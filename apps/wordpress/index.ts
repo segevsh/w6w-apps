@@ -16,6 +16,9 @@ import userGet from "./actions/user-get.ts";
 import userGetAll from "./actions/user-get-all.ts";
 import userUpdate from "./actions/user-update.ts";
 import userDelete from "./actions/user-delete.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
+import site from "./health/site.ts";
 
 export default {
   actions: [
@@ -36,4 +39,5 @@ export default {
     userDelete,
   ],
   auth: [basic, oauth2],
+  healthChecks: [service, quota, site],
 } satisfies AppDefinition;

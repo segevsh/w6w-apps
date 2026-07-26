@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/facebook-lead-ads",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read Facebook Lead Ads forms and their recent leads via the Facebook Graph API.",
   "license": "MIT",
   "author": {

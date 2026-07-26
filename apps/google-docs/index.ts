@@ -21,6 +21,8 @@ import documentInsertTableRow from "./actions/document-insert-table-row.ts";
 import documentInsertTableColumn from "./actions/document-insert-table-column.ts";
 import documentDeleteTableRow from "./actions/document-delete-table-row.ts";
 import documentDeleteTableColumn from "./actions/document-delete-table-column.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -46,4 +48,5 @@ export default {
     documentDeleteTableColumn,
   ],
   auth: [oauth2, serviceAccount],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

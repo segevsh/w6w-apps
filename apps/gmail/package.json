@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/gmail",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Send, read, and manage Gmail messages, drafts, labels, and threads.",
   "license": "MIT",
   "author": {

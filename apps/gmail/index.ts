@@ -34,6 +34,8 @@ import removeThreadLabels from "./actions/remove-thread-labels.ts";
 import trashThread from "./actions/trash-thread.ts";
 import untrashThread from "./actions/untrash-thread.ts";
 import replyThread from "./actions/reply-thread.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -64,4 +66,5 @@ export default {
     replyThread,
   ],
   auth: [oauth2, serviceAccount],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

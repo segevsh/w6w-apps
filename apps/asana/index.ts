@@ -37,6 +37,8 @@ import deleteProject from "./actions/delete-project.ts";
 import getProject from "./actions/get-project.ts";
 import listProjects from "./actions/list-projects.ts";
 import updateProject from "./actions/update-project.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -64,4 +66,5 @@ export default {
     updateProject,
   ],
   auth: [accessToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

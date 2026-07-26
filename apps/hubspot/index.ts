@@ -63,6 +63,8 @@ import listOwners from "./actions/list-owners.ts";
 // Form
 import listForms from "./actions/list-forms.ts";
 import submitForm from "./actions/submit-form.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   auth: [privateAppToken, oauth2, apiKey],
@@ -119,4 +121,5 @@ export default {
     listForms,
     submitForm,
   ],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

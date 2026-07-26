@@ -14,6 +14,8 @@ import fileUpload from "./actions/file-upload.ts";
 import fileList from "./actions/file-list.ts";
 import fileGet from "./actions/file-get.ts";
 import fileDelete from "./actions/file-delete.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -33,4 +35,5 @@ export default {
     fileDelete,
   ],
   auth: [apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -44,6 +44,9 @@ import userGet from "./actions/user-get.ts";
 
 import projectGetMany from "./actions/project-get-many.ts";
 import projectGet from "./actions/project-get.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
+import site from "./health/site.ts";
 
 export default {
   actions: [
@@ -68,4 +71,5 @@ export default {
     projectGet,
   ],
   auth: [apiToken, oauth2],
+  healthChecks: [service, quota, site],
 } satisfies AppDefinition;

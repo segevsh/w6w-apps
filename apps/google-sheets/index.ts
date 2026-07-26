@@ -13,6 +13,8 @@ import sheetAppendOrUpdate from "./actions/sheet-append-or-update.ts";
 import sheetClear from "./actions/sheet-clear.ts";
 import sheetDeleteRows from "./actions/sheet-delete-rows.ts";
 import sheetDeleteColumns from "./actions/sheet-delete-columns.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -30,4 +32,5 @@ export default {
     sheetDeleteColumns,
   ],
   auth: [oauth2, serviceAccount],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

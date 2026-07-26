@@ -23,6 +23,8 @@ import getManyBlocks from "./actions/get-many-blocks.ts";
 
 import getUser from "./actions/get-user.ts";
 import getManyUsers from "./actions/get-many-users.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -50,4 +52,5 @@ export default {
     getManyUsers,
   ],
   auth: [internalSecret, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

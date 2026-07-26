@@ -37,6 +37,8 @@ import chatSetDescription from "./actions/chat-set-description.ts";
 
 import fileGet from "./actions/file-get.ts";
 import callbackAnswerQuery from "./actions/callback-answer-query.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -67,4 +69,5 @@ export default {
     callbackAnswerQuery,
   ],
   auth: [botToken],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

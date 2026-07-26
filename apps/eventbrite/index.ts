@@ -11,6 +11,8 @@ import listOrders from "./actions/list-orders.ts";
 import getOrder from "./actions/get-order.ts";
 import listAttendees from "./actions/list-attendees.ts";
 import getAttendee from "./actions/get-attendee.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -26,4 +28,5 @@ export default {
     getAttendee,
   ],
   auth: [personalToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

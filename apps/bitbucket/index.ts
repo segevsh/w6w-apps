@@ -13,6 +13,8 @@ import deleteWorkspaceHook from "./actions/delete-workspace-hook.ts";
 import listRepositoryHooks from "./actions/list-repository-hooks.ts";
 import createRepositoryHook from "./actions/create-repository-hook.ts";
 import deleteRepositoryHook from "./actions/delete-repository-hook.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -30,4 +32,5 @@ export default {
     deleteRepositoryHook,
   ],
   auth: [basic, accessToken],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

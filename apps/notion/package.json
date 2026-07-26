@@ -1,19 +1,36 @@
 {
   "name": "@w6w-apps/notion",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read and write Notion databases, pages, blocks and users via the Notion API.",
   "license": "MIT",
-  "author": { "name": "w6w" },
+  "author": {
+    "name": "w6w"
+  },
   "private": true,
   "w6w": {
     "id": "io.w6w.notion",
     "displayName": "Notion",
-    "categories": ["productivity", "documents"],
+    "categories": [
+      "productivity",
+      "documents"
+    ],
     "appearance": {
-      "icon": { "svg": "./assets/icon.svg", "alt": "Notion" },
-      "darkMode": { "icon": { "svg": "./assets/icon.dark.svg", "alt": "Notion" } }
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Notion"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Notion"
+        }
+      }
     },
-    "network": { "allow": ["api.notion.com"] },
+    "network": {
+      "allow": [
+        "api.notion.com"
+      ]
+    },
     "entry": "./index.ts"
   }
 }

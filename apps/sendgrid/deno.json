@@ -7,9 +7,9 @@
   },
   "tasks": {
     "test": "deno test -A tests/",
-    "check": "deno check index.ts actions/ auth/ tests/",
-    "fmt": "deno fmt index.ts actions/ auth/ tests/",
-    "lint": "deno lint index.ts actions/ auth/ tests/"
+    "check": "deno check index.ts actions/ auth/ health/ tests/",
+    "fmt": "deno fmt index.ts actions/ auth/ health/ tests/",
+    "lint": "deno lint index.ts actions/ auth/ health/ tests/"
   },
   "fmt": {
     "lineWidth": 100,

@@ -22,6 +22,8 @@ import driveGet from "./actions/drive-get.ts";
 import driveList from "./actions/drive-list.ts";
 import driveDelete from "./actions/drive-delete.ts";
 import driveUpdate from "./actions/drive-update.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -47,4 +49,5 @@ export default {
     driveUpdate,
   ],
   auth: [oauth2, serviceAccount],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

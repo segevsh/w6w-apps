@@ -44,6 +44,9 @@ import customerGetOrders from "./actions/customer-get-orders.ts";
 import inventoryLevelSet from "./actions/inventory-level-set.ts";
 import locationGetMany from "./actions/location-get-many.ts";
 import shopGet from "./actions/shop-get.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
+import store from "./health/store.ts";
 
 export default {
   actions: [
@@ -71,4 +74,5 @@ export default {
     shopGet,
   ],
   auth: [accessToken],
+  healthChecks: [service, quota, store],
 } satisfies AppDefinition;

@@ -44,6 +44,8 @@ import userGetMany from "./actions/user-get-many.ts";
 
 import recordingGetMany from "./actions/recording-get-many.ts";
 import recordingDelete from "./actions/recording-delete.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -68,4 +70,5 @@ export default {
     recordingDelete,
   ],
   auth: [serverToServer, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

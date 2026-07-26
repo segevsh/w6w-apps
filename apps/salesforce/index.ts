@@ -42,6 +42,8 @@ import search from "./actions/search.ts";
 import sobjectDescribe from "./actions/sobject-describe.ts";
 import sobjectList from "./actions/sobject-list.ts";
 import limitsGet from "./actions/limits-get.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -62,4 +64,5 @@ export default {
     limitsGet,
   ],
   auth: [accessToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

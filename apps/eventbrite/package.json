@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/eventbrite",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read events, orders, attendees and ticket classes from Eventbrite.",
   "license": "MIT",
   "author": {
