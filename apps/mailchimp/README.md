@@ -39,6 +39,24 @@ scope beyond a valid key.
 No headroom endpoint or headers. Mailchimp caps concurrency at 10 simultaneous
 connections per key rather than metering a request rate.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | informational | — | _declared absent_ |
+| `quota` | quota | connection | signed | informational | — | _declared absent_ |
+| `auth:api-key` | credential | connection | signed | fatal | — | derived from the `api-key` auth method's `test` hook |
+| `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
+
+**`service` is declared absent.** status.mailchimp.com is a human page with no JSON API or feed. `GET /3.0/ping` — which the auth `test` hook already calls — is the automatable signal.
+
+**`quota` is declared absent.** Mailchimp meters concurrency rather than request rate: 10 simultaneous connections per key, enforced by rejection. There is no counter, endpoint or header to read.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

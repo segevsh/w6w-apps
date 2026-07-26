@@ -50,6 +50,27 @@ action could not reach it even if it tried.
 No headroom endpoint. Slack tiers limits per method and signals exhaustion with 429 plus
 `Retry-After`.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | degraded | 60s | `health/service.ts` |
+| `quota` | quota | connection | signed | informational | — | _declared absent_ |
+| `auth:access-token` | credential | connection | signed | fatal | — | derived from the `access-token` auth method's `test` hook |
+| `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
+
+The host `status.slack.com` (for `service`) is reachable **only inside that hook's worker** — not from any action, and not from the other
+checks. The spec allows the widening precisely because the check is unsigned; pairing an
+extra host with `credential: "signed"` is rejected at load time, so a credential can never
+reach a status host.
+
+**`quota` is declared absent.** Slack publishes no headroom endpoint or rate-limit headers. Limits are tiered per method and exhaustion surfaces as a 429 with `Retry-After`.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

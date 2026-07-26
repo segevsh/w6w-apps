@@ -46,6 +46,22 @@ For diagnosing a token rather than just probing it, Graph's `GET
 `X-App-Usage` and `X-Business-Use-Case-Usage` response headers carry percentage-of-quota
 counters; Meta throttles when any reaches 100.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | informational | — | _declared absent_ |
+| `quota` | quota | connection | signed | informational | 300s | `health/quota.ts` |
+| `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
+| `auth:page-token` | credential | connection | signed | fatal | — | derived from the `page-token` auth method's `test` hook |
+
+**`service` is declared absent.** Meta's status site (metastatus.com, and the developer view at developers.facebook.com/status/dashboard) is a human page with no JSON API or feed. The `quota` check reading `X-App-Usage` is the closest automatable proxy for platform health.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
