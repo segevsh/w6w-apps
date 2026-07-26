@@ -20,7 +20,12 @@ const searchPages: ActionDefinition<Input, NotionListResponse> = {
   title: "Search Pages",
   description: "Search pages by title, or list all pages the integration can access.",
   params: [
-    { key: "query", label: "Query", type: "string", hint: "Free-text search against page titles. Omit to list all pages." },
+    {
+      key: "query",
+      label: "Query",
+      type: "string",
+      hint: "Free-text search against page titles. Omit to list all pages.",
+    },
     { key: "sort", label: "Sort", type: "json" },
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "startCursor", label: "Start cursor", type: "string" },

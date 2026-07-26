@@ -65,7 +65,9 @@ export class ContentfulClient {
     const headers: Record<string, string> = { ...(options.headers ?? {}) };
     const init: RequestInit = { method: options.method ?? "GET", headers };
     if (options.body !== undefined) {
-      if (!headers["content-type"]) headers["content-type"] = "application/vnd.contentful.management.v1+json";
+      if (!headers["content-type"]) {
+        headers["content-type"] = "application/vnd.contentful.management.v1+json";
+      }
       init.body = JSON.stringify(options.body);
     }
 
@@ -76,7 +78,9 @@ export class ContentfulClient {
         detail = await res.text();
       } catch { /* ignore */ }
       throw new Error(
-        `Contentful ${res.status} ${res.statusText} for ${options.method ?? "GET"} ${url.pathname}: ${detail}`,
+        `Contentful ${res.status} ${res.statusText} for ${
+          options.method ?? "GET"
+        } ${url.pathname}: ${detail}`,
       );
     }
     if (res.status === 204) return undefined as T;

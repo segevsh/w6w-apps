@@ -1,6 +1,6 @@
 import { assertEquals, assertRejects } from "@std/assert";
 import { mockCtx } from "../_helpers.ts";
-import { NotionClient, NOTION_VERSION } from "../../lib/client.ts";
+import { NOTION_VERSION, NotionClient } from "../../lib/client.ts";
 
 Deno.test("client: pins Notion-Version on every request", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "database" } }]);
@@ -19,7 +19,11 @@ Deno.test("client: POST serialises body and sets content-type", async () => {
 });
 
 Deno.test("client: throws a descriptive Error on non-2xx", async () => {
-  const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: { code: "object_not_found" } }]);
+  const { ctx } = mockCtx([{
+    status: 404,
+    statusText: "Not Found",
+    body: { code: "object_not_found" },
+  }]);
   const client = new NotionClient(ctx);
   const err = await assertRejects(
     () => client.request("/databases/missing"),

@@ -32,7 +32,7 @@ const updateRole: ActionDefinition<Input> = {
     { key: "mentionable", label: "Mentionable", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const body: Record<string, unknown> = {};
     if (input.name !== undefined) body.name = input.name;
     if (input.permissions !== undefined) body.permissions = input.permissions;

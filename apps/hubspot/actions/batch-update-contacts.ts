@@ -17,7 +17,7 @@ const batchUpdateContacts: ActionDefinition<CrmBatchUpdateInput> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmBatchUpdate(ctx, "contacts", input);
   },
 };

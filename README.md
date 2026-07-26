@@ -22,33 +22,45 @@ Each app dir is a standalone w6w App: `package.json` (manifest under the `w6w`
 field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 `assets/icon.{svg,png}`, and its own `deno.json` / `tsconfig.json` / `tests/`.
 
-| App | Auth | Actions |
-|-----|------|--------:|
-| airtable | personal-access-token, oauth2, api-key (deprecated) | 10 |
-| anthropic | api-key | 14 |
-| asana | access-token, oauth2 | 22 |
-| bitbucket | basic, access-token | 12 |
-| brevo | api-key | 15 |
-| contentful | access-token | 10 |
-| discord | bot-token, oauth2 | 19 |
-| dropbox | access-token, oauth2 | 12 |
-| eventbrite | personal-token, oauth2 | 10 |
-| facebook-lead-ads | oauth2 | 2 |
-| gmail | oauth2, service-account | 25 |
-| google-calendar | oauth2, service-account | 8 |
-| google-docs | oauth2, service-account | 20 |
-| google-drive | oauth2, service-account | 18 |
-| google-sheets | oauth2, service-account | 12 |
-| hubspot | private-app-token, oauth2, api-key | 42 |
-| klaviyo | api-key | 23 |
-| mailchimp | api-key, oauth2 | 14 |
-| mistral | api-key | 4 |
-| notion | internal-secret, oauth2 | 17 |
-| openai | api-key | 13 |
-| sendgrid | api-key | 10 |
-| slack | access-token, oauth2 | 47 |
-| twilio | basic | 2 |
-| wordpress | basic, oauth2 | 15 |
+| App | Categories | Auth | Actions |
+|-----|------------|------|--------:|
+| airtable | spreadsheets, databases, productivity | personal-access-token, oauth2, api-key | 10 |
+| anthropic | ai | api-key | 14 |
+| asana | productivity, project-management | access-token, oauth2 | 22 |
+| bitbucket | developer-tools | basic, access-token | 12 |
+| brevo | marketing, email | api-key | 15 |
+| contentful | cms | access-token | 10 |
+| discord | communication | bot-token, oauth2 | 19 |
+| dropbox | storage | access-token, oauth2 | 12 |
+| eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
+| facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
+| github | version-control, developer-tools | access-token, oauth2 | 24 |
+| gmail | communication, email | oauth2, service-account | 25 |
+| google-calendar | calendar, productivity | oauth2, service-account | 8 |
+| google-docs | productivity, documents | oauth2, service-account | 20 |
+| google-drive | storage, productivity | oauth2, service-account | 18 |
+| google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
+| hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
+| jira | project-management, developer-tools | api-token, oauth2 | 15 |
+| klaviyo | marketing, email | api-key | 23 |
+| linear | project-management, developer-tools | api-key, oauth2 | 11 |
+| mailchimp | marketing, communication | api-key, oauth2 | 14 |
+| mistral | ai | api-key | 4 |
+| notion | productivity, documents | internal-secret, oauth2 | 17 |
+| openai | ai, developer-tools | api-key | 13 |
+| salesforce | crm | access-token, oauth2 | 12 |
+| sendgrid | email, communication | send-grid-api | 10 |
+| shopify | commerce | access-token | 18 |
+| slack | communication | access-token, oauth2 | 47 |
+| stripe | commerce, finance | api-key | 23 |
+| telegram | communication | bot-token | 21 |
+| trello | project-management, productivity | api-key | 27 |
+| twilio | communication | api-key | 2 |
+| wordpress | cms | basic, oauth2 | 15 |
+| zendesk | support, crm | api-token, oauth2 | 17 |
+| zoom | video, communication | server-to-server, oauth2 | 14 |
+
+35 apps, 578 actions.
 
 Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
@@ -81,7 +93,24 @@ Each app has a `deno.json` with local tasks:
 cd apps/<app>
 deno task test
 deno task check
+deno task lint
 ```
+
+Before opening a PR, run the pack-wide conformance auditor from the repo root.
+It validates every app against `core`'s own `@w6w/validator`, rebuilds each
+manifest the way the runtime's loader does, and source-scans for the sandbox
+rules that are only visible in code — global `fetch`, `Deno.*`, credentials
+handled outside an auth `sign` hook, and hosts called but absent from
+`w6w.network.allow`:
+
+```sh
+deno run --no-check -A _tools/audit.ts          # every app
+deno run --no-check -A _tools/audit.ts slack    # one app
+deno run --no-check -A _tools/audit.ts --json   # machine-readable
+```
+
+It exits non-zero on any error. Warnings flag optional-but-recommended
+metadata (`output`, `idempotent`, a unit test per action).
 
 Ship changes through a PR against `w6w-io/w6w-apps` from a personal fork —
 never push directly to `main` here.

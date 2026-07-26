@@ -17,7 +17,8 @@ const listEvents: ActionDefinition<Input> = {
   type: "read",
   resource: "event",
   title: "List Events",
-  description: "List events for an organization. Walks one page; pass back `continuation` to get the next.",
+  description:
+    "List events for an organization. Walks one page; pass back `continuation` to get the next.",
   params: [
     { key: "organizationId", label: "Organization ID", type: "string", required: true },
     {
@@ -48,7 +49,7 @@ const listEvents: ActionDefinition<Input> = {
     { key: "pagination", type: "object", label: "Pagination" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"events">>(
       `/organizations/${input.organizationId}/events/`,

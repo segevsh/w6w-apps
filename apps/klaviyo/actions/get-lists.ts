@@ -26,7 +26,7 @@ const getLists: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
     { key: "additionalFields", label: "Additional fields", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope<unknown[]>>(`/lists/`, {
       query: {

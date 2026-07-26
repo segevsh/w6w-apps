@@ -17,7 +17,7 @@ const addTaskTag: ActionDefinition<Input> = {
     { key: "tag", label: "Tag ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks/${input.id}/addTag`, {
       method: "POST",
       body: { tag: input.tag },

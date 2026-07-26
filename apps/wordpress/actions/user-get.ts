@@ -32,7 +32,7 @@ const userGet: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     return client.request(`/users/${input.userId}`, { query: { context: input.context } });
   },

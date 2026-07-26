@@ -11,7 +11,8 @@ const listOrganizers: ActionDefinition<Input> = {
   type: "read",
   resource: "organizer",
   title: "List Organizers",
-  description: "List organizers belonging to an organization. Organizers are the public-facing event hosts (logo, bio, social links) — distinct from Organizations.",
+  description:
+    "List organizers belonging to an organization. Organizers are the public-facing event hosts (logo, bio, social links) — distinct from Organizations.",
   params: [
     { key: "organizationId", label: "Organization ID", type: "string", required: true },
     { key: "page", label: "Page", type: "number", default: 1 },
@@ -21,7 +22,7 @@ const listOrganizers: ActionDefinition<Input> = {
     { key: "pagination", type: "object", label: "Pagination" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"organizers">>(
       `/organizations/${input.organizationId}/organizers/`,

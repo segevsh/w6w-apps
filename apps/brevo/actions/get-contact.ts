@@ -21,7 +21,7 @@ const getContact: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     return client.request(`/contacts/${encodeURIComponent(input.identifier)}`);
   },

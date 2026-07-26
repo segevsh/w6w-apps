@@ -20,7 +20,7 @@ const batchCancel: ActionDefinition<Input> = {
     { key: "batchId", label: "Batch ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AnthropicClient(ctx);
     return client.request(`/v1/messages/batches/${input.batchId}/cancel`, { method: "POST" });
   },

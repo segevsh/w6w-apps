@@ -48,7 +48,7 @@ const createEmail: ActionDefinition<Input, HubSpotObject> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     const properties = coerceProperties({
       hs_email_subject: input.hs_email_subject,

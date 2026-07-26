@@ -14,12 +14,24 @@ const getRecord: ActionDefinition<Input> = {
   title: "Get Record",
   description: "Retrieve a single record by ID.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
-    { key: "recordId", label: "Record ID", type: "string", required: true, placeholder: "recXXXXXXXXXXXXXX" },
+    {
+      key: "recordId",
+      label: "Record ID",
+      type: "string",
+      required: true,
+      placeholder: "recXXXXXXXXXXXXXX",
+    },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request(`${input.baseId}/${encodeURI(input.table)}/${input.recordId}`);
   },

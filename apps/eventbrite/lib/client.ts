@@ -55,7 +55,11 @@ export class EventbriteClient {
       try {
         detail = await res.text();
       } catch { /* ignore */ }
-      throw new Error(`Eventbrite ${res.status} ${res.statusText} for ${options.method ?? "GET"} ${url.pathname}: ${detail}`);
+      throw new Error(
+        `Eventbrite ${res.status} ${res.statusText} for ${
+          options.method ?? "GET"
+        } ${url.pathname}: ${detail}`,
+      );
     }
     if (res.status === 204) return undefined as T;
     return res.json() as Promise<T>;

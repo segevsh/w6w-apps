@@ -126,9 +126,9 @@ export function buildMimeMessage(input: MimeInput): string {
   const hasHtml = typeof input.html === "string" && input.html.length > 0;
 
   if (hasText && hasHtml) {
-    const boundary = `w6w_boundary_${
-      Math.random().toString(36).slice(2)
-    }${Date.now().toString(36)}`;
+    const boundary = `w6w_boundary_${Math.random().toString(36).slice(2)}${
+      Date.now().toString(36)
+    }`;
     headers.push(`Content-Type: multipart/alternative; boundary="${boundary}"`);
     body = [
       "",

@@ -60,7 +60,7 @@ const subscribeProfiles: ActionDefinition<Input, KlaviyoEnvelope> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     const profiles = input.profiles.map((p) => {
       const attributes: Record<string, unknown> = {};

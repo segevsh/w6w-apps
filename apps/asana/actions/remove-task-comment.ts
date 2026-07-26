@@ -16,7 +16,7 @@ const removeTaskComment: ActionDefinition<Input> = {
     { key: "id", label: "Comment (Story) ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/stories/${input.id}`, { method: "DELETE" });
   },
 };

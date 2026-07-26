@@ -29,7 +29,7 @@ const sheetClear: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleSheetsClient(ctx);
     return client.request(
       `/spreadsheets/${encodeURIComponent(input.spreadsheetId)}/values/${

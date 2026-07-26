@@ -16,7 +16,7 @@ const deleteProject: ActionDefinition<Input> = {
     { key: "id", label: "Project ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/projects/${input.id}`, { method: "DELETE" });
   },
 };

@@ -63,7 +63,7 @@ const listEvents: ActionDefinition<Input> = {
     { key: "nextSyncToken", type: "string", label: "Next sync token" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleCalendarClient(ctx);
     return client.request(`/calendars/${encodeCalendarId(input.calendarId)}/events`, {
       query: {

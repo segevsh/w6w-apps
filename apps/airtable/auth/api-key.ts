@@ -26,7 +26,8 @@ const apiKey: AuthDefinition = {
       label: "API Key (Legacy)",
       type: "secret",
       required: true,
-      hint: "Legacy API keys (starting with 'key…') were disabled in Feb 2024. Use a Personal Access Token instead.",
+      hint:
+        "Legacy API keys (starting with 'key…') were disabled in Feb 2024. Use a Personal Access Token instead.",
     },
   ],
 

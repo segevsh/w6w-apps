@@ -23,7 +23,8 @@ const createProfile: ActionDefinition<Input, KlaviyoEnvelope> = {
   type: "perform",
   resource: "profile",
   title: "Create Profile",
-  description: "Create a new Klaviyo profile. At least one of email / phone / externalId is required.",
+  description:
+    "Create a new Klaviyo profile. At least one of email / phone / externalId is required.",
   params: [
     { key: "email", label: "Email", type: "string" },
     { key: "phoneNumber", label: "Phone (E.164)", type: "string", placeholder: "+15551234567" },
@@ -37,7 +38,7 @@ const createProfile: ActionDefinition<Input, KlaviyoEnvelope> = {
       key: "location",
       label: "Location",
       type: "json",
-      hint: "e.g. `{ \"city\": \"Boston\", \"country\": \"USA\", \"zip\": \"02116\" }`.",
+      hint: 'e.g. `{ "city": "Boston", "country": "USA", "zip": "02116" }`.',
     },
     {
       key: "properties",
@@ -47,7 +48,7 @@ const createProfile: ActionDefinition<Input, KlaviyoEnvelope> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     const attributes: Record<string, unknown> = {};
     if (input.email) attributes.email = input.email;

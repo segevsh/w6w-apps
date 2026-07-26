@@ -13,8 +13,7 @@ const addTaskComment: ActionDefinition<Input> = {
   type: "perform",
   resource: "task-comment",
   title: "Add Task Comment",
-  description:
-    "Post a comment (story) to a task. Toggle `isTextHtml` to send the body as HTML.",
+  description: "Post a comment (story) to a task. Toggle `isTextHtml` to send the body as HTML.",
   params: [
     { key: "id", label: "Task ID", type: "string", required: true },
     { key: "text", label: "Text", type: "text", required: true },
@@ -28,7 +27,7 @@ const addTaskComment: ActionDefinition<Input> = {
     { key: "is_pinned", label: "Pinned", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const body: Record<string, unknown> = {};
     if (input.isTextHtml) body.html_text = input.text;
     else body.text = input.text;

@@ -45,7 +45,7 @@ const documentInsertTableColumn: ActionDefinition<Input> = {
     { key: "segmentId", label: "Segment ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const documentId = extractDocumentId(input.documentURL);
     const segmentId = input.insertSegment && input.insertSegment !== "body"

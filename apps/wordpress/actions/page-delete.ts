@@ -24,7 +24,7 @@ const pageDelete: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     return client.request(`/pages/${input.pageId}`, {
       method: "DELETE",

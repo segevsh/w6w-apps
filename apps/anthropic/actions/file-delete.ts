@@ -20,7 +20,7 @@ const fileDelete: ActionDefinition<Input> = {
     { key: "fileId", label: "File ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AnthropicClient(ctx);
     return client.request(`/v1/files/${input.fileId}`, {
       method: "DELETE",

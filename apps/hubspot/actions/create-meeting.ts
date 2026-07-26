@@ -36,7 +36,7 @@ const createMeeting: ActionDefinition<Input, HubSpotObject> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     const properties = coerceProperties({
       hs_meeting_title: input.hs_meeting_title,

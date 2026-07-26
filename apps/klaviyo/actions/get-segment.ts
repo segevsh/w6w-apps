@@ -19,7 +19,7 @@ const getSegment: ActionDefinition<Input, KlaviyoEnvelope> = {
     { key: "include", label: "Include", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope>(`/segments/${input.segmentId}/`, {
       query: {

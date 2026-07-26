@@ -22,7 +22,7 @@ const listLists: ActionDefinition<Input> = {
     { key: "has-more", type: "boolean", label: "Has more" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request(`/contacts/v1/lists`, {
       query: { count: input.count ?? 100, offset: input.offset },

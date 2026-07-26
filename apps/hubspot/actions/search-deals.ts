@@ -16,7 +16,7 @@ const searchDeals: ActionDefinition<CrmSearchInput> = {
     { key: "after", label: "After (cursor)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmSearch(ctx, "deals", input);
   },
 };

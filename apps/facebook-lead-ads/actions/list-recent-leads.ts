@@ -52,14 +52,19 @@ const listRecentLeads: ActionDefinition<Input, FacebookListResponse<Lead>> = {
       hint: "Only return leads created strictly after this unix timestamp.",
     },
     { key: "limit", label: "Limit", type: "number", default: 25 },
-    { key: "cursor", label: "Cursor", type: "string", hint: "Facebook `after` cursor for pagination." },
+    {
+      key: "cursor",
+      label: "Cursor",
+      type: "string",
+      hint: "Facebook `after` cursor for pagination.",
+    },
   ],
   output: [
     { key: "data", type: "array", label: "Leads" },
     { key: "paging", type: "object", label: "Paging" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new FacebookClient(ctx);
     return client.request<FacebookListResponse<Lead>>(
       `/${input.formId}/leads`,

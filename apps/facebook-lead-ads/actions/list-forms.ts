@@ -33,14 +33,19 @@ const listForms: ActionDefinition<Input, FacebookListResponse<FormSummary>> = {
     "List the lead-generation forms for a Facebook Page. Use the returned form id in `list-recent-leads`.",
   params: [
     { key: "pageId", label: "Page ID", type: "string", required: true },
-    { key: "cursor", label: "Cursor", type: "string", hint: "Facebook `after` cursor for pagination." },
+    {
+      key: "cursor",
+      label: "Cursor",
+      type: "string",
+      hint: "Facebook `after` cursor for pagination.",
+    },
   ],
   output: [
     { key: "data", type: "array", label: "Forms" },
     { key: "paging", type: "object", label: "Paging" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new FacebookClient(ctx);
     return client.request<FacebookListResponse<FormSummary>>(
       `/${input.pageId}/leadgen_forms`,

@@ -31,7 +31,7 @@ const createCompany: ActionDefinition<Input> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmCreate(ctx, "companies", {
       properties: {
         name: input.name,

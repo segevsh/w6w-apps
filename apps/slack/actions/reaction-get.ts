@@ -17,7 +17,7 @@ const reactionGet: ActionDefinition<Input> = {
     { key: "timestamp", label: "Message ts", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/reactions.get", {
       query: { channel: input.channel, timestamp: input.timestamp },

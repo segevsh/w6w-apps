@@ -53,7 +53,7 @@ const sendTemplateEmail: ActionDefinition<Input> = {
     { key: "headers", label: "Custom Headers", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     const to = parseEmailList(input.to);
     const body: Record<string, unknown> = { templateId: input.templateId, to };

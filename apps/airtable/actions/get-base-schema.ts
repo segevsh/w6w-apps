@@ -18,7 +18,13 @@ const getBaseSchema: ActionDefinition<Input> = {
   title: "Get Base Schema",
   description: "Retrieve tables, fields and views for a base.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     {
       key: "include",
       label: "Include",
@@ -27,7 +33,7 @@ const getBaseSchema: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request(`meta/bases/${input.baseId}/tables`, {
       query: { include: input.include },

@@ -77,7 +77,7 @@ const listCampaigns: ActionDefinition<Input> = {
     { key: "total_items", type: "number", label: "Total items" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MailchimpClient(ctx);
     const fields = input.fields && input.fields.length
       ? input.fields.join(",")

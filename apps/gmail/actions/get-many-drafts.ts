@@ -38,7 +38,7 @@ const getManyDrafts: ActionDefinition<Input> = {
     { key: "resultSizeEstimate", type: "number", label: "Result Size Estimate" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request<ListResponse>("/users/me/drafts", {
       query: {

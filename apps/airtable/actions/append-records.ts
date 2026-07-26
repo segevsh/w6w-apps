@@ -18,9 +18,16 @@ const appendRecords: ActionDefinition<Input> = {
   type: "perform",
   resource: "record",
   title: "Append Records (batch)",
-  description: "Append up to 10 records in one request. For >10 records, call this action in a loop.",
+  description:
+    "Append up to 10 records in one request. For >10 records, call this action in a loop.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
     {
       key: "records",
@@ -32,7 +39,7 @@ const appendRecords: ActionDefinition<Input> = {
     { key: "typecast", label: "Typecast", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request(`${input.baseId}/${encodeURI(input.table)}`, {
       method: "POST",

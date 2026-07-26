@@ -44,7 +44,7 @@ const getMessage: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request(`/users/me/messages/${input.messageId}`, {
       query: {

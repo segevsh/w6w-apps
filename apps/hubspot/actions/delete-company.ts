@@ -15,7 +15,7 @@ const deleteCompany: ActionDefinition<Input> = {
     { key: "id", label: "Company ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmDelete(ctx, "companies", input);
   },
 };

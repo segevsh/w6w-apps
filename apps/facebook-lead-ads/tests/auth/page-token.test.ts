@@ -40,5 +40,7 @@ Deno.test("page-token: test probes /me and reports the upstream status", async (
 
 Deno.test("page-token: afterConnect labels the connection with the Page", async () => {
   const { ctx } = mockCtx([{ body: { id: "42", name: "Acme Page" } }]);
-  assertEquals(await auth.afterConnect!({ credential: {} }, ctx), { page: { id: "42", name: "Acme Page" } });
+  assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {
+    page: { id: "42", name: "Acme Page" },
+  });
 });

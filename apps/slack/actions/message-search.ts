@@ -31,7 +31,7 @@ const messageSearch: ActionDefinition<Input> = {
     { key: "page", label: "Page", type: "number" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/search.messages", {
       method: "POST",

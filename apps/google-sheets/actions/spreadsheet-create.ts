@@ -42,7 +42,7 @@ const spreadsheetCreate: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleSheetsClient(ctx);
     const body: Record<string, unknown> = {
       properties: {

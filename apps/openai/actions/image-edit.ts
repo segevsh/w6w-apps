@@ -53,7 +53,7 @@ const imageEdit: ActionDefinition<Input> = {
     { key: "maskFileName", label: "Mask filename", type: "string", default: "mask.png" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     const form = new FormData();
     form.append(

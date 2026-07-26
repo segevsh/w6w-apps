@@ -16,7 +16,7 @@ const getCompany: ActionDefinition<CrmGetInput> = {
     { key: "idProperty", label: "ID property", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmGet(ctx, "companies", input);
   },
 };

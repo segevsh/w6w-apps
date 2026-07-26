@@ -22,7 +22,7 @@ const getMessage: ActionDefinition<Input> = {
     { key: "messageId", label: "Message ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DiscordClient(ctx);
     return client.request(`/channels/${input.channelId}/messages/${input.messageId}`);
   },

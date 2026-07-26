@@ -9,7 +9,7 @@ const getUser: ActionDefinition<Record<string, never>> = {
   description: "Retrieve the profile of the account backing the current credential.",
   params: [],
 
-  async execute(_input, ctx) {
+  execute(_input, ctx) {
     const client = new BitbucketClient(ctx);
     return client.request(`/user`);
   },

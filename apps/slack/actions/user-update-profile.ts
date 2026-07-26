@@ -25,7 +25,8 @@ const userUpdateProfile: ActionDefinition<Input> = {
   type: "perform",
   resource: "user",
   title: "Update User Profile",
-  description: "Updates the authenticated user's (or an admin-specified user's) profile (users.profile.set).",
+  description:
+    "Updates the authenticated user's (or an admin-specified user's) profile (users.profile.set).",
   params: [
     { key: "user", label: "User ID", type: "string", hint: "Admin-only. Defaults to caller." },
     { key: "firstName", label: "First name", type: "string" },

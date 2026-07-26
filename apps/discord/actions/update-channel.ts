@@ -37,7 +37,7 @@ const updateChannel: ActionDefinition<Input> = {
     { key: "nsfw", label: "Age-restricted (NSFW)", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const body: Record<string, unknown> = {};
     if (input.name !== undefined) body.name = input.name;
     if (input.topic !== undefined) body.topic = input.topic;

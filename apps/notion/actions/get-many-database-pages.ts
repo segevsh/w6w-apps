@@ -23,7 +23,12 @@ const getManyDatabasePages: ActionDefinition<Input, NotionListResponse> = {
   description: "Query the pages in a database. Returns one page — pass `startCursor` back to walk.",
   params: [
     { key: "databaseId", label: "Database ID", type: "string", required: true },
-    { key: "filter", label: "Filter", type: "json", hint: "Notion filter object. See developers.notion.com filter reference." },
+    {
+      key: "filter",
+      label: "Filter",
+      type: "json",
+      hint: "Notion filter object. See developers.notion.com filter reference.",
+    },
     { key: "sorts", label: "Sorts", type: "json", hint: "Notion sort array." },
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "startCursor", label: "Start cursor", type: "string" },

@@ -40,7 +40,7 @@ const updateProfile: ActionDefinition<Input, KlaviyoEnvelope> = {
     { key: "properties", label: "Custom Properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     const attributes: Record<string, unknown> = {};
     if (input.email !== undefined) attributes.email = input.email;

@@ -108,9 +108,7 @@ export interface SegmentLocation {
  * `endOfSegmentLocation` object, matching what n8n emits in `GoogleDocs.node.ts`.
  */
 export function buildLocation(loc: SegmentLocation): Record<string, unknown> {
-  const segmentId = loc.insertSegment && loc.insertSegment !== "body"
-    ? (loc.segmentId ?? "")
-    : "";
+  const segmentId = loc.insertSegment && loc.insertSegment !== "body" ? (loc.segmentId ?? "") : "";
   const choice = loc.locationChoice ?? "endOfSegmentLocation";
   const inner: Record<string, unknown> = { segmentId };
   if (choice === "location" && loc.index !== undefined) {

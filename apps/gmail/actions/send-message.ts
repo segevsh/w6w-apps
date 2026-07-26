@@ -48,7 +48,7 @@ const sendMessage: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const raw = buildMimeMessage({
       to: input.to,
       from: input.from,

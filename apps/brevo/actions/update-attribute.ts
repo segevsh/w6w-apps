@@ -39,7 +39,7 @@ const updateAttribute: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     const body: Record<string, unknown> = {};
     if (input.category !== "category" && input.value !== undefined) body.value = input.value;

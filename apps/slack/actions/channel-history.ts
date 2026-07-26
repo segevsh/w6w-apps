@@ -31,7 +31,7 @@ const channelHistory: ActionDefinition<Input> = {
     { key: "cursor", label: "Cursor", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.history", {
       query: {

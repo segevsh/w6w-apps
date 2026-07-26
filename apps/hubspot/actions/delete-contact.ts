@@ -15,7 +15,7 @@ const deleteContact: ActionDefinition<Input> = {
     { key: "id", label: "Contact ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmDelete(ctx, "contacts", input);
   },
 };

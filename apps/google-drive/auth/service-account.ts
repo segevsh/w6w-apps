@@ -1,5 +1,5 @@
 import type { AuthDefinition } from "@w6w/types";
-import { API_URL, TOKEN_URL } from "../lib/client.ts";
+import { TOKEN_URL } from "../lib/client.ts";
 
 /**
  * Service Account — the "server-to-server" path. The user pastes the service
@@ -78,7 +78,7 @@ export function buildAssertion(
  *
  * See the sibling google-sheets app for the shared implementation.
  */
-async function signRs256(
+function signRs256(
   _credential: ServiceAccountCredential,
   _signingInput: string,
 ): Promise<string> {
@@ -150,7 +150,7 @@ const serviceAccount: AuthDefinition = {
     return request;
   },
 
-  async test({ credential }, _ctx) {
+  test({ credential }, _ctx) {
     const cred = credential as ServiceAccountCredential;
     if (!cred.clientEmail || !cred.privateKey) {
       return { ok: false, message: "credential missing clientEmail or privateKey" };
@@ -164,7 +164,7 @@ const serviceAccount: AuthDefinition = {
     };
   },
 
-  async afterConnect(_input, _ctx) {
+  afterConnect(_input, _ctx) {
     return {};
   },
 };

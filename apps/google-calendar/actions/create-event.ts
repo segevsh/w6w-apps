@@ -129,7 +129,7 @@ const createEvent: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleCalendarClient(ctx);
     const body: EventPayload = input.allDay
       ? {

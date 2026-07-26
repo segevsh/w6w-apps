@@ -33,7 +33,7 @@ const createTemplate: ActionDefinition<Input, KlaviyoEnvelope> = {
     { key: "ampBody", label: "AMP body", type: "text" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     const attributes: Record<string, unknown> = {
       name: input.name,

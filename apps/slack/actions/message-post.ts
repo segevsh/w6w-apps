@@ -72,7 +72,7 @@ const messagePost: ActionDefinition<Input> = {
     { key: "username", label: "Username", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = { channel: input.channel };
     if (input.text) body.text = input.text;

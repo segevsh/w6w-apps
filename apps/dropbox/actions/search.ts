@@ -30,7 +30,8 @@ const search: ActionDefinition<Input> = {
       label: "Query",
       type: "string",
       required: true,
-      hint: "Search string. Dropbox matches file names, and (when filename_only=false) file contents.",
+      hint:
+        "Search string. Dropbox matches file names, and (when filename_only=false) file contents.",
     },
     {
       key: "path",
@@ -71,7 +72,7 @@ const search: ActionDefinition<Input> = {
     { key: "has_more", type: "boolean", label: "Has more" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     if (input.cursor) {
       return client.request("/files/search/continue_v2", {

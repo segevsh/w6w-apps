@@ -81,7 +81,7 @@ const pageCreate: ActionDefinition<Input> = {
     { key: "featuredMediaId", label: "Featured Media ID", type: "number" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     const body: PageBody = { title: input.title };
     if (input.authorId !== undefined) body.author = input.authorId;

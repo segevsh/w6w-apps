@@ -51,7 +51,7 @@ const sendSms: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new TwilioClient(ctx);
     const from = input.toWhatsapp ? `whatsapp:${input.from}` : input.from;
     const to = input.toWhatsapp ? `whatsapp:${input.to}` : input.to;

@@ -24,7 +24,7 @@ const getTask: ActionDefinition<Input> = {
     { key: "opt_pretty", label: "Pretty print", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks/${input.id}`, {
       query: {
         opt_fields: input.opt_fields,

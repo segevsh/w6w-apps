@@ -15,7 +15,7 @@ const deleteDeal: ActionDefinition<Input> = {
     { key: "id", label: "Deal ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmDelete(ctx, "deals", input);
   },
 };

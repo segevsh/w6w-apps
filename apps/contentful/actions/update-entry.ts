@@ -41,7 +41,7 @@ const updateEntry: ActionDefinition<Input> = {
     { key: "environmentId", label: "Environment ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const { spaceId, environmentId } = resolveScope(input, ctx);
     const client = new ContentfulClient(ctx);
     return client.request(

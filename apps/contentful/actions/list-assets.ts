@@ -1,5 +1,10 @@
 import type { ActionDefinition } from "@w6w/types";
-import { applySearchExtras, ContentfulClient, type ContentfulListResponse, resolveScope } from "../lib/client.ts";
+import {
+  applySearchExtras,
+  ContentfulClient,
+  type ContentfulListResponse,
+  resolveScope,
+} from "../lib/client.ts";
 
 interface Input {
   spaceId?: string;
@@ -80,7 +85,7 @@ const listAssets: ActionDefinition<Input> = {
     { key: "limit", type: "number", label: "Limit" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const { spaceId, environmentId } = resolveScope(input, ctx);
     const client = new ContentfulClient(ctx);
     const query: Record<string, string | number | boolean | undefined | null> = {

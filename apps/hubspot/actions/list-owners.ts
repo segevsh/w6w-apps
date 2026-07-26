@@ -24,7 +24,8 @@ const listOwners: ActionDefinition<Input> = {
   type: "read",
   resource: "owner",
   title: "List Owners",
-  description: "List CRM owners (portal users assignable as owner of a contact/company/deal/ticket).",
+  description:
+    "List CRM owners (portal users assignable as owner of a contact/company/deal/ticket).",
   params: [
     { key: "email", label: "Email filter", type: "string" },
     { key: "limit", label: "Limit", type: "number", default: 100 },
@@ -32,7 +33,7 @@ const listOwners: ActionDefinition<Input> = {
     { key: "archived", label: "Include archived", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request<HubSpotListResponse<Owner>>(`/crm/v3/owners`, {
       query: {

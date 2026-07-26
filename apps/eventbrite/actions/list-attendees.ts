@@ -48,7 +48,7 @@ const listAttendees: ActionDefinition<Input> = {
     { key: "pagination", type: "object", label: "Pagination" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     const path = input.scope === "organization"
       ? `/organizations/${input.scopeId}/attendees/`

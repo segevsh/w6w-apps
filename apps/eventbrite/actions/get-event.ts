@@ -17,7 +17,7 @@ const getEvent: ActionDefinition<Input> = {
     { key: "expand", label: "Expand", type: "string", default: "venue,ticket_classes" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(`/events/${input.eventId}/`, {
       query: { expand: input.expand ?? "venue,ticket_classes" },

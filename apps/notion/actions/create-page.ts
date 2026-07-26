@@ -23,7 +23,12 @@ const createPage: ActionDefinition<Input> = {
   params: [
     { key: "parentPageId", label: "Parent Page ID", type: "string", required: true },
     { key: "title", label: "Title", type: "string", required: true },
-    { key: "children", label: "Children (blocks)", type: "json", hint: "Optional array of block objects as page content." },
+    {
+      key: "children",
+      label: "Children (blocks)",
+      type: "json",
+      hint: "Optional array of block objects as page content.",
+    },
     { key: "icon", label: "Icon", type: "json" },
     { key: "cover", label: "Cover", type: "json" },
   ],

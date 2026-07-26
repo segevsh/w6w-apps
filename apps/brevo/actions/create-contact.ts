@@ -23,7 +23,7 @@ const createContact: ActionDefinition<Input> = {
       key: "attributes",
       label: "Attributes",
       type: "json",
-      hint: "JSON object of contact attributes, e.g. `{\"FIRSTNAME\": \"Ada\"}`.",
+      hint: 'JSON object of contact attributes, e.g. `{"FIRSTNAME": "Ada"}`.',
     },
     {
       key: "listIds",
@@ -36,7 +36,7 @@ const createContact: ActionDefinition<Input> = {
     { key: "smsBlacklisted", label: "SMS blacklisted", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     const body: Record<string, unknown> = { email: input.email };
     if (input.attributes) body.attributes = input.attributes;

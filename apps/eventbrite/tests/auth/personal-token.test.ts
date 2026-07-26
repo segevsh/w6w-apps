@@ -13,7 +13,11 @@ Deno.test("personal-token: is a bearer method exposing a `token` secret field", 
 
 Deno.test("personal-token: sign appends Bearer using credential.token", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { token: "priv-xyz" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer priv-xyz");
 });

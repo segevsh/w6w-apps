@@ -17,7 +17,7 @@ const getAttendee: ActionDefinition<Input> = {
     { key: "attendeeId", label: "Attendee ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(`/events/${input.eventId}/attendees/${input.attendeeId}/`);
   },

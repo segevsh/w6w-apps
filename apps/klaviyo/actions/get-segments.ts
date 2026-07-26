@@ -31,7 +31,7 @@ const getSegments: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope<unknown[]>>(`/segments/`, {
       query: {

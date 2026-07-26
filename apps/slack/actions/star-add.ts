@@ -33,7 +33,7 @@ const starAdd: ActionDefinition<Input> = {
     { key: "fileComment", label: "File comment ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = { channel: input.channel };
     if (input.target === "message" && input.timestamp) body.timestamp = input.timestamp;

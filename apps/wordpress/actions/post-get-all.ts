@@ -72,7 +72,7 @@ const postGetAll: ActionDefinition<Input> = {
     { key: "page", label: "Page", type: "number", default: 1 },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     return client.request("/posts", {
       query: {

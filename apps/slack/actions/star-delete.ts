@@ -21,7 +21,7 @@ const starDelete: ActionDefinition<Input> = {
     { key: "fileComment", label: "File comment ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = {};
     if (input.channel) body.channel = input.channel;

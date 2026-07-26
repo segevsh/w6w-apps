@@ -22,7 +22,7 @@ const getManyLabels: ActionDefinition<Record<string, never>> = {
     { key: "labels", type: "array", label: "Labels" },
   ],
 
-  async execute(_input, ctx) {
+  execute(_input, ctx) {
     const client = new GmailClient(ctx);
     return client.request<ListResponse>("/users/me/labels");
   },

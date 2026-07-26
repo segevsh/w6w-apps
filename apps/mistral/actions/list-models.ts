@@ -16,7 +16,7 @@ const listModels: ActionDefinition<Record<string, never>> = {
     { key: "data", type: "array", label: "Models" },
   ],
 
-  async execute(_input, ctx) {
+  execute(_input, ctx) {
     const client = new MistralClient(ctx);
     return client.request("/v1/models");
   },

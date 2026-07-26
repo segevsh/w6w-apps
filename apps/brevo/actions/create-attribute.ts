@@ -34,7 +34,8 @@ const createAttribute: ActionDefinition<Input> = {
   type: "perform",
   resource: "attribute",
   title: "Create Attribute",
-  description: "Create a contact attribute (normal / transactional / category / calculated / global).",
+  description:
+    "Create a contact attribute (normal / transactional / category / calculated / global).",
   params: [
     {
       key: "category",

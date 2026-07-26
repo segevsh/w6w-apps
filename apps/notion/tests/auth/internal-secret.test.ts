@@ -14,7 +14,11 @@ Deno.test("internal-secret: is a bearer method exposing a required `apiKey` secr
 
 Deno.test("internal-secret: sign appends Bearer and Notion-Version", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { apiKey: "secret-xyz" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer secret-xyz");
   assertEquals(out.headers["Notion-Version"], NOTION_VERSION);

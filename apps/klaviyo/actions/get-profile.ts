@@ -29,7 +29,7 @@ const getProfile: ActionDefinition<Input, KlaviyoEnvelope> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope>(`/profiles/${input.profileId}/`, {
       query: {

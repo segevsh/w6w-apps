@@ -19,7 +19,7 @@ const userGetMany: ActionDefinition<Input> = {
     { key: "includeLocale", label: "Include locale", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/users.list", {
       query: {

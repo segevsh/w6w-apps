@@ -24,7 +24,7 @@ const getEvent: ActionDefinition<Input> = {
     { key: "maxAttendees", label: "Max attendees", type: "number" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleCalendarClient(ctx);
     return client.request(
       `/calendars/${encodeCalendarId(input.calendarId)}/events/${input.eventId}`,

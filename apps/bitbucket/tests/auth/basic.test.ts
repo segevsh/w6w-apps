@@ -17,7 +17,11 @@ Deno.test("basic: declares username + password (secret) fields", () => {
 
 Deno.test("basic: sign appends Basic <base64(user:pw)>", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!(
     { request, credential: { username: "alice", password: "hunter2" } },
     ctx,

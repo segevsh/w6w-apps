@@ -63,7 +63,7 @@ const updateProject: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const { id, ...rest } = input;
     const body: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(rest)) {

@@ -7,7 +7,10 @@ Deno.test("api-key: declares hapikey as an apiKey-in-query field", () => {
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "query");
   assertEquals(auth.apiKey?.name, "hapikey");
-  assert(auth.description?.toLowerCase().includes("retired") ?? false, "description should call out deprecation");
+  assert(
+    auth.description?.toLowerCase().includes("retired") ?? false,
+    "description should call out deprecation",
+  );
 });
 
 Deno.test("api-key: sign appends hapikey to the URL", async () => {

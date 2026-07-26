@@ -21,7 +21,7 @@ const createFolder: ActionDefinition<Input> = {
     { key: "folderColorRgb", label: "Folder color (hex)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const body: Record<string, unknown> = {
       name: input.name,

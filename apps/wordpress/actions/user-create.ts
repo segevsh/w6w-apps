@@ -47,7 +47,7 @@ const userCreate: ActionDefinition<Input> = {
     { key: "slug", label: "Slug", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     const body: UserBody = {
       username: input.username,

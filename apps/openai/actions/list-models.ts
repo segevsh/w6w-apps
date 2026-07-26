@@ -13,7 +13,7 @@ const listModels: ActionDefinition<Record<string, never>> = {
     { key: "object", type: "string", label: "Object type" },
   ],
 
-  async execute(_input, ctx) {
+  execute(_input, ctx) {
     const client = new OpenAIClient(ctx);
     return client.request("/models");
   },

@@ -1,5 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
-import { TwilioClient, escapeXml } from "../lib/client.ts";
+import { escapeXml, TwilioClient } from "../lib/client.ts";
 
 interface Input {
   from: string;
@@ -52,7 +52,7 @@ const makeCall: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new TwilioClient(ctx);
     const twiml = input.twiml
       ? input.message

@@ -58,7 +58,7 @@ const listMembers: ActionDefinition<Input> = {
     { key: "total_items", type: "number", label: "Total items" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MailchimpClient(ctx);
     return client.request<MailchimpListResponse<"members">>(
       `/lists/${input.listId}/members`,

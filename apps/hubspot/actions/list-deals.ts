@@ -20,7 +20,7 @@ const listDeals: ActionDefinition<CrmListInput> = {
     { key: "paging", type: "object", label: "Paging" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmList(ctx, "deals", input);
   },
 };

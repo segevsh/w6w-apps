@@ -24,7 +24,7 @@ const filesList: ActionDefinition<Input> = {
     { key: "object", type: "string", label: "Object type" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     return client.request("/files", {
       query: { purpose: input.purpose },

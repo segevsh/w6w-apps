@@ -18,7 +18,7 @@ const removeTaskTag: ActionDefinition<Input> = {
     { key: "tag", label: "Tag ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks/${input.id}/removeTag`, {
       method: "POST",
       body: { tag: input.tag },

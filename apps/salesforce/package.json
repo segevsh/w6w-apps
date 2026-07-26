@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/salesforce",
+  "version": "0.1.0",
+  "description": "Create, read, update and query any Salesforce object with SOQL and SOSL.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.salesforce",
+    "displayName": "Salesforce",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Salesforce"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.salesforce.com",
+        "*.force.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

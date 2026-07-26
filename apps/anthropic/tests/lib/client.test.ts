@@ -28,8 +28,12 @@ Deno.test("AnthropicClient: throws with body detail on non-2xx", async () => {
 });
 
 Deno.test("AnthropicClient: asText returns the raw text body (for JSONL)", async () => {
-  const jsonl = `{"custom_id":"a","result":{"type":"succeeded"}}\n{"custom_id":"b","result":{"type":"errored"}}`;
-  const { ctx } = mockCtx([{ body: jsonl, headers: { "content-type": "application/x-jsonlines" } }]);
+  const jsonl =
+    `{"custom_id":"a","result":{"type":"succeeded"}}\n{"custom_id":"b","result":{"type":"errored"}}`;
+  const { ctx } = mockCtx([{
+    body: jsonl,
+    headers: { "content-type": "application/x-jsonlines" },
+  }]);
   const client = new AnthropicClient(ctx);
   const text = await client.request<string>("/v1/messages/batches/x/results", { asText: true });
   assertEquals(typeof text, "string");
@@ -37,7 +41,8 @@ Deno.test("AnthropicClient: asText returns the raw text body (for JSONL)", async
 });
 
 Deno.test("parseJsonl: decodes newline-delimited JSON into an array", () => {
-  const jsonl = `{"custom_id":"a","result":{"type":"succeeded"}}\n{"custom_id":"b","result":{"type":"errored"}}\n`;
+  const jsonl =
+    `{"custom_id":"a","result":{"type":"succeeded"}}\n{"custom_id":"b","result":{"type":"errored"}}\n`;
   const rows = parseJsonl<{ custom_id: string; result: { type: string } }>(jsonl);
   assertEquals(rows.length, 2);
   assertEquals(rows[0].custom_id, "a");

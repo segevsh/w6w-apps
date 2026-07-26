@@ -38,7 +38,7 @@ const sheetAppend: ActionDefinition<Input> = {
       label: "Values (2D)",
       type: "json",
       required: true,
-      hint: "Rows × columns, e.g. `[[\"a\", 1], [\"b\", 2]]`.",
+      hint: 'Rows × columns, e.g. `[["a", 1], ["b", 2]]`.',
     },
     {
       key: "valueInputOption",
@@ -68,7 +68,7 @@ const sheetAppend: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleSheetsClient(ctx);
     return client.request(
       `/spreadsheets/${encodeURIComponent(input.spreadsheetId)}/values/${

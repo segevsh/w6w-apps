@@ -8,7 +8,12 @@ const searchContacts: ActionDefinition<CrmSearchInput> = {
   title: "Search Contacts",
   description: "POST /crm/v3/objects/contacts/search. Up to 3 filter groups, OR'd together.",
   params: [
-    { key: "query", label: "Query", type: "string", hint: "Full-text search across default properties." },
+    {
+      key: "query",
+      label: "Query",
+      type: "string",
+      hint: "Full-text search across default properties.",
+    },
     {
       key: "filterGroups",
       label: "Filter groups",
@@ -21,7 +26,7 @@ const searchContacts: ActionDefinition<CrmSearchInput> = {
     { key: "after", label: "After (cursor)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmSearch(ctx, "contacts", input);
   },
 };

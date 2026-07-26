@@ -23,7 +23,7 @@ const listWorkspaceHooks: ActionDefinition<Input> = {
     { key: "next", type: "string", label: "Next page URL" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BitbucketClient(ctx);
     return client.request<BitbucketListResponse>(
       `/workspaces/${input.workspace}/hooks`,

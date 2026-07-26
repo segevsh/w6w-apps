@@ -54,7 +54,7 @@ const imageGenerate: ActionDefinition<Input> = {
     { key: "user", label: "User", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     const body: Record<string, unknown> = {
       prompt: input.prompt,

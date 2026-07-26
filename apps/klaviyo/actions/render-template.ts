@@ -17,7 +17,8 @@ const renderTemplate: ActionDefinition<Input, KlaviyoEnvelope> = {
   type: "perform",
   resource: "template",
   title: "Render Template",
-  description: "Render a template with the given variable context. Returns the rendered HTML/text — does not send.",
+  description:
+    "Render a template with the given variable context. Returns the rendered HTML/text — does not send.",
   params: [
     { key: "templateId", label: "Template ID", type: "string", required: true },
     {
@@ -25,11 +26,11 @@ const renderTemplate: ActionDefinition<Input, KlaviyoEnvelope> = {
       label: "Context",
       type: "json",
       required: true,
-      hint: "Variables merged into the template, e.g. `{ \"first_name\": \"Alice\" }`.",
+      hint: 'Variables merged into the template, e.g. `{ "first_name": "Alice" }`.',
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope>(`/template-render/`, {
       method: "POST",

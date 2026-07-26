@@ -153,14 +153,16 @@ const action: ActionDefinition = {
           label: "BCC Email",
           type: "string",
           default: "",
-          hint: "Comma-separated list of emails of the recipients of a blind carbon copy of the email",
+          hint:
+            "Comma-separated list of emails of the recipients of a blind carbon copy of the email",
         },
         {
           key: "categories",
           label: "Categories",
           type: "string",
           default: "",
-          hint: "Comma-separated list of categories. Each category name may not exceed 255 characters.",
+          hint:
+            "Comma-separated list of categories. Each category name may not exceed 255 characters.",
         },
         {
           key: "ccEmail",
@@ -188,7 +190,8 @@ const action: ActionDefinition = {
           label: "Reply-To Email",
           type: "string",
           default: "",
-          hint: "Comma-separated list of email addresses that will appear in the reply-to field of the email",
+          hint:
+            "Comma-separated list of email addresses that will appear in the reply-to field of the email",
         },
         {
           key: "headers",

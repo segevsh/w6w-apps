@@ -1,5 +1,5 @@
 import type { ActionDefinition } from "@w6w/types";
-import { GoogleSheetsClient, columnLetterToIndex } from "../lib/client.ts";
+import { columnLetterToIndex, GoogleSheetsClient } from "../lib/client.ts";
 
 interface Input {
   spreadsheetId: string;
@@ -28,7 +28,7 @@ const sheetDeleteColumns: ActionDefinition<Input> = {
     { key: "columnCount", label: "Number of Columns", type: "number", default: 1 },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleSheetsClient(ctx);
     const count = input.columnCount ?? 1;
     const startIndex = columnLetterToIndex(input.startColumn);

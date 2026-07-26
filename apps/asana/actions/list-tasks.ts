@@ -34,7 +34,7 @@ const listTasks: ActionDefinition<Input> = {
     { key: "offset", label: "Offset (pagination cursor)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks`, {
       query: {
         assignee: input.assignee,

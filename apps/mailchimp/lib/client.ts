@@ -99,7 +99,9 @@ export class MailchimpClient {
         detail = await res.text();
       } catch { /* ignore */ }
       throw new Error(
-        `Mailchimp ${res.status} ${res.statusText} for ${options.method ?? "GET"} ${url.pathname}: ${detail}`,
+        `Mailchimp ${res.status} ${res.statusText} for ${
+          options.method ?? "GET"
+        } ${url.pathname}: ${detail}`,
       );
     }
     if (res.status === 204) return undefined as T;

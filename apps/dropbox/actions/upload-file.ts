@@ -55,7 +55,7 @@ const uploadFile: ActionDefinition<Input> = {
     { key: "mute", label: "Mute notifications", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     return client.request(`${CONTENT_URL}/files/upload`, {
       dropboxApiArg: {

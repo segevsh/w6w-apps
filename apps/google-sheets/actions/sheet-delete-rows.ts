@@ -29,7 +29,7 @@ const sheetDeleteRows: ActionDefinition<Input> = {
     { key: "rowCount", label: "Number of Rows", type: "number", default: 1 },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleSheetsClient(ctx);
     const count = input.rowCount ?? 1;
     const startIndex = input.startRow - 1;

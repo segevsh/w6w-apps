@@ -32,7 +32,7 @@ const documentCreate: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const body: Record<string, unknown> = {
       name: input.title,

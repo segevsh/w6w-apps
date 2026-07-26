@@ -12,6 +12,17 @@ import mailSend from "./actions/mail-send.ts";
 import sendGridApi from "./auth/send-grid-api.ts";
 
 export default {
-  actions: [contactUpsert, contactDelete, contactGet, contactGetAll, listCreate, listDelete, listGet, listGetAll, listUpdate, mailSend],
+  actions: [
+    contactUpsert,
+    contactDelete,
+    contactGet,
+    contactGetAll,
+    listCreate,
+    listDelete,
+    listGet,
+    listGetAll,
+    listUpdate,
+    mailSend,
+  ],
   auth: [sendGridApi],
 } satisfies AppDefinition;

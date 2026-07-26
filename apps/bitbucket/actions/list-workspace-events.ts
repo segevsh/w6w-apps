@@ -26,7 +26,7 @@ const listWorkspaceEvents: ActionDefinition<Input> = {
     { key: "next", type: "string", label: "Next page URL" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BitbucketClient(ctx);
     return client.request<BitbucketListResponse>(`/hook_events/workspace`, {
       query: { page: input.page, pagelen: input.pagelen ?? 100 },

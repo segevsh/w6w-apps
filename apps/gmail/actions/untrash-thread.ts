@@ -20,7 +20,7 @@ const untrashThread: ActionDefinition<Input> = {
     { key: "threadId", label: "Thread ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request(`/users/me/threads/${input.threadId}/untrash`, { method: "POST" });
   },

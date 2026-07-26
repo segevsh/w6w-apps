@@ -17,7 +17,7 @@ const listUsers: ActionDefinition<Input> = {
     { key: "opt_fields", label: "Fields", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/workspaces/${input.workspace}/users`, {
       query: { opt_fields: input.opt_fields },
     });

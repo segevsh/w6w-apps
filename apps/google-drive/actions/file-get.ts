@@ -23,7 +23,7 @@ const getFile: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     return client.request(`/files/${input.fileId}`, {
       query: { fields: input.fields ?? "*", ...ALL_DRIVES_QS },

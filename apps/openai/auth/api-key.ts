@@ -9,8 +9,7 @@ const apiKey: AuthDefinition = {
   key: "api-key",
   type: "bearer",
   displayName: "API Key",
-  description:
-    "Paste a secret key from https://platform.openai.com/api-keys. Starts with `sk-`.",
+  description: "Paste a secret key from https://platform.openai.com/api-keys. Starts with `sk-`.",
   fields: [
     {
       key: "apiKey",

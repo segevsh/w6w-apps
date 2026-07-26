@@ -31,7 +31,7 @@ const listProjects: ActionDefinition<Input> = {
     { key: "opt_fields", label: "Fields", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     // n8n Asana: if `team` is set, use it and drop `workspace`; else use `workspace`.
     const query: Record<string, string | number | boolean | undefined | null> = {
       limit: input.limit ?? 100,

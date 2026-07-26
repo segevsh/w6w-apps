@@ -58,20 +58,23 @@ const serviceAccount: AuthDefinition = {
       label: "Service Account Email",
       type: "string",
       required: true,
-      hint: "The `client_email` field from your Google JSON key (e.g. `my-sa@my-project.iam.gserviceaccount.com`).",
+      hint:
+        "The `client_email` field from your Google JSON key (e.g. `my-sa@my-project.iam.gserviceaccount.com`).",
     },
     {
       key: "privateKey",
       label: "Private Key (PEM)",
       type: "secret",
       required: true,
-      hint: "The `private_key` field from your Google JSON key — include the `-----BEGIN PRIVATE KEY-----` / `-----END PRIVATE KEY-----` lines.",
+      hint:
+        "The `private_key` field from your Google JSON key — include the `-----BEGIN PRIVATE KEY-----` / `-----END PRIVATE KEY-----` lines.",
     },
     {
       key: "subject",
       label: "Impersonate Subject (optional)",
       type: "string",
-      hint: "Only for domain-wide delegation. The user email whose identity the service account should assume.",
+      hint:
+        "Only for domain-wide delegation. The user email whose identity the service account should assume.",
     },
   ],
 

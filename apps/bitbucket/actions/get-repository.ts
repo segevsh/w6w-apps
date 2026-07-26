@@ -17,7 +17,7 @@ const getRepository: ActionDefinition<Input> = {
     { key: "repoSlug", label: "Repository slug", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BitbucketClient(ctx);
     return client.request(`/repositories/${input.workspace}/${input.repoSlug}`);
   },

@@ -21,7 +21,7 @@ const getUser: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/users/${input.userId}`);
   },
 };

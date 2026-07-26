@@ -15,7 +15,7 @@ const getOrganizer: ActionDefinition<Input> = {
     { key: "organizerId", label: "Organizer ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(`/organizers/${input.organizerId}/`);
   },
