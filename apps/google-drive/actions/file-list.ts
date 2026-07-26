@@ -30,7 +30,7 @@ const listFiles: ActionDefinition<Input> = {
     { key: "includeTrashed", label: "Include trashed", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const clauses = [];
     if (input.q) clauses.push(input.q);

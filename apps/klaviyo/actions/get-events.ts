@@ -29,7 +29,7 @@ const getEvents: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
     { key: "fieldsEvent", label: "Event fields (comma-separated)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope<unknown[]>>(`/events/`, {
       query: {

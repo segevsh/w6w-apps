@@ -19,7 +19,7 @@ const searchTasks: ActionDefinition<Input> = {
     { key: "completed", label: "Completed", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(
       `/workspaces/${input.workspace}/tasks/search`,
       {

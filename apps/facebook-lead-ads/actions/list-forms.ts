@@ -3,7 +3,6 @@ import { FacebookClient, type FacebookListResponse } from "../lib/client.ts";
 
 interface Input {
   pageId: string;
-  pageAccessToken?: string;
   cursor?: string;
 }
 
@@ -17,12 +16,13 @@ interface FormSummary {
 /**
  * List Lead Ads forms belonging to a Facebook Page.
  *
- * Facebook's `/{page_id}/leadgen_forms` endpoint requires a **page** access
- * token, not the connected user's token. n8n resolves this by calling
- * `/{page_id}?fields=access_token` first and then swapping the Authorization
- * header. We expose the same override explicitly via `pageAccessToken` — when
- * omitted we fall through to the user token (which works if the user has
- * `pages_read_engagement` on that Page).
+ * Facebook's `/{page_id}/leadgen_forms` endpoint wants a **Page** access token,
+ * not the connected user's token. n8n resolves that inside the node — it fetches
+ * `/{page_id}?fields=access_token` and swaps the Authorization header at call
+ * time. An Action cannot do that here: only the auth `sign` hook may touch a
+ * credential. Connect with the `page-token` auth method when the user token
+ * lacks Page-scoped access (a user token carrying `pages_read_engagement` +
+ * `pages_show_list` also works for this edge).
  */
 const listForms: ActionDefinition<Input, FacebookListResponse<FormSummary>> = {
   key: "list-forms",
@@ -34,20 +34,18 @@ const listForms: ActionDefinition<Input, FacebookListResponse<FormSummary>> = {
   params: [
     { key: "pageId", label: "Page ID", type: "string", required: true },
     {
-      key: "pageAccessToken",
-      label: "Page access token",
-      type: "secret",
-      hint:
-        "Optional. Overrides the connection's user token — required if the user token lacks Page-scoped access.",
+      key: "cursor",
+      label: "Cursor",
+      type: "string",
+      hint: "Facebook `after` cursor for pagination.",
     },
-    { key: "cursor", label: "Cursor", type: "string", hint: "Facebook `after` cursor for pagination." },
   ],
   output: [
     { key: "data", type: "array", label: "Forms" },
     { key: "paging", type: "object", label: "Paging" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new FacebookClient(ctx);
     return client.request<FacebookListResponse<FormSummary>>(
       `/${input.pageId}/leadgen_forms`,
@@ -56,7 +54,6 @@ const listForms: ActionDefinition<Input, FacebookListResponse<FormSummary>> = {
           fields: "id,name,status,locale",
           after: input.cursor,
         },
-        bearerOverride: input.pageAccessToken,
       },
     );
   },

@@ -13,18 +13,23 @@ Deno.test("private-app-token: is a bearer method exposing an `apiKey` secret fie
 
 Deno.test("private-app-token: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { apiKey: "pat-xyz" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer pat-xyz");
 });
 
-Deno.test("private-app-token: test hits /crm/v3/objects/contacts?limit=1 and reports ok", async () => {
+Deno.test("private-app-token: test hits /account-info/v3/details and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await auth.test({ credential: { apiKey: "pat-xyz" } }, ctx);
   assertEquals(result.ok, true);
   const url = new URL(calls[0].url);
-  assertEquals(url.pathname, "/crm/v3/objects/contacts");
-  assertEquals(url.searchParams.get("limit"), "1");
+  // Deliberately NOT a CRM object read: that needs an object scope, so a
+  // private app without contacts access would fail its own health check.
+  assertEquals(url.pathname, "/account-info/v3/details");
   assertEquals(calls[0].headers["authorization"], "Bearer pat-xyz");
 });
 

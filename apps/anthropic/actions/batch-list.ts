@@ -29,7 +29,7 @@ const batchList: ActionDefinition<Input> = {
     { key: "last_id", type: "string", label: "Last ID" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AnthropicClient(ctx);
     return client.request("/v1/messages/batches", {
       query: {

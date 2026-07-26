@@ -117,7 +117,7 @@ const serviceAccount: AuthDefinition = {
     return { ok: true };
   },
 
-  async afterConnect({ credential }, _ctx) {
+  afterConnect({ credential }, _ctx) {
     const { delegatedEmail } = credential as { delegatedEmail?: string };
     return { user: { email: delegatedEmail } };
   },

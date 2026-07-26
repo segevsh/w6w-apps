@@ -39,7 +39,7 @@ const action: ActionDefinition = {
           type: "string",
           default: "",
           hint:
-            "Valid <a href=\"https://sendgrid.com/docs/for-developers/sending-email/segmentation-query-language/\">SGQL</a> expression",
+            'Valid <a href="https://sendgrid.com/docs/for-developers/sending-email/segmentation-query-language/">SGQL</a> expression',
         },
       ],
     },

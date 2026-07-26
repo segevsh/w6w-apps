@@ -23,7 +23,7 @@ export interface CrmListInput {
  * List objects with cursor pagination. Mirrors HubSpot's response verbatim —
  * callers pull `results` + `paging.next.after`.
  */
-export async function crmList(
+export function crmList(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmListInput,
@@ -53,7 +53,7 @@ export interface CrmGetInput {
   idProperty?: string;
 }
 
-export async function crmGet(
+export function crmGet(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmGetInput,
@@ -81,7 +81,7 @@ export interface CrmCreateInput {
   }>;
 }
 
-export async function crmCreate(
+export function crmCreate(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmCreateInput,
@@ -102,7 +102,7 @@ export interface CrmUpdateInput {
   idProperty?: string;
 }
 
-export async function crmUpdate(
+export function crmUpdate(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmUpdateInput,
@@ -153,7 +153,7 @@ export interface CrmSearchInput {
   after?: string;
 }
 
-export async function crmSearch(
+export function crmSearch(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmSearchInput,
@@ -182,7 +182,7 @@ export interface CrmBatchCreateInput {
   }>;
 }
 
-export async function crmBatchCreate(
+export function crmBatchCreate(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmBatchCreateInput,
@@ -206,7 +206,7 @@ export interface CrmBatchUpdateInput {
   inputs: Array<{ id: string; properties: Record<string, unknown> }>;
 }
 
-export async function crmBatchUpdate(
+export function crmBatchUpdate(
   ctx: HookContext,
   objectType: CrmObjectType,
   input: CrmBatchUpdateInput,

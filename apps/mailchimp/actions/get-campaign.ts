@@ -15,7 +15,7 @@ const getCampaign: ActionDefinition<Input> = {
     { key: "campaignId", label: "Campaign ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MailchimpClient(ctx);
     return client.request(`/campaigns/${input.campaignId}`);
   },

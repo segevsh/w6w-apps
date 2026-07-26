@@ -8,12 +8,21 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "lib": ["ES2022", "DOM"],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
     "types": [],
-    "baseUrl": ".",
     "paths": {
-      "@w6w/types": ["../../../core/packages/types"]
+      "@w6w/types": [
+        "../../../core/packages/types"
+      ]
     }
   },
-  "include": ["index.ts", "actions/**/*.ts", "auth/**/*.ts", "lib/**/*.ts"]
+  "include": [
+    "index.ts",
+    "actions/**/*.ts",
+    "auth/**/*.ts",
+    "lib/**/*.ts"
+  ]
 }

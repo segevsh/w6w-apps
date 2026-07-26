@@ -13,7 +13,11 @@ Deno.test("access-token: is a bearer method exposing an `apiKey` secret field", 
 
 Deno.test("access-token: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { apiKey: "tok-xyz" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer tok-xyz");
 });

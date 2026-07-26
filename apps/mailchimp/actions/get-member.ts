@@ -22,7 +22,7 @@ const getMember: ActionDefinition<Input> = {
     { key: "excludeFields", label: "Exclude fields (comma-separated)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MailchimpClient(ctx);
     const hash = subscriberHash(input.email);
     return client.request(`/lists/${input.listId}/members/${hash}`, {

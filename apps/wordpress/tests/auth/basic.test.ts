@@ -17,7 +17,11 @@ Deno.test("basic: declares siteUrl / username / password fields", () => {
 
 Deno.test("basic: sign injects a Basic Authorization header from username+password", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!(
     { request, credential: { username: "alice", password: "app-pass" } },
     ctx,

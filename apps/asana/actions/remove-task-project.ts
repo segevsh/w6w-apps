@@ -18,7 +18,7 @@ const removeTaskProject: ActionDefinition<Input> = {
     { key: "project", label: "Project ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks/${input.id}/removeProject`, {
       method: "POST",
       body: { project: input.project },

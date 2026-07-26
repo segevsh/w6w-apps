@@ -17,7 +17,7 @@ const batchCreateContacts: ActionDefinition<CrmBatchCreateInput> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmBatchCreate(ctx, "contacts", input);
   },
 };

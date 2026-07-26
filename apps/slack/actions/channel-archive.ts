@@ -15,7 +15,7 @@ const channelArchive: ActionDefinition<Input> = {
     { key: "channelId", label: "Channel ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.archive", {
       method: "POST",

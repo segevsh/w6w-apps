@@ -39,7 +39,7 @@ const getThread: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request(`/users/me/threads/${input.threadId}`, {
       query: {

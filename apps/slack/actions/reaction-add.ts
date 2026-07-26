@@ -25,7 +25,7 @@ const reactionAdd: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/reactions.add", {
       method: "POST",

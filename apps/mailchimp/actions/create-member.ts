@@ -91,7 +91,7 @@ const createMember: ActionDefinition<Input> = {
     { key: "interests", label: "Interests (id → boolean)", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MailchimpClient(ctx);
     const body: Body = {
       email_address: input.email,

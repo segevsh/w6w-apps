@@ -15,7 +15,7 @@ const deleteTicket: ActionDefinition<Input> = {
     { key: "id", label: "Ticket ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmDelete(ctx, "tickets", input);
   },
 };

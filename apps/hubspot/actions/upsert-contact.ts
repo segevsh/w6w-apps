@@ -41,7 +41,7 @@ const upsertContact: ActionDefinition<Input, HubSpotObject> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     const properties = coerceProperties({
       email: input.email,

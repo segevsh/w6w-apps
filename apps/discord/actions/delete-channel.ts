@@ -20,7 +20,7 @@ const deleteChannel: ActionDefinition<Input> = {
     { key: "channelId", label: "Channel ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DiscordClient(ctx);
     return client.request(`/channels/${input.channelId}`, { method: "DELETE" });
   },

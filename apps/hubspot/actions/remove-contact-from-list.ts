@@ -17,7 +17,7 @@ const removeContactFromList: ActionDefinition<Input> = {
     { key: "vids", label: "Contact VIDs", type: "json", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request(`/contacts/v1/lists/${encodeURIComponent(input.listId)}/remove`, {
       method: "POST",

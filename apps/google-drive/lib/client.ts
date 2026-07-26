@@ -82,7 +82,7 @@ export class GoogleDriveClient {
    * Multipart upload for the two-part "metadata + content" case Google Drive
    * supports via `?uploadType=multipart`. Returns the created file resource.
    */
-  async multipartUpload<T = unknown>(
+  multipartUpload<T = unknown>(
     metadata: Record<string, unknown>,
     content: string | ArrayBuffer | Uint8Array,
     contentMimeType: string,
@@ -119,7 +119,7 @@ export class GoogleDriveClient {
    * Simple content-only upload via `?uploadType=media`. Returns the created
    * file resource (metadata may then be PATCHed onto it).
    */
-  async simpleUpload<T = unknown>(
+  simpleUpload<T = unknown>(
     content: string | ArrayBuffer | Uint8Array,
     contentMimeType: string,
     query: Record<string, string | number | boolean | undefined | null> = {},

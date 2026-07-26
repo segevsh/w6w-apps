@@ -31,7 +31,7 @@ const channelGetMany: ActionDefinition<Input> = {
     { key: "response_metadata", type: "object", label: "Pagination metadata" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/conversations.list", {
       query: {

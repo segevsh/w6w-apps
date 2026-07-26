@@ -45,7 +45,7 @@ const unsubscribeProfiles: ActionDefinition<Input, KlaviyoEnvelope> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     const channels = input.channels?.length ? input.channels : ["email"];
 

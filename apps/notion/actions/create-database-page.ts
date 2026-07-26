@@ -21,11 +21,24 @@ const createDatabasePage: ActionDefinition<Input> = {
   type: "perform",
   resource: "databasePage",
   title: "Create Database Page",
-  description: "Create a page inside a database. Provide the `properties` map keyed by property name.",
+  description:
+    "Create a page inside a database. Provide the `properties` map keyed by property name.",
   params: [
     { key: "databaseId", label: "Database ID", type: "string", required: true },
-    { key: "properties", label: "Properties", type: "json", required: true, hint: "Notion property values, e.g. `{ \"Name\": { \"title\": [{ \"text\": { \"content\": \"Hello\" } }] } }`." },
-    { key: "children", label: "Children (blocks)", type: "json", hint: "Optional array of block objects appended as page content." },
+    {
+      key: "properties",
+      label: "Properties",
+      type: "json",
+      required: true,
+      hint:
+        'Notion property values, e.g. `{ "Name": { "title": [{ "text": { "content": "Hello" } }] } }`.',
+    },
+    {
+      key: "children",
+      label: "Children (blocks)",
+      type: "json",
+      hint: "Optional array of block objects appended as page content.",
+    },
     { key: "icon", label: "Icon", type: "json" },
     { key: "cover", label: "Cover", type: "json" },
   ],

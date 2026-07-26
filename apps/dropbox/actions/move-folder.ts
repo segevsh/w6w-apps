@@ -19,7 +19,7 @@ const moveFolder: ActionDefinition<Input> = {
     { key: "autorename", label: "Auto-rename on conflict", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     return client.request("/files/move_v2", {
       body: {

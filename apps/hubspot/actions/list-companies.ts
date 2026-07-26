@@ -6,7 +6,8 @@ const listCompanies: ActionDefinition<CrmListInput> = {
   type: "read",
   resource: "company",
   title: "List Companies",
-  description: "List companies. Walks one page; pass back `paging.next.after` as `after` for the next.",
+  description:
+    "List companies. Walks one page; pass back `paging.next.after` as `after` for the next.",
   params: [
     { key: "limit", label: "Limit", type: "number", default: 100 },
     { key: "after", label: "After (cursor)", type: "string" },
@@ -20,7 +21,7 @@ const listCompanies: ActionDefinition<CrmListInput> = {
     { key: "paging", type: "object", label: "Paging" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmList(ctx, "companies", input);
   },
 };

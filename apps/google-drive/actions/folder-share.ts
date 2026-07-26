@@ -58,7 +58,7 @@ const shareFolder: ActionDefinition<Input> = {
     { key: "emailMessage", label: "Email message", type: "text" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const body: Record<string, unknown> = { type: input.type, role: input.role };
     if (input.emailAddress) body.emailAddress = input.emailAddress;

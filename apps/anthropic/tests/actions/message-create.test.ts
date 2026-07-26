@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-create.ts";
 
@@ -70,11 +70,15 @@ Deno.test("message-create: omits optional params when undefined", async () => {
   assertEquals("tools" in body, false);
 });
 
-Deno.test("message-create: rejects stream: true", async () => {
+Deno.test("message-create: rejects stream: true", () => {
   const { ctx } = mockCtx();
-  await assertRejects(
+  // Thrown synchronously: the guard runs before any request, and `execute` is
+  // not `async` because nothing before it awaits. `ActionExecuteHook` returns
+  // `O | Promise<O>` and the runtime awaits it either way, so a sync throw
+  // fails the invocation just the same.
+  assertThrows(
     () =>
-      Promise.resolve(action.execute!(
+      action.execute!(
         {
           model: "claude-opus-4-1-20250805",
           messages: [{ role: "user", content: "hi" }],
@@ -82,7 +86,7 @@ Deno.test("message-create: rejects stream: true", async () => {
           stream: true,
         },
         ctx,
-      )),
+      ),
     Error,
     "stream",
   );

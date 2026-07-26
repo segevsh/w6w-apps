@@ -19,8 +19,7 @@ const oauth2: AuthDefinition = {
   key: "oauth2",
   type: "oauth2",
   displayName: "OAuth (WordPress.com)",
-  description:
-    "OAuth2 against WordPress.com-hosted sites. Requires a WordPress.com developer " +
+  description: "OAuth2 against WordPress.com-hosted sites. Requires a WordPress.com developer " +
     "app (client_id / client_secret / redirect_uri) configured on this w6w installation. " +
     "For self-hosted WordPress, use the Application Password method instead.",
   connectionLabel: "{{user.name}} @ {{wordpressSite}}",

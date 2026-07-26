@@ -30,7 +30,13 @@ const searchRecords: ActionDefinition<Input, AirtableListEnvelope> = {
   description:
     "List or filter records. Returns one page with an `offset` cursor for the next page.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
     {
       key: "filterByFormula",
@@ -66,7 +72,7 @@ const searchRecords: ActionDefinition<Input, AirtableListEnvelope> = {
     { key: "offset", type: "string", label: "Next page cursor" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request<AirtableListEnvelope>(`${input.baseId}/${encodeURI(input.table)}`, {
       query: {

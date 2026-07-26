@@ -19,7 +19,7 @@ const reactionRemove: ActionDefinition<Input> = {
     { key: "name", label: "Emoji name", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/reactions.remove", {
       method: "POST",

@@ -13,7 +13,11 @@ Deno.test("access-token: declares bearer type with required apiKey field", () =>
 
 Deno.test("access-token: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { apiKey: "xoxb-abc" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer xoxb-abc");
 });

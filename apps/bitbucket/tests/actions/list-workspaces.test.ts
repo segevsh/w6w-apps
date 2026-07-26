@@ -13,12 +13,12 @@ Deno.test("list-workspaces: hits /user/workspaces with default pagelen", async (
 Deno.test("list-workspaces: forwards all optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   await action.execute(
-    { role: "owner", q: "slug=\"x\"", sort: "name", page: 3, pagelen: 25 },
+    { role: "owner", q: 'slug="x"', sort: "name", page: 3, pagelen: 25 },
     ctx,
   );
   const params = new URL(calls[0].url).searchParams;
   assertEquals(params.get("role"), "owner");
-  assertEquals(params.get("q"), "slug=\"x\"");
+  assertEquals(params.get("q"), 'slug="x"');
   assertEquals(params.get("sort"), "name");
   assertEquals(params.get("page"), "3");
   assertEquals(params.get("pagelen"), "25");

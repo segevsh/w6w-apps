@@ -3,7 +3,9 @@ import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
 Deno.test("list-models: GETs /v1/models with version header", async () => {
-  const { ctx, calls } = mockCtx([{ body: { data: [{ id: "claude-opus-4-1" }], has_more: false } }]);
+  const { ctx, calls } = mockCtx([{
+    body: { data: [{ id: "claude-opus-4-1" }], has_more: false },
+  }]);
   await action.execute!({}, ctx);
 
   assertEquals(calls[0].method, "GET");

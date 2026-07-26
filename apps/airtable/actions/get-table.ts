@@ -27,7 +27,13 @@ const getTable: ActionDefinition<Input, TableSchema> = {
   title: "Get Table",
   description: "Retrieve a single table's schema (fields + views).",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
   ],
 

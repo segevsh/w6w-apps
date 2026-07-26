@@ -24,8 +24,18 @@ const searchDatabases: ActionDefinition<Input> = {
   title: "Search Databases",
   description: "Search databases by title. Returns one page — pass `startCursor` back to walk.",
   params: [
-    { key: "query", label: "Query", type: "string", hint: "Free-text search against database titles." },
-    { key: "sort", label: "Sort", type: "json", hint: "Notion sort object, e.g. `{\"direction\":\"descending\",\"timestamp\":\"last_edited_time\"}`." },
+    {
+      key: "query",
+      label: "Query",
+      type: "string",
+      hint: "Free-text search against database titles.",
+    },
+    {
+      key: "sort",
+      label: "Sort",
+      type: "json",
+      hint: 'Notion sort object, e.g. `{"direction":"descending","timestamp":"last_edited_time"}`.',
+    },
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "startCursor", label: "Start cursor", type: "string" },
   ],

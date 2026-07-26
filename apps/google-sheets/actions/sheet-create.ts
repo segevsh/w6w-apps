@@ -46,7 +46,7 @@ const sheetCreate: ActionDefinition<Input> = {
     { key: "sheetId", label: "Sheet ID", type: "number", hint: "Optional non-negative sheet ID." },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleSheetsClient(ctx);
     const properties: Record<string, unknown> = { title: input.title };
     if (input.index !== undefined) properties.index = input.index;

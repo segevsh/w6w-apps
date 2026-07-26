@@ -28,8 +28,7 @@ const basic: AuthDefinition = {
   key: "basic",
   type: "basic",
   displayName: "Application Password",
-  description:
-    "Basic auth against a self-hosted WordPress install using an application password " +
+  description: "Basic auth against a self-hosted WordPress install using an application password " +
     "(Users → Profile → Application Passwords).",
   connectionLabel: "{{user.name}} @ {{site.host}}",
   fields: [

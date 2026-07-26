@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/telegram",
+  "version": "0.1.0",
+  "description": "Send messages, media and chat actions through a Telegram bot, and manage chats.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.telegram",
+    "displayName": "Telegram",
+    "categories": [
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Telegram"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.telegram.org"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

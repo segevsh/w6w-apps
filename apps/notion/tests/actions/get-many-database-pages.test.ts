@@ -3,7 +3,9 @@ import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-many-database-pages.ts";
 
 Deno.test("get-many-database-pages: POSTs /databases/{id}/query with filter, sorts and cursor", async () => {
-  const { ctx, calls } = mockCtx([{ body: { object: "list", results: [], next_cursor: null, has_more: false } }]);
+  const { ctx, calls } = mockCtx([{
+    body: { object: "list", results: [], next_cursor: null, has_more: false },
+  }]);
   await action.execute({
     databaseId: "db-1",
     filter: { property: "Status", select: { equals: "Done" } },

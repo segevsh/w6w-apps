@@ -14,7 +14,11 @@ Deno.test("oauth2: declares Slack v2 OAuth endpoints with PKCE and user scopes",
 
 Deno.test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { accessToken: "acc-123" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });

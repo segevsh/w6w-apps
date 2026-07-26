@@ -19,11 +19,24 @@ const updateRecord: ActionDefinition<Input> = {
   type: "perform",
   resource: "record",
   title: "Update Record",
-  description: "Update a single record. Set `replace: true` to overwrite unspecified fields with null.",
+  description:
+    "Update a single record. Set `replace: true` to overwrite unspecified fields with null.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
-    { key: "recordId", label: "Record ID", type: "string", required: true, placeholder: "recXXXXXXXXXXXXXX" },
+    {
+      key: "recordId",
+      label: "Record ID",
+      type: "string",
+      required: true,
+      placeholder: "recXXXXXXXXXXXXXX",
+    },
     { key: "fields", label: "Fields", type: "json", required: true },
     { key: "typecast", label: "Typecast", type: "boolean", default: false },
     {
@@ -35,7 +48,7 @@ const updateRecord: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request(`${input.baseId}/${encodeURI(input.table)}/${input.recordId}`, {
       method: input.replace ? "PUT" : "PATCH",

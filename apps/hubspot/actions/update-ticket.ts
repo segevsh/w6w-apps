@@ -19,7 +19,7 @@ const updateTicket: ActionDefinition<Input> = {
     { key: "idProperty", label: "ID property", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmUpdate(ctx, "tickets", input);
   },
 };

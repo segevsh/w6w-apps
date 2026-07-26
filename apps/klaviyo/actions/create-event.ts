@@ -31,7 +31,7 @@ const createEvent: ActionDefinition<Input, KlaviyoEnvelope | void> = {
   type: "perform",
   resource: "event",
   title: "Create Event",
-  description: "Record a customer event (\"track\") — creates the metric on first sight.",
+  description: 'Record a customer event ("track") — creates the metric on first sight.',
   params: [
     {
       key: "metricName",
@@ -53,7 +53,7 @@ const createEvent: ActionDefinition<Input, KlaviyoEnvelope | void> = {
       type: "json",
       required: true,
       hint:
-        "Identify the profile, e.g. `{ \"email\": \"a@x.com\" }`. Optional identifiers: `phoneNumber`, `externalId`, plus `firstName`, `lastName`, `properties`.",
+        'Identify the profile, e.g. `{ "email": "a@x.com" }`. Optional identifiers: `phoneNumber`, `externalId`, plus `firstName`, `lastName`, `properties`.',
     },
     { key: "time", label: "Time (ISO 8601)", type: "datetime" },
     { key: "value", label: "Value", type: "number" },
@@ -61,7 +61,7 @@ const createEvent: ActionDefinition<Input, KlaviyoEnvelope | void> = {
     { key: "uniqueId", label: "Unique ID (idempotency)", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
 
     const profileAttrs: Record<string, unknown> = {};

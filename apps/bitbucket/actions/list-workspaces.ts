@@ -26,7 +26,7 @@ const listWorkspaces: ActionDefinition<Input> = {
         { value: "member", label: "Member" },
       ],
     },
-    { key: "q", label: "BBQL filter", type: "string", hint: "e.g. `slug = \"acme\"`" },
+    { key: "q", label: "BBQL filter", type: "string", hint: 'e.g. `slug = "acme"`' },
     { key: "sort", label: "Sort field", type: "string" },
     { key: "page", label: "Page", type: "number" },
     { key: "pagelen", label: "Page size", type: "number", default: 100 },
@@ -36,7 +36,7 @@ const listWorkspaces: ActionDefinition<Input> = {
     { key: "next", type: "string", label: "Next page URL" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BitbucketClient(ctx);
     return client.request<BitbucketListResponse>(`/user/workspaces`, {
       query: {

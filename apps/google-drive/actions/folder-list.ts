@@ -32,7 +32,7 @@ const listFolders: ActionDefinition<Input> = {
     { key: "fields", label: "Fields", type: "string", default: "nextPageToken, files(*)" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const clauses = [`mimeType = '${FOLDER_MIME}'`];
     if (input.parentFolderId) clauses.push(`'${input.parentFolderId}' in parents`);

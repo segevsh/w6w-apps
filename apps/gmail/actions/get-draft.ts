@@ -34,7 +34,7 @@ const getDraft: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request(`/users/me/drafts/${input.draftId}`, {
       query: { format: input.format ?? "full" },

@@ -19,7 +19,7 @@ const listOrganizations: ActionDefinition<Input> = {
     { key: "pagination", type: "object", label: "Pagination" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"organizations">>(
       `/users/me/organizations/`,

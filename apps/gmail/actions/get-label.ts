@@ -20,7 +20,7 @@ const getLabel: ActionDefinition<Input> = {
     { key: "labelId", label: "Label ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request(`/users/me/labels/${input.labelId}`);
   },

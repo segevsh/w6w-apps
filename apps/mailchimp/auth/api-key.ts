@@ -15,7 +15,11 @@ import { API_HOST_SUFFIX, datacenterFromApiKey } from "../lib/client.ts";
  */
 const apiKey: AuthDefinition = {
   key: "api-key",
-  type: "apiKey",
+  // `basic`, not `apiKey`: `sign` sends HTTP Basic (`anystring:<key>`), which is
+  // the canonical form in the Mailchimp docs. `type: "apiKey"` would require an
+  // `apiKey: { in, name }` placement block describing a header/query the key is
+  // dropped into verbatim — that is not what happens here.
+  type: "basic",
   displayName: "API Key",
   description:
     "Paste an API key from Account → Extras → API keys. The datacenter suffix (`-us14`) is required.",

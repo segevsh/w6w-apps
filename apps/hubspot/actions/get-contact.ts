@@ -13,10 +13,15 @@ const getContact: ActionDefinition<CrmGetInput> = {
     { key: "propertiesWithHistory", label: "Properties with history", type: "string" },
     { key: "associations", label: "Associations", type: "string", hint: "e.g. `companies,deals`" },
     { key: "archived", label: "Include archived", type: "boolean", default: false },
-    { key: "idProperty", label: "ID property", type: "string", hint: "Set to `email` to look up by email." },
+    {
+      key: "idProperty",
+      label: "ID property",
+      type: "string",
+      hint: "Set to `email` to look up by email.",
+    },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmGet(ctx, "contacts", input);
   },
 };

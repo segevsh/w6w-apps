@@ -42,7 +42,7 @@ const imageVariation: ActionDefinition<Input> = {
     { key: "imageFileName", label: "Image filename", type: "string", default: "image.png" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     const form = new FormData();
     form.append(

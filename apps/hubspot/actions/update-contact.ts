@@ -20,12 +20,17 @@ const updateContact: ActionDefinition<Input> = {
       label: "Properties",
       type: "json",
       required: true,
-      hint: "Object of HubSpot property names → values, e.g. `{ \"firstname\": \"Ada\" }`.",
+      hint: 'Object of HubSpot property names → values, e.g. `{ "firstname": "Ada" }`.',
     },
-    { key: "idProperty", label: "ID property", type: "string", hint: "Set to `email` to update by email." },
+    {
+      key: "idProperty",
+      label: "ID property",
+      type: "string",
+      hint: "Set to `email` to update by email.",
+    },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmUpdate(ctx, "contacts", input);
   },
 };

@@ -31,7 +31,7 @@ const copyFile: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const body: Record<string, unknown> = {};
     if (input.name) body.name = input.name;

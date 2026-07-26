@@ -41,7 +41,7 @@ const listCalendars: ActionDefinition<Input> = {
     { key: "nextPageToken", type: "string", label: "Next page token" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleCalendarClient(ctx);
     return client.request("/users/me/calendarList", {
       query: {

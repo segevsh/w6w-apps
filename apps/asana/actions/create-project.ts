@@ -62,7 +62,7 @@ const createProject: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AsanaClient(ctx);
     const body: Record<string, unknown> = {
       name: input.name,

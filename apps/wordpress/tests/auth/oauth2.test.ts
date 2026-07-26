@@ -22,7 +22,11 @@ Deno.test("oauth2: exposes a wordpressSite input field", () => {
 
 Deno.test("oauth2: sign appends a Bearer access token", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer acc-abc");
 });

@@ -16,7 +16,8 @@ const listDatabases: ActionDefinition<Input> = {
   type: "read",
   resource: "database",
   title: "List Databases",
-  description: "List all databases the integration has access to. One page per call — pass `startCursor` back to walk.",
+  description:
+    "List all databases the integration has access to. One page per call — pass `startCursor` back to walk.",
   params: [
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "startCursor", label: "Start cursor", type: "string" },

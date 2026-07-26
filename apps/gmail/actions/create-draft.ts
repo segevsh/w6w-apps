@@ -37,7 +37,7 @@ const createDraft: ActionDefinition<Input> = {
     { key: "threadId", label: "Thread ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const raw = buildMimeMessage({
       to: input.to,
       from: input.from,

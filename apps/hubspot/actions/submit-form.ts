@@ -39,7 +39,7 @@ const submitForm: ActionDefinition<Input> = {
     { key: "submittedAt", label: "Submitted at (ms)", type: "number" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request(
       `https://api.hsforms.com/submissions/v3/integration/submit/${input.portalId}/${input.formId}`,

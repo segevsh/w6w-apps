@@ -16,7 +16,7 @@ const filesDelete: ActionDefinition<Input> = {
     { key: "fileId", label: "File ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     return client.request(`/files/${input.fileId}`, { method: "DELETE" });
   },

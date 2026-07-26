@@ -3,14 +3,29 @@
   "version": "0.1.0",
   "description": "Work with HubSpot CRM: contacts, companies, deals, tickets, engagements, lists, owners and forms.",
   "license": "MIT",
-  "author": { "name": "w6w" },
+  "author": {
+    "name": "w6w"
+  },
   "private": true,
   "w6w": {
     "id": "io.w6w.hubspot",
     "displayName": "HubSpot",
-    "categories": ["crm", "marketing", "sales"],
-    "appearance": { "icon": { "url": "./assets/icon.svg", "alt": "HubSpot" } },
-    "network": { "allow": ["api.hubapi.com", "api.hsforms.com"] },
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "HubSpot"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.hubapi.com",
+        "api.hsforms.com"
+      ]
+    },
     "entry": "./index.ts"
   }
 }

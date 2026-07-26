@@ -46,7 +46,7 @@ const createCall: ActionDefinition<Input, HubSpotObject> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     const properties = coerceProperties({
       hs_call_title: input.hs_call_title,

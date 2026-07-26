@@ -84,7 +84,7 @@ const updateMember: ActionDefinition<Input> = {
     { key: "skipMergeValidation", label: "Skip merge validation", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MailchimpClient(ctx);
     const hash = subscriberHash(input.email);
     const body: Body = { email_address: input.email };

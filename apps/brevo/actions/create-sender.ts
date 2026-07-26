@@ -24,7 +24,7 @@ const createSender: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     const body: Record<string, unknown> = { name: input.name, email: input.email };
     if (input.ips) body.ips = input.ips;

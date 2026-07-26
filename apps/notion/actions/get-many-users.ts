@@ -11,7 +11,8 @@ const getManyUsers: ActionDefinition<Input, NotionListResponse> = {
   type: "read",
   resource: "user",
   title: "Get Many Users",
-  description: "List every user in the workspace. Returns one page — pass `startCursor` back to walk.",
+  description:
+    "List every user in the workspace. Returns one page — pass `startCursor` back to walk.",
   params: [
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "startCursor", label: "Start cursor", type: "string" },

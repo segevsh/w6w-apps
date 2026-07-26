@@ -55,7 +55,9 @@ export class BitbucketClient {
         detail = await res.text();
       } catch { /* ignore */ }
       throw new Error(
-        `Bitbucket ${res.status} ${res.statusText} for ${options.method ?? "GET"} ${url.pathname}: ${detail}`,
+        `Bitbucket ${res.status} ${res.statusText} for ${
+          options.method ?? "GET"
+        } ${url.pathname}: ${detail}`,
       );
     }
     if (res.status === 204) return undefined as T;

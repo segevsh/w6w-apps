@@ -24,9 +24,21 @@ const createRecord: ActionDefinition<Input> = {
   title: "Create Record",
   description: "Create a single record in an Airtable table.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
-    { key: "fields", label: "Fields", type: "json", required: true, hint: "Object keyed by field name or ID." },
+    {
+      key: "fields",
+      label: "Fields",
+      type: "json",
+      required: true,
+      hint: "Object keyed by field name or ID.",
+    },
     {
       key: "typecast",
       label: "Typecast",
@@ -36,7 +48,7 @@ const createRecord: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request(`${input.baseId}/${encodeURI(input.table)}`, {
       method: "POST",

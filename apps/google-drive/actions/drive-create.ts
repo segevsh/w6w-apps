@@ -24,7 +24,7 @@ const createDrive: ActionDefinition<Input> = {
     { key: "hidden", label: "Hidden", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const body: Record<string, unknown> = { name: input.name };
     if (input.colorRgb) body.colorRgb = input.colorRgb;

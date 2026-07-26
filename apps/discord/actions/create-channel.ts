@@ -53,7 +53,7 @@ const createChannel: ActionDefinition<Input> = {
     { key: "nsfw", label: "Age-restricted (NSFW)", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const body: Record<string, unknown> = {
       name: input.name,
       type: input.type ?? 0,

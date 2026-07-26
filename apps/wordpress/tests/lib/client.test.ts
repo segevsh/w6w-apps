@@ -3,11 +3,17 @@ import { mockCtx } from "../_helpers.ts";
 import { resolveBaseUrl, WordPressClient } from "../../lib/client.ts";
 
 Deno.test("resolveBaseUrl: self-hosted siteUrl → /wp-json/wp/v2", () => {
-  assertEquals(resolveBaseUrl({ siteUrl: "https://example.com" }), "https://example.com/wp-json/wp/v2");
+  assertEquals(
+    resolveBaseUrl({ siteUrl: "https://example.com" }),
+    "https://example.com/wp-json/wp/v2",
+  );
 });
 
 Deno.test("resolveBaseUrl: trims trailing slash from siteUrl", () => {
-  assertEquals(resolveBaseUrl({ siteUrl: "https://example.com/" }), "https://example.com/wp-json/wp/v2");
+  assertEquals(
+    resolveBaseUrl({ siteUrl: "https://example.com/" }),
+    "https://example.com/wp-json/wp/v2",
+  );
 });
 
 Deno.test("resolveBaseUrl: WordPress.com hosted site → public-api sites URL", () => {

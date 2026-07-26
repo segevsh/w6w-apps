@@ -24,7 +24,8 @@ const internalSecret: AuthDefinition = {
       label: "Internal Integration Secret",
       type: "secret",
       required: true,
-      hint: "Notion Settings -> Integrations -> Develop your own integrations -> Internal Integration Secret.",
+      hint:
+        "Notion Settings -> Integrations -> Develop your own integrations -> Internal Integration Secret.",
     },
   ],
 

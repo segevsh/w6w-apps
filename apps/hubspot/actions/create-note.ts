@@ -24,7 +24,8 @@ const createNote: ActionDefinition<Input, HubSpotObject> = {
   type: "perform",
   resource: "engagement",
   title: "Create Note",
-  description: "Log a note engagement, optionally associated with contacts/companies/deals/tickets.",
+  description:
+    "Log a note engagement, optionally associated with contacts/companies/deals/tickets.",
   params: [
     { key: "hs_note_body", label: "Body", type: "text", required: true },
     { key: "hs_timestamp", label: "Timestamp", type: "datetime", hint: "Defaults to now." },
@@ -38,7 +39,7 @@ const createNote: ActionDefinition<Input, HubSpotObject> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     const properties = coerceProperties({
       hs_note_body: input.hs_note_body,

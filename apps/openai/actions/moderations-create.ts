@@ -28,7 +28,7 @@ const moderationsCreate: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     const body: Record<string, unknown> = {
       input: input.input,

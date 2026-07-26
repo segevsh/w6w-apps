@@ -55,7 +55,7 @@ const oauth2: AuthDefinition = {
   async test({ credential }, ctx) {
     const { accessToken } = credential as { accessToken?: string };
     if (!accessToken) return { ok: false, message: "credential missing accessToken" };
-    const res = await ctx.fetch(`${API_URL}/crm/v3/objects/contacts?limit=1`, {
+    const res = await ctx.fetch(`${API_URL}/account-info/v3/details`, {
       headers: { authorization: `Bearer ${accessToken}` },
     });
     if (!res.ok) return { ok: false, message: `HubSpot returned ${res.status}` };

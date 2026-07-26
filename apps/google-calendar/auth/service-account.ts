@@ -164,7 +164,7 @@ const serviceAccount: AuthDefinition = {
     return { ok: true };
   },
 
-  async afterConnect({ credential }, _ctx) {
+  afterConnect({ credential }, _ctx) {
     const c = credential as AccessTokenCredential;
     return {
       clientEmail: c.clientEmail,

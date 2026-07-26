@@ -41,7 +41,9 @@ interface Input {
  */
 export function parseEmailList(input: EmailAddress[] | string | undefined): EmailAddress[] {
   if (!input) return [];
-  if (Array.isArray(input)) return input.map((e) => ({ email: e.email, ...(e.name ? { name: e.name } : {}) }));
+  if (Array.isArray(input)) {
+    return input.map((e) => ({ email: e.email, ...(e.name ? { name: e.name } : {}) }));
+  }
   return input
     .split(",")
     .map((raw) => raw.trim())
@@ -60,7 +62,9 @@ export function parseEmailList(input: EmailAddress[] | string | undefined): Emai
 
 function parseSingle(input: EmailAddress | string | undefined): EmailAddress | undefined {
   if (!input) return undefined;
-  if (typeof input !== "string") return { email: input.email, ...(input.name ? { name: input.name } : {}) };
+  if (typeof input !== "string") {
+    return { email: input.email, ...(input.name ? { name: input.name } : {}) };
+  }
   return parseEmailList(input)[0];
 }
 
@@ -103,7 +107,7 @@ const sendEmail: ActionDefinition<Input> = {
     { key: "params", label: "Template Parameters", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     const sender = parseSingle(input.sender);
     const to = parseEmailList(input.to);

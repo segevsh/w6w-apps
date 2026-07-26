@@ -19,7 +19,7 @@ const addContactToList: ActionDefinition<Input> = {
     { key: "vids", label: "Contact VIDs", type: "json", hint: "Array of numeric contact IDs." },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request(`/contacts/v1/lists/${encodeURIComponent(input.listId)}/add`, {
       method: "POST",

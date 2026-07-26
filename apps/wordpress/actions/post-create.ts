@@ -103,7 +103,7 @@ const postCreate: ActionDefinition<Input> = {
     { key: "date", label: "Date", type: "datetime" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     const body: PostBody = { title: input.title };
     if (input.authorId !== undefined) body.author = input.authorId;

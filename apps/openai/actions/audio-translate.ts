@@ -45,7 +45,7 @@ const audioTranslate: ActionDefinition<Input> = {
     { key: "fileMimeType", label: "File MIME type", type: "string", default: "audio/mpeg" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new OpenAIClient(ctx);
     const form = new FormData();
     form.append(

@@ -24,7 +24,7 @@ const addTaskProject: ActionDefinition<Input> = {
     { key: "section", label: "Section ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const body: Record<string, unknown> = { project: input.project };
     if (input.insert_after) body.insert_after = input.insert_after;
     if (input.insert_before) body.insert_before = input.insert_before;

@@ -24,7 +24,9 @@ const deleteAssociation: ActionDefinition<Input> = {
   async execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     await client.request<void>(
-      `/crm/v4/objects/${input.fromObjectType}/${encodeURIComponent(input.fromObjectId)}/associations/${input.toObjectType}/${encodeURIComponent(input.toObjectId)}`,
+      `/crm/v4/objects/${input.fromObjectType}/${
+        encodeURIComponent(input.fromObjectId)
+      }/associations/${input.toObjectType}/${encodeURIComponent(input.toObjectId)}`,
       { method: "DELETE" },
     );
     return {

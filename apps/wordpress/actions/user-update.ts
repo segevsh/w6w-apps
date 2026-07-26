@@ -50,7 +50,7 @@ const userUpdate: ActionDefinition<Input> = {
     { key: "slug", label: "Slug", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     const body: UserBody = { id: input.userId };
     if (input.name !== undefined) body.name = input.name;

@@ -19,7 +19,7 @@ const listForms: ActionDefinition<Input> = {
     { key: "archived", label: "Include archived", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request(`/marketing/v3/forms/`, {
       query: {

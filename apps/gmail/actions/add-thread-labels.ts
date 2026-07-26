@@ -22,7 +22,7 @@ const addThreadLabels: ActionDefinition<Input> = {
     { key: "labelIds", label: "Label IDs", type: "string", repeat: true, required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GmailClient(ctx);
     return client.request(`/users/me/threads/${input.threadId}/modify`, {
       method: "POST",

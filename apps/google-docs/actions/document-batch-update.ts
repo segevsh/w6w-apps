@@ -43,18 +43,18 @@ const documentBatchUpdate: ActionDefinition<Input> = {
       type: "json",
       required: true,
       hint:
-        "Array of Google Docs `Request` objects, e.g. `[{ \"insertText\": { \"text\": \"hi\", \"endOfSegmentLocation\": {} } }]`.",
+        'Array of Google Docs `Request` objects, e.g. `[{ "insertText": { "text": "hi", "endOfSegmentLocation": {} } }]`.',
     },
     {
       key: "writeControl",
       label: "Write Control (revision)",
       type: "json",
       hint:
-        "Optional `{ \"control\": \"requiredRevisionId\", \"value\": \"…\" }` to bind changes to a specific revision.",
+        'Optional `{ "control": "requiredRevisionId", "value": "…" }` to bind changes to a specific revision.',
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const documentId = extractDocumentId(input.documentURL);
     const body: BatchUpdateBody = { requests: input.requests };

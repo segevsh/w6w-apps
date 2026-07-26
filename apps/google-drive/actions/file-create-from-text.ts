@@ -32,7 +32,7 @@ const createFromText: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const mimeType = input.convertToGoogleDocument ? DOCUMENT_MIME : "text/plain";
     const metadata: Record<string, unknown> = {

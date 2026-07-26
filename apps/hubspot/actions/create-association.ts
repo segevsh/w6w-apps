@@ -21,7 +21,8 @@ const createAssociation: ActionDefinition<Input> = {
   type: "perform",
   resource: "association",
   title: "Create Association",
-  description: "Link two CRM records (contact↔company, deal↔ticket, etc.) via the v4 associations API.",
+  description:
+    "Link two CRM records (contact↔company, deal↔ticket, etc.) via the v4 associations API.",
   idempotent: true,
   params: [
     {
@@ -55,15 +56,18 @@ const createAssociation: ActionDefinition<Input> = {
       label: "Association label",
       type: "string",
       default: "default",
-      hint: "`default` uses HubSpot's built-in association for the pair. Otherwise pass a custom label ID.",
+      hint:
+        "`default` uses HubSpot's built-in association for the pair. Otherwise pass a custom label ID.",
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     const label = input.associationType ?? "default";
     return client.request(
-      `/crm/v4/objects/${input.fromObjectType}/${encodeURIComponent(input.fromObjectId)}/associations/${label}/${input.toObjectType}/${encodeURIComponent(input.toObjectId)}`,
+      `/crm/v4/objects/${input.fromObjectType}/${
+        encodeURIComponent(input.fromObjectId)
+      }/associations/${label}/${input.toObjectType}/${encodeURIComponent(input.toObjectId)}`,
       { method: "PUT" },
     );
   },

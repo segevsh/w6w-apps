@@ -43,7 +43,7 @@ const messageSchedule: ActionDefinition<Input> = {
     { key: "unfurlMedia", label: "Unfurl media", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     const body: Record<string, unknown> = {
       channel: input.channel,

@@ -19,7 +19,8 @@ const getManyBlocks: ActionDefinition<Input, NotionListResponse> = {
   type: "read",
   resource: "block",
   title: "Get Many Blocks",
-  description: "List the direct children of a block (or a page). Returns one page — pass `startCursor` back to walk.",
+  description:
+    "List the direct children of a block (or a page). Returns one page — pass `startCursor` back to walk.",
   params: [
     { key: "blockId", label: "Parent Block ID", type: "string", required: true },
     { key: "pageSize", label: "Page size", type: "number", default: 100 },

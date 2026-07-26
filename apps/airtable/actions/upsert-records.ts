@@ -21,10 +21,15 @@ const upsertRecords: ActionDefinition<Input> = {
   type: "perform",
   resource: "record",
   title: "Upsert Records",
-  description:
-    "Create-or-update up to 10 records, matched on the given `fieldsToMergeOn`.",
+  description: "Create-or-update up to 10 records, matched on the given `fieldsToMergeOn`.",
   params: [
-    { key: "baseId", label: "Base ID", type: "string", required: true, placeholder: "appXXXXXXXXXXXXXX" },
+    {
+      key: "baseId",
+      label: "Base ID",
+      type: "string",
+      required: true,
+      placeholder: "appXXXXXXXXXXXXXX",
+    },
     { key: "table", label: "Table (name or ID)", type: "string", required: true },
     {
       key: "records",
@@ -50,7 +55,7 @@ const upsertRecords: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request(`${input.baseId}/${encodeURI(input.table)}`, {
       method: input.replace ? "PUT" : "PATCH",

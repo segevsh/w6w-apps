@@ -35,7 +35,7 @@ const fileUpload: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AnthropicClient(ctx);
     const form = new FormData();
     form.append(

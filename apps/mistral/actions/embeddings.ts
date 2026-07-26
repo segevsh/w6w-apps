@@ -45,7 +45,7 @@ const embeddings: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MistralClient(ctx);
     const body: Record<string, unknown> = {
       model: input.model ?? "mistral-embed",

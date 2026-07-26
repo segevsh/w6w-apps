@@ -27,13 +27,13 @@ const createEntry: ActionDefinition<Input> = {
       label: "Fields",
       type: "json",
       required: true,
-      hint: "Locale-keyed field map, e.g. `{ \"title\": { \"en-US\": \"Hello\" } }`.",
+      hint: 'Locale-keyed field map, e.g. `{ "title": { "en-US": "Hello" } }`.',
     },
     { key: "spaceId", label: "Space ID", type: "string" },
     { key: "environmentId", label: "Environment ID", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const { spaceId, environmentId } = resolveScope(input, ctx);
     const client = new ContentfulClient(ctx);
     return client.request(

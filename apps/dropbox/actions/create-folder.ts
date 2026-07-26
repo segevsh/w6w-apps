@@ -23,7 +23,7 @@ const createFolder: ActionDefinition<Input> = {
     { key: "autorename", label: "Auto-rename on conflict", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     return client.request("/files/create_folder_v2", {
       body: {

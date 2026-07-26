@@ -54,7 +54,7 @@ const documentInsertText: ActionDefinition<Input> = {
     { key: "index", label: "Index", type: "number", hint: "Zero-based index within the segment." },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const documentId = extractDocumentId(input.documentURL);
     const request = {

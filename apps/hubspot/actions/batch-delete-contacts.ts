@@ -11,7 +11,7 @@ const batchDeleteContacts: ActionDefinition<CrmBatchDeleteInput> = {
     { key: "ids", label: "IDs", type: "json", required: true, hint: "Array of contact IDs." },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmBatchDelete(ctx, "contacts", input);
   },
 };

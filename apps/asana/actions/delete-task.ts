@@ -16,7 +16,7 @@ const deleteTask: ActionDefinition<Input> = {
     { key: "id", label: "Task ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks/${input.id}`, { method: "DELETE" });
   },
 };

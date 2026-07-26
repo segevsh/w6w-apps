@@ -17,7 +17,7 @@ const getTemplate: ActionDefinition<Input, KlaviyoEnvelope> = {
     { key: "fieldsTemplate", label: "Template fields", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope>(`/templates/${input.templateId}/`, {
       query: { "fields[template]": input.fieldsTemplate },

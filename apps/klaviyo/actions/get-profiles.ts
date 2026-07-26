@@ -22,7 +22,8 @@ const getProfiles: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
       key: "filter",
       label: "Filter",
       type: "string",
-      hint: 'JSON:API filter, e.g. `equals(email,"a@example.com")` or `greater-than(created,2024-01-01T00:00:00Z)`.',
+      hint:
+        'JSON:API filter, e.g. `equals(email,"a@example.com")` or `greater-than(created,2024-01-01T00:00:00Z)`.',
     },
     {
       key: "sort",
@@ -40,7 +41,7 @@ const getProfiles: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
     { key: "include", label: "Include", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope<unknown[]>>(`/profiles/`, {
       query: {

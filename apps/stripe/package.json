@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/stripe",
+  "version": "0.1.0",
+  "description": "Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogue.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.stripe",
+    "displayName": "Stripe",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Stripe"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.stripe.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

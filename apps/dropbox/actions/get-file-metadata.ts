@@ -30,7 +30,7 @@ const getFileMetadata: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     return client.request("/files/get_metadata", {
       body: {

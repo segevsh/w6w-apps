@@ -84,7 +84,9 @@ export class SlackClient {
         detail = await res.text();
       } catch { /* ignore */ }
       throw new Error(
-        `Slack ${res.status} ${res.statusText} for ${options.method ?? "GET"} ${url.pathname}: ${detail}`,
+        `Slack ${res.status} ${res.statusText} for ${
+          options.method ?? "GET"
+        } ${url.pathname}: ${detail}`,
       );
     }
 

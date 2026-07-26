@@ -38,7 +38,7 @@ const listContentTypes: ActionDefinition<Input> = {
     { key: "total", type: "number", label: "Total" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const { spaceId, environmentId } = resolveScope(input, ctx);
     const client = new ContentfulClient(ctx);
     return client.request<ContentfulListResponse>(

@@ -29,7 +29,7 @@ const listBases: ActionDefinition<Input, AirtableListEnvelope<Base>> = {
     { key: "offset", type: "string", label: "Next page cursor" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AirtableClient(ctx);
     return client.request<AirtableListEnvelope<Base>>("meta/bases", {
       query: { offset: input.offset },

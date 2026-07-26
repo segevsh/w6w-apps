@@ -25,7 +25,7 @@ const documentReplaceText: ActionDefinition<Input> = {
     { key: "matchCase", label: "Match case", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const documentId = extractDocumentId(input.documentURL);
     const request = {

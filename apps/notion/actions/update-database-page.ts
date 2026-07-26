@@ -21,7 +21,12 @@ const updateDatabasePage: ActionDefinition<Input> = {
   description: "Update a database page's properties, icon, cover, or archived flag.",
   params: [
     { key: "pageId", label: "Page ID", type: "string", required: true },
-    { key: "properties", label: "Properties", type: "json", hint: "Partial Notion property map — only the properties you want to change." },
+    {
+      key: "properties",
+      label: "Properties",
+      type: "json",
+      hint: "Partial Notion property map — only the properties you want to change.",
+    },
     { key: "archived", label: "Archived", type: "boolean" },
     { key: "icon", label: "Icon", type: "json" },
     { key: "cover", label: "Cover", type: "json" },

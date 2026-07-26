@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/zendesk",
+  "version": "0.1.0",
+  "description": "Manage Zendesk Support tickets, users and organizations.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zendesk",
+    "displayName": "Zendesk",
+    "categories": [
+      "support",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zendesk"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.zendesk.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

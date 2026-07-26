@@ -79,7 +79,7 @@ const messageCreate: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     if (input.stream) {
       throw new Error(
         "message-create: `stream: true` isn't supported — use the runtime's streaming primitives.",

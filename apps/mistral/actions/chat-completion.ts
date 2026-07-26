@@ -61,7 +61,7 @@ const chatCompletion: ActionDefinition<Input> = {
     { key: "safePrompt", label: "Safe prompt", type: "boolean", default: false },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new MistralClient(ctx);
     const body: Record<string, unknown> = {
       model: input.model,

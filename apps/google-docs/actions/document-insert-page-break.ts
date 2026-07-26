@@ -47,7 +47,7 @@ const documentInsertPageBreak: ActionDefinition<Input> = {
     { key: "index", label: "Index", type: "number" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const documentId = extractDocumentId(input.documentURL);
     const request = { insertPageBreak: buildLocation(input) };

@@ -17,7 +17,7 @@ const messageDelete: ActionDefinition<Input> = {
     { key: "ts", label: "Message ts", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/chat.delete", {
       method: "POST",

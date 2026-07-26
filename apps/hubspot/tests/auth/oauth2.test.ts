@@ -12,7 +12,11 @@ Deno.test("oauth2: declares the HubSpot authorize/token endpoints", () => {
 
 Deno.test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
-  const request = { url: "https://x", method: "GET" as const, headers: {} as Record<string, string> };
+  const request = {
+    url: "https://x",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
   const out = await auth.sign!({ request, credential: { accessToken: "at-xyz" } }, ctx);
   assertEquals(out.headers["authorization"], "Bearer at-xyz");
 });
@@ -23,11 +27,13 @@ Deno.test("oauth2: test with missing accessToken reports the failure", async () 
   assertEquals(result.ok, false);
 });
 
-Deno.test("oauth2: test issues GET /crm/v3/objects/contacts?limit=1 with Bearer token", async () => {
+Deno.test("oauth2: test issues GET /account-info/v3/details with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await auth.test({ credential: { accessToken: "at-xyz" } }, ctx);
   assertEquals(result.ok, true);
   const url = new URL(calls[0].url);
-  assertEquals(url.pathname, "/crm/v3/objects/contacts");
+  // Deliberately NOT a CRM object read: that needs an object scope, so a
+  // private app without contacts access would fail its own health check.
+  assertEquals(url.pathname, "/account-info/v3/details");
   assertEquals(calls[0].headers["authorization"], "Bearer at-xyz");
 });

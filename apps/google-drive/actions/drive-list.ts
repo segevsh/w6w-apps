@@ -21,7 +21,7 @@ const listDrives: ActionDefinition<Input> = {
     { key: "useDomainAdminAccess", label: "Use domain admin access", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     return client.request("/drives", {
       query: {

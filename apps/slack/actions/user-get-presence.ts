@@ -15,7 +15,7 @@ const userGetPresence: ActionDefinition<Input> = {
     { key: "user", label: "User ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/users.getPresence", { query: { user: input.user } });
   },

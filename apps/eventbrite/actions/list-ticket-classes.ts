@@ -31,7 +31,7 @@ const listTicketClasses: ActionDefinition<Input> = {
     { key: "pagination", type: "object", label: "Pagination" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     const path = input.forSale
       ? `/events/${input.eventId}/ticket_classes/for_sale/`

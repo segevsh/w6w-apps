@@ -32,7 +32,7 @@ const batchCreate: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AnthropicClient(ctx);
     return client.request("/v1/messages/batches", {
       method: "POST",

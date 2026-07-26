@@ -17,7 +17,8 @@ const createContact: ActionDefinition<Input> = {
   type: "perform",
   resource: "contact",
   title: "Create Contact",
-  description: "Create a new contact. `email` is not required by HubSpot but is strongly recommended.",
+  description:
+    "Create a new contact. `email` is not required by HubSpot but is strongly recommended.",
   params: [
     { key: "email", label: "Email", type: "string" },
     { key: "firstname", label: "First name", type: "string" },
@@ -34,7 +35,7 @@ const createContact: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmCreate(ctx, "contacts", {
       properties: {
         email: input.email,

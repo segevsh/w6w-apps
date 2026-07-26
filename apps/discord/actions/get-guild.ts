@@ -27,7 +27,7 @@ const getGuild: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DiscordClient(ctx);
     return client.request(`/guilds/${input.guildId}`, {
       query: { with_counts: input.withCounts },

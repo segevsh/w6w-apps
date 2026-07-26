@@ -26,12 +26,13 @@ const createWorkspaceHook: ActionDefinition<Input> = {
       label: "Events",
       type: "string",
       required: true,
-      hint: "Array of Bitbucket event names, e.g. `[\"repo:push\"]`. Use list-workspace-events to enumerate.",
+      hint:
+        'Array of Bitbucket event names, e.g. `["repo:push"]`. Use list-workspace-events to enumerate.',
     },
     { key: "secret", label: "Secret", type: "secret" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BitbucketClient(ctx);
     const body: Record<string, unknown> = {
       description: input.description ?? "w6w webhook",

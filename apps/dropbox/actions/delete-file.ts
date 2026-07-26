@@ -20,7 +20,7 @@ const deleteFile: ActionDefinition<Input> = {
     { key: "path", label: "File Path", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     return client.request("/files/delete_v2", {
       body: { path: input.path },

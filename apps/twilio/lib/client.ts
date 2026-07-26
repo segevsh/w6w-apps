@@ -74,7 +74,9 @@ export class TwilioClient {
         detail = await res.text();
       } catch { /* ignore */ }
       throw new Error(
-        `Twilio ${res.status} ${res.statusText} for ${options.method ?? "GET"} ${u.pathname}: ${detail}`,
+        `Twilio ${res.status} ${res.statusText} for ${
+          options.method ?? "GET"
+        } ${u.pathname}: ${detail}`,
       );
     }
     if (res.status === 204) return undefined as T;
@@ -86,7 +88,7 @@ const XML_CHAR_MAP: Record<string, string> = {
   "<": "&lt;",
   ">": "&gt;",
   "&": "&amp;",
-  "\"": "&quot;",
+  '"': "&quot;",
   "'": "&apos;",
 };
 

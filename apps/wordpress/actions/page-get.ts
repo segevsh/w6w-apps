@@ -28,7 +28,7 @@ const pageGet: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     return client.request(`/pages/${input.pageId}`, {
       query: { password: input.password, context: input.context },

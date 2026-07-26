@@ -17,7 +17,7 @@ const moveTask: ActionDefinition<Input> = {
     { key: "section", label: "Section ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/sections/${input.section}/addTask`, {
       method: "POST",
       body: { task: input.id },

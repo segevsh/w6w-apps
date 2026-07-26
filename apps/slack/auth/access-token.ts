@@ -23,7 +23,8 @@ const accessToken: AuthDefinition = {
       label: "Access Token",
       type: "secret",
       required: true,
-      hint: "Slack app → OAuth & Permissions → Bot User OAuth Token (xoxb-…) or User OAuth Token (xoxp-…).",
+      hint:
+        "Slack app → OAuth & Permissions → Bot User OAuth Token (xoxb-…) or User OAuth Token (xoxp-…).",
     },
   ],
 

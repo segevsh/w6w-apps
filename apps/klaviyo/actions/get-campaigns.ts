@@ -20,7 +20,8 @@ const getCampaigns: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
   type: "read",
   resource: "campaign",
   title: "Get Campaigns",
-  description: "List campaigns for a channel. `filter` is required and must include a `messages.channel` clause.",
+  description:
+    "List campaigns for a channel. `filter` is required and must include a `messages.channel` clause.",
   params: [
     {
       key: "filter",
@@ -28,7 +29,7 @@ const getCampaigns: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
       type: "string",
       required: true,
       default: "equals(messages.channel,'email')",
-      hint: 'Must include a `messages.channel` clause, e.g. `equals(messages.channel,\'email\')`.',
+      hint: "Must include a `messages.channel` clause, e.g. `equals(messages.channel,'email')`.",
     },
     { key: "sort", label: "Sort", type: "string", default: "-send_time" },
     { key: "pageCursor", label: "Page cursor", type: "string" },
@@ -36,7 +37,7 @@ const getCampaigns: ActionDefinition<Input, KlaviyoEnvelope<unknown[]>> = {
     { key: "include", label: "Include", type: "string" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope<unknown[]>>(`/campaigns/`, {
       query: {

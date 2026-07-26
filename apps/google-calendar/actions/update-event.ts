@@ -104,7 +104,7 @@ const updateEvent: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleCalendarClient(ctx);
     const body: EventPatch = {};
 

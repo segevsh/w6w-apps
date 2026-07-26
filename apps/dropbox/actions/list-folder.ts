@@ -60,7 +60,7 @@ const listFolder: ActionDefinition<Input> = {
     { key: "has_more", type: "boolean", label: "Has more" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new DropboxClient(ctx);
     // The continue endpoint accepts *only* the cursor — the initial list_folder
     // endpoint rejects it. Route to whichever applies.

@@ -24,7 +24,7 @@ const upsertContact: ActionDefinition<Input> = {
       key: "attributes",
       label: "Attributes",
       type: "json",
-      hint: "JSON object of contact attributes, e.g. `{\"FIRSTNAME\": \"Ada\"}`.",
+      hint: 'JSON object of contact attributes, e.g. `{"FIRSTNAME": "Ada"}`.',
     },
     { key: "listIds", label: "List IDs", type: "json", hint: "JSON array of list IDs." },
   ],

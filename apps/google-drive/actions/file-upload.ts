@@ -38,7 +38,7 @@ const upload: ActionDefinition<Input> = {
     { key: "description", label: "Description", type: "text" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const mimeType = input.mimeType || "application/octet-stream";
     const metadata: Record<string, unknown> = {

@@ -17,7 +17,7 @@ const messageDeleteScheduled: ActionDefinition<Input> = {
     { key: "scheduledMessageId", label: "Scheduled message ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new SlackClient(ctx);
     return client.request("/chat.deleteScheduledMessage", {
       method: "POST",

@@ -45,7 +45,7 @@ const countTokens: ActionDefinition<Input> = {
     { key: "tool_choice", label: "Tool choice", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new AnthropicClient(ctx);
     const body: Record<string, unknown> = {
       model: input.model,

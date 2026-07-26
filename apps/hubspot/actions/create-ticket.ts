@@ -18,7 +18,8 @@ const createTicket: ActionDefinition<Input> = {
   type: "perform",
   resource: "ticket",
   title: "Create Ticket",
-  description: "Create a support ticket. `hs_pipeline` and `hs_pipeline_stage` are required by HubSpot.",
+  description:
+    "Create a support ticket. `hs_pipeline` and `hs_pipeline_stage` are required by HubSpot.",
   params: [
     { key: "subject", label: "Subject", type: "string", required: true },
     { key: "hs_pipeline", label: "Pipeline ID", type: "string", required: true },
@@ -31,7 +32,7 @@ const createTicket: ActionDefinition<Input> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmCreate(ctx, "tickets", {
       properties: {
         subject: input.subject,

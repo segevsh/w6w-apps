@@ -63,7 +63,7 @@ const shareFile: ActionDefinition<Input> = {
     { key: "moveToNewOwnersRoot", label: "Move to new owner's root", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDriveClient(ctx);
     const body: Record<string, unknown> = { type: input.type, role: input.role };
     if (input.emailAddress) body.emailAddress = input.emailAddress;

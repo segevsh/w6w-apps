@@ -38,8 +38,8 @@ Deno.test("list-recent-leads: omits since/cursor when not supplied", async () =>
   assert(!params.has("after"));
 });
 
-Deno.test("list-recent-leads: pageAccessToken overrides the connection token", async () => {
+Deno.test("list-recent-leads: sets no authorization header (the sign hook injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
-  await action.execute!({ formId: "f", pageAccessToken: "page-tok" }, ctx);
-  assertEquals(calls[0].headers["authorization"], "Bearer page-tok");
+  await action.execute!({ formId: "f" }, ctx);
+  assert(!("authorization" in calls[0].headers), "auth must be injected by the sign hook, not us");
 });

@@ -13,12 +13,19 @@ Deno.test("list-repositories: hits /repositories/{workspace} with default pagele
 Deno.test("list-repositories: forwards all optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [] } }]);
   await action.execute(
-    { workspace: "acme", role: "admin", q: "name~\"api\"", sort: "-updated_on", page: 2, pagelen: 10 },
+    {
+      workspace: "acme",
+      role: "admin",
+      q: 'name~"api"',
+      sort: "-updated_on",
+      page: 2,
+      pagelen: 10,
+    },
     ctx,
   );
   const p = new URL(calls[0].url).searchParams;
   assertEquals(p.get("role"), "admin");
-  assertEquals(p.get("q"), "name~\"api\"");
+  assertEquals(p.get("q"), 'name~"api"');
   assertEquals(p.get("sort"), "-updated_on");
   assertEquals(p.get("page"), "2");
   assertEquals(p.get("pagelen"), "10");

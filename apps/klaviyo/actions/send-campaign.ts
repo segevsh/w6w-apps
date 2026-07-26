@@ -19,7 +19,7 @@ const sendCampaign: ActionDefinition<Input, KlaviyoEnvelope> = {
     { key: "campaignId", label: "Campaign ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope>(`/campaign-send-jobs/`, {
       method: "POST",

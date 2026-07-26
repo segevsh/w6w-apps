@@ -38,7 +38,7 @@ const sendMessage: ActionDefinition<Input> = {
     { key: "flags", label: "Flags", type: "number" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const body: Record<string, unknown> = {};
     if (input.content !== undefined) body.content = input.content;
     if (input.tts !== undefined) body.tts = input.tts;

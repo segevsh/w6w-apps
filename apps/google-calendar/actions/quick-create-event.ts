@@ -41,7 +41,7 @@ const quickCreateEvent: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleCalendarClient(ctx);
     return client.request(
       `/calendars/${encodeCalendarId(input.calendarId)}/events/quickAdd`,

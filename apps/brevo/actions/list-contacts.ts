@@ -39,7 +39,7 @@ const listContacts: ActionDefinition<Input> = {
     { key: "count", type: "number", label: "Count" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BrevoClient(ctx);
     return client.request<BrevoList<"contacts">>("/contacts", {
       query: {

@@ -24,7 +24,7 @@ const postDelete: ActionDefinition<Input> = {
     },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = WordPressClient.fromConnection(ctx);
     return client.request(`/posts/${input.postId}`, {
       method: "DELETE",

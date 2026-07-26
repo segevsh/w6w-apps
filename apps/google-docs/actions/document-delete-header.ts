@@ -18,7 +18,7 @@ const documentDeleteHeader: ActionDefinition<Input> = {
     { key: "headerId", label: "Header ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new GoogleDocsClient(ctx);
     const documentId = extractDocumentId(input.documentURL);
     return client.request(`/documents/${documentId}:batchUpdate`, {

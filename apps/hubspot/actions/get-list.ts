@@ -20,7 +20,7 @@ const getList: ActionDefinition<Input> = {
     { key: "listId", label: "List ID", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new HubSpotClient(ctx);
     return client.request(`/contacts/v1/lists/${encodeURIComponent(input.listId)}`);
   },

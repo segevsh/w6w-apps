@@ -3,7 +3,9 @@ import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-databases.ts";
 
 Deno.test("search-databases: forwards query, sort and cursor to /search", async () => {
-  const { ctx, calls } = mockCtx([{ body: { object: "list", results: [], next_cursor: null, has_more: false } }]);
+  const { ctx, calls } = mockCtx([{
+    body: { object: "list", results: [], next_cursor: null, has_more: false },
+  }]);
   await action.execute({
     query: "roadmap",
     sort: { direction: "descending", timestamp: "last_edited_time" },

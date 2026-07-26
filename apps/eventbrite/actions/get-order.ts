@@ -20,7 +20,7 @@ const getOrder: ActionDefinition<Input> = {
     { key: "expand", label: "Expand", type: "string", default: DEFAULT_EXPAND },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request(`/orders/${input.orderId}/`, {
       query: { expand: input.expand ?? DEFAULT_EXPAND },

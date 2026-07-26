@@ -25,7 +25,7 @@ const listRepositoryHooks: ActionDefinition<Input> = {
     { key: "next", type: "string", label: "Next page URL" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new BitbucketClient(ctx);
     return client.request<BitbucketListResponse>(
       `/repositories/${input.workspace}/${input.repoSlug}/hooks`,

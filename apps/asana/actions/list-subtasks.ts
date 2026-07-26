@@ -29,7 +29,7 @@ const listSubtasks: ActionDefinition<Input> = {
     { key: "opt_pretty", label: "Pretty print", type: "boolean" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return new AsanaClient(ctx).request(`/tasks/${input.taskId}/subtasks`, {
       query: {
         limit: input.limit ?? 100,

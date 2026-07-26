@@ -55,7 +55,12 @@ Deno.test("api-key: test surfaces upstream status on non-2xx", async () => {
 
 Deno.test("api-key: afterConnect returns the account profile fields", async () => {
   const { ctx } = mockCtx([{
-    body: { email: "ada@example.com", firstName: "Ada", lastName: "Lovelace", companyName: "Analytical Engines" },
+    body: {
+      email: "ada@example.com",
+      firstName: "Ada",
+      lastName: "Lovelace",
+      companyName: "Analytical Engines",
+    },
   }]);
   const out = await auth.afterConnect!({ credential: { apiKey: "xkeysib-abc" } }, ctx);
   const account = (out as { account: Record<string, unknown> }).account;

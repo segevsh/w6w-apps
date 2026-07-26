@@ -80,9 +80,7 @@ const oauth2: AuthDefinition = {
       accountname?: string;
       user_id?: number;
     };
-    const datacenter = body.api_endpoint
-      ? datacenterFromApiEndpoint(body.api_endpoint)
-      : undefined;
+    const datacenter = body.api_endpoint ? datacenterFromApiEndpoint(body.api_endpoint) : undefined;
     return {
       datacenter,
       account: {

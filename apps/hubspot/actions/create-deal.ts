@@ -31,7 +31,7 @@ const createDeal: ActionDefinition<Input> = {
     { key: "additionalProperties", label: "Additional properties", type: "json" },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     return crmCreate(ctx, "deals", {
       properties: {
         dealname: input.dealname,

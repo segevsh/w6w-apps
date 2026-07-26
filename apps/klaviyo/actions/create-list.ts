@@ -15,7 +15,7 @@ const createList: ActionDefinition<Input, KlaviyoEnvelope> = {
     { key: "name", label: "Name", type: "string", required: true },
   ],
 
-  async execute(input, ctx) {
+  execute(input, ctx) {
     const client = new KlaviyoClient(ctx);
     return client.request<KlaviyoEnvelope>(`/lists/`, {
       method: "POST",
