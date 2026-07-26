@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/trello",
+  "version": "0.1.0",
+  "description": "Manage Trello boards, lists, cards, checklists, labels and members.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.trello",
+    "displayName": "Trello",
+    "categories": [
+      "project-management",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Trello"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.trello.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

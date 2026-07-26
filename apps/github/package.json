@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/github",
+  "version": "0.1.0",
+  "description": "Manage GitHub issues, pull requests, releases, files, repositories and Actions workflows.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.github",
+    "displayName": "GitHub",
+    "categories": [
+      "version-control",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "GitHub"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "GitHub"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.github.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
