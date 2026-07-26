@@ -66,6 +66,14 @@ Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
 apps built from scratch. See individual `assets/icon.*` for the exact source.
 
+## Health checks
+
+Each app documents how to tell whether the service is up, whether a credential is still
+live, and how much quota is left — see `apps/<app>/README.md`, indexed in
+[HEALTHCHECKS.md](HEALTHCHECKS.md). The credential probe is the Auth `test` hook and is
+the only one an app performs itself; vendor status hosts are deliberately absent from
+every app's egress allowlist.
+
 ## Layout
 
 ```
@@ -73,6 +81,7 @@ w6w-apps/
 ├── w6w-pack.json           # top-level pack manifest — the registry entry point
 ├── apps/                   # every App lives here
 │   └── <app>/              # one dir per App
+│       ├── README.md       # usage + health check (status, probe, quota)
 │       ├── package.json    # manifest (w6w field)
 │       ├── deno.json
 │       ├── tsconfig.json

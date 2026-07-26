@@ -1,0 +1,55 @@
+# Stripe
+
+Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogue.
+
+- **Categories** — commerce, finance
+- **Auth methods** — api-key
+- **Actions** — 23
+- **Egress allowlist** — `api.stripe.com`
+
+## Health check
+
+Three different questions get confused with each other, so this section keeps them
+apart: is the *vendor* up, is *this credential* live, and do we have *quota* left. Only
+the second is something the app itself performs.
+
+### Is the vendor up?
+
+**Service status** — machine-readable.
+
+```
+GET https://status.stripe.com/current
+```
+
+Stripe runs its own status API rather than Statuspage. `/current` returns a per-surface
+map — `api`, `webhooks`, `dashboard`, `checkout` — plus a `largestatus` rollup, which is
+more useful than a single indicator because the API can be healthy while webhooks are
+degraded.
+
+### Is this credential live?
+
+This is what the Auth `test` hook does — the app's own health check, and the only one of
+the three it performs itself.
+
+The single auth method probes:
+
+```
+GET /v1/balance
+```
+
+The account balance. Cheap, read-only, and reachable by essentially any key — unlike
+`/v1/charges`, which n8n probes and which a restricted key may not read.
+
+Nothing in this app calls that endpoint: it is out-of-band context for whoever is
+diagnosing a failure, and the host it lives on is not in `w6w.network.allow`, so an
+action could not reach it even if it tried.
+
+### Do we have quota left?
+
+No headroom endpoint or header. Stripe limits to roughly 100 read requests/second in
+live mode and answers 429; retryable failures are marked with `Stripe-Should-Retry`.
+
+---
+
+Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with
+`_tools/audit.ts` conventions in mind if a probe starts failing for everyone at once.

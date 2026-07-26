@@ -37,10 +37,11 @@ const privateAppToken: AuthDefinition = {
 
   async test({ credential }, ctx) {
     const { apiKey } = credential as { apiKey: string };
-    // /crm/v3/objects/contacts?limit=1 is scoped by every private app that has
-    // *any* CRM read permission, so it's the cheapest probe that verifies both
-    // the token and (indirectly) that scopes are wired up.
-    const res = await ctx.fetch(`${API_URL}/crm/v3/objects/contacts?limit=1`, {
+    // `/account-info/v3/details` rather than a CRM object read: it needs no
+    // object scope, so a private app entitled to (say) deals but not contacts
+    // still passes its own health check. A contacts read would 403 there and
+    // report a perfectly good token as broken.
+    const res = await ctx.fetch(`${API_URL}/account-info/v3/details`, {
       headers: { authorization: `Bearer ${apiKey}` },
     });
     if (!res.ok) return { ok: false, message: `HubSpot returned ${res.status}` };
