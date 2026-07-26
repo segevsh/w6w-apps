@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/linear",
+  "version": "0.1.0",
+  "description": "Create and manage Linear issues, comments, projects and labels through its GraphQL API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.linear",
+    "displayName": "Linear",
+    "categories": [
+      "project-management",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Linear"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.linear.app"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
