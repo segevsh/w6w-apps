@@ -5,6 +5,13 @@ import { SalesforceClient } from "../lib/client.ts";
  * Worth checking before a bulk load: `DailyApiRequests` is the limit a runaway
  * workflow hits first, and hitting it locks the whole org out of the API for
  * the rest of the day.
+ *
+ * `health/quota.ts` asks `/limits` the same question. It is a separate hook
+ * rather than a `healthCheck` tag on this Action because a promoted Action's
+ * `execute` return value IS the health report, and this one returns Salesforce's
+ * raw limits document — which carries no `state`, so the runtime would normalise
+ * every result to `unknown`. The duplication is one `ctx.fetch` call and buys a
+ * report the host can actually read.
  */
 const limitsGet: ActionDefinition<Record<string, never>> = {
   key: "limits-get",

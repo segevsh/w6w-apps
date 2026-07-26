@@ -30,6 +30,8 @@ import teamGetMany from "./actions/team-get-many.ts";
 import stateGetMany from "./actions/state-get-many.ts";
 import userGetMany from "./actions/user-get-many.ts";
 import labelGetMany from "./actions/label-get-many.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -50,4 +52,5 @@ export default {
     labelGetMany,
   ],
   auth: [apiKey, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

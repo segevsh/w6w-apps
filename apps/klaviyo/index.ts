@@ -29,6 +29,8 @@ import getTemplates from "./actions/get-templates.ts";
 import getTemplate from "./actions/get-template.ts";
 import createTemplate from "./actions/create-template.ts";
 import renderTemplate from "./actions/render-template.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -57,4 +59,5 @@ export default {
     renderTemplate,
   ],
   auth: [apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

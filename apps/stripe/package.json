@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/stripe",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogue.",
   "license": "MIT",
   "author": {

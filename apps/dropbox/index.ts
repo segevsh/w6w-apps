@@ -13,6 +13,8 @@ import deleteFolder from "./actions/delete-folder.ts";
 import moveFolder from "./actions/move-folder.ts";
 import copyFolder from "./actions/copy-folder.ts";
 import search from "./actions/search.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -30,4 +32,5 @@ export default {
     search,
   ],
   auth: [accessToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

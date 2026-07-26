@@ -30,6 +30,8 @@ import deleteRole from "./actions/delete-role.ts";
 // guild
 import listGuilds from "./actions/list-guilds.ts";
 import getGuild from "./actions/get-guild.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -54,4 +56,5 @@ export default {
     getGuild,
   ],
   auth: [botToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

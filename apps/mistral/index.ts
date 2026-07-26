@@ -4,6 +4,8 @@ import chatCompletion from "./actions/chat-completion.ts";
 import embeddings from "./actions/embeddings.ts";
 import extractText from "./actions/extract-text.ts";
 import listModels from "./actions/list-models.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -13,4 +15,5 @@ export default {
     listModels,
   ],
   auth: [apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

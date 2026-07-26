@@ -9,6 +9,8 @@ import listEvents from "./actions/list-events.ts";
 import updateEvent from "./actions/update-event.ts";
 import deleteEvent from "./actions/delete-event.ts";
 import quickCreateEvent from "./actions/quick-create-event.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -22,4 +24,5 @@ export default {
     quickCreateEvent,
   ],
   auth: [oauth2, serviceAccount],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

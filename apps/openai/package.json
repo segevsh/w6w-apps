@@ -1,19 +1,36 @@
 {
   "name": "@w6w-apps/openai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Call OpenAI's REST API — chat completions, images, audio, files, embeddings, moderations.",
   "license": "MIT",
-  "author": { "name": "w6w" },
+  "author": {
+    "name": "w6w"
+  },
   "private": true,
   "w6w": {
     "id": "io.w6w.openai",
     "displayName": "OpenAI",
-    "categories": ["ai", "developer-tools"],
+    "categories": [
+      "ai",
+      "developer-tools"
+    ],
     "appearance": {
-      "icon": { "svg": "./assets/icon.svg", "alt": "OpenAI" },
-      "darkMode": { "icon": { "svg": "./assets/icon.dark.svg", "alt": "OpenAI" } }
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "OpenAI"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "OpenAI"
+        }
+      }
     },
-    "network": { "allow": ["api.openai.com"] },
+    "network": {
+      "allow": [
+        "api.openai.com"
+      ]
+    },
     "entry": "./index.ts"
   }
 }

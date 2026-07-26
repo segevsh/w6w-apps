@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/linear",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Create and manage Linear issues, comments, projects and labels through its GraphQL API.",
   "license": "MIT",
   "author": {

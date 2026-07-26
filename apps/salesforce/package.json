@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/salesforce",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Create, read, update and query any Salesforce object with SOQL and SOSL.",
   "license": "MIT",
   "author": {

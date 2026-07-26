@@ -68,11 +68,22 @@ apps built from scratch. See individual `assets/icon.*` for the exact source.
 
 ## Health checks
 
-Each app documents how to tell whether the service is up, whether a credential is still
-live, and how much quota is left — see `apps/<app>/README.md`, indexed in
-[HEALTHCHECKS.md](HEALTHCHECKS.md). The credential probe is the Auth `test` hook and is
-the only one an app performs itself; vendor status hosts are deliberately absent from
-every app's egress allowlist.
+Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc], so a host
+runs what the publisher says to run instead of guessing at a probe. Each declares a
+`service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
+probe where the vendor supports one, and as an explicit `unavailable` where it does not,
+because "nothing exists to check" is a more useful answer than a gap. Five apps addressed
+by a per-tenant host (Salesforce, Jira, Zendesk, Shopify, WordPress) add a `dependency`
+check for the tenant's own site. Credential checks come free: the runtime derives an
+`auth:<method>` check from each Auth `test` hook.
+
+Status hosts stay off every app's main egress allowlist — a `service` check widens egress
+for its own worker only, which is safe precisely because such a check is never signed.
+
+Per-app detail, including why each probe was chosen over the obvious alternatives, is in
+`apps/<app>/README.md`, indexed in [HEALTHCHECKS.md](HEALTHCHECKS.md).
+
+[health-rfc]: https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md
 
 ## Layout
 
@@ -89,6 +100,7 @@ w6w-apps/
 │       ├── assets/icon.{svg,png}
 │       ├── auth/*.ts
 │       ├── actions/*.ts
+│       ├── health/*.ts      # declared health checks (service, quota, dependency)
 │       ├── lib/*.ts
 │       └── tests/
 └── _tools/                 # scaffolding + porting helpers (not shipped)

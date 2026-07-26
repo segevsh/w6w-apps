@@ -58,6 +58,28 @@ action could not reach it even if it tried.
 No headroom endpoint. Atlassian applies dynamic, cost-based limits and answers 429 with
 `Retry-After`; `X-RateLimit-*` headers appear on some endpoints.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | degraded | 60s | `health/service.ts` |
+| `quota` | quota | connection | signed | informational | — | _declared absent_ |
+| `site` | dependency | connection | context | degraded | 120s | `health/site.ts` |
+| `auth:api-token` | credential | connection | signed | fatal | — | derived from the `api-token` auth method's `test` hook |
+| `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
+
+The host `jira-software.status.atlassian.com` (for `service`) is reachable **only inside that hook's worker** — not from any action, and not from the other
+checks. The spec allows the widening precisely because the check is unsigned; pairing an
+extra host with `credential: "signed"` is rejected at load time, so a credential can never
+reach a status host.
+
+**`quota` is declared absent.** Atlassian applies dynamic, cost-based limits with no published headroom endpoint. `X-RateLimit-*` headers appear on some endpoints but not reliably, so there is nothing a probe can read for a stable answer; a 429 carries `Retry-After`.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

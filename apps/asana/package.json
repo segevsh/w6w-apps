@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/asana",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Asana projects, tasks, subtasks, comments, tags, and users via the Asana REST API.",
   "license": "MIT",
   "author": {

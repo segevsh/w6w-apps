@@ -39,6 +39,23 @@ probes.
 `ratelimit-remaining` and `ratelimit-reset` response headers, plus `Retry-After` on 429.
 Zendesk meters per-account per-minute, with tighter per-endpoint caps.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | informational | — | _declared absent_ |
+| `quota` | quota | connection | signed | informational | 300s | `health/quota.ts` |
+| `account` | dependency | connection | context | degraded | 120s | `health/account.ts` |
+| `auth:api-token` | credential | connection | signed | fatal | — | derived from the `api-token` auth method's `test` hook |
+| `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
+
+**`service` is declared absent.** status.zendesk.com is a human page with no JSON API or feed, and it is per-pod — an incident usually affects one pod rather than all of Zendesk, which a single rollup would erase anyway. The `account` dependency check probes this connection's own subdomain instead.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

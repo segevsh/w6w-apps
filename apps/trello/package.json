@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/trello",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Trello boards, lists, cards, checklists, labels and members.",
   "license": "MIT",
   "author": {

@@ -41,6 +41,9 @@ import organizationGet from "./actions/organization-get.ts";
 import organizationGetMany from "./actions/organization-get-many.ts";
 
 import ticketFieldGetMany from "./actions/ticket-field-get-many.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
+import account from "./health/account.ts";
 
 export default {
   actions: [
@@ -67,4 +70,5 @@ export default {
     ticketFieldGetMany,
   ],
   auth: [apiToken, oauth2],
+  healthChecks: [service, quota, account],
 } satisfies AppDefinition;

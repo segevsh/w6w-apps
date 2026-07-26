@@ -55,6 +55,8 @@ import userGroupGetMany from "./actions/usergroup-get-many.ts";
 import userGroupUpdate from "./actions/usergroup-update.ts";
 import userGroupUpdateUsers from "./actions/usergroup-update-users.ts";
 import userGroupGetUsers from "./actions/usergroup-get-users.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -114,4 +116,5 @@ export default {
     userGroupGetUsers,
   ],
   auth: [accessToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

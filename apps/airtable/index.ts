@@ -12,6 +12,8 @@ import deleteRecord from "./actions/delete-record.ts";
 import listBases from "./actions/list-bases.ts";
 import getBaseSchema from "./actions/get-base-schema.ts";
 import getTable from "./actions/get-table.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -32,4 +34,5 @@ export default {
   // Recommended order: PAT first (Feb 2024+ default), OAuth for public integrations,
   // legacy API key last (deprecated).
   auth: [personalAccessToken, oauth2, apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

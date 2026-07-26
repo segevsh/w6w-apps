@@ -3,53 +3,71 @@
 Every app in this pack answers three separate questions, and they are worth keeping
 apart when something breaks:
 
-1. **Is the vendor up?** An out-of-band status service. Nothing in an app calls it —
-   status hosts are not on any app's egress allowlist — but it is the first thing to
-   check when every connection for one vendor fails at once.
-2. **Is this credential live?** The Auth `test` hook. This is the app's own health
-   check, and the only one it performs itself.
-3. **Do we have quota left?** Usually response headers rather than an endpoint.
+1. **Is the vendor up?** An out-of-band status service, declared as a `kind: "service"`
+   check. It is the first thing to look at when every connection for one vendor fails at
+   once.
+2. **Is this credential live?** The Auth `test` hook, projected automatically into the
+   health surface as a derived `auth:<method>` check.
+3. **Do we have quota left?** A `kind: "quota"` check, usually reading response headers
+   rather than a dedicated endpoint.
 
-Per-app detail, including why each probe was chosen over the obvious alternatives, is in
-`apps/<app>/README.md`. This table is the index.
+Each is a **declared health check** per [`rfcs/healthcheck.md`][rfc], so a host runs what
+the publisher says to run rather than guessing — the old heuristic (invoke the first
+`read` action with no required params) tested nothing at all for 9 of these 35 apps, and
+for the rest it tested whatever happened to be first in `index.ts`.
 
-| App | Vendor status | Machine-readable? | Credential probe | Quota headroom |
-|---|---|:-:|---|:-:|
-| [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no |
-| [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes |
-| [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no |
-| [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes |
-| [brevo](apps/brevo/README.md) | [Statuspage](https://status.brevo.com/api/v2/status.json) | yes | `GET /v3/account` | yes |
-| [contentful](apps/contentful/README.md) | [Statuspage](https://www.contentfulstatus.com/api/v2/status.json) | yes | `GET /spaces/{spaceId}` | yes |
-| [discord](apps/discord/README.md) | [Statuspage](https://discordstatus.com/api/v2/status.json) | yes | `GET /users/@me` | yes |
-| [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no |
-| [eventbrite](apps/eventbrite/README.md) | [page](https://status.eventbrite.com) | no | `GET /v3/users/me/` | yes |
-| [facebook-lead-ads](apps/facebook-lead-ads/README.md) | [page](https://metastatus.com) | no | _varies by method_ | yes |
-| [github](apps/github/README.md) | [Statuspage](https://www.githubstatus.com/api/v2/status.json) | yes | `GET /user` | yes |
-| [gmail](apps/gmail/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /gmail/v1/users/me/profile` | no |
-| [google-calendar](apps/google-calendar/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/me/calendarList?maxResults=1` | no |
-| [google-docs](apps/google-docs/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no |
-| [google-drive](apps/google-drive/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no |
-| [google-sheets](apps/google-sheets/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no |
-| [hubspot](apps/hubspot/README.md) | [Statuspage](https://status.hubspot.com/api/v2/status.json) | yes | `GET /account-info/v3/details` | yes |
-| [jira](apps/jira/README.md) | [Statuspage](https://jira-software.status.atlassian.com/api/v2/status.json) | yes | _varies by method_ | no |
-| [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes |
-| [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes |
-| [mailchimp](apps/mailchimp/README.md) | [page](https://status.mailchimp.com) | no | `GET /3.0/ping` | no |
-| [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes |
-| [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no |
-| [openai](apps/openai/README.md) | [Statuspage](https://status.openai.com/api/v2/status.json) | yes | `GET /v1/models` | yes |
-| [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes |
-| [sendgrid](apps/sendgrid/README.md) | [Statuspage](https://status.sendgrid.com/api/v2/status.json) | yes | `GET /v3/scopes` | yes |
-| [shopify](apps/shopify/README.md) | [Statuspage](https://www.shopifystatus.com/api/v2/status.json) | yes | `GET /shop.json` | yes |
-| [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) | yes | `POST /api/auth.test` | no |
-| [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no |
-| [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no |
-| [trello](apps/trello/README.md) | [Statuspage](https://trello.status.atlassian.com/api/v2/status.json) | yes | `GET /1/members/me` | no |
-| [twilio](apps/twilio/README.md) | [Statuspage](https://status.twilio.com/api/v2/status.json) | yes | `GET /2010-04-01/Accounts/{accountSid}.json` | no |
-| [wordpress](apps/wordpress/README.md) | none published | no | `GET /wp-json/wp/v2/users/me` | no |
-| [zendesk](apps/zendesk/README.md) | [page](https://status.zendesk.com) | no | `GET /api/v2/users/me.json` | yes |
-| [zoom](apps/zoom/README.md) | [Statuspage](https://status.zoom.us/api/v2/status.json) | yes | `GET /v2/users/me` | yes |
+[rfc]: https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md
+
+Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
+declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
+left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
+methods. Five apps add a fourth question — **is this tenant's own host reachable?** —
+as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
+different problems with different fixes.
+
+Across the pack that comes to **134 checks**: 49 live probes, 25 declared absences, and 60
+`auth:*` checks derived for free from existing `test` hooks.
+
+Per-app detail, including why each probe was chosen over the obvious alternatives and how
+each check is annotated, is in `apps/<app>/README.md`. This table is the index.
+
+| App | Vendor status | Machine-readable? | Credential probe | Quota headroom | Declared checks |
+|---|---|:-:|---|:-:|---|
+| [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no | `service` · ~~quota~~ · 3 derived |
+| [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
+| [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no | `service` · ~~quota~~ · 2 derived |
+| [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
+| [brevo](apps/brevo/README.md) | [Statuspage](https://status.brevo.com/api/v2/status.json) | yes | `GET /v3/account` | yes | `service` · `quota` · 1 derived |
+| [contentful](apps/contentful/README.md) | [Statuspage](https://www.contentfulstatus.com/api/v2/status.json) | yes | `GET /spaces/{spaceId}` | yes | `service` · `quota` · 1 derived |
+| [discord](apps/discord/README.md) | [Statuspage](https://discordstatus.com/api/v2/status.json) | yes | `GET /users/@me` | yes | `service` · `quota` · 2 derived |
+| [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no | `service` · ~~quota~~ · 2 derived |
+| [eventbrite](apps/eventbrite/README.md) | [page](https://status.eventbrite.com) | no | `GET /v3/users/me/` | yes | ~~service~~ · `quota` · 2 derived |
+| [facebook-lead-ads](apps/facebook-lead-ads/README.md) | [page](https://metastatus.com) | no | _varies by method_ | yes | ~~service~~ · `quota` · 2 derived |
+| [github](apps/github/README.md) | [Statuspage](https://www.githubstatus.com/api/v2/status.json) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
+| [gmail](apps/gmail/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /gmail/v1/users/me/profile` | no | `service` · ~~quota~~ · 2 derived |
+| [google-calendar](apps/google-calendar/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/me/calendarList?maxResults=1` | no | `service` · ~~quota~~ · 2 derived |
+| [google-docs](apps/google-docs/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
+| [google-drive](apps/google-drive/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
+| [google-sheets](apps/google-sheets/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
+| [hubspot](apps/hubspot/README.md) | [Statuspage](https://status.hubspot.com/api/v2/status.json) | yes | `GET /account-info/v3/details` | yes | `service` · `quota` · 3 derived |
+| [jira](apps/jira/README.md) | [Statuspage](https://jira-software.status.atlassian.com/api/v2/status.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · `site` · 2 derived |
+| [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes | `service` · `quota` · 1 derived |
+| [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
+| [mailchimp](apps/mailchimp/README.md) | [page](https://status.mailchimp.com) | no | `GET /3.0/ping` | no | ~~service~~ · ~~quota~~ · 2 derived |
+| [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
+| [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
+| [openai](apps/openai/README.md) | [Statuspage](https://status.openai.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
+| [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes | `service` · `quota` · 2 derived |
+| [sendgrid](apps/sendgrid/README.md) | [Statuspage](https://status.sendgrid.com/api/v2/status.json) | yes | `GET /v3/scopes` | yes | `service` · `quota` · 1 derived |
+| [shopify](apps/shopify/README.md) | [Statuspage](https://www.shopifystatus.com/api/v2/status.json) | yes | `GET /shop.json` | yes | `service` · `quota` · `store` · 1 derived |
+| [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) | yes | `POST /api/auth.test` | no | `service` · ~~quota~~ · 2 derived |
+| [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |
+| [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
+| [trello](apps/trello/README.md) | [Statuspage](https://trello.status.atlassian.com/api/v2/status.json) | yes | `GET /1/members/me` | no | `service` · ~~quota~~ · 1 derived |
+| [twilio](apps/twilio/README.md) | [Statuspage](https://status.twilio.com/api/v2/status.json) | yes | `GET /2010-04-01/Accounts/{accountSid}.json` | no | `service` · ~~quota~~ · 1 derived |
+| [wordpress](apps/wordpress/README.md) | none published | no | `GET /wp-json/wp/v2/users/me` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
+| [zendesk](apps/zendesk/README.md) | [page](https://status.zendesk.com) | no | `GET /api/v2/users/me.json` | yes | ~~service~~ · `quota` · `account` · 2 derived |
+| [zoom](apps/zoom/README.md) | [Statuspage](https://status.zoom.us/api/v2/status.json) | yes | `GET /v2/users/me` | yes | `service` · `quota` · 2 derived |
 
 ## What the research turned up
 
@@ -71,6 +89,41 @@ Per-app detail, including why each probe was chosen over the obvious alternative
   same call.
 - **Salesforce's `/limits` answers questions 2 and 3 at once**, which is why it is the
   probe rather than an identity call.
+
+## What got declared
+
+Transcribing the research above into declared checks turned up a few things worth
+recording:
+
+- **The `summary.json` variant is free.** Every Statuspage service check reads
+  `/api/v2/summary.json` rather than `status.json`: identical request cost, but it carries
+  the per-component breakdown. That is the difference between "Zoom is up" and 143
+  independently-reported components — one probe, many components, which is exactly the
+  shape the RFC is built around.
+- **`unknown` is doing real work.** A status page that itself 500s tells you nothing about
+  the vendor, so every check reports `unknown` there rather than `down`. Salesforce leans
+  on it hardest: a My Domain hostname (`acme.my.salesforce.com`) hides the instance key
+  that Trust indexes by, so that case reports `unknown` with a reason rather than guessing
+  in either direction.
+- **A declared absence must be `informational`.** An `unavailable` entry always reports
+  `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
+  "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
+  All 25 absences carry `severity: "informational"`.
+- **Five apps needed the `context` posture**, the one a boolean would have lost:
+  Salesforce, Jira, Zendesk, Shopify and WordPress are each addressed by a per-tenant host,
+  so the check needs the Connection to know *which* host to call and no credential to
+  interpret the answer. Their dependency probes are deliberately unauthenticated, which
+  makes a **401 a pass** — it proves the host resolves and the API is answering, and
+  whether the credential is any good is the derived `auth:*` check's job. Conflating the
+  two is how "the account was renamed" gets misreported as "your token expired".
+- **The extra-host rule cost nothing.** Every check that widens egress
+  (`status.*`, `api.status.salesforce.com`, `www.google.com`) is a `none` or `context`
+  posture, so the spec's ban on pairing `network.allow` with `credential: "signed"` never
+  bound. The signed checks — all of them quota probes — sit on the app's own API host.
+- **Mistral is the one heuristic.** Its status page is Checkly-hosted with no JSON rollup,
+  so the check infers state from the newest RSS entry (recent, and not titled "resolved")
+  rather than reading a current state. The result says so in its message, and carries a
+  short TTL.
 
 ## Choosing a probe
 

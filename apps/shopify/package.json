@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/shopify",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Shopify products, orders, customers and inventory through the Admin REST API.",
   "license": "MIT",
   "author": {

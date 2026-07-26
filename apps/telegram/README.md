@@ -42,6 +42,23 @@ No headroom endpoint. Telegram allows roughly 30 messages/second overall and 20 
 minute to one group; a 429 carries `parameters.retry_after` **in the body**, not in a
 header.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | informational | — | _declared absent_ |
+| `quota` | quota | connection | signed | informational | — | _declared absent_ |
+| `auth:bot-token` | credential | connection | signed | fatal | — | derived from the `bot-token` auth method's `test` hook |
+
+**`service` is declared absent.** Telegram runs no status service for the Bot API at all — no status page, JSON endpoint or feed; outages are announced on the @telegram channel. The derived `auth:*` check (`getMe`) is the only liveness signal that exists.
+
+**`quota` is declared absent.** Telegram publishes no headroom endpoint or headers. The documented allowance is roughly 30 messages/second overall and 20 per minute to one group; a 429 carries `parameters.retry_after` in the body rather than a header.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

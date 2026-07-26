@@ -48,6 +48,8 @@ import subscriptionCancel from "./actions/subscription-cancel.ts";
 import productCreate from "./actions/product-create.ts";
 import priceCreate from "./actions/price-create.ts";
 import balanceGet from "./actions/balance-get.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -84,4 +86,5 @@ export default {
     balanceGet,
   ],
   auth: [apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

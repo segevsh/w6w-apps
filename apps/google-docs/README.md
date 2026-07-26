@@ -52,6 +52,27 @@ action could not reach it even if it tried.
 
 No headroom endpoint; quota is per-project and visible in the Google Cloud console.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | degraded | 120s | `health/service.ts` |
+| `quota` | quota | connection | signed | informational | — | _declared absent_ |
+| `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
+| `auth:service-account` | credential | connection | signed | fatal | — | derived from the `service-account` auth method's `test` hook |
+
+The host `www.google.com` (for `service`) is reachable **only inside that hook's worker** — not from any action, and not from the other
+checks. The spec allows the widening precisely because the check is unsigned; pairing an
+extra host with `credential: "signed"` is rejected at load time, so a credential can never
+reach a status host.
+
+**`quota` is declared absent.** Google publishes no headroom endpoint or rate-limit headers. Quota is per-project, billed in method-specific units and visible only in the Google Cloud console; exhaustion surfaces as 429 `rateLimitExceeded` or 403 `userRateLimitExceeded`.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

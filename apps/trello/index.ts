@@ -46,6 +46,8 @@ import checklistUpdateItem from "./actions/checklist-update-item.ts";
 
 import labelCreate from "./actions/label-create.ts";
 import labelGetMany from "./actions/label-get-many.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -83,4 +85,5 @@ export default {
     labelGetMany,
   ],
   auth: [apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

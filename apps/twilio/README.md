@@ -50,6 +50,26 @@ action could not reach it even if it tried.
 No headroom endpoint. Twilio queues rather than rejecting for messaging, and applies
 concurrency limits per resource.
 
+## Declared health checks
+
+Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/healthcheck.md).
+The three questions above map onto declared checks like this:
+
+| Key | Kind | Scope | Credential | Severity | Min interval | Probe |
+|---|---|---|---|---|---|---|
+| `service` | service | app | none | degraded | 60s | `health/service.ts` |
+| `quota` | quota | connection | signed | informational | — | _declared absent_ |
+| `auth:api-key` | credential | connection | signed | fatal | — | derived from the `api-key` auth method's `test` hook |
+
+The host `status.twilio.com` (for `service`) is reachable **only inside that hook's worker** — not from any action, and not from the other
+checks. The spec allows the widening precisely because the check is unsigned; pairing an
+extra host with `credential: "signed"` is rejected at load time, so a credential can never
+reach a status host.
+
+**`quota` is declared absent.** Twilio publishes no headroom endpoint or rate-limit headers. Messaging queues rather than rejecting, and other resources apply concurrency limits, so there is no counter to read.
+A declared absence always reports `unknown`, so it carries `severity: "informational"` —
+otherwise it would pin every verdict for this app at `unknown` forever.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

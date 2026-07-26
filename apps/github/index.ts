@@ -43,6 +43,8 @@ import workflowGetMany from "./actions/workflow-get-many.ts";
 import workflowEnable from "./actions/workflow-enable.ts";
 import userGetRepositories from "./actions/user-get-repositories.ts";
 import organizationGetRepositories from "./actions/organization-get-repositories.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -79,4 +81,5 @@ export default {
     organizationGetRepositories,
   ],
   auth: [accessToken, oauth2],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

@@ -20,8 +20,11 @@ import oauth2 from "./auth/oauth2.ts";
 import pageToken from "./auth/page-token.ts";
 import listForms from "./actions/list-forms.ts";
 import listRecentLeads from "./actions/list-recent-leads.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [listForms, listRecentLeads],
   auth: [oauth2, pageToken],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;

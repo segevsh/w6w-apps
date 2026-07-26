@@ -13,6 +13,8 @@ import filesRetrieve from "./actions/files-retrieve.ts";
 import embeddingsCreate from "./actions/embeddings-create.ts";
 import moderationsCreate from "./actions/moderations-create.ts";
 import listModels from "./actions/list-models.ts";
+import service from "./health/service.ts";
+import quota from "./health/quota.ts";
 
 export default {
   actions: [
@@ -31,4 +33,5 @@ export default {
     listModels,
   ],
   auth: [apiKey],
+  healthChecks: [service, quota],
 } satisfies AppDefinition;
