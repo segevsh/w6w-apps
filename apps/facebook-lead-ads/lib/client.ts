@@ -26,20 +26,13 @@ export interface RequestOptions {
   method?: string;
   query?: Record<string, string | number | boolean | undefined | null>;
   body?: unknown;
-  /**
-   * Optional Bearer token to inject on this request only. Used for the
-   * page-access-token override on `/{form_id}/leads` and `/{page_id}/leadgen_forms`:
-   * the leadgen surface requires a *page* token, but the user's stored credential
-   * is a *user* token. When omitted the runtime's `sign` hook injects the user
-   * token from the connection.
-   */
-  bearerOverride?: string;
 }
 
 /**
- * Thin wrapper over `ctx.fetch`. We never set Authorization ourselves unless
- * `bearerOverride` is supplied — the runtime routes the request through the auth
- * `sign` hook, which injects the user token from the stored credential.
+ * Thin wrapper over `ctx.fetch`. It never sets Authorization: the runtime routes
+ * every request through the auth `sign` hook, which is the only code handed the
+ * credential. To reach the Page-scoped leadgen endpoints, connect with the
+ * `page-token` auth method rather than passing a token through an Action.
  */
 export class FacebookClient {
   constructor(private ctx: HookContext) {}
@@ -54,9 +47,6 @@ export class FacebookClient {
     }
 
     const headers: Record<string, string> = { accept: "application/json" };
-    if (options.bearerOverride) {
-      headers["authorization"] = `Bearer ${options.bearerOverride}`;
-    }
 
     const init: RequestInit = { method: options.method ?? "GET", headers };
     if (options.body !== undefined) {

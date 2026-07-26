@@ -59,7 +59,7 @@ const oauth2: AuthDefinition = {
     // scopes, so we don't have a `user.name`/`email` to fill `connectionLabel`.
     // Callers can override connectionLabel or extend scopes; keep the hook so
     // the wiring point stays visible.
-    const res = await ctx.fetch("https://openidconnect.googleapis.com/v1/userinfo");
+    const res = await ctx.fetch("https://www.googleapis.com/oauth2/v3/userinfo");
     if (!res.ok) return {};
     const user = await res.json() as { sub?: string; name?: string; email?: string };
     return {

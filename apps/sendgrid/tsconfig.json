@@ -13,7 +13,6 @@
       "DOM"
     ],
     "types": [],
-    "baseUrl": ".",
     "paths": {
       "@w6w/types": [
         "../../../core/packages/types"

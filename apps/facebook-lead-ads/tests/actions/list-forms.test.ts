@@ -16,11 +16,6 @@ Deno.test("list-forms: GETs /{pageId}/leadgen_forms with fields", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("list-forms: pageAccessToken overrides the connection token", async () => {
-  const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
-  await action.execute!({ pageId: "page-1", pageAccessToken: "page-tok-xyz" }, ctx);
-  assertEquals(calls[0].headers["authorization"], "Bearer page-tok-xyz");
-});
 
 Deno.test("list-forms: omits authorization when no override is provided (runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);

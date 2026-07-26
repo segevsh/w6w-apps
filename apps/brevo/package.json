@@ -3,14 +3,28 @@
   "version": "0.1.1",
   "description": "Manage Brevo (formerly Sendinblue) contacts, senders, attributes, and send transactional emails.",
   "license": "MIT",
-  "author": { "name": "w6w" },
+  "author": {
+    "name": "w6w"
+  },
   "private": true,
   "w6w": {
     "id": "io.w6w.brevo",
     "displayName": "Brevo",
-    "categories": ["marketing", "email"],
-    "appearance": { "icon": { "url": "./assets/icon.svg", "alt": "Brevo" } },
-    "network": { "allow": ["api.brevo.com"] },
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Brevo"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.brevo.com"
+      ]
+    },
     "entry": "./index.ts"
   }
 }

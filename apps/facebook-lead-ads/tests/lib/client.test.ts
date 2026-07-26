@@ -26,9 +26,9 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: bearerOverride sets the Authorization header", async () => {
+Deno.test("client: never sets an Authorization header (credentials belong to `sign`)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FacebookClient(ctx);
-  await client.request("/x", { bearerOverride: "override-token" });
-  assertEquals(calls[0].headers["authorization"], "Bearer override-token");
+  await client.request("/x");
+  assertEquals("authorization" in calls[0].headers, false);
 });

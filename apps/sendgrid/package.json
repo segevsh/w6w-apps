@@ -11,11 +11,13 @@
     "id": "io.w6w.sendgrid",
     "displayName": "SendGrid",
     "categories": [
-      "generated"
+      "email",
+      "communication"
     ],
     "appearance": {
       "icon": {
-        "svg": "./assets/send-grid.svg"
+        "svg": "./assets/send-grid.svg",
+        "alt": "SendGrid"
       }
     },
     "network": {

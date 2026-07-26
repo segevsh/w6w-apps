@@ -2,9 +2,11 @@ import { assert, assertEquals } from "@std/assert";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: declares an apiKey-type auth with a required secret field", () => {
+Deno.test("api-key: declares a basic-type auth with a required secret field", () => {
   assertEquals(auth.key, "api-key");
-  assertEquals(auth.type, "apiKey");
+  // `basic`, not `apiKey`: `sign` sends HTTP Basic rather than dropping the
+  // key verbatim into a header/query slot (which is what `apiKey` describes).
+  assertEquals(auth.type, "basic");
   const field = auth.fields?.find((f) => f.key === "apiKey");
   assert(field, "must declare an `apiKey` field");
   assertEquals(field.type, "secret");

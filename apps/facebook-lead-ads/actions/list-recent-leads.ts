@@ -5,7 +5,6 @@ interface Input {
   formId: string;
   since?: number;
   limit?: number;
-  pageAccessToken?: string;
   cursor?: string;
 }
 
@@ -33,9 +32,9 @@ interface Lead {
  * so this action is what users compose into a scheduled workflow to fetch
  * new leads.
  *
- * As with `/leadgen_forms`, the endpoint prefers a page access token. We
- * accept an optional `pageAccessToken` override and otherwise fall back to
- * the connection's user token.
+ * As with `/leadgen_forms`, the endpoint wants a Page access token. Connect
+ * with the `page-token` auth method for that; the credential reaches the wire
+ * through `sign`, never through this Action.
  */
 const listRecentLeads: ActionDefinition<Input, FacebookListResponse<Lead>> = {
   key: "list-recent-leads",
@@ -53,12 +52,6 @@ const listRecentLeads: ActionDefinition<Input, FacebookListResponse<Lead>> = {
       hint: "Only return leads created strictly after this unix timestamp.",
     },
     { key: "limit", label: "Limit", type: "number", default: 25 },
-    {
-      key: "pageAccessToken",
-      label: "Page access token",
-      type: "secret",
-      hint: "Optional. Overrides the connection's user token for Page-scoped access.",
-    },
     { key: "cursor", label: "Cursor", type: "string", hint: "Facebook `after` cursor for pagination." },
   ],
   output: [
@@ -79,7 +72,6 @@ const listRecentLeads: ActionDefinition<Input, FacebookListResponse<Lead>> = {
           since: input.since,
           after: input.cursor,
         },
-        bearerOverride: input.pageAccessToken,
       },
     );
   },
