@@ -4,9 +4,47 @@ import type { ActionDefinition } from "@w6w/types";
  * Generated from n8n: mail:send
  * Source: https://github.com/n8n-io/n8n/tree/master/packages/nodes-base/nodes/SendGrid
  *
- * The execute body is a TODO — n8n routes through its own helpers; port the
- * relevant https://github.com/n8n-io/n8n/tree/master/packages/nodes-base/nodes/SendGrid logic to a ctx.fetch call before shipping.
+ * Posts to SendGrid's v3 `/mail/send`. Two mutually exclusive body modes:
+ *   - inline  — `content: [{ type, value }]` with the typed subject/body;
+ *   - dynamic — `template_id` + `personalizations[].dynamic_template_data`,
+ *     where SendGrid renders the stored template's handlebars.
  */
+/**
+ * Normalize the "Dynamic Template Fields" value into SendGrid's
+ * `dynamic_template_data` object.
+ *
+ * Accepts the plain object the JSON editor produces (`{ first_name: "James" }`)
+ * and, for compatibility with the n8n-shaped fixed-collection form, a
+ * `{ key, value }` pair list under `fields` (or a bare array of such pairs).
+ */
+function toTemplateData(raw: unknown): Record<string, unknown> {
+  if (!raw) return {};
+  const pairs = (list: unknown[]): Record<string, unknown> => {
+    const out: Record<string, unknown> = {};
+    for (const entry of list) {
+      const e = entry as { key?: unknown; value?: unknown };
+      const key = String(e?.key ?? "").trim();
+      if (key) out[key] = e.value;
+    }
+    return out;
+  };
+  if (Array.isArray(raw)) return pairs(raw);
+  if (typeof raw === "string") {
+    const text = raw.trim();
+    if (!text) return {};
+    try {
+      return toTemplateData(JSON.parse(text));
+    } catch {
+      throw new Error("`dynamicTemplateFields` is not valid JSON.");
+    }
+  }
+  if (typeof raw !== "object") return {};
+  const obj = raw as Record<string, unknown>;
+  if (Array.isArray(obj.fields)) return pairs(obj.fields);
+  // Already a variable -> value map.
+  return obj;
+}
+
 const action: ActionDefinition = {
   key: "mail-send",
   type: "perform",
@@ -59,8 +97,10 @@ const action: ActionDefinition = {
       label: "Message Body",
       type: "text",
       config: { multiline: true },
-      required: true,
+      // Required only when NOT using a dynamic template (the template supplies
+      // the body) — enforced in `execute`, since `required` is static.
       default: "",
+      showIf: { field: "dynamicTemplate", truthy: false },
       hint: "Message body of the email to send",
     },
     {
@@ -72,28 +112,28 @@ const action: ActionDefinition = {
       hint: "Whether this email will contain a dynamic template",
     },
     {
+      key: "templateId",
+      label: "Dynamic Template ID",
+      type: "string",
+      default: "",
+      placeholder: "d-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      // Only relevant when the email uses a dynamic template — hide otherwise.
+      showIf: { field: "dynamicTemplate", truthy: true },
+      hint:
+        "ID of the SendGrid dynamic template (starts with `d-`, from Email API → Dynamic Templates). " +
+        "Handlebars like {{ first_name }} are rendered by SendGrid from the STORED template only — " +
+        "the Subject/Message Body typed above are not templated.",
+    },
+    {
       key: "dynamicTemplateFields",
       label: "Dynamic Template Fields",
-      type: "group",
+      // Rendered as a JSON editor: an object of template variable -> value,
+      // sent verbatim as `personalizations[0].dynamic_template_data`.
+      type: "json",
       default: {},
       // Only relevant when the email uses a dynamic template — hide otherwise.
       showIf: { field: "dynamicTemplate", truthy: true },
-      children: [
-        {
-          key: "key",
-          label: "Key",
-          type: "string",
-          default: "",
-          hint: "Key of the dynamic template field",
-        },
-        {
-          key: "value",
-          label: "Value",
-          type: "string",
-          default: "",
-          hint: "Value for the field",
-        },
-      ],
+      hint: 'Values for the template variables, e.g. { "first_name": "James" }',
     },
     {
       key: "additionalFields",
@@ -201,13 +241,6 @@ const action: ActionDefinition = {
             { "value": "text/html", "label": "HTML" },
           ],
         },
-        {
-          key: "templateId",
-          label: "Template Name or ID",
-          type: "select",
-          default: [],
-          hint: "Choose from the list, or specify an ID using an <a href=\"https://docs.n8n.io/code/expressions/\">expression</a>",
-        },
       ],
     },
   ],
@@ -225,7 +258,8 @@ const action: ActionDefinition = {
     if (!fromEmail) throw new Error("`fromEmail` is required");
     if (!toEmailRaw) throw new Error("`toEmail` is required");
     if (!subject) throw new Error("`subject` is required");
-    if (!contentValue) throw new Error("`contentValue` is required");
+    // `contentValue` is required only when no dynamic template supplies the body
+    // (checked after `useTemplate` is resolved, below).
 
     const splitEmails = (s: unknown): { email: string }[] =>
       String(s ?? "")
@@ -240,14 +274,37 @@ const action: ActionDefinition = {
     if (cc.length) personalization.cc = cc;
     if (bcc.length) personalization.bcc = bcc;
 
+    // Dynamic templates. SendGrid renders handlebars ({{ first_name }}) ONLY
+    // inside a stored dynamic template addressed by `template_id` — never in the
+    // inline `subject`/`content` of the request. So the substitution values go to
+    // `personalizations[].dynamic_template_data` and the inline content is
+    // dropped (the template supplies the body).
+    const useTemplate = p.dynamicTemplate === true;
+    const templateId = String(p.templateId ?? "").trim();
+    if (useTemplate && !templateId) {
+      throw new Error(
+        'Dynamic Template is enabled but no "Dynamic Template ID" is set. SendGrid renders ' +
+          "{{ variables }} from a stored dynamic template (id starts with `d-`), not from the " +
+          "Subject/Message Body typed here — set the template ID, or turn Dynamic Template off.",
+      );
+    }
+    if (!useTemplate && !contentValue) throw new Error("`contentValue` is required");
+    const dynamicData = useTemplate ? toTemplateData(p.dynamicTemplateFields) : undefined;
+    if (dynamicData && Object.keys(dynamicData).length) {
+      personalization.dynamic_template_data = dynamicData;
+    }
+
     const body: Record<string, unknown> = {
       personalizations: [personalization],
       from: {
         email: fromEmail,
         ...(p.fromName ? { name: String(p.fromName) } : {}),
       },
+      // The template's own subject wins when it defines one; ours is the fallback.
       subject,
-      content: [{ type: contentType, value: contentValue }],
+      ...(useTemplate
+        ? { template_id: templateId }
+        : { content: [{ type: contentType, value: contentValue }] }),
     };
 
     if (additional.replyToEmail) {
@@ -270,7 +327,12 @@ const action: ActionDefinition = {
       if (Number.isFinite(ts)) body.send_at = ts;
     }
 
-    ctx.log("info", "sending email via SendGrid", { from: fromEmail, to: toEmailRaw, subject });
+    ctx.log("info", "sending email via SendGrid", {
+      from: fromEmail,
+      to: toEmailRaw,
+      subject,
+      ...(useTemplate ? { templateId } : {}),
+    });
 
     const res = await ctx.fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",

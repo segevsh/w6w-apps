@@ -103,6 +103,64 @@ Deno.test("mail-send: missing required fields reject with informative errors", a
   }
 });
 
+Deno.test("mail-send: dynamic template sends template_id + dynamic_template_data", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({
+      dynamicTemplate: true,
+      templateId: "d-abc123",
+      dynamicTemplateFields: { first_name: "James" },
+    }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.template_id, "d-abc123");
+  assertEquals(body.personalizations[0].dynamic_template_data, { first_name: "James" });
+  // The template supplies the body — inline content is not sent.
+  assertEquals(body.content, undefined);
+});
+
+Deno.test("mail-send: dynamic template accepts key/value pair shapes", async () => {
+  for (
+    const fields of [
+      { fields: [{ key: "first_name", value: "James" }] },
+      [{ key: "first_name", value: "James" }],
+      '{"first_name":"James"}',
+    ]
+  ) {
+    const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+    await action.execute!(
+      baseInput({ dynamicTemplate: true, templateId: "d-abc123", dynamicTemplateFields: fields }),
+      ctx,
+    );
+    const body = JSON.parse(calls[0].body ?? "");
+    assertEquals(body.personalizations[0].dynamic_template_data, { first_name: "James" });
+  }
+});
+
+Deno.test("mail-send: dynamic template without a template id rejects", async () => {
+  const { ctx, calls } = mockCtx();
+  await assertRejects(
+    async () =>
+      await action.execute!(
+        baseInput({ dynamicTemplate: true, dynamicTemplateFields: { first_name: "James" } }),
+        ctx,
+      ),
+    Error,
+    "Dynamic Template ID",
+  );
+  assertEquals(calls.length, 0, "must not call SendGrid with un-rendered handlebars");
+});
+
+Deno.test("mail-send: contentValue is optional when a dynamic template is used", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({ contentValue: "", dynamicTemplate: true, templateId: "d-abc123" }),
+    ctx,
+  );
+  assertEquals(calls.length, 1);
+});
+
 Deno.test("mail-send: non-2xx response propagates as Error", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: '{"errors":[{"message":"unauth"}]}', headers: {} },
