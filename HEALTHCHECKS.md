@@ -60,7 +60,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes | `service` · `quota` · 2 derived |
 | [sendgrid](apps/sendgrid/README.md) | [Statuspage](https://status.sendgrid.com/api/v2/status.json) | yes | `GET /v3/scopes` | yes | `service` · `quota` · 1 derived |
 | [shopify](apps/shopify/README.md) | [Statuspage](https://www.shopifystatus.com/api/v2/status.json) | yes | `GET /shop.json` | yes | `service` · `quota` · `store` · 1 derived |
-| [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) | yes | `POST /api/auth.test` | no | `service` · ~~quota~~ · 2 derived |
+| [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) · [Atom/RSS](https://slack-status.com/feed/atom) | yes | `POST /api/auth.test` | no | `service` · `incidents` · ~~quota~~ · 2 derived |
 | [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [trello](apps/trello/README.md) | [Statuspage](https://trello.status.atlassian.com/api/v2/status.json) | yes | `GET /1/members/me` | no | `service` · ~~quota~~ · 1 derived |
@@ -120,10 +120,46 @@ recording:
   (`status.*`, `api.status.salesforce.com`, `www.google.com`) is a `none` or `context`
   posture, so the spec's ban on pairing `network.allow` with `credential: "signed"` never
   bound. The signed checks — all of them quota probes — sit on the app's own API host.
-- **Mistral is the one heuristic.** Its status page is Checkly-hosted with no JSON rollup,
-  so the check infers state from the newest RSS entry (recent, and not titled "resolved")
-  rather than reading a current state. The result says so in its message, and carries a
-  short TTL.
+## Reading a status feed
+
+Some vendors publish Atom or RSS instead of, or alongside, a JSON status API. `lib/feed.ts`
+(in the apps that need it) reads both formats into one shape — no dependency, since Deno
+ships no XML parser and pulling a JSR module in would widen an app's supply chain for one
+hook.
+
+**A feed is a log of updates, not a statement of current state**, and conflating the two
+produces confident nonsense. Mistral's feed is the worked example: 50 entries describe 26
+incidents, because each update to an incident is its own entry — and the newest entry for a
+*resolved* incident still carries the incident's original title, "Audio API Degraded". An
+earlier version of the Mistral check judged by that newest title and reported Mistral
+degraded for an incident that had already closed.
+
+So reading a feed correctly means two steps the parser deliberately leaves to the caller,
+which knows the vendor's conventions:
+
+1. **Fold updates onto incidents** — `latestPerId` keeps the newest entry per `<guid>` /
+   Atom `<id>`. Everything older is history of the same event.
+2. **Read the vendor's own status field, don't infer one.** Mistral prefixes every update
+   body with `Status: Resolved` / `Status: Investigating`; that is machine-readable, and
+   guessing from the title when it exists is inexcusable. Where a vendor offers nothing
+   like it, report `unknown` rather than inventing a state.
+
+Two apps read feeds today, for opposite reasons:
+
+- **mistral** — the feed is the *only* machine-readable surface, so it drives the `service`
+  verdict. Affected components come from the `<li>` list in each update body.
+- **slack** — the JSON API already answers "what is broken now", so the feed answers what
+  that API structurally cannot: what broke *recently and already resolved*, which is what
+  you want when a run failed twenty minutes ago and works now. It is a separate
+  `informational` check (`incidents`) that never touches the verdict.
+
+Atom is preferred over RSS where a vendor serves both: Atom's `<updated>` says when an
+entry last *changed*, where RSS's `<pubDate>` conflates that with first publication.
+
+Note that every Statuspage vendor also serves `/history.atom` and `/history.rss`. None of
+them use it here — their JSON API is strictly better for current state, and an incident
+history check would double the request count for something `summary.json` largely covers.
+The parser is there if a future vendor drops its JSON API.
 
 ## Choosing a probe
 

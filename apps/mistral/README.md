@@ -24,6 +24,20 @@ GET https://status.mistral.ai/feed.rss
 The page itself is Checkly-hosted and exposes no JSON rollup; the RSS feed is the
 machine-readable surface.
 
+**The feed is a log of updates, not a statement of current state**, and reading it as the
+latter produces confident nonsense. It currently carries 50 entries describing 26
+incidents: each update to an incident is its own entry, and the newest entry for a
+*resolved* incident still carries the incident's original title — "Audio API Degraded"
+stays the title of the update that says it is fixed. Judging by the newest headline
+reports an outage that ended days ago.
+
+The `service` check therefore folds entries to the newest update per `<guid>`, then reads
+each incident's state from the `Status:` field the vendor writes at the head of every
+update body (`Status: Resolved`, `Status: Investigating`). That field is machine-readable,
+so nothing is inferred from prose. Affected components come from the `<li>` list in the
+same body, which is what lets an Audio API incident report against `audio-api` rather than
+greying out the platform.
+
 ### Is this credential live?
 
 This is what the Auth `test` hook does — the app's own health check, and the only one of
@@ -53,7 +67,7 @@ The three questions above map onto declared checks like this:
 
 | Key | Kind | Scope | Credential | Severity | Min interval | Probe |
 |---|---|---|---|---|---|---|
-| `service` | service | app | none | degraded | 300s | `health/service.ts` |
+| `service` | service | app | none | degraded | 120s | `health/service.ts` |
 | `quota` | quota | connection | signed | informational | 300s | `health/quota.ts` |
 | `auth:api-key` | credential | connection | signed | fatal | — | derived from the `api-key` auth method's `test` hook |
 
