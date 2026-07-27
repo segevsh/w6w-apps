@@ -11,9 +11,11 @@
  *     every Connection, so the host runs it once and shares the result.
  *   - `credential: "none"` (also the default) — no Connection is supplied and
  *     `sign` never runs, so this reports even before anyone has connected.
- *   - `network.allow` — status.mistral.ai is not on the app's egress allowlist
- *     and has no business being reachable from an action. Widening it for this
- *     one hook is permitted precisely because the posture is unsigned.
+ *   - `feed` — declared, not fetched here. The host fetches and parses the RSS
+ *     document and hands the entries over as `input.feed`, so this app never
+ *     reimplements a feed reader. `status.mistral.ai` is added to this hook's
+ *     allowlist implicitly by the declaration, which is why it is absent from
+ *     `network.allow` and from the app's own egress list.
  *   - `severity` defaults to `degraded` for this kind.
  *
  * A feed is a log of UPDATES, not a statement of current state, and conflating
@@ -23,15 +25,11 @@
  * original title ("Audio API Degraded"). Judging by the newest entry's title
  * therefore reports an outage that ended days ago.
  *
- * So the entries are folded to the newest update per incident id, and each
+ * `input.feed.latest` is the host's fold to one entry per incident, and each
  * incident's state is read from the `Status:` line the vendor puts at the head
- * of every update body — an explicit machine-readable field, not a guess. An
- * incident counts as open only while its newest update says so.
+ * of every update body — an explicit machine-readable field, not a guess.
  */
 import type { HealthCheckDefinition, HealthComponentReport, HealthState } from "@w6w/types";
-import { latestPerId, listItems, parseFeed } from "../lib/feed.ts";
-
-const STATUS_HOST = "status.mistral.ai";
 
 /**
  * The vendor's own update vocabulary. `Resolved` and `Completed` close an
@@ -55,31 +53,37 @@ function statusOf(summary: string): string | undefined {
   return /^\s*status:\s*([a-z]+)/i.exec(summary)?.[1]?.toLowerCase();
 }
 
+/** Text of every `<li>` — how the vendor lists a incident's affected services. */
+function affected(html: string): string[] {
+  return [...html.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)]
+    .map((m) => m[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+}
+
 const service: HealthCheckDefinition = {
   key: "service",
   title: "Mistral platform status",
   description:
-    "Open incidents from Mistral's status feed. Updates are folded per incident and state is read from each incident's `Status:` field, not inferred from the newest headline.",
+    "Open incidents from Mistral's status feed. The host folds updates per incident; state comes from each incident's `Status:` field, not from the newest headline.",
   kind: "service",
   covers: ["*"],
-  network: { allow: [STATUS_HOST] },
+  feed: { url: "https://status.mistral.ai/feed.rss", format: "rss" },
   minIntervalSeconds: 120,
 
-  async check(_input, ctx) {
-    const res = await ctx.fetch(`https://${STATUS_HOST}/feed.rss`);
+  check({ feed }, _ctx) {
     // `unknown`, never `down`: a feed that itself fails tells us nothing about
     // Mistral, and reporting that as an outage would be a lie.
-    if (!res.ok) return { state: "unknown", message: `status feed returned ${res.status}` };
+    if (!feed) return { state: "unknown", message: "no feed supplied" };
+    if (feed.error) return { state: "unknown", message: feed.error };
 
-    const { entries } = parseFeed(await res.text());
     // An empty feed means nothing has ever been announced, which is good news;
-    // a feed we could not read is not the same thing and says so.
-    if (entries.length === 0) {
+    // a feed we could not read is not the same thing and was handled above.
+    if (feed.entries.length === 0) {
       return { state: "ok", message: "no entries in the status feed", ttlSeconds: 300 };
     }
 
-    const incidents = latestPerId(entries);
-    const open = incidents.filter((i) => {
+    // `latest` is the fold to one entry per incident — see the note above.
+    const open = feed.latest.filter((i) => {
       const status = statusOf(i.summary);
       return status === undefined ? true : !CLOSED.has(status);
     });
@@ -93,7 +97,7 @@ const service: HealthCheckDefinition = {
     for (const incident of open) {
       const state = PHASE[statusOf(incident.summary) ?? ""] ?? "degraded";
       states.push(state);
-      for (const svc of listItems(incident.summaryHtml)) {
+      for (const svc of affected(incident.summaryHtml)) {
         const id = svc.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
         if (id) components[id] = { state, message: incident.title };
       }

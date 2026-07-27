@@ -31,8 +31,9 @@ incidents: each update to an incident is its own entry, and the newest entry for
 stays the title of the update that says it is fixed. Judging by the newest headline
 reports an outage that ended days ago.
 
-The `service` check therefore folds entries to the newest update per `<guid>`, then reads
-each incident's state from the `Status:` field the vendor writes at the head of every
+The `service` check therefore declares the feed (`feed: { url, format: "rss" }`) and reads
+`input.feed.latest` — the host's fold to the newest update per `<guid>` — then takes each
+incident's state from the `Status:` field the vendor writes at the head of every
 update body (`Status: Resolved`, `Status: Investigating`). That field is machine-readable,
 so nothing is inferred from prose. Affected components come from the `<li>` list in the
 same body, which is what lets an Audio API incident report against `audio-api` rather than
