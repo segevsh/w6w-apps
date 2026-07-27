@@ -122,10 +122,18 @@ recording:
   bound. The signed checks — all of them quota probes — sit on the app's own API host.
 ## Reading a status feed
 
-Some vendors publish Atom or RSS instead of, or alongside, a JSON status API. `lib/feed.ts`
-(in the apps that need it) reads both formats into one shape — no dependency, since Deno
-ships no XML parser and pulling a JSR module in would widen an app's supply chain for one
-hook.
+Some vendors publish Atom or RSS instead of, or alongside, a JSON status API. An app
+**declares** the feed and the host fetches and parses it, handing the entries to the hook
+as `input.feed`:
+
+```ts
+feed: { url: "https://status.mistral.ai/feed.rss", format: "rss" },
+```
+
+No app parses XML. The split is the point: reading Atom/RSS is generic and identical for
+every publisher, while interpreting what an entry *means* is vendor-specific — so the
+runtime does the first and the app does the second. The feed's host is added to that hook's
+allowlist implicitly, so it never appears in `network.allow` or the app's egress list.
 
 **A feed is a log of updates, not a statement of current state**, and conflating the two
 produces confident nonsense. Mistral's feed is the worked example: 50 entries describe 26
@@ -134,15 +142,16 @@ incidents, because each update to an incident is its own entry — and the newes
 earlier version of the Mistral check judged by that newest title and reported Mistral
 degraded for an incident that had already closed.
 
-So reading a feed correctly means two steps the parser deliberately leaves to the caller,
-which knows the vendor's conventions:
+So the host supplies two projections, and which one a check reads is the whole ballgame:
 
-1. **Fold updates onto incidents** — `latestPerId` keeps the newest entry per `<guid>` /
-   Atom `<id>`. Everything older is history of the same event.
-2. **Read the vendor's own status field, don't infer one.** Mistral prefixes every update
-   body with `Status: Resolved` / `Status: Investigating`; that is machine-readable, and
-   guessing from the title when it exists is inexcusable. Where a vendor offers nothing
-   like it, report `unknown` rather than inventing a state.
+1. **`latest`** — the newest entry per `<guid>` / Atom `<id>`, i.e. updates folded onto the
+   incident they describe. This is almost always the right one.
+2. **`entries`** — everything, newest first. Only for questions genuinely about the log.
+
+Interpretation stays with the app. **Read the vendor's own status field, don't infer one:**
+Mistral prefixes every update body with `Status: Resolved` / `Status: Investigating`, which
+is machine-readable, and guessing from the title when a real field exists is inexcusable.
+Where a vendor offers nothing like it, report `unknown` rather than inventing a state.
 
 Two apps read feeds today, for opposite reasons:
 
@@ -159,7 +168,7 @@ entry last *changed*, where RSS's `<pubDate>` conflates that with first publicat
 Note that every Statuspage vendor also serves `/history.atom` and `/history.rss`. None of
 them use it here — their JSON API is strictly better for current state, and an incident
 history check would double the request count for something `summary.json` largely covers.
-The parser is there if a future vendor drops its JSON API.
+Adding one is a two-line `feed:` declaration if a vendor ever drops its JSON API.
 
 ## Choosing a probe
 

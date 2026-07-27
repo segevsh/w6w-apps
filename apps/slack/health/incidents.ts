@@ -15,26 +15,25 @@
  *   - `kind: "service"` — it speaks about the vendor's platform, like `service`.
  *   - `scope: "app"` (the default) — identical for every Connection, so the host
  *     runs it once and shares the result.
- *   - `credential: "none"` (also the default) — no Connection, no `sign`.
- *   - `network.allow` — the feed lives on `slack-status.com`, which is a
- *     DIFFERENT host from the `status.slack.com` that serves the JSON API and
- *     different again from the `slack.com` the app's actions call. Each check
- *     widens egress only inside its own worker, so this host is reachable from
- *     this hook and nothing else. Permitted because the posture is unsigned.
+ *   - `credential: "none"` (also the default) — no Connection, no `sign`. The
+ *     `feed` declaration requires an unsigned posture, because a status host is
+ *     exactly the kind that must never see a credential.
+ *   - `feed` — declared, not fetched here: the host fetches and parses it and
+ *     hands the entries over as `input.feed`. The feed lives on
+ *     `slack-status.com`, a DIFFERENT host from the `status.slack.com` that
+ *     serves the JSON API and different again from the `slack.com` the app's
+ *     actions call. Declaring it adds that host to this hook's allowlist
+ *     implicitly, and to no other hook's.
  *   - `severity: "informational"` — load-bearing. History is context for a
  *     human, and an incident that already closed must never drag a roll-up
- *     verdict down; `service` owns the verdict. An informational check is
- *     carried for display and never worsens a target's state.
+ *     verdict down; `service` owns the verdict.
  *
  * Slack publishes the same content as Atom (`/feed/atom`) and RSS
- * (`/feed/rss`). Atom is the one read here because its `<updated>` field says
- * when an incident last CHANGED, where RSS's `<pubDate>` conflates that with
- * when it was first posted — and "changed lately" is the question being asked.
+ * (`/feed/rss`). Atom is the one declared because its `<updated>` says when an
+ * incident last CHANGED, where RSS's `<pubDate>` conflates that with when it
+ * was first posted — and "changed lately" is the question being asked.
  */
 import type { HealthCheckDefinition } from "@w6w/types";
-import { latestPerId, parseFeed } from "../lib/feed.ts";
-
-const STATUS_HOST = "slack-status.com";
 
 /** How far back an entry still counts as "lately". */
 const WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
@@ -52,34 +51,31 @@ const incidents: HealthCheckDefinition = {
   kind: "service",
   covers: ["*"],
   credential: "none",
-  network: { allow: [STATUS_HOST] },
+  feed: { url: "https://slack-status.com/feed/atom", format: "atom" },
   minIntervalSeconds: 900,
   severity: "informational",
 
-  async check(_input, ctx) {
-    const res = await ctx.fetch(`https://${STATUS_HOST}/feed/atom`);
+  check({ feed }, _ctx) {
     // `unknown`, never `down`: a feed that itself fails says nothing about Slack.
-    if (!res.ok) return { state: "unknown", message: `status feed returned ${res.status}` };
-
-    const { entries } = parseFeed(await res.text());
-    if (entries.length === 0) {
+    if (!feed) return { state: "unknown", message: "no feed supplied" };
+    if (feed.error) return { state: "unknown", message: feed.error };
+    if (feed.entries.length === 0) {
       return { state: "ok", message: "no entries in the status feed", ttlSeconds: 900 };
     }
 
-    // Fold successive updates to one incident down to its newest, then keep the
-    // recent ones. Slack's feed is history, so most entries are long closed.
+    // `latest` folds successive updates to one incident down to its newest.
+    // Slack's feed is history, so most entries are long closed.
     const cutoff = Date.now() - WINDOW_MS;
-    const recent = latestPerId(entries)
+    const recent = feed.latest
       .filter((e) => isIncident(e.title))
-      .filter((e) => (e.published?.getTime() ?? 0) >= cutoff);
+      .filter((e) => (e.publishedAt ? Date.parse(e.publishedAt) : 0) >= cutoff);
 
     if (recent.length === 0) {
       return { state: "ok", message: "no incidents published in the last 7 days", ttlSeconds: 900 };
     }
 
-    // `ok` with a message, not `degraded`: every one of these is history. Slack
-    // marks a closed incident by saying so in the body, and anything still
-    // running is `service`'s to report from the live API.
+    // `ok` with a message, not `degraded`: every one of these is history, and
+    // anything still running is `service`'s to report from the live API.
     return {
       state: "ok",
       message: `${recent.length} incident${recent.length === 1 ? "" : "s"} in the last 7 days: ${

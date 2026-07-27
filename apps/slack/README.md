@@ -37,10 +37,13 @@ when a run failed twenty minutes ago and works now. The `incidents` check reads 
 separate from `service` because the two answer different questions and only `service` is
 authoritative about the present.
 
-Atom is the one read, because its `<updated>` says when an incident last *changed* where
-RSS's `<pubDate>` conflates that with first publication. Note that `slack-status.com` is a
-third host, distinct from both `status.slack.com` (the JSON API) and `slack.com` (the app's
-actions) — each check widens egress only inside its own worker.
+Atom is the one declared, because its `<updated>` says when an incident last *changed*
+where RSS's `<pubDate>` conflates that with first publication. The app does not parse it:
+the check declares `feed: { url, format: "atom" }` and the host hands over parsed entries.
+
+Note that `slack-status.com` is a third host, distinct from both `status.slack.com` (the
+JSON API) and `slack.com` (the app's actions). Declaring the feed allowlists that host for
+this one hook and no other.
 
 ### Is this credential live?
 
