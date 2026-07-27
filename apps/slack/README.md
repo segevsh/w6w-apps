@@ -24,6 +24,24 @@ GET https://status.slack.com/api/v2.0.0/current
 Slack runs its own status API rather than Statuspage. `/api/v2.0.0/current` returns
 `status` plus `active_incidents`; `/api/v2.0.0/history` is the archive. Unauthenticated.
 
+Slack also publishes an incident feed, in both formats, on a **different host**:
+
+```
+GET https://slack-status.com/feed/atom
+GET https://slack-status.com/feed/rss
+```
+
+Same content either way. The feed is history — it keeps incidents that have already
+closed and therefore dropped out of `active_incidents`, which is exactly what you want
+when a run failed twenty minutes ago and works now. The `incidents` check reads it, kept
+separate from `service` because the two answer different questions and only `service` is
+authoritative about the present.
+
+Atom is the one read, because its `<updated>` says when an incident last *changed* where
+RSS's `<pubDate>` conflates that with first publication. Note that `slack-status.com` is a
+third host, distinct from both `status.slack.com` (the JSON API) and `slack.com` (the app's
+actions) — each check widens egress only inside its own worker.
+
 ### Is this credential live?
 
 This is what the Auth `test` hook does — the app's own health check, and the only one of
@@ -58,11 +76,12 @@ The three questions above map onto declared checks like this:
 | Key | Kind | Scope | Credential | Severity | Min interval | Probe |
 |---|---|---|---|---|---|---|
 | `service` | service | app | none | degraded | 60s | `health/service.ts` |
+| `incidents` | service | app | none | informational | 900s | `health/incidents.ts` |
 | `quota` | quota | connection | signed | informational | — | _declared absent_ |
 | `auth:access-token` | credential | connection | signed | fatal | — | derived from the `access-token` auth method's `test` hook |
 | `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
 
-The host `status.slack.com` (for `service`) is reachable **only inside that hook's worker** — not from any action, and not from the other
+The hosts `status.slack.com` (for `service`), `slack-status.com` (for `incidents`) are reachable **only inside that hook's worker** — not from any action, and not from the other
 checks. The spec allows the widening precisely because the check is unsigned; pairing an
 extra host with `credential: "signed"` is rejected at load time, so a credential can never
 reach a status host.
