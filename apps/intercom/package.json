@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/intercom",
+  "version": "0.1.0",
+  "description": "Manage Intercom contacts, companies, conversations, notes and tags through its REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.intercom",
+    "displayName": "Intercom",
+    "categories": [
+      "support",
+      "communication",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Intercom"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.intercom.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

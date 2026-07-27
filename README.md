@@ -29,38 +29,48 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | asana | productivity, project-management | access-token, oauth2 | 22 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | brevo | marketing, email | api-key | 15 |
+| calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
+| clickup | project-management, productivity | api-token, oauth2 | 12 |
 | contentful | cms | access-token | 10 |
 | discord | communication | bot-token, oauth2 | 19 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
+| gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
 | google-docs | productivity, documents | oauth2, service-account | 20 |
 | google-drive | storage, productivity | oauth2, service-account | 18 |
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
+| intercom | support, communication, crm | access-token, oauth2 | 14 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
 | klaviyo | marketing, email | api-key | 23 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
 | mistral | ai | api-key | 4 |
+| monday | project-management, productivity | api-token, oauth2 | 14 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
 | openai | ai, developer-tools | api-key | 13 |
+| pipedrive | crm | api-token, oauth2 | 14 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | sendgrid | email, communication | send-grid-api | 10 |
 | shopify | commerce | access-token | 18 |
 | slack | communication | access-token, oauth2 | 47 |
 | stripe | commerce, finance | api-key | 23 |
 | telegram | communication | bot-token | 21 |
+| todoist | productivity | api-token, oauth2 | 14 |
 | trello | project-management, productivity | api-key | 27 |
 | twilio | communication | api-key | 2 |
+| typeform | forms, productivity | personal-access-token, oauth2 | 10 |
+| webflow | cms | api-token, oauth2 | 14 |
+| woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-35 apps, 578 actions.
+45 apps, 711 actions.
 
 Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the

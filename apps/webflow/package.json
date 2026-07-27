@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/webflow",
+  "version": "0.1.0",
+  "description": "Manage Webflow sites, CMS collections and items, products, and orders via the Webflow Data API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.webflow",
+    "displayName": "Webflow",
+    "categories": [
+      "cms"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Webflow"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.webflow.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

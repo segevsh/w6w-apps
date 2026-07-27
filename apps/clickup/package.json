@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/clickup",
+  "version": "0.1.0",
+  "description": "Tasks, lists, folders, comments, and time tracking via the ClickUp API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.clickup",
+    "displayName": "ClickUp",
+    "categories": [
+      "project-management",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "ClickUp"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.clickup.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

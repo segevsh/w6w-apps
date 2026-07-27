@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/monday",
+  "version": "0.1.0",
+  "description": "Boards, groups, items and columns on monday.com via its GraphQL API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.monday",
+    "displayName": "monday.com",
+    "categories": [
+      "project-management",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "monday.com"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.monday.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

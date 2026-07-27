@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/typeform",
+  "version": "0.1.0",
+  "description": "Create and manage Typeform forms, responses, workspaces, themes and images via the Typeform APIs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.typeform",
+    "displayName": "Typeform",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Typeform"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.typeform.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/woocommerce",
+  "version": "0.1.0",
+  "description": "Manage products, orders and customers on a WooCommerce store.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.woocommerce",
+    "displayName": "WooCommerce",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "WooCommerce"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
