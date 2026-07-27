@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/gitlab",
+  "version": "0.1.0",
+  "description": "Manage GitLab projects, issues, merge requests, files and releases on GitLab.com or a self-managed instance.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gitlab",
+    "displayName": "GitLab",
+    "categories": [
+      "developer-tools",
+      "version-control"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "GitLab"
+      }
+    },
+    "network": {
+      "allow": [
+        "gitlab.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

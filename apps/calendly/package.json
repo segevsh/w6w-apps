@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/calendly",
+  "version": "0.1.0",
+  "description": "Read Calendly users, event types, scheduled events and invitees; create single-use scheduling links and manage webhook subscriptions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.calendly",
+    "displayName": "Calendly",
+    "categories": [
+      "calendar",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Calendly"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.calendly.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

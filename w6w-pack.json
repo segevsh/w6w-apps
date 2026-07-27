@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "apps": [
     {
       "path": "./apps/airtable"
@@ -20,6 +20,12 @@
     },
     {
       "path": "./apps/brevo"
+    },
+    {
+      "path": "./apps/calendly"
+    },
+    {
+      "path": "./apps/clickup"
     },
     {
       "path": "./apps/contentful"
@@ -40,6 +46,9 @@
       "path": "./apps/github"
     },
     {
+      "path": "./apps/gitlab"
+    },
+    {
       "path": "./apps/gmail"
     },
     {
@@ -58,6 +67,9 @@
       "path": "./apps/hubspot"
     },
     {
+      "path": "./apps/intercom"
+    },
+    {
       "path": "./apps/jira"
     },
     {
@@ -73,10 +85,16 @@
       "path": "./apps/mistral"
     },
     {
+      "path": "./apps/monday"
+    },
+    {
       "path": "./apps/notion"
     },
     {
       "path": "./apps/openai"
+    },
+    {
+      "path": "./apps/pipedrive"
     },
     {
       "path": "./apps/salesforce"
@@ -97,10 +115,22 @@
       "path": "./apps/telegram"
     },
     {
+      "path": "./apps/todoist"
+    },
+    {
       "path": "./apps/trello"
     },
     {
       "path": "./apps/twilio"
+    },
+    {
+      "path": "./apps/typeform"
+    },
+    {
+      "path": "./apps/webflow"
+    },
+    {
+      "path": "./apps/woocommerce"
     },
     {
       "path": "./apps/wordpress"
