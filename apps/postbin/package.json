@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/postbin",
+  "version": "0.1.0",
+  "description": "Create disposable bins that collect any HTTP request sent to them, for testing API clients and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.postbin",
+    "displayName": "PostBin",
+    "categories": [
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PostBin"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.postb.in"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

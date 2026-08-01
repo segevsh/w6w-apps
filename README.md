@@ -25,8 +25,10 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | App | Categories | Auth | Actions |
 |-----|------------|------|--------:|
 | activecampaign | marketing, crm | api-key | 13 |
+| acuityscheduling | calendar | basic, oauth2 | 9 |
 | airtable | spreadsheets, databases, productivity | personal-access-token, oauth2, api-key | 10 |
 | anthropic | ai | api-key | 14 |
+| apitemplateio | developer-tools | api-key | 5 |
 | asana | productivity, project-management | access-token, oauth2 | 22 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
@@ -61,6 +63,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | klaviyo | marketing, email | api-key | 23 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
+| mailcheck | email, marketing | api-key | 4 |
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
 | mailgun | email, communication | api-key | 14 |
 | mistral | ai | api-key | 4 |
@@ -68,10 +71,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | netlify | devops | personal-access-token | 10 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
 | okta | security | api-token | 11 |
+| onesimpleapi | developer-tools | api-key | 7 |
 | openai | ai, developer-tools | api-key | 13 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | paypal | commerce, finance | client-credentials | 13 |
 | pipedrive | crm | api-token, oauth2 | 14 |
+| postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
 | reddit | social-media | oauth2 | 8 |
 | s3 | storage | aws-iam | 9 |
@@ -105,7 +110,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-80 apps, 1042 actions.
+85 apps, 1072 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

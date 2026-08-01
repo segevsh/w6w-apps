@@ -25,7 +25,7 @@ methods. Fourteen apps add a fourth question — **is this tenant's own host rea
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **288 checks**: 111 live probes, 57 declared absences, and 120
+Across the pack that comes to **302 checks**: 113 live probes, 64 declared absences, and 125
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -34,8 +34,10 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | App | Vendor status | Machine-readable? | Credential probe | Quota headroom | Declared checks |
 |---|---|:-:|---|:-:|---|
 | [activecampaign](apps/activecampaign/README.md) | [Statuspage](https://status.activecampaign.com/api/v2/summary.json) | yes | `GET /contacts?limit=1` | yes | `service` · `quota` · `site` · 1 derived |
+| [acuityscheduling](apps/acuityscheduling/README.md) | [Statuspage](https://status.acuityscheduling.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
 | [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no | `service` · ~~quota~~ · 3 derived |
 | [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
+| [apitemplateio](apps/apitemplateio/README.md) | none published | no | `GET /v2/list-templates?limit=1` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
 | [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
@@ -70,6 +72,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes | `service` · `quota` · 1 derived |
 | [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
 | [linkedin](apps/linkedin/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /v2/userinfo` | no | `service` · ~~quota~~ · 2 derived |
+| [mailcheck](apps/mailcheck/README.md) | none published | no | `GET /v1/emails/operations?page_size=1` | no | ~~service~~ · 1 derived |
 | [mailchimp](apps/mailchimp/README.md) | [page](https://status.mailchimp.com) | no | `GET /3.0/ping` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [mailgun](apps/mailgun/README.md) | [Statuspage](https://status.mailgun.com/api/v2/summary.json) | yes | `GET /v4/domains?limit=1` | yes | `service` · `quota` · 1 derived |
 | [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
@@ -77,10 +80,12 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
 | [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [okta](apps/okta/README.md) | [page](https://status.okta.com) | no | `GET /api/v1/users?limit=1` | yes | ~~service~~ · `quota` · 1 derived |
+| [onesimpleapi](apps/onesimpleapi/README.md) | none published | no | `GET /exchange_rate?to_currency=USD` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [openai](apps/openai/README.md) | [Statuspage](https://status.openai.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [pagerduty](apps/pagerduty/README.md) | [page](https://status.pagerduty.com) | no | `GET /abilities` | yes | ~~service~~ · `quota` · 2 derived |
 | [paypal](apps/paypal/README.md) | [Atom](https://www.paypal-status.com/feed/atom) | yes | `POST /v1/oauth2/token` | no | `service` · ~~quota~~ · 1 derived |
 | [pipedrive](apps/pipedrive/README.md) | [page](https://status.pipedrive.com) | no | `GET /users/me` | yes | ~~service~~ · `quota` · 2 derived |
+| [postbin](apps/postbin/README.md) | [page](https://www.postb.in) | no | _no credential_ | no | `service` · ~~quota~~ · 0 derived |
 | [posthog](apps/posthog/README.md) | none published | no | `GET /api/users/@me/` | no | ~~service~~ · 1 derived |
 | [reddit](apps/reddit/README.md) | [Statuspage](https://www.redditstatus.com/api/v2/summary.json) | yes | `GET /api/v1/me` | yes | `service` · `quota` · 1 derived |
 | [s3](apps/s3/README.md) | [JSON](https://health.aws.amazon.com/public/currentevents) | yes | `GET /` (ListBuckets) | no | `service` · 1 derived |
