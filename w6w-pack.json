@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "apps": [
     {
       "path": "./apps/airtable"
@@ -82,6 +82,12 @@
       "path": "./apps/google-sheets"
     },
     {
+      "path": "./apps/grafana"
+    },
+    {
+      "path": "./apps/harvest"
+    },
+    {
       "path": "./apps/hubspot"
     },
     {
@@ -112,6 +118,9 @@
       "path": "./apps/monday"
     },
     {
+      "path": "./apps/netlify"
+    },
+    {
       "path": "./apps/notion"
     },
     {
@@ -128,6 +137,12 @@
     },
     {
       "path": "./apps/pipedrive"
+    },
+    {
+      "path": "./apps/posthog"
+    },
+    {
+      "path": "./apps/reddit"
     },
     {
       "path": "./apps/s3"

@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/posthog",
+  "version": "0.1.0",
+  "description": "Capture analytics events and query persons, cohorts, feature flags, insights and annotations via PostHog",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.posthog",
+    "displayName": "PostHog",
+    "categories": [
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PostHog"
+      }
+    },
+    "network": {
+      "allow": [
+        "us.posthog.com",
+        "eu.posthog.com",
+        "us.i.posthog.com",
+        "eu.i.posthog.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
