@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/onesimpleapi",
+  "version": "0.1.0",
+  "description": "A toolbox of small utility APIs: page metadata, screenshots, PDFs, QR codes, email validation, URL expansion, and currency conversion.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.onesimpleapi",
+    "displayName": "OneSimpleApi",
+    "categories": [
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "OneSimpleApi"
+      }
+    },
+    "network": {
+      "allow": [
+        "onesimpleapi.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

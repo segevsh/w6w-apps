@@ -4,16 +4,22 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
+    },
+    {
+      "path": "./apps/acuityscheduling"
     },
     {
       "path": "./apps/airtable"
     },
     {
       "path": "./apps/anthropic"
+    },
+    {
+      "path": "./apps/apitemplateio"
     },
     {
       "path": "./apps/asana"
@@ -118,6 +124,9 @@
       "path": "./apps/linkedin"
     },
     {
+      "path": "./apps/mailcheck"
+    },
+    {
       "path": "./apps/mailchimp"
     },
     {
@@ -139,6 +148,9 @@
       "path": "./apps/okta"
     },
     {
+      "path": "./apps/onesimpleapi"
+    },
+    {
       "path": "./apps/openai"
     },
     {
@@ -149,6 +161,9 @@
     },
     {
       "path": "./apps/pipedrive"
+    },
+    {
+      "path": "./apps/postbin"
     },
     {
       "path": "./apps/posthog"

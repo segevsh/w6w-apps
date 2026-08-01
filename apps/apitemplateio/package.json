@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/apitemplateio",
+  "version": "0.1.0",
+  "description": "Generate PDFs and images from APITemplate.io templates.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.apitemplateio",
+    "displayName": "APITemplate.io",
+    "categories": [
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "APITemplate.io"
+      }
+    },
+    "network": {
+      "allow": [
+        "rest.apitemplate.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

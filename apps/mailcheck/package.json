@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/mailcheck",
+  "version": "0.1.0",
+  "description": "Verify single or bulk email addresses via the Mailcheck API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mailcheck",
+    "displayName": "Mailcheck",
+    "categories": [
+      "email",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mailcheck"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mailcheck.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
