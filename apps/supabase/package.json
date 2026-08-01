@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/supabase",
+  "version": "0.1.0",
+  "description": "Query, write, and call Postgres functions in a Supabase project over its auto-generated PostgREST REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.supabase",
+    "displayName": "Supabase",
+    "categories": [
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Supabase"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.supabase.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

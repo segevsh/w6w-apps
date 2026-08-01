@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/paypal",
+  "version": "0.1.0",
+  "description": "Create and manage PayPal orders, payments, invoices and payouts.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.paypal",
+    "displayName": "PayPal",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PayPal"
+      }
+    },
+    "network": {
+      "allow": [
+        "api-m.paypal.com",
+        "api-m.sandbox.paypal.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

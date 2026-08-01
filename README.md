@@ -36,6 +36,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | dropbox | storage | access-token, oauth2 | 12 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
+| figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
@@ -48,29 +49,50 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
 | klaviyo | marketing, email | api-key | 23 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
+| linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
+| mailgun | email, communication | api-key | 14 |
 | mistral | ai | api-key | 4 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
+| okta | security | api-token | 11 |
 | openai | ai, developer-tools | api-key | 13 |
+| pagerduty | monitoring, devops | api-token, oauth2 | 14 |
+| paypal | commerce, finance | client-credentials | 13 |
 | pipedrive | crm | api-token, oauth2 | 14 |
+| s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | sendgrid | email, communication | send-grid-api | 10 |
+| servicenow | support, devops | basic, oauth2 | 9 |
 | shopify | commerce | access-token | 18 |
 | slack | communication | access-token, oauth2 | 47 |
+| snowflake | data-warehousing | key-pair | 5 |
+| splunk | monitoring, devops | token | 8 |
 | stripe | commerce, finance | api-key | 23 |
+| supabase | databases | api-key | 7 |
 | telegram | communication | bot-token | 21 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | trello | project-management, productivity | api-key | 27 |
 | twilio | communication | api-key | 2 |
+| twitter | social-media | oauth2 | 8 |
 | typeform | forms, productivity | personal-access-token, oauth2 | 10 |
+| upstash | databases | rest-token | 15 |
 | webflow | cms | api-token, oauth2 | 14 |
+| whatsapp | communication | access-token | 9 |
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
+| xero | finance | oauth2 | 13 |
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-45 apps, 711 actions.
+60 apps, 862 actions.
+
+`upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
+network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
+static, publish-time hostname allowlist, so a wire-protocol database (TCP, not HTTP)
+cannot be reached at all. Upstash (Redis over a REST API) and Supabase (Postgres via
+PostgREST's REST API) are the closest real, fixed-domain products that actually work
+under this architecture — see each app's README for the scoping rationale.
 
 Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
@@ -82,9 +104,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Five apps addressed
-by a per-tenant host (Salesforce, Jira, Zendesk, Shopify, WordPress) add a `dependency`
-check for the tenant's own site. Credential checks come free: the runtime derives an
+because "nothing exists to check" is a more useful answer than a gap. Nine apps addressed
+by a per-tenant host (Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake,
+Supabase, Upstash) add a `dependency` check for the tenant's own site. Credential checks
+come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 
 Status hosts stay off every app's main egress allowlist — a `service` check widens egress

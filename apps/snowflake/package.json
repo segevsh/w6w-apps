@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/snowflake",
+  "version": "0.1.0",
+  "description": "Run SQL against Snowflake — execute statements, poll async results, and manage them via the Snowflake SQL API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.snowflake",
+    "displayName": "Snowflake",
+    "categories": [
+      "data-warehousing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Snowflake"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.snowflakecomputing.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
