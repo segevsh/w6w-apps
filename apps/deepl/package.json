@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/deepl",
+  "version": "0.1.0",
+  "description": "Translate text and documents, manage glossaries, and check quota via the DeepL API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.deepl",
+    "displayName": "DeepL",
+    "categories": [
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "DeepL"
+      }
+    },
+    "network": {
+      "allow": [
+        "api-free.deepl.com",
+        "api.deepl.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

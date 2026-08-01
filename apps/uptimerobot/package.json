@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/uptimerobot",
+  "version": "0.1.0",
+  "description": "Manage monitors and alert contacts, and check account status, via the UptimeRobot API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.uptimerobot",
+    "displayName": "UptimeRobot",
+    "categories": [
+      "monitoring"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "UptimeRobot"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.uptimerobot.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
