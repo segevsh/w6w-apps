@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/strapi",
+  "version": "0.1.0",
+  "description": "Read, create, update and delete entries on any Strapi content type, and browse the media library.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.strapi",
+    "displayName": "Strapi",
+    "categories": [
+      "cms"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Strapi"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Twelve apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Thirteen apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **256 checks**: 97 live probes, 49 declared absences, and 110
+Across the pack that comes to **272 checks**: 103 live probes, 54 declared absences, and 115
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -80,6 +80,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [posthog](apps/posthog/README.md) | none published | no | `GET /api/users/@me/` | no | ~~service~~ · 1 derived |
 | [reddit](apps/reddit/README.md) | [Statuspage](https://www.redditstatus.com/api/v2/summary.json) | yes | `GET /api/v1/me` | yes | `service` · `quota` · 1 derived |
 | [s3](apps/s3/README.md) | [JSON](https://health.aws.amazon.com/public/currentevents) | yes | `GET /` (ListBuckets) | no | `service` · 1 derived |
+| [segment](apps/segment/README.md) | [Statuspage](https://status.segment.com/api/v2/summary.json) | yes | `POST /v1/identify` | no | `service` · ~~quota~~ · 1 derived |
 | [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes | `service` · `quota` · 2 derived |
 | [sendgrid](apps/sendgrid/README.md) | [Statuspage](https://status.sendgrid.com/api/v2/status.json) | yes | `GET /v3/scopes` | yes | `service` · `quota` · 1 derived |
 | [servicenow](apps/servicenow/README.md) | none published | no | `GET /api/now/table/sys_user_role?sysparm_limit=1` | no | ~~service~~ · ~~quota~~ · `instance` · 2 derived |
@@ -87,10 +88,14 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) · [Atom/RSS](https://slack-status.com/feed/atom) | yes | `POST /api/auth.test` | no | `service` · `incidents` · ~~quota~~ · 2 derived |
 | [snowflake](apps/snowflake/README.md) | [Atom](https://status.snowflake.com/history.atom) | yes | `POST /api/v2/statements` | no | `service` · `account` · 1 derived |
 | [splunk](apps/splunk/README.md) | [Statuspage](https://status.splunkcloud.com/api/v2/summary.json) | yes | `GET /services/authentication/current-context` | no | `service` · 1 derived |
+| [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
+| [strapi](apps/strapi/README.md) | none published | no | `GET /api/upload/files/page` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
+| [strava](apps/strava/README.md) | [Statuspage](https://status.strava.com/api/v2/summary.json) | yes | `GET /athlete` | yes | `service` · `quota` · 1 derived |
 | [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |
 | [supabase](apps/supabase/README.md) | [Atom](https://status.supabase.com/history.atom) | yes | `GET /rest/v1/` | no | `service` · `reachable` · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [todoist](apps/todoist/README.md) | [Instatus](https://status.todoist.net/summary.json) | yes | `GET /projects` | no | `service` · ~~quota~~ · 2 derived |
+| [toggl](apps/toggl/README.md) | [Statuspage](https://status.toggl.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [trello](apps/trello/README.md) | [Statuspage](https://trello.status.atlassian.com/api/v2/status.json) | yes | `GET /1/members/me` | no | `service` · ~~quota~~ · 1 derived |
 | [twilio](apps/twilio/README.md) | [Statuspage](https://status.twilio.com/api/v2/status.json) | yes | `GET /2010-04-01/Accounts/{accountSid}.json` | no | `service` · ~~quota~~ · 1 derived |
 | [twitter](apps/twitter/README.md) | [page](https://developer.x.com/status) | no | `GET /2/users/me` | yes | ~~service~~ · `quota` · 1 derived |
@@ -144,14 +149,14 @@ recording:
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
   All 25 absences carry `severity: "informational"`.
-- **Twelve apps needed the `context` posture**, the one a boolean would have lost:
+- **Thirteen apps needed the `context` posture**, the one a boolean would have lost:
   Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake, Supabase, Upstash,
-  Elastic, Freshdesk and Grafana are each addressed by a per-tenant host, so the check needs
-  the Connection to know *which* host to call and no credential to interpret the answer.
-  Their dependency probes are deliberately unauthenticated, which makes a **401 a pass** — it
-  proves the host resolves and the API is answering, and whether the credential is any good
-  is the derived `auth:*` check's job. Conflating the two is how "the account was renamed"
-  gets misreported as "your token expired".
+  Elastic, Freshdesk, Grafana and Strapi are each addressed by a per-tenant host, so the
+  check needs the Connection to know *which* host to call and no credential to interpret the
+  answer. Their dependency probes are deliberately unauthenticated, which makes a **401 a
+  pass** — it proves the host resolves and the API is answering, and whether the credential
+  is any good is the derived `auth:*` check's job. Conflating the two is how "the account was
+  renamed" gets misreported as "your token expired".
 - **The extra-host rule cost nothing.** Every check that widens egress
   (`status.*`, `api.status.salesforce.com`, `www.google.com`) is a `none` or `context`
   posture, so the spec's ban on pairing `network.allow` with `credential: "signed"` never

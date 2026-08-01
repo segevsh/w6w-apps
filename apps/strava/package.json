@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/strava",
+  "version": "0.1.0",
+  "description": "Read and log activities, comments, kudos and athlete stats on Strava.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.strava",
+    "displayName": "Strava",
+    "categories": [
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Strava"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.strava.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
