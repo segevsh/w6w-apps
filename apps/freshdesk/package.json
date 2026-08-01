@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/freshdesk",
+  "version": "0.1.0",
+  "description": "Manage Freshdesk tickets, contacts and companies.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.freshdesk",
+    "displayName": "Freshdesk",
+    "categories": [
+      "support"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Freshdesk"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.freshdesk.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

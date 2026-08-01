@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/box",
+  "version": "0.1.0",
+  "description": "Upload, download, and manage files and folders in Box.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.box",
+    "displayName": "Box",
+    "categories": [
+      "storage"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Box"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.box.com",
+        "upload.box.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

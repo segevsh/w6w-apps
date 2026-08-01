@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/elastic",
+  "version": "0.1.0",
+  "description": "Search, index, and manage documents and indices on any Elasticsearch cluster.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.elastic",
+    "displayName": "Elasticsearch",
+    "categories": [
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Elasticsearch"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

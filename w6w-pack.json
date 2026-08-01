@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "apps": [
     {
       "path": "./apps/airtable"
@@ -19,6 +19,9 @@
       "path": "./apps/bitbucket"
     },
     {
+      "path": "./apps/box"
+    },
+    {
       "path": "./apps/brevo"
     },
     {
@@ -26,6 +29,12 @@
     },
     {
       "path": "./apps/clickup"
+    },
+    {
+      "path": "./apps/cloudflare"
+    },
+    {
+      "path": "./apps/coda"
     },
     {
       "path": "./apps/contentful"
@@ -37,6 +46,9 @@
       "path": "./apps/dropbox"
     },
     {
+      "path": "./apps/elastic"
+    },
+    {
       "path": "./apps/eventbrite"
     },
     {
@@ -44,6 +56,9 @@
     },
     {
       "path": "./apps/figma"
+    },
+    {
+      "path": "./apps/freshdesk"
     },
     {
       "path": "./apps/github"

@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/cloudflare",
+  "version": "0.1.0",
+  "description": "Consume Cloudflare API",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.cloudflare",
+    "displayName": "Cloudflare",
+    "categories": [
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Cloudflare"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.cloudflare.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
