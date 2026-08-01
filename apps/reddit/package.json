@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/reddit",
+  "version": "0.1.0",
+  "description": "Submit and read posts and comments, vote, search, and look up identity on Reddit.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.reddit",
+    "displayName": "Reddit",
+    "categories": [
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Reddit"
+      }
+    },
+    "network": {
+      "allow": [
+        "oauth.reddit.com",
+        "www.reddit.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

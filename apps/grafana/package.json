@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/grafana",
+  "version": "0.1.0",
+  "description": "Manage dashboards, data sources, annotations, and alert rules on any Grafana instance.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.grafana",
+    "displayName": "Grafana",
+    "categories": [
+      "monitoring"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Grafana"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
