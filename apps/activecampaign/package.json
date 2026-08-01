@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/activecampaign",
+  "version": "0.1.0",
+  "description": "Manage ActiveCampaign contacts, deals, campaigns and automations.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.activecampaign",
+    "displayName": "ActiveCampaign",
+    "categories": [
+      "marketing",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "ActiveCampaign"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

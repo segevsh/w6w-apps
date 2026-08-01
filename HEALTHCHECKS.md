@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Thirteen apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Fourteen apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **272 checks**: 103 live probes, 54 declared absences, and 115
+Across the pack that comes to **288 checks**: 111 live probes, 57 declared absences, and 120
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -33,10 +33,12 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 
 | App | Vendor status | Machine-readable? | Credential probe | Quota headroom | Declared checks |
 |---|---|:-:|---|:-:|---|
+| [activecampaign](apps/activecampaign/README.md) | [Statuspage](https://status.activecampaign.com/api/v2/summary.json) | yes | `GET /contacts?limit=1` | yes | `service` · `quota` · `site` · 1 derived |
 | [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no | `service` · ~~quota~~ · 3 derived |
 | [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
+| [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
 | [box](apps/box/README.md) | [Statuspage](https://status.box.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [brevo](apps/brevo/README.md) | [Statuspage](https://status.brevo.com/api/v2/status.json) | yes | `GET /v3/account` | yes | `service` · `quota` · 1 derived |
 | [calendly](apps/calendly/README.md) | [Statuspage](https://www.calendlystatus.com/api/v2/status.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
@@ -44,6 +46,8 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [cloudflare](apps/cloudflare/README.md) | [Statuspage](https://www.cloudflarestatus.com/api/v2/summary.json) | yes | `GET /user/tokens/verify` | yes | `service` · `quota` · 1 derived |
 | [coda](apps/coda/README.md) | [Atom](https://status.coda.io/history.atom) | yes | `GET /whoami` | no | `service` · ~~quota~~ · 1 derived |
 | [contentful](apps/contentful/README.md) | [Statuspage](https://www.contentfulstatus.com/api/v2/status.json) | yes | `GET /spaces/{spaceId}` | yes | `service` · `quota` · 1 derived |
+| [customerio](apps/customerio/README.md) | [Statuspage](https://status.customerio.com/api/v2/summary.json) | yes | `PUT /customers/:id` | no | `service` · ~~quota~~ · 1 derived |
+| [deepl](apps/deepl/README.md) | [JSON](https://api-status.deepl.com/api/status) | yes | `GET /v2/usage` | yes | `service` · `quota` · 1 derived |
 | [discord](apps/discord/README.md) | [Statuspage](https://discordstatus.com/api/v2/status.json) | yes | `GET /users/@me` | yes | `service` · `quota` · 2 derived |
 | [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no | `service` · ~~quota~~ · 2 derived |
 | [elastic](apps/elastic/README.md) | none published | no | `GET /_security/_authenticate` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
@@ -101,6 +105,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [twitter](apps/twitter/README.md) | [page](https://developer.x.com/status) | no | `GET /2/users/me` | yes | ~~service~~ · `quota` · 1 derived |
 | [typeform](apps/typeform/README.md) | [Statuspage](https://status.typeform.com/api/v2/status.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
 | [upstash](apps/upstash/README.md) | [Statuspage](https://status.upstash.com/api/v2/summary.json) | yes | `GET /ping` | no | `service` · `host` · 1 derived |
+| [uptimerobot](apps/uptimerobot/README.md) | none published | no | `POST /getAccountDetails` | yes | ~~service~~ · `quota` · 1 derived |
 | [webflow](apps/webflow/README.md) | [Statuspage](https://status.webflow.com/api/v2/status.json) | yes | `GET /v2/sites` | yes | `service` · `quota` · 2 derived |
 | [whatsapp](apps/whatsapp/README.md) | [RSS](https://metastatus.com/outage-events-feed-whatsapp-business-api.rss) | yes | `GET /{phone-number-id}?fields=verified_name` | no | `service` · ~~quota~~ · 1 derived |
 | [woocommerce](apps/woocommerce/README.md) | none published | no | `GET /wp-json/wc/v3/system_status` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
@@ -149,14 +154,14 @@ recording:
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
   All 25 absences carry `severity: "informational"`.
-- **Thirteen apps needed the `context` posture**, the one a boolean would have lost:
+- **Fourteen apps needed the `context` posture**, the one a boolean would have lost:
   Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake, Supabase, Upstash,
-  Elastic, Freshdesk, Grafana and Strapi are each addressed by a per-tenant host, so the
-  check needs the Connection to know *which* host to call and no credential to interpret the
-  answer. Their dependency probes are deliberately unauthenticated, which makes a **401 a
-  pass** — it proves the host resolves and the API is answering, and whether the credential
-  is any good is the derived `auth:*` check's job. Conflating the two is how "the account was
-  renamed" gets misreported as "your token expired".
+  Elastic, Freshdesk, Grafana, Strapi and ActiveCampaign are each addressed by a per-tenant
+  host, so the check needs the Connection to know *which* host to call and no credential to
+  interpret the answer. Their dependency probes are deliberately unauthenticated, which makes
+  a **401 a pass** — it proves the host resolves and the API is answering, and whether the
+  credential is any good is the derived `auth:*` check's job. Conflating the two is how "the
+  account was renamed" gets misreported as "your token expired".
 - **The extra-host rule cost nothing.** Every check that widens egress
   (`status.*`, `api.status.salesforce.com`, `www.google.com`) is a `none` or `context`
   posture, so the spec's ban on pairing `network.allow` with `credential: "signed"` never

@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/customerio",
+  "version": "0.1.0",
+  "description": "Identify, track, segment and merge people via Customer.io's Track API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.customerio",
+    "displayName": "Customer.io",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Customer.io"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon-dark.svg",
+          "alt": "Customer.io"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "track.customer.io",
+        "track-eu.customer.io",
+        "api.customer.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -24,10 +24,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 
 | App | Categories | Auth | Actions |
 |-----|------------|------|--------:|
+| activecampaign | marketing, crm | api-key | 13 |
 | airtable | spreadsheets, databases, productivity | personal-access-token, oauth2, api-key | 10 |
 | anthropic | ai | api-key | 14 |
 | asana | productivity, project-management | access-token, oauth2 | 22 |
 | bitbucket | developer-tools | basic, access-token | 12 |
+| bitly | marketing, analytics | access-token | 8 |
 | box | storage | oauth2 | 10 |
 | brevo | marketing, email | api-key | 15 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
@@ -35,6 +37,8 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cloudflare | devops | api-token | 8 |
 | coda | productivity, documents | api-token | 11 |
 | contentful | cms | access-token | 10 |
+| customerio | marketing, email | basic | 7 |
+| deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | elastic | search | api-key, basic | 9 |
@@ -92,6 +96,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | twitter | social-media | oauth2 | 8 |
 | typeform | forms, productivity | personal-access-token, oauth2 | 10 |
 | upstash | databases | rest-token | 15 |
+| uptimerobot | monitoring | api-key | 8 |
 | webflow | cms | api-token, oauth2 | 14 |
 | whatsapp | communication | access-token | 9 |
 | woocommerce | commerce | api-key | 13 |
@@ -100,7 +105,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-75 apps, 998 actions.
+80 apps, 1042 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -119,10 +124,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Thirteen apps addressed
+because "nothing exists to check" is a more useful answer than a gap. Fourteen apps addressed
 by a per-tenant host (Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake,
-Supabase, Upstash, Elastic, Freshdesk, Grafana, Strapi) add a `dependency` check for the
-tenant's own site. Credential checks come free: the runtime derives an
+Supabase, Upstash, Elastic, Freshdesk, Grafana, Strapi, ActiveCampaign) add a `dependency`
+check for the tenant's own site. Credential checks come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 
 Status hosts stay off every app's main egress allowlist — a `service` check widens egress
