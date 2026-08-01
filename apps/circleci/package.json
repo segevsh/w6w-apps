@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/circleci",
+  "version": "0.1.0",
+  "description": "Consume CircleCI API",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.circleci",
+    "displayName": "CircleCI",
+    "categories": [
+      "devops",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "CircleCI"
+      }
+    },
+    "network": {
+      "allow": [
+        "circleci.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/jenkins",
+  "version": "0.1.0",
+  "description": "Trigger builds, inspect jobs, and manage the build queue on any Jenkins instance.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.jenkins",
+    "displayName": "Jenkins",
+    "categories": [
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Jenkins"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/clockify",
+  "version": "0.1.0",
+  "description": "Track time entries, projects, clients, and workspaces via the Clockify API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.clockify",
+    "displayName": "Clockify",
+    "categories": [
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Clockify"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.clockify.me"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -34,12 +34,16 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | bitly | marketing, analytics | access-token | 8 |
 | box | storage | oauth2 | 10 |
 | brevo | marketing, email | api-key | 15 |
+| cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
+| circleci | devops, developer-tools | api-token | 8 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
+| clockify | productivity | api-key | 10 |
 | cloudflare | devops | api-token | 8 |
 | coda | productivity, documents | api-token | 11 |
 | contentful | cms | access-token | 10 |
 | customerio | marketing, email | basic | 7 |
+| databricks | data-warehousing | bearer-token | 8 |
 | deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
 | dropbox | storage | access-token, oauth2 | 12 |
@@ -59,6 +63,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
+| jenkins | devops | basic | 6 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
 | klaviyo | marketing, email | api-key | 23 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
@@ -110,7 +115,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-85 apps, 1072 actions.
+90 apps, 1112 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
