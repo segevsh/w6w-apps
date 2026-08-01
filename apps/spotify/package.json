@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/spotify",
+  "version": "0.1.0",
+  "description": "Search Spotify's catalog and manage playlists, profile and playback state.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.spotify",
+    "displayName": "Spotify",
+    "categories": [
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Spotify"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.spotify.com",
+        "accounts.spotify.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

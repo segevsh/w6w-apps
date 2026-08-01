@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "apps": [
     {
       "path": "./apps/airtable"
@@ -151,6 +151,9 @@
       "path": "./apps/salesforce"
     },
     {
+      "path": "./apps/segment"
+    },
+    {
       "path": "./apps/sendgrid"
     },
     {
@@ -169,6 +172,15 @@
       "path": "./apps/splunk"
     },
     {
+      "path": "./apps/spotify"
+    },
+    {
+      "path": "./apps/strapi"
+    },
+    {
+      "path": "./apps/strava"
+    },
+    {
       "path": "./apps/stripe"
     },
     {
@@ -179,6 +191,9 @@
     },
     {
       "path": "./apps/todoist"
+    },
+    {
+      "path": "./apps/toggl"
     },
     {
       "path": "./apps/trello"

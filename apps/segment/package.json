@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/segment",
+  "version": "0.1.0",
+  "description": "Send identify, track, page, group, alias and batch calls to Segment's Tracking API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.segment",
+    "displayName": "Segment",
+    "categories": [
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Segment"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.segment.io",
+        "api.segmentapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

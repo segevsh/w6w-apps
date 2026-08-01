@@ -71,6 +71,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | posthog | analytics | personal-api-key | 8 |
 | reddit | social-media | oauth2 | 8 |
 | s3 | storage | aws-iam | 9 |
+| segment | analytics | write-key | 6 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | sendgrid | email, communication | send-grid-api | 10 |
 | servicenow | support, devops | basic, oauth2 | 9 |
@@ -78,10 +79,14 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | slack | communication | access-token, oauth2 | 47 |
 | snowflake | data-warehousing | key-pair | 5 |
 | splunk | monitoring, devops | token | 8 |
+| spotify | productivity | oauth2 | 9 |
+| strapi | cms | api-token | 6 |
+| strava | productivity | oauth2 | 9 |
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
 | telegram | communication | bot-token | 21 |
 | todoist | productivity | api-token, oauth2 | 14 |
+| toggl | productivity | api-token | 10 |
 | trello | project-management, productivity | api-key | 27 |
 | twilio | communication | api-key | 2 |
 | twitter | social-media | oauth2 | 8 |
@@ -95,7 +100,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-70 apps, 958 actions.
+75 apps, 998 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -114,10 +119,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Twelve apps addressed
+because "nothing exists to check" is a more useful answer than a gap. Thirteen apps addressed
 by a per-tenant host (Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake,
-Supabase, Upstash, Elastic, Freshdesk, Grafana) add a `dependency` check for the tenant's own
-site. Credential checks come free: the runtime derives an
+Supabase, Upstash, Elastic, Freshdesk, Grafana, Strapi) add a `dependency` check for the
+tenant's own site. Credential checks come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 
 Status hosts stay off every app's main egress allowlist — a `service` check widens egress
