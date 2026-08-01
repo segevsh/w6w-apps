@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/pagerduty",
+  "version": "0.1.0",
+  "description": "Manage PagerDuty incidents, services, on-call schedules and escalation policies.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.pagerduty",
+    "displayName": "PagerDuty",
+    "categories": [
+      "monitoring",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PagerDuty"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.pagerduty.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

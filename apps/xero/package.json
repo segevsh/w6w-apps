@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/xero",
+  "version": "0.1.0",
+  "description": "Manage Xero contacts, invoices, bank transactions, items and accounts.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.xero",
+    "displayName": "Xero",
+    "categories": [
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Xero"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.xero.com",
+        "identity.xero.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

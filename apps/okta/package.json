@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/okta",
+  "version": "0.1.0",
+  "description": "Manage Okta users and groups — identity lifecycle for an org.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.okta",
+    "displayName": "Okta",
+    "categories": [
+      "security"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Okta"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon-dark.svg"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*.okta.com",
+        "*.oktapreview.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

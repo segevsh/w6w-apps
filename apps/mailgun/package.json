@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mailgun",
+  "version": "0.1.0",
+  "description": "Send transactional email and manage domains, mailing lists and suppressions via Mailgun",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mailgun",
+    "displayName": "Mailgun",
+    "categories": [
+      "email",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mailgun"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mailgun.net",
+        "api.eu.mailgun.net"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

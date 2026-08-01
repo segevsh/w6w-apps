@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/figma",
+  "version": "0.1.0",
+  "description": "Read Figma files, nodes, images, comments, projects and versions via the Figma REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.figma",
+    "displayName": "Figma",
+    "categories": [
+      "productivity",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Figma"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.figma.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

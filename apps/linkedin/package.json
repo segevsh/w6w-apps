@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/linkedin",
+  "version": "0.1.0",
+  "description": "Create LinkedIn posts and read member/organization info via the versioned Posts API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.linkedin",
+    "displayName": "LinkedIn",
+    "categories": [
+      "social-media",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "LinkedIn"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.linkedin.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

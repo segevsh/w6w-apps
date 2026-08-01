@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/upstash",
+  "version": "0.1.0",
+  "description": "Read and write an Upstash Redis database over its HTTP REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.upstash",
+    "displayName": "Upstash Redis",
+    "categories": [
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Upstash Redis"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.upstash.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

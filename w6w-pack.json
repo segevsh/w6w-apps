@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "apps": [
     {
       "path": "./apps/airtable"
@@ -43,6 +43,9 @@
       "path": "./apps/facebook-lead-ads"
     },
     {
+      "path": "./apps/figma"
+    },
+    {
       "path": "./apps/github"
     },
     {
@@ -79,7 +82,13 @@
       "path": "./apps/linear"
     },
     {
+      "path": "./apps/linkedin"
+    },
+    {
       "path": "./apps/mailchimp"
+    },
+    {
+      "path": "./apps/mailgun"
     },
     {
       "path": "./apps/mistral"
@@ -91,10 +100,22 @@
       "path": "./apps/notion"
     },
     {
+      "path": "./apps/okta"
+    },
+    {
       "path": "./apps/openai"
     },
     {
+      "path": "./apps/pagerduty"
+    },
+    {
+      "path": "./apps/paypal"
+    },
+    {
       "path": "./apps/pipedrive"
+    },
+    {
+      "path": "./apps/s3"
     },
     {
       "path": "./apps/salesforce"
@@ -103,13 +124,25 @@
       "path": "./apps/sendgrid"
     },
     {
+      "path": "./apps/servicenow"
+    },
+    {
       "path": "./apps/shopify"
     },
     {
       "path": "./apps/slack"
     },
     {
+      "path": "./apps/snowflake"
+    },
+    {
+      "path": "./apps/splunk"
+    },
+    {
       "path": "./apps/stripe"
+    },
+    {
+      "path": "./apps/supabase"
     },
     {
       "path": "./apps/telegram"
@@ -124,16 +157,28 @@
       "path": "./apps/twilio"
     },
     {
+      "path": "./apps/twitter"
+    },
+    {
       "path": "./apps/typeform"
     },
     {
+      "path": "./apps/upstash"
+    },
+    {
       "path": "./apps/webflow"
+    },
+    {
+      "path": "./apps/whatsapp"
     },
     {
       "path": "./apps/woocommerce"
     },
     {
       "path": "./apps/wordpress"
+    },
+    {
+      "path": "./apps/xero"
     },
     {
       "path": "./apps/zendesk"

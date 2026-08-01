@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/servicenow",
+  "version": "0.1.0",
+  "description": "Manage ServiceNow incidents and arbitrary table records via the Table API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.servicenow",
+    "displayName": "ServiceNow",
+    "categories": [
+      "support",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "ServiceNow"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.service-now.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
