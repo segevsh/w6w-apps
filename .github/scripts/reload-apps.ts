@@ -232,7 +232,7 @@ async function refreshApp(cfg: Config, id: string): Promise<StepResult> {
 type ImportResult = { kind: "ok"; detail: string } | { kind: "error"; detail: string };
 
 async function importApp(cfg: Config, entry: PackEntryRef): Promise<ImportResult> {
-  const source = `github:w6w-io/w6w-apps/${entry.relPath}@main`;
+  const source = `github:w6w-io/w6w-apps@main#${entry.relPath}`;
   const token = mintOpsToken(cfg.opsSecret, APPS_RELOAD_SCOPE);
   const res = await fetch(`${cfg.apiUrl}/system-ops/apps/import`, {
     method: "POST",
