@@ -20,7 +20,8 @@
       },
       "darkMode": {
         "icon": {
-          "svg": "./assets/icon.dark.svg"
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Clockify"
         }
       }
     },
