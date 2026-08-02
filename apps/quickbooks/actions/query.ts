@@ -8,6 +8,7 @@ interface Input {
 const query: ActionDefinition<Input> = {
   key: "query",
   type: "read",
+  resource: "query",
   title: "Run Query",
   description:
     "Run a raw QuickBooks query-language statement against any entity — the escape hatch for resources this app has no dedicated action for (CreditMemo, JournalEntry, TaxCode, Deposit, …).",
