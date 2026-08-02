@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/zoho",
+  "version": "0.1.0",
+  "description": "Create, read, update, search and convert Leads, Contacts, Deals and Accounts in Zoho CRM.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho",
+    "displayName": "Zoho CRM",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho CRM"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.zohoapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/facebook",
+  "version": "0.1.0",
+  "description": "Manage Facebook Pages, posts, comments, photos, videos, insights and basic ad-account reads via the Graph API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.facebook",
+    "displayName": "Facebook Pages",
+    "categories": [
+      "social-media",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Facebook"
+      }
+    },
+    "network": {
+      "allow": [
+        "graph.facebook.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
