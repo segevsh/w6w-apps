@@ -91,7 +91,6 @@ Deno.test("mail-send: missing required fields reject with informative errors", a
     ["fromEmail", { fromEmail: "" }],
     ["toEmail", { toEmail: "" }],
     ["subject", { subject: "" }],
-    ["contentValue", { contentValue: "" }],
   ];
   for (const [field, patch] of cases) {
     const { ctx } = mockCtx();
@@ -161,16 +160,25 @@ Deno.test("mail-send: contentValue is optional when a dynamic template is used",
   assertEquals(calls.length, 1);
 });
 
-Deno.test("mail-send: contentValue/templateId are declared required, so the Configure UI can flag a missing one before Test — not just execute()", () => {
+Deno.test("mail-send: contentValue is optional even without a dynamic template — sends a blank body", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput({ contentValue: "" }), ctx);
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.content, [{ type: "text/plain", value: "" }]);
+});
+
+Deno.test("mail-send: templateId is declared required, so the Configure UI can flag a missing one before Test — not just execute()", () => {
   // Safe to declare `required: true` alongside `showIf` here because the
   // studio Test-gate (`requiredParamsFilled`) skips a required param while
   // it's hidden — see packages/ui/src/StepBuilderModal.required-gate.test.ts.
-  // Before that fix this app deliberately left both non-required to avoid
-  // blocking the gate in the branch where each is moot, which meant a
+  // Before that fix this app deliberately left it non-required to avoid
+  // blocking the gate in the branch where it's moot, which meant a
   // half-configured step only failed at runtime with a raw `hook_failed`.
+  // `contentValue` is NOT required (unlike an earlier revision of this fix) —
+  // SendGrid accepts a blank body, so the platform shouldn't block one.
   const contentValue = action.params?.find((p) => p.key === "contentValue");
   const templateId = action.params?.find((p) => p.key === "templateId");
-  assertEquals(contentValue?.required, true);
+  assertEquals(contentValue?.required, undefined);
   assertEquals(templateId?.required, true);
 });
 
