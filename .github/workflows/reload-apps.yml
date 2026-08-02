@@ -3,92 +3,57 @@ name: Reload apps
 # ---------------------------------------------------------------------------
 # On every push to main, re-registers every app in w6w-pack.json against the
 # production w6w API (import for an id the catalog hasn't seen, refresh for
-# one it has) and, on full success, triggers a frontend redeploy so the
-# marketing site's app pages pick up the change with no human step in
-# between. See /home/segevs/dev/w6w/.ai/projects/backlog/26-08-02-00-apps-push-frontend-redeploy.md
-# (item F-1) for the full design/decisions (D-1..D-4) behind this workflow.
+# one it has). All the actual work happens in .github/scripts/reload-apps.js
+# — this file is just the trigger, Node setup, and wiring two env vars in
+# from repo secrets/variables.
 #
-# All the actual work happens in .github/scripts/reload-apps.ts — this file
-# is just the trigger, the checkout/Deno setup, and wiring two env vars in
-# from repo secrets/variables. The script owns exit-code semantics: 0 only
-# when every app refreshed/imported cleanly AND the redeploy trigger
-# succeeded; nonzero on any single failure. This job does nothing but let
-# that exit code propagate — Actions already fails the step (and the job) on
-# a nonzero exit with no extra handling required.
-#
-# ONE credential family, not two: every request the script makes — the
-# per-app catalog reload AND the redeploy trigger — goes through the
-# /system-ops machine-to-machine edge, authenticated with a short-lived JWT
-# minted from OPS_JWT_SECRET. There is no operator login here (no
-# /auth/login, no username/password secret pair) — the ops routes this
-# workflow calls (POST /system-ops/apps/import, POST
-# /system-ops/apps/:id/refresh, POST /system-ops/deploy-frontend) are all
-# reachable with that one secret, each gated by its own `scope` claim.
+# Publishing the catalog only — no frontend redeploy trigger here. That's a
+# separate concern with its own credential/infra requirements; keeping this
+# workflow to one job (mint an ops JWT, refresh-or-import every app) keeps
+# its pass/fail signal meaningful.
 #
 # BEFORE THIS WORKFLOW DOES ANYTHING USEFUL, a human needs to configure on
 # this repo's (w6w-io/w6w-apps) settings:
 #   - Repo variable  W6W_API_URL     — the production API base URL (not secret)
-#   - Repo secret    OPS_JWT_SECRET  — same signing key packages/frontend's CI already holds,
-#                                      for minting short-lived ops JWTs
-# Until both are set, every run of this workflow fails at the "Run the
-# reload script" step with the script's own missing-env-var message — that
-# is the intended failure mode, not a bug to route around here.
+#   - Repo secret    OPS_JWT_SECRET  — signs short-lived ops JWTs (same key
+#                                      GCP Secret Manager's `ops-jwt-secret` holds)
+# Until both are set, every run fails at the "Run the reload script" step
+# with the script's own missing-env-var message.
 # ---------------------------------------------------------------------------
 
 on:
   push:
     branches: [main]
-    # Path-filtered rather than whole-repo: this triggers a LIVE write against
-    # the production catalog (and, on success, a live frontend redeploy), so a
-    # push touching only .github/ itself, root docs, etc. shouldn't fire it.
-    # Not settled with the human in the originating design chat (flagged open
-    # in the intake doc) — deciding it here per this repo's convention of
-    # deciding-and-documenting: scope to the app directories and the pack
-    # manifest, since those are the only paths the reload script actually
-    # reads.
+    # Path-filtered: this triggers a LIVE write against the production
+    # catalog, so a push touching only .github/ itself, root docs, etc.
+    # shouldn't fire it. Scoped to the app directories and the pack
+    # manifest, since those are the only paths the reload script reads.
     paths:
       - "apps/**"
       - "w6w-pack.json"
 
 # A burst of pushes to main (e.g. several small app fixes landing back to
 # back) should not cancel a reload that's already partway through applying
-# the catalog — unlike a static-site build/deploy, canceling this mid-flight
-# can leave some apps refreshed and others not, which is worse than letting
-# it finish and letting the next push's run simply queue behind it.
-# cancel-in-progress is deliberately false here (the frontend's own
-# build/deploy workflow sets it true for the opposite reason: a stale build
-# is safe to throw away).
+# the catalog — canceling mid-flight can leave some apps refreshed and
+# others not, which is worse than letting it finish and letting the next
+# push's run simply queue behind it.
 concurrency:
   group: reload-apps-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   reload:
-    name: Reload apps + trigger frontend redeploy
+    name: Reload apps
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@v2
+      - uses: actions/setup-node@v4
         with:
-          deno-version: v2.x
+          node-version: "22"
 
-      # No "is it configured?" soft-fail branch here, unlike the frontend
-      # deploy workflow's ops-API step: that pattern exists there to protect
-      # fork PRs, which legitimately run with no secrets available. This
-      # workflow only ever runs on push to main on the canonical repo — no
-      # fork-PR case to protect — so an unconfigured run should fail hard.
-      # The missing-env-var check itself lives in the script, not here.
-      #
-      # Exit code is the sole signal (per the script's documented contract):
-      # nonzero on ANY failure, whether that's a single app failing to
-      # import/refresh or the redeploy-trigger call failing. Run directly,
-      # not piped through anything (like `tee`) that could swallow the exit
-      # status — see the frontend deploy workflow's own comment on why
-      # `bash -e {0}` alone doesn't protect a piped command (pipefail is not
-      # part of the ambient `-e`).
       - name: Run the reload script
         env:
           W6W_API_URL: ${{ vars.W6W_API_URL }}
           OPS_JWT_SECRET: ${{ secrets.OPS_JWT_SECRET }}
-        run: deno run -A .github/scripts/reload-apps.ts
+        run: node .github/scripts/reload-apps.js
