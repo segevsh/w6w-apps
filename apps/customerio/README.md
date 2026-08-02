@@ -7,6 +7,8 @@ API.
 - **Auth methods** — basic (Site ID + Track API Key)
 - **Actions** — 7
 - **Egress allowlist** — `track.customer.io`, `track-eu.customer.io`, `api.customer.io`
+- **Website** — https://customer.io
+- **API docs** — https://docs.customer.io/integrations/api/track/
 
 ## Two different Customer.io APIs — this app only calls one
 

@@ -6,6 +6,8 @@ Post messages, manage channels, files, reactions, stars, users and user groups o
 - **Auth methods** — access-token, oauth2
 - **Actions** — 47
 - **Egress allowlist** — `slack.com`
+- **Website** — https://slack.com
+- **API docs** — https://api.slack.com
 
 ## Health check
 

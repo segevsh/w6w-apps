@@ -6,6 +6,8 @@ Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogu
 - **Auth methods** — api-key
 - **Actions** — 23
 - **Egress allowlist** — `api.stripe.com`
+- **Website** — https://stripe.com
+- **API docs** — https://docs.stripe.com/api
 
 ## Health check
 

@@ -7,6 +7,7 @@ calendars and clients; check availability.
 - **Auth methods** — basic, oauth2
 - **Actions** — 9
 - **Egress allowlist** — `acuityscheduling.com`
+- **Website** — https://acuityscheduling.com
 - **API docs** — https://developers.acuityscheduling.com
 
 ## Actions

@@ -6,6 +6,8 @@ Create and manage Linear issues, comments, projects and labels through its Graph
 - **Auth methods** — api-key, oauth2
 - **Actions** — 11
 - **Egress allowlist** — `api.linear.app`
+- **Website** — https://linear.app
+- **API docs** — https://linear.app/developers
 
 ## Health check
 

@@ -6,6 +6,8 @@ Create and manage PayPal orders, payments, invoices and payouts.
 - **Auth methods** — client-credentials
 - **Actions** — 13
 - **Egress allowlist** — `api-m.paypal.com`, `api-m.sandbox.paypal.com`
+- **Website** — https://www.paypal.com
+- **API docs** — https://developer.paypal.com/docs/api/overview/
 
 ## Setup
 

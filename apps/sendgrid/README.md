@@ -6,6 +6,8 @@ Consume SendGrid API
 - **Auth methods** — sendgrid-api
 - **Actions** — 10
 - **Egress allowlist** — `api.sendgrid.com`
+- **Website** — https://sendgrid.com
+- **API docs** — https://docs.sendgrid.com/api-reference
 
 ## Health check
 

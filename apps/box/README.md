@@ -6,6 +6,8 @@ Upload, download, and manage files and folders in Box.
 - **Auth methods** — oauth2
 - **Actions** — 10
 - **Egress allowlist** — `api.box.com`, `upload.box.com`
+- **Website** — https://www.box.com
+- **API docs** — https://developer.box.com
 
 ## A note on the download redirect
 

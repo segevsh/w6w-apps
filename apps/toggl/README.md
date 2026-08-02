@@ -6,6 +6,7 @@ Track time entries, projects, workspaces, and clients via the Toggl Track API v9
 - **Auth method** — api-token (`basic`)
 - **Actions** — 10
 - **Egress allowlist** — `api.track.toggl.com`
+- **Website** — https://toggl.com/track/
 - **API docs** — https://engineering.toggl.com/docs/track/ (OpenAPI spec linked from
   https://engineering.toggl.com/docs/track/openapi/)
 

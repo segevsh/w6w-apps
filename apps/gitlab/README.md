@@ -7,6 +7,7 @@ self-managed instance.
 - **Auth methods** — access-token, oauth2
 - **Actions** — 16
 - **Egress allowlist** — `gitlab.com`
+- **Website** — https://about.gitlab.com
 - **API docs** — https://docs.gitlab.com/ee/api/
 
 ## Auth

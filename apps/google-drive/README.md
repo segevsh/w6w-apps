@@ -6,6 +6,8 @@ Manage files, folders and shared drives on Google Drive.
 - **Auth methods** — oauth2, service-account
 - **Actions** — 18
 - **Egress allowlist** — `www.googleapis.com`
+- **Website** — https://drive.google.com
+- **API docs** — https://developers.google.com/workspace/drive
 
 ## Health check
 

@@ -6,6 +6,7 @@ Manage Pipedrive deals, persons, organizations, activities, notes and leads thro
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.pipedrive.com`
+- **Website** — https://www.pipedrive.com
 - **API docs** — https://developers.pipedrive.com/docs/api/v1
 
 ## Actions

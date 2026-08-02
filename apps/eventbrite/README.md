@@ -6,6 +6,8 @@ Read events, orders, attendees and ticket classes from Eventbrite.
 - **Auth methods** — personal-token, oauth2
 - **Actions** — 10
 - **Egress allowlist** — `www.eventbriteapi.com`
+- **Website** — https://www.eventbrite.com
+- **API docs** — https://www.eventbrite.com/platform/api
 
 ## Health check
 

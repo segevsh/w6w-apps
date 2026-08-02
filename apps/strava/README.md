@@ -6,6 +6,7 @@ Read and log activities, comments, kudos and athlete stats via the Strava API v3
 - **Auth methods** — oauth2
 - **Actions** — 9
 - **Egress allowlist** — `www.strava.com`
+- **Website** — https://www.strava.com
 - **API docs** — https://developers.strava.com/docs/reference/
 
 ## Actions

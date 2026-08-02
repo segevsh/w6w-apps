@@ -6,6 +6,8 @@ Manage Freshdesk tickets, contacts and companies.
 - **Auth methods** — api-key
 - **Actions** — 13
 - **Egress allowlist** — `*.freshdesk.com`
+- **Website** — https://www.freshworks.com/freshdesk/
+- **API docs** — https://developers.freshdesk.com/api/
 
 ## Health check
 

@@ -6,6 +6,8 @@ Create, read and structurally update Google Docs documents.
 - **Auth methods** — oauth2, service-account
 - **Actions** — 20
 - **Egress allowlist** — `docs.googleapis.com`, `www.googleapis.com`
+- **Website** — https://docs.google.com
+- **API docs** — https://developers.google.com/workspace/docs
 
 ## Health check
 

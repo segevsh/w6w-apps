@@ -6,6 +6,8 @@ Chat completions, embeddings, and OCR via the Mistral AI API.
 - **Auth methods** — api-key
 - **Actions** — 4
 - **Egress allowlist** — `api.mistral.ai`
+- **Website** — https://mistral.ai
+- **API docs** — https://docs.mistral.ai/api/
 
 ## Health check
 

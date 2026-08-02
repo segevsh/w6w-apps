@@ -7,6 +7,7 @@ scheduling links and manage webhook subscriptions.
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 12
 - **Egress allowlist** — `api.calendly.com`
+- **Website** — https://calendly.com
 - **API docs** — https://developer.calendly.com/api-docs
 
 ## Actions

@@ -2,6 +2,9 @@
 
 Track time entries, projects, clients, and workspaces via the [Clockify REST API v1](https://api.clockify.me/api/v1).
 
+- **Website** — https://clockify.me
+- **API docs** — https://docs.clockify.me/
+
 ## Setup
 
 Generate an API key from your Clockify profile: **clockify.me/user/settings** → *API* section, near the bottom of the page. Paste it into the `api-key` connection field.

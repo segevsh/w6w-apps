@@ -6,6 +6,8 @@ Manage Shopify products, orders, customers and inventory through the Admin REST 
 - **Auth methods** — access-token
 - **Actions** — 18
 - **Egress allowlist** — `*.myshopify.com`
+- **Website** — https://www.shopify.com
+- **API docs** — https://shopify.dev
 
 ## Health check
 

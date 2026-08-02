@@ -8,6 +8,8 @@ driver most tools use), so this app needs no scoping compromise for w6w's networ
 - **Auth methods** — key-pair (RSA key-pair JWT)
 - **Actions** — 5
 - **Egress allowlist** — `*.snowflakecomputing.com`
+- **Website** — https://www.snowflake.com
+- **API docs** — https://docs.snowflake.com/en/developer-guide/sql-api/index
 
 ## Setup
 

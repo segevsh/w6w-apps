@@ -7,6 +7,8 @@ and forms.
 - **Auth methods** — private-app-token, oauth2, api-key
 - **Actions** — 42
 - **Egress allowlist** — `api.hubapi.com`, `api.hsforms.com`
+- **Website** — https://www.hubspot.com
+- **API docs** — https://developers.hubspot.com/docs/api/overview
 
 ## Health check
 

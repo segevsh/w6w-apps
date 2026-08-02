@@ -7,6 +7,8 @@ validation, URL expansion, and currency conversion.
 - **Auth methods** — api-key
 - **Actions** — 7
 - **Egress allowlist** — `onesimpleapi.com`
+- **Website** — https://onesimpleapi.com
+- **API docs** — https://onesimpleapi.com/docs
 
 ## API surface
 

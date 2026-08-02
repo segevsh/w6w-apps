@@ -6,6 +6,8 @@ Verify single or bulk email addresses via the [Mailcheck](https://mailcheck.co) 
 - **Auth methods** — api-key (Bearer JWT)
 - **Actions** — 4
 - **Egress allowlist** — `api.mailcheck.co`
+- **Website** — https://mailcheck.co
+- **API docs** — https://app.mailcheck.co/docs
 
 ## Vendor identification
 

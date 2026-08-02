@@ -6,6 +6,8 @@ Read and write Notion databases, pages, blocks and users via the Notion API.
 - **Auth methods** — internal-secret, oauth2
 - **Actions** — 17
 - **Egress allowlist** — `api.notion.com`
+- **Website** — https://www.notion.com
+- **API docs** — https://developers.notion.com
 
 ## Health check
 

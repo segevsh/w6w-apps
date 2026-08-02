@@ -6,6 +6,7 @@ Tasks, lists, folders, comments, and time tracking via the ClickUp API (v2).
 - **Auth methods** — api-token, oauth2
 - **Actions** — 12
 - **Egress allowlist** — `api.clickup.com`
+- **Website** — https://clickup.com
 - **API docs** — https://clickup.com/api (reference: https://developer.clickup.com/reference)
 
 ## Actions

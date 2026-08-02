@@ -6,6 +6,7 @@ Manage Intercom contacts, companies, conversations, notes and tags through its R
 - **Auth methods** — access-token, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.intercom.io`
+- **Website** — https://www.intercom.com
 - **API docs** — https://developers.intercom.com/docs/references/rest-api/
 
 Every request pins the API version with an `Intercom-Version` header (currently `2.11`)

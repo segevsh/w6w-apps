@@ -6,6 +6,7 @@ Manage products, orders and customers on a self-hosted WooCommerce store.
 - **Auth methods** — api-key
 - **Actions** — 13
 - **Egress allowlist** — `*`
+- **Website** — https://woocommerce.com
 - **API docs** — https://woocommerce.github.io/woocommerce-rest-api-docs/
 
 WooCommerce is a WordPress plugin: its REST API lives on the tenant's own

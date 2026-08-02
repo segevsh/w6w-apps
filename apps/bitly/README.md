@@ -6,6 +6,8 @@ Shorten, manage and track Bitly links via the Bitly REST API v4.
 - **Auth methods** — access-token
 - **Actions** — 8
 - **Egress allowlist** — `api-ssl.bitly.com`
+- **Website** — https://bitly.com
+- **API docs** — https://dev.bitly.com
 
 ## Actions
 

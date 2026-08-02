@@ -6,6 +6,7 @@ Track time entries, projects, tasks, clients, and users via the Harvest API v2.
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 11
 - **Egress allowlist** — `api.harvestapp.com`, `id.getharvest.com`
+- **Website** — https://www.getharvest.com
 - **API docs** — https://help.getharvest.com/api-v2/
 
 ## Actions

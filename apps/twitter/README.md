@@ -7,6 +7,8 @@ Post, delete, search and read tweets, look up users, and like/retweet on X
 - **Auth methods** — oauth2
 - **Actions** — 8
 - **Egress allowlist** — `api.x.com`
+- **Website** — https://x.com
+- **API docs** — https://developer.x.com
 
 Ported from n8n's `Twitter.node.ts` (V2) for the operation set, then
 re-verified endpoint-by-endpoint against `docs.x.com` on 2026-07-31, since

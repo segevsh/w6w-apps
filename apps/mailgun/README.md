@@ -6,6 +6,8 @@ Send transactional email and manage domains, mailing lists and suppressions via 
 - **Auth methods** — api-key
 - **Actions** — 14
 - **Egress allowlist** — `api.mailgun.net`, `api.eu.mailgun.net`
+- **Website** — https://www.mailgun.com
+- **API docs** — https://documentation.mailgun.com/
 
 ## Auth — Private API Key
 

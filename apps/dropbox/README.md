@@ -6,6 +6,8 @@ Upload, download, and manage files and folders in Dropbox.
 - **Auth methods** — access-token, oauth2
 - **Actions** — 12
 - **Egress allowlist** — `api.dropboxapi.com`, `content.dropboxapi.com`
+- **Website** — https://www.dropbox.com
+- **API docs** — https://www.dropbox.com/developers
 
 ## Health check
 

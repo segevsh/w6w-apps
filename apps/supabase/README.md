@@ -15,6 +15,8 @@ Postgres or a self-hosted PostgREST install, this is not that app.
 - **Auth method** — api-key
 - **Actions** — 7
 - **Egress allowlist** — `*.supabase.co`
+- **Website** — https://supabase.com
+- **API docs** — https://supabase.com/docs
 
 ## Setup
 

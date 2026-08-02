@@ -6,6 +6,8 @@ Manage ActiveCampaign contacts, deals, campaigns and automations.
 - **Auth methods** — api-key
 - **Actions** — 13
 - **Egress allowlist** — `*`
+- **Website** — https://www.activecampaign.com
+- **API docs** — https://developers.activecampaign.com
 
 ## Why `network.allow` is `*`
 

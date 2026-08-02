@@ -7,6 +7,8 @@ calendar events.
 - **Auth methods** — oauth2, service-account
 - **Actions** — 8
 - **Egress allowlist** — `www.googleapis.com`
+- **Website** — https://calendar.google.com
+- **API docs** — https://developers.google.com/workspace/calendar
 
 ## Health check
 

@@ -6,6 +6,7 @@ Manage Webflow sites, CMS collections and items, products, and orders via the We
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.webflow.com`
+- **Website** — https://webflow.com
 - **API docs** — https://developers.webflow.com/
 
 ## Actions

@@ -7,6 +7,8 @@ emails.
 - **Auth methods** — api-key
 - **Actions** — 15
 - **Egress allowlist** — `api.brevo.com`
+- **Website** — https://www.brevo.com
+- **API docs** — https://developers.brevo.com
 
 ## Health check
 

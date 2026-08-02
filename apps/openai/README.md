@@ -7,6 +7,8 @@ moderations.
 - **Auth methods** — api-key
 - **Actions** — 13
 - **Egress allowlist** — `api.openai.com`
+- **Website** — https://openai.com
+- **API docs** — https://developers.openai.com
 
 ## Health check
 

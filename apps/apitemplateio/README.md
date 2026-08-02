@@ -6,6 +6,8 @@ Generate PDFs and images from APITemplate.io templates.
 - **Auth methods** — api-key
 - **Actions** — 5
 - **Egress allowlist** — `rest.apitemplate.io`
+- **Website** — https://apitemplate.io
+- **API docs** — https://apitemplate.io/apiv2/
 
 ## API surface
 

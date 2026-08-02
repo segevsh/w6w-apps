@@ -6,6 +6,8 @@ Read and write Coda docs, tables and rows via the Coda REST API.
 - **Auth methods** — api-token
 - **Actions** — 11
 - **Egress allowlist** — `coda.io`
+- **Website** — https://coda.io
+- **API docs** — https://coda.io/developers/apis/v1
 
 > Coda's product is being rebranded "Superhuman Docs" (coda.io now banners "Coda is now
 > Superhuman Docs"), but the API host, auth model and endpoints are unchanged at

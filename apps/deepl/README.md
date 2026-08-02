@@ -6,6 +6,8 @@ Translate text and documents, manage glossaries, and check quota via the DeepL A
 - **Auth methods** — api-key
 - **Actions** — 8
 - **Egress allowlist** — `api-free.deepl.com`, `api.deepl.com`
+- **Website** — https://www.deepl.com
+- **API docs** — https://developers.deepl.com/docs
 
 ## Free vs Pro: two hosts, one App
 

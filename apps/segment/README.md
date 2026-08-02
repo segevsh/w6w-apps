@@ -7,6 +7,8 @@ Tracking API.
 - **Auth methods** — write-key
 - **Actions** — 6
 - **Egress allowlist** — `api.segment.io`, `api.segmentapis.com`
+- **Website** — https://segment.com
+- **API docs** — https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/
 
 ## Two different Segment APIs — this app only calls one
 

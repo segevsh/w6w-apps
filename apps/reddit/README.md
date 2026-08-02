@@ -8,6 +8,8 @@ account's identity on Reddit — the OAuth-authenticated Reddit API
 - **Auth methods** — oauth2
 - **Actions** — 8
 - **Egress allowlist** — `oauth.reddit.com`, `www.reddit.com`
+- **Website** — https://www.reddit.com
+- **API docs** — https://www.reddit.com/dev/api
 
 Ported from n8n's `Reddit.node.ts` for the operation set, then re-verified
 endpoint-by-endpoint against Reddit's own

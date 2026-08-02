@@ -6,6 +6,7 @@ Boards, groups, items and columns on monday.com via its GraphQL API.
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.monday.com`
+- **Website** — https://monday.com
 - **API docs** — https://developer.monday.com/api-reference/docs
 
 monday has no REST surface: every call is a GraphQL `POST https://api.monday.com/v2`

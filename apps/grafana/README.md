@@ -6,6 +6,8 @@ Manage dashboards, data sources, annotations, and alert rules on any Grafana ins
 - **Auth methods** — service-account-token
 - **Actions** — 8
 - **Egress allowlist** — `*`
+- **Website** — https://grafana.com
+- **API docs** — https://grafana.com/docs/grafana/latest/developers/http_api/
 
 ## The arbitrary-endpoint model
 

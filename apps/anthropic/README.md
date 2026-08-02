@@ -6,6 +6,8 @@ Call Anthropic's REST API — Claude messages, token counting, batches, files.
 - **Auth methods** — api-key
 - **Actions** — 14
 - **Egress allowlist** — `api.anthropic.com`
+- **Website** — https://www.anthropic.com
+- **API docs** — https://docs.anthropic.com
 
 ## Health check
 

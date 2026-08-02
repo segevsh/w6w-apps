@@ -6,6 +6,7 @@ Manage Todoist tasks, projects, sections, comments, and labels via the REST v2 A
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.todoist.com`
+- **Website** — https://www.todoist.com
 - **API docs** — https://developer.todoist.com/rest/v2/
 
 ## Actions

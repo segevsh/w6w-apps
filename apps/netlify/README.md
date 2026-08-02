@@ -6,6 +6,8 @@ Consume Netlify API
 - **Auth methods** — personal-access-token
 - **Actions** — 10
 - **Egress allowlist** — `api.netlify.com`
+- **Website** — https://www.netlify.com
+- **API docs** — https://docs.netlify.com/api/get-started/
 
 ## Auth methods
 
