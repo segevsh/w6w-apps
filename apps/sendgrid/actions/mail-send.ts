@@ -98,7 +98,11 @@ const action: ActionDefinition = {
       type: "text",
       config: { multiline: true },
       // Required only when NOT using a dynamic template (the template supplies
-      // the body) — enforced in `execute`, since `required` is static.
+      // the body instead) — `required` + `showIf` combine correctly: the studio
+      // Test-gate (`requiredParamsFilled`) skips a required field while it's
+      // hidden, so this only blocks in the branch where `execute` actually needs
+      // it. Still re-checked in `execute` itself as the real enforcement point.
+      required: true,
       default: "",
       showIf: { field: "dynamicTemplate", truthy: false },
       hint: "Message body of the email to send",
@@ -115,6 +119,9 @@ const action: ActionDefinition = {
       key: "templateId",
       label: "Dynamic Template ID",
       type: "string",
+      // Required only when the email uses a dynamic template — see the
+      // `contentValue` param above for why `required` + `showIf` is safe now.
+      required: true,
       default: "",
       placeholder: "d-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       // Only relevant when the email uses a dynamic template — hide otherwise.
@@ -291,7 +298,12 @@ const action: ActionDefinition = {
           "Subject/Message Body typed here — set the template ID, or turn Dynamic Template off.",
       );
     }
-    if (!useTemplate && !contentValue) throw new Error("`contentValue` is required");
+    if (!useTemplate && !contentValue) {
+      throw new Error(
+        "`contentValue` is required unless Dynamic Template is enabled with a Dynamic " +
+          "Template ID (the template supplies the body instead).",
+      );
+    }
     const dynamicData = useTemplate ? toTemplateData(p.dynamicTemplateFields) : undefined;
     if (dynamicData && Object.keys(dynamicData).length) {
       personalization.dynamic_template_data = dynamicData;

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/quickbooks",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Manage QuickBooks Online customers, invoices, items, vendors, payments, bills, accounts and reports.",
   "license": "MIT",
   "author": {
