@@ -1,7 +1,7 @@
 import type { AuthDefinition } from "@w6w/types";
 
 const auth: AuthDefinition = {
-  key: "send-grid-api",
+  key: "sendgrid-api",
   type: "bearer",
   displayName: "SendGrid API",
   fields: [

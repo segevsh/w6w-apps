@@ -87,7 +87,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | s3 | storage | aws-iam | 9 |
 | segment | analytics | write-key | 6 |
 | salesforce | crm | access-token, oauth2 | 12 |
-| sendgrid | email, communication | send-grid-api | 10 |
+| sendgrid | email, communication | sendgrid-api | 10 |
 | servicenow | support, devops | basic, oauth2 | 9 |
 | shopify | commerce | access-token | 18 |
 | slack | communication | access-token, oauth2 | 47 |
