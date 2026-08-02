@@ -9,7 +9,7 @@ import listGet from "./actions/list-get.ts";
 import listGetAll from "./actions/list-get-all.ts";
 import listUpdate from "./actions/list-update.ts";
 import mailSend from "./actions/mail-send.ts";
-import sendGridApi from "./auth/send-grid-api.ts";
+import sendgridApi from "./auth/sendgrid-api.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -26,6 +26,6 @@ export default {
     listUpdate,
     mailSend,
   ],
-  auth: [sendGridApi],
+  auth: [sendgridApi],
   healthChecks: [service, quota],
 } satisfies AppDefinition;

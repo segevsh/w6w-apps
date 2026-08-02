@@ -3,7 +3,7 @@
 Consume SendGrid API
 
 - **Categories** — email, communication
-- **Auth methods** — send-grid-api
+- **Auth methods** — sendgrid-api
 - **Actions** — 10
 - **Egress allowlist** — `api.sendgrid.com`
 
@@ -59,7 +59,7 @@ The three questions above map onto declared checks like this:
 |---|---|---|---|---|---|---|
 | `service` | service | app | none | degraded | 60s | `health/service.ts` |
 | `quota` | quota | connection | signed | informational | 300s | `health/quota.ts` |
-| `auth:send-grid-api` | credential | connection | signed | fatal | — | derived from the `send-grid-api` auth method's `test` hook |
+| `auth:sendgrid-api` | credential | connection | signed | fatal | — | derived from the `sendgrid-api` auth method's `test` hook |
 
 The host `status.sendgrid.com` (for `service`) is reachable **only inside that hook's worker** — not from any action, and not from the other
 checks. The spec allows the widening precisely because the check is unsigned; pairing an
