@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/ghost",
+  "version": "0.1.0",
+  "description": "Create, read, update and delete posts, pages, members and tags on a Ghost site via the Admin API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ghost",
+    "displayName": "Ghost",
+    "categories": [
+      "cms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Ghost"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
