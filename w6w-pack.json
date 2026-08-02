@@ -127,6 +127,9 @@
       "path": "./apps/harvest"
     },
     {
+      "path": "./apps/helpscout"
+    },
+    {
       "path": "./apps/highlevel"
     },
     {
@@ -199,6 +202,9 @@
       "path": "./apps/posthog"
     },
     {
+      "path": "./apps/postmark"
+    },
+    {
       "path": "./apps/quickbooks"
     },
     {
@@ -245,6 +251,9 @@
     },
     {
       "path": "./apps/supabase"
+    },
+    {
+      "path": "./apps/surveymonkey"
     },
     {
       "path": "./apps/telegram"
