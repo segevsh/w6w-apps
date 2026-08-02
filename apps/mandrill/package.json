@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/mandrill",
+  "version": "0.1.0",
+  "description": "Send transactional email and manage templates, tags, rejects, and whitelist entries via Mandrill (Mailchimp Transactional).",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mandrill",
+    "displayName": "Mandrill",
+    "categories": [
+      "email",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mandrill"
+      }
+    },
+    "network": {
+      "allow": [
+        "mandrillapp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

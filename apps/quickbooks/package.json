@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/quickbooks",
+  "version": "0.1.0",
+  "description": "Manage QuickBooks Online customers, invoices, items, vendors, payments, bills, accounts and reports.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.quickbooks",
+    "displayName": "QuickBooks",
+    "categories": [
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "QuickBooks"
+      }
+    },
+    "network": {
+      "allow": [
+        "quickbooks.api.intuit.com",
+        "developer.api.intuit.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

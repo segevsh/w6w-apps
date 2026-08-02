@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/highlevel",
+  "version": "0.1.0",
+  "description": "Work with HighLevel (GoHighLevel) CRM: contacts, opportunities, pipelines, calendars, conversations and location metadata.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.highlevel",
+    "displayName": "HighLevel",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "HighLevel"
+      }
+    },
+    "network": {
+      "allow": [
+        "services.leadconnectorhq.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

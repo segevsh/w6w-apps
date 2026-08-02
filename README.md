@@ -49,6 +49,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | dropbox | storage | access-token, oauth2 | 12 |
 | elastic | search | api-key, basic | 9 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
+| facebook | social-media, marketing | oauth2, page-token | 14 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | freshdesk | support | api-key | 13 |
@@ -61,6 +62,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | grafana | monitoring | service-account-token | 8 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
+| highlevel | crm, marketing | oauth2 | 18 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | jenkins | devops | basic | 6 |
@@ -71,6 +73,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailcheck | email, marketing | api-key | 4 |
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
 | mailgun | email, communication | api-key | 14 |
+| mandrill | email, marketing | api-key | 17 |
 | mistral | ai | api-key | 4 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | netlify | devops | personal-access-token | 10 |
@@ -83,6 +86,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pipedrive | crm | api-token, oauth2 | 14 |
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
+| quickbooks | finance | oauth2 | 20 |
 | reddit | social-media | oauth2 | 8 |
 | s3 | storage | aws-iam | 9 |
 | segment | analytics | write-key | 6 |
@@ -113,9 +117,10 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | wordpress | cms | basic, oauth2 | 15 |
 | xero | finance | oauth2 | 13 |
 | zendesk | support, crm | api-token, oauth2 | 17 |
+| zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-90 apps, 1112 actions.
+95 apps, 1202 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
