@@ -161,6 +161,19 @@ Deno.test("mail-send: contentValue is optional when a dynamic template is used",
   assertEquals(calls.length, 1);
 });
 
+Deno.test("mail-send: contentValue/templateId are declared required, so the Configure UI can flag a missing one before Test — not just execute()", () => {
+  // Safe to declare `required: true` alongside `showIf` here because the
+  // studio Test-gate (`requiredParamsFilled`) skips a required param while
+  // it's hidden — see packages/ui/src/StepBuilderModal.required-gate.test.ts.
+  // Before that fix this app deliberately left both non-required to avoid
+  // blocking the gate in the branch where each is moot, which meant a
+  // half-configured step only failed at runtime with a raw `hook_failed`.
+  const contentValue = action.params?.find((p) => p.key === "contentValue");
+  const templateId = action.params?.find((p) => p.key === "templateId");
+  assertEquals(contentValue?.required, true);
+  assertEquals(templateId?.required, true);
+});
+
 Deno.test("mail-send: non-2xx response propagates as Error", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: '{"errors":[{"message":"unauth"}]}', headers: {} },
