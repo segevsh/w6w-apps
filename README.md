@@ -37,6 +37,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
 | circleci | devops, developer-tools | api-token | 8 |
+| clearbit | marketing, crm | api-key | 9 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
 | clockify | productivity | api-key | 10 |
 | cloudflare | devops | api-token | 8 |
@@ -53,6 +54,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | freshdesk | support | api-key | 13 |
+| ghost | cms, productivity | admin-api-key | 11 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
@@ -62,6 +64,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | grafana | monitoring | service-account-token | 8 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
+| helpscout | support | oauth2 | 13 |
 | highlevel | crm, marketing | oauth2 | 18 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
@@ -86,6 +89,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pipedrive | crm | api-token, oauth2 | 14 |
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
+| postmark | email, communication | api-key | 13 |
 | quickbooks | finance | oauth2 | 20 |
 | reddit | social-media | oauth2 | 8 |
 | s3 | storage | aws-iam | 9 |
@@ -102,6 +106,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | strava | productivity | oauth2 | 9 |
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
+| surveymonkey | forms, productivity | oauth2 | 12 |
 | telegram | communication | bot-token | 21 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
@@ -120,7 +125,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-95 apps, 1202 actions.
+100 apps, 1260 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

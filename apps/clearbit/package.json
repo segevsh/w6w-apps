@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/clearbit",
+  "version": "0.1.0",
+  "description": "Enrich people and companies, search for prospects, resolve visitor IPs, and score sign-up risk via Clearbit",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.clearbit",
+    "displayName": "Clearbit",
+    "categories": [
+      "marketing",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Clearbit"
+      }
+    },
+    "network": {
+      "allow": [
+        "person-stream.clearbit.com",
+        "company-stream.clearbit.com",
+        "company.clearbit.com",
+        "prospector.clearbit.com",
+        "reveal.clearbit.com",
+        "risk.clearbit.com",
+        "autocomplete.clearbit.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

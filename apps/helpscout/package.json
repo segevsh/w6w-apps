@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/helpscout",
+  "version": "0.1.0",
+  "description": "Manage Help Scout conversations, customers and mailboxes.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.helpscout",
+    "displayName": "Help Scout",
+    "categories": [
+      "support"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Help Scout"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.helpscout.net"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
