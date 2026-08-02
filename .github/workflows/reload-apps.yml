@@ -9,21 +9,28 @@ name: Reload apps
 # (item F-1) for the full design/decisions (D-1..D-4) behind this workflow.
 #
 # All the actual work happens in .github/scripts/reload-apps.ts — this file
-# is just the trigger, the checkout/Deno setup, and wiring four env vars in
+# is just the trigger, the checkout/Deno setup, and wiring two env vars in
 # from repo secrets/variables. The script owns exit-code semantics: 0 only
 # when every app refreshed/imported cleanly AND the redeploy trigger
 # succeeded; nonzero on any single failure. This job does nothing but let
 # that exit code propagate — Actions already fails the step (and the job) on
 # a nonzero exit with no extra handling required.
 #
+# ONE credential family, not two: every request the script makes — the
+# per-app catalog reload AND the redeploy trigger — goes through the
+# /system-ops machine-to-machine edge, authenticated with a short-lived JWT
+# minted from OPS_JWT_SECRET. There is no operator login here (no
+# /auth/login, no username/password secret pair) — the ops routes this
+# workflow calls (POST /system-ops/apps/import, POST
+# /system-ops/apps/:id/refresh, POST /system-ops/deploy-frontend) are all
+# reachable with that one secret, each gated by its own `scope` claim.
+#
 # BEFORE THIS WORKFLOW DOES ANYTHING USEFUL, a human needs to configure on
 # this repo's (w6w-io/w6w-apps) settings:
-#   - Repo variable  W6W_API_URL             — the production API base URL (not secret)
-#   - Repo secret    W6W_OPERATOR_USERNAME   — platform operator credential (server AUTH_USERNAME)
-#   - Repo secret    W6W_OPERATOR_PASSWORD   — platform operator credential (server AUTH_PASSWORD)
-#   - Repo secret    OPS_JWT_SECRET          — same signing key packages/frontend's CI already
-#                                              holds, for minting a short-lived ops JWT
-# Until all four are set, every run of this workflow fails at the "Run the
+#   - Repo variable  W6W_API_URL     — the production API base URL (not secret)
+#   - Repo secret    OPS_JWT_SECRET  — same signing key packages/frontend's CI already holds,
+#                                      for minting short-lived ops JWTs
+# Until both are set, every run of this workflow fails at the "Run the
 # reload script" step with the script's own missing-env-var message — that
 # is the intended failure mode, not a bug to route around here.
 # ---------------------------------------------------------------------------
@@ -83,7 +90,5 @@ jobs:
       - name: Run the reload script
         env:
           W6W_API_URL: ${{ vars.W6W_API_URL }}
-          W6W_OPERATOR_USERNAME: ${{ secrets.W6W_OPERATOR_USERNAME }}
-          W6W_OPERATOR_PASSWORD: ${{ secrets.W6W_OPERATOR_PASSWORD }}
           OPS_JWT_SECRET: ${{ secrets.OPS_JWT_SECRET }}
         run: deno run -A .github/scripts/reload-apps.ts
