@@ -6,6 +6,8 @@ Consume Cloudflare API
 - **Auth methods** — api-token
 - **Actions** — 8
 - **Egress allowlist** — `api.cloudflare.com`
+- **Website** — https://www.cloudflare.com
+- **API docs** — https://developers.cloudflare.com/api/
 
 ## Auth methods
 

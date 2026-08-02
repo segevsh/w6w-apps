@@ -7,6 +7,8 @@ workflows.
 - **Auth methods** — access-token, oauth2
 - **Actions** — 24
 - **Egress allowlist** — `api.github.com`
+- **Website** — https://github.com
+- **API docs** — https://docs.github.com/en/rest
 
 ## Health check
 

@@ -6,6 +6,8 @@ Manage Xero contacts, invoices, bank transactions, items and the chart of accoun
 - **Auth methods** — oauth2
 - **Actions** — 13
 - **Egress allowlist** — `api.xero.com`, `identity.xero.com`
+- **Website** — https://www.xero.com
+- **API docs** — https://developer.xero.com/documentation
 
 ## Auth: tenant discovery
 

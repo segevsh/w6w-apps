@@ -6,6 +6,8 @@ Send messages, manage channels, members, and roles on Discord servers.
 - **Auth methods** — bot-token, oauth2
 - **Actions** — 19
 - **Egress allowlist** — `discord.com`
+- **Website** — https://discord.com
+- **API docs** — https://docs.discord.com/developers/intro
 
 ## Health check
 

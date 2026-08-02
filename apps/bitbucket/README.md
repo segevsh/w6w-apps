@@ -6,6 +6,8 @@ Read repositories, workspaces and manage webhooks on Bitbucket Cloud.
 - **Auth methods** — basic, access-token
 - **Actions** — 12
 - **Egress allowlist** — `api.bitbucket.org`
+- **Website** — https://bitbucket.org
+- **API docs** — https://developer.atlassian.com/cloud/bitbucket/rest/intro/
 
 ## Health check
 

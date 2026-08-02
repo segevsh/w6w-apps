@@ -6,6 +6,7 @@ Manage monitors and alert contacts, and check account status, via the UptimeRobo
 - **Auth method** — api-key (`apiKey`, body-located)
 - **Actions** — 8
 - **Egress allowlist** — `api.uptimerobot.com`
+- **Website** — https://uptimerobot.com
 - **API docs** — https://uptimerobot.com/api/legacy/ (the v2 API; UptimeRobot's newer v3 REST
   API exists but was not used here — see "Why v2" below)
 

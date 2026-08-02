@@ -14,6 +14,8 @@ does not give Apps.
 - **Auth method** — rest-token (bearer)
 - **Actions** — 15
 - **Egress allowlist** — `*.upstash.io`
+- **Website** — https://upstash.com
+- **API docs** — https://upstash.com/docs/redis/features/restapi
 
 ## Setup
 

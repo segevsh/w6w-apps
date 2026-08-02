@@ -6,6 +6,8 @@ Read, create, update and delete entries on any Strapi content type, and browse t
 - **Auth methods** — api-token
 - **Actions** — 6
 - **Egress allowlist** — `*`
+- **Website** — https://strapi.io
+- **API docs** — https://docs.strapi.io/dev-docs/api/rest
 
 ## The arbitrary-endpoint model
 

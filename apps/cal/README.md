@@ -7,6 +7,7 @@ platform.
 - **Auth methods** — api-key
 - **Actions** — 8
 - **Egress allowlist** — `api.cal.com`
+- **Website** — https://cal.com
 - **API docs** — https://cal.com/docs/api-reference/v2/introduction
 
 ## API version note

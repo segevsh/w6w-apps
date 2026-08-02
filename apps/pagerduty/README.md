@@ -7,6 +7,8 @@ policies.
 - **Auth methods** — api-token, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.pagerduty.com`
+- **Website** — https://www.pagerduty.com
+- **API docs** — https://developer.pagerduty.com/api-reference
 
 ## Setup
 

@@ -6,6 +6,8 @@ Create, read, update and query any Salesforce object with SOQL and SOSL.
 - **Auth methods** — access-token, oauth2
 - **Actions** — 12
 - **Egress allowlist** — `*.salesforce.com`, `*.force.com`
+- **Website** — https://www.salesforce.com
+- **API docs** — https://developer.salesforce.com/docs
 
 ## Health check
 

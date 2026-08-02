@@ -6,6 +6,8 @@ Manage ServiceNow incidents, plus any other table, via the Table API.
 - **Auth methods** — basic, oauth2
 - **Actions** — 9
 - **Egress allowlist** — `*.service-now.com`
+- **Website** — https://www.servicenow.com
+- **API docs** — https://developer.servicenow.com
 
 ## Setup
 

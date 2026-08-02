@@ -7,6 +7,8 @@ API.
 - **Auth methods** — access-token, oauth2
 - **Actions** — 22
 - **Egress allowlist** — `app.asana.com`
+- **Website** — https://asana.com
+- **API docs** — https://developers.asana.com
 
 ## Health check
 

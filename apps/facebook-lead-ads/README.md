@@ -6,6 +6,8 @@ Read Facebook Lead Ads forms and their recent leads via the Facebook Graph API.
 - **Auth methods** — oauth2, page-token
 - **Actions** — 2
 - **Egress allowlist** — `graph.facebook.com`
+- **Website** — https://www.facebook.com/business/ads/lead-ads
+- **API docs** — https://developers.facebook.com/documentation/ads-commerce/marketing-api/guides/lead-ads
 
 ## Health check
 

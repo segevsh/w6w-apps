@@ -6,6 +6,8 @@ Send, read, and manage Gmail messages, drafts, labels, and threads.
 - **Auth methods** — oauth2, service-account
 - **Actions** — 25
 - **Egress allowlist** — `gmail.googleapis.com`, `www.googleapis.com`
+- **Website** — https://mail.google.com
+- **API docs** — https://developers.google.com/workspace/gmail
 
 ## Health check
 

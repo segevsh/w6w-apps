@@ -6,6 +6,8 @@ Manage Mailchimp audiences: create/update members, tag them, and send campaigns.
 - **Auth methods** — api-key, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `*.api.mailchimp.com`, `login.mailchimp.com`
+- **Website** — https://mailchimp.com
+- **API docs** — https://mailchimp.com/developer/marketing/api/root/
 
 ## Health check
 

@@ -6,6 +6,8 @@ Post to LinkedIn and read member/organization info via LinkedIn's versioned Post
 - **Auth methods** — oauth2, oauth2-community-management
 - **Actions** — 6
 - **Egress allowlist** — `api.linkedin.com`
+- **Website** — https://www.linkedin.com
+- **API docs** — https://developer.linkedin.com/
 
 ## Access is the whole story here
 

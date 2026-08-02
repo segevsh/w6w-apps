@@ -6,6 +6,8 @@ Send SMS/MMS/WhatsApp messages and make phone calls via Twilio.
 - **Auth methods** — api-key
 - **Actions** — 2
 - **Egress allowlist** — `api.twilio.com`
+- **Website** — https://www.twilio.com
+- **API docs** — https://www.twilio.com/docs/usage/api
 
 ## Health check
 

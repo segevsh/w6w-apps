@@ -7,6 +7,8 @@ webhooks.
 - **Auth methods** — none (PostBin is a genuinely anonymous, no-auth service)
 - **Actions** — 5
 - **Egress allowlist** — `www.postb.in`
+- **Website** — https://www.postb.in
+- **API docs** — https://www.postb.in/api
 
 ## What PostBin is
 

@@ -6,6 +6,8 @@ Manage Okta users and groups — identity lifecycle for an org.
 - **Auth methods** — api-token
 - **Actions** — 11
 - **Egress allowlist** — `*.okta.com`, `*.oktapreview.com`
+- **Website** — https://www.okta.com
+- **API docs** — https://developer.okta.com/docs/reference/
 
 ## Setup
 

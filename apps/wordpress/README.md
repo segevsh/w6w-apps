@@ -6,6 +6,8 @@ Create, read, update and delete posts, pages and users on a WordPress site.
 - **Auth methods** — basic, oauth2
 - **Actions** — 15
 - **Egress allowlist** — `*`
+- **Website** — https://wordpress.org
+- **API docs** — https://developer.wordpress.org/rest-api/
 
 ## Health check
 

@@ -14,6 +14,8 @@ Run and read back Splunk searches, list saved searches ("Reports") and list inde
 - **Auth methods** — token
 - **Actions** — 8
 - **Egress allowlist** — `*.splunkcloud.com`
+- **Website** — https://www.splunk.com
+- **API docs** — https://dev.splunk.com
 
 ## Setup
 

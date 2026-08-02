@@ -7,6 +7,8 @@ schema.
 - **Auth methods** — personal-access-token, oauth2, api-key
 - **Actions** — 10
 - **Egress allowlist** — `api.airtable.com`
+- **Website** — https://www.airtable.com
+- **API docs** — https://airtable.com/developers/web/api/introduction
 
 ## Health check
 

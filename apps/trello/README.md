@@ -6,6 +6,8 @@ Manage Trello boards, lists, cards, checklists, labels and members.
 - **Auth methods** — api-key
 - **Actions** — 27
 - **Egress allowlist** — `api.trello.com`
+- **Website** — https://trello.com
+- **API docs** — https://developer.atlassian.com/cloud/trello/rest/
 
 ## Health check
 

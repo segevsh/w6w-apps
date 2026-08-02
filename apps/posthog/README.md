@@ -7,6 +7,8 @@ PostHog.
 - **Auth methods** — personal-api-key
 - **Actions** — 8
 - **Egress allowlist** — `us.posthog.com`, `eu.posthog.com`, `us.i.posthog.com`, `eu.i.posthog.com`
+- **Website** — https://posthog.com
+- **API docs** — https://posthog.com/docs/api
 
 ## PostHog has two structurally different APIs — and two structurally different keys
 

@@ -6,6 +6,8 @@ Manage Zendesk Support tickets, users and organizations.
 - **Auth methods** — api-token, oauth2
 - **Actions** — 17
 - **Egress allowlist** — `*.zendesk.com`
+- **Website** — https://www.zendesk.com
+- **API docs** — https://developer.zendesk.com/api-reference/
 
 ## Health check
 

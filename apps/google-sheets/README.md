@@ -6,6 +6,8 @@ Read and write Google Sheets: manage spreadsheets, sheets, rows and cells.
 - **Auth methods** — oauth2, service-account
 - **Actions** — 12
 - **Egress allowlist** — `sheets.googleapis.com`, `www.googleapis.com`
+- **Website** — https://sheets.google.com
+- **API docs** — https://developers.google.com/workspace/sheets
 
 ## Health check
 

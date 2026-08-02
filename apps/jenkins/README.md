@@ -6,6 +6,8 @@ Trigger builds, inspect jobs, and manage the build queue on any Jenkins instance
 - **Auth methods** — basic
 - **Actions** — 6
 - **Egress allowlist** — `*`
+- **Website** — https://www.jenkins.io
+- **API docs** — https://www.jenkins.io/doc/book/using/remote-access-api/
 
 ## The arbitrary-endpoint model
 

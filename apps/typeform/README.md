@@ -6,6 +6,7 @@ Create and manage Typeform forms, responses, workspaces, themes and images via t
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 10
 - **Egress allowlist** — `api.typeform.com`
+- **Website** — https://www.typeform.com
 - **API docs** — https://www.typeform.com/developers/
 
 ## Health check

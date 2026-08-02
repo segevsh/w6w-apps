@@ -6,6 +6,8 @@ Read and manage Contentful spaces, content types, entries, assets and locales.
 - **Auth methods** — access-token
 - **Actions** — 10
 - **Egress allowlist** — `cdn.contentful.com`, `preview.contentful.com`, `api.contentful.com`, `upload.contentful.com`
+- **Website** — https://www.contentful.com
+- **API docs** — https://www.contentful.com/developers/docs/references/content-delivery-api/
 
 ## Health check
 

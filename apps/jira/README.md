@@ -6,6 +6,8 @@ Create, search and transition Jira issues, and manage comments, users and projec
 - **Auth methods** — api-token, oauth2
 - **Actions** — 15
 - **Egress allowlist** — `*.atlassian.net`, `api.atlassian.com`
+- **Website** — https://www.atlassian.com/software/jira
+- **API docs** — https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/
 
 ## Health check
 

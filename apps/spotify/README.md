@@ -7,6 +7,8 @@ Search Spotify's catalog and manage playlists, profile and playback state via th
 - **Auth methods** — oauth2 (Authorization Code + PKCE)
 - **Actions** — 9
 - **Egress allowlist** — `api.spotify.com`, `accounts.spotify.com`
+- **Website** — https://www.spotify.com
+- **API docs** — https://developer.spotify.com/documentation/web-api
 
 ## Auth
 

@@ -6,6 +6,8 @@ Search, index, and manage documents and indices on any Elasticsearch cluster.
 - **Auth methods** — api-key, basic
 - **Actions** — 9
 - **Egress allowlist** — `*`
+- **Website** — https://www.elastic.co
+- **API docs** — https://www.elastic.co/docs/api
 
 ## The arbitrary-endpoint model
 

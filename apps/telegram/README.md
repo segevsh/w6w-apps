@@ -6,6 +6,8 @@ Send messages, media and chat actions through a Telegram bot, and manage chats.
 - **Auth methods** — bot-token
 - **Actions** — 21
 - **Egress allowlist** — `api.telegram.org`
+- **Website** — https://telegram.org
+- **API docs** — https://core.telegram.org/bots/api
 
 ## Health check
 

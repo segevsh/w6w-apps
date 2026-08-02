@@ -6,6 +6,8 @@ Store and retrieve objects in Amazon S3, signed with AWS Signature Version 4 (Si
 - **Auth methods** — aws-iam
 - **Actions** — 9
 - **Egress allowlist** — 36 path-style regional S3 endpoints (`s3.<region>.amazonaws.com`), one per AWS commercial region + AWS GovCloud (US)
+- **Website** — https://aws.amazon.com/s3/
+- **API docs** — https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
 
 ## Auth — AWS IAM Access Key
 

@@ -6,6 +6,8 @@ Schedule and manage Zoom meetings, webinars, registrants, users and cloud record
 - **Auth methods** — server-to-server, oauth2
 - **Actions** — 14
 - **Egress allowlist** — `api.zoom.us`, `zoom.us`
+- **Website** — https://www.zoom.com
+- **API docs** — https://developers.zoom.us/docs/api/
 
 ## Health check
 

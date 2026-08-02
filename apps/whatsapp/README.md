@@ -7,6 +7,8 @@ Cloud API — Meta's Graph-API-hosted platform (not the deprecated on-prem Busin
 - **Auth methods** — access-token
 - **Actions** — 9
 - **Egress allowlist** — `graph.facebook.com`
+- **Website** — https://business.whatsapp.com
+- **API docs** — https://developers.facebook.com/docs/whatsapp
 
 ## Setup
 

@@ -2,6 +2,9 @@
 
 Execute SQL statements and manage Unity Catalog catalogs and tables in a Databricks workspace.
 
+- **Website** — https://www.databricks.com
+- **API docs** — https://docs.databricks.com/api/workspace/introduction
+
 ## Setup
 
 Every workspace has its own full host URL (e.g. `https://adb-1234567890123456.7.azuredatabricks.net`) — copy it from your browser's address bar while in the workspace. Generate a Personal Access Token from **User Settings → Developer → Access tokens**.

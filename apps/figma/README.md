@@ -6,6 +6,7 @@ Read Figma files, nodes, images, comments, projects and versions via the Figma R
 - **Auth methods** — personal-access-token, oauth2
 - **Actions** — 10
 - **Egress allowlist** — `api.figma.com`
+- **Website** — https://www.figma.com
 - **API docs** — https://developers.figma.com/docs/rest-api/
 
 ## Actions

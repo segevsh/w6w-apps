@@ -6,6 +6,8 @@ Consume CircleCI API
 - **Auth methods** — api-token
 - **Actions** — 8
 - **Egress allowlist** — `circleci.com`
+- **Website** — https://circleci.com
+- **API docs** — https://circleci.com/docs/api/v2/
 
 ## Auth methods
 
