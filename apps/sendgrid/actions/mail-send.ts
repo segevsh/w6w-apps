@@ -97,12 +97,9 @@ const action: ActionDefinition = {
       label: "Message Body",
       type: "text",
       config: { multiline: true },
-      // Required only when NOT using a dynamic template (the template supplies
-      // the body instead) — `required` + `showIf` combine correctly: the studio
-      // Test-gate (`requiredParamsFilled`) skips a required field while it's
-      // hidden, so this only blocks in the branch where `execute` actually needs
-      // it. Still re-checked in `execute` itself as the real enforcement point.
-      required: true,
+      // Genuinely optional: SendGrid's API doesn't require non-empty content,
+      // only the `content` array's presence (handled unconditionally in
+      // `execute` below) — a blank body sends a subject-only email.
       default: "",
       showIf: { field: "dynamicTemplate", truthy: false },
       hint: "Message body of the email to send",
@@ -298,12 +295,11 @@ const action: ActionDefinition = {
           "Subject/Message Body typed here — set the template ID, or turn Dynamic Template off.",
       );
     }
-    if (!useTemplate && !contentValue) {
-      throw new Error(
-        "`contentValue` is required unless Dynamic Template is enabled with a Dynamic " +
-          "Template ID (the template supplies the body instead).",
-      );
-    }
+    // No inline-body requirement: SendGrid's API only requires the `content`
+    // array to be present (structurally) when not using a template — the
+    // `value` string itself has no documented non-empty constraint, so an
+    // empty Message Body sends fine (a subject-only email). Left to SendGrid's
+    // own validation rather than pre-emptively blocked here.
     const dynamicData = useTemplate ? toTemplateData(p.dynamicTemplateFields) : undefined;
     if (dynamicData && Object.keys(dynamicData).length) {
       personalization.dynamic_template_data = dynamicData;
