@@ -3,31 +3,39 @@ name: Reload apps
 # ---------------------------------------------------------------------------
 # On every push to main, re-registers every app in w6w-pack.json against the
 # production w6w API (import for an id the catalog hasn't seen, refresh for
-# one it has). All the actual work happens in .github/scripts/reload-apps.js
-# — this file is just the trigger, Node setup, and wiring two env vars in
-# from repo secrets/variables.
+# one it has), then — only if that succeeds — dispatches a rebuild of
+# w6w-frontend so its app pages pick up the change with no human step in
+# between.
 #
-# Publishing the catalog only — no frontend redeploy trigger here. That's a
-# separate concern with its own credential/infra requirements; keeping this
-# workflow to one job (mint an ops JWT, refresh-or-import every app) keeps
-# its pass/fail signal meaningful.
+# The reload itself lives in .github/scripts/reload-apps.js — this file is
+# just the trigger, Node setup, and wiring env vars in from repo
+# secrets/variables. The frontend dispatch is a plain GitHub-to-GitHub API
+# call (workflow_dispatch on w6w-frontend's Build + Deploy workflow),
+# authenticated with a short-lived installation token from a GitHub App
+# installed on both repos — no production server, no GCP Secret Manager, no
+# Terraform involved. See actions/create-github-app-token's docs for the
+# token-minting step.
 #
 # BEFORE THIS WORKFLOW DOES ANYTHING USEFUL, a human needs to configure on
 # this repo's (w6w-io/w6w-apps) settings:
-#   - Repo variable  W6W_API_URL     — the production API base URL (not secret)
-#   - Repo secret    OPS_JWT_SECRET  — signs short-lived ops JWTs (same key
-#                                      GCP Secret Manager's `ops-jwt-secret` holds)
-# Until both are set, every run fails at the "Run the reload script" step
-# with the script's own missing-env-var message.
+#   - Repo variable  W6W_API_URL       — the production API base URL (not secret)
+#   - Repo secret    OPS_JWT_SECRET    — signs short-lived ops JWTs (same key
+#                                        GCP Secret Manager's `ops-jwt-secret` holds)
+#   - Repo secret    APP_ID            — the w6w-ci-bot GitHub App's ID (or client ID)
+#   - Repo secret    APP_PRIVATE_KEY   — that App's private key (.pem)
+# The App must be installed on w6w-io/w6w-frontend with `actions: write`.
+# Until W6W_API_URL/OPS_JWT_SECRET are set, the reload step fails with its
+# own missing-env-var message; the dispatch step just doesn't run.
 # ---------------------------------------------------------------------------
 
 on:
   push:
     branches: [main]
     # Path-filtered: this triggers a LIVE write against the production
-    # catalog, so a push touching only .github/ itself, root docs, etc.
-    # shouldn't fire it. Scoped to the app directories and the pack
-    # manifest, since those are the only paths the reload script reads.
+    # catalog (and, on success, a live frontend redeploy), so a push
+    # touching only .github/ itself, root docs, etc. shouldn't fire it.
+    # Scoped to the app directories and the pack manifest, since those are
+    # the only paths the reload script reads.
     paths:
       - "apps/**"
       - "w6w-pack.json"
@@ -57,3 +65,22 @@ jobs:
           W6W_API_URL: ${{ vars.W6W_API_URL }}
           OPS_JWT_SECRET: ${{ secrets.OPS_JWT_SECRET }}
         run: node .github/scripts/reload-apps.js
+
+      # Only reached if the reload step above succeeded (default GitHub
+      # Actions behavior — a failed prior step skips the rest of the job).
+      # Mints a token scoped to ONLY w6w-frontend, even though the App may be
+      # installed on other repos too — least privilege per call, one shared
+      # App registration.
+      - name: Mint a token scoped to w6w-frontend
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: w6w-io
+          repositories: w6w-frontend
+
+      - name: Trigger the frontend rebuild
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: gh workflow run "Build + Deploy" --repo w6w-io/w6w-frontend --ref main
