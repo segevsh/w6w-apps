@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/clockify",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Track time entries, projects, clients, and workspaces via the Clockify API v1.",
   "license": "MIT",
   "author": {
