@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/jotform",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Read Jotform forms and questions, and read, create, edit and delete form submissions via the Jotform API.",
   "license": "MIT",
   "author": {
