@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -112,13 +112,22 @@
       "path": "./apps/google-calendar"
     },
     {
+      "path": "./apps/google-contacts"
+    },
+    {
       "path": "./apps/google-docs"
     },
     {
       "path": "./apps/google-drive"
     },
     {
+      "path": "./apps/google-forms"
+    },
+    {
       "path": "./apps/google-sheets"
+    },
+    {
+      "path": "./apps/google-tasks"
     },
     {
       "path": "./apps/grafana"
@@ -143,6 +152,9 @@
     },
     {
       "path": "./apps/jira"
+    },
+    {
+      "path": "./apps/jotform"
     },
     {
       "path": "./apps/klaviyo"
@@ -185,6 +197,9 @@
     },
     {
       "path": "./apps/openai"
+    },
+    {
+      "path": "./apps/outlook"
     },
     {
       "path": "./apps/pagerduty"

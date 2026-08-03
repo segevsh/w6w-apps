@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/google-forms",
+  "version": "0.1.0",
+  "description": "Create and update Google Forms, manage publish state, and read form responses.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-forms",
+    "displayName": "Google Forms",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Forms"
+      }
+    },
+    "network": {
+      "allow": [
+        "forms.googleapis.com",
+        "www.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/google-contacts",
+  "version": "0.1.0",
+  "description": "Read and manage Google Contacts via the Google People API: connections, contacts and contact groups.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-contacts",
+    "displayName": "Google Contacts",
+    "categories": [
+      "crm",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Google Contacts"
+      }
+    },
+    "network": {
+      "allow": [
+        "people.googleapis.com",
+        "www.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

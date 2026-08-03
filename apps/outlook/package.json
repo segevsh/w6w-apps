@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/outlook",
+  "version": "0.1.0",
+  "description": "Read, send, and organize Microsoft Outlook mail and calendar events via the Microsoft Graph API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.outlook",
+    "displayName": "Microsoft Outlook",
+    "categories": [
+      "communication",
+      "email",
+      "calendar"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Microsoft Outlook"
+      }
+    },
+    "network": {
+      "allow": [
+        "graph.microsoft.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
