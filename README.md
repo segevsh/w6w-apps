@@ -50,8 +50,10 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | dropbox | storage | access-token, oauth2 | 12 |
 | elastic | search | api-key, basic | 9 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
+| excel | spreadsheets, productivity | oauth2 | 16 |
 | facebook | social-media, marketing | oauth2, page-token | 14 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
+| fathom | ai, productivity, video | api-key | 11 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | freshdesk | support | api-key | 13 |
 | ghost | cms, productivity | admin-api-key | 11 |
@@ -95,6 +97,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | outlook | communication, email, calendar | oauth2 | 18 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | paypal | commerce, finance | client-credentials | 13 |
+| pandadoc | documents, legal, productivity | api-key | 16 |
 | pipedrive | crm | api-token, oauth2 | 14 |
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
@@ -117,6 +120,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | supabase | databases | api-key | 7 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
 | tally | forms, productivity | api-key | 38 |
+| teams | communication | oauth2 | 16 |
 | telegram | communication | bot-token | 21 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
@@ -131,11 +135,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
 | xero | finance | oauth2 | 13 |
+| youtube | video, social-media | api-key, oauth2 | 16 |
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-110 apps, 1429 actions.
+115 apps, 1504 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

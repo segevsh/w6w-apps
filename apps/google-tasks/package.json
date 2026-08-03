@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-tasks",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Read and manage Google Tasks: task lists, tasks, completion, reordering, and clearing completed work.",
   "license": "MIT",
   "author": {

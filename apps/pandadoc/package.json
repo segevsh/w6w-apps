@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/pandadoc",
+  "version": "0.1.0",
+  "description": "Create documents from PandaDoc templates, send them for signature, track their status, and manage templates, contacts and webhook subscriptions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.pandadoc",
+    "displayName": "PandaDoc",
+    "categories": [
+      "documents",
+      "legal",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PandaDoc"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.pandadoc.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

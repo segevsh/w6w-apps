@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/youtube",
+  "version": "0.1.0",
+  "description": "Search YouTube and manage videos, playlists, comments and subscriptions through the YouTube Data API v3.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.youtube",
+    "displayName": "YouTube",
+    "categories": [
+      "video",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "YouTube"
+      }
+    },
+    "network": {
+      "allow": [
+        "youtube.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

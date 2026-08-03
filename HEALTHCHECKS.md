@@ -25,7 +25,7 @@ methods. Fourteen apps add a fourth question — **is this tenant's own host rea
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **366 checks**: 137 live probes, 82 declared absences, and 147
+Across the pack that comes to **383 checks**: 141 live probes, 89 declared absences, and 153
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -55,8 +55,10 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no | `service` · ~~quota~~ · 2 derived |
 | [elastic](apps/elastic/README.md) | none published | no | `GET /_security/_authenticate` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
 | [eventbrite](apps/eventbrite/README.md) | [page](https://status.eventbrite.com) | no | `GET /v3/users/me/` | yes | ~~service~~ · `quota` · 2 derived |
+| [excel](apps/excel/README.md) | none machine-readable | no | `GET /me/drive` | yes | ~~service~~ · `quota` · 1 derived |
 | [facebook](apps/facebook/README.md) | none published | no | _varies by method_ | yes | ~~service~~ · `quota` · 2 derived |
 | [facebook-lead-ads](apps/facebook-lead-ads/README.md) | [page](https://metastatus.com) | no | _varies by method_ | yes | ~~service~~ · `quota` · 2 derived |
+| [fathom](apps/fathom/README.md) | [Statuspage](https://status.fathom.video/api/v2/summary.json) | yes | `GET /meetings` | yes | `service` · `quota` · 1 derived |
 | [figma](apps/figma/README.md) | [Statuspage](https://status.figma.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 2 derived |
 | [freshdesk](apps/freshdesk/README.md) | none published | no | `GET /agents/me` | yes | ~~service~~ · `quota` · `domain` · 1 derived |
 | [ghost](apps/ghost/README.md) | [RSS](https://ghoststatus.org/history.rss) | yes | `GET /users/?limit=1` | no | `service` · ~~quota~~ · `site` · 1 derived |
@@ -99,6 +101,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [outlook](apps/outlook/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [pagerduty](apps/pagerduty/README.md) | [page](https://status.pagerduty.com) | no | `GET /abilities` | yes | ~~service~~ · `quota` · 2 derived |
 | [paypal](apps/paypal/README.md) | [Atom](https://www.paypal-status.com/feed/atom) | yes | `POST /v1/oauth2/token` | no | `service` · ~~quota~~ · 1 derived |
+| [pandadoc](apps/pandadoc/README.md) | [Statuspage](https://status.pandadoc.com/api/v2/summary.json) | yes | `GET /members/current` | no | `service` · ~~quota~~ · 1 derived |
 | [pipedrive](apps/pipedrive/README.md) | [page](https://status.pipedrive.com) | no | `GET /users/me` | yes | ~~service~~ · `quota` · 2 derived |
 | [postbin](apps/postbin/README.md) | [page](https://www.postb.in) | no | _no credential_ | no | `service` · ~~quota~~ · 0 derived |
 | [posthog](apps/posthog/README.md) | none published | no | `GET /api/users/@me/` | no | ~~service~~ · 1 derived |
@@ -121,6 +124,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [supabase](apps/supabase/README.md) | [Atom](https://status.supabase.com/history.atom) | yes | `GET /rest/v1/` | no | `service` · `reachable` · 1 derived |
 | [surveymonkey](apps/surveymonkey/README.md) | [Statuspage](https://status.surveymonkey.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
 | [tally](apps/tally/README.md) | [Better Stack](https://status.tally.so/index.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
+| [teams](apps/teams/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [todoist](apps/todoist/README.md) | [Instatus](https://status.todoist.net/summary.json) | yes | `GET /projects` | no | `service` · ~~quota~~ · 2 derived |
 | [toggl](apps/toggl/README.md) | [Statuspage](https://status.toggl.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
@@ -135,6 +139,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [woocommerce](apps/woocommerce/README.md) | none published | no | `GET /wp-json/wc/v3/system_status` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [wordpress](apps/wordpress/README.md) | none published | no | `GET /wp-json/wp/v2/users/me` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
 | [xero](apps/xero/README.md) | [Statuspage](https://status.xero.com/api/v2/summary.json) | yes | `GET /connections` | yes | `service` · `quota` · 1 derived |
+| [youtube](apps/youtube/README.md) | not on the Workspace dashboard | no | _varies by method_ | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [zendesk](apps/zendesk/README.md) | [page](https://status.zendesk.com) | no | `GET /api/v2/users/me.json` | yes | ~~service~~ · `quota` · `account` · 2 derived |
 | [zoho](apps/zoho/README.md) | [RSS](https://us.zohostatus.com/rss) | yes | `GET /crm/v6/org` | yes | `service` · `quota` · 1 derived |
 | [zoom](apps/zoom/README.md) | [Statuspage](https://status.zoom.us/api/v2/status.json) | yes | `GET /v2/users/me` | yes | `service` · `quota` · 2 derived |
