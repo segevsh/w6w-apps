@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/circle",
+  "version": "0.1.0",
+  "description": "Manage members, spaces, posts, comments, events and tags in a Circle community via the Circle Admin API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.circle",
+    "displayName": "Circle",
+    "categories": [
+      "communication",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Circle"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.circle.so"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

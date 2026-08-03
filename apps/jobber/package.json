@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/jobber",
+  "version": "0.1.0",
+  "description": "Jobber field-service management — clients, properties, requests, quotes, jobs, visits and invoices — over Jobber's GraphQL API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.jobber",
+    "displayName": "Jobber",
+    "categories": [
+      "calendar",
+      "crm",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Jobber"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.getjobber.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

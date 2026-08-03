@@ -25,7 +25,7 @@ methods. Twenty-two apps add a fourth question — **is this tenant's own host r
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **466 checks**: 174 live probes, 110 declared absences, and 182
+Across the pack that comes to **481 checks**: 181 live probes, 113 declared absences, and 187
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -47,6 +47,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [cal](apps/cal/README.md) | [JSON](https://status.cal.com/api/status/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [calendly](apps/calendly/README.md) | [Statuspage](https://www.calendlystatus.com/api/v2/status.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [chargebee](apps/chargebee/README.md) | [Statuspage](https://status.chargebee.com/api/v2/summary.json) | yes | `GET /customers?limit=1` | no | `service` · ~~quota~~ · 1 derived |
+| [circle](apps/circle/README.md) | [Statuspage](https://status.circle.so/api/v2/summary.json) | yes | `GET /community` | no | `service` · ~~quota~~ · 1 derived |
 | [circleci](apps/circleci/README.md) | [Statuspage](https://status.circleci.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [clearbit](apps/clearbit/README.md) | [Statuspage](https://status.clearbit.com/api/v2/summary.json) | yes | `GET /v1/domains/find?name=Clearbit` | yes | `service` · `quota` · 1 derived |
 | [clickup](apps/clickup/README.md) | [status.io](https://api.status.io/1.0/status/5b6e0963c662144d00913a09) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
@@ -73,6 +74,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [fathom](apps/fathom/README.md) | [Statuspage](https://status.fathom.video/api/v2/summary.json) | yes | `GET /meetings` | yes | `service` · `quota` · 1 derived |
 | [figma](apps/figma/README.md) | [Statuspage](https://status.figma.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 2 derived |
 | [flodesk](apps/flodesk/README.md) | none machine-readable | no | `GET /segments/colors` | yes | ~~service~~ · `quota` · 2 derived |
+| [followupboss](apps/followupboss/README.md) | [Statuspage](https://followupboss.statuspage.io/api/v2/summary.json) | yes | `GET /identity` | yes | `service` · `quota` · 1 derived |
 | [freshdesk](apps/freshdesk/README.md) | none published | no | `GET /agents/me` | yes | ~~service~~ · `quota` · `domain` · 1 derived |
 | [freshservice](apps/freshservice/README.md) | [Freshstatus](https://public-api.freshstatus.io/v1/public-components/?account_id=3616) | yes | `GET /api/v2/tickets` | yes | `service` · `quota` · `domain` · 1 derived |
 | [ghost](apps/ghost/README.md) | [RSS](https://ghoststatus.org/history.rss) | yes | `GET /users/?limit=1` | no | `service` · ~~quota~~ · `site` · 1 derived |
@@ -98,6 +100,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [intercom](apps/intercom/README.md) | [Statuspage](https://www.finstatus.com/api/v2/status.json) | yes | `GET /me` | yes | `service` · `quota` · 2 derived |
 | [jenkins](apps/jenkins/README.md) | none published | no | `GET /api/json` | no | ~~service~~ · `site` · 1 derived |
 | [jira](apps/jira/README.md) | [Statuspage](https://jira-software.status.atlassian.com/api/v2/status.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · `site` · 2 derived |
+| [jobber](apps/jobber/README.md) | [Statuspage](https://www.jobberstatus.net/api/v2/summary.json) | yes | `query { account }` (GraphQL) | yes | `service` · `quota` · 1 derived |
 | [jotform](apps/jotform/README.md) | [Statuspage](https://status.jotform.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
 | [kit](apps/kit/README.md) | [Statuspage](https://status.kit.com/api/v2/summary.json) | yes | `GET /v4/account` | no | `service` · ~~quota~~ · 1 derived |
 | [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes | `service` · `quota` · 1 derived |
@@ -110,6 +113,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [mailgun](apps/mailgun/README.md) | [Statuspage](https://status.mailgun.com/api/v2/summary.json) | yes | `GET /v4/domains?limit=1` | yes | `service` · `quota` · 1 derived |
 | [mailjet](apps/mailjet/README.md) | [Statuspage](https://status.mailjet.com/api/v2/summary.json) | yes | `GET /v3/REST/contactslist?Limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [mandrill](apps/mandrill/README.md) | none published | no | `POST /users/ping.json` | yes | ~~service~~ · `quota` · 1 derived |
+| [manychat](apps/manychat/README.md) | [Instatus](https://status.manychat.com/v2/components.json) | yes | `GET /fb/page/getInfo` | no | `service` · ~~quota~~ · 1 derived |
 | [microsoft-todo](apps/microsoft-todo/README.md) | none published | no | `GET /me/todo/lists` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
@@ -150,6 +154,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [tally](apps/tally/README.md) | [Better Stack](https://status.tally.so/index.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [teams](apps/teams/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
+| [ticktick](apps/ticktick/README.md) | none published | no | `GET /open/v1/project` | no | `service` · ~~quota~~ · 1 derived |
 | [todoist](apps/todoist/README.md) | [Instatus](https://status.todoist.net/summary.json) | yes | `GET /projects` | no | `service` · ~~quota~~ · 2 derived |
 | [toggl](apps/toggl/README.md) | [Statuspage](https://status.toggl.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [trello](apps/trello/README.md) | [Statuspage](https://trello.status.atlassian.com/api/v2/status.json) | yes | `GET /1/members/me` | no | `service` · ~~quota~~ · 1 derived |

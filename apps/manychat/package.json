@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/manychat",
+  "version": "0.1.0",
+  "description": "Manage Manychat subscribers, tags, custom fields, bot fields and automations, and send Flows or dynamic content over Messenger, Instagram, WhatsApp and Telegram.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.manychat",
+    "displayName": "Manychat",
+    "categories": [
+      "marketing",
+      "communication",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Manychat"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.manychat.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

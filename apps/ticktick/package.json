@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/ticktick",
+  "version": "0.1.0",
+  "description": "Manage TickTick projects, tasks, focus records and habits via the TickTick Open API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ticktick",
+    "displayName": "TickTick",
+    "categories": [
+      "productivity",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "TickTick"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.ticktick.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

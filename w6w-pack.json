@@ -49,6 +49,9 @@
       "path": "./apps/chargebee"
     },
     {
+      "path": "./apps/circle"
+    },
+    {
       "path": "./apps/circleci"
     },
     {
@@ -127,6 +130,9 @@
       "path": "./apps/flodesk"
     },
     {
+      "path": "./apps/followupboss"
+    },
+    {
       "path": "./apps/freshdesk"
     },
     {
@@ -202,6 +208,9 @@
       "path": "./apps/jira"
     },
     {
+      "path": "./apps/jobber"
+    },
+    {
       "path": "./apps/jotform"
     },
     {
@@ -236,6 +245,9 @@
     },
     {
       "path": "./apps/mandrill"
+    },
+    {
+      "path": "./apps/manychat"
     },
     {
       "path": "./apps/microsoft-todo"
@@ -356,6 +368,9 @@
     },
     {
       "path": "./apps/telegram"
+    },
+    {
+      "path": "./apps/ticktick"
     },
     {
       "path": "./apps/todoist"
