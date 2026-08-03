@@ -31,6 +31,7 @@ const service: HealthCheckDefinition = {
   description:
     "No machine-readable status API, Atom, or RSS feed is published for status.pagerduty.com.",
   kind: "service",
+  severity: "informational",
   unavailable: {
     reason:
       "status.pagerduty.com is a client-rendered SPA (PagerDuty's own Status Pages product) with " +

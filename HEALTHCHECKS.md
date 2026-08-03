@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Fourteen apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Twenty apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **430 checks**: 161 live probes, 99 declared absences, and 170
+Across the pack that comes to **448 checks**: 168 live probes, 104 declared absences, and 176
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -39,6 +39,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [apitemplateio](apps/apitemplateio/README.md) | none published | no | `GET /v2/list-templates?limit=1` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no | `service` · ~~quota~~ · 2 derived |
+| [bamboohr](apps/bamboohr/README.md) | [RSS](https://status.bamboohr.com/pages/54f0de009d6f51e7140002b7/rss) | yes | `GET /api/v1/employees/0` | no | `service` · ~~quota~~ · 1 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
 | [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
 | [box](apps/box/README.md) | [Statuspage](https://status.box.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
@@ -55,6 +56,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [coda](apps/coda/README.md) | [Atom](https://status.coda.io/history.atom) | yes | `GET /whoami` | no | `service` · ~~quota~~ · 1 derived |
 | [constantcontact](apps/constantcontact/README.md) | [Statuspage](https://status.constantcontact.com/api/v2/summary.json) | yes | `GET /contacts?limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [contentful](apps/contentful/README.md) | [Statuspage](https://www.contentfulstatus.com/api/v2/status.json) | yes | `GET /spaces/{spaceId}` | yes | `service` · `quota` · 1 derived |
+| [copper](apps/copper/README.md) | [Statuspage](https://status.copper.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [customerio](apps/customerio/README.md) | [Statuspage](https://status.customerio.com/api/v2/summary.json) | yes | `PUT /customers/:id` | no | `service` · ~~quota~~ · 1 derived |
 | [databricks](apps/databricks/README.md) | none published | no | _varies by method_ | no | ~~service~~ · `workspace` · 1 derived |
 | [deepl](apps/deepl/README.md) | [JSON](https://api-status.deepl.com/api/status) | yes | `GET /v2/usage` | yes | `service` · `quota` · 1 derived |
@@ -65,11 +67,13 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [eventbrite](apps/eventbrite/README.md) | [page](https://status.eventbrite.com) | no | `GET /v3/users/me/` | yes | ~~service~~ · `quota` · 2 derived |
 | [excel](apps/excel/README.md) | none machine-readable | no | `GET /me/drive` | yes | ~~service~~ · `quota` · 1 derived |
 | [facebook](apps/facebook/README.md) | none published | no | _varies by method_ | yes | ~~service~~ · `quota` · 2 derived |
+| [facebook-conversions](apps/facebook-conversions/README.md) | none published | no | `GET /me` | yes | ~~service~~ · `quota` · 2 derived |
 | [facebook-lead-ads](apps/facebook-lead-ads/README.md) | [page](https://metastatus.com) | no | _varies by method_ | yes | ~~service~~ · `quota` · 2 derived |
 | [fathom](apps/fathom/README.md) | [Statuspage](https://status.fathom.video/api/v2/summary.json) | yes | `GET /meetings` | yes | `service` · `quota` · 1 derived |
 | [figma](apps/figma/README.md) | [Statuspage](https://status.figma.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 2 derived |
 | [flodesk](apps/flodesk/README.md) | none machine-readable | no | `GET /segments/colors` | yes | ~~service~~ · `quota` · 2 derived |
 | [freshdesk](apps/freshdesk/README.md) | none published | no | `GET /agents/me` | yes | ~~service~~ · `quota` · `domain` · 1 derived |
+| [freshservice](apps/freshservice/README.md) | [Freshstatus](https://public-api.freshstatus.io/v1/public-components/?account_id=3616) | yes | `GET /api/v2/tickets` | yes | `service` · `quota` · `domain` · 1 derived |
 | [ghost](apps/ghost/README.md) | [RSS](https://ghoststatus.org/history.rss) | yes | `GET /users/?limit=1` | no | `service` · ~~quota~~ · `site` · 1 derived |
 | [github](apps/github/README.md) | [Statuspage](https://www.githubstatus.com/api/v2/status.json) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
 | [gitlab](apps/gitlab/README.md) | [status.io](https://api.status.io/1.0/status/5b36dc6502d06804c08349f7) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
@@ -107,6 +111,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
 | [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
+| [odoo](apps/odoo/README.md) | none machine-readable | no | `common.authenticate` (JSON-RPC) | no | ~~service~~ · ~~quota~~ · `instance` · 1 derived |
 | [okta](apps/okta/README.md) | [page](https://status.okta.com) | no | `GET /api/v1/users?limit=1` | yes | ~~service~~ · `quota` · 1 derived |
 | [onesimpleapi](apps/onesimpleapi/README.md) | none published | no | `GET /exchange_rate?to_currency=USD` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [openai](apps/openai/README.md) | [Statuspage](https://status.openai.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
@@ -198,10 +203,11 @@ recording:
 - **A declared absence must be `informational`.** An `unavailable` entry always reports
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
-  All 25 absences carry `severity: "informational"`.
-- **Fourteen apps needed the `context` posture**, the one a boolean would have lost:
-  Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake, Supabase, Upstash,
-  Elastic, Freshdesk, Grafana, Strapi and ActiveCampaign are each addressed by a per-tenant
+  All 104 absences carry `severity: "informational"`.
+- **Twenty apps needed the `context` posture**, the one a boolean would have lost:
+  ActiveCampaign, Databricks, Elastic, Freshdesk, Freshservice, Ghost, Grafana, Gravity Forms,
+  Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake, Strapi, Supabase, Upstash, WooCommerce,
+  WordPress and Zendesk are each addressed by a per-tenant
   host, so the check needs the Connection to know *which* host to call and no credential to
   interpret the answer. Their dependency probes are deliberately unauthenticated, which makes
   a **401 a pass** — it proves the host resolves and the API is answering, and whether the

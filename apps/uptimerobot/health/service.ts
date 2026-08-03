@@ -29,6 +29,7 @@ const service: HealthCheckDefinition = {
   title: "UptimeRobot platform status",
   kind: "service",
   covers: ["*"],
+  severity: "informational",
   unavailable: {
     reason: "UptimeRobot publishes no JSON status API or Atom/RSS feed for its own platform. " +
       "status.uptimerobot.com is UptimeRobot's own Public Status Page product, dogfooded for " +

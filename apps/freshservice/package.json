@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/freshservice",
+  "version": "0.1.0",
+  "description": "Manage Freshservice ITSM tickets, problems, changes, releases, assets and the service catalog.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.freshservice",
+    "displayName": "Freshservice",
+    "categories": [
+      "support",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Freshservice"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.freshservice.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

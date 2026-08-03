@@ -25,6 +25,9 @@
       "path": "./apps/asana"
     },
     {
+      "path": "./apps/bamboohr"
+    },
+    {
       "path": "./apps/bitbucket"
     },
     {
@@ -73,6 +76,9 @@
       "path": "./apps/contentful"
     },
     {
+      "path": "./apps/copper"
+    },
+    {
       "path": "./apps/customerio"
     },
     {
@@ -103,6 +109,9 @@
       "path": "./apps/facebook"
     },
     {
+      "path": "./apps/facebook-conversions"
+    },
+    {
       "path": "./apps/facebook-lead-ads"
     },
     {
@@ -116,6 +125,9 @@
     },
     {
       "path": "./apps/freshdesk"
+    },
+    {
+      "path": "./apps/freshservice"
     },
     {
       "path": "./apps/ghost"
@@ -227,6 +239,9 @@
     },
     {
       "path": "./apps/notion"
+    },
+    {
+      "path": "./apps/odoo"
     },
     {
       "path": "./apps/okta"
