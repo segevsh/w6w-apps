@@ -59,9 +59,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
+| google-contacts | crm, productivity | oauth2 | 14 |
 | google-docs | productivity, documents | oauth2, service-account | 20 |
 | google-drive | storage, productivity | oauth2, service-account | 18 |
+| google-forms | forms, productivity | oauth2, service-account | 12 |
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
+| google-tasks | productivity, project-management | oauth2 | 13 |
 | grafana | monitoring | service-account-token | 8 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | helpscout | support | oauth2 | 13 |
@@ -70,6 +73,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | jenkins | devops | basic | 6 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
+| jotform | forms, productivity | api-key | 14 |
 | klaviyo | marketing, email | api-key | 23 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
@@ -84,6 +88,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | okta | security | api-token | 11 |
 | onesimpleapi | developer-tools | api-key | 7 |
 | openai | ai, developer-tools | api-key | 13 |
+| outlook | communication, email, calendar | oauth2 | 18 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | paypal | commerce, finance | client-credentials | 13 |
 | pipedrive | crm | api-token, oauth2 | 14 |
@@ -125,7 +130,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-100 apps, 1260 actions.
+105 apps, 1331 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -137,6 +142,11 @@ under this architecture — see each app's README for the scoping rationale.
 Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
 apps built from scratch. See individual `assets/icon.*` for the exact source.
+
+One exception, stated rather than buried: **`google-forms`'s icon is drawn for this
+pack**, not a vendor asset — n8n has no Google Forms node and there was no upstream
+mark to port. It follows the sibling Google icons' silhouette in Forms' brand purple.
+Its own README says so too. Replace it if an official mark is ever sourced.
 
 ## Health checks
 

@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/google-tasks",
+  "version": "0.1.0",
+  "description": "Read and manage Google Tasks: task lists, tasks, completion, reordering, and clearing completed work.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-tasks",
+    "displayName": "Google Tasks",
+    "categories": [
+      "productivity",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Tasks"
+      }
+    },
+    "network": {
+      "allow": [
+        "tasks.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

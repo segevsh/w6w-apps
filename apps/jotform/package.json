@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/jotform",
+  "version": "0.1.0",
+  "description": "Read Jotform forms and questions, and read, create, edit and delete form submissions via the Jotform API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.jotform",
+    "displayName": "Jotform",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Jotform"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.jotform.com",
+        "eu-api.jotform.com",
+        "hipaa-api.jotform.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
