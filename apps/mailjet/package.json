@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/mailjet",
+  "version": "0.1.0",
+  "description": "Send transactional email via Mailjet's v3.1 Send API and manage contacts, lists, templates, senders, and statistics.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mailjet",
+    "displayName": "Mailjet",
+    "categories": [
+      "email",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mailjet"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mailjet.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

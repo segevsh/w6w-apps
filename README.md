@@ -52,6 +52,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | databricks | data-warehousing | bearer-token | 8 |
 | deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
+| discourse | communication, social-media | api-key | 26 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | elastic | search | api-key, basic | 9 |
@@ -80,6 +81,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-tasks | productivity, project-management | oauth2 | 13 |
 | grafana | monitoring | service-account-token | 8 |
 | gravityforms | forms, productivity | basic | 12 |
+| grist | spreadsheets, databases, productivity | api-key, oauth2 | 15 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | helpscout | support | oauth2 | 13 |
 | highlevel | crm, marketing | oauth2 | 18 |
@@ -97,7 +99,9 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
 | mailerlite | marketing, email | api-key | 16 |
 | mailgun | email, communication | api-key | 14 |
+| mailjet | email, marketing | basic | 17 |
 | mandrill | email, marketing | api-key | 17 |
+| microsoft-todo | productivity, project-management | oauth2 | 19 |
 | mistral | ai | api-key | 4 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | netlify | devops | personal-access-token | 10 |
@@ -114,6 +118,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
 | postmark | email, communication | api-key | 13 |
+| quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
 | reddit | social-media | oauth2 | 8 |
 | s3 | storage | aws-iam | 9 |
@@ -155,7 +160,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-130 apps, 1786 actions.
+135 apps, 1883 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -186,10 +191,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Twenty apps addressed
-by a per-tenant host (ActiveCampaign, Databricks, Elastic, Freshdesk, Freshservice, Ghost,
-Grafana, Gravity Forms, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake, Strapi, Supabase,
-Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
+because "nothing exists to check" is a more useful answer than a gap. Twenty-two apps addressed
+by a per-tenant host (ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice,
+Ghost, Grafana, Gravity Forms, Grist, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake,
+Strapi, Supabase, Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
 check for the tenant's own site. Credential checks come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 

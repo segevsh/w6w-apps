@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/discourse",
+  "version": "0.1.0",
+  "description": "Read and write topics, posts, categories, users and groups on a Discourse forum — self-hosted or Discourse-hosted.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.discourse",
+    "displayName": "Discourse",
+    "categories": [
+      "communication",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Discourse"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

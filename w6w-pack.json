@@ -91,6 +91,9 @@
       "path": "./apps/discord"
     },
     {
+      "path": "./apps/discourse"
+    },
+    {
       "path": "./apps/docusign"
     },
     {
@@ -175,6 +178,9 @@
       "path": "./apps/gravityforms"
     },
     {
+      "path": "./apps/grist"
+    },
+    {
       "path": "./apps/harvest"
     },
     {
@@ -226,7 +232,13 @@
       "path": "./apps/mailgun"
     },
     {
+      "path": "./apps/mailjet"
+    },
+    {
       "path": "./apps/mandrill"
+    },
+    {
+      "path": "./apps/microsoft-todo"
     },
     {
       "path": "./apps/mistral"
@@ -275,6 +287,9 @@
     },
     {
       "path": "./apps/postmark"
+    },
+    {
+      "path": "./apps/quickbase"
     },
     {
       "path": "./apps/quickbooks"
