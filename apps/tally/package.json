@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/tally",
+  "version": "0.1.0",
+  "description": "Build and manage Tally forms, questions, blocks, submissions, analytics, workspaces, folders, webhooks and organization members via the Tally API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.tally",
+    "displayName": "Tally",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Tally"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.tally.so"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

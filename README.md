@@ -58,6 +58,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
+| google-ads | marketing, analytics | oauth2 | 14 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
 | google-contacts | crm, productivity | oauth2 | 14 |
 | google-docs | productivity, documents | oauth2, service-account | 20 |
@@ -66,6 +67,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | google-tasks | productivity, project-management | oauth2 | 13 |
 | grafana | monitoring | service-account-token | 8 |
+| gravityforms | forms, productivity | basic | 12 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | helpscout | support | oauth2 | 13 |
 | highlevel | crm, marketing | oauth2 | 18 |
@@ -74,11 +76,13 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jenkins | devops | basic | 6 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
 | jotform | forms, productivity | api-key | 14 |
+| kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
 | mailcheck | email, marketing | api-key | 4 |
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
+| mailerlite | marketing, email | api-key | 16 |
 | mailgun | email, communication | api-key | 14 |
 | mandrill | email, marketing | api-key | 17 |
 | mistral | ai | api-key | 4 |
@@ -112,6 +116,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
+| tally | forms, productivity | api-key | 38 |
 | telegram | communication | bot-token | 21 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
@@ -130,7 +135,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-105 apps, 1331 actions.
+110 apps, 1429 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

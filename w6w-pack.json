@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -109,6 +109,9 @@
       "path": "./apps/gmail"
     },
     {
+      "path": "./apps/google-ads"
+    },
+    {
       "path": "./apps/google-calendar"
     },
     {
@@ -131,6 +134,9 @@
     },
     {
       "path": "./apps/grafana"
+    },
+    {
+      "path": "./apps/gravityforms"
     },
     {
       "path": "./apps/harvest"
@@ -157,6 +163,9 @@
       "path": "./apps/jotform"
     },
     {
+      "path": "./apps/kit"
+    },
+    {
       "path": "./apps/klaviyo"
     },
     {
@@ -170,6 +179,9 @@
     },
     {
       "path": "./apps/mailchimp"
+    },
+    {
+      "path": "./apps/mailerlite"
     },
     {
       "path": "./apps/mailgun"
@@ -269,6 +281,9 @@
     },
     {
       "path": "./apps/surveymonkey"
+    },
+    {
+      "path": "./apps/tally"
     },
     {
       "path": "./apps/telegram"

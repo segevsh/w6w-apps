@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/google-ads",
+  "version": "0.1.0",
+  "description": "Read and manage Google Ads accounts: GAQL reporting, campaigns, budgets, ad groups, ads and keywords over the Google Ads API v25 REST interface.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-ads",
+    "displayName": "Google Ads",
+    "categories": [
+      "marketing",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Ads"
+      }
+    },
+    "network": {
+      "allow": [
+        "googleads.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
