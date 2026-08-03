@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/docusign",
+  "version": "0.1.0",
+  "description": "Send envelopes for signature with Docusign eSignature, track their status, download signed documents, and manage recipients, templates and account users.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.docusign",
+    "displayName": "DocuSign",
+    "categories": [
+      "documents",
+      "legal",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Docusign"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.docusign.net",
+        "account.docusign.com",
+        "account-d.docusign.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/close",
+  "version": "0.1.0",
+  "description": "Manage Close CRM leads, contacts, opportunities, activities, tasks and org metadata via the Close API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.close",
+    "displayName": "Close",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Close"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.close.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

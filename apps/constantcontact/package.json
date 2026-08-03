@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/constantcontact",
+  "version": "0.1.0",
+  "description": "Manage Constant Contact contacts, contact lists, custom fields, and email campaigns through the V3 API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.constantcontact",
+    "displayName": "Constant Contact",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Constant Contact"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.cc.email"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
