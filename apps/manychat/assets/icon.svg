@@ -1,0 +1,7 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Manychat">
+  <rect width="40" height="40" rx="9" fill="#3A46BD"/>
+  <path d="M11 9h13.5c4.14 0 7.5 3.36 7.5 7.5S28.64 24 24.5 24H18.6l-5.35 4.6A1.2 1.2 0 0 1 11.3 27.7V9Z" fill="#FFFFFF"/>
+  <circle cx="17" cy="16.5" r="1.9" fill="#3A46BD"/>
+  <circle cx="22.5" cy="16.5" r="1.9" fill="#3A46BD"/>
+  <circle cx="28" cy="16.5" r="1.9" fill="#3A46BD"/>
+</svg>

@@ -38,6 +38,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
 | chargebee | commerce, finance | api-key | 17 |
+| circle | communication, social-media | api-token | 33 |
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
@@ -52,6 +53,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | databricks | data-warehousing | bearer-token | 8 |
 | deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
+| discourse | communication, social-media | api-key | 26 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | elastic | search | api-key, basic | 9 |
@@ -63,6 +65,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | fathom | ai, productivity, video | api-key | 11 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
+| followupboss | crm | api-key | 26 |
 | freshdesk | support | api-key | 13 |
 | freshservice | support, devops | api-key | 23 |
 | ghost | cms, productivity | admin-api-key | 11 |
@@ -80,6 +83,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-tasks | productivity, project-management | oauth2 | 13 |
 | grafana | monitoring | service-account-token | 8 |
 | gravityforms | forms, productivity | basic | 12 |
+| grist | spreadsheets, databases, productivity | api-key, oauth2 | 15 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | helpscout | support | oauth2 | 13 |
 | highlevel | crm, marketing | oauth2 | 18 |
@@ -87,6 +91,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | jenkins | devops | basic | 6 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
+| jobber | calendar, crm, finance | oauth2 | 28 |
 | jotform | forms, productivity | api-key | 14 |
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
@@ -97,7 +102,10 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailchimp | marketing, communication | api-key, oauth2 | 14 |
 | mailerlite | marketing, email | api-key | 16 |
 | mailgun | email, communication | api-key | 14 |
+| mailjet | email, marketing | basic | 17 |
 | mandrill | email, marketing | api-key | 17 |
+| manychat | marketing, communication, social-media | api-token | 25 |
+| microsoft-todo | productivity, project-management | oauth2 | 19 |
 | mistral | ai | api-key | 4 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | netlify | devops | personal-access-token | 10 |
@@ -114,6 +122,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
 | postmark | email, communication | api-key | 13 |
+| quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
 | reddit | social-media | oauth2 | 8 |
 | s3 | storage | aws-iam | 9 |
@@ -136,6 +145,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | tally | forms, productivity | api-key | 38 |
 | teams | communication | oauth2 | 16 |
 | telegram | communication | bot-token | 21 |
+| ticktick | productivity, project-management | oauth2 | 23 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
 | trello | project-management, productivity | api-key | 27 |
@@ -155,7 +165,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-130 apps, 1786 actions.
+140 apps, 2018 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -168,17 +178,26 @@ Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
 apps built from scratch. See individual `assets/icon.*` for the exact source.
 
-Two exceptions, stated rather than buried:
+Five exceptions, stated rather than buried. In each case n8n has no node for the
+product and the vendor publishes no obtainable mark, so there was nothing to copy
+verbatim. Where a colour is quoted below it *is* vendor-sourced — taken from the
+vendor's own stylesheet, theme config or web manifest — even though the artwork is not.
 
-- **`google-forms`'s icon is drawn for this pack**, not a vendor asset — n8n has no
-  Google Forms node and there was no upstream mark to port. It follows the sibling
-  Google icons' silhouette in Forms' brand purple.
-- **`odoo`'s icon is drawn for this pack** — Odoo publishes no downloadable brand
-  mark, and n8n's `nodes-base` Odoo icon is itself a simplification (a single filled
-  ring), not the vendor's own artwork, so there was nothing to copy verbatim. Ours is
-  two rings in Odoo's brand purples (`#714B67`, `#875A7B`).
+- **`google-forms`** — follows the sibling Google icons' silhouette in Forms' brand
+  purple, with a checklist glyph.
+- **`odoo`** — n8n's `nodes-base` Odoo icon is itself a simplification (a single
+  filled ring), not the vendor's own artwork. Ours is two rings in Odoo's brand
+  purples (`#714B67`, `#875A7B`).
+- **`manychat`** — the vendor's assets sit behind Cloudflare (403) and the one
+  fetchable logo is a wordmark, unusable as a square icon. Ours is a chat bubble in
+  `#3A46BD`, the `brand_color` from ManyChat's own help-centre theme.
+- **`ticktick`** — a rounded square and checkmark in `#4772FA`, the `themeColor`
+  from TickTick's own `developer.ticktick.com/docs/config.js`.
+- **`circle`** — n8n has a CircleCI node, a different product. Ours is a ring with
+  three satellites, in colours sampled from circle.so's own stylesheet.
 
-Each app's own README says so too. Replace either if an official mark is ever sourced.
+Each app's own README says so too. Replace any of them if an official mark is ever
+sourced.
 
 ## Health checks
 
@@ -186,10 +205,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Twenty apps addressed
-by a per-tenant host (ActiveCampaign, Databricks, Elastic, Freshdesk, Freshservice, Ghost,
-Grafana, Gravity Forms, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake, Strapi, Supabase,
-Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
+because "nothing exists to check" is a more useful answer than a gap. Twenty-two apps addressed
+by a per-tenant host (ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice,
+Ghost, Grafana, Gravity Forms, Grist, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake,
+Strapi, Supabase, Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
 check for the tenant's own site. Credential checks come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 

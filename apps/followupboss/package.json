@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/followupboss",
+  "version": "0.1.0",
+  "description": "Manage Follow Up Boss real-estate CRM people, lead events, notes, calls, tasks, appointments, deals and account metadata via the Follow Up Boss API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.followupboss",
+    "displayName": "Follow Up Boss",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Follow Up Boss"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.followupboss.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

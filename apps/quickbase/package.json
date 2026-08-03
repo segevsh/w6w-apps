@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/quickbase",
+  "version": "0.1.0",
+  "description": "Query, upsert and delete Quickbase records; manage tables, fields, relationships and reports.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.quickbase",
+    "displayName": "Quickbase",
+    "categories": [
+      "databases",
+      "productivity",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Quickbase"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.quickbase.com",
+        "api.quickbase.eu"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

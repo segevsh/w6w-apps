@@ -49,6 +49,9 @@
       "path": "./apps/chargebee"
     },
     {
+      "path": "./apps/circle"
+    },
+    {
       "path": "./apps/circleci"
     },
     {
@@ -91,6 +94,9 @@
       "path": "./apps/discord"
     },
     {
+      "path": "./apps/discourse"
+    },
+    {
       "path": "./apps/docusign"
     },
     {
@@ -122,6 +128,9 @@
     },
     {
       "path": "./apps/flodesk"
+    },
+    {
+      "path": "./apps/followupboss"
     },
     {
       "path": "./apps/freshdesk"
@@ -175,6 +184,9 @@
       "path": "./apps/gravityforms"
     },
     {
+      "path": "./apps/grist"
+    },
+    {
       "path": "./apps/harvest"
     },
     {
@@ -194,6 +206,9 @@
     },
     {
       "path": "./apps/jira"
+    },
+    {
+      "path": "./apps/jobber"
     },
     {
       "path": "./apps/jotform"
@@ -226,7 +241,16 @@
       "path": "./apps/mailgun"
     },
     {
+      "path": "./apps/mailjet"
+    },
+    {
       "path": "./apps/mandrill"
+    },
+    {
+      "path": "./apps/manychat"
+    },
+    {
+      "path": "./apps/microsoft-todo"
     },
     {
       "path": "./apps/mistral"
@@ -275,6 +299,9 @@
     },
     {
       "path": "./apps/postmark"
+    },
+    {
+      "path": "./apps/quickbase"
     },
     {
       "path": "./apps/quickbooks"
@@ -341,6 +368,9 @@
     },
     {
       "path": "./apps/telegram"
+    },
+    {
+      "path": "./apps/ticktick"
     },
     {
       "path": "./apps/todoist"
