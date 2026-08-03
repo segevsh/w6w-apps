@@ -50,6 +50,37 @@ function mintToken(scope) {
 
 const PACK_PATH = path.join(__dirname, "..", "..", "w6w-pack.json");
 
+/** How many times to re-attempt a request that failed for a reason that may not recur. */
+const MAX_ATTEMPTS = 3;
+const RETRY_BASE_MS = 1000;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * `fetch`, retried on 5xx and on network-level throws.
+ *
+ * A 4xx is the server's considered answer — a bad ref, a version conflict, an unknown app — and
+ * repeating it just wastes the run. A 5xx or a dropped connection is the server having a moment,
+ * and on 2026-08-03 exactly one of those (a bare `503 {}` on postmark) failed a run in which the
+ * other 114 apps were fine, which in turn suppressed the frontend deploy for the whole batch.
+ * The catalog write is idempotent, so re-attempting is safe.
+ */
+async function fetchWithRetry(url, init) {
+  let lastErr;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(url, init);
+      if (res.status < 500 || attempt === MAX_ATTEMPTS) return res;
+      lastErr = `${res.status}`;
+    } catch (err) {
+      if (attempt === MAX_ATTEMPTS) throw err;
+      lastErr = err.message;
+    }
+    await sleep(RETRY_BASE_MS * attempt);
+  }
+  throw new Error(lastErr);
+}
+
 async function refreshOrImport(relPath) {
   const pkg = JSON.parse(
     fs.readFileSync(path.join(__dirname, "..", "..", relPath, "package.json"), "utf8"),
@@ -60,7 +91,7 @@ async function refreshOrImport(relPath) {
   // A network-level throw (timeout, DNS blip, reset) must fail this ONE entry, never take down
   // the whole run — the loop in main() has 100 more entries to get through either way.
   try {
-    const refreshRes = await fetch(`${API_URL}/system-ops/apps/${id}/refresh`, {
+    const refreshRes = await fetchWithRetry(`${API_URL}/system-ops/apps/${id}/refresh`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${mintToken(APPS_RELOAD_SCOPE)}` },
       body: JSON.stringify({ force: true }),
@@ -74,7 +105,7 @@ async function refreshOrImport(relPath) {
       return { id, name, ok: false, detail: `refresh ${refreshRes.status} ${JSON.stringify(refreshBody)}` };
     }
 
-    const importRes = await fetch(`${API_URL}/system-ops/apps/import`, {
+    const importRes = await fetchWithRetry(`${API_URL}/system-ops/apps/import`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${mintToken(APPS_RELOAD_SCOPE)}` },
       body: JSON.stringify({ source: `github:w6w-io/w6w-apps@main#${relPath}`, refresh: true }),
