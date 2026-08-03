@@ -39,14 +39,17 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
+| close | crm | api-key | 21 |
 | clockify | productivity | api-key | 10 |
 | cloudflare | devops | api-token | 8 |
 | coda | productivity, documents | api-token | 11 |
+| constantcontact | marketing, email | oauth2 | 22 |
 | contentful | cms | access-token | 10 |
 | customerio | marketing, email | basic | 7 |
 | databricks | data-warehousing | bearer-token | 8 |
 | deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
+| docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | elastic | search | api-key, basic | 9 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
@@ -55,6 +58,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | fathom | ai, productivity, video | api-key | 11 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
+| flodesk | marketing, email | api-key, oauth2 | 22 |
 | freshdesk | support | api-key | 13 |
 | ghost | cms, productivity | admin-api-key | 11 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
@@ -116,6 +120,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | spotify | productivity | oauth2 | 9 |
 | strapi | cms | api-token | 6 |
 | strava | productivity | oauth2 | 9 |
+| square | commerce, finance | access-token | 17 |
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
@@ -140,7 +145,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-115 apps, 1504 actions.
+120 apps, 1602 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

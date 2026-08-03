@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/flodesk",
+  "version": "0.1.0",
+  "description": "Manage Flodesk subscribers, segments, workflows, custom fields and webhooks via the Flodesk API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.flodesk",
+    "displayName": "Flodesk",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Flodesk"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.flodesk.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

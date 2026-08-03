@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -55,10 +55,16 @@
       "path": "./apps/clockify"
     },
     {
+      "path": "./apps/close"
+    },
+    {
       "path": "./apps/cloudflare"
     },
     {
       "path": "./apps/coda"
+    },
+    {
+      "path": "./apps/constantcontact"
     },
     {
       "path": "./apps/contentful"
@@ -74,6 +80,9 @@
     },
     {
       "path": "./apps/discord"
+    },
+    {
+      "path": "./apps/docusign"
     },
     {
       "path": "./apps/dropbox"
@@ -98,6 +107,9 @@
     },
     {
       "path": "./apps/figma"
+    },
+    {
+      "path": "./apps/flodesk"
     },
     {
       "path": "./apps/freshdesk"
@@ -275,6 +287,9 @@
     },
     {
       "path": "./apps/spotify"
+    },
+    {
+      "path": "./apps/square"
     },
     {
       "path": "./apps/strapi"
