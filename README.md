@@ -30,11 +30,13 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | anthropic | ai | api-key | 14 |
 | apitemplateio | developer-tools | api-key | 5 |
 | asana | productivity, project-management | access-token, oauth2 | 22 |
+| attio | crm | api-key | 29 |
 | bamboohr | hr | api-key | 18 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
 | box | storage | oauth2 | 10 |
 | brevo | marketing, email | api-key | 15 |
+| buffer | social-media, marketing | oauth2, api-key | 14 |
 | cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
 | chargebee | commerce, finance | api-key | 17 |
@@ -74,6 +76,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | gmail | communication, email | oauth2, service-account | 25 |
 | google-ads | marketing, analytics | oauth2 | 14 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
+| google-slides | documents, productivity | oauth2, service-account | 17 |
 | googlechat | communication | oauth2 | 18 |
 | google-contacts | crm, productivity | oauth2 | 14 |
 | google-docs | productivity, documents | oauth2, service-account | 20 |
@@ -93,6 +96,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
 | jobber | calendar, crm, finance | oauth2 | 28 |
 | jotform | forms, productivity | api-key | 14 |
+| kajabi | commerce, crm, marketing | client-credentials | 49 |
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
 | lemlist | marketing, email | api-key | 18 |
@@ -105,6 +109,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailjet | email, marketing | basic | 17 |
 | mandrill | email, marketing | api-key | 17 |
 | manychat | marketing, communication, social-media | api-token | 25 |
+| metabase | analytics, databases | api-key | 17 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
 | mistral | ai | api-key | 4 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
@@ -165,7 +170,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-140 apps, 2018 actions.
+145 apps, 2144 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -205,10 +210,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Twenty-two apps addressed
+because "nothing exists to check" is a more useful answer than a gap. Twenty-three apps addressed
 by a per-tenant host (ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice,
-Ghost, Grafana, Gravity Forms, Grist, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake,
-Strapi, Supabase, Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
+Ghost, Grafana, Gravity Forms, Grist, Jenkins, Jira, Metabase, Odoo, ServiceNow, Shopify,
+Snowflake, Strapi, Supabase, Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
 check for the tenant's own site. Credential checks come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 

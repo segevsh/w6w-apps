@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/kajabi",
+  "version": "0.1.0",
+  "description": "Manage contacts, tags, offers, products, orders, purchases and forms on a Kajabi site via the Kajabi Public API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.kajabi",
+    "displayName": "Kajabi",
+    "categories": [
+      "commerce",
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Kajabi"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.kajabi.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

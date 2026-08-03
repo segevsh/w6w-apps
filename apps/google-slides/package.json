@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/google-slides",
+  "version": "0.1.0",
+  "description": "Create and edit Google Slides presentations: slides, text, images, shapes and tables.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-slides",
+    "displayName": "Google Slides",
+    "categories": [
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Slides"
+      }
+    },
+    "network": {
+      "allow": [
+        "slides.googleapis.com",
+        "oauth2.googleapis.com",
+        "www.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

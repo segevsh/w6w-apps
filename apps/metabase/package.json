@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/metabase",
+  "version": "0.1.0",
+  "description": "Run saved Metabase questions and ad-hoc MBQL/SQL queries, export results as CSV/JSON/XLSX, and browse collections, dashboards, databases and search.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.metabase",
+    "displayName": "Metabase",
+    "categories": [
+      "analytics",
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Metabase"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

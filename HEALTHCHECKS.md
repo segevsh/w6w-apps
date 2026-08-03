@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Twenty-two apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Twenty-three apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **481 checks**: 181 live probes, 113 declared absences, and 187
+Across the pack that comes to **499 checks**: 188 live probes, 117 declared absences, and 194
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -39,11 +39,13 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [apitemplateio](apps/apitemplateio/README.md) | none published | no | `GET /v2/list-templates?limit=1` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no | `service` · ~~quota~~ · 2 derived |
+| [attio](apps/attio/README.md) | [Statuspage](https://status.attio.com/api/v2/summary.json) | yes | `GET /v2/self` | no | `service` · ~~quota~~ · 1 derived |
 | [bamboohr](apps/bamboohr/README.md) | [RSS](https://status.bamboohr.com/pages/54f0de009d6f51e7140002b7/rss) | yes | `GET /api/v1/employees/0` | no | `service` · ~~quota~~ · 1 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
 | [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
 | [box](apps/box/README.md) | [Statuspage](https://status.box.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [brevo](apps/brevo/README.md) | [Statuspage](https://status.brevo.com/api/v2/status.json) | yes | `GET /v3/account` | yes | `service` · `quota` · 1 derived |
+| [buffer](apps/buffer/README.md) | [Statuspage](https://status.buffer.com/api/v2/summary.json) | yes | `{ account { id } }` (GraphQL) | yes | `service` · `quota` · 2 derived |
 | [cal](apps/cal/README.md) | [JSON](https://status.cal.com/api/status/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [calendly](apps/calendly/README.md) | [Statuspage](https://www.calendlystatus.com/api/v2/status.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [chargebee](apps/chargebee/README.md) | [Statuspage](https://status.chargebee.com/api/v2/summary.json) | yes | `GET /customers?limit=1` | no | `service` · ~~quota~~ · 1 derived |
@@ -83,6 +85,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [gmail](apps/gmail/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /gmail/v1/users/me/profile` | no | `service` · ~~quota~~ · 2 derived |
 | [google-ads](apps/google-ads/README.md) | [JSON](https://ads.google.com/status/publisher/incidents.json) | yes | `GET /v25/customers:listAccessibleCustomers` | no | `service` · ~~quota~~ · 1 derived |
 | [google-calendar](apps/google-calendar/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/me/calendarList?maxResults=1` | no | `service` · ~~quota~~ · 2 derived |
+| [google-slides](apps/google-slides/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `POST /tokeninfo` | no | `service` · ~~quota~~ · 2 derived |
 | [googlechat](apps/googlechat/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /spaces` | no | `service` · ~~quota~~ · 1 derived |
 | [google-contacts](apps/google-contacts/README.md) | none published | no | `GET /people/me?personFields=names` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [google-docs](apps/google-docs/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
@@ -102,6 +105,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [jira](apps/jira/README.md) | [Statuspage](https://jira-software.status.atlassian.com/api/v2/status.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · `site` · 2 derived |
 | [jobber](apps/jobber/README.md) | [Statuspage](https://www.jobberstatus.net/api/v2/summary.json) | yes | `query { account }` (GraphQL) | yes | `service` · `quota` · 1 derived |
 | [jotform](apps/jotform/README.md) | [Statuspage](https://status.jotform.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
+| [kajabi](apps/kajabi/README.md) | [Statuspage](https://status.kajabi.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 1 derived |
 | [kit](apps/kit/README.md) | [Statuspage](https://status.kit.com/api/v2/summary.json) | yes | `GET /v4/account` | no | `service` · ~~quota~~ · 1 derived |
 | [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes | `service` · `quota` · 1 derived |
 | [lemlist](apps/lemlist/README.md) | [Hyperping](https://status.lempire.com/status.json) | yes | `GET /team` | yes | `service` · `quota` · 1 derived |
@@ -114,6 +118,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [mailjet](apps/mailjet/README.md) | [Statuspage](https://status.mailjet.com/api/v2/summary.json) | yes | `GET /v3/REST/contactslist?Limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [mandrill](apps/mandrill/README.md) | none published | no | `POST /users/ping.json` | yes | ~~service~~ · `quota` · 1 derived |
 | [manychat](apps/manychat/README.md) | [Instatus](https://status.manychat.com/v2/components.json) | yes | `GET /fb/page/getInfo` | no | `service` · ~~quota~~ · 1 derived |
+| [metabase](apps/metabase/README.md) | [Statuspage](https://status.metabase.com/api/v2/summary.json) | yes | `GET /api/user/current` | no | `service` · ~~quota~~ · `instance` · 1 derived |
 | [microsoft-todo](apps/microsoft-todo/README.md) | none published | no | `GET /me/todo/lists` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
@@ -213,11 +218,11 @@ recording:
 - **A declared absence must be `informational`.** An `unavailable` entry always reports
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
-  All 110 absences carry `severity: "informational"`.
-- **Twenty-two apps needed the `context` posture**, the one a boolean would have lost:
+  All 117 absences carry `severity: "informational"`.
+- **Twenty-three apps needed the `context` posture**, the one a boolean would have lost:
   ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice, Ghost, Grafana,
-  Gravity Forms, Grist, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake, Strapi, Supabase,
-  Upstash, WooCommerce, WordPress and Zendesk are each addressed by a per-tenant
+  Gravity Forms, Grist, Jenkins, Jira, Metabase, Odoo, ServiceNow, Shopify, Snowflake, Strapi,
+  Supabase, Upstash, WooCommerce, WordPress and Zendesk are each addressed by a per-tenant
   host, so the check needs the Connection to know *which* host to call and no credential to
   interpret the answer. Their dependency probes are deliberately unauthenticated, which makes
   a **401 a pass** — it proves the host resolves and the API is answering, and whether the

@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/buffer",
+  "version": "0.1.0",
+  "description": "Schedule and manage social posts, channels, ideas and post metrics in Buffer via the Buffer GraphQL Public API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.buffer",
+    "displayName": "Buffer",
+    "categories": [
+      "social-media",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Buffer"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.buffer.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
