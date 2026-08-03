@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/chargebee",
+  "version": "0.1.0",
+  "description": "Manage Chargebee customers, subscriptions, invoices, payments and the product catalog via the Chargebee API v2 (Product Catalog 2.0).",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.chargebee",
+    "displayName": "Chargebee",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Chargebee"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.chargebee.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/googlechat",
+  "version": "0.1.0",
+  "description": "Post and manage Google Chat messages, spaces, memberships and reactions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.googlechat",
+    "displayName": "Google Chat",
+    "categories": [
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Chat"
+      }
+    },
+    "network": {
+      "allow": [
+        "chat.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -36,6 +36,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | brevo | marketing, email | api-key | 15 |
 | cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
+| chargebee | commerce, finance | api-key | 17 |
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
@@ -66,6 +67,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | gmail | communication, email | oauth2, service-account | 25 |
 | google-ads | marketing, analytics | oauth2 | 14 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
+| googlechat | communication | oauth2 | 18 |
 | google-contacts | crm, productivity | oauth2 | 14 |
 | google-docs | productivity, documents | oauth2, service-account | 20 |
 | google-drive | storage, productivity | oauth2, service-account | 18 |
@@ -84,6 +86,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jotform | forms, productivity | api-key | 14 |
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
+| lemlist | marketing, email | api-key | 18 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
 | mailcheck | email, marketing | api-key | 4 |
@@ -115,6 +118,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | servicenow | support, devops | basic, oauth2 | 9 |
 | shopify | commerce | access-token | 18 |
 | slack | communication | access-token, oauth2 | 47 |
+| smartsheet | spreadsheets, productivity | access-token | 16 |
 | snowflake | data-warehousing | key-pair | 5 |
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |
@@ -137,6 +141,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | uptimerobot | monitoring | api-key | 8 |
 | webflow | cms | api-token, oauth2 | 14 |
 | whatsapp | communication | access-token | 9 |
+| wix | cms, crm, commerce | api-key | 24 |
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
 | xero | finance | oauth2 | 13 |
@@ -145,7 +150,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-120 apps, 1602 actions.
+125 apps, 1695 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

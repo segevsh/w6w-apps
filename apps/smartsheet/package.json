@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/smartsheet",
+  "version": "0.1.0",
+  "description": "Read and write Smartsheet sheets, rows, cells and columns; list workspaces, folders, users and reports via the Smartsheet API 2.0.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.smartsheet",
+    "displayName": "Smartsheet",
+    "categories": [
+      "spreadsheets",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Smartsheet"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.smartsheet.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

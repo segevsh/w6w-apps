@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/wix",
+  "version": "0.1.0",
+  "description": "Manage a Wix site's CMS collections and data items, contacts and labels, Stores products, and eCommerce orders via the Wix REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.wix",
+    "displayName": "Wix",
+    "categories": [
+      "cms",
+      "crm",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Wix"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.wixapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
