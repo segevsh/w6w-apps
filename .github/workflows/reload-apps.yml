@@ -29,6 +29,10 @@ name: Reload apps
 # ---------------------------------------------------------------------------
 
 on:
+  # Manual re-run. The reload is idempotent, and without this the only way
+  # to retry a run that failed on something transient is to push a dummy
+  # commit — exactly the bind a 503 on one app left us in on 2026-08-03.
+  workflow_dispatch:
   push:
     branches: [main]
     # Path-filtered: this triggers a LIVE write against the production
