@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/copper",
+  "version": "0.1.0",
+  "description": "Manage Copper CRM people, companies, opportunities, leads, tasks, activities and org metadata via the Copper Developer API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.copper",
+    "displayName": "Copper",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Copper"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.copper.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/bamboohr",
+  "version": "0.1.0",
+  "description": "Read and write BambooHR employees, time off, files, reports and metadata via the BambooHR API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bamboohr",
+    "displayName": "BambooHR",
+    "categories": [
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "BambooHR"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.bamboohr.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

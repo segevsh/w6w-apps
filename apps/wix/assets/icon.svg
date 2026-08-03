@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Wix">
+  <rect width="256" height="256" rx="56" fill="#000000" />
+  <g fill="#FFFFFF">
+    <path d="M40 100h26l16 56 16-56h24l16 56 16-56h26l-29 96h-27l-14-50-14 50H69z" />
+    <circle cx="163" cy="74" r="13" />
+    <path d="M150 100h26v96h-26z" />
+    <path d="M186 100h29l14 22 14-22h29l-28 44 30 52h-30l-15-26-15 26h-30l30-52z" />
+  </g>
+</svg>

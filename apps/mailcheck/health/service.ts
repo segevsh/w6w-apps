@@ -22,6 +22,7 @@ const service: HealthCheckDefinition = {
   key: "service",
   title: "Mailcheck platform status",
   kind: "service",
+  severity: "informational",
   unavailable: {
     reason:
       "Mailcheck publishes no status page or status feed (checked mailcheck.co, mailcheck.statuspage.io, mailcheck.instatus.com — none resolve to a vendor-branded status surface).",

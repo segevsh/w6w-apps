@@ -30,12 +30,14 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | anthropic | ai | api-key | 14 |
 | apitemplateio | developer-tools | api-key | 5 |
 | asana | productivity, project-management | access-token, oauth2 | 22 |
+| bamboohr | hr | api-key | 18 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
 | box | storage | oauth2 | 10 |
 | brevo | marketing, email | api-key | 15 |
 | cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
+| chargebee | commerce, finance | api-key | 17 |
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
@@ -45,6 +47,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | coda | productivity, documents | api-token | 11 |
 | constantcontact | marketing, email | oauth2 | 22 |
 | contentful | cms | access-token | 10 |
+| copper | crm | api-key | 24 |
 | customerio | marketing, email | basic | 7 |
 | databricks | data-warehousing | bearer-token | 8 |
 | deepl | ai | api-key | 8 |
@@ -55,17 +58,20 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
 | excel | spreadsheets, productivity | oauth2 | 16 |
 | facebook | social-media, marketing | oauth2, page-token | 14 |
+| facebook-conversions | marketing, analytics, social-media | conversions-token, oauth2 | 5 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | fathom | ai, productivity, video | api-key | 11 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
 | freshdesk | support | api-key | 13 |
+| freshservice | support, devops | api-key | 23 |
 | ghost | cms, productivity | admin-api-key | 11 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
 | google-ads | marketing, analytics | oauth2 | 14 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
+| googlechat | communication | oauth2 | 18 |
 | google-contacts | crm, productivity | oauth2 | 14 |
 | google-docs | productivity, documents | oauth2, service-account | 20 |
 | google-drive | storage, productivity | oauth2, service-account | 18 |
@@ -84,6 +90,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jotform | forms, productivity | api-key | 14 |
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
+| lemlist | marketing, email | api-key | 18 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
 | mailcheck | email, marketing | api-key | 4 |
@@ -95,6 +102,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | netlify | devops | personal-access-token | 10 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
+| odoo | crm, commerce | api-key | 21 |
 | okta | security | api-token | 11 |
 | onesimpleapi | developer-tools | api-key | 7 |
 | openai | ai, developer-tools | api-key | 13 |
@@ -115,6 +123,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | servicenow | support, devops | basic, oauth2 | 9 |
 | shopify | commerce | access-token | 18 |
 | slack | communication | access-token, oauth2 | 47 |
+| smartsheet | spreadsheets, productivity | access-token | 16 |
 | snowflake | data-warehousing | key-pair | 5 |
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |
@@ -137,6 +146,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | uptimerobot | monitoring | api-key | 8 |
 | webflow | cms | api-token, oauth2 | 14 |
 | whatsapp | communication | access-token | 9 |
+| wix | cms, crm, commerce | api-key | 24 |
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
 | xero | finance | oauth2 | 13 |
@@ -145,7 +155,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho | crm | oauth2 | 21 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-120 apps, 1602 actions.
+130 apps, 1786 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
@@ -158,10 +168,17 @@ Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
 apps built from scratch. See individual `assets/icon.*` for the exact source.
 
-One exception, stated rather than buried: **`google-forms`'s icon is drawn for this
-pack**, not a vendor asset — n8n has no Google Forms node and there was no upstream
-mark to port. It follows the sibling Google icons' silhouette in Forms' brand purple.
-Its own README says so too. Replace it if an official mark is ever sourced.
+Two exceptions, stated rather than buried:
+
+- **`google-forms`'s icon is drawn for this pack**, not a vendor asset — n8n has no
+  Google Forms node and there was no upstream mark to port. It follows the sibling
+  Google icons' silhouette in Forms' brand purple.
+- **`odoo`'s icon is drawn for this pack** — Odoo publishes no downloadable brand
+  mark, and n8n's `nodes-base` Odoo icon is itself a simplification (a single filled
+  ring), not the vendor's own artwork, so there was nothing to copy verbatim. Ours is
+  two rings in Odoo's brand purples (`#714B67`, `#875A7B`).
+
+Each app's own README says so too. Replace either if an official mark is ever sourced.
 
 ## Health checks
 
@@ -169,9 +186,10 @@ Every app **declares** its health checks per [`rfcs/healthcheck.md`][health-rfc]
 runs what the publisher says to run instead of guessing at a probe. Each declares a
 `service` check (is the vendor up?) and a `quota` check (is there headroom?) — as a real
 probe where the vendor supports one, and as an explicit `unavailable` where it does not,
-because "nothing exists to check" is a more useful answer than a gap. Fourteen apps addressed
-by a per-tenant host (Jira, Shopify, WordPress, Zendesk, WooCommerce, ServiceNow, Snowflake,
-Supabase, Upstash, Elastic, Freshdesk, Grafana, Strapi, ActiveCampaign) add a `dependency`
+because "nothing exists to check" is a more useful answer than a gap. Twenty apps addressed
+by a per-tenant host (ActiveCampaign, Databricks, Elastic, Freshdesk, Freshservice, Ghost,
+Grafana, Gravity Forms, Jenkins, Jira, Odoo, ServiceNow, Shopify, Snowflake, Strapi, Supabase,
+Upstash, WooCommerce, WordPress, Zendesk) add a `dependency`
 check for the tenant's own site. Credential checks come free: the runtime derives an
 `auth:<method>` check from each Auth `test` hook.
 

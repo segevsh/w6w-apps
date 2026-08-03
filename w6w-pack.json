@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -25,6 +25,9 @@
       "path": "./apps/asana"
     },
     {
+      "path": "./apps/bamboohr"
+    },
+    {
       "path": "./apps/bitbucket"
     },
     {
@@ -41,6 +44,9 @@
     },
     {
       "path": "./apps/calendly"
+    },
+    {
+      "path": "./apps/chargebee"
     },
     {
       "path": "./apps/circleci"
@@ -68,6 +74,9 @@
     },
     {
       "path": "./apps/contentful"
+    },
+    {
+      "path": "./apps/copper"
     },
     {
       "path": "./apps/customerio"
@@ -100,6 +109,9 @@
       "path": "./apps/facebook"
     },
     {
+      "path": "./apps/facebook-conversions"
+    },
+    {
       "path": "./apps/facebook-lead-ads"
     },
     {
@@ -113,6 +125,9 @@
     },
     {
       "path": "./apps/freshdesk"
+    },
+    {
+      "path": "./apps/freshservice"
     },
     {
       "path": "./apps/ghost"
@@ -151,6 +166,9 @@
       "path": "./apps/google-tasks"
     },
     {
+      "path": "./apps/googlechat"
+    },
+    {
       "path": "./apps/grafana"
     },
     {
@@ -187,6 +205,9 @@
       "path": "./apps/klaviyo"
     },
     {
+      "path": "./apps/lemlist"
+    },
+    {
       "path": "./apps/linear"
     },
     {
@@ -218,6 +239,9 @@
     },
     {
       "path": "./apps/notion"
+    },
+    {
+      "path": "./apps/odoo"
     },
     {
       "path": "./apps/okta"
@@ -278,6 +302,9 @@
     },
     {
       "path": "./apps/slack"
+    },
+    {
+      "path": "./apps/smartsheet"
     },
     {
       "path": "./apps/snowflake"
@@ -344,6 +371,9 @@
     },
     {
       "path": "./apps/whatsapp"
+    },
+    {
+      "path": "./apps/wix"
     },
     {
       "path": "./apps/woocommerce"
