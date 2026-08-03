@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/gravityforms",
+  "version": "0.1.0",
+  "description": "Read forms, search and manage entries, and run real form submissions on a self-hosted Gravity Forms site via the WordPress REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gravityforms",
+    "displayName": "Gravity Forms",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gravity Forms"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
