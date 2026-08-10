@@ -66,6 +66,17 @@ export function datacenterFromConnection(connection: RedactedConnection | undefi
 }
 
 /**
+ * Hostname segment used when an api-key connection's `display.datacenter`
+ * isn't set (e.g. the host hasn't run `afterConnect` yet). It never reaches
+ * the network as-is: `auth/api-key.ts`'s `sign()` holds the raw key on every
+ * call and rewrites the request's real host from its `-<dc>` suffix before
+ * the request goes out, so this only needs to be a syntactically valid label.
+ * oauth2 has no such fallback — its datacenter isn't derivable from the
+ * credential alone — so it still relies on `display.datacenter`.
+ */
+const PLACEHOLDER_DATACENTER = "unresolved";
+
+/**
  * Thin wrapper around `ctx.fetch`. Never sets Authorization — the runtime
  * routes every request through the auth `sign` hook, which injects it.
  */
@@ -73,7 +84,15 @@ export class MailchimpClient {
   private base: string;
 
   constructor(private ctx: HookContext, opts: { datacenter?: string } = {}) {
-    const dc = opts.datacenter ?? datacenterFromConnection(ctx.connection);
+    let dc = opts.datacenter;
+    if (!dc) {
+      try {
+        dc = datacenterFromConnection(ctx.connection);
+      } catch (err) {
+        if (ctx.connection?.auth !== "api-key") throw err;
+        dc = PLACEHOLDER_DATACENTER;
+      }
+    }
     this.base = `https://${dc}.${API_HOST_SUFFIX}`;
   }
 

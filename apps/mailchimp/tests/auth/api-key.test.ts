@@ -28,6 +28,36 @@ Deno.test("api-key: sign injects HTTP Basic with the key as password", async () 
   assertEquals(out.headers["authorization"], `Basic ${encoded}`);
 });
 
+Deno.test("api-key: sign rewrites the request host to the key's real datacenter", async () => {
+  const { ctx } = mockCtx();
+  const request = {
+    url: "https://unresolved.api.mailchimp.com/3.0/lists",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
+  const out = await auth.sign!(
+    { request, credential: { apiKey: "abcdef-us14" } },
+    ctx,
+  );
+  const url = new URL(out.url);
+  assertEquals(url.hostname, "us14.api.mailchimp.com");
+  assertEquals(url.pathname, "/3.0/lists");
+});
+
+Deno.test("api-key: sign leaves the URL untouched when the key has no datacenter suffix", async () => {
+  const { ctx } = mockCtx();
+  const request = {
+    url: "https://unresolved.api.mailchimp.com/3.0/lists",
+    method: "GET" as const,
+    headers: {} as Record<string, string>,
+  };
+  const out = await auth.sign!(
+    { request, credential: { apiKey: "nodashkey" } },
+    ctx,
+  );
+  assertEquals(out.url, request.url);
+});
+
 Deno.test("api-key: test hits the account's datacenter /ping and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { health_status: "Ok" } }]);
   const result = await auth.test({ credential: { apiKey: "abcdef-us14" } }, ctx);

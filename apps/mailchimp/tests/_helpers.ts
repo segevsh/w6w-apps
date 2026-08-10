@@ -34,6 +34,8 @@ export interface CallRecord {
 export interface MockCtxOptions {
   datacenter?: string;
   display?: Record<string, unknown>;
+  /** Connection's auth key. Defaults to "api-key". */
+  auth?: string;
 }
 
 export interface MockCtx {
@@ -109,7 +111,7 @@ export function mockCtx(
   const connection: RedactedConnection = {
     id: "conn-test",
     app: "io.w6w.mailchimp",
-    auth: "api-key",
+    auth: opts.auth ?? "api-key",
     owner: "user-test",
     state: "connected",
     display,
