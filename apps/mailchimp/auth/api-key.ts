@@ -39,6 +39,22 @@ const apiKey: AuthDefinition = {
     // HTTP Basic; username is arbitrary per Mailchimp docs.
     const encoded = btoa(`anystring:${key}`);
     request.headers["authorization"] = `Basic ${encoded}`;
+    // The datacenter lives in the key itself (`abcdef-us14`). Rewrite the
+    // request's host from it here — `sign` is the only hook that holds the
+    // raw credential on every call — rather than trusting `display.datacenter`,
+    // which the connecting host may never have populated (`afterConnect` isn't
+    // guaranteed to have run). This makes the client self-healing even when
+    // `display` is empty or stale; MailchimpClient only needs a placeholder
+    // host to build the request against (see PLACEHOLDER_DATACENTER).
+    try {
+      const url = new URL(request.url);
+      url.hostname = `${datacenterFromApiKey(key)}.api.mailchimp.com`;
+      request.url = url.toString();
+    } catch {
+      // Malformed key (no `-<dc>` suffix) — leave the URL as built; the
+      // request will fail with a clear DNS/connection error instead of
+      // silently going to the wrong host.
+    }
     return request;
   },
 

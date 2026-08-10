@@ -88,7 +88,20 @@ Deno.test("client: serializes JSON body and sets content-type", async () => {
   assertEquals(calls[0].body, '{"hello":"world"}');
 });
 
-Deno.test("client: throws when connection has no datacenter", () => {
-  const { ctx } = mockCtx([], { display: {} });
+Deno.test("client: throws when an oauth2 connection has no datacenter", () => {
+  // oauth2's datacenter isn't derivable from the credential alone (see
+  // auth/oauth2.ts), so it has no self-heal and this must still throw.
+  const { ctx } = mockCtx([], { display: {}, auth: "oauth2" });
   assertThrows(() => new MailchimpClient(ctx), Error, "no datacenter");
+});
+
+Deno.test("client: an api-key connection with no display.datacenter falls back to a placeholder host instead of throwing", async () => {
+  // display.datacenter is empty (e.g. the host never ran `afterConnect`).
+  // For api-key auth this is not fatal: auth/api-key.ts's `sign()` rewrites
+  // the request's real host from the credential on every call, so the client
+  // only needs some syntactically valid hostname to build against.
+  const { ctx, calls } = mockCtx([{ body: {} }], { display: {}, auth: "api-key" });
+  const client = new MailchimpClient(ctx);
+  await client.request("/ping");
+  assertEquals(new URL(calls[0].url).pathname, "/3.0/ping");
 });

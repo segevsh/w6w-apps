@@ -19,6 +19,7 @@ import deleteCampaign from "./actions/delete-campaign.ts";
 import sendCampaign from "./actions/send-campaign.ts";
 import replicateCampaign from "./actions/replicate-campaign.ts";
 import resendCampaign from "./actions/resend-campaign.ts";
+import ping from "./actions/ping.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -38,6 +39,7 @@ export default {
     sendCampaign,
     replicateCampaign,
     resendCampaign,
+    ping,
   ],
   auth: [apiKey, oauth2],
   healthChecks: [service, quota],
