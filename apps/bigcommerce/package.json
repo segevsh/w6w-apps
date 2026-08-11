@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/bigcommerce",
+  "version": "0.1.0",
+  "description": "Manage a BigCommerce store's catalog, orders, customers, carts, inventory, price lists and webhooks over the REST Management API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bigcommerce",
+    "displayName": "BigCommerce",
+    "categories": [
+      "commerce",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "BigCommerce"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.bigcommerce.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

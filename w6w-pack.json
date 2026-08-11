@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -41,6 +41,9 @@
     },
     {
       "path": "./apps/baserow"
+    },
+    {
+      "path": "./apps/bigcommerce"
     },
     {
       "path": "./apps/bitbucket"
@@ -160,6 +163,9 @@
       "path": "./apps/figma"
     },
     {
+      "path": "./apps/fillout"
+    },
+    {
       "path": "./apps/fireflies"
     },
     {
@@ -242,6 +248,9 @@
     },
     {
       "path": "./apps/highlevel"
+    },
+    {
+      "path": "./apps/housecallpro"
     },
     {
       "path": "./apps/hubspot"
@@ -373,6 +382,9 @@
       "path": "./apps/postmark"
     },
     {
+      "path": "./apps/productboard"
+    },
+    {
       "path": "./apps/pushover"
     },
     {
@@ -413,6 +425,9 @@
     },
     {
       "path": "./apps/snowflake"
+    },
+    {
+      "path": "./apps/splitwise"
     },
     {
       "path": "./apps/splunk"

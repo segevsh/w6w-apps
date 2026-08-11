@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/productboard",
+  "version": "0.1.0",
+  "description": "Read and write the Productboard product hierarchy, customer notes, teams, members and webhooks over the Productboard REST API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.productboard",
+    "displayName": "Productboard",
+    "categories": [
+      "project-management",
+      "productivity",
+      "support"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Productboard"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.productboard.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
