@@ -45,6 +45,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [bamboohr](apps/bamboohr/README.md) | [RSS](https://status.bamboohr.com/pages/54f0de009d6f51e7140002b7/rss) | yes | `GET /api/v1/employees/0` | no | `service` · ~~quota~~ · 1 derived |
 | [basecamp](apps/basecamp/README.md) | [Statuspage](https://37signals.statuspage.io/api/v2/summary.json) | yes | `GET launchpad/authorization.json` | no | `service` · ~~quota~~ · 1 derived |
 | [baserow](apps/baserow/README.md) | [Better Stack](https://status.baserow.org/index.json) | yes | `GET /api/database/tables/all-tables/` | no | `service` · ~~quota~~ · 1 derived |
+| [bigcommerce](apps/bigcommerce/README.md) | [Statuspage](https://status.bigcommerce.com/api/v2/status.json) | yes | `GET /v2/store` | yes | `service` · `api` · `quota` · `store` · ~~plan-limits~~ · 1 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
 | [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
 | [box](apps/box/README.md) | [Statuspage](https://status.box.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
@@ -84,6 +85,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [facebook-lead-ads](apps/facebook-lead-ads/README.md) | [page](https://metastatus.com) | no | _varies by method_ | yes | ~~service~~ · `quota` · 2 derived |
 | [fathom](apps/fathom/README.md) | [Statuspage](https://status.fathom.video/api/v2/summary.json) | yes | `GET /meetings` | yes | `service` · `quota` · 1 derived |
 | [figma](apps/figma/README.md) | [Statuspage](https://status.figma.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 2 derived |
+| [fillout](apps/fillout/README.md) | [Statuspage](https://fillout.statuspage.io/api/v2/status.json) (page is branded "Zite" — pinned by id) | yes | `GET /v1/api/forms` | yes | `service` · `request-rate` · ~~plan~~ · 1 derived |
 | [fireflies](apps/fireflies/README.md) | none reachable (dangling Freshstatus CNAME) | no | `POST /graphql` `{ user { user_id name email } }` | no | `api` · ~~service~~ · ~~quota~~ · 1 derived |
 | [flodesk](apps/flodesk/README.md) | none machine-readable | no | `GET /segments/colors` | yes | ~~service~~ · `quota` · 2 derived |
 | [followupboss](apps/followupboss/README.md) | [Statuspage](https://followupboss.statuspage.io/api/v2/summary.json) | yes | `GET /identity` | yes | `service` · `quota` · 1 derived |
@@ -112,6 +114,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [harvest](apps/harvest/README.md) | [Statuspage](https://www.harveststatus.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [helpscout](apps/helpscout/README.md) | [Statuspage](https://status.helpscout.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
 | [highlevel](apps/highlevel/README.md) | [Atom](https://status.gohighlevel.com/feed.atom) | yes | `GET /locations/{locationId}` | yes | `service` · `quota` · 1 derived |
+| [housecallpro](apps/housecallpro/README.md) | [Statuspage](https://status.housecallpro.com/api/v2/status.json) (no API component) | yes | `GET /company` | yes | ~~service~~ · `api` · `quota` · 2 derived |
 | [hubspot](apps/hubspot/README.md) | [Statuspage](https://status.hubspot.com/api/v2/status.json) | yes | `GET /account-info/v3/details` | yes | `service` · `quota` · 3 derived |
 | [intercom](apps/intercom/README.md) | [Statuspage](https://www.finstatus.com/api/v2/status.json) | yes | `GET /me` | yes | `service` · `quota` · 2 derived |
 | [jenkins](apps/jenkins/README.md) | none published | no | `GET /api/json` | no | ~~service~~ · `site` · 1 derived |
@@ -155,6 +158,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [postbin](apps/postbin/README.md) | [page](https://www.postb.in) | no | _no credential_ | no | `service` · ~~quota~~ · 0 derived |
 | [posthog](apps/posthog/README.md) | none published | no | `GET /api/users/@me/` | no | ~~service~~ · 1 derived |
 | [postmark](apps/postmark/README.md) | [JSON](https://status.postmarkapp.com/api/v1/status) | yes | `GET /server` | no | `service` · ~~quota~~ · 1 derived |
+| [productboard](apps/productboard/README.md) | [Statuspage](https://status.productboard.com/api/v2/status.json) | yes | `GET /v2/entities` | yes | `service` · `api` · `quota` · 1 derived |
 | [pushover](apps/pushover/README.md) | [page](https://status.pushover.net) | no | `POST /1/users/validate.json` | yes | ~~service~~ · `quota` · 1 derived |
 | [quickbase](apps/quickbase/README.md) | [status.page](https://quickbasestatus.status.page/status.json) | yes | `GET /v1/apps/{appId}` | yes | `service` · `quota` · 1 derived |
 | [quickbooks](apps/quickbooks/README.md) | [Statuspage](https://status.developer.intuit.com/api/v2/summary.json) | yes | `GET /v3/company/{realmId}/companyinfo/{realmId}` | no | `service` · ~~quota~~ · 1 derived |
@@ -169,6 +173,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) · [Atom/RSS](https://slack-status.com/feed/atom) | yes | `POST /api/auth.test` | no | `service` · `incidents` · ~~quota~~ · 2 derived |
 | [smartsheet](apps/smartsheet/README.md) | [Statuspage](https://status.smartsheet.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [snowflake](apps/snowflake/README.md) | [Atom](https://status.snowflake.com/history.atom) | yes | `POST /api/v2/statements` | no | `service` · `account` · 1 derived |
+| [splitwise](apps/splitwise/README.md) | [Instatus](https://status.splitwise.com/v2/components.json) | yes | `GET /api/v3.0/get_current_user` | yes | `service` · `api` · `quota` · 1 derived |
 | [splunk](apps/splunk/README.md) | [Statuspage](https://status.splunkcloud.com/api/v2/summary.json) | yes | `GET /services/authentication/current-context` | no | `service` · 1 derived |
 | [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [strapi](apps/strapi/README.md) | none published | no | `GET /api/upload/files/page` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |

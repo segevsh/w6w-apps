@@ -36,6 +36,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | bamboohr | hr | api-key | 18 |
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
+| bigcommerce | commerce, crm | access-token | 38 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
 | box | storage | oauth2 | 10 |
@@ -75,6 +76,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | fathom | ai, productivity, video | api-key | 11 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
+| fillout | forms, productivity | api-key | 8 |
 | fireflies | ai, productivity, video | api-key | 25 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
 | followupboss | crm | api-key | 26 |
@@ -103,6 +105,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | helpscout | support | oauth2 | 13 |
 | highlevel | crm, marketing | oauth2 | 18 |
+| housecallpro | crm, calendar, finance | api-key, oauth2 | 39 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | jenkins | devops | basic | 6 |
@@ -146,6 +149,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
 | postmark | email, communication | api-key | 13 |
+| productboard | project-management, productivity, support | api-token | 41 |
 | pushover | communication, monitoring | app-token | 4 |
 | quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
@@ -160,6 +164,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | slack | communication | access-token, oauth2 | 47 |
 | smartsheet | spreadsheets, productivity | access-token | 16 |
 | snowflake | data-warehousing | key-pair | 5 |
+| splitwise | finance, productivity | api-key | 26 |
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |
 | strapi | cms | api-token | 6 |
