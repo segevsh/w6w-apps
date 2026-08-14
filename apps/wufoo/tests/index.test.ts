@@ -148,13 +148,15 @@ Deno.test("index: the manifest allows *.wufoo.com, not *", async () => {
   const manifest = JSON.parse(
     await Deno.readTextFile(new URL("../package.json", import.meta.url)),
   ) as {
-    w6w: { id: string; network: { allow: string[] }; appearance: { icon: { png?: string } } };
+    w6w: { id: string; network: { allow: string[] }; appearance: { icon: { url?: string } } };
   };
   assertEquals(manifest.w6w.id, "io.w6w.wufoo");
   assertEquals(manifest.w6w.network.allow, ["*.wufoo.com"]);
   // The status host belongs to the health check's own allowlist, not the app's.
   assert(!manifest.w6w.network.allow.includes("status.wufoo.com"));
-  assertEquals(manifest.w6w.appearance.icon.png, "./assets/icon.png");
+  // `url` is ImageObject's raster slot — a `png` key is silently invisible to the
+  // host's asset inliner, which is how this app once shipped with no icon at all.
+  assertEquals(manifest.w6w.appearance.icon.url, "./assets/icon.png");
 });
 
 Deno.test("index: every health check is either probing or declared unavailable", () => {

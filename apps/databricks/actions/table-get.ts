@@ -13,7 +13,13 @@ const tableGet: ActionDefinition<Input> = {
   title: "Get Table",
   description: "Get a single Unity Catalog table by its full name (catalog.schema.table).",
   params: [
-    { key: "fullName", label: "Full Name", type: "string", required: true, placeholder: "main.default.my_table" },
+    {
+      key: "fullName",
+      label: "Full Name",
+      type: "string",
+      required: true,
+      placeholder: "main.default.my_table",
+    },
   ],
   output: [
     { key: "name", type: "string", label: "Table Name" },

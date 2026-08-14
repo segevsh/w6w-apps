@@ -26,7 +26,8 @@ const sqlStatementExecute: ActionDefinition<Input> = {
   type: "perform",
   resource: "sql-statement",
   title: "Execute SQL Statement",
-  description: "Run a SQL statement against a SQL warehouse. May return PENDING/RUNNING for long queries — poll with Get SQL Statement.",
+  description:
+    "Run a SQL statement against a SQL warehouse. May return PENDING/RUNNING for long queries — poll with Get SQL Statement.",
   idempotent: false,
   params: [
     { key: "warehouseId", label: "Warehouse ID", type: "string", required: true },

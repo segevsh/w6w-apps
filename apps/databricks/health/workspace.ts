@@ -32,7 +32,10 @@ const workspace: HealthCheckDefinition = {
 
     const res = await ctx.fetch(`${display.workspaceUrl}/api/2.0/preview/scim/v2/Me`);
     if (res.status === 404) {
-      return { state: "down", message: "workspace not found — the URL may be wrong or the workspace deleted" };
+      return {
+        state: "down",
+        message: "workspace not found — the URL may be wrong or the workspace deleted",
+      };
     }
     if (res.status >= 500) {
       return { state: "down", message: `workspace returned ${res.status}` };

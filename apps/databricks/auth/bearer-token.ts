@@ -19,7 +19,8 @@ const bearerToken: AuthDefinition = {
   key: "bearer-token",
   type: "apiKey",
   displayName: "Personal Access Token",
-  description: "A workspace URL and a Personal Access Token generated from your Databricks user settings.",
+  description:
+    "A workspace URL and a Personal Access Token generated from your Databricks user settings.",
   apiKey: { in: "header", name: "Authorization", prefix: "Bearer " },
   fields: [
     {
