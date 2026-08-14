@@ -21,6 +21,7 @@ import {
   validateApp,
   validateAuth,
 } from "../../core/packages/validator/mod.ts";
+import { TILE, verdictFor } from "./icon-legibility.ts";
 
 const ROOT = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 const APPS_DIR = `${ROOT}/apps`;
@@ -239,8 +240,34 @@ async function auditApp(name: string): Promise<Issue[]> {
       );
     }
   }
+  if (!iconRef) {
+    add(
+      "error",
+      "manifest/icon",
+      "package.json#w6w.appearance.icon",
+      "no `svg` or `url` ref — an ImageObject has no other slot a host reads, so the app ships without an icon",
+    );
+  }
   if (!icon.alt) {
     add("warn", "manifest/icon", "package.json#w6w.appearance.icon", "missing `alt` text");
+  }
+
+  // --- icon legibility: the mark has to survive BOTH themes. A one-colour black
+  // export is perfect on the light tile and invisible on the dark one; the fix is
+  // `appearance.darkMode.icon` (see `_tools/icon-legibility.ts`, which writes it).
+  const themes = await verdictFor(name);
+  for (const theme of ["light", "dark"] as const) {
+    const score = themes[theme];
+    if (score.ok) continue;
+    add(
+      "error",
+      "manifest/icon-theme",
+      "package.json#w6w.appearance",
+      score.note ??
+        `icon is illegible on the ${theme} tile ${TILE[theme]} ` +
+          `(\u0394E ${score.deltaE}, contrast ${score.contrast}) — declare ` +
+          "`appearance.darkMode.icon` (`deno task icons:fix` in _tools/)",
+    );
   }
 
   // --- behavior (import the entry module; type imports are erased at runtime)

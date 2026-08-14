@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/openai",
-  "version": "0.2.0",
-  "description": "Call OpenAI's REST API — chat completions, images, audio, files, embeddings, moderations.",
+  "version": "0.2.1",
+  "description": "Call OpenAI's REST API \u2014 chat completions, images, audio, files, embeddings, moderations.",
   "license": "MIT",
   "author": {
     "name": "w6w"

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/square",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Square payments, refunds, orders, customers, catalog items, locations and invoices via the Square Connect v2 API.",
   "license": "MIT",
   "author": {
@@ -18,6 +18,12 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Square"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Square"
+        }
       }
     },
     "network": {

@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/cal",
-  "version": "0.1.0",
-  "description": "Read and manage Cal.com bookings, event types and schedules — the open-source scheduling platform.",
+  "version": "0.1.1",
+  "description": "Read and manage Cal.com bookings, event types and schedules \u2014 the open-source scheduling platform.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -20,7 +20,7 @@
       },
       "darkMode": {
         "icon": {
-          "svg": "./assets/icon-dark.svg",
+          "svg": "./assets/icon.dark.svg",
           "alt": "Cal.com"
         }
       }

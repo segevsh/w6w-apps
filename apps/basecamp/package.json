@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/basecamp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read Basecamp projects and people, and create to-dos, messages, comments and Campfire lines — on the Basecamp 5 API.",
   "license": "MIT",
   "author": {
@@ -18,6 +18,12 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Basecamp"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Basecamp"
+        }
       }
     },
     "network": {
