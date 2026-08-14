@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/paddle",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Manage the Paddle Billing catalog, customers, subscriptions, transactions and refunds \u2014 products, prices, subscription pause/resume/cancel, invoice PDFs and adjustments.",
   "license": "MIT",
   "author": {
@@ -16,7 +16,7 @@
     ],
     "appearance": {
       "icon": {
-        "svg": "./assets/icon.svg",
+        "url": "./assets/icon.png",
         "alt": "Paddle"
       }
     },
