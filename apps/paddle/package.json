@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/paddle",
-  "version": "0.1.1",
-  "description": "Manage the Paddle Billing catalog, customers, subscriptions, transactions and refunds — products, prices, subscription pause/resume/cancel, invoice PDFs and adjustments.",
+  "version": "0.1.2",
+  "description": "Manage the Paddle Billing catalog, customers, subscriptions, transactions and refunds \u2014 products, prices, subscription pause/resume/cancel, invoice PDFs and adjustments.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -18,12 +18,6 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Paddle"
-      },
-      "darkMode": {
-        "icon": {
-          "svg": "./assets/icon.dark.svg",
-          "alt": "Paddle"
-        }
       }
     },
     "network": {

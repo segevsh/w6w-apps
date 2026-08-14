@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/greenhouse",
-  "version": "0.1.1",
-  "description": "Read and write Greenhouse Recruiting data — candidates, applications, jobs, interviews, scorecards and offers — over the Harvest v3 API.",
+  "version": "0.1.2",
+  "description": "Read and write Greenhouse Recruiting data \u2014 candidates, applications, jobs, interviews, scorecards and offers \u2014 over the Harvest v3 API.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -17,12 +17,6 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Greenhouse"
-      },
-      "darkMode": {
-        "icon": {
-          "svg": "./assets/icon.dark.svg",
-          "alt": "Greenhouse"
-        }
       }
     },
     "network": {

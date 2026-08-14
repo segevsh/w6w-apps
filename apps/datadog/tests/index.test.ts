@@ -376,12 +376,21 @@ Deno.test("index: the site table and the status host table cover the same nine s
   assertEquals(STATUS_HOSTS.uk1, undefined);
 });
 
-Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
+/**
+ * The artwork is the vendor's, unmodified — but the paint is not. The mark
+ * shipped monochrome, which put a black dog on the host's near-black icon tile;
+ * it now carries Datadog's own brand purple, the `hex` simple-icons records for
+ * this brand. Geometry is still byte-for-byte theirs: only a root `fill` was
+ * added, which is why the length moved by exactly that attribute.
+ */
+Deno.test("index: the icon is the vendor's mark, in the vendor's colour", async () => {
   const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
-  // Downloaded verbatim from simple-icons on 2026-08-11: 2,998 bytes.
-  assertEquals(svg.length, 2998, "icon.svg is no longer the 2,998-byte vendor file");
+  // simple-icons' 2,998-byte file (2026-08-11) + ` fill="#632CA6"`.
+  assertEquals(svg.length, 3013, "icon.svg is no longer the vendor file plus its brand fill");
   assert(svg.includes("<title>Datadog</title>"), "the mark no longer names Datadog");
   assert(svg.includes('viewBox="0 0 24 24"'));
+  assert(svg.includes('fill="#632CA6"'), "the mark lost Datadog's brand purple");
+  assert(!svg.includes("icon.dark.svg"), "a coloured mark needs no dark variant");
 });
 
 Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
