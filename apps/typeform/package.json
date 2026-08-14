@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/typeform",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Create and manage Typeform forms, responses, workspaces, themes and images via the Typeform APIs.",
   "license": "MIT",
   "author": {
