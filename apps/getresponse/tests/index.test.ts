@@ -160,7 +160,7 @@ Deno.test("index: the manifest names all three platform hosts, and no wildcard",
   const manifest = JSON.parse(
     await Deno.readTextFile(new URL("../package.json", import.meta.url)),
   ) as {
-    w6w: { id: string; network: { allow: string[] }; appearance: { icon: { png?: string } } };
+    w6w: { id: string; network: { allow: string[] }; appearance: { icon: { url?: string } } };
   };
   assertEquals(manifest.w6w.id, "io.w6w.getresponse");
   assertEquals(manifest.w6w.network.allow.sort(), [
@@ -171,7 +171,9 @@ Deno.test("index: the manifest names all three platform hosts, and no wildcard",
   assert(!manifest.w6w.network.allow.includes("*"));
   // The status host belongs to the health check's own allowlist, not the app's.
   assert(!manifest.w6w.network.allow.includes("status.getresponse.com"));
-  assertEquals(manifest.w6w.appearance.icon.png, "./assets/icon.png");
+  // `url` is ImageObject's raster slot — a `png` key is silently invisible to the
+  // host's asset inliner, which is how this app once shipped with no icon at all.
+  assertEquals(manifest.w6w.appearance.icon.url, "./assets/icon.png");
 });
 
 Deno.test("service: probes the vendor's Statuspage and declares only that host", () => {

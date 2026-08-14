@@ -346,7 +346,7 @@ async function manifest() {
       id: string;
       categories: string[];
       network: { allow: string[] };
-      appearance: { icon: { png?: string; svg?: string } };
+      appearance: { icon: { url?: string; svg?: string } };
     };
   };
 }
@@ -383,7 +383,9 @@ Deno.test("index: the manifest declares 1-3 categories", async () => {
  */
 Deno.test("index: the icon is the vendor's file, byte-for-byte", async () => {
   const { w6w } = await manifest();
-  assertEquals(w6w.appearance.icon.png, "./assets/icon.png");
+  // `url` is ImageObject's raster slot — a `png` key is silently invisible to the
+  // host's asset inliner, which is how this app once shipped with no icon at all.
+  assertEquals(w6w.appearance.icon.url, "./assets/icon.png");
   assertEquals(w6w.appearance.icon.svg, undefined);
 
   const bytes = await Deno.readFile(new URL("../assets/icon.png", import.meta.url));
