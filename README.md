@@ -213,6 +213,32 @@ Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
 the apps ported from it, and fetched from each vendor's brand page for the
 apps built from scratch. See individual `assets/icon.*` for the exact source.
 
+**Both themes, every app.** A host draws the mark on a tile that flips with the
+theme (`--w6w-icon-swatch` in `@w6w/ui`: `#f0f2f6` light, `#1f232c` dark), so a
+one-colour black export — what most vendor "simple icon" downloads are — is
+perfect in light mode and invisible in dark. An app whose mark cannot survive a
+theme ships a second ImageObject under `appearance.darkMode.icon`
+(`assets/icon.dark.svg`), which the host prefers when the theme is dark. Two
+sanctioned forms, and which one an app takes is a brand question:
+
+- **Reversed mark** — the same artwork re-inked to white, the treatment
+  essentially every brand guide specifies for its own logo on a dark ground.
+  The geometry is untouched; only the paint changes.
+- **Plate** — a multicolour mark whose palette must not change is composed,
+  verbatim, on the light backdrop its brand allows (via a nested `<svg>`).
+
+`_tools/icon-legibility.ts` decides which apps need one and writes the reversed
+form; the pack auditor fails an app that needs a variant and has none:
+
+```bash
+deno task icons        # from _tools/ — report every illegible mark
+deno task icons:fix    # generate the reversed variants + declare them
+```
+
+An icon is judged illegible on a tile when none of its inks is separable from
+it — ΔE (Lab) below 25, or sitting at the tile's own brightness (WCAG contrast
+below 1.5) without a large colour difference to carry it.
+
 Five exceptions, stated rather than buried. In each case n8n has no node for the
 product and the vendor publishes no obtainable mark, so there was nothing to copy
 verbatim. Where a colour is quoted below it *is* vendor-sourced — taken from the
@@ -268,6 +294,7 @@ w6w-apps/
 │       ├── tsconfig.json
 │       ├── index.ts
 │       ├── assets/icon.{svg,png}
+│       ├── assets/icon.dark.svg  # optional dark-theme variant (see Icons)
 │       ├── auth/*.ts
 │       ├── actions/*.ts
 │       ├── health/*.ts      # declared health checks (service, quota, dependency)

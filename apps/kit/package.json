@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Kit (formerly ConvertKit) subscribers, tags, forms, sequences, broadcasts, and custom fields via the Kit API v4.",
   "license": "MIT",
   "author": {
@@ -18,6 +18,12 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Kit"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Kit"
+        }
       }
     },
     "network": {

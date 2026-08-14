@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/formstack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions — on the V2025 API.",
   "license": "MIT",
   "author": {
@@ -18,6 +18,12 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Formstack"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Formstack"
+        }
       }
     },
     "network": {

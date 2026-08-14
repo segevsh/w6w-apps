@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/housecallpro",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Housecall Pro field-service management: customers, jobs, estimates, leads, invoices, scheduling and dispatch over the Housecall v1 public API.",
   "license": "MIT",
   "author": {
@@ -17,7 +17,7 @@
     ],
     "appearance": {
       "icon": {
-        "png": "./assets/icon.png",
+        "url": "./assets/icon.png",
         "alt": "Housecall Pro"
       }
     },

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/attio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Attio CRM records, list entries, attributes, notes, tasks and workspace members through the Attio REST API v2.",
   "license": "MIT",
   "author": {
@@ -17,6 +17,12 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Attio"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Attio"
+        }
       }
     },
     "network": {

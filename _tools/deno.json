@@ -1,6 +1,8 @@
 {
   "nodeModulesDir": "auto",
   "tasks": {
-    "convert": "deno run --allow-net --allow-read --allow-write --allow-env n8n-to-w6w.ts"
+    "convert": "deno run --allow-net --allow-read --allow-write --allow-env n8n-to-w6w.ts",
+    "icons": "deno run --allow-read icon-legibility.ts check",
+    "icons:fix": "deno run --allow-read --allow-write icon-legibility.ts fix"
   }
 }
