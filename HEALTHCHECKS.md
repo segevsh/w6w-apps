@@ -53,6 +53,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [buffer](apps/buffer/README.md) | [Statuspage](https://status.buffer.com/api/v2/summary.json) | yes | `{ account { id } }` (GraphQL) | yes | `service` · `quota` · 2 derived |
 | [cal](apps/cal/README.md) | [JSON](https://status.cal.com/api/status/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [calendly](apps/calendly/README.md) | [Statuspage](https://www.calendlystatus.com/api/v2/status.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
+| [callrail](apps/callrail/README.md) | [Statuspage](https://status.callrail.com/api/v2/summary.json) | yes | `GET /v3/a.json` | no | `service` · ~~quota~~ · 1 derived |
 | [campaignmonitor](apps/campaignmonitor/README.md) | StatusCast, WAF-blocked to server-side clients | no | `GET /systemdate.json` | no | `api` · ~~service~~ · ~~quota~~ · 2 derived |
 | [chargebee](apps/chargebee/README.md) | [Statuspage](https://status.chargebee.com/api/v2/summary.json) | yes | `GET /customers?limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [circle](apps/circle/README.md) | [Statuspage](https://status.circle.so/api/v2/summary.json) | yes | `GET /community` | no | `service` · ~~quota~~ · 1 derived |
@@ -99,14 +100,14 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [gmail](apps/gmail/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /gmail/v1/users/me/profile` | no | `service` · ~~quota~~ · 2 derived |
 | [google-ads](apps/google-ads/README.md) | [JSON](https://ads.google.com/status/publisher/incidents.json) | yes | `GET /v25/customers:listAccessibleCustomers` | no | `service` · ~~quota~~ · 1 derived |
 | [google-calendar](apps/google-calendar/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/me/calendarList?maxResults=1` | no | `service` · ~~quota~~ · 2 derived |
-| [google-slides](apps/google-slides/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `POST /tokeninfo` | no | `service` · ~~quota~~ · 2 derived |
-| [googlechat](apps/googlechat/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /spaces` | no | `service` · ~~quota~~ · 1 derived |
 | [google-contacts](apps/google-contacts/README.md) | none published | no | `GET /people/me?personFields=names` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [google-docs](apps/google-docs/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
 | [google-drive](apps/google-drive/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
 | [google-forms](apps/google-forms/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
 | [google-sheets](apps/google-sheets/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
+| [google-slides](apps/google-slides/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `POST /tokeninfo` | no | `service` · ~~quota~~ · 2 derived |
 | [google-tasks](apps/google-tasks/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/@me/lists?maxResults=1` | no | `service` · ~~quota~~ · 1 derived |
+| [googlechat](apps/googlechat/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /spaces` | no | `service` · ~~quota~~ · 1 derived |
 | [grafana](apps/grafana/README.md) | none published | no | `GET /api/org` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [gravityforms](apps/gravityforms/README.md) | none published | no | `GET /gf/v2/forms` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [greenhouse](apps/greenhouse/README.md) | [Statuspage](https://status.greenhouse.io/api/v2/summary.json) | yes | `GET /v3/candidates` | yes | `service` · `api` · `quota` · ~~silo~~ · 2 derived |
@@ -151,8 +152,8 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [outlook](apps/outlook/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [paddle](apps/paddle/README.md) | [incident.io](https://paddlestatus.com/api/v2/summary.json) | yes | `GET /event-types` | no | `service` · ~~quota~~ · 1 derived |
 | [pagerduty](apps/pagerduty/README.md) | [page](https://status.pagerduty.com) | no | `GET /abilities` | yes | ~~service~~ · `quota` · 2 derived |
-| [paypal](apps/paypal/README.md) | [Atom](https://www.paypal-status.com/feed/atom) | yes | `POST /v1/oauth2/token` | no | `service` · ~~quota~~ · 1 derived |
 | [pandadoc](apps/pandadoc/README.md) | [Statuspage](https://status.pandadoc.com/api/v2/summary.json) | yes | `GET /members/current` | no | `service` · ~~quota~~ · 1 derived |
+| [paypal](apps/paypal/README.md) | [Atom](https://www.paypal-status.com/feed/atom) | yes | `POST /v1/oauth2/token` | no | `service` · ~~quota~~ · 1 derived |
 | [pipedrive](apps/pipedrive/README.md) | [page](https://status.pipedrive.com) | no | `GET /users/me` | yes | ~~service~~ · `quota` · 2 derived |
 | [podio](apps/podio/README.md) | [Statuspage](https://status.podio.com/api/v2/summary.json) | yes | `GET /oauth/scope` | yes | `service` · `api` · `quota` · 2 derived |
 | [postbin](apps/postbin/README.md) | [page](https://www.postb.in) | no | _no credential_ | no | `service` · ~~quota~~ · 0 derived |
@@ -164,9 +165,10 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [quickbooks](apps/quickbooks/README.md) | [Statuspage](https://status.developer.intuit.com/api/v2/summary.json) | yes | `GET /v3/company/{realmId}/companyinfo/{realmId}` | no | `service` · ~~quota~~ · 1 derived |
 | [raindrop](apps/raindrop/README.md) | [Better Stack](https://status.raindrop.io/index.json) | yes | `GET /rest/v1/user` | yes | `service` · `quota` · 2 derived |
 | [reddit](apps/reddit/README.md) | [Statuspage](https://www.redditstatus.com/api/v2/summary.json) | yes | `GET /api/v1/me` | yes | `service` · `quota` · 1 derived |
+| [ringcentral](apps/ringcentral/README.md) | dashboard only, private feed host | no | `GET /restapi/v1.0/account/~/extension/~` | no | ~~service~~ · `api` · ~~quota~~ · 2 derived |
 | [s3](apps/s3/README.md) | [JSON](https://health.aws.amazon.com/public/currentevents) | yes | `GET /` (ListBuckets) | no | `service` · 1 derived |
-| [segment](apps/segment/README.md) | [Statuspage](https://status.segment.com/api/v2/summary.json) | yes | `POST /v1/identify` | no | `service` · ~~quota~~ · 1 derived |
 | [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes | `service` · `quota` · 2 derived |
+| [segment](apps/segment/README.md) | [Statuspage](https://status.segment.com/api/v2/summary.json) | yes | `POST /v1/identify` | no | `service` · ~~quota~~ · 1 derived |
 | [sendgrid](apps/sendgrid/README.md) | [Statuspage](https://status.sendgrid.com/api/v2/status.json) | yes | `GET /v3/scopes` | yes | `service` · `quota` · 1 derived |
 | [servicenow](apps/servicenow/README.md) | none published | no | `GET /api/now/table/sys_user_role?sysparm_limit=1` | no | ~~service~~ · ~~quota~~ · `instance` · 2 derived |
 | [shopify](apps/shopify/README.md) | [Statuspage](https://www.shopifystatus.com/api/v2/status.json) | yes | `GET /shop.json` | yes | `service` · `quota` · `store` · 1 derived |
@@ -176,15 +178,17 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [splitwise](apps/splitwise/README.md) | [Instatus](https://status.splitwise.com/v2/components.json) | yes | `GET /api/v3.0/get_current_user` | yes | `service` · `api` · `quota` · 1 derived |
 | [splunk](apps/splunk/README.md) | [Statuspage](https://status.splunkcloud.com/api/v2/summary.json) | yes | `GET /services/authentication/current-context` | no | `service` · 1 derived |
 | [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
+| [square](apps/square/README.md) | [Statuspage](https://issquareup.com/api/v2/status.json) | yes | `GET /v2/merchants/me` | no | `service` · ~~quota~~ · 1 derived |
 | [strapi](apps/strapi/README.md) | none published | no | `GET /api/upload/files/page` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [strava](apps/strava/README.md) | [Statuspage](https://status.strava.com/api/v2/summary.json) | yes | `GET /athlete` | yes | `service` · `quota` · 1 derived |
-| [square](apps/square/README.md) | [Statuspage](https://issquareup.com/api/v2/status.json) | yes | `GET /v2/merchants/me` | no | `service` · ~~quota~~ · 1 derived |
 | [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |
 | [supabase](apps/supabase/README.md) | [Atom](https://status.supabase.com/history.atom) | yes | `GET /rest/v1/` | no | `service` · `reachable` · 1 derived |
 | [surveymonkey](apps/surveymonkey/README.md) | [Statuspage](https://status.surveymonkey.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
 | [tally](apps/tally/README.md) | [Better Stack](https://status.tally.so/index.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [teams](apps/teams/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
+| [thinkific](apps/thinkific/README.md) | [Statuspage](https://status.thinkific.com/api/v2/summary.json) | yes | `GET /courses` | no | `service` · ~~quota~~ · 1 derived |
+| [thrivecart](apps/thrivecart/README.md) | none published | no | `GET /api/external/ping` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [ticktick](apps/ticktick/README.md) | none published | no | `GET /open/v1/project` | no | `service` · ~~quota~~ · 1 derived |
 | [tidycal](apps/tidycal/README.md) | none (statuspage host unclaimed) | no | `GET /api/me` | no | `api` · ~~service~~ · ~~quota~~ · 2 derived |
 | [todoist](apps/todoist/README.md) | [Instatus](https://status.todoist.net/summary.json) | yes | `GET /projects` | no | `service` · ~~quota~~ · 2 derived |
@@ -207,6 +211,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [youtube](apps/youtube/README.md) | not on the Workspace dashboard | no | _varies by method_ | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [zendesk](apps/zendesk/README.md) | [page](https://status.zendesk.com) | no | `GET /api/v2/users/me.json` | yes | ~~service~~ · `quota` · `account` · 2 derived |
 | [zoho](apps/zoho/README.md) | [RSS](https://us.zohostatus.com/rss) | yes | `GET /crm/v6/org` | yes | `service` · `quota` · 1 derived |
+| [zohomail](apps/zohomail/README.md) | [StatusIQ RSS](https://us.zohostatus.com/rss) | yes | `GET /api/accounts` | no | `service` · ~~quota~~ · 8 derived |
 | [zoom](apps/zoom/README.md) | [Statuspage](https://status.zoom.us/api/v2/status.json) | yes | `GET /v2/users/me` | yes | `service` · `quota` · 2 derived |
 
 ## What the research turned up
@@ -295,10 +300,16 @@ Mistral prefixes every update body with `Status: Resolved` / `Status: Investigat
 is machine-readable, and guessing from the title when a real field exists is inexcusable.
 Where a vendor offers nothing like it, report `unknown` rather than inventing a state.
 
-Two apps read feeds today, for opposite reasons:
+Three apps read feeds today, for different reasons:
 
 - **mistral** — the feed is the *only* machine-readable surface, so it drives the `service`
   verdict. Affected components come from the `<li>` list in each update body.
+- **zohomail** — same reason, one layer worse: `status.zoho.com` 301s to `us.zohostatus.com`,
+  a Site24x7 StatusIQ page with no Statuspage-style JSON at all, and its single feed carries
+  one item per component across every Zoho product. The check reads the `Zoho Mail` component
+  specifically — the neighbouring `Zoho Mail-IMAP` / `-POP` / `-SMTP` entries are protocol
+  front-ends, not the REST API, and rolling them up would report the app down for an IMAP
+  incident that cannot affect it.
 - **slack** — the JSON API already answers "what is broken now", so the feed answers what
   that API structurally cannot: what broke *recently and already resolved*, which is what
   you want when a run failed twenty minutes ago and works now. It is a separate

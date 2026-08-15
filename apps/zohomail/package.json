@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/zohomail",
+  "version": "0.1.0",
+  "description": "Send, search and manage email in Zoho Mail — messages, folders, labels and accounts, across every Zoho data centre.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zohomail",
+    "displayName": "Zoho Mail",
+    "categories": [
+      "communication",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Zoho Mail"
+      }
+    },
+    "network": {
+      "allow": [
+        "mail.zoho.com",
+        "mail.zoho.eu",
+        "mail.zoho.in",
+        "mail.zoho.com.au",
+        "mail.zoho.jp",
+        "mail.zoho.com.cn",
+        "mail.zohocloud.ca",
+        "mail.zoho.sa"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
