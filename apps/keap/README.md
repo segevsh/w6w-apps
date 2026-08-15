@@ -450,22 +450,17 @@ as an OAuth endpoint host. `127.0.0.1` is **not** declared: nothing here calls i
 
 ## Icon
 
-`assets/icon.png` — downloaded verbatim from
-<https://keap.com/apple-touch-icon.png> on 2026-08-11.
+`assets/icon.png` — 512px — the previous PNG was 180px.
 
-- **4,222 bytes**, `image/png`, 180 × 180 RGBA
-- **md5 `33a0ccad77795f59944838c316d93135`**
+Taken from <https://keap.com/android-chrome-512x512.png> on 2026-08-15.
 
-`tests/index.test.ts` asserts the byte length and reads the PNG magic and the
-IHDR dimensions straight off the header, so a redraw fails the suite.
+- **4,122 bytes**, `image/png`, 512 × 512, md5 `cf8ba31a768b2da55bdc62f6a6e21248`
+- raster, because the vendor publishes no vector of this mark
 
-**No SVG was used, and the two candidates were checked.**
-`keap.com/favicon.svg` answers **404** with a 202,176-byte HTML page — the site's
-404 document, not an icon. `keap.com/safari-pinned-tab.svg` is real (1,239 bytes,
-`image/svg+xml`, md5 `de7a71ff118f65f258c112ebc14c2fea`) but is a
-potrace-generated **monochrome mask icon** with no colour, which is what Safari's
-pinned-tab slot requires and a poor app mark. The full-colour apple-touch-icon is
-the vendor's actual mark.
+Still no vector. The two candidates were re-checked: `keap.com/favicon.svg` answers 404 with the site's HTML 404 document, and `keap.com/safari-pinned-tab.svg` is a potrace-generated monochrome mask with no brand colour, which is what Safari's pinned-tab slot requires and a poor app mark. Keap's own 512×512 web-app icon is the full-colour mark, and the largest they publish.
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.
 
 ## Development
 

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/whatsapp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send and manage messages, templates and the business profile through the WhatsApp Business Cloud API.",
   "license": "MIT",
   "author": {

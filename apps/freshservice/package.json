@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/freshservice",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Freshservice ITSM tickets, problems, changes, releases, assets and the service catalog.",
   "license": "MIT",
   "author": {

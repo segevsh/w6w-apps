@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48.446" height="48.808" viewBox="0 0 48.446 48.808">
-  <defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Fireflies.ai"><title>Fireflies.ai</title><svg xmlns:xlink="http://www.w3.org/1999/xlink" x="4.341" y="4" width="91.318" height="92" viewBox="0 0 48.446 48.808" preserveAspectRatio="xMidYMid meet" overflow="visible"><defs>
     <linearGradient id="linear-gradient" x1="2.446" y1="2.53" x2="-1.79" y2="-1.888" gradientUnits="objectBoundingBox">
       <stop offset="0" stop-color="#e82a73"/>
       <stop offset="0.113" stop-color="#de2d7a"/>
@@ -40,5 +39,4 @@
       <path id="Path_83" data-name="Path 83" d="M91.421,556.149A13.653,13.653,0,0,0,105.074,569.8h2.275v-29.58Z" transform="translate(-91.421 -520.992)" opacity="0.18" fill="url(#linear-gradient-7)"/>
       <path id="Path_84" data-name="Path 84" d="M127.617,519.563a13.653,13.653,0,0,1,13.653,13.652v2.276H111.689Z" transform="translate(-92.823 -519.563)" opacity="0.18" fill="url(#linear-gradient-8)"/>
     </g>
-  </g>
-</svg>
+  </g></svg></svg>

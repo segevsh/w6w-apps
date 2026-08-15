@@ -127,6 +127,17 @@ cluster imposes whatever thread-pool and circuit-breaker limits its own configur
 A declared absence always reports `unknown`, so it carries `severity: "informational"` —
 otherwise it would pin every verdict for this app at `unknown` forever.
 
+
+## Icon
+
+`assets/icon.svg` — Elastic's mark is the multicolour cluster — the previous artwork was neither its shape nor its palette.
+
+Taken from <https://www.elastic.co/favicon.svg> on 2026-08-15.
+
+- **3,511 bytes**, `image/svg+xml`, md5 `d30a723f22de6b698316f8f058f54bc1`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-01 against Elastic's own REST API documentation

@@ -397,6 +397,20 @@ Every other limit is a fixed constant enforced by refusal, never reported as a r
 25 recipients per transactional send (954), 1000 subscribers per import (209), `pagesize` 10–1000
 (801), 15 preview recipients (374) and 240 per 24 h (375), 5 clients per 30 minutes (172).
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's own marque, in brand purple — the previous mark was an uncoloured black export.
+
+Taken from <https://www.campaignmonitor.com/wp-content/themes/cm-theme/assets/ico/cm-marque.svg> on 2026-08-15.
+
+- **598 bytes**, `image/svg+xml`, md5 `0017e8d03cb6242f9752637e10dffd32`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.
+
 ---
 
 ## What is deliberately not here

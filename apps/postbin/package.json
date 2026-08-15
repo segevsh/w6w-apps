@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/postbin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create disposable bins that collect any HTTP request sent to them, for testing API clients and webhooks.",
   "license": "MIT",
   "author": {

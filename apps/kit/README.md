@@ -198,6 +198,18 @@ would pin every verdict at `unknown` forever.
 - **Brand assets** — https://kit.com/brand (source of `assets/icon.svg`, the official
   `kit-logo-soft-black.svg` mark)
 
+
+## Icon
+
+`assets/icon.png` — Kit's app icon; the previous artwork was the wordmark at 2.2:1, which a square tile cannot hold.
+
+Taken from <https://kit.com/android-chrome-512x512.png> on 2026-08-15.
+
+- **14,761 bytes**, `image/png`, 512 × 512, md5 `b37afe36ec8f075b3d509919485906a5`
+- raster, because the vendor publishes no vector of this mark
+
+Kit publishes vectors of the wordmark only (`media.kit.com/images/logos/kit-logo-*.svg`, 2.2:1), which is what this app used to ship. The square icon exists as a raster only, and at 512px it is sharper on the tile than the vector wordmark was legible.
+
 ---
 
 Researched and endpoint-verified against Kit's live v4 OpenAPI document on 2026-08-03. Every path,

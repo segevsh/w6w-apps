@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/strapi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read, create, update and delete entries on any Strapi content type, and browse the media library.",
   "license": "MIT",
   "author": {

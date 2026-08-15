@@ -1,5 +1,4 @@
-<svg width="36" height="37" viewBox="0 0 36 37" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_3_622)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Discourse"><title>Discourse</title><svg fill="none" x="6.14" y="4" width="87.72" height="92" viewBox="0 0 35.279 37" preserveAspectRatio="xMidYMid meet" overflow="visible"><g clip-path="url(#clip0_3_622)">
 <path d="M17.784 0C8.12914 0 0 8.12221 0 18.1442V36.9324L17.7806 36.9146C27.4354 36.9146 35.2663 28.4793 35.2663 18.4609C35.2663 8.4424 27.4286 0 17.784 0Z" fill="black" style="fill:black;fill-opacity:1;"/>
 <path d="M17.9659 7.02289C14.1464 7.02523 10.6116 9.11232 8.6573 12.516C6.70302 15.9196 6.62004 20.1401 8.43774 23.6266L6.47659 30.1728L13.5189 28.522C17.5509 30.4072 22.2823 29.5605 25.4743 26.3828C28.6656 23.2047 29.6743 18.3317 28.0259 14.0732C26.3764 9.81461 22.3996 7.02182 17.9767 7.02182L17.9659 7.02289Z" fill="#FFF9AE" style="fill:#FFF9AE;fill:color(display-p3 1.0000 0.9765 0.6824);fill-opacity:1;"/>
 <path d="M26.4413 25.2276C23.3628 29.2585 18.0413 30.6068 13.519 28.5028L6.47672 30.1749L13.6459 29.2962C18.3979 32.185 24.4836 30.9139 27.7887 26.3419C31.0939 21.7699 30.5672 15.3522 26.5644 11.4245C29.5695 15.5122 29.5184 21.1974 26.4401 25.2248L26.4413 25.2276Z" fill="#00AEEF" style="fill:#00AEEF;fill:color(display-p3 0.0000 0.6824 0.9373);fill-opacity:1;"/>
@@ -11,5 +10,4 @@
 <clipPath id="clip0_3_622">
 <rect width="36" height="37" fill="white" style="fill:white;fill-opacity:1;"/>
 </clipPath>
-</defs>
-</svg>
+</defs></svg></svg>

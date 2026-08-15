@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/customerio",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Identify, track, segment and merge people via Customer.io's Track API.",
   "license": "MIT",
   "author": {

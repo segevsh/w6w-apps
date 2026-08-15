@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/wix",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Manage a Wix site's CMS collections and data items, contacts and labels, Stores products, and eCommerce orders via the Wix REST API.",
   "license": "MIT",
   "author": {

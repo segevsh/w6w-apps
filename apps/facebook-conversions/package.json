@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/facebook-conversions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send server-side conversion events to a Meta dataset (pixel) through the Meta Conversions API, with Meta's required SHA-256 customer-data hashing applied in-app.",
   "license": "MIT",
   "author": {

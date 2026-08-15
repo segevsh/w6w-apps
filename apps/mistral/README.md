@@ -79,6 +79,17 @@ checks. The spec allows the widening precisely because the check is unsigned; pa
 extra host with `credential: "signed"` is rejected at load time, so a credential can never
 reach a status host.
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's palette; the previous artwork carried black bars the brand does not use.
+
+Taken from <https://www.mistral.ai/favicon.svg> on 2026-08-15.
+
+- **919 bytes**, `image/svg+xml`, md5 `9f2bf54460fa831851d383f527c13620`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

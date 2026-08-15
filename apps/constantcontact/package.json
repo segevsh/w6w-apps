@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/constantcontact",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Constant Contact contacts, contact lists, custom fields, and email campaigns through the V3 API.",
   "license": "MIT",
   "author": {

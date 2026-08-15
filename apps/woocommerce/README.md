@@ -95,6 +95,19 @@ host does, with no standard way to read them. A declared absence always reports
 `unknown`, so it carries `severity: "informational"` — otherwise it would pin
 every verdict for this app at `unknown` forever.
 
+
+## Icon
+
+`assets/icon.svg` — the Woo mark in its bubble — the previous artwork was the bare wordmark, 3.8:1 and unusable on a square tile.
+
+Taken from <https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/woocommerce-icon.svg> on 2026-08-15.
+
+- **5,093 bytes**, `image/svg+xml`, md5 `6452582dc916a26f07c1ebc3ad31ba64`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+The `gilbarbara/logos` collection carries the Woo mark in its bubble; WooCommerce's own site publishes only the wordmark, which is what this app used to ship at 3.8:1.
+
 ---
 
 Researched and endpoint-verified 2026-07-27. Status surfaces move; re-check with

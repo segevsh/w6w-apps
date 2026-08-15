@@ -345,12 +345,16 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
 
 Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
   const bytes = await Deno.readFile(new URL("../assets/icon.png", import.meta.url));
-  // Downloaded verbatim from https://keap.com/apple-touch-icon.png on
-  // 2026-08-11: 4,222 bytes, 180x180 RGBA PNG, md5 33a0ccad77795f59944838c316d93135.
-  assertEquals(bytes.length, 4222, "icon.png is no longer the 4,222-byte vendor file");
-  // PNG magic + IHDR width/height (180 x 180), read straight off the header.
+  // Downloaded verbatim from https://keap.com/android-chrome-512x512.png on
+  // 2026-08-15: 4,122 bytes, 512x512 PNG, md5 cf8ba31a768b2da55bdc62f6a6e21248.
+  // Same artwork as the 180x180 apple-touch-icon this app used to ship — Keap
+  // publishes both — at the largest size they offer, because 180px is soft on a
+  // hidpi tile. Still no SVG: the two candidates checked in the README are a
+  // 404 page and a colourless pinned-tab mask.
+  assertEquals(bytes.length, 4122, "icon.png is no longer the 4,122-byte vendor file");
+  // PNG magic + IHDR width/height (512 x 512), read straight off the header.
   assertEquals(Array.from(bytes.slice(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10]);
   const view = new DataView(bytes.buffer, bytes.byteOffset);
-  assertEquals(view.getUint32(16), 180);
-  assertEquals(view.getUint32(20), 180);
+  assertEquals(view.getUint32(16), 512);
+  assertEquals(view.getUint32(20), 512);
 });

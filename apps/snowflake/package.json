@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/snowflake",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run SQL against Snowflake — execute statements, poll async results, and manage them via the Snowflake SQL API v2.",
   "license": "MIT",
   "author": {

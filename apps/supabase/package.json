@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/supabase",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Query, write, and call Postgres functions in a Supabase project over its auto-generated PostgREST REST API.",
   "license": "MIT",
   "author": {

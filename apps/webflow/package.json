@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/webflow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Webflow sites, CMS collections and items, products, and orders via the Webflow Data API v2.",
   "license": "MIT",
   "author": {

@@ -155,9 +155,15 @@ so a credential can never reach a status host.
 
 ## Icon
 
-Sourced from Customer.io's own mark as shipped in n8n's `nodes-base` package
-(`nodes/CustomerIo/customerio.svg` / `customerio.dark.svg`) — light and dark variants, copied
-verbatim.
+`assets/icon.svg` — the vendor's current mark; the previous one predates their rebrand.
+
+Taken from <https://customer.io/favicon.svg> on 2026-08-15.
+
+- **736 bytes**, `image/svg+xml`, md5 `0315173e8674f92376fd43846e60bc5a`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+Composed from Customer.io's own artwork rather than installed as-is. Their `favicon.svg` is an svgjs bundle that carries *both* themes in one file and switches between them with a `prefers-color-scheme` media query, inside nested viewports whose dimensions contradict the root's — it renders as a cropped quarter of the mark in any host that scales it. The three glyph paths, the plate's 15% corner radius and the 10% inset are theirs, read straight out of that file; light and dark are split into the two ImageObjects the spec expects.
 
 ---
 

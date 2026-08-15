@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/circleci",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Consume CircleCI API",
   "license": "MIT",
   "author": {

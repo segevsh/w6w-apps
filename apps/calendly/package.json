@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/calendly",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read Calendly users, event types, scheduled events and invitees; create single-use scheduling links and manage webhook subscriptions.",
   "license": "MIT",
   "author": {

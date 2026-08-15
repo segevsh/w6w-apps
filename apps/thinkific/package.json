@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/thinkific",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Manage Thinkific courses, users, enrollments, orders, products and bundles through the Admin API.",
   "license": "MIT",
   "author": {

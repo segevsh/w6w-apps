@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/zohomail",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send, search and manage email in Zoho Mail — messages, folders, labels and accounts, across every Zoho data centre.",
   "license": "MIT",
   "author": {

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/pandadoc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create documents from PandaDoc templates, send them for signature, track their status, and manage templates, contacts and webhook subscriptions.",
   "license": "MIT",
   "author": {

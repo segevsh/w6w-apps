@@ -129,8 +129,15 @@ through the host-mediated OAuth redirect.
 
 ## Icon
 
-`assets/icon.png` is the real Harvest mark, copied unmodified from n8n's
-`nodes-base/nodes/Harvest/harvest.png` (152×152 PNG) — no icon was invented for this app.
+`assets/icon.svg` — vector, and the current mark — replaces a 152px 4-bit PNG of the retired H logo.
+
+Taken from <https://www.getharvest.com/hubfs/favicon.svg> on 2026-08-15.
+
+- **1,328 bytes**, `image/svg+xml`, md5 `d268b9c06c3e390a4952ab2eae620404`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+The previous file came from n8n's `nodes-base` at 152×152 and was the retired orange H. Harvest publishes a vector of its current mark.
 
 ---
 

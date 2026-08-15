@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/grist",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read, add, update, upsert and delete Grist records; run read-only SQL; manage tables and columns; browse orgs, workspaces and docs.",
   "license": "MIT",
   "author": {

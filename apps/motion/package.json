@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/motion",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create, schedule and query Motion tasks, projects, recurring tasks, comments and custom fields.",
   "license": "MIT",
   "author": {

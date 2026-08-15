@@ -153,6 +153,17 @@ The three questions above map onto declared checks like this:
 | `auth:api-token` | credential | connection | signed | fatal | — | derived from the `api-token` auth method's `test` hook |
 | `auth:oauth2` | credential | connection | signed | fatal | — | derived from the `oauth2` auth method's `test` hook |
 
+
+## Icon
+
+`assets/icon.svg` — PagerDuty's mark is a white P on brand green, not the lowercase pd wordmark.
+
+Taken from <https://www.pagerduty.com/favicon/prod/icon.svg> on 2026-08-15.
+
+- **506 bytes**, `image/svg+xml`, md5 `180c6f201779c85efd95df5c28134875`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-07-31 against PagerDuty's OpenAPI

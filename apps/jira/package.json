@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/jira",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Create, search and transition Jira issues, and manage comments, users and projects.",
   "license": "MIT",
   "author": {

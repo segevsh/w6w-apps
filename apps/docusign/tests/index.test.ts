@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertMatch } from "@std/assert";
 import app from "../index.ts";
 import manifest from "../package.json" with { type: "json" };
 
@@ -48,7 +48,10 @@ Deno.test("manifest identity matches the pack's conventions", () => {
   assertEquals(manifest.w6w.displayName, "DocuSign");
   assertEquals(manifest.w6w.categories, ["documents", "legal", "productivity"]);
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
-  assertEquals(manifest.version, "0.1.0");
+  // Shape, not value: the version moves on every pack-wide change (an icon
+  // sweep, a fmt pass), and a pinned literal turns each of those into a test
+  // edit that asserts nothing about this app.
+  assertMatch(manifest.version, /^\d+\.\d+\.\d+$/);
 });
 
 Deno.test("network.allow covers the per-account API apex and both auth hosts", () => {

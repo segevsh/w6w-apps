@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/productboard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write the Productboard product hierarchy, customer notes, teams, members and webhooks over the Productboard REST API v2.",
   "license": "MIT",
   "author": {

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/bamboohr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write BambooHR employees, time off, files, reports and metadata via the BambooHR API v1.",
   "license": "MIT",
   "author": {

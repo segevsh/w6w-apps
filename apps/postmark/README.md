@@ -110,6 +110,17 @@ The three questions above map onto declared checks like this:
 | `quota` | quota | — | — | informational | — | `unavailable` — no rate-limit headers or credit API exist |
 | `auth:api-key` | credential | connection | signed | fatal | — | derived from the `api-key` auth method's `test` hook |
 
+
+## Icon
+
+`assets/icon.svg` — Postmark's stamp in vector and in brand yellow — replaces a 60px PNG that had lost the perforation.
+
+Taken from <https://postmarkapp.com/images/logo-stamp-simple.svg> on 2026-08-15.
+
+- **3,878 bytes**, `image/svg+xml`, md5 `147f2c90c839830cb9f78139ac864bde`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-02 against Postmark's own developer docs

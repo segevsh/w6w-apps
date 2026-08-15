@@ -214,9 +214,38 @@ cannot be reached at all. Upstash (Redis over a REST API) and Supabase (Postgres
 PostgREST's REST API) are the closest real, fixed-domain products that actually work
 under this architecture — see each app's README for the scoping rationale.
 
-Icons are the vendors' own marks — copied verbatim from n8n's `nodes-base` for
-the apps ported from it, and fetched from each vendor's brand page for the
-apps built from scratch. See individual `assets/icon.*` for the exact source.
+Icons are the vendors' own marks — fetched from each vendor's own brand page,
+favicon or web-app manifest, with n8n's `nodes-base` as the fallback mirror for
+apps ported from it. Each app's README says exactly which file, from where, and
+on what date, under `## Icon`.
+
+**The vendor first, and the vendor's current mark.** A mirror can lag a rebrand
+and a "simple icon" export can be a wordmark or a colourless silhouette, so a
+mark is only as good as its source. Prefer, in order: the vendor's own brand
+page; their `favicon.svg` or web-app-manifest icon; a mirror. Reject a
+`safari-pinned-tab.svg` outright — it is a potrace-generated monochrome *mask*,
+which is what Safari's pinned-tab slot requires and a poor app mark. Vector is
+preferred, but a vendor that publishes no vector of its square mark is better
+served by their largest raster (`appearance.icon.url`) than by a redraw: nothing
+in this pack is drawn from scratch except the five exceptions listed below.
+
+**One canvas, every app.** A host draws the mark into one small square tile, so
+marks arrive pre-squared and pre-inset: `_tools/icon-normalize.ts` trims each
+one to its true ink box and re-frames it on a square `0 0 100 100` canvas at a
+fixed fraction of it, so nothing is squashed by a non-square aspect, nothing
+kisses the tile's rounded corner, and optical weight is uniform across the pack.
+The artwork is never touched — it is re-parented, verbatim, into a nested
+`<svg>` whose viewBox is the measured ink box, which is the one re-frame that
+survives `<style>` rules, `userSpaceOnUse` masks, gradients and `<use>`. Run it
+after installing any new mark:
+
+```bash
+deno task icons:normalize   # from _tools/ — square + inset every icon
+```
+
+It needs `rsvg-convert` and ImageMagick; the file header says how to get them
+into the `api` service. Re-running is safe — it unwraps its own output before
+measuring, so a second pass reproduces the first.
 
 **Both themes, every app.** A host draws the mark on a tile that flips with the
 theme (`--w6w-icon-swatch` in `@w6w/ui`: `#f0f2f6` light, `#1f232c` dark), so a

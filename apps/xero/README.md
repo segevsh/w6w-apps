@@ -151,6 +151,17 @@ widening precisely because the check is unsigned; pairing an extra host with
 `credential: "signed"` is rejected at load time, so a credential can never reach a
 status host.
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's current icon and blue.
+
+Taken from <https://www.xero.com/content/dam/xero/pilot-images/admin/icons/favicon/favicon.svg> on 2026-08-15.
+
+- **3,045 bytes**, `image/svg+xml`, md5 `9af5f9dbbd9434653978552c94a1bc9a`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-07-31 against developer.xero.com (via search-

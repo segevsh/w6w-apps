@@ -329,13 +329,18 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
 
 Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
   const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
-  // Downloaded verbatim from
-  // cdn.jsdelivr.net/npm/simple-icons@latest/icons/elevenlabs.svg on 2026-08-11:
-  // 158 bytes, md5 582f077cf9276d910bb367f43e41a62b.
-  assertEquals(svg.length, 158, "icon.svg is no longer the 158-byte vendor file");
+  // ElevenLabs' own icon, from https://elevenlabs.io/icon.svg on 2026-08-15,
+  // re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`. It
+  // replaces the simple-icons export — the same two bars, but with no plate, so
+  // it was black-on-black and needed a generated reversal to survive the dark
+  // tile. The vendor ships the plate; the reversal is retired.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
   assert(svg.includes("<title>ElevenLabs</title>"));
-  assert(svg.includes('viewBox="0 0 24 24"'));
-  assert(svg.includes("M4.6035 0v24h4.9317V0zm9.8613 0v24h4.9317V0z"), "the mark was redrawn");
+  assert(svg.includes('viewBox="0 0 500 500"'), "the vendor viewBox changed");
+  assert(svg.includes('rx="100"'), "the vendor's rounded plate is gone — the mark was redrawn");
 });
 
 Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {

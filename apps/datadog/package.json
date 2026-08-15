@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/datadog",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Submit metrics and events to Datadog, query timeseries, and read monitors, downtimes, dashboards, logs, hosts and users across every Datadog site.",
   "license": "MIT",
   "author": {

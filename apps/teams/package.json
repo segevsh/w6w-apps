@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/teams",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read teams and channels, and send channel and chat messages, in Microsoft Teams via the Microsoft Graph API.",
   "license": "MIT",
   "author": {

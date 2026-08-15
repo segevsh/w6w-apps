@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/circle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage members, spaces, posts, comments, events and tags in a Circle community via the Circle Admin API v2.",
   "license": "MIT",
   "author": {

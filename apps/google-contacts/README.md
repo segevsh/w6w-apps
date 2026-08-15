@@ -233,6 +233,17 @@ Because no check here runs a hook, this app adds **no** status host to any allow
 Google publishes no repository dedicated to the People API — it is reached through the generic
 Google API client libraries above, or over plain REST as this app does.
 
+
+## Icon
+
+`assets/icon.svg` — Google's own product logo in vector — replaces a 60px colormapped PNG.
+
+Taken from <https://fonts.gstatic.com/s/i/productlogos/contacts/v8/192px.svg> on 2026-08-15.
+
+- **896 bytes**, `image/svg+xml`, md5 `93f859f50287f40747733f9517ea0eb2`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified against the live documentation on 2026-08-02. Every path, parameter

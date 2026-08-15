@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/companycam",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write CompanyCam projects, photos, videos, documents, checklists, tags, users and webhooks over the Core API v2.",
   "license": "MIT",
   "author": {

@@ -122,7 +122,13 @@ Deno.test("index: the shipped icon is the verbatim simple-icons BigCommerce mark
   // The vendor's own site serves a ~378 KB catch-all for unknown asset paths, so
   // "we downloaded something" is not evidence. The title is.
   assert(svg.includes("<title>BigCommerce</title>"), "icon does not identify itself");
-  assertEquals(svg.length, 700, "icon is not the 700-byte file that was verified");
+  // `_tools/icon-normalize.ts` re-frames every mark onto one square canvas, so
+  // the file's length is the tool's. What still has to be the vendor's is the
+  // artwork inside — which is what the assertions below check.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
 });
 
 /**

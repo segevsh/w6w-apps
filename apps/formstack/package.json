@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/formstack",
-  "version": "0.1.2",
-  "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions \u2014 on the V2025 API.",
+  "version": "0.1.3",
+  "description": "Read Formstack forms, fields and folders, and list, search, create and delete submissions — on the V2025 API.",
   "license": "MIT",
   "author": {
     "name": "w6w"

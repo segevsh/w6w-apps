@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/reddit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Submit and read posts and comments, vote, search, and look up identity on Reddit.",
   "license": "MIT",
   "author": {

@@ -150,6 +150,17 @@ requests/minute per API family), not the separate, unmetered **enrichment-credit
 HubSpot's Breeze Intelligence billing now tracks — Clearbit publishes no header or endpoint for the
 latter, so this check can only speak to request-rate headroom.
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's own mark; the previous one was a square-cut approximation.
+
+Taken from <https://www.clearbit.com/logo.svg> on 2026-08-15.
+
+- **1,931 bytes**, `image/svg+xml`, md5 `ec769ea15fcfe6f025e528aed070d418`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-01 against Clearbit's official `clearbit-node` SDK source

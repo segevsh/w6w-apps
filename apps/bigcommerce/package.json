@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/bigcommerce",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Manage a BigCommerce store's catalog, orders, customers, carts, inventory, price lists and webhooks over the REST Management API.",
   "license": "MIT",
   "author": {

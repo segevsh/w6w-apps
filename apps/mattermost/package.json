@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/mattermost",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Post, edit, search and thread messages in Mattermost channels, and manage channels and their members — on Mattermost Cloud and self-hosted servers alike.",
   "license": "MIT",
   "author": {

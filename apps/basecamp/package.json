@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/basecamp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Read Basecamp projects and people, and create to-dos, messages, comments and Campfire lines — on the Basecamp 5 API.",
   "license": "MIT",
   "author": {

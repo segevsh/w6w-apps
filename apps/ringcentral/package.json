@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/ringcentral",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send SMS, read the message store and call log, look up extensions and the company directory, and place RingOut calls over the RingCentral Platform API.",
   "license": "MIT",
   "author": {

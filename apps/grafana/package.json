@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/grafana",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage dashboards, data sources, annotations, and alert rules on any Grafana instance.",
   "license": "MIT",
   "author": {

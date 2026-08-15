@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/highlevel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Work with HighLevel (GoHighLevel) CRM: contacts, opportunities, pipelines, calendars, conversations and location metadata.",
   "license": "MIT",
   "author": {

@@ -432,6 +432,17 @@ silos knows the question was asked. `severity: "informational"` is required rath
 `unavailable` entry always reports `unknown`, and `unknown` outranks `ok` in a roll-up, so at any
 other severity this honest statement would pin the app's verdict at `unknown` forever.
 
+## Icon
+
+`assets/icon.png` — Greenhouse's current mark — the previous artwork was the retired outline g.
+
+Taken from <https://www.greenhouse.io/> on 2026-08-15.
+
+- **4,602 bytes**, `image/png`, 256 × 256, md5 `935cd264c09e4e081cb25058b4211d0a`
+- raster, because the vendor publishes no vector of this mark
+
+The previous artwork was Greenhouse's retired outline `g`. This is the mark they use today.
+
 ## Development
 
 ```bash

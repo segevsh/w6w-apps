@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/xero",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Xero contacts, invoices, bank transactions, items and accounts.",
   "license": "MIT",
   "author": {

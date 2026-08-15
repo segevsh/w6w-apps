@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/postmark",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send transactional email and inspect messages, bounces, templates, and server info via Postmark.",
   "license": "MIT",
   "author": {
@@ -16,7 +16,7 @@
     ],
     "appearance": {
       "icon": {
-        "url": "./assets/icon.png",
+        "svg": "./assets/icon.svg",
         "alt": "Postmark"
       }
     },

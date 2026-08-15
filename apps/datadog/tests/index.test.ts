@@ -386,9 +386,21 @@ Deno.test("index: the site table and the status host table cover the same nine s
 Deno.test("index: the icon is the vendor's mark, in the vendor's colour", async () => {
   const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
   // simple-icons' 2,998-byte file (2026-08-11) + ` fill="#632CA6"`.
-  assertEquals(svg.length, 3013, "icon.svg is no longer the vendor file plus its brand fill");
+  // `_tools/icon-normalize.ts` re-frames every mark onto one square canvas, so
+  // the file's length is the tool's. What still has to be the vendor's is the
+  // artwork inside — which is what the assertions below check.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
   assert(svg.includes("<title>Datadog</title>"), "the mark no longer names Datadog");
-  assert(svg.includes('viewBox="0 0 24 24"'));
+  // The re-frame trims the mark to its ink box, so the inner viewBox is the
+  // measured box now, not the vendor's original. The path data is untouched,
+  // and it is the thing a redraw would change.
+  assert(
+    svg.includes("M19.57 17.04l-1.997-1.316"),
+    "the vendor's geometry changed — the mark was redrawn",
+  );
   assert(svg.includes('fill="#632CA6"'), "the mark lost Datadog's brand purple");
   assert(!svg.includes("icon.dark.svg"), "a coloured mark needs no dark variant");
 });

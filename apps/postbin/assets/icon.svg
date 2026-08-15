@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#0084FF">
-  <rect x="1" y="7" width="2" height="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="PostBin"><title>PostBin</title><svg fill="#0084FF" x="4" y="4" width="92" height="92" viewBox="1 1 14 14" preserveAspectRatio="xMidYMid meet" overflow="visible"><rect x="1" y="7" width="2" height="2"/>
   <rect x="2" y="2" width="2" height="2"/>
   <rect x="2" y="12" width="2" height="2"/>
   <rect x="4" y="6" width="2" height="4"/>
@@ -13,5 +12,4 @@
   <rect x="10" y="6" width="2" height="4"/>
   <rect x="12" y="2" width="2" height="2"/>
   <rect x="12" y="12" width="2" height="2"/>
-  <rect x="13" y="7" width="2" height="2"/>
-</svg>
+  <rect x="13" y="7" width="2" height="2"/></svg></svg>

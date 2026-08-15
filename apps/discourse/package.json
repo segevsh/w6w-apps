@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/discourse",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write topics, posts, categories, users and groups on a Discourse forum — self-hosted or Discourse-hosted.",
   "license": "MIT",
   "author": {

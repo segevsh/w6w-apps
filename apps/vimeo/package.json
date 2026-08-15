@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/vimeo",
-  "version": "0.1.2",
-  "description": "Manage Vimeo videos, folders, showcases, comments and likes \u2014 list, edit and delete videos, pull-upload from a URL, organise folders and showcases, and read rate-limit headroom.",
+  "version": "0.1.3",
+  "description": "Manage Vimeo videos, folders, showcases, comments and likes — list, edit and delete videos, pull-upload from a URL, organise folders and showcases, and read rate-limit headroom.",
   "license": "MIT",
   "author": {
     "name": "w6w"

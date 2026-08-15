@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/elevenlabs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate speech, sound effects and transcripts with ElevenLabs: text-to-speech with character timestamps, speech-to-text, the voice library, models, generation history and plan usage.",
   "license": "MIT",
   "author": {
@@ -17,12 +17,6 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "ElevenLabs"
-      },
-      "darkMode": {
-        "icon": {
-          "svg": "./assets/icon.dark.svg",
-          "alt": "ElevenLabs"
-        }
       }
     },
     "network": {

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/toggl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Track time entries, projects, workspaces, and clients via the Toggl Track API v9.",
   "license": "MIT",
   "author": {
@@ -15,7 +15,7 @@
     ],
     "appearance": {
       "icon": {
-        "url": "./assets/icon.png",
+        "svg": "./assets/icon.svg",
         "alt": "Toggl Track"
       }
     },

@@ -500,21 +500,27 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
 });
 
 Deno.test("index: the icon is the vendor's own file, byte-for-byte", async () => {
-  // Downloaded verbatim on 2026-08-11 from https://companycam.com/apple-touch-icon.png,
-  // md5 411d86ab3dd3b5efe6d879ea59c5d31b, 7,213 bytes, a 76x76 RGBA PNG. The
-  // identical bytes are served from assets.c.companycam.com, which is the
-  // corroboration that it is the vendor's mark and not a CDN placeholder.
+  // Downloaded verbatim on 2026-08-15 from
+  // https://companycam.com/apple-touch-icon-precomposed.png, md5
+  // b2cd6d1e9f709869566be753639c70ce, 19,802 bytes, a 180x180 RGBA PNG. It
+  // supersedes the 76x76 apple-touch-icon this app used to ship: same artwork
+  // from the same vendor, at the largest size CompanyCam publishes, because
+  // 76px is visibly soft on a hidpi tile.
   const bytes = await Deno.readFile(new URL("../assets/icon.png", import.meta.url));
-  assertEquals(bytes.length, 7213, "icon.png is no longer the 7,213-byte vendor file");
+  assertEquals(bytes.length, 19802, "icon.png is no longer the 19,802-byte vendor file");
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   const hex = Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   assertEquals(
     hex,
-    "28a893c26f47dce1ddcea12e8b8780d332e7161d5539bbb9fa996a12f778d09e",
+    "4b9d45600d790e5abdc394bb6823a351a70ce9df59d6df97cacb45ffbf2bc276",
     "icon.png is not the file downloaded from companycam.com — it was replaced or re-encoded",
   );
+  // The size upgrade is the point, so it is asserted rather than implied.
+  const view = new DataView(bytes.buffer, bytes.byteOffset);
+  assertEquals(view.getUint32(16), 180);
+  assertEquals(view.getUint32(20), 180);
   // PNG magic. The digest above is the real assertion; this only makes a
   // wrong-format file fail with a readable message.
   assertEquals(Array.from(bytes.slice(0, 4)), [0x89, 0x50, 0x4e, 0x47]);

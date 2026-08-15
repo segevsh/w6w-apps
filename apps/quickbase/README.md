@@ -347,9 +347,15 @@ Two further corrections the live docs made to the starting assumptions:
 
 ## Icon
 
-`assets/icon.png` is the **vendor mark**, copied verbatim from n8n's `nodes-base`
-(`packages/nodes-base/nodes/QuickBase/quickbase.png`, 60×60) — the same provenance as most icons in
-this pack. It is not drawn for this pack, so it is not an exception to the pack README's claim.
+`assets/icon.svg` — vector and the current mark — replaces a 60px PNG of the retired purple Q.
+
+Taken from <https://www.quickbase.com/favicon.svg> on 2026-08-15.
+
+- **487 bytes**, `image/svg+xml`, md5 `c6b76cf9fc8f7bc1afa628cd1f55db06`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+The previous file came from n8n's `nodes-base` at 60×60 and was Quickbase's *retired* purple Q. Quickbase publishes a vector of its current mark, so the mirror is no longer the best available source.
 
 ---
 

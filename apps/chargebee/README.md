@@ -293,6 +293,16 @@ Confirmed to be a real route independently of the docs: with a bogus credential
 A 404 is reported as *"no Chargebee site named X"* rather than a bad key — the two failures look
 identical to a user and have completely different fixes.
 
+## Icon
+
+`assets/icon.svg` — the vendor's brand-page icon in vector — replaces a 60px colormapped PNG.
+
+Taken from <https://www.chargebee.com/static/resources/brand/chargebee-icon-orange.svg> on 2026-08-15.
+
+- **930 bytes**, `image/svg+xml`, md5 `0eadb02226ce812c2f23b40d68974c86`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ## Development
 
 ```sh

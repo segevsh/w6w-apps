@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/tally",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Build and manage Tally forms, questions, blocks, submissions, analytics, workspaces, folders, webhooks and organization members via the Tally API.",
   "license": "MIT",
   "author": {

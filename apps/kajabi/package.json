@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/kajabi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage contacts, tags, offers, products, orders, purchases and forms on a Kajabi site via the Kajabi Public API v1.",
   "license": "MIT",
   "author": {

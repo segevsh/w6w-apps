@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/emailoctopus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage EmailOctopus lists, contacts, fields, tags, campaign reports and API-triggered automations via the EmailOctopus v2 API.",
   "license": "MIT",
   "author": {
