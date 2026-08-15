@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/thinkific",
+  "version": "0.1.1",
+  "description": "Manage Thinkific courses, users, enrollments, orders, products and bundles through the Admin API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.thinkific",
+    "displayName": "Thinkific",
+    "categories": [
+      "commerce",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Thinkific"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Thinkific"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.thinkific.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

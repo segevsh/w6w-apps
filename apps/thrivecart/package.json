@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/thrivecart",
+  "version": "0.1.0",
+  "description": "Read ThriveCart's products, transactions, customers and affiliates, and manage subscriptions, affiliates, students and webhook subscriptions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.thrivecart",
+    "displayName": "ThriveCart",
+    "categories": [
+      "commerce",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "ThriveCart"
+      }
+    },
+    "network": {
+      "allow": [
+        "thrivecart.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/ringcentral",
+  "version": "0.1.0",
+  "description": "Send SMS, read the message store and call log, look up extensions and the company directory, and place RingOut calls over the RingCentral Platform API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ringcentral",
+    "displayName": "RingCentral",
+    "categories": [
+      "communication",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "RingCentral"
+      }
+    },
+    "network": {
+      "allow": [
+        "platform.ringcentral.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
