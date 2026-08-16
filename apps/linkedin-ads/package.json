@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/linkedin-ads",
+  "version": "0.1.0",
+  "description": "Manage LinkedIn ad accounts, campaign groups, campaigns, creatives and Matched Audiences segments, and read performance analytics, via the versioned LinkedIn Marketing (Ads) API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.linkedin-ads",
+    "displayName": "LinkedIn Ads",
+    "categories": [
+      "marketing",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "LinkedIn Ads"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.linkedin.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -99,6 +99,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [gitlab](apps/gitlab/README.md) | [status.io](https://api.status.io/1.0/status/5b36dc6502d06804c08349f7) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
 | [gmail](apps/gmail/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /gmail/v1/users/me/profile` | no | `service` · ~~quota~~ · 2 derived |
 | [google-ads](apps/google-ads/README.md) | [JSON](https://ads.google.com/status/publisher/incidents.json) | yes | `GET /v25/customers:listAccessibleCustomers` | no | `service` · ~~quota~~ · 1 derived |
+| [google-business-profile](apps/google-business-profile/README.md) | none published (not on the Workspace dashboard) | no | `GET /v1/accounts?pageSize=1` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [google-calendar](apps/google-calendar/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/me/calendarList?maxResults=1` | no | `service` · ~~quota~~ · 2 derived |
 | [google-contacts](apps/google-contacts/README.md) | none published | no | `GET /people/me?personFields=names` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [google-docs](apps/google-docs/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
@@ -129,6 +130,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [lemlist](apps/lemlist/README.md) | [Hyperping](https://status.lempire.com/status.json) | yes | `GET /team` | yes | `service` · `quota` · 1 derived |
 | [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
 | [linkedin](apps/linkedin/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /v2/userinfo` | no | `service` · ~~quota~~ · 2 derived |
+| [linkedin-ads](apps/linkedin-ads/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /rest/adAccounts?q=search` | no | `service` · ~~quota~~ · 2 derived |
 | [mailcheck](apps/mailcheck/README.md) | none published | no | `GET /v1/emails/operations?page_size=1` | no | ~~service~~ · 1 derived |
 | [mailchimp](apps/mailchimp/README.md) | [page](https://status.mailchimp.com) | no | `GET /3.0/ping` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [mailerlite](apps/mailerlite/README.md) | [Statuspage](https://status.mailerlite.com/api/v2/summary.json) | yes | `GET /api/subscribers?limit=0` | yes | `service` · `quota` · 1 derived |
