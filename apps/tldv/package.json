@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/tldv",
+  "version": "0.1.0",
+  "description": "Read tl;dv meeting recordings, transcripts and AI notes, and import external recordings, over the tl;dv Public API (v1alpha1, alpha).",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.tldv",
+    "displayName": "tl;dv",
+    "categories": [
+      "ai",
+      "productivity",
+      "video"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "tl;dv"
+      }
+    },
+    "network": {
+      "allow": [
+        "pasta.tldv.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
