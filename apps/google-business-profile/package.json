@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/google-business-profile",
+  "version": "0.1.0",
+  "description": "Manage Google Business Profile listings: accounts, locations, attributes, Q&A, and place action links.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-business-profile",
+    "displayName": "Google Business Profile",
+    "categories": [
+      "marketing",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Google Business Profile"
+      }
+    },
+    "network": {
+      "allow": [
+        "mybusinessaccountmanagement.googleapis.com",
+        "mybusinessbusinessinformation.googleapis.com",
+        "mybusinessqanda.googleapis.com",
+        "mybusinessplaceactions.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
