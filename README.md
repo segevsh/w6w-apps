@@ -84,6 +84,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | formstack | forms, productivity | access-token | 9 |
 | freshdesk | support | api-key | 13 |
 | freshservice | support, devops | api-key | 23 |
+| gemini | ai | api-key | 6 |
 | getresponse | marketing, email | api-key | 14 |
 | ghost | cms, productivity | admin-api-key | 11 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
@@ -147,6 +148,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | pandadoc | documents, legal, productivity | api-key | 16 |
 | paypal | commerce, finance | client-credentials | 13 |
+| perplexity | ai | api-key | 5 |
 | pipedrive | crm | api-token, oauth2 | 14 |
 | podio | project-management, databases, productivity | app-auth, oauth2 | 29 |
 | postbin | developer-tools | none | 5 |
@@ -184,6 +186,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | thrivecart | commerce, marketing | api-token | 33 |
 | ticktick | productivity, project-management | oauth2 | 23 |
 | tidycal | calendar, productivity | personal-token, oauth2 | 18 |
+| tldv | ai, productivity, video | api-key | 5 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
 | trello | project-management, productivity | api-key | 27 |
@@ -207,7 +210,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-182 apps, 3056 actions.
+185 apps, 3072 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

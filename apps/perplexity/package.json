@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/perplexity",
+  "version": "0.1.0",
+  "description": "Web-grounded chat completions, search, and embeddings via the Perplexity API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.perplexity",
+    "displayName": "Perplexity",
+    "categories": [
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Perplexity"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.perplexity.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
