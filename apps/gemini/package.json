@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/gemini",
+  "version": "0.1.0",
+  "description": "Call the Gemini Developer API — generate content, count tokens, embed content, list models.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gemini",
+    "displayName": "Google Gemini",
+    "categories": [
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Gemini"
+      }
+    },
+    "network": {
+      "allow": [
+        "generativelanguage.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
