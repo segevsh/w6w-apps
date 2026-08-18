@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **730 checks**: 282 live probes, 172 declared absences, and 276
+Across the pack that comes to **733 checks**: 284 live probes, 172 declared absences, and 277
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -66,6 +66,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [clockify](apps/clockify/README.md) | none machine-readable | no | `GET /workspaces` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [close](apps/close/README.md) | [Statuspage](https://status.close.com/api/v2/summary.json) | yes | `GET /me/` | yes | `service` · `quota` · 1 derived |
 | [cloudflare](apps/cloudflare/README.md) | [Statuspage](https://www.cloudflarestatus.com/api/v2/summary.json) | yes | `GET /user/tokens/verify` | yes | `service` · `quota` · 1 derived |
+| [cloudinary](apps/cloudinary/README.md) | [Statuspage](https://status.cloudinary.com/api/v2/components.json) (connection-scoped: only THIS cloud's datacenter components — an EU outage leaves a US connection green) | yes | `GET /ping` | yes | `service` · `quota` · 1 derived |
 | [coda](apps/coda/README.md) | [Atom](https://status.coda.io/history.atom) | yes | `GET /whoami` | no | `service` · ~~quota~~ · 1 derived |
 | [companycam](apps/companycam/README.md) | [Statuspage](https://status.companycam.com/api/v2/status.json) | yes | `GET /users/current` | no | `service` · ~~quota~~ · 2 derived |
 | [confluence](apps/confluence/README.md) | [Statuspage](https://confluence.status.atlassian.com/api/v2/summary.json) | yes | `GET /wiki/rest/api/user/current` | no | `service` · `site` · ~~quota~~ · 2 derived |

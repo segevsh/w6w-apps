@@ -57,6 +57,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | clockify | productivity | api-key | 10 |
 | close | crm | api-key | 21 |
 | cloudflare | devops | api-token | 8 |
+| cloudinary | storage, documents, developer-tools | basic | 21 |
 | coda | productivity, documents | api-token | 11 |
 | companycam | project-management, documents, productivity | access-token, oauth2 | 62 |
 | confluence | documents, productivity | api-token, oauth2 | 22 |
@@ -230,7 +231,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-205 apps, 3552 actions.
+206 apps, 3573 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

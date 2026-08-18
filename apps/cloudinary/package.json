@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/cloudinary",
+  "version": "0.1.1",
+  "description": "Manage a Cloudinary media library — upload from a URL, search and tag assets, organise folders, apply named transformations, and build delivery URLs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.cloudinary",
+    "displayName": "Cloudinary",
+    "categories": [
+      "storage",
+      "documents",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Cloudinary"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Cloudinary"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.cloudinary.com",
+        "api-eu.cloudinary.com",
+        "api-ap.cloudinary.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
