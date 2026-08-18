@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **723 checks**: 278 live probes, 171 declared absences, and 274
+Across the pack that comes to **726 checks**: 280 live probes, 171 declared absences, and 275
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -100,6 +100,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [formstack](apps/formstack/README.md) | [Statuspage](https://www.intellistackstatus.com/api/v2/summary.json) | yes | `GET /forms?pageSize=1` | no | `service` · ~~quota~~ · 1 derived |
 | [freshdesk](apps/freshdesk/README.md) | none published | no | `GET /agents/me` | yes | ~~service~~ · `quota` · `domain` · 1 derived |
 | [freshservice](apps/freshservice/README.md) | [Freshstatus](https://public-api.freshstatus.io/v1/public-components/?account_id=3616) | yes | `GET /api/v2/tickets` | yes | `service` · `quota` · `domain` · 1 derived |
+| [front](apps/front/README.md) | [Statuspage](https://www.frontstatus.com/api/v2/components.json) (the API components roll up; the message channels are capped at degraded, since a dead Gmail breaks sending and nothing else) | yes | `GET /me` | yes | `service` · `quota` · 1 derived |
 | [gemini](apps/gemini/README.md) | none published (Workspace and Cloud feeds both cover a *different* Gemini) | no | `GET /v1beta/models` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [getresponse](apps/getresponse/README.md) | [Statuspage](https://status.getresponse.com/api/v2/summary.json) | yes | `GET /accounts` | no | `service` · ~~quota~~ · 1 derived |
 | [ghost](apps/ghost/README.md) | [RSS](https://ghoststatus.org/history.rss) | yes | `GET /users/?limit=1` | no | `service` · ~~quota~~ · `site` · 1 derived |
