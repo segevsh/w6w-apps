@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/pinecone",
+  "version": "0.1.0",
+  "description": "Read and write a Pinecone vector index — upsert records, run semantic and text search, manage indexes and namespaces, and use Pinecone's hosted embedding and reranking models.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.pinecone",
+    "displayName": "Pinecone",
+    "categories": [
+      "ai",
+      "databases",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Pinecone"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.pinecone.io",
+        "*.pinecone.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

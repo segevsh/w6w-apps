@@ -164,6 +164,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pandadoc | documents, legal, productivity | api-key | 16 |
 | paypal | commerce, finance | client-credentials | 13 |
 | perplexity | ai | api-key | 5 |
+| pinecone | ai, databases, search | api-key | 24 |
 | pipedrive | crm | api-token, oauth2 | 14 |
 | podio | project-management, databases, productivity | app-auth, oauth2 | 29 |
 | postbin | developer-tools | none | 5 |
@@ -229,7 +230,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-204 apps, 3528 actions.
+205 apps, 3552 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
