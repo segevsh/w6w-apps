@@ -230,6 +230,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | wix | cms, crm, commerce | api-key | 24 |
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
+| workos | security, developer-tools | api-key | 23 |
 | wufoo | forms, productivity | api-key | 8 |
 | xero | finance | oauth2 | 13 |
 | youtube | video, social-media | api-key, oauth2 | 16 |
@@ -238,7 +239,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-213 apps, 3678 actions.
+214 apps, 3701 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

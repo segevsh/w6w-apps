@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/workos",
+  "version": "0.1.0",
+  "description": "Manage WorkOS enterprise features — organizations, SSO connections, Directory Sync users and groups, the Admin Portal, user management and the unified event stream.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.workos",
+    "displayName": "WorkOS",
+    "categories": [
+      "security",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "WorkOS"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.workos.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **756 checks**: 295 live probes, 175 declared absences, and 286
+Across the pack that comes to **760 checks**: 297 live probes, 176 declared absences, and 287
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -239,6 +239,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [wix](apps/wix/README.md) | [Statuspage](https://status.wix.com/api/v2/status.json) | yes | `GET /contacts/v4/contacts` | no | `service` · ~~quota~~ · 1 derived |
 | [woocommerce](apps/woocommerce/README.md) | none published | no | `GET /wp-json/wc/v3/system_status` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [wordpress](apps/wordpress/README.md) | none published | no | `GET /wp-json/wp/v2/users/me` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
+| [workos](apps/workos/README.md) | [Statuspage](https://status.workos.com/api/v2/components.json) | yes | `GET /organizations?limit=1` | no | `service` · ~~quota~~ · `environment` · 1 derived |
 | [wufoo](apps/wufoo/README.md) | [Statuspage](https://status.wufoo.com/api/v2/summary.json) | yes | `GET /forms.json` | no | `service` · ~~quota~~ · 1 derived |
 | [xero](apps/xero/README.md) | [Statuspage](https://status.xero.com/api/v2/summary.json) | yes | `GET /connections` | yes | `service` · `quota` · 1 derived |
 | [youtube](apps/youtube/README.md) | not on the Workspace dashboard | no | _varies by method_ | no | ~~service~~ · ~~quota~~ · 2 derived |
