@@ -25,7 +25,7 @@ methods. Fifty-eight apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **813 checks**: 325 live probes, 188 declared absences, and 300
+Across the pack that comes to **818 checks**: 327 live probes, 189 declared absences, and 302
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -181,6 +181,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [odoo](apps/odoo/README.md) | none machine-readable | no | `common.authenticate` (JSON-RPC) | no | ~~service~~ · ~~quota~~ · `instance` · 1 derived |
 | [okta](apps/okta/README.md) | [page](https://status.okta.com) | no | `GET /api/v1/users?limit=1` | yes | ~~service~~ · `quota` · 1 derived |
 | [onedrive](apps/onedrive/README.md) | none machine-readable | no | `GET /me` | yes | ~~service~~ · `quota` · ~~request-rate~~ · 1 derived |
+| [onepassword](apps/onepassword/README.md) | [Statuspage](https://status.1password.com/api/v2/summary.json) — 88 components grouped by region with names repeating in each, so keys are group-qualified. Nearly irrelevant to a Connect connection, which keeps serving its local vault copy through an outage | yes | `GET /v1/vaults` (Connect) or `GET /api/auth/introspect` (Events) | no | `service` · `surface` · ~~quota~~ · 2 derived |
 | [onesimpleapi](apps/onesimpleapi/README.md) | none published | no | `GET /exchange_rate?to_currency=USD` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [openai](apps/openai/README.md) | [Statuspage](https://status.openai.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [outlook](apps/outlook/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |

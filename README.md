@@ -172,6 +172,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | odoo | crm, commerce | api-key | 21 |
 | okta | security | api-token | 11 |
 | onedrive | documents, storage | oauth2 | 18 |
+| onepassword | security, developer-tools | connect-token, events-token | 14 |
 | onesimpleapi | developer-tools | api-key | 7 |
 | openai | ai, developer-tools | api-key | 13 |
 | outlook | communication, email, calendar | oauth2 | 18 |
@@ -252,7 +253,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-227 apps, 3959 actions.
+228 apps, 3973 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
