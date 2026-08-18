@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **784 checks**: 310 live probes, 181 declared absences, and 293
+Across the pack that comes to **788 checks**: 312 live probes, 182 declared absences, and 294
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -45,6 +45,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [ashby](apps/ashby/README.md) | [Statuspage](https://status.ashbyhq.com/api/v2/components.json) — mixes Ashby services with the vendors it depends on; only the former count | yes | `POST /apiKey.info` | no | `service` · ~~quota~~ · `permissions` · 1 derived |
 | [attio](apps/attio/README.md) | [Statuspage](https://status.attio.com/api/v2/summary.json) | yes | `GET /v2/self` | no | `service` · ~~quota~~ · 1 derived |
 | [auth0](apps/auth0/README.md) | none machine-readable (status.auth0.com is an HTML app; its only machine-readable source is a PER-TENANT RSS feed at `/api/rss?domain=…`, whose URL cannot be a static `feed.url`) | no | `GET /api/v2/users?per_page=1` | no | ~~service~~ · `tenant` · 1 derived |
+| [azuredevops](apps/azuredevops/README.md) | [structured JSON](https://status.dev.azure.com/_apis/status/health) — per service AND per geography; not a Statuspage | yes | `GET /{org}/_apis/projects` | no (throughput units) | `service` · ~~quota~~ · `organization` · 1 derived |
 | [bamboohr](apps/bamboohr/README.md) | [RSS](https://status.bamboohr.com/pages/54f0de009d6f51e7140002b7/rss) | yes | `GET /api/v1/employees/0` | no | `service` · ~~quota~~ · 1 derived |
 | [basecamp](apps/basecamp/README.md) | [Statuspage](https://37signals.statuspage.io/api/v2/summary.json) | yes | `GET launchpad/authorization.json` | no | `service` · ~~quota~~ · 1 derived |
 | [baserow](apps/baserow/README.md) | [Better Stack](https://status.baserow.org/index.json) | yes | `GET /api/database/tables/all-tables/` | no | `service` · ~~quota~~ · 1 derived |

@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/azuredevops",
+  "version": "0.1.0",
+  "description": "Work an Azure DevOps organization — repositories and pull requests, pipeline runs and their artifacts, and work items queried with WIQL.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.azuredevops",
+    "displayName": "Azure DevOps",
+    "categories": [
+      "version-control",
+      "devops",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Azure DevOps"
+      }
+    },
+    "network": {
+      "allow": [
+        "dev.azure.com",
+        "vssps.dev.azure.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
