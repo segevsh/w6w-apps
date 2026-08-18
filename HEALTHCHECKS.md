@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **776 checks**: 305 live probes, 180 declared absences, and 291
+Across the pack that comes to **780 checks**: 307 live probes, 181 declared absences, and 292
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -88,6 +88,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [docusign](apps/docusign/README.md) | [Statuspage](https://status.docusign.com/api/v2/summary.json) | yes | `GET /accounts/{accountId}` | yes | `service` · `quota` · 2 derived |
 | [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no | `service` · ~~quota~~ · 2 derived |
 | [dropbox-sign](apps/dropbox-sign/README.md) | [Statuspage](https://status.hellosign.com/api/v2/components.json) (the signing components — NOT the group named "API", which is outbound callbacks) | yes | `GET /v3/account` | yes | `service` · `quota` · 2 derived |
+| [easypost](apps/easypost/README.md) | [Statuspage](https://www.easypoststatus.com/api/v2/components.json) — NOT status.easypost.com, which answers 200 with HTML; carrier outages are named but do not count | yes | `GET /v2/users` | no (burst limit) | `service` · ~~quota~~ · `account` · 1 derived |
 | [elastic](apps/elastic/README.md) | none published | no | `GET /_security/_authenticate` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
 | [elevenlabs](apps/elevenlabs/README.md) | [Statuspage](https://status.elevenlabs.io/api/v2/summary.json) | yes | `GET /v1/user/subscription` | yes | `service` · `quota` · ~~request-rate~~ · 1 derived |
 | [emailoctopus](apps/emailoctopus/README.md) | [incident.io](https://status.emailoctopus.com/api/v2/status.json) | yes | `GET /lists` | yes | `service` · `api` · `quota` · 1 derived |

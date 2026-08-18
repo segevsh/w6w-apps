@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/easypost",
+  "version": "0.1.0",
+  "description": "Ship parcels \u2014 rate a shipment across carriers, buy a label, track it to the door, verify addresses and file insurance claims.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.easypost",
+    "displayName": "EasyPost",
+    "categories": [
+      "commerce",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "EasyPost"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.easypost.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
