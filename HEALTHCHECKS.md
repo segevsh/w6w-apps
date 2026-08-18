@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **705 checks**: 270 live probes, 167 declared absences, and 268
+Across the pack that comes to **708 checks**: 271 live probes, 168 declared absences, and 269
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -139,6 +139,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
 | [linkedin](apps/linkedin/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /v2/userinfo` | no | `service` · ~~quota~~ · 2 derived |
 | [linkedin-ads](apps/linkedin-ads/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /rest/adAccounts?q=search` | no | `service` · ~~quota~~ · 2 derived |
+| [loops](apps/loops/README.md) | [Statuspage](https://status.loops.so/api/v2/components.json) | yes | `GET /v1/api-key` | no | `service` · ~~quota~~ · 1 derived |
 | [mailcheck](apps/mailcheck/README.md) | none published | no | `GET /v1/emails/operations?page_size=1` | no | ~~service~~ · 1 derived |
 | [mailchimp](apps/mailchimp/README.md) | [page](https://status.mailchimp.com) | no | `GET /3.0/ping` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [mailerlite](apps/mailerlite/README.md) | [Statuspage](https://status.mailerlite.com/api/v2/summary.json) | yes | `GET /api/subscribers?limit=0` | yes | `service` · `quota` · 1 derived |
