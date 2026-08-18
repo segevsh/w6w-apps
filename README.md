@@ -162,6 +162,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | quickbooks | finance | oauth2 | 20 |
 | raindrop | productivity, search, storage | test-token, oauth2 | 39 |
 | reddit | social-media | oauth2 | 8 |
+| resend | email, communication | api-key | 24 |
 | ringcentral | communication, productivity | oauth2, jwt-bearer | 13 |
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |

@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **541 checks**: 207 live probes, 125 declared absences, and 209
+Across the pack that comes to **544 checks**: 207 live probes, 127 declared absences, and 210
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -171,6 +171,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [quickbooks](apps/quickbooks/README.md) | [Statuspage](https://status.developer.intuit.com/api/v2/summary.json) | yes | `GET /v3/company/{realmId}/companyinfo/{realmId}` | no | `service` · ~~quota~~ · 1 derived |
 | [raindrop](apps/raindrop/README.md) | [Better Stack](https://status.raindrop.io/index.json) | yes | `GET /rest/v1/user` | yes | `service` · `quota` · 2 derived |
 | [reddit](apps/reddit/README.md) | [Statuspage](https://www.redditstatus.com/api/v2/summary.json) | yes | `GET /api/v1/me` | yes | `service` · `quota` · 1 derived |
+| [resend](apps/resend/README.md) | status page is a catch-all HTML route | no | `GET /emails?limit=1` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [ringcentral](apps/ringcentral/README.md) | dashboard only, private feed host | no | `GET /restapi/v1.0/account/~/extension/~` | no | ~~service~~ · `api` · ~~quota~~ · 2 derived |
 | [s3](apps/s3/README.md) | [JSON](https://health.aws.amazon.com/public/currentevents) | yes | `GET /` (ListBuckets) | no | `service` · 1 derived |
 | [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes | `service` · `quota` · 2 derived |
@@ -262,7 +263,7 @@ recording:
 - **A declared absence must be `informational`.** An `unavailable` entry always reports
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
-  All 117 absences carry `severity: "informational"`.
+  Every declared absence in the pack carries `severity: "informational"` — verified by scan, not by tally.
 - **Twenty-five apps needed the `context` posture**, the one a boolean would have lost:
   ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice, Ghost, Grafana,
   Gravity Forms, Grist, Jenkins, Jira, Metabase, Odoo, Sentry, ServiceNow, Shopify, Snowflake,

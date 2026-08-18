@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/resend",
+  "version": "0.1.0",
+  "description": "Send transactional email and manage domains, audiences, contacts and broadcasts via Resend.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.resend",
+    "displayName": "Resend",
+    "categories": [
+      "email",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Resend"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Resend"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.resend.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
