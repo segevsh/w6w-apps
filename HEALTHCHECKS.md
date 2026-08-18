@@ -25,7 +25,7 @@ methods. Fifty-eight apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **801 checks**: 319 live probes, 185 declared absences, and 297
+Across the pack that comes to **806 checks**: 322 live probes, 186 declared absences, and 298
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -138,6 +138,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [harvest](apps/harvest/README.md) | [Statuspage](https://www.harveststatus.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [helpscout](apps/helpscout/README.md) | [Statuspage](https://status.helpscout.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
 | [highlevel](apps/highlevel/README.md) | [Atom](https://status.gohighlevel.com/feed.atom) | yes | `GET /locations/{locationId}` | yes | `service` · `quota` · 1 derived |
+| [homeassistant](apps/homeassistant/README.md) | [Statuspage](https://status.home-assistant.io/api/v2/summary.json) — covers the PROJECT's infrastructure and Nabu Casa Cloud, not your instance; probed anyway because a Remote UI outage is what makes a healthy instance unreachable. Capped at degraded | yes | `GET /api/` | no | `service` · `instance` · `entities` · ~~quota~~ · 1 derived |
 | [housecallpro](apps/housecallpro/README.md) | [Statuspage](https://status.housecallpro.com/api/v2/status.json) (no API component) | yes | `GET /company` | yes | ~~service~~ · `api` · `quota` · 2 derived |
 | [hubspot](apps/hubspot/README.md) | [Statuspage](https://status.hubspot.com/api/v2/status.json) | yes | `GET /account-info/v3/details` | yes | `service` · `quota` · 3 derived |
 | [intercom](apps/intercom/README.md) | [Statuspage](https://www.finstatus.com/api/v2/status.json) | yes | `GET /me` | yes | `service` · `quota` · 2 derived |
