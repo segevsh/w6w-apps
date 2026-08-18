@@ -115,6 +115,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-docs | productivity, documents | oauth2, service-account | 20 |
 | google-drive | storage, productivity | oauth2, service-account | 18 |
 | google-forms | forms, productivity | oauth2, service-account | 12 |
+| google-maps | developer-tools, search | api-key | 15 |
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | google-slides | documents, productivity | oauth2, service-account | 17 |
 | google-tasks | productivity, project-management | oauth2 | 13 |
@@ -247,7 +248,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-222 apps, 3872 actions.
+223 apps, 3887 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

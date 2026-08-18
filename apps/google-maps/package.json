@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/google-maps",
+  "version": "0.1.0",
+  "description": "Google Maps Platform \u2014 geocode addresses, validate them, search places, compute routes and matrices, snap GPS traces to roads, and read time zones and elevation.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-maps",
+    "displayName": "Google Maps Platform",
+    "categories": [
+      "developer-tools",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Maps Platform"
+      }
+    },
+    "network": {
+      "allow": [
+        "maps.googleapis.com",
+        "places.googleapis.com",
+        "routes.googleapis.com",
+        "addressvalidation.googleapis.com",
+        "roads.googleapis.com",
+        "www.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

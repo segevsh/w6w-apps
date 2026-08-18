@@ -25,7 +25,7 @@ methods. Fifty-eight apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **793 checks**: 315 live probes, 183 declared absences, and 295
+Across the pack that comes to **797 checks**: 317 live probes, 184 declared absences, and 296
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -124,6 +124,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [google-docs](apps/google-docs/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
 | [google-drive](apps/google-drive/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
 | [google-forms](apps/google-forms/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
+| [google-maps](apps/google-maps/README.md) | [JSON](https://status.cloud.google.com/maps-platform/incidents.json) — the Maps-specific feed; the Cloud-wide `incidents.json` lists no Maps products at all. An incident with no `end` is open | yes | `GET /maps/api/geocode/json` (a fixed landmark — proves the key AND that Geocoding in particular is enabled) | no | `service` · `apis` · ~~quota~~ · 1 derived |
 | [google-sheets](apps/google-sheets/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · 2 derived |
 | [google-slides](apps/google-slides/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `POST /tokeninfo` | no | `service` · ~~quota~~ · 2 derived |
 | [google-tasks](apps/google-tasks/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /users/@me/lists?maxResults=1` | no | `service` · ~~quota~~ · 1 derived |
