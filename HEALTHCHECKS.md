@@ -25,7 +25,7 @@ methods. Fifty-eight apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **806 checks**: 322 live probes, 186 declared absences, and 298
+Across the pack that comes to **810 checks**: 324 live probes, 187 declared absences, and 299
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -175,6 +175,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [motion](apps/motion/README.md) | [Better Stack](https://status.usemotion.com/index.json) (monitors nothing) | yes | `GET /v1/users/me` | no | `service` · `api` · ~~quota~~ · 1 derived |
 | [mux](apps/mux/README.md) | [Statuspage](https://status.mux.com/api/v2/components.json) (API and delivery split — they fail independently, so one out is degraded and only both is down) | yes | `GET /video/v1/assets?limit=1` | yes | `service` · `quota` · 1 derived |
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
+| [newrelic](apps/newrelic/README.md) | [Statuspage](https://status.newrelic.com/api/v2/summary.json) — 115 components, each suffixed with its data centre (`APM : US`, `Alerts : Europe`); only the affected ones are reported and the regions named, since an incident in another region is not one for this account | yes | `{ actor { user { name email } } }` | no | `service` · `reporting` · ~~quota~~ · 1 derived |
 | [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [odoo](apps/odoo/README.md) | none machine-readable | no | `common.authenticate` (JSON-RPC) | no | ~~service~~ · ~~quota~~ · `instance` · 1 derived |
 | [okta](apps/okta/README.md) | [page](https://status.okta.com) | no | `GET /api/v1/users?limit=1` | yes | ~~service~~ · `quota` · 1 derived |
