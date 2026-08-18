@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/amplitude",
+  "version": "0.1.0",
+  "description": "Send events to Amplitude and query its analytics — segmentation, funnels, retention, cohorts, user activity and chart results.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.amplitude",
+    "displayName": "Amplitude",
+    "categories": [
+      "analytics",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Amplitude"
+      }
+    },
+    "network": {
+      "allow": [
+        "api2.amplitude.com",
+        "api.eu.amplitude.com",
+        "amplitude.com",
+        "analytics.eu.amplitude.com",
+        "status.amplitude.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
