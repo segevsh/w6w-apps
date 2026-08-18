@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **698 checks**: 267 live probes, 166 declared absences, and 265
+Across the pack that comes to **702 checks**: 269 live probes, 166 declared absences, and 267
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -80,6 +80,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [discourse](apps/discourse/README.md) | [status.io](https://api.status.io/1.0/status/5e2141ce30dc5c04b3ac32fc) | yes | `GET /u/{username}.json` | no | `service` · ~~quota~~ · `site` · 1 derived |
 | [docusign](apps/docusign/README.md) | [Statuspage](https://status.docusign.com/api/v2/summary.json) | yes | `GET /accounts/{accountId}` | yes | `service` · `quota` · 2 derived |
 | [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no | `service` · ~~quota~~ · 2 derived |
+| [dropbox-sign](apps/dropbox-sign/README.md) | [Statuspage](https://status.hellosign.com/api/v2/components.json) (the signing components — NOT the group named "API", which is outbound callbacks) | yes | `GET /v3/account` | yes | `service` · `quota` · 2 derived |
 | [elastic](apps/elastic/README.md) | none published | no | `GET /_security/_authenticate` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
 | [elevenlabs](apps/elevenlabs/README.md) | [Statuspage](https://status.elevenlabs.io/api/v2/summary.json) | yes | `GET /v1/user/subscription` | yes | `service` · `quota` · ~~request-rate~~ · 1 derived |
 | [emailoctopus](apps/emailoctopus/README.md) | [incident.io](https://status.emailoctopus.com/api/v2/status.json) | yes | `GET /lists` | yes | `service` · `api` · `quota` · 1 derived |

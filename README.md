@@ -71,6 +71,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | discourse | communication, social-media | api-key | 26 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
 | dropbox | storage | access-token, oauth2 | 12 |
+| dropbox-sign | legal, documents, productivity | api-key, oauth2 | 27 |
 | elastic | search | api-key, basic | 9 |
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
@@ -220,7 +221,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-195 apps, 3303 actions.
+196 apps, 3330 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
