@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **749 checks**: 291 live probes, 175 declared absences, and 283
+Across the pack that comes to **753 checks**: 293 live probes, 175 declared absences, and 285
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -179,6 +179,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [perplexity](apps/perplexity/README.md) | [Instatus](https://status.perplexity.com/v2/components.json) | yes | `GET /v1/models` | no | `service` · ~~quota~~ · 1 derived |
 | [pinecone](apps/pinecone/README.md) | [Statuspage](https://status.pinecone.io/api/v2/components.json) (the global components decide; the per-region grid is reported but capped at degraded, since an app-scoped check cannot know which region an index is in) | yes | `GET /indexes` | no | `service` · `indexes` · ~~quota~~ · 1 derived |
 | [pipedrive](apps/pipedrive/README.md) | [page](https://status.pipedrive.com) | no | `GET /users/me` | yes | ~~service~~ · `quota` · 2 derived |
+| [plaid](apps/plaid/README.md) | [Statuspage](https://status.plaid.com/api/v2/components.json) (API and Link only — institution connectivity is per Item and lives in `item-get`'s error) | yes | `POST /institutions/get` (needs no Item, so a failure can only be the connection) | no | `service` · `credentials` · 2 derived |
 | [podio](apps/podio/README.md) | [Statuspage](https://status.podio.com/api/v2/summary.json) | yes | `GET /oauth/scope` | yes | `service` · `api` · `quota` · 2 derived |
 | [postbin](apps/postbin/README.md) | [page](https://www.postb.in) | no | _no credential_ | no | `service` · ~~quota~~ · 0 derived |
 | [posthog](apps/posthog/README.md) | none published | no | `GET /api/users/@me/` | no | ~~service~~ · 1 derived |
