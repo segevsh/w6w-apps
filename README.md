@@ -38,6 +38,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
 | bigcommerce | commerce, crm | access-token | 38 |
+| bigquery | data-warehousing, databases | oauth2 | 18 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
 | box | storage | oauth2 | 10 |
@@ -128,7 +129,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
 | linkedin-ads | marketing, analytics | oauth2, oauth2-audiences | 23 |
 | mailcheck | email, marketing | api-key | 4 |
-| mailchimp | marketing, communication | api-key, oauth2 | 14 |
+| mailchimp | marketing, communication | api-key, oauth2 | 15 |
 | mailerlite | marketing, email | api-key | 16 |
 | mailgun | email, communication | api-key | 14 |
 | mailjet | email, marketing | basic | 17 |
@@ -219,7 +220,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-185 apps, 3072 actions.
+195 apps, 3303 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

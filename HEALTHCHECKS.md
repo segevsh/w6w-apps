@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **557 checks**: 212 live probes, 131 declared absences, and 214
+Across the pack that comes to **698 checks**: 267 live probes, 166 declared absences, and 265
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -35,7 +35,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 |---|---|:-:|---|:-:|---|
 | [activecampaign](apps/activecampaign/README.md) | [Statuspage](https://status.activecampaign.com/api/v2/summary.json) | yes | `GET /contacts?limit=1` | yes | `service` · `quota` · `site` · 1 derived |
 | [acuityscheduling](apps/acuityscheduling/README.md) | [Statuspage](https://status.acuityscheduling.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
-| [aircall](apps/aircall/README.md) | [Statuspage](https://status.aircall.com/api/v2/status.json) | yes | `GET /v1/ping` | no | `service` · ~~quota~~ · 1 derived |
+| [aircall](apps/aircall/README.md) | [Statuspage](https://status.aircall.com/api/v2/status.json) | yes | `GET /v1/ping` | no | `service` · `quota` · 1 derived |
 | [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no | `service` · ~~quota~~ · 3 derived |
 | [algolia](apps/algolia/README.md) | [JSON](https://status.algolia.com/1/status) (per-cluster; the Statuspage paths are decoys) | yes | `GET /1/keys/{key}` | no | `service` · ~~quota~~ · 1 derived |
 | [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
@@ -47,6 +47,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [basecamp](apps/basecamp/README.md) | [Statuspage](https://37signals.statuspage.io/api/v2/summary.json) | yes | `GET launchpad/authorization.json` | no | `service` · ~~quota~~ · 1 derived |
 | [baserow](apps/baserow/README.md) | [Better Stack](https://status.baserow.org/index.json) | yes | `GET /api/database/tables/all-tables/` | no | `service` · ~~quota~~ · 1 derived |
 | [bigcommerce](apps/bigcommerce/README.md) | [Statuspage](https://status.bigcommerce.com/api/v2/status.json) | yes | `GET /v2/store` | yes | `service` · `api` · `quota` · `store` · ~~plan-limits~~ · 1 derived |
+| [bigquery](apps/bigquery/README.md) | [Google Cloud dashboard](https://status.cloud.google.com/incidents.json) (incident feed; `Google BigQuery` only, not the Data Transfer Service) | yes | `GET /projects/{id}/datasets?maxResults=1` | no | `service` · ~~quota~~ · 1 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
 | [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
 | [box](apps/box/README.md) | [Statuspage](https://status.box.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
@@ -149,7 +150,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [miro](apps/miro/README.md) | [Statuspage](https://status.miro.com/api/v2/status.json) | yes | `GET /v1/oauth-token` | no | `service` · ~~quota~~ · 1 derived |
 | [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
-| [motion](apps/motion/README.md) | [Better Stack](https://status.usemotion.com/index.json) (monitors nothing) | yes | `GET /v1/users/me` | yes | `service` · `api` · `quota` · 1 derived |
+| [motion](apps/motion/README.md) | [Better Stack](https://status.usemotion.com/index.json) (monitors nothing) | yes | `GET /v1/users/me` | no | `service` · `api` · ~~quota~~ · 1 derived |
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
 | [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [odoo](apps/odoo/README.md) | none machine-readable | no | `common.authenticate` (JSON-RPC) | no | ~~service~~ · ~~quota~~ · `instance` · 1 derived |
@@ -187,7 +188,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [smartsheet](apps/smartsheet/README.md) | [Statuspage](https://status.smartsheet.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [snowflake](apps/snowflake/README.md) | [Atom](https://status.snowflake.com/history.atom) | yes | `POST /api/v2/statements` | no | `service` · `account` · 1 derived |
 | [snyk](apps/snyk/README.md) | [Statuspage](https://status.snyk.io/api/v2/summary.json) | yes | `GET /self` | no | `service` · `api-version` · ~~quota~~ · 1 derived |
-| [splitwise](apps/splitwise/README.md) | [Instatus](https://status.splitwise.com/v2/components.json) | yes | `GET /api/v3.0/get_current_user` | yes | `service` · `api` · `quota` · 1 derived |
+| [splitwise](apps/splitwise/README.md) | [Instatus](https://status.splitwise.com/v2/components.json) | yes | `GET /api/v3.0/get_current_user` | no | `service` · `api` · ~~quota~~ · 1 derived |
 | [splunk](apps/splunk/README.md) | [Statuspage](https://status.splunkcloud.com/api/v2/summary.json) | yes | `GET /services/authentication/current-context` | no | `service` · 1 derived |
 | [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [square](apps/square/README.md) | [Statuspage](https://issquareup.com/api/v2/status.json) | yes | `GET /v2/merchants/me` | no | `service` · ~~quota~~ · 1 derived |
