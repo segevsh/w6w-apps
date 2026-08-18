@@ -71,6 +71,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | datadog | monitoring, devops, developer-tools | api-key | 22 |
 | dbtcloud | data-warehousing, devops, analytics | token | 23 |
 | deel | hr, finance | api-token | 25 |
+| deepgram | ai, video, developer-tools | api-key | 19 |
 | deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
 | discourse | communication, social-media | api-key | 26 |
@@ -241,7 +242,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-216 apps, 3751 actions.
+217 apps, 3770 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
