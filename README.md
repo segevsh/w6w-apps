@@ -156,6 +156,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailjet | email, marketing | basic | 17 |
 | mandrill | email, marketing | api-key | 17 |
 | manychat | marketing, communication, social-media | api-token | 25 |
+| mastodon | social-media, communication | access-token | 18 |
 | mattermost | communication, productivity | access-token | 13 |
 | meilisearch | search, databases, developer-tools | api-key | 24 |
 | metabase | analytics, databases | api-key | 17 |
@@ -253,7 +254,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-228 apps, 3973 actions.
+229 apps, 3991 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

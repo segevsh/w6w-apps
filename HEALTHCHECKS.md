@@ -25,7 +25,7 @@ methods. Fifty-eight apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **818 checks**: 327 live probes, 189 declared absences, and 302
+Across the pack that comes to **822 checks**: 329 live probes, 190 declared absences, and 303
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -165,6 +165,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [mailjet](apps/mailjet/README.md) | [Statuspage](https://status.mailjet.com/api/v2/summary.json) | yes | `GET /v3/REST/contactslist?Limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [mandrill](apps/mandrill/README.md) | none published | no | `POST /users/ping.json` | yes | ~~service~~ · `quota` · 1 derived |
 | [manychat](apps/manychat/README.md) | [Instatus](https://status.manychat.com/v2/components.json) | yes | `GET /fb/page/getInfo` | no | `service` · ~~quota~~ · 1 derived |
+| [mastodon](apps/mastodon/README.md) | none — there is no vendor. Mastodon is software thousands of people run, joinmastodon.org does not operate the network, and per-instance status pages have no registry | no | `GET /api/v1/accounts/verify_credentials` | yes (real `x-ratelimit-*`; the reset is an ISO TIMESTAMP, not epoch seconds) | ~~service~~ · `instance` · `quota` · 1 derived |
 | [mattermost](apps/mattermost/README.md) | [Statuspage](https://status.mattermost.com/api/v2/summary.json) | yes | `GET /api/v4/users/me` | yes | `service` · `quota` · `instance` · 1 derived |
 | [meilisearch](apps/meilisearch/README.md) | [RSS feed](https://status.meilisearch.com/feed.rss) (Cloud only; the JSON paths are an SPA catch-all) | yes | `GET /keys?limit=1` | no | `instance` · `service` · 1 derived |
 | [metabase](apps/metabase/README.md) | [Statuspage](https://status.metabase.com/api/v2/summary.json) | yes | `GET /api/user/current` | no | `service` · ~~quota~~ · `instance` · 1 derived |
