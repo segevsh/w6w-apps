@@ -121,6 +121,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
 | jobber | calendar, crm, finance | oauth2 | 28 |
 | jotform | forms, productivity | api-key | 14 |
+| jumpcloud | security, devops, hr | api-key | 31 |
 | kajabi | commerce, crm, marketing | client-credentials | 49 |
 | keap | crm, marketing, email | oauth2, access-key | 36 |
 | kit | marketing, email | api-key | 18 |
@@ -221,7 +222,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-196 apps, 3330 actions.
+197 apps, 3361 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

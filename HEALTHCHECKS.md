@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **702 checks**: 269 live probes, 166 declared absences, and 267
+Across the pack that comes to **705 checks**: 270 live probes, 167 declared absences, and 268
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -130,6 +130,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [jira](apps/jira/README.md) | [Statuspage](https://jira-software.status.atlassian.com/api/v2/status.json) | yes | _varies by method_ | no | `service` · ~~quota~~ · `site` · 2 derived |
 | [jobber](apps/jobber/README.md) | [Statuspage](https://www.jobberstatus.net/api/v2/summary.json) | yes | `query { account }` (GraphQL) | yes | `service` · `quota` · 1 derived |
 | [jotform](apps/jotform/README.md) | [Statuspage](https://status.jotform.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
+| [jumpcloud](apps/jumpcloud/README.md) | [Statuspage](https://status.jumpcloud.com/api/v2/components.json) (per-region components; the check reads the CONNECTION's region) | yes | `GET /api/systemusers?limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [kajabi](apps/kajabi/README.md) | [Statuspage](https://status.kajabi.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 1 derived |
 | [keap](apps/keap/README.md) | [Statuspage](https://status.thryv.com/api/v2/summary.json) (Keap group only) | yes | `GET /crm/rest/v2/oauth/connect/userinfo` | yes | `service` · `quota` · ~~spike-rate~~ · 2 derived |
 | [kit](apps/kit/README.md) | [Statuspage](https://status.kit.com/api/v2/summary.json) | yes | `GET /v4/account` | no | `service` · ~~quota~~ · 1 derived |

@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/jumpcloud",
+  "version": "0.1.0",
+  "description": "Manage JumpCloud users, devices, groups and remote commands from one directory.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.jumpcloud",
+    "displayName": "JumpCloud",
+    "categories": [
+      "security",
+      "devops",
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "JumpCloud"
+      }
+    },
+    "network": {
+      "allow": [
+        "console.jumpcloud.com",
+        "console.eu.jumpcloud.com",
+        "console.in.jumpcloud.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
