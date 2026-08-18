@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Twenty-five apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Fifty-eight apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **788 checks**: 312 live probes, 182 declared absences, and 294
+Across the pack that comes to **793 checks**: 315 live probes, 183 declared absences, and 295
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -193,6 +193,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [postmark](apps/postmark/README.md) | [JSON](https://status.postmarkapp.com/api/v1/status) | yes | `GET /server` | no | `service` · ~~quota~~ · 1 derived |
 | [productboard](apps/productboard/README.md) | [Statuspage](https://status.productboard.com/api/v2/status.json) | yes | `GET /v2/entities` | yes | `service` · `api` · `quota` · 1 derived |
 | [pushover](apps/pushover/README.md) | [page](https://status.pushover.net) | no | `POST /1/users/validate.json` | yes | ~~service~~ · `quota` · 1 derived |
+| [qdrant](apps/qdrant/README.md) | [Better Stack](https://status.qdrant.io/index.json) — NOT a Statuspage; every `summary.json`-shaped path returns the page's own 983,546-byte HTML with a 200. Capped at degraded (an app-scoped check cannot know the connection's region, or whether it is self-hosted at all) except when every region is down | yes | `GET /collections` | no | `service` · `instance` · `collections` · ~~quota~~ · 1 derived |
 | [quickbase](apps/quickbase/README.md) | [status.page](https://quickbasestatus.status.page/status.json) | yes | `GET /v1/apps/{appId}` | yes | `service` · `quota` · 1 derived |
 | [quickbooks](apps/quickbooks/README.md) | [Statuspage](https://status.developer.intuit.com/api/v2/summary.json) | yes | `GET /v3/company/{realmId}/companyinfo/{realmId}` | no | `service` · ~~quota~~ · 1 derived |
 | [raindrop](apps/raindrop/README.md) | [Better Stack](https://status.raindrop.io/index.json) | yes | `GET /rest/v1/user` | yes | `service` · `quota` · 2 derived |

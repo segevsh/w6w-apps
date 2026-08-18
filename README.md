@@ -184,6 +184,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | postmark | email, communication | api-key | 13 |
 | productboard | project-management, productivity, support | api-token | 41 |
 | pushover | communication, monitoring | app-token | 4 |
+| qdrant | search, databases, ai | api-key | 19 |
 | quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
 | raindrop | productivity, search, storage | test-token, oauth2 | 39 |
@@ -246,7 +247,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-221 apps, 3853 actions.
+222 apps, 3872 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
