@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **746 checks**: 290 live probes, 174 declared absences, and 282
+Across the pack that comes to **749 checks**: 291 live probes, 175 declared absences, and 283
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -207,6 +207,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [splunk](apps/splunk/README.md) | [Statuspage](https://status.splunkcloud.com/api/v2/summary.json) | yes | `GET /services/authentication/current-context` | no | `service` · 1 derived |
 | [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [square](apps/square/README.md) | [Statuspage](https://issquareup.com/api/v2/status.json) | yes | `GET /v2/merchants/me` | no | `service` · ~~quota~~ · 1 derived |
+| [statuspage](apps/statuspage/README.md) | [Statuspage](https://metastatuspage.com/api/v2/components.json) (Atlassian's own status page is itself a Statuspage — the same document shape this app writes) | yes | `GET /v1/pages` | no | `service` · ~~quota~~ · 1 derived |
 | [strapi](apps/strapi/README.md) | none published | no | `GET /api/upload/files/page` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [strava](apps/strava/README.md) | [Statuspage](https://status.strava.com/api/v2/summary.json) | yes | `GET /athlete` | yes | `service` · `quota` · 1 derived |
 | [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |
