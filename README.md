@@ -116,6 +116,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | gravityforms | forms, productivity | basic | 12 |
 | greenhouse | hr | oauth-client-credentials, api-key | 24 |
 | grist | spreadsheets, databases, productivity | api-key, oauth2 | 15 |
+| gusto | hr, finance, productivity | oauth2, oauth2-demo | 23 |
 | harvest | productivity | personal-access-token, oauth2 | 11 |
 | helpscout | support | oauth2 | 13 |
 | highlevel | crm, marketing | oauth2 | 18 |
@@ -232,7 +233,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-207 apps, 3586 actions.
+208 apps, 3609 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

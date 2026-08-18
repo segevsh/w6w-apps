@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/gusto",
+  "version": "0.1.1",
+  "description": "Read and update a Gusto payroll account — employees, contractors, compensation, payrolls, pay schedules, time off and departments.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gusto",
+    "displayName": "Gusto",
+    "categories": [
+      "hr",
+      "finance",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gusto"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Gusto"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.gusto.com",
+        "api.gusto-demo.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

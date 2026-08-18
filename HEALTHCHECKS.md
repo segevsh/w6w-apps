@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **736 checks**: 285 live probes, 173 declared absences, and 278
+Across the pack that comes to **740 checks**: 287 live probes, 173 declared absences, and 280
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -125,6 +125,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [gravityforms](apps/gravityforms/README.md) | none published | no | `GET /gf/v2/forms` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [greenhouse](apps/greenhouse/README.md) | [Statuspage](https://status.greenhouse.io/api/v2/summary.json) | yes | `GET /v3/candidates` | yes | `service` · `api` · `quota` · ~~silo~~ · 2 derived |
 | [grist](apps/grist/README.md) | none machine-readable | no | `GET /api/profile/user` | no | ~~service~~ · ~~quota~~ · `site` · 2 derived |
+| [gusto](apps/gusto/README.md) | [Statuspage](https://status.gusto.com/api/v2/components.json) (the API and payroll components decide; Gusto's named infrastructure vendors are capped at degraded and its support channels ignored) | yes | `GET /v1/token_info` | no | `service` · `api-version` · 2 derived |
 | [harvest](apps/harvest/README.md) | [Statuspage](https://www.harveststatus.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 2 derived |
 | [helpscout](apps/helpscout/README.md) | [Statuspage](https://status.helpscout.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
 | [highlevel](apps/highlevel/README.md) | [Atom](https://status.gohighlevel.com/feed.atom) | yes | `GET /locations/{locationId}` | yes | `service` · `quota` · 1 derived |
