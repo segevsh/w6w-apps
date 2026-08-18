@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/mixpanel",
+  "version": "0.1.1",
+  "description": "Query Mixpanel product analytics and write events and user profiles into it — saved reports, segmentation, retention, cohorts, raw export, and deduplicated event import.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mixpanel",
+    "displayName": "Mixpanel",
+    "categories": [
+      "analytics",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mixpanel"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Mixpanel"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "mixpanel.com",
+        "*.mixpanel.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

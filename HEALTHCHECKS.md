@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **733 checks**: 284 live probes, 172 declared absences, and 277
+Across the pack that comes to **736 checks**: 285 live probes, 173 declared absences, and 278
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -159,6 +159,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [microsoft-todo](apps/microsoft-todo/README.md) | none published | no | `GET /me/todo/lists` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [miro](apps/miro/README.md) | [Statuspage](https://status.miro.com/api/v2/status.json) | yes | `GET /v1/oauth-token` | no | `service` · ~~quota~~ · 1 derived |
 | [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
+| [mixpanel](apps/mixpanel/README.md) | [Statuspage](https://www.mixpanelstatus.com/api/v2/components.json) (connection-scoped: this project's region only, split by capability — querying, ingestion and export fail independently) | yes | `GET /api/app/me` (not a query, so it costs nothing from the 60/hour budget) | no | `service` · ~~quota~~ · 1 derived |
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
 | [motion](apps/motion/README.md) | [Better Stack](https://status.usemotion.com/index.json) (monitors nothing) | yes | `GET /v1/users/me` | no | `service` · `api` · ~~quota~~ · 1 derived |
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |

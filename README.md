@@ -150,6 +150,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
 | miro | productivity, project-management | oauth2 | 27 |
 | mistral | ai | api-key | 4 |
+| mixpanel | analytics, marketing | service-account | 13 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | motion | productivity, project-management, calendar | api-key | 27 |
 | netlify | devops | personal-access-token | 10 |
@@ -231,7 +232,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-206 apps, 3573 actions.
+207 apps, 3586 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
