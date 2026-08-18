@@ -28,6 +28,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | acuityscheduling | calendar | basic, oauth2 | 9 |
 | aircall | communication, support, crm | basic | 38 |
 | airtable | spreadsheets, databases, productivity | personal-access-token, oauth2, api-key | 10 |
+| algolia | search, developer-tools | api-key | 22 |
 | anthropic | ai | api-key | 14 |
 | apify | developer-tools, storage, ai | api-token | 31 |
 | apitemplateio | developer-tools | api-key | 5 |

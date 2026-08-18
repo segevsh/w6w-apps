@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **547 checks**: 208 live probes, 128 declared absences, and 211
+Across the pack that comes to **550 checks**: 209 live probes, 129 declared absences, and 212
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -37,6 +37,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [acuityscheduling](apps/acuityscheduling/README.md) | [Statuspage](https://status.acuityscheduling.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
 | [aircall](apps/aircall/README.md) | [Statuspage](https://status.aircall.com/api/v2/status.json) | yes | `GET /v1/ping` | no | `service` · ~~quota~~ · 1 derived |
 | [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no | `service` · ~~quota~~ · 3 derived |
+| [algolia](apps/algolia/README.md) | [JSON](https://status.algolia.com/1/status) (per-cluster; the Statuspage paths are decoys) | yes | `GET /1/keys/{key}` | no | `service` · ~~quota~~ · 1 derived |
 | [anthropic](apps/anthropic/README.md) | [Statuspage](https://status.anthropic.com/api/v2/status.json) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [apify](apps/apify/README.md) | [Statuspage](https://status.apify.com/api/v2/summary.json) | yes | `GET /v2/users/me/limits` | yes | `service` · `quota` · ~~request-rate~~ · 1 derived |
 | [apitemplateio](apps/apitemplateio/README.md) | none published | no | `GET /v2/list-templates?limit=1` | no | ~~service~~ · ~~quota~~ · 1 derived |

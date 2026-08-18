@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/algolia",
+  "version": "0.1.0",
+  "description": "Search Algolia indices and keep their records, settings, synonyms and rules in sync.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.algolia",
+    "displayName": "Algolia",
+    "categories": [
+      "search",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Algolia"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.algolia.net",
+        "*.algolianet.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
