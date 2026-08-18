@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **714 checks**: 273 live probes, 170 declared absences, and 271
+Across the pack that comes to **717 checks**: 274 live probes, 171 declared absences, and 272
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -102,6 +102,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [gemini](apps/gemini/README.md) | none published (Workspace and Cloud feeds both cover a *different* Gemini) | no | `GET /v1beta/models` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [getresponse](apps/getresponse/README.md) | [Statuspage](https://status.getresponse.com/api/v2/summary.json) | yes | `GET /accounts` | no | `service` · ~~quota~~ · 1 derived |
 | [ghost](apps/ghost/README.md) | [RSS](https://ghoststatus.org/history.rss) | yes | `GET /users/?limit=1` | no | `service` · ~~quota~~ · `site` · 1 derived |
+| [gitea](apps/gitea/README.md) | none — self-hosted software, so there is no vendor instance to watch | no | `GET /api/v1/user` | no | `instance` · ~~service~~ · 1 derived |
 | [github](apps/github/README.md) | [Statuspage](https://www.githubstatus.com/api/v2/status.json) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
 | [gitlab](apps/gitlab/README.md) | [status.io](https://api.status.io/1.0/status/5b36dc6502d06804c08349f7) | yes | `GET /user` | yes | `service` · `quota` · 2 derived |
 | [gmail](apps/gmail/README.md) | [JSON](https://www.google.com/appsstatus/dashboard/incidents.json) | yes | `GET /gmail/v1/users/me/profile` | no | `service` · ~~quota~~ · 2 derived |

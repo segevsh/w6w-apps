@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/gitea",
+  "version": "0.1.0",
+  "description": "Manage Gitea repositories, issues, pull requests, releases and files.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gitea",
+    "displayName": "Gitea",
+    "categories": [
+      "version-control",
+      "developer-tools",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gitea"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
