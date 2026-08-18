@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **780 checks**: 307 live probes, 181 declared absences, and 292
+Across the pack that comes to **784 checks**: 310 live probes, 181 declared absences, and 293
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -101,6 +101,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [figma](apps/figma/README.md) | [Statuspage](https://status.figma.com/api/v2/summary.json) | yes | `GET /v1/me` | no | `service` · ~~quota~~ · 2 derived |
 | [fillout](apps/fillout/README.md) | [Statuspage](https://fillout.statuspage.io/api/v2/status.json) (page is branded "Zite" — pinned by id) | yes | `GET /v1/api/forms` | yes | `service` · `request-rate` · ~~plan~~ · 1 derived |
 | [fireflies](apps/fireflies/README.md) | none reachable (dangling Freshstatus CNAME) | no | `POST /graphql` `{ user { user_id name email } }` | no | `api` · ~~service~~ · ~~quota~~ · 1 derived |
+| [fivetran](apps/fivetran/README.md) | [Statuspage-shaped](https://status.fivetran.com/api/v2/status.json) — only status.json exists; components and incidents both 404 | yes | `GET /v1/account/info` | yes (`X-Rate-Limit` headers) | `service` · `quota` · `connections` · 1 derived |
 | [flodesk](apps/flodesk/README.md) | none machine-readable | no | `GET /segments/colors` | yes | ~~service~~ · `quota` · 2 derived |
 | [followupboss](apps/followupboss/README.md) | [Statuspage](https://followupboss.statuspage.io/api/v2/summary.json) | yes | `GET /identity` | yes | `service` · `quota` · 1 derived |
 | [formstack](apps/formstack/README.md) | [Statuspage](https://www.intellistackstatus.com/api/v2/summary.json) | yes | `GET /forms?pageSize=1` | no | `service` · ~~quota~~ · 1 derived |

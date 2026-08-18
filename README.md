@@ -92,6 +92,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | fillout | forms, productivity | api-key | 8 |
 | fireflies | ai, productivity, video | api-key | 25 |
+| fivetran | data-warehousing, devops, analytics | api-key | 20 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
 | followupboss | crm | api-key | 26 |
 | formstack | forms, productivity | access-token | 9 |
@@ -244,7 +245,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-219 apps, 3814 actions.
+220 apps, 3834 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
