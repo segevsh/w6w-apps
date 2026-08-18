@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **720 checks**: 276 live probes, 171 declared absences, and 273
+Across the pack that comes to **723 checks**: 278 live probes, 171 declared absences, and 274
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -79,6 +79,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [deepl](apps/deepl/README.md) | [JSON](https://api-status.deepl.com/api/status) | yes | `GET /v2/usage` | yes | `service` · `quota` · 1 derived |
 | [discord](apps/discord/README.md) | [Statuspage](https://discordstatus.com/api/v2/status.json) | yes | `GET /users/@me` | yes | `service` · `quota` · 2 derived |
 | [discourse](apps/discourse/README.md) | [status.io](https://api.status.io/1.0/status/5e2141ce30dc5c04b3ac32fc) | yes | `GET /u/{username}.json` | no | `service` · ~~quota~~ · `site` · 1 derived |
+| [documenso](apps/documenso/README.md) | none — self-hostable, so the `instance` check reads the connection's own /api/health (database + signing certificate) | no | `GET /api/v2/envelope?perPage=1` | yes | `instance` · `quota` · 1 derived |
 | [docusign](apps/docusign/README.md) | [Statuspage](https://status.docusign.com/api/v2/summary.json) | yes | `GET /accounts/{accountId}` | yes | `service` · `quota` · 2 derived |
 | [dropbox](apps/dropbox/README.md) | [Statuspage](https://status.dropbox.com/api/v2/status.json) | yes | `POST /2/users/get_current_account` | no | `service` · ~~quota~~ · 2 derived |
 | [dropbox-sign](apps/dropbox-sign/README.md) | [Statuspage](https://status.hellosign.com/api/v2/components.json) (the signing components — NOT the group named "API", which is outbound callbacks) | yes | `GET /v3/account` | yes | `service` · `quota` · 2 derived |

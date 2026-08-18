@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/documenso",
+  "version": "0.1.0",
+  "description": "Send Documenso envelopes for signature, manage their recipients and fields, and read the audit trail.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.documenso",
+    "displayName": "Documenso",
+    "categories": [
+      "legal",
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Documenso"
+      },
+      "darkMode": {
+        "icon": {
+          "url": "./assets/icon.dark.png",
+          "alt": "Documenso"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "app.documenso.com",
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
