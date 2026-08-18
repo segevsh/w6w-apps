@@ -226,6 +226,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | typeform | forms, productivity | personal-access-token, oauth2 | 10 |
 | upstash | databases | rest-token | 15 |
 | uptimerobot | monitoring | api-key | 8 |
+| vanta | legal, security, monitoring | client-credentials | 25 |
 | vercel | devops, developer-tools | access-token, oauth2 | 28 |
 | vimeo | video, social-media | access-token | 36 |
 | webflow | cms | api-token, oauth2 | 14 |
@@ -242,7 +243,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-217 apps, 3770 actions.
+218 apps, 3795 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

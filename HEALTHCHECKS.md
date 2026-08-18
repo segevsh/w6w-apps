@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **772 checks**: 303 live probes, 179 declared absences, and 290
+Across the pack that comes to **776 checks**: 305 live probes, 180 declared absences, and 291
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -235,6 +235,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [typeform](apps/typeform/README.md) | [Statuspage](https://status.typeform.com/api/v2/status.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
 | [upstash](apps/upstash/README.md) | [Statuspage](https://status.upstash.com/api/v2/summary.json) | yes | `GET /ping` | no | `service` · `host` · 1 derived |
 | [uptimerobot](apps/uptimerobot/README.md) | none published | no | `POST /getAccountDetails` | yes | ~~service~~ · `quota` · 1 derived |
+| [vanta](apps/vanta/README.md) | [Statuspage](https://status.vanta.com/api/v2/components.json) — an integrations outage is capped at degraded, since the API keeps answering with stale evidence | yes | `GET /v1/frameworks?pageSize=1` | no | `service` · ~~quota~~ · `tenant` · 1 derived |
 | [vercel](apps/vercel/README.md) | [Statuspage](https://www.vercel-status.com/api/v2/summary.json) | yes | `GET /v2/user` | yes | `service` · `quota` · 2 derived |
 | [vimeo](apps/vimeo/README.md) | [Statuspage](https://www.vimeostatus.com/api/v2/status.json) | yes | `GET /me?fields=uri,name` | yes | `service` · `quota` · 1 derived |
 | [webflow](apps/webflow/README.md) | [Statuspage](https://status.webflow.com/api/v2/status.json) | yes | `GET /v2/sites` | yes | `service` · `quota` · 2 derived |
