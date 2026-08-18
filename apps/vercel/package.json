@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/vercel",
+  "version": "0.1.0",
+  "description": "Ship and inspect Vercel deployments \u2014 projects, aliases, env vars, domains and logs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.vercel",
+    "displayName": "Vercel",
+    "categories": [
+      "devops",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Vercel"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Vercel"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.vercel.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

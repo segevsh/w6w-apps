@@ -197,6 +197,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | typeform | forms, productivity | personal-access-token, oauth2 | 10 |
 | upstash | databases | rest-token | 15 |
 | uptimerobot | monitoring | api-key | 8 |
+| vercel | devops, developer-tools | access-token, oauth2 | 28 |
 | vimeo | video, social-media | access-token | 36 |
 | webflow | cms | api-token, oauth2 | 14 |
 | whatsapp | communication | access-token | 9 |
