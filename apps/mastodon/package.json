@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/mastodon",
+  "version": "0.1.0",
+  "description": "Post, search, follow and read on any Mastodon instance — the fediverse, where every server is its own API with its own limits and rules.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mastodon",
+    "displayName": "Mastodon",
+    "categories": [
+      "social-media",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mastodon"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
