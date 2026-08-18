@@ -64,6 +64,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | customerio | marketing, email | basic | 7 |
 | databricks | data-warehousing | bearer-token | 8 |
 | datadog | monitoring, devops, developer-tools | api-key | 22 |
+| deel | hr, finance | api-token | 25 |
 | deepl | ai | api-key | 8 |
 | discord | communication | bot-token, oauth2 | 19 |
 | discourse | communication, social-media | api-key | 26 |
