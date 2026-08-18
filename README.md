@@ -29,6 +29,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | aircall | communication, support, crm | basic | 38 |
 | airtable | spreadsheets, databases, productivity | personal-access-token, oauth2, api-key | 10 |
 | algolia | search, developer-tools | api-key | 22 |
+| amplitude | analytics, marketing | api-keys | 15 |
 | anthropic | ai | api-key | 14 |
 | apify | developer-tools, storage, ai | api-token | 31 |
 | apitemplateio | developer-tools | api-key | 5 |
@@ -251,7 +252,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-226 apps, 3944 actions.
+227 apps, 3959 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
