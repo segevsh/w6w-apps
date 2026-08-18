@@ -183,6 +183,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | ringcentral | communication, productivity | oauth2, jwt-bearer | 13 |
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
+| sanity | cms, databases, developer-tools | token | 11 |
 | segment | analytics | write-key | 6 |
 | sendgrid | email, communication | sendgrid-api | 10 |
 | sentry | monitoring, developer-tools | auth-token, oauth2 | 21 |
@@ -233,7 +234,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-208 apps, 3609 actions.
+209 apps, 3620 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/sanity",
+  "version": "0.1.1",
+  "description": "Query and mutate a Sanity Content Lake — GROQ queries, transactional document mutations, publishing, revision history and dataset management.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.sanity",
+    "displayName": "Sanity",
+    "categories": [
+      "cms",
+      "databases",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Sanity"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Sanity"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.sanity.io",
+        "*.api.sanity.io",
+        "*.apicdn.sanity.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
