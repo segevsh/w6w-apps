@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/checkly",
+  "version": "0.1.0",
+  "description": "Run and inspect Checkly synthetic monitors, their results, alerts and maintenance windows.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.checkly",
+    "displayName": "Checkly",
+    "categories": [
+      "monitoring",
+      "devops",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Checkly"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.checklyhq.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

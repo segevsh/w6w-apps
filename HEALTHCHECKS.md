@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **711 checks**: 273 live probes, 168 declared absences, and 270
+Across the pack that comes to **714 checks**: 273 live probes, 170 declared absences, and 271
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -58,6 +58,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [callrail](apps/callrail/README.md) | [Statuspage](https://status.callrail.com/api/v2/summary.json) | yes | `GET /v3/a.json` | no | `service` · ~~quota~~ · 1 derived |
 | [campaignmonitor](apps/campaignmonitor/README.md) | StatusCast, WAF-blocked to server-side clients | no | `GET /systemdate.json` | no | `api` · ~~service~~ · ~~quota~~ · 2 derived |
 | [chargebee](apps/chargebee/README.md) | [Statuspage](https://status.chargebee.com/api/v2/summary.json) | yes | `GET /customers?limit=1` | no | `service` · ~~quota~~ · 1 derived |
+| [checkly](apps/checkly/README.md) | none usable (the page is an SPA catch-all; the old Statuspage instance is stale since 2026-04-28) | no | `GET /v1/accounts/me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [circle](apps/circle/README.md) | [Statuspage](https://status.circle.so/api/v2/summary.json) | yes | `GET /community` | no | `service` · ~~quota~~ · 1 derived |
 | [circleci](apps/circleci/README.md) | [Statuspage](https://status.circleci.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [clearbit](apps/clearbit/README.md) | [Statuspage](https://status.clearbit.com/api/v2/summary.json) | yes | `GET /v1/domains/find?name=Clearbit` | yes | `service` · `quota` · 1 derived |
