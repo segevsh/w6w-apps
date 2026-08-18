@@ -128,6 +128,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | keap | crm, marketing, email | oauth2, access-key | 36 |
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
+| launchdarkly | devops, developer-tools | api-key | 21 |
 | lemlist | marketing, email | api-key | 18 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
@@ -226,7 +227,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-201 apps, 3457 actions.
+202 apps, 3478 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

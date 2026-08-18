@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **717 checks**: 274 live probes, 171 declared absences, and 272
+Across the pack that comes to **720 checks**: 276 live probes, 171 declared absences, and 273
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -137,6 +137,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [keap](apps/keap/README.md) | [Statuspage](https://status.thryv.com/api/v2/summary.json) (Keap group only) | yes | `GET /crm/rest/v2/oauth/connect/userinfo` | yes | `service` · `quota` · ~~spike-rate~~ · 2 derived |
 | [kit](apps/kit/README.md) | [Statuspage](https://status.kit.com/api/v2/summary.json) | yes | `GET /v4/account` | no | `service` · ~~quota~~ · 1 derived |
 | [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes | `service` · `quota` · 1 derived |
+| [launchdarkly](apps/launchdarkly/README.md) | [Statuspage](https://status.launchdarkly.com/api/v2/components.json) (the management components; NOT the four named "API", which are SDK delivery) | yes | `GET /api/v2/projects?limit=1` | yes | `service` · `quota` · 1 derived |
 | [lemlist](apps/lemlist/README.md) | [Hyperping](https://status.lempire.com/status.json) | yes | `GET /team` | yes | `service` · `quota` · 1 derived |
 | [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
 | [linkedin](apps/linkedin/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /v2/userinfo` | no | `service` · ~~quota~~ · 2 derived |

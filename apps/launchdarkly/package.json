@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/launchdarkly",
+  "version": "0.1.0",
+  "description": "Read and change LaunchDarkly feature flags, segments and the audit trail behind them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.launchdarkly",
+    "displayName": "LaunchDarkly",
+    "categories": [
+      "devops",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "LaunchDarkly"
+      },
+      "darkMode": {
+        "icon": {
+          "url": "./assets/icon.dark.png",
+          "alt": "LaunchDarkly"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "app.launchdarkly.com",
+        "app.launchdarkly.us"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
