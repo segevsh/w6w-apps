@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Twenty-four apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Twenty-five apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **533 checks**: 203 live probes, 124 declared absences, and 206
+Across the pack that comes to **538 checks**: 205 live probes, 125 declared absences, and 208
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -65,6 +65,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [cloudflare](apps/cloudflare/README.md) | [Statuspage](https://www.cloudflarestatus.com/api/v2/summary.json) | yes | `GET /user/tokens/verify` | yes | `service` · `quota` · 1 derived |
 | [coda](apps/coda/README.md) | [Atom](https://status.coda.io/history.atom) | yes | `GET /whoami` | no | `service` · ~~quota~~ · 1 derived |
 | [companycam](apps/companycam/README.md) | [Statuspage](https://status.companycam.com/api/v2/status.json) | yes | `GET /users/current` | no | `service` · ~~quota~~ · 2 derived |
+| [confluence](apps/confluence/README.md) | [Statuspage](https://confluence.status.atlassian.com/api/v2/summary.json) | yes | `GET /wiki/rest/api/user/current` | no | `service` · `site` · ~~quota~~ · 2 derived |
 | [constantcontact](apps/constantcontact/README.md) | [Statuspage](https://status.constantcontact.com/api/v2/summary.json) | yes | `GET /contacts?limit=1` | no | `service` · ~~quota~~ · 1 derived |
 | [contentful](apps/contentful/README.md) | [Statuspage](https://www.contentfulstatus.com/api/v2/status.json) | yes | `GET /spaces/{spaceId}` | yes | `service` · `quota` · 1 derived |
 | [copper](apps/copper/README.md) | [Statuspage](https://status.copper.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
@@ -261,11 +262,11 @@ recording:
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
   All 117 absences carry `severity: "informational"`.
-- **Twenty-four apps needed the `context` posture**, the one a boolean would have lost:
+- **Twenty-five apps needed the `context` posture**, the one a boolean would have lost:
   ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice, Ghost, Grafana,
   Gravity Forms, Grist, Jenkins, Jira, Metabase, Odoo, Sentry, ServiceNow, Shopify, Snowflake,
-  Strapi, Supabase, Upstash, WooCommerce, WordPress and Zendesk are each addressed by a
-  per-tenant host, so the check needs the Connection to know *which* host to call and no credential to
+  Strapi, Supabase, Upstash, WooCommerce, WordPress and Zendesk — plus Confluence, Jira's
+  sibling — are each addressed by a per-tenant host, so the check needs the Connection to know *which* host to call and no credential to
   interpret the answer. Their dependency probes are deliberately unauthenticated, which makes
   a **401 a pass** — it proves the host resolves and the API is answering, and whether the
   credential is any good is the derived `auth:*` check's job. Conflating the two is how "the

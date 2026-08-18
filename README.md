@@ -56,6 +56,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cloudflare | devops | api-token | 8 |
 | coda | productivity, documents | api-token | 11 |
 | companycam | project-management, documents, productivity | access-token, oauth2 | 62 |
+| confluence | documents, productivity | api-token, oauth2 | 22 |
 | constantcontact | marketing, email | oauth2 | 22 |
 | contentful | cms | access-token | 10 |
 | copper | crm | api-key | 24 |
