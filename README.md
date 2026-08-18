@@ -92,6 +92,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | gmail | communication, email | oauth2, service-account | 25 |
 | google-ads | marketing, analytics | oauth2 | 14 |
+| google-analytics | analytics, marketing | oauth2 | 23 |
 | google-business-profile | marketing, productivity | oauth2 | 15 |
 | google-calendar | calendar, productivity | oauth2, service-account | 8 |
 | google-contacts | crm, productivity | oauth2 | 14 |
