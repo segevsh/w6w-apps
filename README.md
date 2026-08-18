@@ -133,6 +133,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | homeassistant | iot, productivity | token | 19 |
 | housecallpro | crm, calendar, finance | api-key, oauth2 | 39 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
+| huggingface | ai, developer-tools | token | 14 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | jenkins | devops | basic | 6 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
@@ -254,7 +255,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-229 apps, 3991 actions.
+230 apps, 4005 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
