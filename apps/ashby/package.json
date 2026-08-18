@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/ashby",
+  "version": "0.1.0",
+  "description": "Work an Ashby hiring pipeline — find and create candidates, move applications between stages, read interviews, feedback and offers, and sync it all incrementally.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ashby",
+    "displayName": "Ashby",
+    "categories": [
+      "hr",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Ashby"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.ashbyhq.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

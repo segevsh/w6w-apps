@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **764 checks**: 299 live probes, 177 declared absences, and 288
+Across the pack that comes to **768 checks**: 301 live probes, 178 declared absences, and 289
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -42,6 +42,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [apify](apps/apify/README.md) | [Statuspage](https://status.apify.com/api/v2/summary.json) | yes | `GET /v2/users/me/limits` | yes | `service` · `quota` · ~~request-rate~~ · 1 derived |
 | [apitemplateio](apps/apitemplateio/README.md) | none published | no | `GET /v2/list-templates?limit=1` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [asana](apps/asana/README.md) | [Statuspage](https://status.asana.com/api/v2/status.json) | yes | `GET /api/1.0/users/me` | no | `service` · ~~quota~~ · 2 derived |
+| [ashby](apps/ashby/README.md) | [Statuspage](https://status.ashbyhq.com/api/v2/components.json) — mixes Ashby services with the vendors it depends on; only the former count | yes | `POST /apiKey.info` | no | `service` · ~~quota~~ · `permissions` · 1 derived |
 | [attio](apps/attio/README.md) | [Statuspage](https://status.attio.com/api/v2/summary.json) | yes | `GET /v2/self` | no | `service` · ~~quota~~ · 1 derived |
 | [auth0](apps/auth0/README.md) | none machine-readable (status.auth0.com is an HTML app; its only machine-readable source is a PER-TENANT RSS feed at `/api/rss?domain=…`, whose URL cannot be a static `feed.url`) | no | `GET /api/v2/users?per_page=1` | no | ~~service~~ · `tenant` · 1 derived |
 | [bamboohr](apps/bamboohr/README.md) | [RSS](https://status.bamboohr.com/pages/54f0de009d6f51e7140002b7/rss) | yes | `GET /api/v1/employees/0` | no | `service` · ~~quota~~ · 1 derived |
