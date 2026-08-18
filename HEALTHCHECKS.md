@@ -25,7 +25,7 @@ methods. Fifty-eight apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **797 checks**: 317 live probes, 184 declared absences, and 296
+Across the pack that comes to **801 checks**: 319 live probes, 185 declared absences, and 297
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -53,6 +53,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [bigquery](apps/bigquery/README.md) | [Google Cloud dashboard](https://status.cloud.google.com/incidents.json) (incident feed; `Google BigQuery` only, not the Data Transfer Service) | yes | `GET /projects/{id}/datasets?maxResults=1` | no | `service` · ~~quota~~ · 1 derived |
 | [bitbucket](apps/bitbucket/README.md) | [Statuspage](https://bitbucket.status.atlassian.com/api/v2/status.json) | yes | `GET /2.0/user` | yes | `service` · `quota` · 2 derived |
 | [bitly](apps/bitly/README.md) | [Atom](https://status.bitly.com/history.atom) | yes | `GET /user` | no | `service` · ~~quota~~ · 1 derived |
+| [bluesky](apps/bluesky/README.md) | none usable — status.bsky.app is an UptimeRobot page whose only JSON route is keyed by a token scraped from its own `pspApiPath` script, and whose monitors are per-PDS-instance | no | `GET /xrpc/com.atproto.server.getSession` | yes (real `ratelimit-*` headers; the ~10/day createSession limit is documented rather than probed, because probing consumes it) | ~~service~~ · `pds` · `quota` · 1 derived |
 | [box](apps/box/README.md) | [Statuspage](https://status.box.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [brevo](apps/brevo/README.md) | [Statuspage](https://status.brevo.com/api/v2/status.json) | yes | `GET /v3/account` | yes | `service` · `quota` · 1 derived |
 | [buffer](apps/buffer/README.md) | [Statuspage](https://status.buffer.com/api/v2/summary.json) | yes | `{ account { id } }` (GraphQL) | yes | `service` · `quota` · 2 derived |

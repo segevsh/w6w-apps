@@ -44,6 +44,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | bigquery | data-warehousing, databases | oauth2 | 18 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
+| bluesky | social-media, communication | app-password | 21 |
 | box | storage | oauth2 | 10 |
 | brevo | marketing, email | api-key | 15 |
 | buffer | social-media, marketing | oauth2, api-key | 14 |
@@ -248,7 +249,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-223 apps, 3887 actions.
+224 apps, 3908 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
