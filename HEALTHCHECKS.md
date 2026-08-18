@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **544 checks**: 207 live probes, 127 declared absences, and 210
+Across the pack that comes to **547 checks**: 208 live probes, 128 declared absences, and 211
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -144,6 +144,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [mattermost](apps/mattermost/README.md) | [Statuspage](https://status.mattermost.com/api/v2/summary.json) | yes | `GET /api/v4/users/me` | yes | `service` · `quota` · `instance` · 1 derived |
 | [metabase](apps/metabase/README.md) | [Statuspage](https://status.metabase.com/api/v2/summary.json) | yes | `GET /api/user/current` | no | `service` · ~~quota~~ · `instance` · 1 derived |
 | [microsoft-todo](apps/microsoft-todo/README.md) | none published | no | `GET /me/todo/lists` | no | ~~service~~ · ~~quota~~ · 1 derived |
+| [miro](apps/miro/README.md) | [Statuspage](https://status.miro.com/api/v2/status.json) | yes | `GET /v1/oauth-token` | no | `service` · ~~quota~~ · 1 derived |
 | [mistral](apps/mistral/README.md) | [RSS](https://status.mistral.ai/feed.rss) | yes | `GET /v1/models` | yes | `service` · `quota` · 1 derived |
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
 | [motion](apps/motion/README.md) | [Better Stack](https://status.usemotion.com/index.json) (monitors nothing) | yes | `GET /v1/users/me` | yes | `service` · `api` · `quota` · 1 derived |

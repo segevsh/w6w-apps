@@ -135,6 +135,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mattermost | communication, productivity | access-token | 13 |
 | metabase | analytics, databases | api-key | 17 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
+| miro | productivity, project-management | oauth2 | 27 |
 | mistral | ai | api-key | 4 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | motion | productivity, project-management, calendar | api-key | 27 |
