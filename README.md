@@ -34,6 +34,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | apitemplateio | developer-tools | api-key | 5 |
 | asana | productivity, project-management | access-token, oauth2 | 22 |
 | attio | crm | api-key | 29 |
+| auth0 | security, developer-tools | client-credentials | 18 |
 | bamboohr | hr | api-key | 18 |
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
@@ -234,7 +235,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-209 apps, 3620 actions.
+210 apps, 3638 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
