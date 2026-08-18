@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Twenty-three apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Twenty-four apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **524 checks**: 198 live probes, 124 declared absences, and 202
+Across the pack that comes to **529 checks**: 201 live probes, 124 declared absences, and 204
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -174,6 +174,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [salesforce](apps/salesforce/README.md) | [JSON](https://api.status.salesforce.com/v1/instances) | yes | _varies by method_ | yes | `service` · `quota` · 2 derived |
 | [segment](apps/segment/README.md) | [Statuspage](https://status.segment.com/api/v2/summary.json) | yes | `POST /v1/identify` | no | `service` · ~~quota~~ · 1 derived |
 | [sendgrid](apps/sendgrid/README.md) | [Statuspage](https://status.sendgrid.com/api/v2/status.json) | yes | `GET /v3/scopes` | yes | `service` · `quota` · 1 derived |
+| [sentry](apps/sentry/README.md) | [Statuspage](https://status.sentry.io/api/v2/summary.json) | yes | `GET /organizations/{slug}/?detailed=0` | yes | `service` · `quota` · `site` · 2 derived |
 | [servicenow](apps/servicenow/README.md) | none published | no | `GET /api/now/table/sys_user_role?sysparm_limit=1` | no | ~~service~~ · ~~quota~~ · `instance` · 2 derived |
 | [shopify](apps/shopify/README.md) | [Statuspage](https://www.shopifystatus.com/api/v2/status.json) | yes | `GET /shop.json` | yes | `service` · `quota` · `store` · 1 derived |
 | [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) · [Atom/RSS](https://slack-status.com/feed/atom) | yes | `POST /api/auth.test` | no | `service` · `incidents` · ~~quota~~ · 2 derived |
@@ -259,11 +260,11 @@ recording:
   `unknown`, and `unknown` outranks `ok` in the roll-up — so at any other severity, saying
   "this vendor publishes nothing" would pin the app's verdict at `unknown` permanently.
   All 117 absences carry `severity: "informational"`.
-- **Twenty-three apps needed the `context` posture**, the one a boolean would have lost:
+- **Twenty-four apps needed the `context` posture**, the one a boolean would have lost:
   ActiveCampaign, Databricks, Discourse, Elastic, Freshdesk, Freshservice, Ghost, Grafana,
-  Gravity Forms, Grist, Jenkins, Jira, Metabase, Odoo, ServiceNow, Shopify, Snowflake, Strapi,
-  Supabase, Upstash, WooCommerce, WordPress and Zendesk are each addressed by a per-tenant
-  host, so the check needs the Connection to know *which* host to call and no credential to
+  Gravity Forms, Grist, Jenkins, Jira, Metabase, Odoo, Sentry, ServiceNow, Shopify, Snowflake,
+  Strapi, Supabase, Upstash, WooCommerce, WordPress and Zendesk are each addressed by a
+  per-tenant host, so the check needs the Connection to know *which* host to call and no credential to
   interpret the answer. Their dependency probes are deliberately unauthenticated, which makes
   a **401 a pass** — it proves the host resolves and the API is answering, and whether the
   credential is any good is the derived `auth:*` check's job. Conflating the two is how "the

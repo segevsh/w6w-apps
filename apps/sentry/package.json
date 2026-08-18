@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/sentry",
+  "version": "0.1.0",
+  "description": "Triage Sentry issues, read events, and manage projects, releases and deploys.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.sentry",
+    "displayName": "Sentry",
+    "categories": [
+      "monitoring",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Sentry"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Sentry"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

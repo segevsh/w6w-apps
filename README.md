@@ -165,6 +165,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | salesforce | crm | access-token, oauth2 | 12 |
 | segment | analytics | write-key | 6 |
 | sendgrid | email, communication | sendgrid-api | 10 |
+| sentry | monitoring, developer-tools | auth-token, oauth2 | 21 |
 | servicenow | support, devops | basic, oauth2 | 9 |
 | shopify | commerce | access-token | 18 |
 | slack | communication | access-token, oauth2 | 47 |
