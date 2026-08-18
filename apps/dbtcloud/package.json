@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/dbtcloud",
+  "version": "0.1.0",
+  "description": "Run and watch dbt Cloud jobs — trigger runs, poll their status, download manifest and run_results artifacts, and read the projects, environments and access that produce them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.dbtcloud",
+    "displayName": "dbt Cloud",
+    "categories": [
+      "data-warehousing",
+      "devops",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "dbt Cloud"
+      }
+    },
+    "network": {
+      "allow": [
+        "cloud.getdbt.com",
+        "*.dbt.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **760 checks**: 297 live probes, 176 declared absences, and 287
+Across the pack that comes to **764 checks**: 299 live probes, 177 declared absences, and 288
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -77,6 +77,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [customerio](apps/customerio/README.md) | [Statuspage](https://status.customerio.com/api/v2/summary.json) | yes | `PUT /customers/:id` | no | `service` · ~~quota~~ · 1 derived |
 | [databricks](apps/databricks/README.md) | none published | no | _varies by method_ | no | ~~service~~ · `workspace` · 1 derived |
 | [datadog](apps/datadog/README.md) | [Statuspage](https://status.datadoghq.com/api/v2/status.json) (per site) | yes | `GET /api/v1/validate` | yes | `service` · `api` · ~~quota~~ · 1 derived |
+| [dbtcloud](apps/dbtcloud/README.md) | [Statuspage](https://status.getdbt.com/api/v2/summary.json) — indicator only, its components list is EMPTY | yes | `GET /api/v2/accounts/{id}/` | no | `service` · ~~quota~~ · `account` · 1 derived |
 | [deel](apps/deel/README.md) | Statuspage exists but is private (401 "page is inactive") | no | `GET /contracts?limit=1` | yes | ~~service~~ · `quota` · 1 derived |
 | [deepl](apps/deepl/README.md) | [JSON](https://api-status.deepl.com/api/status) | yes | `GET /v2/usage` | yes | `service` · `quota` · 1 derived |
 | [discord](apps/discord/README.md) | [Statuspage](https://discordstatus.com/api/v2/status.json) | yes | `GET /users/@me` | yes | `service` · `quota` · 2 derived |
