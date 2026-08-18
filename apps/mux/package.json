@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mux",
+  "version": "0.1.0",
+  "description": "Manage Mux video — create assets from a URL, run live streams, mint playback IDs, build delivery URLs and read viewer metrics.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mux",
+    "displayName": "Mux",
+    "categories": [
+      "video",
+      "developer-tools",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mux"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mux.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

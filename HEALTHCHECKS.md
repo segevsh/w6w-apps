@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **753 checks**: 293 live probes, 175 declared absences, and 285
+Across the pack that comes to **756 checks**: 295 live probes, 175 declared absences, and 286
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -164,6 +164,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [mixpanel](apps/mixpanel/README.md) | [Statuspage](https://www.mixpanelstatus.com/api/v2/components.json) (connection-scoped: this project's region only, split by capability — querying, ingestion and export fail independently) | yes | `GET /api/app/me` (not a query, so it costs nothing from the 60/hour budget) | no | `service` · ~~quota~~ · 1 derived |
 | [monday](apps/monday/README.md) | [Statuspage](https://status.monday.com/api/v2/status.json) | yes | `POST /v2 · { me { id } }` | yes | `service` · `quota` · 2 derived |
 | [motion](apps/motion/README.md) | [Better Stack](https://status.usemotion.com/index.json) (monitors nothing) | yes | `GET /v1/users/me` | no | `service` · `api` · ~~quota~~ · 1 derived |
+| [mux](apps/mux/README.md) | [Statuspage](https://status.mux.com/api/v2/components.json) (API and delivery split — they fail independently, so one out is degraded and only both is down) | yes | `GET /video/v1/assets?limit=1` | yes | `service` · `quota` · 1 derived |
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
 | [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [odoo](apps/odoo/README.md) | none machine-readable | no | `common.authenticate` (JSON-RPC) | no | ~~service~~ · ~~quota~~ · `instance` · 1 derived |
