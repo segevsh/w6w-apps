@@ -176,6 +176,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | slack | communication | access-token, oauth2 | 47 |
 | smartsheet | spreadsheets, productivity | access-token | 16 |
 | snowflake | data-warehousing | key-pair | 5 |
+| snyk | security, developer-tools | api-token | 20 |
 | splitwise | finance, productivity | api-key | 26 |
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |

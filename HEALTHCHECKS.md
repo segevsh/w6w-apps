@@ -25,7 +25,7 @@ methods. Twenty-five apps add a fourth question — **is this tenant's own host 
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **550 checks**: 209 live probes, 129 declared absences, and 212
+Across the pack that comes to **554 checks**: 211 live probes, 130 declared absences, and 213
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -185,6 +185,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [slack](apps/slack/README.md) | [JSON](https://status.slack.com/api/v2.0.0/current) · [Atom/RSS](https://slack-status.com/feed/atom) | yes | `POST /api/auth.test` | no | `service` · `incidents` · ~~quota~~ · 2 derived |
 | [smartsheet](apps/smartsheet/README.md) | [Statuspage](https://status.smartsheet.com/api/v2/summary.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [snowflake](apps/snowflake/README.md) | [Atom](https://status.snowflake.com/history.atom) | yes | `POST /api/v2/statements` | no | `service` · `account` · 1 derived |
+| [snyk](apps/snyk/README.md) | [Statuspage](https://status.snyk.io/api/v2/summary.json) | yes | `GET /self` | no | `service` · `api-version` · ~~quota~~ · 1 derived |
 | [splitwise](apps/splitwise/README.md) | [Instatus](https://status.splitwise.com/v2/components.json) | yes | `GET /api/v3.0/get_current_user` | yes | `service` · `api` · `quota` · 1 derived |
 | [splunk](apps/splunk/README.md) | [Statuspage](https://status.splunkcloud.com/api/v2/summary.json) | yes | `GET /services/authentication/current-context` | no | `service` · 1 derived |
 | [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
