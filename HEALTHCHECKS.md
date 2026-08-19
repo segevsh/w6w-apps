@@ -25,7 +25,7 @@ methods. Sixty-four apps add a fourth question — **is this tenant's own host r
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **846 checks**: 341 live probes, 195 declared absences, and 312
+Across the pack that comes to **849 checks**: 342 live probes, 196 declared absences, and 313
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -161,6 +161,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [klaviyo](apps/klaviyo/README.md) | [Statuspage](https://status.klaviyo.com/api/v2/status.json) | yes | `GET /api/accounts/` | yes | `service` · `quota` · 1 derived |
 | [launchdarkly](apps/launchdarkly/README.md) | [Statuspage](https://status.launchdarkly.com/api/v2/components.json) (the management components; NOT the four named "API", which are SDK delivery) | yes | `GET /api/v2/projects?limit=1` | yes | `service` · `quota` · 1 derived |
 | [lemlist](apps/lemlist/README.md) | [Hyperping](https://status.lempire.com/status.json) | yes | `GET /team` | yes | `service` · `quota` · 1 derived |
+| [lever](apps/lever/README.md) | [Statuspage](https://status.lever.co/api/v2/summary.json) — 41 components across seven groups where EVERY NAME APPEARS TWICE, once per data centre, so a component is only identifiable as (GROUP, name); resolved through `group_id` for the data centre the connection names, weighting `Integration API & Webhooks` and reporting `Hire` separately since the API and the product fail independently | yes | `GET /users?limit=1`, plus a probe for CONFIDENTIAL access — which Lever grants only at key creation, and whose absence shortens every list silently | no — Lever documents a 429 without stating the budget or window and publishes no header; the real constraint is the OPAQUE pagination cursor, which cannot be parallelised | `service` · ~~quota~~ · 1 derived |
 | [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
 | [linkedin](apps/linkedin/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /v2/userinfo` | no | `service` · ~~quota~~ · 2 derived |
 | [linkedin-ads](apps/linkedin-ads/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /rest/adAccounts?q=search` | no | `service` · ~~quota~~ · 2 derived |
