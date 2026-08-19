@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Sixty-three apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Sixty-four apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **843 checks**: 339 live probes, 195 declared absences, and 311
+Across the pack that comes to **846 checks**: 341 live probes, 195 declared absences, and 312
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -35,6 +35,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 |---|---|:-:|---|:-:|---|
 | [activecampaign](apps/activecampaign/README.md) | [Statuspage](https://status.activecampaign.com/api/v2/summary.json) | yes | `GET /contacts?limit=1` | yes | `service` · `quota` · `site` · 1 derived |
 | [acuityscheduling](apps/acuityscheduling/README.md) | [Statuspage](https://status.acuityscheduling.com/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
+| [airbyte](apps/airbyte/README.md) | [Statuspage](https://status.airbyte.com/api/v2/summary.json) — declared `informational`, because much of Airbyte is SELF-MANAGED and because a stale pipeline is usually a paused connection or an expired source credential rather than an outage, which makes a green feed weak evidence for the thing anybody cares about | yes | `GET /v1/health` — UNAUTHENTICATED, which matters because access tokens last THREE MINUTES and a signed check would mostly report on the token; the body is plain text, not JSON | no — Airbyte publishes no rate-limit header; what binds is the source's own limits during a re-read | `service` · `api` · 1 derived |
 | [aircall](apps/aircall/README.md) | [Statuspage](https://status.aircall.com/api/v2/status.json) | yes | `GET /v1/ping` | no | `service` · `quota` · 1 derived |
 | [airtable](apps/airtable/README.md) | [Statuspage](https://status.airtable.com/api/v2/status.json) | yes | `GET /v0/meta/whoami` | no | `service` · ~~quota~~ · 3 derived |
 | [algolia](apps/algolia/README.md) | [JSON](https://status.algolia.com/1/status) (per-cluster; the Statuspage paths are decoys) | yes | `GET /1/keys/{key}` | no | `service` · ~~quota~~ · 1 derived |
