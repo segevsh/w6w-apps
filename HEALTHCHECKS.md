@@ -233,6 +233,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [tally](apps/tally/README.md) | [Better Stack](https://status.tally.so/index.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [teams](apps/teams/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
+| [terraform](apps/terraform/README.md) | [Statuspage](https://status.hashicorp.com/api/v2/components.json) — components.json, NOT summary.json: summary returns 25 of 62 components and `HCP Terraform` is the 38th by position, so the conventional probe reports other products' health as Terraform's. Matches EXACT names, because the board repeats region names across products | yes | `GET /api/v2/account/details` | no — the headers exist (`x-ratelimit-limit: 30`) but the window is ONE SECOND, so a sample measures nothing | `service` · `instance` · ~~quota~~ · 1 derived |
 | [thinkific](apps/thinkific/README.md) | [Statuspage](https://status.thinkific.com/api/v2/summary.json) | yes | `GET /courses` | no | `service` · ~~quota~~ · 1 derived |
 | [thrivecart](apps/thrivecart/README.md) | none published | no | `GET /api/external/ping` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [ticktick](apps/ticktick/README.md) | none published | no | `GET /open/v1/project` | no | `service` · ~~quota~~ · 1 derived |
