@@ -60,6 +60,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
+| clickhouse | databases, data-warehousing | api-key, service | 15 |
 | clockify | productivity | api-key | 10 |
 | close | crm | api-key | 21 |
 | cloudflare | devops | api-token | 8 |
@@ -259,7 +260,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-234 apps, 4074 actions.
+235 apps, 4089 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
