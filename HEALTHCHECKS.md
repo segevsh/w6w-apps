@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Sixty-one apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Sixty-two apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **836 checks**: 336 live probes, 193 declared absences, and 308
+Across the pack that comes to **839 checks**: 337 live probes, 194 declared absences, and 310
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -233,6 +233,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [spotify](apps/spotify/README.md) | [Statuspage](https://spotify.statuspage.io/api/v2/summary.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 1 derived |
 | [square](apps/square/README.md) | [Statuspage](https://issquareup.com/api/v2/status.json) | yes | `GET /v2/merchants/me` | no | `service` · ~~quota~~ · 1 derived |
 | [statuspage](apps/statuspage/README.md) | [Statuspage](https://metastatuspage.com/api/v2/components.json) (Atlassian's own status page is itself a Statuspage — the same document shape this app writes) | yes | `GET /v1/pages` | no | `service` · ~~quota~~ · 1 derived |
+| [storyblok](apps/storyblok/README.md) | none machine-readable — `status.storyblok.com` meta-refreshes to `uptime.storyblok.com`, which serves HTML; `/api/v2/summary.json` on both returns the page or a 404. A feed would also be the wrong instrument: the delivery CDN survives outages of the system that fills it, while the Management API IS the application, so the two fail separately | no | `GET /v2/cdn/spaces/me` or `GET /v1/spaces/:id` — whichever API the connection's credential uses, in its REGION; a 401 is equally a wrong token, a wrong credential kind, a `Bearer` prefix, or a space in another region | no — Storyblok publishes no rate-limit header, but the limits are documented and INVERSE: 50/s at 25 per page against 6/s at 100, and 3–6/s on the Management API | ~~service~~ · `api` · 2 derived |
 | [strapi](apps/strapi/README.md) | none published | no | `GET /api/upload/files/page` | no | ~~service~~ · ~~quota~~ · `site` · 1 derived |
 | [strava](apps/strava/README.md) | [Statuspage](https://status.strava.com/api/v2/summary.json) | yes | `GET /athlete` | yes | `service` · `quota` · 1 derived |
 | [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |

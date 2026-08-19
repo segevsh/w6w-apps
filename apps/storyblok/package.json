@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/storyblok",
+  "version": "0.1.0",
+  "description": "Storyblok: read published and draft content, and create, update, publish and organise stories.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.storyblok",
+    "displayName": "Storyblok",
+    "categories": [
+      "cms",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Storyblok"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.storyblok.com",
+        "api-us.storyblok.com",
+        "api-ca.storyblok.com",
+        "api-ap.storyblok.com",
+        "mapi.storyblok.com",
+        "app.storyblokchina.cn"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
