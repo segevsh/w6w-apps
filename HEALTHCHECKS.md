@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Fifty-eight apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Fifty-nine apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **822 checks**: 329 live probes, 190 declared absences, and 303
+Across the pack that comes to **825 checks**: 330 live probes, 191 declared absences, and 304
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -162,6 +162,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [linear](apps/linear/README.md) | [page](https://status.linear.app) | no | `POST /graphql  ·  { viewer { id } }` | yes | ~~service~~ · `quota` · 2 derived |
 | [linkedin](apps/linkedin/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /v2/userinfo` | no | `service` · ~~quota~~ · 2 derived |
 | [linkedin-ads](apps/linkedin-ads/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) | yes | `GET /rest/adAccounts?q=search` | no | `service` · ~~quota~~ · 2 derived |
+| [looker](apps/looker/README.md) | none — there is no Looker SERVICE to have a status: every deployment is its own instance (hosted at `{name}.cloud.looker.com` or self-hosted), and a healthy Looker in front of a struggling WAREHOUSE presents to a workflow as a Looker failure, which no status page covers | no | `GET /api/4.0/user` (SIGNED — Looker offers no unauthenticated health endpoint; a connection failure is reported as the self-hosted API PORT 19999, a 401 as a missed refresh of the one-hour token, and a DISABLED user as down rather than ok) | no — Looker rate-limits per instance and publishes no header at all; the ceiling that binds is the database CONNECTION POOL, reported by `connection-list` | ~~service~~ · `instance` · 1 derived |
 | [loops](apps/loops/README.md) | [Statuspage](https://status.loops.so/api/v2/components.json) | yes | `GET /v1/api-key` | no | `service` · ~~quota~~ · 1 derived |
 | [mailcheck](apps/mailcheck/README.md) | none published | no | `GET /v1/emails/operations?page_size=1` | no | ~~service~~ · 1 derived |
 | [mailchimp](apps/mailchimp/README.md) | [page](https://status.mailchimp.com) | no | `GET /3.0/ping` | no | ~~service~~ · ~~quota~~ · 2 derived |
