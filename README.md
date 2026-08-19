@@ -177,6 +177,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mux | video, developer-tools, analytics | basic | 14 |
 | netlify | devops | personal-access-token | 10 |
 | newrelic | monitoring, analytics, devops | user-key | 17 |
+| nocodb | spreadsheets, databases | api-token | 13 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
 | odoo | crm, commerce | api-key | 21 |
 | okta | security | api-token | 11 |
@@ -267,7 +268,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-242 apps, 4190 actions.
+243 apps, 4203 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

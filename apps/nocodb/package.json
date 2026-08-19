@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/nocodb",
+  "version": "0.1.0",
+  "description": "NocoDB: read and write records in bases and tables, follow links, and inspect schemas and views.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.nocodb",
+    "displayName": "NocoDB",
+    "categories": [
+      "spreadsheets",
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "NocoDB"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

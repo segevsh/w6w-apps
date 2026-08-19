@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Sixty-two apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Sixty-three apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **839 checks**: 337 live probes, 194 declared absences, and 310
+Across the pack that comes to **843 checks**: 339 live probes, 195 declared absences, and 311
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -186,6 +186,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [mux](apps/mux/README.md) | [Statuspage](https://status.mux.com/api/v2/components.json) (API and delivery split — they fail independently, so one out is degraded and only both is down) | yes | `GET /video/v1/assets?limit=1` | yes | `service` · `quota` · 1 derived |
 | [netlify](apps/netlify/README.md) | [Statuspage](https://www.netlifystatus.com/api/v2/summary.json) | yes | `GET /user` | yes | `service` · `quota` · 1 derived |
 | [newrelic](apps/newrelic/README.md) | [Statuspage](https://status.newrelic.com/api/v2/summary.json) — 115 components, each suffixed with its data centre (`APM : US`, `Alerts : Europe`); only the affected ones are reported and the regions named, since an incident in another region is not one for this account | yes | `{ actor { user { name email } } }` | no | `service` · `reporting` · ~~quota~~ · 1 derived |
+| [nocodb](apps/nocodb/README.md) | none machine-readable — status.nocodb.com serves an HTML uptime page and `/api/v2/summary.json`, `/api/v1/monitors` and `/badge` all 404; it would also speak only for app.nocodb.com, while NocoDB is self-hosted more often than not | no | `GET /api/v1/health` — UNAUTHENTICATED, so an outage cannot hide behind a revoked token, and it reports the process UPTIME: a repeatedly small one is a container crash-looping, a pattern no single check would show | YES — measured `x-ratelimit-limit: 60` / `x-ratelimit-remaining` on every response, a real and current number, and small enough that one workflow can spend it; the probe costs one of the 60 | ~~service~~ · `instance` · `quota` · 1 derived |
 | [notion](apps/notion/README.md) | [page](https://status.notion.so) | no | `GET /v1/users/me` | no | ~~service~~ · ~~quota~~ · 2 derived |
 | [odoo](apps/odoo/README.md) | none machine-readable | no | `common.authenticate` (JSON-RPC) | no | ~~service~~ · ~~quota~~ · `instance` · 1 derived |
 | [okta](apps/okta/README.md) | [page](https://status.okta.com) | no | `GET /api/v1/users?limit=1` | yes | ~~service~~ · `quota` · 1 derived |
