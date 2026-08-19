@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/gcs",
+  "version": "0.1.0",
+  "description": "Google Cloud Storage: buckets and objects, uploads and downloads, lifecycle and access \u2014 plus V4 signed URLs minted offline from the service-account key.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gcs",
+    "displayName": "Google Cloud Storage",
+    "categories": [
+      "storage",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Cloud Storage"
+      }
+    },
+    "network": {
+      "allow": [
+        "storage.googleapis.com",
+        "oauth2.googleapis.com",
+        "iamcredentials.googleapis.com",
+        "status.cloud.google.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
