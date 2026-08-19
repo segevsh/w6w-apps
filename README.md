@@ -224,6 +224,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | spotify | productivity | oauth2 | 9 |
 | square | commerce, finance | access-token | 17 |
 | statuspage | monitoring, communication, devops | api-key | 12 |
+| storyblok | cms, marketing | delivery-token, management-token | 14 |
 | strapi | cms | api-token | 6 |
 | strava | productivity | oauth2 | 9 |
 | stripe | commerce, finance | api-key | 23 |
@@ -266,7 +267,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-241 apps, 4176 actions.
+242 apps, 4190 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
