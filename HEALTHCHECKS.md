@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Sixty apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Sixty-one apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **832 checks**: 333 live probes, 193 declared absences, and 307
+Across the pack that comes to **836 checks**: 336 live probes, 193 declared absences, and 308
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -255,6 +255,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [twitch](apps/twitch/README.md) | [Statuspage](https://status.twitch.com/api/v2/status.json) | yes | `GET id.twitch.tv/oauth2/validate` | yes | `service` · `api` · `quota` · ~~api-status~~ · 2 derived |
 | [twitter](apps/twitter/README.md) | [page](https://developer.x.com/status) | no | `GET /2/users/me` | yes | ~~service~~ · `quota` · 1 derived |
 | [typeform](apps/typeform/README.md) | [Statuspage](https://status.typeform.com/api/v2/status.json) | yes | `GET /me` | no | `service` · ~~quota~~ · 2 derived |
+| [typesense](apps/typesense/README.md) | [Instatus](https://typesense.instatus.com/v2/components.json) — covers TYPESENSE CLOUD only, and Typesense is mostly self-hosted, so it is declared `informational` rather than fatal; a Management Console incident is provisioning and the dashboard, not the search path | yes | `GET /collections` (NOT `/health`, which needs no key and would pass with no credential at all) | YES, and unusually it is the real resource: Typesense serves its index from RAM, so `/metrics.json` memory and disk headroom is the quota, and the failure is WRITES stopping while searches carry on | `service` · `node` · `capacity` · 1 derived |
 | [upstash](apps/upstash/README.md) | [Statuspage](https://status.upstash.com/api/v2/summary.json) | yes | `GET /ping` | no | `service` · `host` · 1 derived |
 | [uptimerobot](apps/uptimerobot/README.md) | none published | no | `POST /getAccountDetails` | yes | ~~service~~ · `quota` · 1 derived |
 | [vanta](apps/vanta/README.md) | [Statuspage](https://status.vanta.com/api/v2/components.json) — an integrations outage is capped at degraded, since the API keeps answering with stale evidence | yes | `GET /v1/frameworks?pageSize=1` | no | `service` · ~~quota~~ · `tenant` · 1 derived |
