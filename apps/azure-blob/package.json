@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/azure-blob",
+  "version": "0.1.0",
+  "description": "Azure Blob Storage: containers and blobs, uploads and downloads, tiers and leases, plus SAS URLs minted from the account key.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.azure-blob",
+    "displayName": "Azure Blob Storage",
+    "categories": [
+      "storage",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Azure Blob Storage"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.blob.core.windows.net",
+        "azurestatuscdn.azureedge.net"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
