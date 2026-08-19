@@ -25,7 +25,7 @@ methods. Sixty-four apps add a fourth question — **is this tenant's own host r
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **849 checks**: 342 live probes, 196 declared absences, and 313
+Across the pack that comes to **852 checks**: 343 live probes, 197 declared absences, and 314
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -118,6 +118,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [front](apps/front/README.md) | [Statuspage](https://www.frontstatus.com/api/v2/components.json) (the API components roll up; the message channels are capped at degraded, since a dead Gmail breaks sending and nothing else) | yes | `GET /me` | yes | `service` · `quota` · 1 derived |
 | [gcs](apps/gcs/README.md) | [incident feed](https://status.cloud.google.com/incidents.json) — an ARCHIVE of recent incidents, most already closed, so only entries with no `end` are current. Matched on the product ID, because a multi-product outage is filed under 'Multiple Products' and `Cloud Storage for Firebase` is a different product | yes | `GET /storage/v1/b?project=…` | no — Cloud Storage returns NO rate-limit header, and its real limit is per-OBJECT (~1 write/sec to one name) | `service` · ~~quota~~ · 1 derived |
 | [gemini](apps/gemini/README.md) | none published (Workspace and Cloud feeds both cover a *different* Gemini) | no | `GET /v1beta/models` | no | ~~service~~ · ~~quota~~ · 1 derived |
+| [gerrit](apps/gerrit/README.md) | none — there is no Gerrit service to have a status: it is Apache-licensed software organisations run themselves (Google, Android, Chromium, Wikimedia), and gerritcodereview.com operates nobody's instance | no | `GET /config/server/version` at the BARE path — the one place this app does not use `/a/`, since Gerrit serves anonymous reads there and an unauthenticated probe answers about Gerrit rather than about the password; the absence of the `)]}'` magic prefix identifies a proxy answering | no — Gerrit publishes no rate-limit header, and a self-hosted instance's limits are whatever its operator configured | ~~service~~ · `instance` · 1 derived |
 | [getresponse](apps/getresponse/README.md) | [Statuspage](https://status.getresponse.com/api/v2/summary.json) | yes | `GET /accounts` | no | `service` · ~~quota~~ · 1 derived |
 | [ghost](apps/ghost/README.md) | [RSS](https://ghoststatus.org/history.rss) | yes | `GET /users/?limit=1` | no | `service` · ~~quota~~ · `site` · 1 derived |
 | [gitea](apps/gitea/README.md) | none — self-hosted software, so there is no vendor instance to watch | no | `GET /api/v1/user` | no | `instance` · ~~service~~ · 1 derived |
