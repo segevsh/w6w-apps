@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/mongodb-atlas",
+  "version": "0.1.1",
+  "description": "Manage MongoDB Atlas: projects and clusters, database users and IP access lists, alerts and events — the control plane, not the data.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mongodb-atlas",
+    "displayName": "MongoDB Atlas",
+    "categories": [
+      "databases",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "MongoDB Atlas"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "MongoDB Atlas"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "cloud.mongodb.com",
+        "status.mongodb.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
