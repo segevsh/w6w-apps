@@ -21,11 +21,11 @@ for the rest it tested whatever happened to be first in `index.ts`.
 Reading the **Declared checks** column: `` `key` `` is a live probe, ~~`key`~~ is a
 declared *absence* (the vendor publishes nothing, stated as a positive fact rather than
 left as a gap), and "N derived" counts the `auth:*` checks projected from the app's auth
-methods. Fifty-nine apps add a fourth question — **is this tenant's own host reachable?** —
+methods. Sixty apps add a fourth question — **is this tenant's own host reachable?** —
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **828 checks**: 331 live probes, 192 declared absences, and 306
+Across the pack that comes to **832 checks**: 333 live probes, 193 declared absences, and 307
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -48,6 +48,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [auth0](apps/auth0/README.md) | none machine-readable (status.auth0.com is an HTML app; its only machine-readable source is a PER-TENANT RSS feed at `/api/rss?domain=…`, whose URL cannot be a static `feed.url`) | no | `GET /api/v2/users?per_page=1` | no | ~~service~~ · `tenant` · 1 derived |
 | [azure-blob](apps/azure-blob/README.md) | none machine-readable — Azure publishes incident announcements as RSS PROSE with no per-service state, and Storage health is per REGION and per account anyway | no | `GET /?comp=list` (SIGNED — Azure offers no unauthenticated probe, so an outage and a rotated key cannot be fully separated; clock drift presents as a 403) | no — Azure publishes no rate-limit header | ~~service~~ · `account` · 1 derived |
 | [azuredevops](apps/azuredevops/README.md) | [structured JSON](https://status.dev.azure.com/_apis/status/health) — per service AND per geography; not a Statuspage | yes | `GET /{org}/_apis/projects` | no (throughput units) | `service` · ~~quota~~ · `organization` · 1 derived |
+| [balena](apps/balena/README.md) | [Statuspage](https://status.balena.io/api/v2/summary.json) — weights `API` and reports `Cloudlink (VPN)` separately at no worse than degraded, because the four SUPERVISOR actions travel over the VPN and fail independently of every read; names its own components rather than the feed's worst, which mixes in a dozen `AWS …` entries | yes | `GET /user/v1/whoami` (NOT `/v7/application` — measured, that answers 200 with NO credential at all, returning the platform's public fleets) | no — measured 2026-08-19, no rate-limit header on success or 401; the plan's DEVICE COUNT is the ceiling | `service` · `api` · ~~quota~~ · 1 derived |
 | [bamboohr](apps/bamboohr/README.md) | [RSS](https://status.bamboohr.com/pages/54f0de009d6f51e7140002b7/rss) | yes | `GET /api/v1/employees/0` | no | `service` · ~~quota~~ · 1 derived |
 | [basecamp](apps/basecamp/README.md) | [Statuspage](https://37signals.statuspage.io/api/v2/summary.json) | yes | `GET launchpad/authorization.json` | no | `service` · ~~quota~~ · 1 derived |
 | [baserow](apps/baserow/README.md) | [Better Stack](https://status.baserow.org/index.json) | yes | `GET /api/database/tables/all-tables/` | no | `service` · ~~quota~~ · 1 derived |
