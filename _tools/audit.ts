@@ -169,8 +169,12 @@ function scanSources(appDir: string, allow: string[], oauthHosts: string[]): Iss
   }
 
   for (const [host, file] of seenHosts) {
-    // A wildcard-ish allow entry (e.g. a bare apex) covers its subdomains.
-    const covered = [...allowed].some((a) => host === a || host.endsWith(`.${a}`));
+    // A wildcard-ish allow entry (e.g. a bare apex) covers its subdomains, and
+    // a bare `*` covers everything — an app whose instance can be at any
+    // address (Mastodon, Terraform Enterprise) declares that and may still
+    // name its vendor's own host in code.
+    const covered = allowed.has("*") ||
+      [...allowed].some((a) => host === a || host.endsWith(`.${a}`));
     if (!covered && !host.endsWith("example.com") && !host.endsWith("schema.org")) {
       issues.push({
         severity: "error",

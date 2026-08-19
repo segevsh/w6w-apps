@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/terraform",
+  "version": "0.1.1",
+  "description": "Drive HCP Terraform and Terraform Enterprise: list workspaces, queue and apply runs, read state outputs, and manage workspace variables.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.terraform",
+    "displayName": "HCP Terraform",
+    "categories": [
+      "devops",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "HCP Terraform"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "HCP Terraform"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

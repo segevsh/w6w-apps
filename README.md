@@ -224,6 +224,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | tally | forms, productivity | api-key | 38 |
 | teams | communication | oauth2 | 16 |
 | telegram | communication | bot-token | 21 |
+| terraform | devops, developer-tools | token | 20 |
 | thinkific | commerce, crm | api-key | 20 |
 | thrivecart | commerce, marketing | api-token | 33 |
 | ticktick | productivity, project-management | oauth2 | 23 |
@@ -255,7 +256,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-230 apps, 4005 actions.
+231 apps, 4025 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
