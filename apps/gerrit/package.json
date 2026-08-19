@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/gerrit",
+  "version": "0.1.0",
+  "description": "Gerrit: search and review changes, vote on labels, submit or abandon, and inspect projects.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gerrit",
+    "displayName": "Gerrit",
+    "categories": [
+      "version-control",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gerrit Code Review"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
