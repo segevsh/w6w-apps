@@ -102,6 +102,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | freshdesk | support | api-key | 13 |
 | freshservice | support, devops | api-key | 23 |
 | front | support, communication, productivity | api-token | 30 |
+| gcs | storage, devops | service-account | 16 |
 | gemini | ai | api-key | 6 |
 | getresponse | marketing, email | api-key | 14 |
 | ghost | cms, productivity | admin-api-key | 11 |
@@ -257,7 +258,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 
-232 apps, 4044 actions.
+233 apps, 4060 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
