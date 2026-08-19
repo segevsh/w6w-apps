@@ -25,7 +25,7 @@ methods. Fifty-nine apps add a fourth question — **is this tenant's own host r
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **825 checks**: 330 live probes, 191 declared absences, and 304
+Across the pack that comes to **828 checks**: 331 live probes, 192 declared absences, and 306
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -237,6 +237,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [stripe](apps/stripe/README.md) | [JSON](https://status.stripe.com/current) | yes | `GET /v1/balance` | no | `service` · ~~quota~~ · 1 derived |
 | [supabase](apps/supabase/README.md) | [Atom](https://status.supabase.com/history.atom) | yes | `GET /rest/v1/` | no | `service` · `reachable` · 1 derived |
 | [surveymonkey](apps/surveymonkey/README.md) | [Statuspage](https://status.surveymonkey.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
+| [tailscale](apps/tailscale/README.md) | [Statuspage](https://status.tailscale.com/api/v2/summary.json) — weights `API (api.tailscale.com)`, and reports `Coordination service` and `DERP relay servers` alongside it at no worse than degraded: Tailscale's data plane is PEER-TO-PEER, so an API outage stops CHANGE (devices joining, ACL updates) rather than traffic between peers that already connected | yes | `GET /tailnet/-/devices` | no — measured 2026-08-19, no `RateLimit-*`, `X-RateLimit-*` or `Retry-After` on success or failure; the binding ceiling is the plan's USER and DEVICE count, which `user-list` and `device-list` report | `service` · ~~quota~~ · 2 derived |
 | [tally](apps/tally/README.md) | [Better Stack](https://status.tally.so/index.json) | yes | `GET /users/me` | no | `service` · ~~quota~~ · 1 derived |
 | [teams](apps/teams/README.md) | none machine-readable | no | `GET /me` | no | ~~service~~ · ~~quota~~ · 1 derived |
 | [telegram](apps/telegram/README.md) | none published | no | `GET /bot{token}/getMe` | no | ~~service~~ · ~~quota~~ · 1 derived |
