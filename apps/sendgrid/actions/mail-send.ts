@@ -16,6 +16,19 @@ import type { ActionDefinition } from "@w6w/types";
  * working; `pick()` below reads flat first and falls back to it.
  */
 
+/**
+ * True when a param value carries nothing the caller meant to send: unset, an
+ * empty string, an empty list, or an empty object. Declared defaults are `[]` /
+ * `{}`, so without this a defaulted-but-untouched field would shadow the
+ * deprecated `additionalFields` fallback instead of deferring to it.
+ */
+function isBlank(v: unknown): boolean {
+  if (v === undefined || v === null || v === "") return true;
+  if (Array.isArray(v)) return v.length === 0;
+  if (typeof v === "object") return Object.keys(v as Record<string, unknown>).length === 0;
+  return false;
+}
+
 /** A record whose values came from the old `additionalFields` group. */
 type Legacy = Record<string, unknown>;
 
@@ -426,8 +439,7 @@ const action: ActionDefinition = {
      */
     const pick = (key: string): unknown => {
       const flat = p[key];
-      if (flat !== undefined && flat !== null && flat !== "") return flat;
-      return legacy[key];
+      return isBlank(flat) ? legacy[key] : flat;
     };
 
     const fromEmail = String(p.fromEmail ?? "").trim();
