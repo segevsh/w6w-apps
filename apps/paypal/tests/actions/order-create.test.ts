@@ -58,3 +58,47 @@ Deno.test("order-create: value is required", async () => {
   );
   assertEquals(calls.length, 0);
 });
+
+Deno.test("order-create: the former group's fields are read flat", async () => {
+  // `returnUrl`/`cancelUrl` decide where PayPal sends the buyer after approval,
+  // and they lived in a `type: "group"` the studio renders as a JSON editor —
+  // so the approval round trip could not be configured from the form at all.
+  const { ctx, calls } = mockCtx([{ status: 201, body: { id: "O1", status: "CREATED" } }]);
+  await action.execute!(
+    {
+      currencyCode: "USD",
+      value: "10.00",
+      customId: "ref-1",
+      invoiceId: "INV-1",
+      returnUrl: "https://x/ok",
+      cancelUrl: "https://x/no",
+      brandName: "Acme",
+    },
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  const unit = body.purchase_units[0];
+  assertEquals(unit.custom_id, "ref-1");
+  assertEquals(unit.invoice_id, "INV-1");
+  assertEquals(body.application_context, {
+    return_url: "https://x/ok",
+    cancel_url: "https://x/no",
+    brand_name: "Acme",
+  });
+});
+
+Deno.test("order-create: a flat field wins over the deprecated group", async () => {
+  const { ctx, calls } = mockCtx([{ status: 201, body: { id: "O1" } }]);
+  await action.execute!(
+    {
+      currencyCode: "USD",
+      value: "10.00",
+      customId: "new",
+      additionalFields: { customId: "old", invoiceId: "kept" },
+    },
+    ctx,
+  );
+  const unit = JSON.parse(calls[0].body ?? "").purchase_units[0];
+  assertEquals(unit.custom_id, "new");
+  assertEquals(unit.invoice_id, "kept");
+});

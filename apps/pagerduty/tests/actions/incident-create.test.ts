@@ -74,3 +74,47 @@ Deno.test("incident-create: non-2xx response propagates as Error", async () => {
     "400",
   );
 });
+
+Deno.test("incident-create: the former group's fields are read flat", async () => {
+  // They used to sit in a `type: "group"`, which renders as a raw JSON editor —
+  // so urgency, priority, escalation policy and the dedupe key were all
+  // unreachable as form fields. A section writes them flat.
+  const { ctx, calls } = mockCtx([{ status: 201, body: { incident: { id: "P1" } } }]);
+  await action.execute!(
+    {
+      title: "Disk full",
+      serviceId: "SVC1",
+      from: "ops@example.com",
+      details: "on node 3",
+      urgency: "low",
+      priorityId: "PRI1",
+      escalationPolicyId: "EP1",
+      incidentKey: "disk-full-node-3",
+    },
+    ctx,
+  );
+  const incident = JSON.parse(calls[0].body ?? "").incident;
+  assertEquals(incident.urgency, "low");
+  assertEquals(incident.priority, { id: "PRI1", type: "priority_reference" });
+  assertEquals(incident.escalation_policy, { id: "EP1", type: "escalation_policy_reference" });
+  assertEquals(incident.incident_key, "disk-full-node-3");
+  assertEquals(incident.body, { type: "incident_body", details: "on node 3" });
+});
+
+Deno.test("incident-create: a flat field wins over the deprecated group", async () => {
+  const { ctx, calls } = mockCtx([{ status: 201, body: { incident: {} } }]);
+  await action.execute!(
+    {
+      title: "t",
+      serviceId: "SVC1",
+      from: "ops@example.com",
+      urgency: "high",
+      additionalFields: { urgency: "low", incidentKey: "kept" },
+    },
+    ctx,
+  );
+  const incident = JSON.parse(calls[0].body ?? "").incident;
+  assertEquals(incident.urgency, "high");
+  // ...and a key the flat form left empty still falls back to the old group.
+  assertEquals(incident.incident_key, "kept");
+});

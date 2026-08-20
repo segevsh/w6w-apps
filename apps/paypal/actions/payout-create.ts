@@ -45,15 +45,31 @@ const action: ActionDefinition = {
         '[{ "receiver": "a@b.com", "amount": { "value": "10.00", "currency": "USD" } }]',
     },
     {
-      key: "additionalFields",
-      label: "Additional Fields",
-      type: "group",
-      default: {},
+      key: "additionalOptions",
+      label: "Additional options",
+      type: "section",
+      section: "collapsible",
+      title: "Additional options",
+      collapsed: true,
       children: [
         { key: "emailSubject", label: "Email Subject", type: "string", default: "" },
         { key: "emailMessage", label: "Email Message", type: "string", default: "" },
         { key: "note", label: "Note", type: "string", default: "" },
       ],
+    },
+    {
+      key: "additionalFields",
+      // DEPRECATED. These fields used to sit in a `type: "group"`, which
+      // ParamsForm renders as a raw JSON editor — so none of them were
+      // reachable as form fields. They are in the section above now; this
+      // stays declared because `resolveParams` drops any key an action does
+      // not declare, so removing it would silently strip saved values.
+      label: "Additional Fields (deprecated)",
+      type: "json",
+      default: {},
+      advanced: true,
+      hint: "Superseded by the fields above and kept only so older saved steps keep working. " +
+        "Anything set here is used only when the matching field above is empty.",
     },
   ],
   output: [
@@ -100,7 +116,15 @@ const action: ActionDefinition = {
       };
     });
 
-    const additional = (p.additionalFields ?? {}) as Record<string, unknown>;
+    // These used to be a nested `additionalFields` group. A section writes its
+    // children FLAT at this level, so read them from the top and fall back to
+    // the deprecated group for steps saved against the old shape.
+    const legacy = (p.additionalFields ?? {}) as Record<string, unknown>;
+    const additional: Record<string, unknown> = { ...legacy };
+    for (const k of ["emailSubject", "emailMessage", "note"]) {
+      const v = p[k];
+      if (v !== undefined && v !== null && v !== "") additional[k] = v;
+    }
     const header: Record<string, unknown> = { sender_batch_id: senderBatchId };
     if (additional.emailSubject) header.email_subject = String(additional.emailSubject);
     if (additional.emailMessage) header.email_message = String(additional.emailMessage);
