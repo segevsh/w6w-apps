@@ -35,32 +35,35 @@ const action: ActionDefinition = {
       hint: "Primary email for the contact",
     },
     {
-      key: "name",
-      label: "Name",
-      type: "section",
-      section: "group",
-      layout: "row",
-      children: [
-        { key: "firstName", label: "First Name", type: "string", default: "" },
-        { key: "lastName", label: "Last Name", type: "string", default: "" },
-      ],
-    },
-    {
-      key: "listIds",
-      label: "List IDs",
-      type: "multiselect",
-      default: [],
-      hint: "IDs of lists this contact should be added to",
-    },
-    {
       key: "contactDetails",
       label: "Additional details",
       type: "section",
       section: "collapsible",
       title: "Additional details",
-      subtitle: "Address, alternate emails, custom fields",
+      subtitle: "Name, lists, address, alternate emails, custom fields",
       collapsed: true,
       children: [
+        // `email` is the only required field on an upsert; everything else is
+        // optional and lives behind this one disclosure rather than lengthening
+        // the form.
+        {
+          key: "name",
+          label: "Name",
+          type: "section",
+          section: "group",
+          layout: "row",
+          children: [
+            { key: "firstName", label: "First Name", type: "string", default: "" },
+            { key: "lastName", label: "Last Name", type: "string", default: "" },
+          ],
+        },
+        {
+          key: "listIds",
+          label: "List IDs",
+          type: "multiselect",
+          default: [],
+          hint: "IDs of lists this contact should be added to",
+        },
         {
           key: "address",
           label: "Address",
@@ -138,8 +141,10 @@ const action: ActionDefinition = {
     if (!email) throw new Error("`email` is required");
 
     // Optional fields used to live inside an `additionalFields` group, which the
-    // studio renders as a raw JSON editor — unreachable as form fields. They are
-    // flat now; the group survives only as a fallback for steps saved earlier.
+    // studio renders as a raw JSON editor — unreachable as form fields. They sit
+    // in a `section` now, which is layout-only: the children render as real
+    // inputs and their values arrive FLAT here. The group survives only as a
+    // fallback for steps saved earlier.
     const add = (p.additionalFields ?? {}) as Record<string, unknown>;
     const legacyAddress = (add.addressUi ?? {}) as Record<string, unknown>;
     const pick = (key: string, legacyKey = key): unknown => {
