@@ -29,10 +29,18 @@ const action: ActionDefinition = {
         "Email of a valid user on the account — PagerDuty requires this to attribute the update",
     },
     {
-      key: "updateFields",
-      label: "Update Fields",
-      type: "group",
-      default: {},
+      // Was a `type: "group"`, which ParamsForm renders as a raw JSON editor —
+      // and since this group IS the whole payload, the action could not be
+      // configured at all without hand-writing JSON. A section is layout-only:
+      // the children render as real inputs and their values arrive flat.
+      // Not collapsed: these are the action's content, not extras.
+      key: "updateFieldsSection",
+      label: "Fields to update",
+      type: "section",
+      section: "collapsible",
+      title: "Fields to update",
+      subtitle: "Set only what should change",
+      collapsed: false,
       children: [
         { key: "title", label: "Title", type: "string", default: "" },
         { key: "priorityId", label: "Priority ID", type: "string", default: "" },
@@ -56,6 +64,18 @@ const action: ActionDefinition = {
         },
       ],
     },
+    {
+      key: "updateFields",
+      // DEPRECATED — see the section above. Kept declared because
+      // `resolveParams` drops any key an action does not declare, so removing
+      // it would silently strip values from steps saved against the old shape.
+      label: "Update Fields (deprecated)",
+      type: "json",
+      default: {},
+      advanced: true,
+      hint: "Superseded by the fields above and kept only so older saved steps keep working. " +
+        "Anything set here is used only when the matching field above is empty.",
+    },
   ],
 
   async execute(input, ctx) {
@@ -67,7 +87,14 @@ const action: ActionDefinition = {
       throw new Error("`from` is required — PagerDuty attributes incident updates to a user");
     }
 
-    const fields = (p.updateFields ?? {}) as Record<string, unknown>;
+    // A section writes its children FLAT at this level; the deprecated group is
+    // the fallback for steps saved against the old nested shape.
+    const legacy = (p.updateFields ?? {}) as Record<string, unknown>;
+    const fields: Record<string, unknown> = { ...legacy };
+    for (const k of ["title", "priorityId", "urgency", "escalationPolicyId", "escalationLevel"]) {
+      const v = p[k];
+      if (v !== undefined && v !== null && v !== "") fields[k] = v;
+    }
     const incident: Record<string, unknown> = { type: "incident" };
     if (fields.title) incident.title = String(fields.title);
     if (fields.priorityId) {
