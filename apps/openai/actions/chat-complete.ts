@@ -18,8 +18,12 @@ interface Input {
   presencePenalty?: number;
   stop?: string | string[];
   user?: string;
-  responseFormat?: "text" | "json_object";
+  responseFormat?: "text" | "json_object" | "json_schema";
+  jsonSchema?: unknown;
   seed?: number;
+  tools?: unknown[];
+  toolChoice?: unknown;
+  parallelToolCalls?: boolean;
 }
 
 /**
@@ -57,9 +61,45 @@ const chatComplete: ActionDefinition<Input> = {
       options: [
         { value: "text", label: "Text" },
         { value: "json_object", label: "JSON object" },
+        { value: "json_schema", label: "JSON schema (structured outputs)" },
       ],
     },
+    {
+      key: "jsonSchema",
+      label: "JSON schema",
+      type: "json",
+      showIf: { field: "responseFormat", equals: "json_schema" },
+      hint:
+        'The `json_schema` object OpenAI expects: `{ "name": "…", "schema": { … }, "strict": true }`. ' +
+        "Structured outputs guarantee the reply parses against it.",
+    },
     { key: "seed", label: "Seed", type: "number" },
+    {
+      // Tool calling is the feature that turns a completion into an agent step,
+      // and it is the one thing this action could not do. Anthropic's
+      // `message-create` in this same pack has carried `tools`/`tool_choice`
+      // from the start; the shapes differ per vendor, so both stay `json`
+      // rather than being modelled into a form.
+      key: "tools",
+      label: "Tools",
+      type: "json",
+      hint:
+        'Array of tool definitions, e.g. [{ "type": "function", "function": { "name": "get_weather", "parameters": { … } } }]. ' +
+        "The reply carries `choices[].message.tool_calls` when the model decides to call one.",
+    },
+    {
+      key: "toolChoice",
+      label: "Tool choice",
+      type: "json",
+      hint:
+        '`"auto"`, `"none"`, `"required"`, or a specific tool: { "type": "function", "function": { "name": "…" } }',
+    },
+    {
+      key: "parallelToolCalls",
+      label: "Parallel tool calls",
+      type: "boolean",
+      hint: "Set false to make the model call at most one tool per turn.",
+    },
   ],
 
   execute(input, ctx) {
@@ -77,7 +117,25 @@ const chatComplete: ActionDefinition<Input> = {
     if (input.stop !== undefined) body.stop = input.stop;
     if (input.user !== undefined) body.user = input.user;
     if (input.seed !== undefined) body.seed = input.seed;
-    if (input.responseFormat) body.response_format = { type: input.responseFormat };
+    if (input.responseFormat) {
+      // `json_schema` is the only format that carries a payload beside the type,
+      // and OpenAI rejects the request when it is missing — better to say so
+      // here than to forward a request that cannot succeed.
+      if (input.responseFormat === "json_schema") {
+        if (!input.jsonSchema) {
+          throw new Error(
+            'Response format "json_schema" requires a `jsonSchema` value — ' +
+              "the `{ name, schema, strict }` object OpenAI expects.",
+          );
+        }
+        body.response_format = { type: "json_schema", json_schema: input.jsonSchema };
+      } else {
+        body.response_format = { type: input.responseFormat };
+      }
+    }
+    if (input.tools !== undefined) body.tools = input.tools;
+    if (input.toolChoice !== undefined) body.tool_choice = input.toolChoice;
+    if (input.parallelToolCalls !== undefined) body.parallel_tool_calls = input.parallelToolCalls;
 
     return client.request("/chat/completions", { method: "POST", body });
   },

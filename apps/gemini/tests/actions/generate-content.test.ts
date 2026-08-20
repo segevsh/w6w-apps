@@ -79,3 +79,51 @@ Deno.test("generate-content: forwards safetySettings verbatim when supplied", as
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.safetySettings, safetySettings);
 });
+
+// ── Function calling and response schemas ──────────────────────────────────
+
+Deno.test("generate-content: forwards tools and toolConfig at the top level", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  const tools = [{ functionDeclarations: [{ name: "get_weather" }] }];
+  const toolConfig = { functionCallingConfig: { mode: "ANY" } };
+  await action.execute!(
+    { model: "gemini-3.5-flash", contents: [], tools, toolConfig },
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body!);
+  // `tools` sits beside `contents`, NOT inside `generationConfig`.
+  assertEquals(body.tools, tools);
+  assertEquals(body.toolConfig, toolConfig);
+  assertEquals(body.generationConfig, undefined);
+});
+
+Deno.test("generate-content: responseSchema rides in generationConfig alongside JSON output", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  const responseSchema = { type: "object" };
+  await action.execute!(
+    {
+      model: "gemini-3.5-flash",
+      contents: [],
+      responseMimeType: "application/json",
+      responseSchema,
+    },
+    ctx,
+  );
+  assertEquals(JSON.parse(calls[0].body!).generationConfig.responseSchema, responseSchema);
+});
+
+Deno.test("generate-content: a responseSchema without JSON output rejects rather than no-op", async () => {
+  const { ctx, calls } = mockCtx();
+  let threw = false;
+  try {
+    await action.execute!(
+      { model: "gemini-3.5-flash", contents: [], responseSchema: { type: "object" } },
+      ctx,
+    );
+  } catch (e) {
+    threw = true;
+    assertEquals((e as Error).message.includes("application/json"), true);
+  }
+  assertEquals(threw, true);
+  assertEquals(calls.length, 0);
+});
