@@ -61,3 +61,69 @@ Deno.test("chat-complete: omits optional params when not provided", async () => 
   assertEquals("max_tokens" in body, false);
   assertEquals("response_format" in body, false);
 });
+
+// ── Tool calling and structured outputs ────────────────────────────────────
+// This action could not call a tool at all, while Anthropic's `message-create`
+// in the same pack always could. These cover the gap being closed.
+
+Deno.test("chat-complete: forwards tools, tool_choice and parallel_tool_calls", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  const tools = [
+    { type: "function", function: { name: "get_weather", parameters: { type: "object" } } },
+  ];
+  await action.execute!(
+    {
+      model: "gpt-4o",
+      messages: [{ role: "user", content: "weather?" }],
+      tools,
+      toolChoice: "required",
+      parallelToolCalls: false,
+    },
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body!);
+  assertEquals(body.tools, tools);
+  assertEquals(body.tool_choice, "required");
+  assertEquals(body.parallel_tool_calls, false);
+});
+
+Deno.test("chat-complete: omits the tool keys entirely when unset", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  await action.execute!({ model: "gpt-4o", messages: [] }, ctx);
+  const body = JSON.parse(calls[0].body!);
+  assertEquals(body.tools, undefined);
+  assertEquals(body.tool_choice, undefined);
+  assertEquals(body.parallel_tool_calls, undefined);
+});
+
+Deno.test("chat-complete: json_schema response format carries the schema", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  const jsonSchema = { name: "answer", schema: { type: "object" }, strict: true };
+  await action.execute!(
+    { model: "gpt-4o", messages: [], responseFormat: "json_schema", jsonSchema },
+    ctx,
+  );
+  assertEquals(JSON.parse(calls[0].body!).response_format, {
+    type: "json_schema",
+    json_schema: jsonSchema,
+  });
+});
+
+Deno.test("chat-complete: json_schema without a schema rejects before the request", async () => {
+  const { ctx, calls } = mockCtx();
+  let threw = false;
+  try {
+    await action.execute!({ model: "gpt-4o", messages: [], responseFormat: "json_schema" }, ctx);
+  } catch (e) {
+    threw = true;
+    assertEquals((e as Error).message.includes("jsonSchema"), true);
+  }
+  assertEquals(threw, true);
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("chat-complete: the simpler response formats keep their old shape", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  await action.execute!({ model: "gpt-4o", messages: [], responseFormat: "json_object" }, ctx);
+  assertEquals(JSON.parse(calls[0].body!).response_format, { type: "json_object" });
+});

@@ -16,6 +16,9 @@ interface Input {
   randomSeed?: number;
   responseFormat?: "text" | "json_object";
   safePrompt?: boolean;
+  tools?: unknown[];
+  toolChoice?: unknown;
+  parallelToolCalls?: boolean;
 }
 
 /**
@@ -59,6 +62,29 @@ const chatCompletion: ActionDefinition<Input> = {
       ],
     },
     { key: "safePrompt", label: "Safe prompt", type: "boolean", default: false },
+    {
+      // Function calling. Mistral follows OpenAI's shape here, and Anthropic's
+      // `message-create` in this same pack has carried its equivalent from the
+      // start — this action was the odd one out.
+      key: "tools",
+      label: "Tools",
+      type: "json",
+      hint:
+        'Array of tool definitions, e.g. [{ "type": "function", "function": { "name": "get_weather", "parameters": { … } } }]. ' +
+        "The reply carries `choices[].message.tool_calls` when the model decides to call one.",
+    },
+    {
+      key: "toolChoice",
+      label: "Tool choice",
+      type: "json",
+      hint: '`"auto"`, `"none"`, `"any"`, or a specific tool object.',
+    },
+    {
+      key: "parallelToolCalls",
+      label: "Parallel tool calls",
+      type: "boolean",
+      hint: "Set false to make the model call at most one tool per turn.",
+    },
   ],
 
   execute(input, ctx) {
@@ -74,6 +100,9 @@ const chatCompletion: ActionDefinition<Input> = {
     if (input.randomSeed !== undefined) body.random_seed = input.randomSeed;
     if (input.responseFormat) body.response_format = { type: input.responseFormat };
     if (input.safePrompt !== undefined) body.safe_prompt = input.safePrompt;
+    if (input.tools !== undefined) body.tools = input.tools;
+    if (input.toolChoice !== undefined) body.tool_choice = input.toolChoice;
+    if (input.parallelToolCalls !== undefined) body.parallel_tool_calls = input.parallelToolCalls;
 
     return client.request("/v1/chat/completions", { method: "POST", body });
   },

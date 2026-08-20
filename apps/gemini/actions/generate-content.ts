@@ -15,7 +15,10 @@ interface Input {
   presencePenalty?: number;
   frequencyPenalty?: number;
   seed?: number;
+  responseSchema?: unknown;
   safetySettings?: unknown;
+  tools?: unknown;
+  toolConfig?: unknown;
 }
 
 /**
@@ -73,6 +76,35 @@ const generateContent: ActionDefinition<Input> = {
     { key: "frequencyPenalty", label: "Frequency penalty", type: "number" },
     { key: "seed", label: "Seed", type: "number" },
     {
+      key: "responseSchema",
+      label: "Response schema",
+      type: "json",
+      showIf: { field: "responseMimeType", equals: "application/json" },
+      hint:
+        "OpenAPI-subset schema the JSON reply must satisfy. Gemini only honours this alongside " +
+        "a JSON response MIME type, which is why it is bound to that choice.",
+    },
+    {
+      // Function calling — the feature that turns a generation into an agent
+      // step. Anthropic's `message-create` in this same pack has carried its
+      // equivalent from the start; Gemini's shape is its own, so it stays
+      // `json` rather than being modelled into a form.
+      key: "tools",
+      label: "Tools",
+      type: "json",
+      hint:
+        'Array of tool declarations, e.g. [{ "functionDeclarations": [{ "name": "get_weather", "parameters": { … } }] }]. ' +
+        "Also where the built-in `googleSearch` / `codeExecution` tools are enabled. " +
+        "A calling model answers with a `functionCall` part instead of text.",
+    },
+    {
+      key: "toolConfig",
+      label: "Tool config",
+      type: "json",
+      hint:
+        'Controls when the model may call: { "functionCallingConfig": { "mode": "AUTO" | "ANY" | "NONE", "allowedFunctionNames": [ … ] } }',
+    },
+    {
       key: "safetySettings",
       label: "Safety settings",
       type: "json",
@@ -105,6 +137,17 @@ const generateContent: ActionDefinition<Input> = {
       generationConfig.frequencyPenalty = input.frequencyPenalty;
     }
     if (input.seed !== undefined) generationConfig.seed = input.seed;
+    // Gemini ignores `responseSchema` unless the reply is JSON, so a schema set
+    // against a text response is a silent no-op — say so rather than send it.
+    if (input.responseSchema !== undefined) {
+      if (input.responseMimeType !== "application/json") {
+        throw new Error(
+          "`responseSchema` only applies when Response MIME type is `application/json` — " +
+            "Gemini ignores it otherwise.",
+        );
+      }
+      generationConfig.responseSchema = input.responseSchema;
+    }
 
     const body: Record<string, unknown> = { contents: input.contents };
     if (Object.keys(generationConfig).length > 0) body.generationConfig = generationConfig;
@@ -112,6 +155,8 @@ const generateContent: ActionDefinition<Input> = {
       body.systemInstruction = { parts: [{ text: input.systemInstruction }] };
     }
     if (input.safetySettings !== undefined) body.safetySettings = input.safetySettings;
+    if (input.tools !== undefined) body.tools = input.tools;
+    if (input.toolConfig !== undefined) body.toolConfig = input.toolConfig;
 
     return client.request(`/${modelResource(input.model)}:generateContent`, {
       method: "POST",
