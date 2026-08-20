@@ -370,3 +370,22 @@ Deno.test("mail-send: cc/bcc/reply-to are reachable as declared fields", () => {
     assert(keys.has(k), `${k} must be a declared param`);
   }
 });
+
+Deno.test("mail-send: optional fields stay behind the disclosure, not on the compose form", () => {
+  // The compose path is From / To / Subject / Body (+ the template branch).
+  // CC/BCC are the most-reached-for options but they are still options, and
+  // hanging them off the recipient lengthens the form for everyone who doesn't
+  // use them — they belong inside the collapsible section.
+  const collapsible = action.params?.find((p) => p.section === "collapsible");
+  const keysUnder = (list: typeof action.params): string[] =>
+    (list ?? []).flatMap((p) => [p.key, ...keysUnder(p.children)]);
+  const hidden = new Set(keysUnder(collapsible?.children));
+  for (const k of ["ccEmail", "bccEmail", "replyToEmail", "attachments", "headers"]) {
+    assert(hidden.has(k), `${k} must live inside the collapsible section`);
+  }
+  // ...and nothing optional leaked back out to the top level beside them.
+  const topLevel = (action.params ?? []).map((p) => p.key);
+  for (const k of ["ccEmail", "bccEmail"]) {
+    assert(!topLevel.includes(k), `${k} must not sit on the compose form`);
+  }
+});

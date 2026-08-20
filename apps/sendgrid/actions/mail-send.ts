@@ -10,8 +10,10 @@ import type { ActionDefinition } from "@w6w/types";
  * which buries every optional field in one `additionalFields` collection. w6w
  * renders a `type: "group"` param as a raw JSON editor (ParamsForm.tsx), so that
  * shape made CC, BCC, Reply-To and friends *invisible as fields* — the exact
- * "SendGrid can't CC" report. They now sit flat / in a `section: "collapsible"`,
- * which renders as real inputs. `additionalFields` survives only as a
+ * "SendGrid can't CC" report. They now sit in a `section: "collapsible"` —
+ * layout-only, so the children render as real inputs and their values stay
+ * flat — behind one disclosure, rather than lengthening the compose form.
+ * `additionalFields` survives only as a
  * deprecated JSON escape hatch so steps saved against the old shape keep
  * working; `pick()` below reads flat first and falls back to it.
  */
@@ -177,32 +179,6 @@ const action: ActionDefinition = {
       default: "",
       hint: "Comma-separated list of recipient email addresses",
     },
-    // CC / BCC are primary compose fields, not "additional" ones — every other
-    // mail app in the pack (gmail, resend, postmark, brevo, mailjet, mandrill)
-    // carries them flat, and burying them is what made them unreachable here.
-    {
-      key: "copies",
-      label: "Copies",
-      type: "section",
-      section: "group",
-      layout: "row",
-      children: [
-        {
-          key: "ccEmail",
-          label: "CC",
-          type: "string",
-          default: "",
-          hint: "Comma-separated list of carbon-copy recipients",
-        },
-        {
-          key: "bccEmail",
-          label: "BCC",
-          type: "string",
-          default: "",
-          hint: "Comma-separated list of blind-carbon-copy recipients",
-        },
-      ],
-    },
     {
       key: "subject",
       label: "Subject",
@@ -264,9 +240,35 @@ const action: ActionDefinition = {
       type: "section",
       section: "collapsible",
       title: "Additional options",
-      subtitle: "Reply-to, attachments, headers, scheduling, tracking",
+      subtitle: "CC/BCC, reply-to, attachments, headers, scheduling, tracking",
       collapsed: true,
       children: [
+        // CC/BCC lead the section: they are the most-reached-for options here,
+        // but they are still options — the compose path is From/To/Subject/Body,
+        // and putting every optional field on it is what this section is for.
+        {
+          key: "copies",
+          label: "Copies",
+          type: "section",
+          section: "group",
+          layout: "row",
+          children: [
+            {
+              key: "ccEmail",
+              label: "CC",
+              type: "string",
+              default: "",
+              hint: "Comma-separated list of carbon-copy recipients",
+            },
+            {
+              key: "bccEmail",
+              label: "BCC",
+              type: "string",
+              default: "",
+              hint: "Comma-separated list of blind-carbon-copy recipients",
+            },
+          ],
+        },
         {
           key: "replyTo",
           label: "Reply-To",
