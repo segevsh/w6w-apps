@@ -1,14 +1,24 @@
 import type { ActionDefinition } from "@w6w/types";
 
 /**
- * Generated from n8n: mail:send
- * Source: https://github.com/n8n-io/n8n/tree/master/packages/nodes-base/nodes/SendGrid
- *
- * Posts to SendGrid's v3 `/mail/send`. Two mutually exclusive body modes:
+ * SendGrid v3 `/mail/send`. Two mutually exclusive body modes:
  *   - inline  — `content: [{ type, value }]` with the typed subject/body;
  *   - dynamic — `template_id` + `personalizations[].dynamic_template_data`,
  *     where SendGrid renders the stored template's handlebars.
+ *
+ * FORM SHAPE — this action was originally transcribed from n8n's SendGrid node,
+ * which buries every optional field in one `additionalFields` collection. w6w
+ * renders a `type: "group"` param as a raw JSON editor (ParamsForm.tsx), so that
+ * shape made CC, BCC, Reply-To and friends *invisible as fields* — the exact
+ * "SendGrid can't CC" report. They now sit flat / in a `section: "collapsible"`,
+ * which renders as real inputs. `additionalFields` survives only as a
+ * deprecated JSON escape hatch so steps saved against the old shape keep
+ * working; `pick()` below reads flat first and falls back to it.
  */
+
+/** A record whose values came from the old `additionalFields` group. */
+type Legacy = Record<string, unknown>;
+
 /**
  * Normalize the "Dynamic Template Fields" value into SendGrid's
  * `dynamic_template_data` object.
@@ -43,6 +53,76 @@ function toTemplateData(raw: unknown): Record<string, unknown> {
   if (Array.isArray(obj.fields)) return pairs(obj.fields);
   // Already a variable -> value map.
   return obj;
+}
+
+/**
+ * Parse a param that may arrive as an object (the JSON editor's own value) or
+ * as the JSON text a caller typed. Anything else yields `undefined` so the
+ * caller can simply omit the field.
+ */
+function toObject(raw: unknown, key: string): Record<string, unknown> | undefined {
+  if (raw === undefined || raw === null || raw === "") return undefined;
+  if (typeof raw === "string") {
+    try {
+      return toObject(JSON.parse(raw), key);
+    } catch {
+      throw new Error(`\`${key}\` is not valid JSON.`);
+    }
+  }
+  if (typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const obj = raw as Record<string, unknown>;
+  return Object.keys(obj).length ? obj : undefined;
+}
+
+/** SendGrid takes every header value as a string. */
+function toStringMap(raw: unknown, key: string): Record<string, string> | undefined {
+  const obj = toObject(raw, key);
+  if (!obj) return undefined;
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined || v === null) continue;
+    out[k] = String(v);
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
+/** One `attachments[]` entry, dropping rows the user left blank. */
+interface Attachment {
+  content: string;
+  filename: string;
+  type?: string;
+  disposition?: string;
+  content_id?: string;
+}
+
+function toAttachments(raw: unknown): Attachment[] | undefined {
+  if (!raw) return undefined;
+  const list = typeof raw === "string"
+    ? (() => {
+      try {
+        return JSON.parse(raw);
+      } catch {
+        throw new Error("`attachments` is not valid JSON.");
+      }
+    })()
+    : raw;
+  if (!Array.isArray(list)) return undefined;
+  const out: Attachment[] = [];
+  for (const entry of list) {
+    if (!entry || typeof entry !== "object") continue;
+    const e = entry as Record<string, unknown>;
+    const content = String(e.content ?? "").trim();
+    const filename = String(e.filename ?? "").trim();
+    // SendGrid requires both on every attachment — a half-filled row is a
+    // 400 waiting to happen, so skip it rather than send it.
+    if (!content || !filename) continue;
+    const att: Attachment = { content, filename };
+    if (e.type) att.type = String(e.type);
+    if (e.disposition) att.disposition = String(e.disposition);
+    if (e.contentId) att.content_id = String(e.contentId);
+    out.push(att);
+  }
+  return out.length ? out : undefined;
 }
 
 const action: ActionDefinition = {
@@ -83,6 +163,32 @@ const action: ActionDefinition = {
       required: true,
       default: "",
       hint: "Comma-separated list of recipient email addresses",
+    },
+    // CC / BCC are primary compose fields, not "additional" ones — every other
+    // mail app in the pack (gmail, resend, postmark, brevo, mailjet, mandrill)
+    // carries them flat, and burying them is what made them unreachable here.
+    {
+      key: "copies",
+      label: "Copies",
+      type: "section",
+      section: "group",
+      layout: "row",
+      children: [
+        {
+          key: "ccEmail",
+          label: "CC",
+          type: "string",
+          default: "",
+          hint: "Comma-separated list of carbon-copy recipients",
+        },
+        {
+          key: "bccEmail",
+          label: "BCC",
+          type: "string",
+          default: "",
+          hint: "Comma-separated list of blind-carbon-copy recipients",
+        },
+      ],
     },
     {
       key: "subject",
@@ -140,25 +246,72 @@ const action: ActionDefinition = {
       hint: 'Values for the template variables, e.g. { "first_name": "James" }',
     },
     {
-      key: "additionalFields",
-      label: "Additional Fields",
-      type: "group",
-      default: {},
+      key: "deliveryOptions",
+      label: "Additional options",
+      type: "section",
+      section: "collapsible",
+      title: "Additional options",
+      subtitle: "Reply-to, attachments, headers, scheduling, tracking",
+      collapsed: true,
       children: [
+        {
+          key: "replyTo",
+          label: "Reply-To",
+          type: "section",
+          section: "group",
+          layout: "row",
+          children: [
+            {
+              key: "replyToEmail",
+              label: "Reply-To Email",
+              type: "string",
+              default: "",
+              hint: "Address replies are directed to",
+            },
+            {
+              key: "replyToName",
+              label: "Reply-To Name",
+              type: "string",
+              default: "",
+              hint: "Display name shown beside the reply-to address",
+            },
+          ],
+        },
         {
           key: "attachments",
           label: "Attachments",
-          type: "string",
-          default: "",
-          hint: "Comma-separated list of binary properties",
+          type: "array",
+          default: [],
+          item: {
+            type: "object",
+            fields: [
+              { key: "filename", label: "File name", type: "string", placeholder: "report.pdf" },
+              { key: "content", label: "Base64 content", type: "string", placeholder: "base64…" },
+              { key: "type", label: "MIME type", type: "string", placeholder: "application/pdf" },
+              {
+                key: "disposition",
+                label: "Disposition",
+                type: "select",
+                default: "attachment",
+                options: [
+                  { value: "attachment", label: "Attachment" },
+                  { value: "inline", label: "Inline" },
+                ],
+              },
+              { key: "contentId", label: "Content ID", type: "string", placeholder: "logo" },
+            ],
+          },
+          hint:
+            "SendGrid takes attachment bytes base64-encoded. File name and content are both required; " +
+            "rows missing either are skipped. Use `inline` + a Content ID to embed an image in HTML.",
         },
         {
-          key: "bccEmail",
-          label: "BCC Email",
-          type: "string",
-          default: "",
+          key: "headers",
+          label: "Custom Headers",
+          type: "json",
+          default: {},
           hint:
-            "Comma-separated list of emails of the recipients of a blind carbon copy of the email",
+            'Extra SMTP headers, e.g. { "X-Campaign": "spring" }. Reserved headers are rejected by SendGrid.',
         },
         {
           key: "categories",
@@ -169,18 +322,32 @@ const action: ActionDefinition = {
             "Comma-separated list of categories. Each category name may not exceed 255 characters.",
         },
         {
-          key: "ccEmail",
-          label: "CC Email",
-          type: "string",
-          default: "",
-          hint: "Comma-separated list of emails of the recipients of a carbon copy of the email",
+          key: "customArgs",
+          label: "Custom Args",
+          type: "json",
+          default: {},
+          hint:
+            'Key/value pairs echoed back on every event webhook for this message, e.g. { "orderId": "42" }',
         },
         {
-          key: "enableSandbox",
-          label: "Enable Sandbox",
-          type: "boolean",
-          default: false,
-          hint: "Whether to use to the sandbox for testing out email-sending functionality",
+          key: "sendAt",
+          label: "Send At",
+          type: "datetime",
+          default: "",
+          hint: "When to deliver the email. Scheduling more than 72 hours in advance is forbidden.",
+        },
+        {
+          key: "batchId",
+          label: "Batch ID",
+          type: "string",
+          default: "",
+          hint: "Groups this message into a batch that can be cancelled or rescheduled as a unit",
+        },
+        {
+          key: "asmGroupId",
+          label: "Unsubscribe Group ID",
+          type: "number",
+          hint: "Numeric ASM group id, so the message honours that group's unsubscribe preferences",
         },
         {
           key: "ipPoolName",
@@ -190,41 +357,23 @@ const action: ActionDefinition = {
           hint: "The IP Pool that you would like to send this email from",
         },
         {
-          key: "replyToEmail",
-          label: "Reply-To Email",
-          type: "string",
-          default: "",
-          hint:
-            "Comma-separated list of email addresses that will appear in the reply-to field of the email",
+          key: "trackOpens",
+          label: "Track Opens",
+          type: "boolean",
+          hint: "Override the account default for open tracking on this message",
         },
         {
-          key: "headers",
-          label: "Headers",
-          type: "group",
-          default: {},
-          children: [
-            {
-              key: "key",
-              label: "Key",
-              type: "string",
-              default: "",
-              hint: "Key to set in the header object",
-            },
-            {
-              key: "value",
-              label: "Value",
-              type: "string",
-              default: "",
-              hint: "Value to set in the header object",
-            },
-          ],
+          key: "trackClicks",
+          label: "Track Clicks",
+          type: "boolean",
+          hint: "Override the account default for click tracking on this message",
         },
         {
-          key: "sendAt",
-          label: "Send At",
-          type: "datetime",
-          default: "",
-          hint: "When to deliver the email. Scheduling more than 72 hours in advance is forbidden.",
+          key: "enableSandbox",
+          label: "Enable Sandbox",
+          type: "boolean",
+          default: false,
+          hint: "Whether to use to the sandbox for testing out email-sending functionality",
         },
       ],
     },
@@ -250,11 +399,36 @@ const action: ActionDefinition = {
         },
       ],
     },
+    {
+      key: "additionalFields",
+      // DEPRECATED — kept declared so steps saved against the pre-flattening
+      // shape keep sending CC/BCC/etc. `resolveParams` drops any key an action
+      // does not declare, so removing this outright would silently strip those
+      // saved values. Flat fields above win; see `pick()`.
+      label: "Additional Fields (deprecated)",
+      type: "json",
+      default: {},
+      advanced: true,
+      hint: "Superseded by the fields above and kept only so older saved steps keep working. " +
+        "Anything set here is used only when the matching field above is empty.",
+    },
   ],
 
   async execute(input, ctx) {
     const p = input as Record<string, unknown>;
-    const additional = (p.additionalFields ?? {}) as Record<string, unknown>;
+    const legacy = (p.additionalFields ?? {}) as Legacy;
+
+    /**
+     * Read a flat param, falling back to the same key inside the deprecated
+     * `additionalFields` group. Two former keys were renamed on the way out
+     * (`replyToEmail` kept its name; nothing else moved), so the group's own
+     * key is the same string in every case.
+     */
+    const pick = (key: string): unknown => {
+      const flat = p[key];
+      if (flat !== undefined && flat !== null && flat !== "") return flat;
+      return legacy[key];
+    };
 
     const fromEmail = String(p.fromEmail ?? "").trim();
     const toEmailRaw = String(p.toEmail ?? "").trim();
@@ -276,8 +450,8 @@ const action: ActionDefinition = {
         .map((email) => ({ email }));
 
     const personalization: Record<string, unknown> = { to: splitEmails(toEmailRaw) };
-    const cc = splitEmails(additional.ccEmail);
-    const bcc = splitEmails(additional.bccEmail);
+    const cc = splitEmails(pick("ccEmail"));
+    const bcc = splitEmails(pick("bccEmail"));
     if (cc.length) personalization.cc = cc;
     if (bcc.length) personalization.bcc = bcc;
 
@@ -318,23 +492,58 @@ const action: ActionDefinition = {
         : { content: [{ type: contentType, value: contentValue }] }),
     };
 
-    if (additional.replyToEmail) {
-      body.reply_to = { email: String(additional.replyToEmail) };
+    const replyToEmail = pick("replyToEmail");
+    if (replyToEmail) {
+      const replyToName = pick("replyToName");
+      body.reply_to = {
+        email: String(replyToEmail),
+        ...(replyToName ? { name: String(replyToName) } : {}),
+      };
     }
-    if (typeof additional.categories === "string" && additional.categories.length) {
-      body.categories = additional.categories
+    const categories = pick("categories");
+    if (typeof categories === "string" && categories.length) {
+      body.categories = categories
         .split(",")
         .map((c) => c.trim())
         .filter(Boolean);
     }
-    if (additional.enableSandbox === true) {
+    const headers = toStringMap(pick("headers"), "headers");
+    if (headers) body.headers = headers;
+
+    const customArgs = toStringMap(pick("customArgs"), "customArgs");
+    if (customArgs) body.custom_args = customArgs;
+
+    const attachments = toAttachments(pick("attachments"));
+    if (attachments) body.attachments = attachments;
+
+    const batchId = pick("batchId");
+    if (typeof batchId === "string" && batchId.length) body.batch_id = batchId;
+
+    const asmGroupId = pick("asmGroupId");
+    if (asmGroupId !== undefined && asmGroupId !== null && asmGroupId !== "") {
+      const groupId = Number(asmGroupId);
+      if (Number.isFinite(groupId)) body.asm = { group_id: groupId };
+    }
+
+    // `mail_settings` and `tracking_settings` are both objects SendGrid merges
+    // over the account defaults — only send the keys the user actually set, so
+    // an untouched toggle keeps inheriting the account setting.
+    if (pick("enableSandbox") === true) {
       body.mail_settings = { sandbox_mode: { enable: true } };
     }
-    if (typeof additional.ipPoolName === "string" && additional.ipPoolName.length) {
-      body.ip_pool_name = additional.ipPoolName;
-    }
-    if (typeof additional.sendAt === "string" && additional.sendAt.length) {
-      const ts = Math.floor(new Date(additional.sendAt).getTime() / 1000);
+    const tracking: Record<string, unknown> = {};
+    const trackOpens = pick("trackOpens");
+    if (typeof trackOpens === "boolean") tracking.open_tracking = { enable: trackOpens };
+    const trackClicks = pick("trackClicks");
+    if (typeof trackClicks === "boolean") tracking.click_tracking = { enable: trackClicks };
+    if (Object.keys(tracking).length) body.tracking_settings = tracking;
+
+    const ipPoolName = pick("ipPoolName");
+    if (typeof ipPoolName === "string" && ipPoolName.length) body.ip_pool_name = ipPoolName;
+
+    const sendAt = pick("sendAt");
+    if (typeof sendAt === "string" && sendAt.length) {
+      const ts = Math.floor(new Date(sendAt).getTime() / 1000);
       if (Number.isFinite(ts)) body.send_at = ts;
     }
 
@@ -342,6 +551,8 @@ const action: ActionDefinition = {
       from: fromEmail,
       to: toEmailRaw,
       subject,
+      ...(cc.length ? { cc: cc.length } : {}),
+      ...(bcc.length ? { bcc: bcc.length } : {}),
       ...(useTemplate ? { templateId } : {}),
     });
 
