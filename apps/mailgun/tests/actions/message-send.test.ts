@@ -150,3 +150,99 @@ Deno.test("message-send: non-2xx response propagates as Error", async () => {
   );
   assert(err.message.includes("Forbidden"), "should include upstream error text");
 });
+
+// ── Flattened optional fields ──────────────────────────────────────────────
+// CC/BCC and every option below used to sit inside a `type: "group"`, which the
+// studio renders as a raw JSON editor — so none of them were reachable as form
+// fields. Same defect, and same fix, as SendGrid's `mail-send`.
+
+function base(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    domain: "mg.example.com",
+    fromEmail: "s@example.com",
+    toEmail: "r@example.com",
+    subject: "hi",
+    text: "body",
+    ...overrides,
+  };
+}
+
+Deno.test("message-send: cc/bcc/replyTo are read from flat params", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: { id: "<1>" } }]);
+  await action.execute!(
+    base({ ccEmail: "c1@x.com, c2@x.com", bccEmail: "b@x.com", replyTo: "reply@x.com" }),
+    ctx,
+  );
+  const form = calls[0].formData!;
+  assertEquals(form.getAll("cc"), ["c1@x.com", "c2@x.com"]);
+  assertEquals(form.getAll("bcc"), ["b@x.com"]);
+  assertEquals(form.get("h:Reply-To"), "reply@x.com");
+});
+
+Deno.test("message-send: a flat field wins over the deprecated group", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
+  await action.execute!(
+    base({
+      ccEmail: "new@x.com",
+      additionalFields: { ccEmail: "old@x.com", bccEmail: "kept@x.com" },
+    }),
+    ctx,
+  );
+  const form = calls[0].formData!;
+  assertEquals(form.getAll("cc"), ["new@x.com"]);
+  // ...and a key the flat form left empty still falls back to the old group.
+  assertEquals(form.getAll("bcc"), ["kept@x.com"]);
+});
+
+Deno.test("message-send: an empty declared default does not shadow the fallback", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
+  await action.execute!(
+    base({
+      customHeaders: [],
+      additionalFields: { customHeaders: [{ name: "X-A", value: "1" }] },
+    }),
+    ctx,
+  );
+  assertEquals((calls[0].formData!).get("h:X-A"), "1");
+});
+
+Deno.test("message-send: delivery time is sent as RFC 2822, not ISO 8601", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
+  await action.execute!(base({ deliveryTime: "2026-09-01T10:00:00Z" }), ctx);
+  // Mailgun rejects an ISO timestamp on `o:deliverytime`.
+  assertEquals(
+    (calls[0].formData!).get("o:deliverytime"),
+    new Date("2026-09-01T10:00:00Z").toUTCString(),
+  );
+});
+
+Deno.test("message-send: an unparseable delivery time rejects before the request", async () => {
+  const { ctx, calls } = mockCtx();
+  let threw = false;
+  try {
+    await action.execute!(base({ deliveryTime: "not a date" }), ctx);
+  } catch (e) {
+    threw = true;
+    assertEquals((e as Error).message.includes("deliveryTime"), true);
+  }
+  assertEquals(threw, true);
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("message-send: custom variables are sent as v: fields", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
+  await action.execute!(base({ customVariables: { orderId: "42", meta: { a: 1 } } }), ctx);
+  const form = calls[0].formData!;
+  assertEquals(form.get("v:orderId"), "42");
+  // Non-string values are JSON-encoded rather than stringified to [object Object].
+  assertEquals(form.get("v:meta"), '{"a":1}');
+});
+
+Deno.test("message-send: no param is buried in a `group` the studio renders as JSON", () => {
+  const walk = (list: typeof action.params): string[] =>
+    (list ?? []).flatMap((p) => [
+      ...(p.type === "group" ? [p.key] : []),
+      ...walk(p.children),
+    ]);
+  assertEquals(walk(action.params), []);
+});
