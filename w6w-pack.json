@@ -562,6 +562,9 @@
       "path": "./apps/reddit"
     },
     {
+      "path": "./apps/replicate"
+    },
+    {
       "path": "./apps/resend"
     },
     {
