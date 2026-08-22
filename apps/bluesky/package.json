@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/bluesky",
+  "version": "0.1.0",
+  "description": "Post, search, follow and read on Bluesky and any AT Protocol PDS \u2014 with rich-text facets built correctly and sessions that refresh rather than re-authenticate.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bluesky",
+    "displayName": "Bluesky",
+    "categories": [
+      "social-media",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Bluesky"
+      }
+    },
+    "network": {
+      "allow": [
+        "bsky.social",
+        "public.api.bsky.app",
+        "bsky.app",
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

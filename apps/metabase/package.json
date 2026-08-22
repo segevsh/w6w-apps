@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/metabase",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run saved Metabase questions and ad-hoc MBQL/SQL queries, export results as CSV/JSON/XLSX, and browse collections, dashboards, databases and search.",
   "license": "MIT",
   "author": {

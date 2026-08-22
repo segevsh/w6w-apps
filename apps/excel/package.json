@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/excel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Microsoft Excel workbooks stored in OneDrive for Business or SharePoint, via the Microsoft Graph workbook API.",
   "license": "MIT",
   "author": {

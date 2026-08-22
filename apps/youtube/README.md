@@ -300,6 +300,19 @@ Icon: the vendor's own mark, copied verbatim from n8n's `nodes-base`
 Verified byte-identical to upstream; it is a PNG rather than an SVG because that is the format n8n
 ships, as with the nine other PNG icons here.
 
+
+## Icon
+
+`assets/icon.svg` — vector — replaces a 70px PNG.
+
+Taken from <https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/youtube-icon.svg> on 2026-08-15.
+
+- **1,117 bytes**, `image/svg+xml`, md5 `b3c9190cde44d91b83379cccf9d90bca`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+YouTube publishes no SVG favicon; this is the play-button mark as carried by the `gilbarbara/logos` collection. The previous file was a 70px PNG.
+
 ---
 
 Researched and endpoint-verified 2026-08-03 against the live **discovery document**

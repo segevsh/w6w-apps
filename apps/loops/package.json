@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/loops",
+  "version": "0.1.0",
+  "description": "Send transactional email, track events, and manage contacts and campaigns in Loops.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.loops",
+    "displayName": "Loops",
+    "categories": [
+      "email",
+      "marketing",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Loops"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.loops.so"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

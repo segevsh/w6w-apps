@@ -114,6 +114,17 @@ worker** — not from any action, and not from the other checks. The spec allows
 precisely because the check is unsigned; pairing an extra host with `credential: "signed"` is
 rejected at load time, so a credential can never reach a status host.
 
+
+## Icon
+
+`assets/icon.svg` — Cloudflare's mark is the orange cloud, not a cloud reversed out of an orange disc.
+
+Taken from <https://www.cloudflare.com/logo.svg> on 2026-08-15.
+
+- **1,576 bytes**, `image/svg+xml`, md5 `6d678ce1b72481204935ac1d28e89d49`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-01 against `developers.cloudflare.com` (official docs)

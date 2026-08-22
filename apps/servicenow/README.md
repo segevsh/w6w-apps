@@ -150,6 +150,19 @@ A declared absence always reports `unknown`, so both carry
 `severity: "informational"` — otherwise either would pin every verdict for
 this app at `unknown` forever.
 
+
+## Icon
+
+`assets/icon.svg` — ServiceNow's mark is brand green (#62D84E); the previous artwork was grey.
+
+Taken from <https://www.servicenow.com/content/dam/servicenow-assets/images/naas/servicenow-logo-icon.svg> on 2026-08-15.
+
+- **782 bytes**, `image/svg+xml`, md5 `c8b8aca412f56f1f263d186a526425bf`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+ServiceNow's CDN refuses requests without a browser user-agent, which is why this mark was previously taken from a mirror and arrived grey. Fetched from `servicenow.com` directly, it is the brand green the guide specifies.
+
 ---
 
 Researched and endpoint-verified 2026-07-31 against ServiceNow's public Table

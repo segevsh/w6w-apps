@@ -395,13 +395,19 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
+Deno.test("index: the icon is the vendor's mark, on the pack's canvas", async () => {
   const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Downloaded verbatim from https://www.aircall.io/favicon.svg on 2026-08-11
   // (which 301s to https://aircall.io/favicon.svg): 2,740 bytes,
   // md5 8e491a6537a43d75a6433f11aad7e1d9, a 96x96 square of four paths. Not a
   // wordmark — it carries no <text> element at all.
-  assertEquals(svg.length, 2740, "icon.svg is no longer the 2,740-byte vendor file");
+  // `_tools/icon-normalize.ts` re-frames every mark onto one square canvas, so
+  // the file's length is the tool's. What still has to be the vendor's is the
+  // artwork inside — which is what the assertions below check.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
   assert(svg.includes('viewBox="0 0 96 96"'), "the mark is no longer the square 96x96 glyph");
   assert(!/<text|<tspan/.test(svg), "the icon became a wordmark");
   for (const colour of ["#00bd82", "#fff"]) {

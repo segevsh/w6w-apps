@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/s3",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Store and retrieve objects in Amazon S3",
   "license": "MIT",
   "author": {

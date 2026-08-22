@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/jenkins",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Trigger builds, inspect jobs, and manage the build queue on any Jenkins instance.",
   "license": "MIT",
   "author": {

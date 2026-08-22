@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/freshdesk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Freshdesk tickets, contacts and companies.",
   "license": "MIT",
   "author": {

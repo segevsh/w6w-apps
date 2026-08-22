@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/onepassword",
+  "version": "0.1.0",
+  "description": "Read and manage 1Password vault items through a self-hosted Connect server, and read the account's audit trail through the Events API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.onepassword",
+    "displayName": "1Password",
+    "categories": [
+      "security",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "1Password"
+      }
+    },
+    "network": {
+      "allow": [
+        "events.1password.com",
+        "events.1password.eu",
+        "events.1password.ca",
+        "events.ent.1password.com",
+        "status.1password.com",
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

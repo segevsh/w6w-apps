@@ -335,22 +335,17 @@ a photo went away.
 
 ## Icon
 
-`assets/icon.png` is the vendor's own file, downloaded verbatim from
-`https://companycam.com/apple-touch-icon.png`:
+`assets/icon.png` — 180px — the previous PNG was 76px and visibly soft.
 
-- **7,213 bytes**, `image/png`, 76×76 RGBA
-- md5 `411d86ab3dd3b5efe6d879ea59c5d31b`
-- sha256 `28a893c26f47dce1ddcea12e8b8780d332e7161d5539bbb9fa996a12f778d09e`
+Taken from <https://companycam.com/apple-touch-icon-precomposed.png> on 2026-08-15.
 
-Byte-identical bytes are served from `https://assets.c.companycam.com/apple-touch-icon.png` (same
-md5), which is the corroboration that this is the vendor's mark and not a CDN placeholder. Both the
-size and the sha256 are asserted in `tests/index.test.ts`, so a re-encode or a redraw fails the
-suite.
+- **19,802 bytes**, `image/png`, 180 × 180, md5 `b2cd6d1e9f709869566be753639c70ce`
+- raster, because the vendor publishes no vector of this mark
 
-`https://assets.c.companycam.com/safari-pinned-tab.svg` is a real vendor SVG (1,860 bytes, md5
-`89b882fa0a62b2459d87f65b075e5de9`) but it is a potrace-generated **monochrome mask icon** — a solid
-black silhouette with no brand colour — so the colour PNG was preferred. `companycam.com/favicon.svg`
-is not an icon at all: it is a ~232 KB HTML catch-all page.
+Still no vector: `assets.c.companycam.com/safari-pinned-tab.svg` is a potrace-generated monochrome mask, and `companycam.com/favicon.svg` is not an icon at all but a ~232 KB HTML catch-all page.
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.
 
 ---
 

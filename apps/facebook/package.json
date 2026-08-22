@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/facebook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Facebook Pages, posts, comments, photos, videos, insights and basic ad-account reads via the Graph API.",
   "license": "MIT",
   "author": {

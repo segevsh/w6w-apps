@@ -186,17 +186,17 @@ enforced by refusal, so neither can be read before it runs out.
 
 ## Icon
 
-`assets/icon.png` is **Wufoo's own mark**, not a drawing. Wufoo has no SVG in any of the usual
-verbatim sources — simple-icons does not carry it — so the mark was taken from n8n's `nodes-base`,
-which is where several of this pack's vendor marks come from:
+`assets/icon.png` — 152px — the previous PNG was 60px and colormapped.
 
-```
-https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wufoo/wufoo.png
-```
+Taken from <https://www.wufoo.com/wp-content/themes/wufoo-site/img/favicons/apple-touch-icon.png> on 2026-08-15.
 
-It is a 60×60 PNG, unmodified. The App contract accepts `assets/icon.{svg,png}`, and a real
-low-resolution mark is a better answer than an invented vector one. Run `deno task fmt`, never bare
-`deno fmt`.
+- **14,301 bytes**, `image/png`, 152 × 152, md5 `ff60735304ddf93c805f1afd70c5ef7e`
+- raster, because the vendor publishes no vector of this mark
+
+The previous file came from n8n's `nodes-base` at 60×60 — a real vendor mark, but a mirror of one. This is the same mark from Wufoo's own favicon directory. Wufoo still ships no usable vector: `safari-pinned-tab.svg` is a colourless pinned-tab mask, and simple-icons does not carry them.
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.
 
 ## Layout
 

@@ -324,12 +324,24 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
+Deno.test("index: the icon is the vendor's mark, on the pack's canvas", async () => {
   const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Downloaded verbatim from www.productboard.com/favicon.svg on 2026-08-11:
   // 323 bytes, a 32x32 viewBox of three coloured paths.
-  assertEquals(svg.length, 323, "icon.svg is no longer the 323-byte vendor file");
-  assert(svg.includes('viewBox="0 0 32 32"'));
+  // `_tools/icon-normalize.ts` re-frames every mark onto one square canvas, so
+  // the file's length is the tool's. What still has to be the vendor's is the
+  // artwork inside — which is what the assertions below check.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
+  // The re-frame trims the mark to its ink box, so the inner viewBox is the
+  // measured box now, not the vendor's original. The path data is untouched,
+  // and it is the thing a redraw would change.
+  assert(
+    svg.includes("M21.0003 7L30.0001 16L20.9998 25"),
+    "the vendor's geometry changed — the mark was redrawn",
+  );
   for (const colour of ["#0071E1", "#FFC600", "#F84136"]) {
     assert(svg.includes(colour), `vendor colour ${colour} missing — the mark was redrawn`);
   }

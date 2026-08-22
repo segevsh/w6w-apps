@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/tailscale",
+  "version": "0.1.1",
+  "description": "Tailscale: inspect and manage the devices, auth keys, users and ACL policy of a tailnet.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.tailscale",
+    "displayName": "Tailscale",
+    "categories": [
+      "security",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Tailscale"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Tailscale"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.tailscale.com",
+        "status.tailscale.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

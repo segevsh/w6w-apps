@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/twitch",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Read Twitch channels, streams, videos, clips, chat metadata and schedules over the Helix API, and update a broadcaster's own channel.",
   "license": "MIT",
   "author": {

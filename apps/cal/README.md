@@ -117,6 +117,18 @@ not from any action, and not from the other checks. The spec allows the widening
 because the check is unsigned; pairing an extra host with `credential: "signed"` is rejected
 at load time, so a credential can never reach a status host.
 
+
+## Icon
+
+`assets/icon.png` — Cal.com's app icon; the previous artwork was the wordmark, which reads as a text block on a square tile.
+
+Taken from <https://cal.com/> on 2026-08-15.
+
+- **68,346 bytes**, `image/png`, 1024 × 1024, md5 `bf7a4518f834149389469008c60a4a63`
+- raster, because the vendor publishes no vector of this mark
+
+Cal.com's logo is a wordmark, which is what this app used to ship and what a square tile cannot hold. Their app icon is a separate, square lockup. No vector of it is published, so this is the 1024px raster — four times the pack's largest render, and sharper than a scaled wordmark could ever be.
+
 ---
 
 Researched and endpoint-verified 2026-08-01. `cal-api-version` values and status-page shape

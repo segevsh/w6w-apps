@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/splitwise",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Splitwise expenses, groups, friends and comments — including the full per-user share model.",
   "license": "MIT",
   "author": {

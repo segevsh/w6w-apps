@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/digitalocean",
+  "version": "0.1.1",
+  "description": "DigitalOcean: droplets, volumes, snapshots, reserved IPs, DNS and managed databases — with the billing surprises made explicit.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.digitalocean",
+    "displayName": "DigitalOcean",
+    "categories": [
+      "devops",
+      "storage"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "DigitalOcean"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "DigitalOcean"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.digitalocean.com",
+        "status.digitalocean.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

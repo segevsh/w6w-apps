@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Azure DevOps">
+  <defs>
+    <linearGradient id="ado" x1="9%" y1="16.97%" x2="84%" y2="89.14%">
+      <stop offset="0%" stop-color="#0078D4"/>
+      <stop offset="16%" stop-color="#1380DA"/>
+      <stop offset="53%" stop-color="#3C91E5"/>
+      <stop offset="82%" stop-color="#559CEC"/>
+      <stop offset="100%" stop-color="#5EA0EF"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#ado)" d="M240 56.6v137.7l-56.5 46.3-87.6-32v31.7L46.5 176l143.3 11.2V58.6L240 56.6zM190.8 58.9L104.3 8v34.6L25.1 65.9 16 77.5v87.7l34.3 15.1V74.8l140.5-15.9z"/>
+</svg>

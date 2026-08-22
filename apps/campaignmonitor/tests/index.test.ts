@@ -368,8 +368,15 @@ Deno.test("index: the manifest declares 1-3 categories and an icon with alt text
  */
 Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
   const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
-  assertEquals(svg.length, 364, "icon.svg is no longer the 364-byte vendor file");
+  // Campaign Monitor's own marque, from their site's icon directory
+  // (`/wp-content/themes/cm-theme/assets/ico/cm-marque.svg`), re-framed onto the
+  // pack's square canvas by `_tools/icon-normalize.ts`. It replaces the
+  // simple-icons export, which was the same silhouette with no colour at all —
+  // black on the light tile, and a reversed variant to survive the dark one.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
   assert(svg.includes("<title>Campaign Monitor</title>"), "the mark is not Campaign Monitor's");
-  assert(svg.includes('viewBox="0 0 24 24"'), "the viewBox changed — the mark was redrawn");
-  assert(!svg.includes("\n"), "the file was reformatted rather than kept verbatim");
+  assert(svg.includes("#7856FF"), "the marque lost Campaign Monitor's purple");
 });

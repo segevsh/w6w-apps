@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/buffer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Schedule and manage social posts, channels, ideas and post metrics in Buffer via the Buffer GraphQL Public API.",
   "license": "MIT",
   "author": {

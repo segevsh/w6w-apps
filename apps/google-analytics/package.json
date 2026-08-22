@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/google-analytics",
+  "version": "0.1.0",
+  "description": "Run GA4 reports and manage Google Analytics properties, data streams and key events.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-analytics",
+    "displayName": "Google Analytics",
+    "categories": [
+      "analytics",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Analytics"
+      }
+    },
+    "network": {
+      "allow": [
+        "analyticsdata.googleapis.com",
+        "analyticsadmin.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/todoist",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Manage Todoist tasks, projects, sections, comments, and labels via the REST v2 API.",
   "license": "MIT",
   "author": {

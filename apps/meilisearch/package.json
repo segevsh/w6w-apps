@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/meilisearch",
+  "version": "0.1.0",
+  "description": "Search, index documents, and manage Meilisearch indexes and their settings.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.meilisearch",
+    "displayName": "Meilisearch",
+    "categories": [
+      "search",
+      "databases",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Meilisearch"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

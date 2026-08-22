@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/bigquery",
+  "version": "0.1.0",
+  "description": "Run BigQuery SQL, stream rows in, and manage datasets, tables and jobs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bigquery",
+    "displayName": "BigQuery",
+    "categories": [
+      "data-warehousing",
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "BigQuery"
+      }
+    },
+    "network": {
+      "allow": [
+        "bigquery.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

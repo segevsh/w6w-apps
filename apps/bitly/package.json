@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/bitly",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shorten, manage and track Bitly links via the Bitly REST API v4.",
   "license": "MIT",
   "author": {

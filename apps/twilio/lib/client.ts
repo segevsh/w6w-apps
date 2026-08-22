@@ -5,8 +5,13 @@ export const API_BASE = "https://api.twilio.com/2010-04-01";
 export interface RequestOptions {
   method?: string;
   query?: Record<string, string | number | boolean | undefined | null>;
-  /** Form fields — Twilio's REST API accepts `application/x-www-form-urlencoded`. */
-  form?: Record<string, string | number | boolean | undefined | null>;
+  /**
+   * Form fields — Twilio's REST API accepts `application/x-www-form-urlencoded`.
+   * An array value is encoded as a REPEATED key, which is how Twilio takes
+   * multi-valued parameters (`MediaUrl` on an MMS, up to ten of them); a
+   * comma-joined single value is not the same thing and is rejected.
+   */
+  form?: Record<string, string | number | boolean | string[] | undefined | null>;
 }
 
 /**
@@ -60,6 +65,13 @@ export class TwilioClient {
       const params = new URLSearchParams();
       for (const [k, v] of Object.entries(options.form)) {
         if (v === undefined || v === null) continue;
+        if (Array.isArray(v)) {
+          for (const item of v) {
+            if (item === undefined || item === null || item === "") continue;
+            params.append(k, String(item));
+          }
+          continue;
+        }
         params.set(k, String(v));
       }
       (init.headers as Record<string, string>)["content-type"] =

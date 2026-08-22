@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/baserow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read, create, update, move and delete Baserow rows — singly or in batches of up to 200 — and browse the tables and fields a database token can reach.",
   "license": "MIT",
   "author": {

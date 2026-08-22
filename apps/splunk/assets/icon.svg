@@ -1,18 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   width="1200"
-   height="1200"
-   viewBox="0 0 1200 1200"
-   fill="none"
-   version="1.1"
-   id="svg82"
-   sodipodi:docname="splunk.svg"
-   inkscape:version="1.3.1 (9b9bdc1480, 2023-11-25, custom)"
-   xml:space="preserve"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Splunk"><title>Splunk</title><svg fill="none" sodipodi:docname="splunk.svg" inkscape:version="1.3.1 (9b9bdc1480, 2023-11-25, custom)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" x="4" y="4" width="92" height="92" viewBox="0 0 1200 1200" preserveAspectRatio="xMidYMid meet" overflow="visible"><sodipodi:namedview
      id="namedview82"
      pagecolor="#ffffff"
      bordercolor="#000000"
@@ -378,4 +364,4 @@
        id="clip0"><path
          d="M0 600C0 268.629 268.629 0 600 0C931.371 0 1200 268.629 1200 600C1200 931.371 931.371 1200 600 1200C268.629 1200 0 931.371 0 600Z"
          fill="white"
-         id="path82" /></clipPath></defs></svg>
+         id="path82" /></clipPath></defs></svg></svg>

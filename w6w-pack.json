@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.33.0",
+  "version": "0.94.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -13,10 +13,19 @@
       "path": "./apps/acuityscheduling"
     },
     {
+      "path": "./apps/airbyte"
+    },
+    {
       "path": "./apps/aircall"
     },
     {
       "path": "./apps/airtable"
+    },
+    {
+      "path": "./apps/algolia"
+    },
+    {
+      "path": "./apps/amplitude"
     },
     {
       "path": "./apps/anthropic"
@@ -31,7 +40,22 @@
       "path": "./apps/asana"
     },
     {
+      "path": "./apps/ashby"
+    },
+    {
       "path": "./apps/attio"
+    },
+    {
+      "path": "./apps/auth0"
+    },
+    {
+      "path": "./apps/azure-blob"
+    },
+    {
+      "path": "./apps/azuredevops"
+    },
+    {
+      "path": "./apps/balena"
     },
     {
       "path": "./apps/bamboohr"
@@ -46,10 +70,16 @@
       "path": "./apps/bigcommerce"
     },
     {
+      "path": "./apps/bigquery"
+    },
+    {
       "path": "./apps/bitbucket"
     },
     {
       "path": "./apps/bitly"
+    },
+    {
+      "path": "./apps/bluesky"
     },
     {
       "path": "./apps/box"
@@ -76,6 +106,9 @@
       "path": "./apps/chargebee"
     },
     {
+      "path": "./apps/checkly"
+    },
+    {
       "path": "./apps/circle"
     },
     {
@@ -83,6 +116,9 @@
     },
     {
       "path": "./apps/clearbit"
+    },
+    {
+      "path": "./apps/clickhouse"
     },
     {
       "path": "./apps/clickup"
@@ -97,10 +133,16 @@
       "path": "./apps/cloudflare"
     },
     {
+      "path": "./apps/cloudinary"
+    },
+    {
       "path": "./apps/coda"
     },
     {
       "path": "./apps/companycam"
+    },
+    {
+      "path": "./apps/confluence"
     },
     {
       "path": "./apps/constantcontact"
@@ -121,7 +163,19 @@
       "path": "./apps/datadog"
     },
     {
+      "path": "./apps/dbtcloud"
+    },
+    {
+      "path": "./apps/deel"
+    },
+    {
+      "path": "./apps/deepgram"
+    },
+    {
       "path": "./apps/deepl"
+    },
+    {
+      "path": "./apps/digitalocean"
     },
     {
       "path": "./apps/discord"
@@ -130,10 +184,19 @@
       "path": "./apps/discourse"
     },
     {
+      "path": "./apps/documenso"
+    },
+    {
       "path": "./apps/docusign"
     },
     {
       "path": "./apps/dropbox"
+    },
+    {
+      "path": "./apps/dropbox-sign"
+    },
+    {
+      "path": "./apps/easypost"
     },
     {
       "path": "./apps/elastic"
@@ -172,6 +235,9 @@
       "path": "./apps/fireflies"
     },
     {
+      "path": "./apps/fivetran"
+    },
+    {
       "path": "./apps/flodesk"
     },
     {
@@ -187,13 +253,25 @@
       "path": "./apps/freshservice"
     },
     {
+      "path": "./apps/front"
+    },
+    {
+      "path": "./apps/gcs"
+    },
+    {
       "path": "./apps/gemini"
+    },
+    {
+      "path": "./apps/gerrit"
     },
     {
       "path": "./apps/getresponse"
     },
     {
       "path": "./apps/ghost"
+    },
+    {
+      "path": "./apps/gitea"
     },
     {
       "path": "./apps/github"
@@ -206,6 +284,9 @@
     },
     {
       "path": "./apps/google-ads"
+    },
+    {
+      "path": "./apps/google-analytics"
     },
     {
       "path": "./apps/google-business-profile"
@@ -224,6 +305,9 @@
     },
     {
       "path": "./apps/google-forms"
+    },
+    {
+      "path": "./apps/google-maps"
     },
     {
       "path": "./apps/google-sheets"
@@ -250,6 +334,9 @@
       "path": "./apps/grist"
     },
     {
+      "path": "./apps/gusto"
+    },
+    {
       "path": "./apps/harvest"
     },
     {
@@ -259,10 +346,16 @@
       "path": "./apps/highlevel"
     },
     {
+      "path": "./apps/homeassistant"
+    },
+    {
       "path": "./apps/housecallpro"
     },
     {
       "path": "./apps/hubspot"
+    },
+    {
+      "path": "./apps/huggingface"
     },
     {
       "path": "./apps/intercom"
@@ -280,6 +373,9 @@
       "path": "./apps/jotform"
     },
     {
+      "path": "./apps/jumpcloud"
+    },
+    {
       "path": "./apps/kajabi"
     },
     {
@@ -292,7 +388,13 @@
       "path": "./apps/klaviyo"
     },
     {
+      "path": "./apps/launchdarkly"
+    },
+    {
       "path": "./apps/lemlist"
+    },
+    {
+      "path": "./apps/lever"
     },
     {
       "path": "./apps/linear"
@@ -302,6 +404,12 @@
     },
     {
       "path": "./apps/linkedin-ads"
+    },
+    {
+      "path": "./apps/looker"
+    },
+    {
+      "path": "./apps/loops"
     },
     {
       "path": "./apps/mailcheck"
@@ -325,7 +433,13 @@
       "path": "./apps/manychat"
     },
     {
+      "path": "./apps/mastodon"
+    },
+    {
       "path": "./apps/mattermost"
+    },
+    {
+      "path": "./apps/meilisearch"
     },
     {
       "path": "./apps/metabase"
@@ -334,16 +448,34 @@
       "path": "./apps/microsoft-todo"
     },
     {
+      "path": "./apps/miro"
+    },
+    {
       "path": "./apps/mistral"
+    },
+    {
+      "path": "./apps/mixpanel"
     },
     {
       "path": "./apps/monday"
     },
     {
+      "path": "./apps/mongodb-atlas"
+    },
+    {
       "path": "./apps/motion"
     },
     {
+      "path": "./apps/mux"
+    },
+    {
       "path": "./apps/netlify"
+    },
+    {
+      "path": "./apps/newrelic"
+    },
+    {
+      "path": "./apps/nocodb"
     },
     {
       "path": "./apps/notion"
@@ -356,6 +488,9 @@
     },
     {
       "path": "./apps/onedrive"
+    },
+    {
+      "path": "./apps/onepassword"
     },
     {
       "path": "./apps/onesimpleapi"
@@ -376,13 +511,22 @@
       "path": "./apps/pandadoc"
     },
     {
+      "path": "./apps/particle"
+    },
+    {
       "path": "./apps/paypal"
     },
     {
       "path": "./apps/perplexity"
     },
     {
+      "path": "./apps/pinecone"
+    },
+    {
       "path": "./apps/pipedrive"
+    },
+    {
+      "path": "./apps/plaid"
     },
     {
       "path": "./apps/podio"
@@ -403,6 +547,9 @@
       "path": "./apps/pushover"
     },
     {
+      "path": "./apps/qdrant"
+    },
+    {
       "path": "./apps/quickbase"
     },
     {
@@ -415,6 +562,12 @@
       "path": "./apps/reddit"
     },
     {
+      "path": "./apps/replicate"
+    },
+    {
+      "path": "./apps/resend"
+    },
+    {
       "path": "./apps/ringcentral"
     },
     {
@@ -424,10 +577,16 @@
       "path": "./apps/salesforce"
     },
     {
+      "path": "./apps/sanity"
+    },
+    {
       "path": "./apps/segment"
     },
     {
       "path": "./apps/sendgrid"
+    },
+    {
+      "path": "./apps/sentry"
     },
     {
       "path": "./apps/servicenow"
@@ -445,6 +604,9 @@
       "path": "./apps/snowflake"
     },
     {
+      "path": "./apps/snyk"
+    },
+    {
       "path": "./apps/splitwise"
     },
     {
@@ -455,6 +617,12 @@
     },
     {
       "path": "./apps/square"
+    },
+    {
+      "path": "./apps/statuspage"
+    },
+    {
+      "path": "./apps/storyblok"
     },
     {
       "path": "./apps/strapi"
@@ -472,6 +640,9 @@
       "path": "./apps/surveymonkey"
     },
     {
+      "path": "./apps/tailscale"
+    },
+    {
       "path": "./apps/tally"
     },
     {
@@ -479,6 +650,9 @@
     },
     {
       "path": "./apps/telegram"
+    },
+    {
+      "path": "./apps/terraform"
     },
     {
       "path": "./apps/thinkific"
@@ -517,10 +691,19 @@
       "path": "./apps/typeform"
     },
     {
+      "path": "./apps/typesense"
+    },
+    {
       "path": "./apps/upstash"
     },
     {
       "path": "./apps/uptimerobot"
+    },
+    {
+      "path": "./apps/vanta"
+    },
+    {
+      "path": "./apps/vercel"
     },
     {
       "path": "./apps/vimeo"
@@ -539,6 +722,9 @@
     },
     {
       "path": "./apps/wordpress"
+    },
+    {
+      "path": "./apps/workos"
     },
     {
       "path": "./apps/wufoo"

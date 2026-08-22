@@ -1,10 +1,10 @@
 # Stripe
 
-Manage Stripe customers, payments, refunds, invoices, subscriptions and catalogue.
+Manage Stripe customers, payments, refunds, invoices, subscriptions, catalogue and hosted checkout.
 
 - **Categories** — commerce, finance
 - **Auth methods** — api-key
-- **Actions** — 23
+- **Actions** — 25
 - **Egress allowlist** — `api.stripe.com`
 - **Website** — https://stripe.com
 - **API docs** — https://docs.stripe.com/api

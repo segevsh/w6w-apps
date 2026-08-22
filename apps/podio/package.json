@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/podio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Podio items, apps, workspaces, tasks, comments and webhooks over the Podio API.",
   "license": "MIT",
   "author": {

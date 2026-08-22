@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/aircall",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and act on Aircall calls, contacts, users, teams, numbers, tags and webhooks over the Aircall Public API.",
   "license": "MIT",
   "author": {

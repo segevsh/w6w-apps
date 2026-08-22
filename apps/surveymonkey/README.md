@@ -120,6 +120,17 @@ widening precisely because the check is unsigned; pairing an extra host with
 `credential: "signed"` is rejected at load time, so a credential can never reach a status
 host.
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's own icon, complete with the disc the bare glyph was missing.
+
+Taken from <https://prod.smassets.net/assets/static/images/surveymonkey/favicon.svg> on 2026-08-15.
+
+- **2,436 bytes**, `image/svg+xml`, md5 `da6d598837926247beef73b235fbc57d`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-02 against `SurveyMonkey/public_api_docs` (the

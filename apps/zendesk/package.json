@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/zendesk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Manage Zendesk Support tickets, users and organizations.",
   "license": "MIT",
   "author": {

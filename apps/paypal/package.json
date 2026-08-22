@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/paypal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Create and manage PayPal orders, payments, invoices and payouts.",
   "license": "MIT",
   "author": {

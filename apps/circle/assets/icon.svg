@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" role="img" aria-label="Circle">
-  <circle cx="80" cy="80" r="56" stroke="#0A0A0A" stroke-width="12" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Circle"><title>Circle</title><svg fill="none" x="4" y="4" width="92" height="92" viewBox="17.813 17.813 124.375 124.375" preserveAspectRatio="xMidYMid meet" overflow="visible"><circle cx="80" cy="80" r="56" stroke="#0A0A0A" stroke-width="12" />
   <circle cx="80" cy="36" r="14" fill="#E35E2C" />
   <circle cx="118" cy="102" r="14" fill="#C95BCF" />
-  <circle cx="42" cy="102" r="14" fill="#3E8DEF" />
-</svg>
+  <circle cx="42" cy="102" r="14" fill="#3E8DEF" /></svg></svg>

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/deepgram",
+  "version": "0.1.0",
+  "description": "Transcribe audio and video by URL, analyse text for sentiment, topics and intent, generate speech, and watch the spend and request history behind it.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.deepgram",
+    "displayName": "Deepgram",
+    "categories": [
+      "ai",
+      "video",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Deepgram"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.deepgram.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

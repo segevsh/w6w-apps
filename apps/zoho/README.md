@@ -118,6 +118,19 @@ from any action, and not from the other checks. The spec allows the widening pre
 check is unsigned; pairing an extra host with `credential: "signed"` is rejected at load time, so a
 credential can never reach a status host.
 
+
+## Icon
+
+`assets/icon.svg` — the app is Zoho CRM, and this is Zoho's own CRM product mark; the previous artwork was the Zoho corporate mark flattened to one red, which is neither the product's mark nor a palette Zoho's brand guide allows.
+
+Taken from <https://www.zohowebstatic.com/sites/zweb/images/productlogos/crm.svg> on 2026-08-15.
+
+- **1,670 bytes**, `image/svg+xml`, md5 `bba70be67592bc3703a03cdc4a26a138`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+This app is Zoho **CRM**, so the mark is the CRM product's, not Zoho corporate's. The previous artwork was the corporate mark from simple-icons, which is single-path and therefore flattened to one fill — `#E42527`, the first of the four colours Zoho's brand guide specifies. Recolouring it was not possible without redrawing it, and the four-colour corporate mark is 3.2:1, which a square tile cannot hold. Zoho's own product logo carries the CRM symbol as a separable `<g id="logo">`; that is what ships here.
+
 ---
 
 Researched and endpoint-verified 2026-08-02 against

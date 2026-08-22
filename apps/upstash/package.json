@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/upstash",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Read and write an Upstash Redis database over its HTTP REST API.",
   "license": "MIT",
   "author": {

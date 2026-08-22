@@ -68,6 +68,19 @@ checks. The spec allows the widening precisely because the check is unsigned; pa
 extra host with `credential: "signed"` is rejected at load time, so a credential can never
 reach a status host.
 
+
+## Icon
+
+`assets/icon.svg` — vector, in Contentful's own palette — replaces a 60px colormapped PNG.
+
+Taken from <https://cdn.jsdelivr.net/gh/gilbarbara/logos/logos/contentful.svg> on 2026-08-15.
+
+- **2,254 bytes**, `image/svg+xml`, md5 `14bbe447a88cc2c72addd4eae5d6ae17`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+Contentful ships no vector on their own site (`contentful.com` refuses non-browser clients outright); this is the mark as carried by the `gilbarbara/logos` collection, which reproduces the vendor's palette. The previous file was a 60px colourmapped PNG.
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

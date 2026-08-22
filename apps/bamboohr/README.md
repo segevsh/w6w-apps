@@ -388,8 +388,14 @@ employee limit reached · `503` throttled, retry with `Retry-After`.
 
 ## Icon
 
-`assets/icon.png` — 60×60 PNG, RGBA. Copied byte-identically from n8n's BambooHR node
-(`nodes-base/nodes/BambooHr/bambooHr.png`); verified with `diff`.
+`assets/icon.png` — BambooHR's current mark at 227px — the previous PNG was 60px and showed the retired disc lockup.
+
+Taken from <https://www.bamboohr.com/images/about/media-assets/bamboohr-logo-green.png> on 2026-08-15.
+
+- **2,431 bytes**, `image/png`, 227 × 227, md5 `531bc04e9215e8c1ef96238e8a05be58`
+- raster, because the vendor publishes no vector of this mark
+
+BambooHR publishes no square icon and no vector: their site ships an empty `data:` favicon, and the only asset on their media page is the horizontal lockup. This is the symbol half of that lockup, cropped on its own bounding box — the pixels are the vendor's, untouched; only the wordmark beside them is gone.
 
 ---
 

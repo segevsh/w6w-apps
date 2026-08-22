@@ -193,3 +193,199 @@ Deno.test("mail-send: non-2xx response propagates as Error", async () => {
   );
   assert(err.message.includes("unauth"), "should include upstream error text");
 });
+
+// ── Flattened optional fields ──────────────────────────────────────────────
+// CC/BCC/Reply-To et al. used to live inside an n8n-shaped `additionalFields`
+// group, which the studio renders as a raw JSON editor — so they were not
+// reachable as form fields at all. They are flat (or in a `section`) now; the
+// group survives only as a deprecated fallback, covered by the test above.
+
+Deno.test("mail-send: cc/bcc are read from flat params", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({ ccEmail: "cc1@x.com, cc2@x.com", bccEmail: "bcc@x.com" }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.personalizations[0].cc, [{ email: "cc1@x.com" }, { email: "cc2@x.com" }]);
+  assertEquals(body.personalizations[0].bcc, [{ email: "bcc@x.com" }]);
+});
+
+Deno.test("mail-send: a flat field wins over the deprecated additionalFields group", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({
+      ccEmail: "new@x.com",
+      additionalFields: { ccEmail: "old@x.com", bccEmail: "kept@x.com" },
+    }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.personalizations[0].cc, [{ email: "new@x.com" }]);
+  // ...and a key the flat form left empty still falls back to the old group.
+  assertEquals(body.personalizations[0].bcc, [{ email: "kept@x.com" }]);
+});
+
+Deno.test("mail-send: reply-to carries an optional display name", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({ replyToEmail: "reply@x.com", replyToName: "Support" }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.reply_to, { email: "reply@x.com", name: "Support" });
+});
+
+Deno.test("mail-send: custom headers and custom args are sent as string maps", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({ headers: { "X-Campaign": "spring" }, customArgs: { orderId: 42 } }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.headers, { "X-Campaign": "spring" });
+  // SendGrid rejects non-string custom_args values, so numbers are coerced.
+  assertEquals(body.custom_args, { orderId: "42" });
+});
+
+Deno.test("mail-send: headers accept JSON text as well as an object", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput({ headers: '{"X-A":"1"}' }), ctx);
+  assertEquals(JSON.parse(calls[0].body ?? "").headers, { "X-A": "1" });
+});
+
+Deno.test("mail-send: invalid header JSON rejects before the request", async () => {
+  const { ctx, calls } = mockCtx();
+  await assertRejects(
+    async () => await action.execute!(baseInput({ headers: "{not json" }), ctx),
+    Error,
+    "`headers` is not valid JSON.",
+  );
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("mail-send: empty header/customArgs objects are omitted entirely", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput({ headers: {}, customArgs: {} }), ctx);
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.headers, undefined);
+  assertEquals(body.custom_args, undefined);
+});
+
+Deno.test("mail-send: attachments are mapped to SendGrid's shape", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({
+      attachments: [
+        {
+          filename: "report.pdf",
+          content: "YmFzZTY0",
+          type: "application/pdf",
+          disposition: "attachment",
+        },
+        { filename: "logo.png", content: "aW1n", disposition: "inline", contentId: "logo" },
+      ],
+    }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.attachments, [
+    {
+      content: "YmFzZTY0",
+      filename: "report.pdf",
+      type: "application/pdf",
+      disposition: "attachment",
+    },
+    { content: "aW1n", filename: "logo.png", disposition: "inline", content_id: "logo" },
+  ]);
+});
+
+Deno.test("mail-send: attachment rows missing filename or content are skipped", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(
+    baseInput({
+      attachments: [
+        { filename: "", content: "aW1n" },
+        { filename: "only-name.pdf", content: "" },
+        { filename: "ok.pdf", content: "b2s=" },
+      ],
+    }),
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.attachments, [{ content: "b2s=", filename: "ok.pdf" }]);
+});
+
+Deno.test("mail-send: an all-blank attachment list is omitted, not sent empty", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput({ attachments: [{ filename: "", content: "" }] }), ctx);
+  assertEquals(JSON.parse(calls[0].body ?? "").attachments, undefined);
+});
+
+Deno.test("mail-send: batch id and unsubscribe group ride along", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput({ batchId: "batch-1", asmGroupId: 7 }), ctx);
+  const body = JSON.parse(calls[0].body ?? "");
+  assertEquals(body.batch_id, "batch-1");
+  assertEquals(body.asm, { group_id: 7 });
+});
+
+Deno.test("mail-send: tracking toggles only send the keys that were set", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput({ trackClicks: false }), ctx);
+  const body = JSON.parse(calls[0].body ?? "");
+  // An untouched `trackOpens` must stay absent so the account default wins.
+  assertEquals(body.tracking_settings, { click_tracking: { enable: false } });
+});
+
+Deno.test("mail-send: untouched tracking toggles omit tracking_settings", async () => {
+  const { ctx, calls } = mockCtx([{ status: 202, headers: {} }]);
+  await action.execute!(baseInput(), ctx);
+  assertEquals(JSON.parse(calls[0].body ?? "").tracking_settings, undefined);
+});
+
+Deno.test("mail-send: no optional param is buried in a `group` the studio renders as JSON", () => {
+  // Regression guard for the reported "SendGrid has no CC/BCC": ParamsForm
+  // renders `type: "group"` as a raw JSON editor, so a group makes its children
+  // invisible as fields. Sections are layout-only and render their children as
+  // real inputs — those are fine.
+  const walk = (list: typeof action.params): string[] =>
+    (list ?? []).flatMap((p) => [
+      ...(p.type === "group" && p.key !== "additionalFields" ? [p.key] : []),
+      ...walk(p.children),
+    ]);
+  assertEquals(walk(action.params), []);
+});
+
+Deno.test("mail-send: cc/bcc/reply-to are reachable as declared fields", () => {
+  const keys = new Set<string>();
+  const walk = (list: typeof action.params) => {
+    for (const p of list ?? []) {
+      keys.add(p.key);
+      walk(p.children);
+    }
+  };
+  walk(action.params);
+  for (const k of ["ccEmail", "bccEmail", "replyToEmail", "attachments", "headers"]) {
+    assert(keys.has(k), `${k} must be a declared param`);
+  }
+});
+
+Deno.test("mail-send: optional fields stay behind the disclosure, not on the compose form", () => {
+  // The compose path is From / To / Subject / Body (+ the template branch).
+  // CC/BCC are the most-reached-for options but they are still options, and
+  // hanging them off the recipient lengthens the form for everyone who doesn't
+  // use them — they belong inside the collapsible section.
+  const collapsible = action.params?.find((p) => p.section === "collapsible");
+  const keysUnder = (list: typeof action.params): string[] =>
+    (list ?? []).flatMap((p) => [p.key, ...keysUnder(p.children)]);
+  const hidden = new Set(keysUnder(collapsible?.children));
+  for (const k of ["ccEmail", "bccEmail", "replyToEmail", "attachments", "headers"]) {
+    assert(hidden.has(k), `${k} must live inside the collapsible section`);
+  }
+  // ...and nothing optional leaked back out to the top level beside them.
+  const topLevel = (action.params ?? []).map((p) => p.key);
+  for (const k of ["ccEmail", "bccEmail"]) {
+    assert(!topLevel.includes(k), `${k} must not sit on the compose form`);
+  }
+});

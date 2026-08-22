@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-contacts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and manage Google Contacts via the Google People API: connections, contacts and contact groups.",
   "license": "MIT",
   "author": {
@@ -16,7 +16,7 @@
     ],
     "appearance": {
       "icon": {
-        "url": "./assets/icon.png",
+        "svg": "./assets/icon.svg",
         "alt": "Google Contacts"
       }
     },

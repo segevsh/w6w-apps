@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-forms",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create and update Google Forms, manage publish state, and read form responses.",
   "license": "MIT",
   "author": {

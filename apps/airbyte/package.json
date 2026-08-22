@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/airbyte",
+  "version": "0.1.0",
+  "description": "Airbyte: inspect connections, sources and destinations, trigger and watch syncs, and read job history.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.airbyte",
+    "displayName": "Airbyte",
+    "categories": [
+      "data-warehousing",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Airbyte"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

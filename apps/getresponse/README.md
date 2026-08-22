@@ -195,17 +195,17 @@ question than the check asks.
 
 ## Icon
 
-`assets/icon.png` is **GetResponse's own mark**, not a drawing. No SVG is available from the usual
-verbatim sources — simple-icons does not carry GetResponse — so the mark was taken from n8n's
-`nodes-base`:
+`assets/icon.png` — 194px — the previous PNG was 60px and colormapped.
 
-```
-https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/GetResponse/getResponse.png
-```
+Taken from <https://www.getresponse.com/global/favicons/favicon-194x194.png> on 2026-08-15.
 
-It is a 60×60 PNG, unmodified. The App contract accepts `assets/icon.{svg,png}`, and a real
-low-resolution mark is a better answer than an invented vector one. Run `deno task fmt`, never bare
-`deno fmt`.
+- **6,450 bytes**, `image/png`, 194 × 194, md5 `34c4c40ae8a0e70b08cd1a0c67890cd3`
+- raster, because the vendor publishes no vector of this mark
+
+The previous file came from n8n's `nodes-base` at 60×60 — a real vendor mark, but a mirror of one, and small enough to read as mush on a hidpi tile. This is the same mark from GetResponse's own favicon directory at the largest size they publish. GetResponse still ships no vector, and simple-icons does not carry them.
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.
 
 ## Layout
 

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/particle",
+  "version": "0.1.0",
+  "description": "Particle IoT: list and inspect devices, read variables, call functions, publish events, and manage products and SIMs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.particle",
+    "displayName": "Particle",
+    "categories": [
+      "iot",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Particle"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.particle.io",
+        "status.particle.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

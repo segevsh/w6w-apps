@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/deel",
+  "version": "0.1.0",
+  "description": "Manage Deel contracts, people, time off, timesheets and invoice adjustments.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.deel",
+    "displayName": "Deel",
+    "categories": [
+      "hr",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Deel"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.letsdeel.com",
+        "api-staging.letsdeel.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -127,6 +127,17 @@ headers to read one from. A declared absence always reports `unknown`, so it car
 `severity: "informational"` — otherwise it would pin every verdict for this app at `unknown`
 forever.
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's own mark; the previous artwork was an unweighted ring.
+
+Taken from <https://www.ghost.org/favicon.svg> on 2026-08-15.
+
+- **1,770 bytes**, `image/svg+xml`, md5 `7622e26da9b69472e186bfdc1c7a89dd`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-02 against Ghost's official docs

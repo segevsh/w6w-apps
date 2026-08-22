@@ -304,6 +304,16 @@ check is unsigned; pairing an extra host with `credential: "signed"` is rejected
 credential can never reach a status host. The `api` and `quota` checks declare no extra hosts at
 all: `api.emailoctopus.com` is already the app's own egress host.
 
+## Icon
+
+`assets/icon.svg` — the vendor's octopus mark; the previous artwork was an unrelated glyph.
+
+Taken from <https://emailoctopus.com/icon.svg> on 2026-08-15.
+
+- **3,800 bytes**, `image/svg+xml`, md5 `ce579f64de6594fd60329832a34c257b`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ## Development
 
 ```bash

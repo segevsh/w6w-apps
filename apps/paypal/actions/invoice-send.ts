@@ -19,10 +19,12 @@ const action: ActionDefinition = {
     { key: "subject", label: "Email Subject", type: "string", default: "" },
     { key: "note", label: "Note to Recipient", type: "text", default: "" },
     {
-      key: "additionalFields",
-      label: "Additional Fields",
-      type: "group",
-      default: {},
+      key: "additionalOptions",
+      label: "Additional options",
+      type: "section",
+      section: "collapsible",
+      title: "Additional options",
+      collapsed: true,
       children: [
         {
           key: "sendToRecipient",
@@ -38,6 +40,20 @@ const action: ActionDefinition = {
         },
       ],
     },
+    {
+      key: "additionalFields",
+      // DEPRECATED. These fields used to sit in a `type: "group"`, which
+      // ParamsForm renders as a raw JSON editor — so none of them were
+      // reachable as form fields. They are in the section above now; this
+      // stays declared because `resolveParams` drops any key an action does
+      // not declare, so removing it would silently strip saved values.
+      label: "Additional Fields (deprecated)",
+      type: "json",
+      default: {},
+      advanced: true,
+      hint: "Superseded by the fields above and kept only so older saved steps keep working. " +
+        "Anything set here is used only when the matching field above is empty.",
+    },
   ],
   output: [
     { key: "href", type: "string", label: "Link to the sent invoice" },
@@ -48,7 +64,15 @@ const action: ActionDefinition = {
     const invoiceId = String(p.invoiceId ?? "").trim();
     if (!invoiceId) throw new Error("`invoiceId` is required");
 
-    const additional = (p.additionalFields ?? {}) as Record<string, unknown>;
+    // These used to be a nested `additionalFields` group. A section writes its
+    // children FLAT at this level, so read them from the top and fall back to
+    // the deprecated group for steps saved against the old shape.
+    const legacy = (p.additionalFields ?? {}) as Record<string, unknown>;
+    const additional: Record<string, unknown> = { ...legacy };
+    for (const k of ["sendToRecipient", "sendToInvoicer"]) {
+      const v = p[k];
+      if (v !== undefined && v !== null && v !== "") additional[k] = v;
+    }
     const body = compact({
       subject: p.subject ? String(p.subject) : undefined,
       note: p.note ? String(p.note) : undefined,

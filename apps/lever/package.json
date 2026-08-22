@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/lever",
+  "version": "0.1.0",
+  "description": "Lever: read and move candidates through the hiring pipeline, manage postings, notes and archive state.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.lever",
+    "displayName": "Lever",
+    "categories": [
+      "hr",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Lever"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.lever.co",
+        "api.eu.lever.co",
+        "api.sandbox.lever.co",
+        "status.lever.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

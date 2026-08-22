@@ -1,5 +1,4 @@
-<svg width="28" height="28" viewBox="0 0 28.0538 28.0538" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0 0.561076C0 0.251202 0.251202 0 0.561076 0H27.4927C27.8026 0 28.0538 0.251202 28.0538 0.561076V27.4927C28.0538 27.8026 27.8026 28.0538 27.4927 28.0538H0.561076C0.251202 28.0538 0 27.8026 0 27.4927V0.561076Z" fill="#0A0A0A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Kajabi"><title>Kajabi</title><svg fill="none" x="4" y="4" width="92" height="92" viewBox="0 0 28.054 28.054" preserveAspectRatio="xMidYMid meet" overflow="visible"><path d="M0 0.561076C0 0.251202 0.251202 0 0.561076 0H27.4927C27.8026 0 28.0538 0.251202 28.0538 0.561076V27.4927C28.0538 27.8026 27.8026 28.0538 27.4927 28.0538H0.561076C0.251202 28.0538 0 27.8026 0 27.4927V0.561076Z" fill="#0A0A0A"/>
 <path d="M14.0275 14.0262L6.17184 6.17183H21.882L14.0275 14.0262Z" fill="url(#kajabi-a)"/>
 <path d="M21.882 21.8791L6.17185 21.8819L14.0275 14.0261L21.882 21.8791Z" fill="url(#kajabi-b)"/>
 <path d="M14.0275 14.0262L6.17184 21.882V6.17183L14.0275 14.0262Z" fill="url(#kajabi-c)"/>
@@ -16,5 +15,4 @@
 <stop stop-color="white" stop-opacity="0.8"/>
 <stop offset="1" stop-color="white" stop-opacity="0.5"/>
 </linearGradient>
-</defs>
-</svg>
+</defs></svg></svg>

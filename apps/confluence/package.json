@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/confluence",
+  "version": "0.1.0",
+  "description": "Read and write Confluence Cloud pages, spaces, blog posts, comments and tasks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.confluence",
+    "displayName": "Confluence",
+    "categories": [
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Confluence"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Confluence"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*.atlassian.net",
+        "api.atlassian.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

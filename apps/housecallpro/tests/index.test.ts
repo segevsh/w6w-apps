@@ -383,23 +383,24 @@ Deno.test("index: the manifest declares 1-3 categories", async () => {
  */
 Deno.test("index: the icon is the vendor's file, byte-for-byte", async () => {
   const { w6w } = await manifest();
-  // `url` is ImageObject's raster slot — a `png` key is silently invisible to the
-  // host's asset inliner, which is how this app once shipped with no icon at all.
-  assertEquals(w6w.appearance.icon.url, "./assets/icon.png");
-  assertEquals(w6w.appearance.icon.svg, undefined);
+  // `svg` is ImageObject's vector slot; `url` is the raster one, and a `png`
+  // key is silently invisible to the host's asset inliner, which is how this
+  // app once shipped with no icon at all. It is vector now — Housecall Pro
+  // publishes the same mark as an SVG, so the 180px PNG is retired.
+  assertEquals(w6w.appearance.icon.svg, "./assets/icon.svg");
+  assertEquals(w6w.appearance.icon.url, undefined);
 
-  const bytes = await Deno.readFile(new URL("../assets/icon.png", import.meta.url));
-  assertEquals(bytes.length, 4002, "icon.png is no longer the 4,002-byte vendor file");
-
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  const hex = Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  assertEquals(
-    hex,
-    "b0a379bd19cde48a786300bda3454eec5f9b60c85e518418f791a2003f8c5b6a",
-    "icon.png bytes changed — it is no longer the file downloaded from housecallpro.com",
+  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+  // Downloaded verbatim on 2026-08-15 from
+  // housecallpro.com/wp-content/uploads/2024/03/hcp-logo_favicon.svg, then
+  // re-framed onto the pack's square canvas by `_tools/icon-normalize.ts` —
+  // which is why the length is the tool's and the artwork below is the vendor's.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
   );
+  assert(svg.includes("#0f77cc"), "Housecall Pro's blue is gone — the mark was redrawn");
+  assert(!/<text|<tspan/.test(svg), "the icon became a wordmark");
 });
 
 Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {

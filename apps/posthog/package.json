@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/posthog",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Capture analytics events and query persons, cohorts, feature flags, insights and annotations via PostHog",
   "license": "MIT",
   "author": {

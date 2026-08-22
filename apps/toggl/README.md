@@ -121,8 +121,15 @@ from any action, and not from the other checks.
 
 ## Icon
 
-`assets/icon.png` is the real Toggl mark, copied unmodified from n8n's
-`nodes-base/nodes/Toggl/toggl.png` (60×61 PNG) — no icon was invented for this app.
+`assets/icon.svg` — vector and the current Toggl Track mark — replaces a 60px PNG of the retired power glyph.
+
+Taken from <https://public-assets.toggl.com/b/static/favicon.svg> on 2026-08-15.
+
+- **902 bytes**, `image/svg+xml`, md5 `c0bd4ea59dbbbc36356ddc79eb5274a9`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+The previous file came from n8n's `nodes-base` at 60×61 and was Toggl's retired power glyph. Toggl Track publishes a vector of its current mark.
 
 ---
 

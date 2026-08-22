@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/onesimpleapi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A toolbox of small utility APIs: page metadata, screenshots, PDFs, QR codes, email validation, URL expansion, and currency conversion.",
   "license": "MIT",
   "author": {

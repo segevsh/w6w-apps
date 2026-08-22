@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/elastic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Search, index, and manage documents and indices on any Elasticsearch cluster.",
   "license": "MIT",
   "author": {

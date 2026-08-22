@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/fivetran",
+  "version": "0.1.0",
+  "description": "Run the pipelines that fill a warehouse — trigger and watch connection syncs, pause and resume them, run dbt transformations, and read the destinations and sync history behind it.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.fivetran",
+    "displayName": "Fivetran",
+    "categories": [
+      "data-warehousing",
+      "devops",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Fivetran"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.fivetran.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

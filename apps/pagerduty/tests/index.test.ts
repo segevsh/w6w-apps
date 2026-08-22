@@ -27,3 +27,19 @@ Deno.test("index: perform actions declare `idempotent` explicitly", () => {
     assertEquals(typeof action.idempotent, "boolean", `${action.key} must declare idempotent`);
   }
 });
+
+Deno.test("index: no param is buried in a `group` the studio renders as JSON", () => {
+  // `ParamsForm` routes `type: "group"` to the JSON editor, so a group's
+  // children never render as fields — the defect that made SendGrid look like
+  // it had no CC/BCC. Sections are layout-only and render their children as
+  // real inputs; a `json` param is a deliberate JSON editor. Neither is a group.
+  const buried: string[] = [];
+  const walk = (actionKey: string, list: unknown) => {
+    for (const entry of (list ?? []) as Array<Record<string, unknown>>) {
+      if (entry?.type === "group") buried.push(`${actionKey}.${String(entry.key)}`);
+      walk(actionKey, entry?.children);
+    }
+  };
+  for (const a of app.actions) walk(a.key, a.params);
+  assertEquals(buried, []);
+});

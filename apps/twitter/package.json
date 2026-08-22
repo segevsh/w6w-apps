@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/twitter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Post, delete, search and read tweets, look up users, and like/retweet on X (formerly Twitter).",
   "license": "MIT",
   "author": {

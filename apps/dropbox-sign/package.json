@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/dropbox-sign",
+  "version": "0.1.0",
+  "description": "Send documents for signature, track and download them, and manage templates and teams.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.dropbox-sign",
+    "displayName": "Dropbox Sign",
+    "categories": [
+      "legal",
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Dropbox Sign"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.hellosign.com",
+        "app.hellosign.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

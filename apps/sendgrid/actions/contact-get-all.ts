@@ -28,20 +28,25 @@ const action: ActionDefinition = {
       hint: "Max number of results to return",
     },
     {
+      // Was a `filters` group holding this one field — and the studio renders a
+      // `group` as a raw JSON editor, so the only filter this action has was
+      // unreachable as a form field. Flat, it is just an input.
+      key: "query",
+      label: "Query",
+      type: "string",
+      default: "",
+      hint:
+        'Valid <a href="https://sendgrid.com/docs/for-developers/sending-email/segmentation-query-language/">SGQL</a> expression',
+    },
+    {
       key: "filters",
-      label: "Filters",
-      type: "group",
+      // DEPRECATED — see mail-send.ts. Kept declared so steps saved against the
+      // old group shape keep working; `resolveParams` drops undeclared keys.
+      label: "Filters (deprecated)",
+      type: "json",
       default: {},
-      children: [
-        {
-          key: "query",
-          label: "Query",
-          type: "string",
-          default: "",
-          hint:
-            'Valid <a href="https://sendgrid.com/docs/for-developers/sending-email/segmentation-query-language/">SGQL</a> expression',
-        },
-      ],
+      advanced: true,
+      hint: "Superseded by Query above; used only when Query is empty.",
     },
   ],
 
@@ -50,7 +55,12 @@ const action: ActionDefinition = {
     const returnAll = p.returnAll === true;
     const limit = Number(p.limit ?? 100);
     const filters = (p.filters ?? {}) as Record<string, unknown>;
-    const query = typeof filters.query === "string" ? filters.query.trim() : "";
+    const queryRaw = typeof p.query === "string" && p.query.trim()
+      ? p.query
+      : typeof filters.query === "string"
+      ? filters.query
+      : "";
+    const query = queryRaw.trim();
 
     const useSearch = query.length > 0;
     const method = useSearch ? "POST" : "GET";

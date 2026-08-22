@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/homeassistant",
+  "version": "0.1.0",
+  "description": "Read and control a Home Assistant instance — entity states, service calls, history, templates, calendars and events.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.homeassistant",
+    "displayName": "Home Assistant",
+    "categories": [
+      "iot",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Home Assistant"
+      }
+    },
+    "network": {
+      "allow": [
+        "status.home-assistant.io",
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

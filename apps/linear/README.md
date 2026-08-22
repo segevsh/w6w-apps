@@ -57,6 +57,17 @@ The three questions above map onto declared checks like this:
 A declared absence always reports `unknown`, so it carries `severity: "informational"` —
 otherwise it would pin every verdict for this app at `unknown` forever.
 
+
+## Icon
+
+`assets/icon.svg` — vector — replaces a 180px PNG.
+
+Taken from <https://linear.app/static/favicon.svg> on 2026-08-15.
+
+- **870 bytes**, `image/svg+xml`, md5 `3b15ba7e8fac94de88598f27741478de`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-07-26. Status surfaces move; re-check with

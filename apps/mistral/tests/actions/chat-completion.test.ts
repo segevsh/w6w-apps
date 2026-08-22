@@ -58,3 +58,30 @@ Deno.test("chat-completion: omits undefined optional params from the request bod
   const sent = JSON.parse(calls[0].body!);
   assertEquals(Object.keys(sent).sort(), ["messages", "model"]);
 });
+
+Deno.test("chat-completion: forwards tools, tool_choice and parallel_tool_calls", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  const tools = [{ type: "function", function: { name: "get_weather" } }];
+  await action.execute!(
+    {
+      model: "mistral-large-latest",
+      messages: [{ role: "user", content: "weather?" }],
+      tools,
+      toolChoice: "any",
+      parallelToolCalls: false,
+    },
+    ctx,
+  );
+  const body = JSON.parse(calls[0].body!);
+  assertEquals(body.tools, tools);
+  assertEquals(body.tool_choice, "any");
+  assertEquals(body.parallel_tool_calls, false);
+});
+
+Deno.test("chat-completion: omits the tool keys entirely when unset", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  await action.execute!({ model: "mistral-large-latest", messages: [] }, ctx);
+  const body = JSON.parse(calls[0].body!);
+  assertEquals(body.tools, undefined);
+  assertEquals(body.tool_choice, undefined);
+});

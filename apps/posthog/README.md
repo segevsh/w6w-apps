@@ -143,6 +143,17 @@ Per [`rfcs/healthcheck.md`](https://github.com/w6w-io/w6w-core/blob/main/rfcs/he
 | `service` | service | app | none | informational | `health/service.ts` — declared `unavailable`, no vendor status API exists |
 | `auth:personal-api-key` | credential | connection | signed | fatal | derived from the `personal-api-key` auth method's `test` hook |
 
+
+## Icon
+
+`assets/icon.svg` — the vendor's own icon; the previous artwork sat on a hard white plate.
+
+Taken from <https://posthog.com/favicon.svg> on 2026-08-15.
+
+- **1,410 bytes**, `image/svg+xml`, md5 `5131946b61517e86971c24c08e68174f`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
 ---
 
 Researched and endpoint-verified 2026-08-01 against PostHog's official docs (`posthog.com/docs/api`,

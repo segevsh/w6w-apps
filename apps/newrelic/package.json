@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/newrelic",
+  "version": "0.1.0",
+  "description": "Query New Relic with NRQL, search entities, manage tags and alerts, read dashboards and record deployments — all through NerdGraph.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.newrelic",
+    "displayName": "New Relic",
+    "categories": [
+      "monitoring",
+      "analytics",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "New Relic"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.newrelic.com",
+        "api.eu.newrelic.com",
+        "status.newrelic.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

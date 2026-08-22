@@ -337,12 +337,20 @@ Deno.test("index: the manifest allows both API hosts and not the status host", a
 
 Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
   const svg = await readSource("assets/icon.svg");
-  // Downloaded verbatim on 2026-08-11 from
-  // cdn.jsdelivr.net/npm/simple-icons@latest/icons/fillout.svg: 1,971 bytes,
-  // a 24x24 single-path wordmark, md5 b4616cc4c5356b5fb88f4c4ab107c4ae.
-  assertEquals(svg.length, 1971, "icon.svg is no longer the 1,971-byte vendor file");
+  // The square icon from Fillout's own brand page
+  // (https://www.fillout.com/brand → /fillout-icon.svg), taken on 2026-08-15 and
+  // re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`. It
+  // replaces the simple-icons export, which was the bare wordmark: 4:1, and a
+  // strip of text on a square tile. Fillout's yellow carries both themes on its
+  // own, so the reversed variant this app used to ship is retired.
+  assert(
+    svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"'),
+    "icon.svg is not on the pack's normalized canvas",
+  );
   assert(svg.includes("<title>Fillout</title>"), "the icon's title is not Fillout's");
-  assert(svg.includes('viewBox="0 0 24 24"'));
+  for (const colour of ["#FFC738", "#071003"]) {
+    assert(svg.includes(colour), `Fillout brand colour ${colour} missing — the mark was redrawn`);
+  }
 });
 
 // --- the guards' own guards -------------------------------------------------

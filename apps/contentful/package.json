@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/contentful",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Read and manage Contentful spaces, content types, entries, assets and locales.",
   "license": "MIT",
   "author": {
@@ -15,7 +15,7 @@
     ],
     "appearance": {
       "icon": {
-        "url": "./assets/icon.png",
+        "svg": "./assets/icon.svg",
         "alt": "Contentful"
       }
     },

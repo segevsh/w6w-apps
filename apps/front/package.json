@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/front",
+  "version": "0.1.0",
+  "description": "Work a Front shared inbox — find conversations, reply, comment, tag, assign, snooze, and keep the contacts behind them current.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.front",
+    "displayName": "Front",
+    "categories": [
+      "support",
+      "communication",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Front"
+      }
+    },
+    "network": {
+      "allow": [
+        "api2.frontapp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

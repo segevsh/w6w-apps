@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/tidycal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and manage TidyCal scheduling: bookings, booking types, available timeslots, contacts and teams.",
   "license": "MIT",
   "author": {

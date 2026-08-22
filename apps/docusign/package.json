@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/docusign",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send envelopes for signature with Docusign eSignature, track their status, download signed documents, and manage recipients, templates and account users.",
   "license": "MIT",
   "author": {

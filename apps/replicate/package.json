@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/replicate",
+  "version": "0.1.0",
+  "description": "Run models on Replicate, poll or wait for their output, and manage deployments and trainings.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.replicate",
+    "displayName": "Replicate",
+    "categories": [
+      "ai",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Replicate"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Replicate"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.replicate.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

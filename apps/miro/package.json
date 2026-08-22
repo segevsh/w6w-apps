@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/miro",
+  "version": "0.1.0",
+  "description": "Create and read Miro boards, sticky notes, cards, shapes, connectors and tags.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.miro",
+    "displayName": "Miro",
+    "categories": [
+      "productivity",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Miro"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Miro"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.miro.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

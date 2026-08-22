@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/airtable",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Read, create, update, upsert and delete Airtable records; list bases and get base schema.",
   "license": "MIT",
   "author": {

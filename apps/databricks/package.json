@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/databricks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Execute SQL statements and manage Unity Catalog catalogs and tables in a Databricks workspace.",
   "license": "MIT",
   "author": {

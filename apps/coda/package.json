@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/coda",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read and write Coda docs, tables and rows via the Coda REST API.",
   "license": "MIT",
   "author": {

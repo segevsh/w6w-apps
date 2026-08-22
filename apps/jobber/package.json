@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/jobber",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Jobber field-service management — clients, properties, requests, quotes, jobs, visits and invoices — over Jobber's GraphQL API.",
   "license": "MIT",
   "author": {

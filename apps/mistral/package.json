@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/mistral",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Chat completions, embeddings, and OCR via the Mistral AI API.",
   "license": "MIT",
   "author": {

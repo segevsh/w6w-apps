@@ -283,6 +283,17 @@ Every URL below was fetched and confirmed **200** on 2026-08-03.
   It could not be verified as the vendor's official organisation, so it is not presented as one.
   Flodesk publishes no official SDK.
 
+## Icon
+
+`assets/icon.png` — Flodesk's app icon; the previous artwork was the wordmark at 4.65:1, the widest mark in the pack.
+
+Taken from <https://flodesk.com/web-app-manifest-512x512.png> on 2026-08-15.
+
+- **2,774 bytes**, `image/png`, 512 × 512, md5 `96484f3f9598db0d5a3b9a3001b4d5b8`
+- raster, because the vendor publishes no vector of this mark
+
+Flodesk publishes no usable vector: their `safari-pinned-tab.svg` is a potrace of the bitmap, not the source artwork. The previous file was the wordmark at 4.65:1 — the widest mark in the pack.
+
 ## Development
 
 ```bash

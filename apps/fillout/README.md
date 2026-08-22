@@ -244,3 +244,18 @@ rather than from `https://…` literals, `_tools/audit.ts`'s undeclared-host sca
 check here. `tests/index.test.ts` closes that gap by deriving the host set from the code and
 asserting it equals `w6w.network.allow` in **both** directions — a host called but undeclared, and a
 host declared but never called, each fail.
+
+## Icon
+
+`assets/icon.svg` — the square icon from Fillout's brand page; its yellow gradient carries both themes, so the reversed variant is no longer needed.
+
+Taken from <https://www.fillout.com/fillout-icon.svg> on 2026-08-15.
+
+- **4,820 bytes**, `image/svg+xml`, md5 `c34a66f0627e7b3a88971f7af7455096`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+Fillout's brand page offers the wordmark and the icon as separate downloads; this is the icon. The previous artwork was the wordmark export from simple-icons — 4:1, a strip of text on a square tile. The icon's yellow (`#FFC738`) reads on both tiles on its own, so the generated reversed variant is retired.
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.

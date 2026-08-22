@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/notion",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Read and write Notion databases, pages, blocks and users via the Notion API.",
   "license": "MIT",
   "author": {

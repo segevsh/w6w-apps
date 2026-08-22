@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/snyk",
+  "version": "0.1.0",
+  "description": "Read Snyk issues, projects, targets and SBOMs, and audit an organization's security posture.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.snyk",
+    "displayName": "Snyk",
+    "categories": [
+      "security",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Snyk"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.snyk.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

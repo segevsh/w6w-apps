@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/wufoo",
-  "version": "0.1.1",
-  "description": "Read Wufoo forms, fields, entries and reports, and submit new entries \u2014 with the entry filters, sorting and paging the v3 API provides.",
+  "version": "0.1.2",
+  "description": "Read Wufoo forms, fields, entries and reports, and submit new entries — with the entry filters, sorting and paging the v3 API provides.",
   "license": "MIT",
   "author": {
     "name": "w6w"

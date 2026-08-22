@@ -450,23 +450,18 @@ implement.
 
 ## Icon
 
-`assets/icon.png` is Housecall Pro's own `apple-touch-icon.png`, downloaded **verbatim**:
+`assets/icon.svg` — the same mark in vector — replaces a 180px PNG.
 
-| | |
-|---|---|
-| Source | `https://www.housecallpro.com/apple-touch-icon.png` |
-| Size | 4,002 bytes |
-| Type | `image/png`, 180×180, 8-bit RGBA, non-interlaced |
-| md5 | `5e2761c440ee7f4572766682283da4ad` |
-| sha256 | `b0a379bd19cde48a786300bda3454eec5f9b60c85e518418f791a2003f8c5b6a` |
+Taken from <https://www.housecallpro.com/wp-content/uploads/2024/03/hcp-logo_favicon.svg> on 2026-08-15.
 
-A genuine vendor **SVG** exists and was found, byte-verified, and deliberately not used:
-`https://static-assets.housecallpro.com/brand/logos/square-door-only.svg`, 1,035 bytes, md5
-`fe1537f2af8cc68f208b839e49652b5e` — the file Housecall Pro's own documentation site names as its
-workspace `logoUrl`, so its provenance is not in doubt. It declares `width="486.53"`
-`height="486.53"` and **no `viewBox`**, which means it cannot be scaled into an icon slot without
-editing it — and editing it would forfeit the verbatim claim. The PNG is used instead, and the SHA-256
-above is asserted in `tests/index.test.ts` so a silent substitution fails the suite.
+- **657 bytes**, `image/svg+xml`, md5 `89fbfb3ccd932ec0f124daaf9a5ae8c1`
+- re-framed onto the pack's square canvas by `_tools/icon-normalize.ts`; the artwork
+  inside the nested `<svg>` is the vendor's, verbatim
+
+The vector this app previously turned down — `static-assets.housecallpro.com/brand/logos/square-door-only.svg` — declared `width`/`height` and **no `viewBox`**, so it could not be scaled into an icon slot without editing it. This is a different vendor file: it carries a `viewBox`, so it scales as shipped and the verbatim claim survives.
+
+`tests/index.test.ts` asserts what the file has to keep, so a redraw or a
+look-alike fails the suite.
 
 ---
 
