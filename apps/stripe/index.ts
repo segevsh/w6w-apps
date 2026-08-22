@@ -18,9 +18,17 @@
  *     retried invocation replays the original response instead of charging a
  *     customer twice. That is why the write actions declare `idempotent: true`.
  *
+ * Checkout is the one path that can take money from a customer who has no
+ * saved card: `subscription-create` needs a payment method already attached,
+ * and card details can never reach this runtime (a PCI boundary), so a new
+ * self-serve signup goes through `checkout-session-create` and returns a
+ * Stripe-hosted URL to redirect to.
+ *
  * Deliberately absent: the webhook trigger (a Trigger, not an Action — which
  * is also why n8n's `signatureSecret` credential field is not collected), and
- * Stripe Connect's account/transfer surface.
+ * Stripe Connect's account/transfer surface. Note that checkout only *starts*
+ * the flow — knowing it COMPLETED needs that webhook, so today a caller polls
+ * the session or reads the subscription instead.
  */
 import type { AppDefinition } from "@w6w/types";
 import apiKey from "./auth/api-key.ts";
@@ -47,6 +55,8 @@ import subscriptionGet from "./actions/subscription-get.ts";
 import subscriptionCancel from "./actions/subscription-cancel.ts";
 import productCreate from "./actions/product-create.ts";
 import priceCreate from "./actions/price-create.ts";
+import priceGetMany from "./actions/price-get-many.ts";
+import checkoutSessionCreate from "./actions/checkout-session-create.ts";
 import balanceGet from "./actions/balance-get.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
@@ -82,6 +92,9 @@ export default {
     // catalogue
     productCreate,
     priceCreate,
+    priceGetMany,
+    // checkout
+    checkoutSessionCreate,
     // balance
     balanceGet,
   ],
