@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/moco",
+  "version": "0.1.0",
+  "description": "Manage MOCO contacts, companies, projects, time-tracking activities and invoices.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.moco",
+    "displayName": "MOCO",
+    "longDescription": "MOCO is a combined CRM, project time-tracking and invoicing tool built for agencies and consultancies. This app covers the day-to-day records a workflow touches: contacts and the companies (customers, suppliers, organizations) they belong to, projects work is booked against, the tracked time activities that make up a project's hours, and the invoices generated from that work.\n\nA fit for syncing contacts and companies with an external CRM, creating or updating a project when a deal closes elsewhere, logging time entries from an external time source, or moving an invoice through its status lifecycle (created → sent → paid) as a workflow tracks payment.",
+    "categories": [
+      "crm",
+      "finance",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "MOCO"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.mocoapp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

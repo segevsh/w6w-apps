@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mindee",
+  "version": "0.1.0",
+  "description": "Extract structured data from documents with Mindee's OCR/AI models: enqueue extraction, classification, crop, OCR and split inferences, poll jobs, and read results.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mindee",
+    "displayName": "Mindee",
+    "longDescription": "Mindee turns documents into structured data. This app covers Mindee's V2 Platform API (`api-v2.mindee.net`): the five inference products a custom Mindee model can run — Extraction (a data schema you define), Classification, Crop, OCR (raw text + word positions) and Split (breaking a multi-document file into ranges) — plus the polling and search surfaces every one of them shares.\n\nEvery inference is asynchronous: an enqueue action returns a Job immediately, and a workflow either polls Job Status until it reports `Processed`/`Failed`, or relies on a webhook configured on the model itself (Mindee's V2 API has no webhook-management endpoint; webhooks are created on the Mindee Platform per model and referenced here only by ID). Once processed, the matching *-result-get action reads the structured output using the same ID the enqueue action returned.\n\nExtraction also supports Retrieval-Augmented Generation: upload a reference document, annotate it, and Mindee uses it as context for later extractions against the same model. Model Search lists the models an API key's organization owns, which is where a workflow gets the model ID every enqueue action needs.\n\nHealth checks track Mindee's own status page, scoped specifically to the API V2 component this app calls, rather than the page's page-level roll-up.",
+    "categories": [
+      "ai",
+      "documents"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mindee"
+      }
+    },
+    "network": {
+      "allow": [
+        "api-v2.mindee.net"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/gotify",
+  "version": "0.1.0",
+  "description": "Send and manage push notifications through a self-hosted Gotify server.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gotify",
+    "displayName": "Gotify",
+    "longDescription": "Gotify (https://gotify.net) is a small self-hosted server for sending and receiving push notifications — the kind a script, cron job or monitoring stack fires off ('backup finished', 'disk 90% full') without needing a phone number, an email relay or a SaaS account. This app puts that server behind a workflow: send a message, list and prune the messages already sent, and manage the two kinds of access token Gotify hands out — application tokens for the things that send, and client tokens for the things (and people) that read and manage.\n\nBecause Gotify is software you run yourself, there is no fixed hostname or shared vendor account: the connection asks for the server's own URL alongside a client token, and every action reaches wherever that server actually lives.\n\nDeliberately out of scope: deleting an application or a client. Gotify gates both behind a freshly-elevated client session (a WebAuthn re-authentication ceremony, `403 session not elevated` otherwise) that a stored API credential has no way to perform — see the README for the full explanation. Also out of scope: application images, plugins, the WebSocket message stream, OIDC/local login, and user administration — each is its own surface, and none is the daily loop of sending and triaging notifications.",
+    "categories": [
+      "communication",
+      "monitoring"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gotify"
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

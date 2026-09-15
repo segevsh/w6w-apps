@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.132.0",
+  "version": "0.133.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -14,6 +14,9 @@
     },
     {
       "path": "./apps/adalo"
+    },
+    {
+      "path": "./apps/addevent"
     },
     {
       "path": "./apps/affinity"
@@ -475,6 +478,9 @@
       "path": "./apps/gorgias"
     },
     {
+      "path": "./apps/gotify"
+    },
+    {
       "path": "./apps/goto-webinar"
     },
     {
@@ -727,6 +733,9 @@
       "path": "./apps/microsoft-todo"
     },
     {
+      "path": "./apps/mindee"
+    },
+    {
       "path": "./apps/miro"
     },
     {
@@ -737,6 +746,9 @@
     },
     {
       "path": "./apps/mixpanel"
+    },
+    {
+      "path": "./apps/moco"
     },
     {
       "path": "./apps/mollie"
@@ -1019,6 +1031,9 @@
     },
     {
       "path": "./apps/snyk"
+    },
+    {
+      "path": "./apps/softr"
     },
     {
       "path": "./apps/splitwise"

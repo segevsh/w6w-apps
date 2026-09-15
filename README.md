@@ -27,6 +27,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | activecampaign | marketing, crm | api-key | 13 |
 | acuityscheduling | calendar | basic, oauth2 | 9 |
 | adalo | developer-tools, databases | api-key | 5 |
+| addevent | calendar, scheduling | bearer-token | 22 |
 | affinity | crm | bearer-token | 39 |
 | agencyzoom | crm, project-management | custom | 23 |
 | airbyte | data-warehousing, devops | application | 12 |
@@ -178,6 +179,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | googlechat | communication | oauth2 | 18 |
 | googlesearchconsole | marketing, analytics | oauth2 | 10 |
 | gorgias | support | basic | 22 |
+| gotify | communication, devops | custom | 12 |
 | goto-webinar | video, communication | oauth2 | 13 |
 | grafana | monitoring | service-account-token | 8 |
 | grain | ai | api-key | 19 |
@@ -260,10 +262,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | messagebird | communication, phone-sms | api-key | 7 |
 | metabase | analytics, databases | api-key | 17 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
+| mindee | ai, documents | api-key | 16 |
 | miro | productivity, project-management | oauth2 | 27 |
 | missive | communication, support, productivity | api-token | 42 |
 | mistral | ai | api-key | 4 |
 | mixpanel | analytics, marketing | service-account | 13 |
+| moco | crm, finance | api-key | 17 |
 | mollie | commerce, finance | api-key, oauth2 | 41 |
 | monday | project-management, productivity | api-token, oauth2 | 14 |
 | moneybird | finance, accounting | personal-token, oauth2 | 11 |
@@ -356,6 +360,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | smartsheet | spreadsheets, productivity | access-token | 16 |
 | snowflake | data-warehousing | key-pair | 5 |
 | snyk | security, developer-tools | api-token | 20 |
+| softr | developer-tools, databases | api-key | 18 |
 | splitwise | finance, productivity | api-key | 26 |
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |
@@ -444,7 +449,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-374 apps, 7109 actions.
+379 apps, 7194 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

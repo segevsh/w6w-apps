@@ -539,10 +539,14 @@ Mistral prefixes every update body with `Status: Resolved` / `Status: Investigat
 is machine-readable, and guessing from the title when a real field exists is inexcusable.
 Where a vendor offers nothing like it, report `unknown` rather than inventing a state.
 
-Three apps read feeds today, for different reasons:
+Several apps read feeds today, for different reasons:
 
 - **mistral** — the feed is the *only* machine-readable surface, so it drives the `service`
   verdict. Affected components come from the `<li>` list in each update body.
+- **moco** — `status.mocoapp.com` 302s to `www.mocoappstatus.com`, an Atlassian Statuspage
+  page whose `/history.atom` feed is read the same way as **bitly**'s: Statuspage.io prefixes
+  every update body with its status word (`Resolved - …`), so the check reads the newest
+  update per incident (`latest`) and treats anything not opening with "Resolved" as still open.
 - **zohomail** — same reason, one layer worse: `status.zoho.com` 301s to `us.zohostatus.com`,
   a Site24x7 StatusIQ page with no Statuspage-style JSON at all, and its single feed carries
   one item per component across every Zoho product. The check reads the `Zoho Mail` component
