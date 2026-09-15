@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/recurly",
+  "version": "0.1.0",
+  "description": "Manage Recurly accounts, subscriptions, plans, invoices, transactions and coupons via the Recurly V3 API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.recurly",
+    "displayName": "Recurly",
+    "longDescription": "Recurly runs subscription billing and recurring-payment operations for a lot of SaaS and subscription-commerce businesses, and this app lets a workflow act directly on that billing data. Create and look up accounts, list and inspect subscriptions, and drive the subscription lifecycle — create and cancel.\n\nOn the money side, list invoices, pull up a specific one, and collect payment against a pending or past-due one. Browse the plan catalog to know what you're billing for, pull the transaction log for a payment attempt, and look up coupons.\n\nAuthentication is HTTP Basic with a private API key as the username and an empty password. Every request must also declare the API version it targets — this app pins `v2021-02-25`, Recurly's current GA version.",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Recurly"
+      }
+    },
+    "network": {
+      "allow": [
+        "v3.recurly.com",
+        "v3.eu.recurly.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

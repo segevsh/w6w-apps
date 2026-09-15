@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/float",
+  "version": "0.1.0",
+  "description": "Manage people, projects, allocations, time off, milestones, clients, statuses and logged time in Float — the resource scheduling and team capacity planning tool.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.float",
+    "displayName": "Float",
+    "longDescription": "Float is resource scheduling and team capacity planning software: who is working on what, when, and how much room is left before someone is overbooked.\n\nThis app covers Float's core scheduling objects over its REST API v3 — People (the team roster), Projects and Clients (what work belongs to), Allocations (the schedule itself, called `tasks` in the API), Time Off, Milestones, Statuses (short one-off notes like 'Travelling' or 'Sick'), and Logged Time (actual hours worked, distinct from the scheduled allocation). Every action does the CRUD the vendor documents for that resource — list, get, create, update, delete where Float exposes each.\n\nTwo Float quirks a workflow needs to know about, both handled here rather than left for the next step to discover: `logged-time` create answers `200` with an array of entries (every other create answers `201` with one object), and its own ID is a string, not the integer every other Float ID uses; and `status` create/update answer a `{status: [...]}` wrapper because creating a status that overlaps an existing one for that person silently deletes the old one and returns both.",
+    "categories": [
+      "project-management",
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Float"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.float.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

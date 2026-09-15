@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/shortcut",
+  "version": "0.1.0",
+  "description": "Manage Shortcut stories, epics, iterations, workflows and labels — the project-management tool formerly known as Clubhouse.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.shortcut",
+    "displayName": "Shortcut",
+    "longDescription": "Shortcut (formerly Clubhouse) is a project-management tool built around Stories — the atomic unit of work — grouped into Epics, scheduled into time-boxed Iterations, and moved through a team's own Workflow states. This app covers that core model end to end: create, read, update, delete and search Stories; manage Epics and their comments; create and update Iterations; read Workflows and their states; and manage Labels, Projects and the comment threads on Stories and Epics.\n\nEvery Story, Epic, Iteration, Label and Project id in Shortcut's API is a plain integer, not a UUID — the one exception being Members, which are addressed by UUID. Getting that mixed up is the most common way a request against this API 404s.\n\nHealth checks track Shortcut's own status page. Shortcut publishes no readable request-rate headroom (only a fixed 200-requests-per-minute ceiling enforced by a 429), so that dimension is declared unavailable rather than guessed at.",
+    "categories": [
+      "project-management",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Shortcut"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.app.shortcut.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
