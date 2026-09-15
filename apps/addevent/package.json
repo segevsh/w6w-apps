@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/addevent",
+  "version": "0.1.0",
+  "description": "Create, search, update and delete calendar events and calendars, manage RSVP attendees and calendar subscribers, and generate \"add to calendar\" links with AddEvent's Calendar & Events API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.addevent",
+    "displayName": "AddEvent",
+    "longDescription": "AddEvent turns a date and a title into a working \"add to calendar\" link — one that opens correctly in Google Calendar, Apple Calendar, Outlook, Office 365 and Yahoo without the caller having to know each vendor's own calendar-link format. This app covers AddEvent's Calendar & Events API v2: full CRUD on events and the calendars that hold them, RSVP attendee management for events that require a response, read access to a calendar's subscribers, and lookups of the account's saved RSVP forms, landing-page templates and supported timezones.\n\nThe shape of most workflows against this API is small: create or update an event when something happens in your own system (a booking, a webinar, a lifecycle change), and every event comes back with `link_long`/`link_short` URLs ready to hand to a user or drop in an email. RSVP-enabled events additionally track seat limits and going/maybe/not-going counts, and a workflow can react to a new RSVP attendee or read the roster of a subscribed calendar.\n\nHealth checks track AddEvent's own status page. AddEvent publishes no rate-limit or usage-quota signal of any kind — no response headers, no metering endpoint — so that question is answered as a declared absence rather than guessed at.",
+    "categories": [
+      "calendar",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "AddEvent"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.addevent.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

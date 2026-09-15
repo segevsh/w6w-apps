@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/softr",
+  "version": "0.1.0",
+  "description": "Read and write records in a Softr app's own Database tables, manage its tables and users, over the Softr Database API and Studio Users API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.softr",
+    "displayName": "Softr",
+    "longDescription": "Softr lets you build internal tools, client portals and websites on top of a data source — most often its own built-in Softr Database, a native multi-table store with fields, views and (optionally) AI-assisted columns.\n\nThis app covers the Softr Database API end to end: list and inspect databases, tables and views, then read, search, create, update and delete the records inside a table. Search supports Softr's full filter grammar (binary/unary/ternary/composite conditions, relative date tokens), not just a flat equality match.\n\nA second, separately-hosted surface — the Studio Users API — manages the people signed up to a published Softr app: create, delete, activate, deactivate and invite a user, generate a magic sign-in link, and trigger a user sync. It shares the same Personal Access Token as the Database API but talks to a different host and is scoped per-app by a domain header rather than by an app-scoped path.\n\nOne documented endpoint is deliberately not implemented: validating a Softr-issued user JWT (`POST /v1/api/users/validate-token`) is called against the Softr app's own live domain — a value that varies per app and per customer rather than a fixed API host — so it cannot be reached through a static network allowlist. See the README for the full reasoning.",
+    "categories": [
+      "databases",
+      "spreadsheets",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Softr"
+      }
+    },
+    "network": {
+      "allow": [
+        "tables-api.softr.io",
+        "studio-api.softr.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
