@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/tremendous",
+  "version": "0.1.0",
+  "description": "Send gift cards, prepaid cards, cash and donations, and manage the orders, rewards, products and campaigns behind them, via the Tremendous API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.tremendous",
+    "displayName": "Tremendous",
+    "longDescription": "Tremendous is a payouts and incentives API: gift cards, prepaid Visa/Mastercard, cash (PayPal, Venmo, ACH, international bank transfer) and charitable donations, sent one at a time or in bulk to employees, customers, survey respondents and research participants.\n\nEvery reward is sent by creating an Order, which either names a specific catalog product (a single Amazon.com gift card) or a Campaign that lets the recipient pick from a curated set. Orders are idempotent: supplying the same external_id twice returns the original order instead of paying twice, which is the retry-safety this app leans on for every money-moving action. Rewards created by an order can be listed, resent after a failed delivery, canceled before redemption, or turned back into a redemption link for a channel Tremendous doesn't deliver to directly (Slack, an in-app notification, a support ticket reply).\n\nThe Product and Campaign catalogs are read-only lookups a workflow queries before building an order — which gift cards are available in a country/currency, what a campaign's curated set looks like — and Funding Sources reports what's available to pay with, including the account's own USD balance.\n\nHealth checks track Tremendous's own status page, the API credential's liveness, and the account balance's remaining headroom, so a workflow that sends rewards on a schedule finds out about an empty balance from a health check rather than from a batch of failed orders.",
+    "categories": [
+      "commerce",
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Tremendous"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.tremendous.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

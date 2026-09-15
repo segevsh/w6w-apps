@@ -144,6 +144,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | firecrawl | ai, developer-tools | bearer-token | 10 |
 | fireflies | ai, productivity, video | api-key | 25 |
 | fivetran | data-warehousing, devops, analytics | api-key | 20 |
+| float | project-management, productivity | api-token | 40 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
 | folk | crm | api-key | 12 |
 | followupboss | crm | api-key | 26 |
@@ -278,6 +279,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mongodb-atlas | databases, devops | service-account | 19 |
 | motion | productivity, project-management, calendar | api-key | 27 |
 | mux | video, developer-tools, analytics | basic | 14 |
+| nationbuilder | crm | api-token, oauth2 | 23 |
 | netlify | devops | personal-access-token | 10 |
 | neverbounce | email, marketing | api-key | 10 |
 | newrelic | monitoring, analytics, devops | user-key | 17 |
@@ -336,6 +338,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | readwise | productivity | api-token | 20 |
 | recharge | commerce, finance | api-token | 29 |
 | recruitee | hr | bearer-token | 17 |
+| recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
 | replyio | marketing, crm, email | api-key | 18 |
 | resend | email, communication | api-key | 24 |
@@ -358,6 +361,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | shippo | commerce, developer-tools | api-key | 14 |
 | shipstation | ecommerce | api-key | 18 |
 | shopify | commerce | access-token | 18 |
+| shortcut | project-management, productivity | api-token | 36 |
 | signnow | documents | custom | 16 |
 | signrequest | legal, documents, productivity | api-key | 26 |
 | simplybook | calendar | login | 14 |
@@ -401,6 +405,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
 | trello | project-management, productivity | api-key | 27 |
+| tremendous | finance, hr | api-key | 14 |
 | trustpilot | marketing, reviews | api-key, client-credentials | 11 |
 | tumblr | social-media, cms | oauth2 | 23 |
 | twilio | communication | api-key | 2 |
@@ -454,7 +459,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-384 apps, 7300 actions.
+389 apps, 7430 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

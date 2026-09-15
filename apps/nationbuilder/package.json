@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/nationbuilder",
+  "version": "0.1.0",
+  "description": "Manage NationBuilder people, lists, events, donations and tags for campaigns, nonprofits and advocacy groups.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.nationbuilder",
+    "displayName": "NationBuilder",
+    "longDescription": "NationBuilder is a CRM and organizing platform for campaigns, nonprofits and advocacy groups, built around one shared record of every person a nation has ever touched — a \"signup\" in NationBuilder's own vocabulary, exposed here as a person. This app puts the daily loop of running a nation behind a workflow: create, look up, update and delete people; group them into lists and move people on and off a list in bulk; tag and untag them; and log a contact attempt (a canvass call, a door knock, a text) against a person's record.\n\nEvents round out the organizing side — creating and listing events and RSVPing a person to one — and donations cover the fundraising side, creating and listing gifts against a person's record. Custom fields can be listed so a workflow can populate a nation's own configured fields correctly instead of guessing at what has been set up.\n\nEvery nation runs on its own `{slug}.nationbuilder.com` subdomain, so the nation is chosen at connect time, not baked into the app, and both of NationBuilder's own documented ways in are offered: the public OAuth 2.0 flow (the only supported way to run against production, but gated behind either NationBuilder's Certified Developer program or an Enterprise/Network-plan nation) and a short-lived personal API token from the control panel's Developer settings, for a quick connection to a nation whose owner already has one.\n\nDeliberately out of scope: NationBuilder's fundraising pages, petitions, surveys, path/automation builders, imports, voter-file fields, memberships, precincts, ballots and elections, and its own website/CMS surfaces. Each is its own large surface, and none of it is the daily loop of managing people, lists, events, donations and tags a workflow actually touches.",
+    "categories": [
+      "crm",
+      "marketing",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "NationBuilder"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.nationbuilder.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
