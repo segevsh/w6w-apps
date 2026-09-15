@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/firecrawl",
+  "version": "0.1.0",
+  "description": "Turn any web page or site into clean, LLM-ready markdown: scrape a single URL, crawl a whole site, map its URLs, search the web, or extract structured data with an AI prompt.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.firecrawl",
+    "displayName": "Firecrawl",
+    "longDescription": "Firecrawl turns the messy web into clean input for an LLM. Point it at one URL and get back markdown with boilerplate stripped; point it at a whole site and it crawls every reachable page the same way; ask it to map a site and it returns the URL list without fetching content; ask it to search and it runs a web search and can scrape each result too; ask it to extract and an LLM turns a set of pages into the JSON shape you describe with a prompt or a schema.\n\nCrawls and extractions are asynchronous jobs: starting one returns a job id immediately, and a separate action polls it until the pages are done. Scrape and search both work with no API key at all, on a rate-limited free tier — everything else needs a key.\n\nHealth checks track Firecrawl's own status page (api.firecrawl.dev and firecrawl.dev, reported separately) and the team's remaining credit balance, read from the same endpoint used to verify a connection is live.",
+    "categories": [
+      "ai",
+      "developer-tools",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Firecrawl"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.firecrawl.dev"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

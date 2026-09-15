@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/bexio",
+  "version": "0.1.0",
+  "description": "Manage contacts, invoices, quotes, orders, articles, projects and timesheets in bexio, the Swiss business/accounting/CRM platform.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bexio",
+    "displayName": "bexio",
+    "longDescription": "bexio is a Swiss all-in-one business platform combining CRM, accounting, invoicing and project/time tracking for small and medium businesses. This app covers bexio's REST API v2 (`api.bexio.com`) end to end for the resources most workflows touch: contacts (create, edit, delete, search), sales documents (quotes, orders, invoices — including issuing an invoice), items/products (articles), projects and timesheets.\n\nEvery path, verb, query parameter, body field and enum here was verified on 2026-09-15 against bexio's own OpenAPI 3.0 document, extracted from the embedded Redoc state served at `docs.bexio.com` (bexio publishes no standalone `.json`/`.yaml` spec file), plus a live probe of the real Statuspage-hosted incident feed at `bexio-status.com`.\n\nTwo details in bexio's API are easy to get wrong from guesswork alone: every write — create AND edit — is a `POST` (there is no `PUT`/`PATCH` anywhere in the v2 surface, and edit reuses the exact same request schema as create), and every request must carry an explicit `Accept: application/json` header — the OpenAPI document marks it as a required parameter on every single operation, not just a conventional default. bexio also authenticates exclusively via OAuth 2.0 / OpenID Connect through a Keycloak realm at `auth.bexio.com` (there is no static API-key scheme for a third-party app); scopes are requested per resource and per direction (e.g. `contact_show` vs `contact_edit`), and requesting the write scope silently also grants the read scope for that resource.",
+    "categories": [
+      "crm",
+      "finance",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "bexio"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.bexio.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
