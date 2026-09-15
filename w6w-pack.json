@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.133.0",
+  "version": "0.134.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -100,6 +100,9 @@
       "path": "./apps/baserow"
     },
     {
+      "path": "./apps/bexio"
+    },
+    {
       "path": "./apps/bigcommerce"
     },
     {
@@ -122,6 +125,9 @@
     },
     {
       "path": "./apps/bluesky"
+    },
+    {
+      "path": "./apps/boldsign"
     },
     {
       "path": "./apps/booqable"
@@ -185,6 +191,9 @@
     },
     {
       "path": "./apps/clearbit"
+    },
+    {
+      "path": "./apps/clerk"
     },
     {
       "path": "./apps/clickhouse"
@@ -353,6 +362,9 @@
     },
     {
       "path": "./apps/fillout"
+    },
+    {
+      "path": "./apps/firecrawl"
     },
     {
       "path": "./apps/fireflies"
@@ -839,6 +851,9 @@
     },
     {
       "path": "./apps/pandadoc"
+    },
+    {
+      "path": "./apps/parseur"
     },
     {
       "path": "./apps/particle"

@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/parseur",
+  "version": "0.1.0",
+  "description": "Turn incoming emails and documents into structured data with Parseur's AI mailboxes, and manage the templates, webhooks and custom downloads that shape what comes out.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.parseur",
+    "displayName": "Parseur",
+    "longDescription": "Parseur turns unstructured emails, PDFs, images and spreadsheets into structured JSON. A mailbox (called a \"parser\" throughout the API) receives documents — forwarded emails, direct file uploads, or raw email/text posted straight to the API — and an AI or template engine extracts the fields you configure into a document record.\n\nThis app covers the full lifecycle: create and configure mailboxes, list and inspect the documents they've received (including per-document processing logs), submit new documents either as a binary upload or as an email/text payload, and drive documents through their own lifecycle (reprocess, skip, copy to another mailbox). It also manages the templates a mailbox uses to identify layouts, the webhooks that push parsed data out the moment a document finishes, and the custom CSV/XLS downloads Parseur can generate per mailbox or per field.\n\nAuthentication is a single account-wide API key, and Parseur's own health signal is the same call used to prove that key is live: hitting the API root returns a tiny routing map with no way to leak anything, so this app also uses it as its liveness probe rather than any endpoint that touches real mailbox data.",
+    "categories": [
+      "ai",
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Parseur"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.parseur.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -55,6 +55,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | base44 | ai, developer-tools | api-key | 11 |
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
+| bexio | accounting, crm | oauth2 | 25 |
 | bigcommerce | commerce, crm | access-token | 38 |
 | bigquery | data-warehousing, databases | oauth2 | 18 |
 | bitbucket | developer-tools | basic, access-token | 12 |
@@ -62,6 +63,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | bitrix24 | crm, productivity | webhook | 15 |
 | blandai | ai, communication | api-key | 19 |
 | bluesky | social-media, communication | app-password | 21 |
+| boldsign | documents | api-key | 12 |
 | booqable | crm, commerce | access-token | 26 |
 | box | storage | oauth2 | 10 |
 | braze | marketing, communication | api-key | 22 |
@@ -82,6 +84,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | circle | communication, social-media | api-token | 33 |
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
+| clerk | developer-tools, security | api-key | 30 |
 | clicksend | communication | basic-auth | 16 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
 | clio | crm | oauth2 (×4 regions) | 25 |
@@ -138,6 +141,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | feedly | productivity, security | bearer-token | 14 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | fillout | forms, productivity | api-key | 8 |
+| firecrawl | ai, developer-tools | bearer-token | 10 |
 | fireflies | ai, productivity, video | api-key | 25 |
 | fivetran | data-warehousing, devops, analytics | api-key | 20 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
@@ -298,6 +302,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | paddle | commerce, finance | api-key | 21 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | pandadoc | documents, legal, productivity | api-key | 16 |
+| parseur | documents, ai | api-key | 29 |
 | particle | iot, devops | access-token | 13 |
 | patreon | commerce, crm | creator-access-token, oauth2 | 11 |
 | paypal | commerce, finance | client-credentials | 13 |
@@ -449,7 +454,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-379 apps, 7194 actions.
+384 apps, 7300 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

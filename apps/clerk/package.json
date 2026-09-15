@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/clerk",
+  "version": "0.1.0",
+  "description": "Manage a Clerk instance — users, organizations, sessions, invitations and sign-in tokens — through the Backend API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.clerk",
+    "displayName": "Clerk",
+    "longDescription": "Clerk is a user authentication and management platform, and this app drives its Backend API — the server-to-server surface, distinct from the Frontend API and client SDKs a Clerk-powered app itself embeds. It creates, looks up, updates, bans and deletes users; merges metadata onto a user without clobbering the rest; manages B2B organizations, their memberships and invitations; lists and revokes sessions; and mints or revokes the two ways a backend hands someone a live session without touching a password: application-wide invitations and one-time sign-in tokens.\n\nThe API is a single global host (`api.clerk.com`) shared by every Clerk instance — the credential, not the URL, says which instance a call reaches, unlike platforms that key an integration off a per-tenant subdomain. It is also a moving target on shape: as of API version 2026-05-12, `PATCH /users/{id}` and `PATCH /organizations/{id}` no longer accept metadata fields at all — those now live behind dedicated `/metadata` endpoints with explicit merge (`PATCH`) or replace (`PUT`) semantics — and roughly half of this app's list endpoints answer a bare JSON array while the other half wrap the same data in `{ data, total_count }`, with no way to tell which from the URL alone.\n\nDeliberately out of scope: anything from the Frontend API (client-side sign-in/sign-up flows, that surface's own session cookies), JWT template and OAuth application management, SAML/enterprise SSO configuration, SCIM directory sync, and billing — all instance configuration or Frontend-only concepts, not workflow-shaped operations on the four resources above.",
+    "categories": [
+      "security",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Clerk"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.clerk.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

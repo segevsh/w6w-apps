@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/boldsign",
+  "version": "0.1.0",
+  "description": "Send documents for e-signature, manage templates and track status via the BoldSign REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.boldsign",
+    "displayName": "BoldSign",
+    "longDescription": "BoldSign is an e-signature API. This app covers the document lifecycle a workflow drives against an account that already has files uploaded through BoldSign's own app or reachable at a public URL: send a document for signature, list and inspect its status, download the signed PDF and its audit trail, nudge pending signers, revoke a document, and mint an embedded signing link a workflow can hand to a UI. Template actions cover listing templates, reading a template's roles, and sending a document by filling a template's roles with real signers.\n\nBoldSign's API host is region-sharded — an account (and its API keys) lives on exactly one of api.boldsign.com (US), api-eu.boldsign.com, api-ca.boldsign.com or api-au.boldsign.com, chosen at connect time.\n\nUploading a brand-new file isn't supported the way BoldSign's own dashboard supports it: this pack's Actions run in a sandbox whose ctx.fetch stringifies every request body, so a real multipart file upload cannot survive the trip. BoldSign's send/send-from-template operations accept a fileUrls list as an alternative to an uploaded file, and that is what this app uses — the document must already be reachable at a URL (already in BoldSign, or hosted elsewhere).",
+    "categories": [
+      "legal",
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "BoldSign"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.boldsign.com",
+        "api-eu.boldsign.com",
+        "api-ca.boldsign.com",
+        "api-au.boldsign.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
