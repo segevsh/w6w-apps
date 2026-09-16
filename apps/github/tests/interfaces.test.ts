@@ -2,9 +2,11 @@ import { assertEquals, assertFalse } from "@std/assert";
 import type { InterfaceConformance, InterfaceMethodImpl } from "@w6w/types";
 import app from "../index.ts";
 import refGet from "../actions/ref-get.ts";
+import refCreate from "../actions/ref-create.ts";
 import fileGet from "../actions/file-get.ts";
 import fileCreateOrUpdate from "../actions/file-create-or-update.ts";
 import fileDelete from "../actions/file-delete.ts";
+import pullRequestCreate from "../actions/pull-request-create.ts";
 
 /**
  * §S-2's declaration is asserted here, never host-verified (D-3) — this suite
@@ -13,23 +15,35 @@ import fileDelete from "../actions/file-delete.ts";
  */
 
 const INTERFACE_ID = "blob-store@1";
-const METHOD_KEYS = ["delete", "get", "headRef", "list", "put"] as const;
+const METHOD_KEYS = [
+  "createRef",
+  "delete",
+  "get",
+  "headRef",
+  "list",
+  "openPullRequest",
+  "put",
+] as const;
 
 // §S-1's canonical inputs for blob-store@1, keyed by method.
 const CANONICAL_INPUTS: Record<string, string[]> = {
   headRef: ["owner", "repository", "branch"],
   list: ["owner", "repository", "path", "ref"],
   get: ["owner", "repository", "path", "ref"],
-  put: ["owner", "repository", "path", "content", "expectedSha"],
-  delete: ["owner", "repository", "path", "expectedSha"],
+  put: ["owner", "repository", "path", "content", "expectedSha", "branch"],
+  delete: ["owner", "repository", "path", "expectedSha", "branch"],
+  createRef: ["owner", "repository", "branch", "fromSha"],
+  openPullRequest: ["owner", "repository", "headBranch", "baseBranch", "title", "body"],
 };
 
 // deno-lint-ignore no-explicit-any
 const ACTIONS_BY_KEY: Record<string, any> = {
   "ref-get": refGet,
+  "ref-create": refCreate,
   "file-get": fileGet,
   "file-create-or-update": fileCreateOrUpdate,
   "file-delete": fileDelete,
+  "pull-request-create": pullRequestCreate,
 };
 
 function conformance(): InterfaceConformance {
@@ -37,7 +51,7 @@ function conformance(): InterfaceConformance {
   return conformances[0];
 }
 
-Deno.test("interfaces: exactly one blob-store@1 conformance with the five method keys", () => {
+Deno.test("interfaces: exactly one blob-store@1 conformance with the seven method keys", () => {
   const conformances: InterfaceConformance[] = app.interfaces ?? [];
   assertEquals(conformances.length, 1);
   assertEquals(conformances[0].interfaceId, INTERFACE_ID);
@@ -57,11 +71,27 @@ Deno.test("interfaces: every uses.action names an action this app actually has",
   }
 });
 
-Deno.test("interfaces: headRef and put outputMaps are pinned exactly", () => {
+Deno.test("interfaces: headRef and put/delete outputMaps are pinned exactly", () => {
   const methods = conformance().methods;
   assertEquals(methods.headRef.outputMap, { sha: { "$": "output.object.sha" } });
   assertEquals(methods.headRef.with, undefined);
-  assertEquals(methods.put.outputMap, { sha: { "$": "output.content.sha" } });
+  assertEquals(methods.put.outputMap, {
+    sha: { "$": "output.content.sha" },
+    commitUrl: { "$": "output.commit.html_url" },
+  });
+  assertEquals(methods.delete.outputMap, {
+    ok: true,
+    commitUrl: { "$": "output.commit.html_url" },
+  });
+});
+
+Deno.test("interfaces: createRef and openPullRequest are declared as pinned", () => {
+  const methods = conformance().methods;
+  assertEquals(methods.createRef.with, undefined);
+  assertEquals(methods.createRef.outputMap, { sha: { "$": "output.object.sha" } });
+  assertEquals(methods.openPullRequest.with?.head, { "$": "inputs.headBranch" });
+  assertEquals(methods.put.with?.branch, { "$": "inputs.branch" });
+  assertEquals(methods.delete.with?.branch, { "$": "inputs.branch" });
 });
 
 Deno.test("interfaces: put/delete carry the literal commitMessage; delete's sha is wired", () => {
@@ -101,7 +131,7 @@ Deno.test("interfaces: every required param of the bound action is covered", () 
 });
 
 Deno.test("interfaces: the rest of the app export is unchanged", () => {
-  assertEquals(app.actions.length, 26);
+  assertEquals(app.actions.length, 27);
   assertEquals(app.auth.length, 2);
   assertEquals(app.healthChecks.length, 2);
 });
