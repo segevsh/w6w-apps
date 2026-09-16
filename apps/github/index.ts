@@ -28,6 +28,7 @@ import repositoryGet from "./actions/repository-get.ts";
 import repositoryGetIssues from "./actions/repository-get-issues.ts";
 import repositoryGetLicense from "./actions/repository-get-license.ts";
 import refGet from "./actions/ref-get.ts";
+import refCreate from "./actions/ref-create.ts";
 import releaseCreate from "./actions/release-create.ts";
 import releaseGetMany from "./actions/release-get-many.ts";
 import releaseUpdate from "./actions/release-update.ts";
@@ -61,6 +62,7 @@ export default {
     repositoryGetIssues,
     repositoryGetLicense,
     refGet,
+    refCreate,
     // release
     releaseCreate,
     releaseGetMany,
@@ -119,9 +121,13 @@ export default {
           filePath: { "$": "inputs.path" },
           content: { "$": "inputs.content" },
           sha: { "$": "inputs.expectedSha" },
+          branch: { "$": "inputs.branch" },
           commitMessage: "w6w interface sync", // D-11: a LITERAL
         },
-        outputMap: { sha: { "$": "output.content.sha" } },
+        outputMap: {
+          sha: { "$": "output.content.sha" },
+          commitUrl: { "$": "output.commit.html_url" },
+        },
       },
       delete: {
         uses: { action: "file-delete" },
@@ -130,9 +136,26 @@ export default {
           repository: { "$": "inputs.repository" },
           filePath: { "$": "inputs.path" },
           sha: { "$": "inputs.expectedSha" },
+          branch: { "$": "inputs.branch" },
           commitMessage: "w6w interface sync",
         },
-        outputMap: { ok: true },
+        outputMap: { ok: true, commitUrl: { "$": "output.commit.html_url" } },
+      },
+      createRef: {
+        uses: { action: "ref-create" },
+        outputMap: { sha: { "$": "output.object.sha" } },
+      },
+      openPullRequest: {
+        uses: { action: "pull-request-create" },
+        with: {
+          owner: { "$": "inputs.owner" },
+          repository: { "$": "inputs.repository" },
+          title: { "$": "inputs.title" },
+          head: { "$": "inputs.headBranch" },
+          base: { "$": "inputs.baseBranch" },
+          body: { "$": "inputs.body" },
+        },
+        outputMap: { url: { "$": "output.html_url" }, number: { "$": "output.number" } },
       },
     },
   }],
