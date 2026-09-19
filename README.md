@@ -219,6 +219,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | jira-data-center | project-management, developer-tools | personal-access-token, basic | 15 |
 | jira-service-management | support, project-management | api-token, oauth2 | 17 |
 | jobber | calendar, crm, finance | oauth2 | 28 |
+| jobtread | project-management, crm, finance | api-key | 13 |
 | jotform | forms, productivity | api-key | 14 |
 | judgeme | commerce, marketing | api-key | 16 |
 | jumpcloud | security, devops, hr | api-key | 31 |

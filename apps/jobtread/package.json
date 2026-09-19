@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/jobtread",
+  "version": "0.1.0",
+  "description": "Manage organizations, accounts, jobs, locations, and billing documents in JobTread via its Pave query API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.jobtread",
+    "displayName": "JobTread",
+    "longDescription": "JobTread is construction project management software: jobs, customers/vendors, locations, and the estimate/order/invoice documents that move money on a job. This app covers the operational core a workflow needs — reading the connected user and the organizations they belong to, listing and creating customer/vendor accounts, listing and creating job sites (locations), listing and creating jobs, and reading billing documents (bids, orders, bills, invoices) with their status and amounts.\n\nJobTread's API is a single endpoint (`POST https://api.jobtread.com/pave`) speaking Pave, a JSON query-by-example language in the spirit of GraphQL but with its own grammar for field selection, filtering (`where`), sorting, and pagination — and a credential that travels inside the JSON request body rather than as a header. Every action and query shape in this app was verified live against the API's own structured validation errors, or against the field-level documentation reproduced in a third-party open-source connector, never invented — see the README for what that means for the (deliberately narrower) action set here.",
+    "categories": [
+      "project-management",
+      "crm",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "JobTread"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.jobtread.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
