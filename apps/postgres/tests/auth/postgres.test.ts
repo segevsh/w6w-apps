@@ -191,6 +191,34 @@ Deno.test("auth/postgres: a partial read is buffered in state, not treated as a 
   assert(decoded.message.startsWith("n,,n=alice,r="));
 });
 
+/**
+ * (e) at the **hook boundary**, not just `lib/scram.ts`'s `clientFirstMessage`. The hook's own
+ * call site (`auth/postgres.ts:263`) relies on `clientFirstMessage`'s default third argument —
+ * a mutant that pins a constant there instead would pass a lib-level nonce test perfectly while
+ * every handshake this app ever drives sends the same client nonce. Read the nonce back off the
+ * `r=` attribute of the SASLInitialResponse the hook itself produced, never off an internal call.
+ */
+Deno.test("auth/postgres: two independently-driven handshake first-steps produce different client nonces", async () => {
+  async function clientNonceFromFreshHandshake(): Promise<string> {
+    const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
+    const step2 = continuing(
+      await postgres.handshake!(
+        { credential: cred, target, received: authSasl(["SCRAM-SHA-256"]), state: first.state },
+        noopCtx,
+      ),
+    );
+    const { message } = decodeSaslInitialResponse(step2.send);
+    return /r=([^,]+)$/.exec(message)![1];
+  }
+
+  const nonceA = await clientNonceFromFreshHandshake();
+  const nonceB = await clientNonceFromFreshHandshake();
+  assert(
+    nonceA !== nonceB,
+    `expected two independent handshakes to produce different client nonces, got the same value twice: ${nonceA}`,
+  );
+});
+
 /** Full SCRAM round trip through the hook, glue-tested against `lib/scram.ts` as the oracle for what it SHOULD send. */
 Deno.test("auth/postgres: completes a full SCRAM-SHA-256 round trip and verifies the server signature", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
