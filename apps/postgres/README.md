@@ -6,10 +6,12 @@ HTTP, via the platform's `ctx.socket` capability rather than `ctx.fetch`.
 
 - **Categories** — databases
 - **Auth methods** — postgres (`custom`, SCRAM-SHA-256)
-- **Actions** — 1 (`query`) in this node; `execute`, the health check and the
-  catalog entry (`w6w-pack.json`) are added in a follow-up node (T2.1.2),
-  along with the first live run against a real server
+- **Actions** — 2: `query` (returns rows) and `execute` (returns the
+  affected-row count + command tag, never a row set)
+- **Health checks** — `service`, a live `SELECT 1`-equivalent probe
 - **Capability** — `socket: true` (`package.json`'s `w6w.capabilities`)
+- **Catalog** — `w6w-pack.json` lists it; proven end to end against the
+  devcontainer's live `postgres` service (see `tests/golden-path.test.ts`)
 
 ## There is no vendor API to call
 
@@ -85,7 +87,16 @@ accordingly (the same convention `apps/snowflake`'s `statement-execute`
 uses for the same reason): a workflow author, not this app, has to judge
 whether their own statement is safe to retry.
 
-## `test` cannot make a live check
+`execute` runs the same Simple Query, but for callers who only care about
+the EFFECT, not the rows: it returns `{ rowCount, command }`, both read
+straight off the last `CommandComplete` tag the server sends — never a row
+set. A multi-statement `sql` (`CREATE TEMP TABLE` + `INSERT` + `SELECT` in
+one string) runs every statement over the ONE session this action's socket
+holds, which is the only way to prove a temp table's writes actually landed:
+the connection — and the temp table with it — closes the moment `execute`
+returns (see `tests/golden-path.test.ts`'s isolation test).
+
+## `test` cannot make a live check — and today, neither can the health check
 
 `ctx.socket` is only ever handed to an action's `execute` — never to `test`,
 `afterConnect`, or any other auth-phase hook (Hook Runtime RFC's sandbox
@@ -93,10 +104,20 @@ posture table marks it `Absent` for "Other auth hooks"). Since this app has
 no HTTP surface for `ctx.fetch` to reach either, `auth/postgres.ts`'s `test`
 hook validates only that the credential's shape is plausible (a
 non-empty username and password); it cannot confirm the server is
-reachable or the password is correct. The first real liveness check happens
-when the host actually drives `handshake` against the live server — which
-is T2.1.2's job, by design (see that node's contract for why the golden
-path is a separate node with its own evaluator).
+reachable or the password is correct.
+
+`health/service.ts` is the real liveness check — a `SELECT 1`-equivalent
+over the same authenticated socket an action would use — but as of this
+node, the reference host's own `checkHealth()` convenience function
+(`@w6w/runtime`) never actually opens one for ANY health check: only
+`invoke()`'s action path calls `openConnectionSocket`. That is a gap in the
+current runtime surface, not something this app can fix (`packages/core` is
+out of this node's scope — see its doc comment and this node's result for
+detail). `service.check` handles the gap honestly (reports `unknown`, never
+a fabricated `down`, when no socket was handed to it) and is proven against
+the live server anyway: `tests/golden-path.test.ts` composes the same
+`openConnectionSocket` + `runHook` primitives `invoke()` itself uses,
+pointed at the health selector instead of an action.
 
 ## Icon
 
@@ -121,7 +142,22 @@ DataRow/CommandComplete/ReadyForQuery message shape. `tests/auth/
 postgres.test.ts` drives the `handshake` hook through a full round trip
 with a mocked server reply sequence. `tests/actions/query.test.ts` proves
 `query` sends the caller's SQL unmodified over a mocked `ctx.socket` and
-parses the response into rows.
+parses the response into rows. `tests/actions/execute.test.ts` proves the
+same for `execute`'s narrower `{ rowCount, command }` output, including that
+a multi-statement `sql` keeps only the LAST `CommandComplete`'s tag/count.
+`tests/health/service.test.ts` proves `service.check`'s own probe logic
+(ok/down/unknown) over a mocked `ctx.socket`.
+
+`tests/golden-path.test.ts` is the independent oracle none of the above
+can be: it drives `@w6w/runtime`'s `invoke()` against the devcontainer's
+REAL `postgres` compose service — real SCRAM-SHA-256, a wrong password
+genuinely refused, the private-target check against the real
+`172.20.0.5`, a real multi-statement write+select-back, NULL-vs-empty-string
+and a 5000-row result over the real wire, credential isolation observed
+from inside the sandbox, and the health check's own ok/down directions —
+composing `openConnectionSocket` + `runHook` directly for the last one, per
+the section above. See this node's (T2.1.2) result for exact gate output and
+three consecutive golden-path runs.
 
 ```bash
 deno task check && deno task test && deno task lint && deno task validate

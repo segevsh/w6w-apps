@@ -916,6 +916,9 @@
       "path": "./apps/postbin"
     },
     {
+      "path": "./apps/postgres"
+    },
+    {
       "path": "./apps/posthog"
     },
     {
