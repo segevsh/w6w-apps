@@ -1,0 +1,28 @@
+{
+  "name": "@w6w-apps/postgres",
+  "version": "0.1.0",
+  "description": "Run SQL directly against a PostgreSQL database over its own wire protocol.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.postgres",
+    "displayName": "PostgreSQL",
+    "longDescription": "PostgreSQL is a raw database, not an HTTP API — there is no vendor REST surface to call, so this app speaks the Postgres wire protocol (v3.0) directly: it authenticates with SCRAM-SHA-256, the mechanism every current PostgreSQL install negotiates by default, and sends a workflow's SQL to the server exactly as written.\n\nThe connect form collects host, port, database, TLS mode, and a username/password pair once; the host resolves and pre-checks that target before ever dialing it, and the SCRAM exchange runs as an iterative, network-less hook so the password itself never leaves the sandbox that holds it. `query` then runs over the resulting authenticated socket and returns whatever rows come back.\n\nThere is deliberately no parameter-binding syntax (`$1`, a `params` array) in this version — the caller's SQL is sent verbatim as a Simple Query, so building a statement safely is the caller's job, the same way it would be with `psql` or any other client that has not yet added prepared statements.",
+    "categories": [
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PostgreSQL"
+      }
+    },
+    "capabilities": {
+      "socket": true
+    },
+    "entry": "./index.ts"
+  }
+}
