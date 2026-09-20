@@ -19,15 +19,19 @@ host performs on this app's behalf; the runtime's egress allowlist only
 inspects the request's own hostname (see `lib/client.ts`), so `*.boxcloud.com`
 is neither declared in `w6w.network.allow` nor needed there.
 
-## Uploads are text-only
+## Downloads and uploads carry real file bytes
 
-`upload-file` hand-builds its `multipart/form-data` body as a UTF-8 string
-(`attributes` part first, then `file`, exactly as Box's docs require — the
-other order gets a `400 metadata_after_file_contents`). This app's sandbox
-coerces every `ctx.fetch` body to a string en route to the network, so a real
-`FormData` or binary payload would not survive intact; restricting content to
-text keeps the body a string end to end. Same constraint and same choice as
-this pack's Dropbox app.
+`download-file` reads the response bytes directly and hands them to the
+host's file store via `ctx.file.create`, returning a `FileRef` rather than
+inlining the content into the action's own JSON output — the bytes never
+travel through step output at all.
+
+`upload-file` accepts that `FileRef` (or its bare id) as its `content` param,
+reads the bytes back out via `ctx.file.read`, and hand-builds its
+`multipart/form-data` body from them as raw bytes (`attributes` part first,
+then `file`, exactly as Box's docs require — the other order gets a `400
+metadata_after_file_contents`). Content is no longer restricted to UTF-8
+text: binary payloads survive the trip intact end to end.
 
 ## Health check
 
