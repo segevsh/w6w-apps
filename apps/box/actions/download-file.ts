@@ -1,22 +1,31 @@
-import type { ActionDefinition } from "@w6w/types";
+import type { ActionDefinition, FileRef } from "@w6w/types";
 import { BoxClient } from "../lib/client.ts";
 
 interface Input {
   fileId: string;
-  /** When true (default) decode the response body as UTF-8 text. */
-  asText?: boolean;
 }
 
 interface Output {
-  content: string;
-  encoding: "utf-8" | "base64";
+  file: FileRef;
 }
 
-/** base64 encode a byte array (no url-safe transformation). */
-function encodeBase64(bytes: Uint8Array): string {
-  let s = "";
-  for (const b of bytes) s += String.fromCharCode(b);
-  return btoa(s);
+/**
+ * Extract a filename from a `Content-Disposition` header, if Box sent one.
+ * Handles both the plain `filename="..."` form and the RFC 5987
+ * `filename*=UTF-8''...` form; the latter takes precedence when both appear.
+ */
+function filenameFromContentDisposition(header: string | null): string | undefined {
+  if (!header) return undefined;
+  const extended = header.match(/filename\*\s*=\s*[^']*''([^;]+)/i);
+  if (extended) {
+    try {
+      return decodeURIComponent(extended[1].trim());
+    } catch {
+      return extended[1].trim();
+    }
+  }
+  const plain = header.match(/filename\s*=\s*"?([^";]+)"?/i);
+  return plain ? plain[1].trim() : undefined;
 }
 
 /**
@@ -25,6 +34,10 @@ function encodeBase64(bytes: Uint8Array): string {
  * redirect is followed transparently by the host's fetch on this app's
  * behalf, so this action only ever sees the final response (see
  * `../lib/client.ts` for why that host needs no separate allowlist entry).
+ *
+ * The response bytes are handed to the host's file store via `ctx.file`,
+ * never inlined into the action's own output — a `FileRef` travels through
+ * step output/params like any other value, but the bytes never do.
  *
  * https://developer.box.com/reference/get-files-id-content/
  */
@@ -36,30 +49,27 @@ const downloadFile: ActionDefinition<Input, Output> = {
   description: "Download a file's contents from Box.",
   params: [
     { key: "fileId", label: "File ID", type: "string", required: true },
-    {
-      key: "asText",
-      label: "Return as UTF-8 text",
-      type: "boolean",
-      default: true,
-      hint: "When off, the file is base64-encoded so binary content survives JSON serialization.",
-    },
   ],
   output: [
-    { key: "content", type: "string", label: "File contents" },
-    { key: "encoding", type: "string", label: "Encoding (utf-8 or base64)" },
+    { key: "file", type: "file", label: "Downloaded file" },
   ],
 
   async execute(input, ctx) {
+    if (!ctx.file) {
+      throw new Error(
+        "download-file requires the host to support file storage (ctx.file), " +
+          "which this host does not provide.",
+      );
+    }
     const client = new BoxClient(ctx);
     const res = await client.request<Response>(`/files/${input.fileId}/content`, { raw: true });
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    const contentType = res.headers.get("content-type") ?? "application/octet-stream";
+    const filename = filenameFromContentDisposition(res.headers.get("content-disposition")) ??
+      input.fileId;
 
-    const asText = input.asText ?? true;
-    if (asText) {
-      const content = await res.text();
-      return { content, encoding: "utf-8" };
-    }
-    const buf = new Uint8Array(await res.arrayBuffer());
-    return { content: encodeBase64(buf), encoding: "base64" };
+    const file = await ctx.file.create(bytes, { contentType, filename });
+    return { file };
   },
 };
 
