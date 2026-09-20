@@ -229,6 +229,77 @@ Deno.test("upload-file also accepts a bare FileRef id string, and still reads re
   }
 });
 
+Deno.test("upload-file escapes a CRLF-bearing contentType instead of splicing it into the header", async () => {
+  const app = await loadApp(BOX_DIR);
+  const box = startBoxDouble();
+  const { onFileCreate, onFileRead, store } = makeFileStore();
+  const onFetch = makeOnFetch(box.baseUrl);
+
+  try {
+    // A FileRef whose contentType is attacker/host-controlled and carries a
+    // CRLF plus a forged second multipart part. If upload-file spliced this
+    // straight into the `Content-Type:` header line unescaped, the header
+    // would terminate early and the forged text below would land in the
+    // wire body as its own multipart part.
+    const injected =
+      "text/plain\r\n\r\n--w6wBoxUploadBoundary7f3c9a1e\r\nContent-Disposition: form-data; " +
+      'name="attributes"\r\n\r\n{"forged":true}';
+    const ref: FileRef = {
+      kind: "file",
+      id: "evil-1",
+      contentType: injected,
+      size: PAYLOAD.length,
+      filename: "evil.bin",
+      expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
+    };
+    store.set(ref.id, { ref, bytes: PAYLOAD });
+
+    await runHook({
+      entryPath: app.entryPath,
+      selector: { kind: "action", key: "upload-file" },
+      input: { fileName: "evil.bin", content: ref.id, parentId: "0" },
+      readScope: app.dir,
+      onFetch,
+      onFileRead,
+      onFileCreate,
+    });
+
+    const body = box.getUploadBody();
+    assert(body, "upload must have reached the local server");
+    const bodyText = new TextDecoder().decode(body!);
+
+    // Exactly one `name="attributes"` part must exist — the legitimate one
+    // built by buildMultipart, never a second one forged via the
+    // contentType's injected CRLF + boundary + part header.
+    const attributesMarker = 'name="attributes"';
+    let count = 0;
+    let idx = bodyText.indexOf(attributesMarker);
+    while (idx !== -1) {
+      count++;
+      idx = bodyText.indexOf(attributesMarker, idx + attributesMarker.length);
+    }
+    assertEquals(count, 1, 'exactly one name="attributes" part must appear in the body');
+
+    // The injected forged JSON text must never appear as its own part —
+    // i.e. must not appear in the body at all, since the only legitimate
+    // `attributes` part carries the real upload attributes, not this text.
+    assertEquals(
+      bodyText.includes('{"forged":true}'),
+      false,
+      "the injected forged text must never appear in the body",
+    );
+
+    // No raw CRLF may have been spliced into the Content-Type header line —
+    // the escaped value should appear literally (CR/LF stripped) inside it.
+    assert(
+      bodyText.includes("Content-Type: text/plain"),
+      "the escaped contentType must still be present as a normal header value",
+    );
+  } finally {
+    await box.close();
+  }
+});
+
 Deno.test("A5: ctx.file disabled fails both actions with a clear message, not a TypeError", async () => {
   const app = await loadApp(BOX_DIR);
   const box = startBoxDouble();

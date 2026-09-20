@@ -31,13 +31,14 @@ function buildMultipart(
 ): Uint8Array {
   const encoder = new TextEncoder();
   const safeName = escapeHeaderValue(fileName);
+  const safeContentType = escapeHeaderValue(fileContentType);
   const head = encoder.encode(
     `--${BOUNDARY}\r\n` +
       `Content-Disposition: form-data; name="attributes"\r\n\r\n` +
       `${JSON.stringify(attributes)}\r\n` +
       `--${BOUNDARY}\r\n` +
       `Content-Disposition: form-data; name="file"; filename="${safeName}"\r\n` +
-      `Content-Type: ${fileContentType}\r\n\r\n`,
+      `Content-Type: ${safeContentType}\r\n\r\n`,
   );
   const tail = encoder.encode(`\r\n--${BOUNDARY}--\r\n`);
   const body = new Uint8Array(head.length + fileBytes.length + tail.length);
