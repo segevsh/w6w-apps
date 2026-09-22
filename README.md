@@ -127,6 +127,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | dust | ai, productivity | api-key | 11 |
 | easypost | commerce, developer-tools | api-key | 19 |
 | ebay | commerce | custom | 4 |
+| ecwid | commerce, productivity | bearer | 23 |
 | elastic | search | api-key, basic | 9 |
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
@@ -200,6 +201,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | hedy | ai, productivity | api-key | 4 |
 | helpscout | support | oauth2 | 13 |
 | heygen | ai | api-key | 18 |
+| heyreach | marketing, social-media, crm | api-key | 30 |
 | highlevel | crm, marketing | oauth2 | 18 |
 | homeassistant | iot, productivity | token | 19 |
 | hotmart | commerce, finance | client-credentials | 17 |
@@ -342,6 +344,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | recruitee | hr | bearer-token | 17 |
 | recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
+| relevanceai | ai, productivity, developer-tools | api-key | 12 |
 | replyio | marketing, crm, email | api-key | 18 |
 | resend | email, communication | api-key | 24 |
 | respondio | support, crm, communication | api-token | 28 |
@@ -354,6 +357,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | segment | analytics | write-key | 6 |
 | sendblue | communication | api-key | 47 |
 | sender | email, marketing | bearer-token | 39 |
+| sendfox | email, marketing | bearer | 22 |
 | sendgrid | email, communication | sendgrid-api | 10 |
 | sendpulse | marketing, crm | client-credentials | 18 |
 | sentry | monitoring, developer-tools | auth-token, oauth2 | 21 |
@@ -392,6 +396,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | teachable | commerce, productivity | api-key | 21 |
 | teamleader | crm | oauth2 | 15 |
 | teams | communication | oauth2 | 16 |
+| teamup | crm, calendar, commerce | bearer | 29 |
 | teamwork | project-management, productivity | api-key | 17 |
 | telegram | communication | bot-token | 21 |
 | telnyx | communication, devops | api-key | 6 |
@@ -461,7 +466,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-389 apps, 7430 actions.
+441 apps, 8291 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
