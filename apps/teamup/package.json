@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/teamup",
+  "version": "0.1.0",
+  "description": "Run a gym or studio on TeamUp: customers, the class schedule, attendance, memberships and invoices, instructors, venues and front-desk check-ins.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.teamup",
+    "displayName": "TeamUp",
+    "longDescription": "TeamUp is the scheduling and member-management system a gym, studio or fitness business runs on, and this app covers the day-to-day it is asked to answer for: who the customers are, what is on the timetable, who is actually coming, and what they are paying for it.\n\nThe class side is a full loop. A workflow can read the schedule with the filters that matter — venue, instructor, offering type, category, occupancy, and both the absolute and local time windows — create an event, register a customer for it (optionally against a specific membership, or comped), unregister them, and manage the waiting list on both ends, including the reserved-spot state TeamUp puts a freed place into. Attendance reads back the same relationship as a record, with its own status vocabulary, so a no-show follow-up is a filter rather than a calculation.\n\nThe membership side separates the sellable plan from the instance a customer holds: list and read the plans (packs, recurring plans, prepaid plans, drop-ins) and their pricing and allotments, then list and read a customer's own memberships with their holds, renewal and billing dates, and assign one. Invoices and front-desk check-ins close the loop on money and visits, and the business's own vocabulary — instructors, venues and their rooms, staff, courses and their sessions, providers and offering types — is readable so downstream steps speak the same language the TeamUp account does.\n\nEverything here talks to the same public v2 API the TeamUp dashboard uses, over one M2M token issued for the business, so a workflow can act on a real gym's customers and schedule without hand-rolling calls against TeamUp's own reference.",
+    "categories": [
+      "crm",
+      "calendar",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "TeamUp"
+      }
+    },
+    "network": {
+      "allow": [
+        "goteamup.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
