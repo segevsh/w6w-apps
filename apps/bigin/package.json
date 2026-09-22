@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/bigin",
+  "version": "0.1.0",
+  "description": "Create, read, update, search and delete Contacts, Companies, Pipelines and Tasks in Bigin by Zoho CRM.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bigin",
+    "displayName": "Bigin by Zoho CRM",
+    "longDescription": "Bigin is Zoho's lightweight pipeline CRM for small teams, and this app covers the records a pipeline is actually made of: create, read, update, delete and search Contacts, Companies (the API calls them Accounts), Pipelines (the API calls the deals Pipelines) and Tasks, plus the two user endpoints so a workflow can resolve who owns what.\n\nBigin hosts every account in one of eight regional data centres, each with its own API host and its own OAuth host, and the app addresses the right one per connection from the api_domain the authorization exchange returns — so an EU or Indian tenant is not silently routed through the US region. One region, Canada, breaks the naming pattern the other seven follow on the OAuth side and is implemented exactly as the vendor documents it.\n\nListing and reading are deliberately scoped to the four modules above: Products, Calls, Events and Notes, the approval and custom-view filters, and the bulk/upsert surfaces are left out of this first pass rather than half-implemented.",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.ico",
+        "alt": "Bigin by Zoho CRM"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.zohoapis.com",
+        "www.zohoapis.eu",
+        "www.zohoapis.in",
+        "www.zohoapis.com.au",
+        "www.zohoapis.jp",
+        "www.zohoapis.com.cn",
+        "www.zohoapis.sa",
+        "www.zohoapis.ca",
+        "accounts.zoho.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
