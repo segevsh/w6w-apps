@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/semrush",
+  "version": "0.1.0",
+  "description": "Read SEMrush backlink, referring-domain, anchor, competitor and keyword reports, and check the account's remaining API units.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.semrush",
+    "displayName": "SEMrush",
+    "longDescription": "SEMrush is an SEO and marketing-analytics platform. This app reads its current v4 Standard API (api.semrush.com/apis/v4): a domain's backlink profile — totals, historical summaries, individual links, referring domains and IPs, linked pages, anchors, the domain-score distribution and competitors — plus a keyword's volume, difficulty and SERP features.\n\nSEMrush meters these calls in paid 'API units', so the app also reads the account's remaining balance from the one endpoint that costs nothing (www.semrush.com/users/countapiunits.html). That endpoint is also the credential probe, and it has a trap the app is built around: its error text echoes the submitted key back, so no vendor error string from it is ever surfaced.",
+    "categories": [
+      "marketing",
+      "analytics",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SEMrush"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "SEMrush"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.semrush.com",
+        "www.semrush.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/smartsuite",
+  "version": "1.0.0",
+  "description": "Manage Solutions, Tables, Records, Fields, Comments and Members in SmartSuite.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.smartsuite",
+    "displayName": "SmartSuite",
+    "longDescription": "SmartSuite is a no-code work-management platform where every workspace is built from Solutions, each holding the Tables (SmartSuite calls them Apps) and Fields a team actually works in. This app turns that structure into workflow building blocks: list the Solutions and Tables a token can see, pull a table's live structure, and add or change a field without opening the UI — so an automation can adapt to a schema instead of hardcoding slugs that drift.\n\nRecords are the read/write core. A workflow can list or filter records server-side (with sort, filter and `hydrated` text labels), fetch a single record, and create, update or delete one — plus the 25-item bulk endpoints for add, update and delete, so a nightly sync does not have to fan out into hundreds of single-record calls. Record bodies are passed through as raw JSON keyed by each table's own field slugs, because SmartSuite field types are defined per table and no single static shape fits them all.\n\nCollaboration surfaces are covered too: list a record's comments and post a rich-text SmartDoc comment (optionally assigning it to a member), and list the workspace's members to resolve the ids those assignments use. Health checks track SmartSuite's own regional API status and declare the flat per-key rate limit honestly, since there is no headroom endpoint to probe.",
+    "categories": [
+      "databases",
+      "project-management",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SmartSuite"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.smartsuite.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

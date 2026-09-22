@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/workiz",
+  "version": "0.1.0",
+  "description": "Schedule jobs, work leads, and read the team and payments of a home-service business over the Workiz API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.workiz",
+    "displayName": "Workiz",
+    "longDescription": "Workiz is the field-service-management platform a plumbing, HVAC, cleaning or landscaping business schedules its day on, and this app covers the four resources its public API exposes: the team, company and per-user time off, leads, and jobs.\n\nJobs and leads are the centre of gravity. A workflow can read one by id or page through them with Workiz's own filters \u2014 a date window, a record count, open-only, and a status list \u2014 create and update either, and drive the lifecycle calls that move a lead toward work: mark it lost or put it back with activate, assign or unassign a technician, and convert it into a job. The wrapper each of those returns carries the record's `UUID` and its `link` into the Workiz web app.\n\nJobs take the same lifecycle plus payment: an `addPayment` call records a cash, credit or cheque payment against a job, with the same `type` sent as both a path-adjacent query parameter and a body field because the vendor declares it required in both places.\n\nThe client-side shape is deliberately literal. Workiz's wire format mixes PascalCase and camelCase across resources and this app reproduces every field name exactly, including the vendor's own inconsistency, because that casing is the API. Two of the API's design choices are unusual enough to be documented where they matter: the account API token is a URL path segment rather than a header, and every write against an existing record takes a second, per-record `auth_secret` that the create/get responses hand back. Health covers Workiz's own Atlassian status page \u2014 which reports `api.workiz.com` as a component \u2014 and declares the request-rate dimension unavailable, because Workiz publishes neither rate-limit response headers nor a limits endpoint.",
+    "categories": [
+      "calendar",
+      "crm",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Workiz"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.workiz.com",
+        "workiz.statuspage.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/scoreapp",
+  "version": "0.1.0",
+  "description": "Read ScoreApp scorecards, their questions and scoring categories, and the results (leads) they collect, with each result's per-question answers.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.scoreapp",
+    "displayName": "ScoreApp",
+    "longDescription": "ScoreApp builds quiz funnels — \"scorecards\" — that score a respondent as they answer and hand back a lead with a score. This app is the read side of that: list the scorecards an account owns and filter them by status, read a scorecard's questions with their options and scoring categories, list the results (leads) a scorecard has collected, and read one result, optionally with its answers, scores, source, activity log or enriched contact data.\n\nThe vendor's Open API is deliberately small and read-only — there is no create, update or delete of scorecards or results — so every action here is a list or a get, and each one returns the vendor's own response envelope verbatim, `links`/`meta` pagination included. The health surface answers the three questions separately: the credential's liveness from the API's own `401 Unauthenticated.` body, the request-rate headroom from the `x-ratelimit-limit`/`x-ratelimit-remaining` headers ScoreApp sends on every response, and the vendor's platform status as a declared absence, since ScoreApp publishes no status page.",
+    "categories": [
+      "forms",
+      "marketing",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "ScoreApp"
+      }
+    },
+    "network": {
+      "allow": [
+        "open-api.scoreapp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
