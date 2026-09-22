@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/sendfox",
+  "version": "0.1.0",
+  "description": "Manage SendFox contacts, tags, campaigns, lists, forms and automations, and read account usage, over the SendFox REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.sendfox",
+    "displayName": "SendFox",
+    "longDescription": "SendFox is an email-newsletter platform for content creators: contacts organised into lists and tags, and campaigns sent to them.\n\nThis app covers the whole send path. It lists, reads, creates, updates and removes contacts, including their per-list memberships, custom fields and tags, and can unsubscribe a contact by email in one call. It creates draft campaigns, sends them, and reads their performance counters. It manages contact lists and subscription forms, and lists automations.\n\nIt also sizes an audience before you act on it: the contact list action accepts SendFox's full `filter[...]` engagement set and a `count_only` mode, so a workflow can answer \"how many people opened nothing this year\" without paging the whole account. The `me-get` action returns the account's own contact usage against its plan limit.\n\nHealth checks read SendFox's live rate-limit headers for quota headroom, and declare the missing status page as a positive fact rather than leaving a gap.",
+    "categories": [
+      "email",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SendFox"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.sendfox.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
