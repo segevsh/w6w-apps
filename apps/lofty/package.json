@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/lofty",
+  "version": "0.1.0",
+  "description": "Manage Lofty real-estate CRM leads, tasks and notes, register webhooks, read team members, send SMS and email, and pull communication history.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.lofty",
+    "displayName": "Lofty",
+    "longDescription": "Lofty (formerly Chime) is a real-estate CRM, and this app covers the record-keeping a property workflow runs on: leads and their assignment, follow-up tasks, notes, and the appointments attached to a lead. It brings the whole lead lifecycle into a workflow — create a lead when a form is submitted, move it through a pipeline stage, log a note after a conversation, and schedule the follow-up task that keeps it moving.\n\nLeads can be searched by stage, source, assignee, tags, segments and contact details, so a workflow can act on a filtered set rather than pulling the whole book. Communication is covered on both sides: send SMS and email from the connection's own Lofty number and mailbox, and read the SMS, email and call history back for a lead. Team-wide vocabulary — tags, custom-field definitions and lead pipelines — is readable too, so downstream steps can use the same stages and fields the Lofty account does.\n\nThe app also registers webhooks, so a workflow can react to lead events instead of polling for them, and reads the organization structure and team-member list for routing and ownership decisions. It is the app to reach for when a workflow needs to read or write the leads a real-estate team works, without hand-rolling calls against Lofty's Open API.",
+    "categories": [
+      "crm",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.ico",
+        "alt": "Lofty"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.lofty.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
