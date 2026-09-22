@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/firestore",
+  "version": "0.1.0",
+  "description": "Read and write Google Cloud Firestore documents, query collections, and batch documents into a database.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.firestore",
+    "displayName": "Firestore",
+    "longDescription": "Firestore gives a workflow a document database: read, create, patch and delete documents by path, list the documents in a collection, and query a collection with equality and range filters, ordering and a limit. Every value is translated to and from Firestore's typed wire format, so whole numbers stay int64 rather than becoming floats, timestamps and geopoints survive the trip, and a read returns both the raw typed fields and a plain-JS `data` object.\n\nBeyond single documents, a workflow can fetch many at once and be told which of them do not exist, commit a batch of writes atomically when two documents have to agree, or apply them independently when one failure should not sink the rest. Aggregation queries answer count, sum and average without reading every matching document, and a database's edition, concurrency mode and location are readable as a connection check.\n\nCollections are addressed the way Firestore addresses them — a path, with the collection id as its own segment — and both a document's subcollections and the database's top-level collections can be listed. Health checks track Google Cloud's own status feed for Cloud Firestore, and declare honestly that Firestore publishes no quota headroom to read.",
+    "categories": [
+      "databases",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Firestore"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Firestore"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "firestore.googleapis.com",
+        "oauth2.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/streamtime",
+  "version": "0.1.0",
+  "description": "Read and write Streamtime jobs, job items, quotes, invoices, logged time and expenses, and run filtered searches and reports against the Public API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.streamtime",
+    "displayName": "Streamtime",
+    "longDescription": "Streamtime is job tracking and project management for creative agencies: the money side of a studio — jobs, phases, job items, the people and roles booked against them, quotes, invoices, and the time and expenses everybody logs — lives in one place.\n\nThe Public API is shaped unlike a typical REST surface, and this app is built around what it actually does. Only four of the resource collections answer a list request at all (branches, rate cards, roles, users); companies, jobs, logged time and logged expenses are create-only at the collection level and readable one id at a time. Getting a list of them means going through POST /search, a generic query endpoint with its own filter-expression language, which this app exposes verbatim — along with GET /search/setup and GET /report/setup, the two metadata endpoints Streamtime tells callers to fetch first. POST /report covers the aggregation questions the same way: totals, averages and grouped breakdowns without pulling every record back.\n\nBeyond search, the app covers the full documented write surface — creating and updating companies, contacts, jobs, phases, job items, milestones, item roles, item users and sub-items, logging time in bulk, logging and updating expenses, creating invoice payments, and managing labels — plus the nesting underneath a job item, which is where agency scheduling actually lives. Quote and invoice documents come back as HTML or base64-encoded PDF.\n\nHealth checks track Streamtime's own status page (its API component), probe the credential with the organisation read, and record that Streamtime publishes no quota or rate-limit surface at all. The credential probe deliberately classifies from the response body rather than the status code, because Streamtime answers an identical 401 body for a missing token, an invalid token, and a path that does not exist.",
+    "categories": [
+      "project-management",
+      "finance",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Streamtime"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.streamtime.net",
+        "streamtime.statuspage.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

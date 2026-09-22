@@ -148,6 +148,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | fillout | forms, productivity | api-key | 8 |
 | firecrawl | ai, developer-tools | bearer-token | 10 |
 | fireflies | ai, productivity, video | api-key | 25 |
+| firestore | databases, developer-tools | oauth2 | 12 |
 | fivetran | data-warehousing, devops, analytics | api-key | 20 |
 | float | project-management, productivity | api-token | 40 |
 | flodesk | marketing, email | api-key, oauth2 | 22 |
@@ -185,6 +186,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-drive | storage, productivity | oauth2, service-account | 18 |
 | google-forms | forms, productivity | oauth2, service-account | 12 |
 | google-maps | developer-tools, search | api-key | 15 |
+| google-meet | video, communication | oauth2, service-account | 18 |
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | google-slides | documents, productivity | oauth2, service-account | 17 |
 | google-tasks | productivity, project-management | oauth2 | 13 |
@@ -210,6 +212,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | heyreach | marketing, social-media, crm | api-key | 30 |
 | highlevel | crm, marketing | oauth2 | 18 |
 | homeassistant | iot, productivity | token | 19 |
+| hostaway | crm, calendar | client-credentials | 21 |
 | hotmart | commerce, finance | client-credentials | 17 |
 | housecallpro | crm, calendar, finance | api-key, oauth2 | 39 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
@@ -394,11 +397,13 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |
 | square | commerce, finance | access-token | 17 |
+| squarespace-commerce | commerce, finance | api-key | 21 |
 | statuspage | monitoring, communication, devops | api-key | 12 |
 | storyblok | cms, marketing | delivery-token, management-token | 14 |
 | strapi | cms | api-token | 6 |
 | strava | productivity | oauth2 | 9 |
 | streak | crm | basic | 40 |
+| streamtime | project-management, finance, productivity | api-token | 84 |
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
@@ -481,7 +486,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-451 apps, 8479 actions.
+461 apps, 8695 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
