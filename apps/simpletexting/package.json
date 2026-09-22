@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/simpletexting",
+  "version": "0.1.0",
+  "description": "Send SMS and MMS, manage contacts, lists and custom fields, run campaigns, and subscribe webhooks to SimpleTexting's messaging events.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.simpletexting",
+    "displayName": "SimpleTexting",
+    "longDescription": "SimpleTexting is an SMS marketing and two-way texting platform, and this app covers the messaging surface a workflow actually drives: sending a single SMS or MMS to a contact with a chosen presentation mode, and evaluating a message body first to see what it will cost in credits and whether it fits in one SMS or spills into an extended SMS or an MMS.\n\nAround the send, it manages the audience: contacts (create, look up by phone number or ID, update, delete), the lists those contacts belong to, list membership, and the segments and custom fields an account has defined. It also exposes read-only tenant information (the account's own email and its sending phone numbers), so a workflow can pick the number to send from rather than hard-coding it.\n\nCampaigns are covered end to end for the immediate case: send a campaign to a set of lists or segments with a message template, list the campaigns an account has sent with filters for type, state, list and date range, and read one campaign's full state, message template, lists, segments and delivery outcome.\n\nFor event-driven workflows, webhooks can be created, listed, updated and deleted, with the platform's own eight trigger names (incoming and outgoing messages, delivery and non-delivery reports, unsubscribes, conversation open/close, contact phone updates) offered as a multi-select, and an optional per-second delivery rate limit.\n\nHealth checks report SimpleTexting's own status page — anchored on its dedicated API component — alongside the credential check derived from the connection, and state plainly that the vendor publishes no readable quota.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SimpleTexting"
+      }
+    },
+    "network": {
+      "allow": [
+        "api-app2.simpletexting.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
