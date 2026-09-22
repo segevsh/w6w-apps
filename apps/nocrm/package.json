@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/nocrm",
+  "version": "0.1.0",
+  "description": "Manage noCRM.io leads, comments, client folders, users, teams, pipelines, steps, categories, predefined tags and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.nocrm",
+    "displayName": "noCRM.io",
+    "longDescription": "noCRM.io is a lead-management / sales CRM in which every account is served from its own subdomain (https://YOUR_SUBDOMAIN.nocrm.io). This app covers the lead lifecycle end to end: leads can be created, fetched, listed with the documented filters and offset paging, updated and deleted, unassigned leads can be pulled for routing, tags can be added and activities logged through the Simplified API, and comments can be posted on and listed for a lead.\n\nBeyond leads, the app reads the account's own reference data — users, teams, pipelines, steps, tag categories and predefined tags — so a workflow can resolve the ids and names the lead endpoints expect, and it can create and list client folders and create and list webhooks or email notifications for account events.\n\nTwo connections are supported, matching the vendor's own two schemes: an account-level API key (X-API-KEY) and a user token (X-USER-TOKEN) whose requests run with that user's own privacy and permissions. A fit for turning an inbound enquiry, form submission or another system's event into a noCRM lead, keeping leads and their owners in sync with the rest of a sales stack, and reacting to noCRM's own webhook events.",
+    "categories": [
+      "crm",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "noCRM.io"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.nocrm.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

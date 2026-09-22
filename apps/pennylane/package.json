@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/pennylane",
+  "version": "0.1.0",
+  "description": "Manage Pennylane customers, suppliers, products, customer and supplier invoices, journals, ledger accounts, categories and bank transactions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.pennylane",
+    "displayName": "Pennylane",
+    "longDescription": "Pennylane is a French accounting and bookkeeping platform, and its Company API v2 is the accounting primitives that a workflow can actually automate: customers and suppliers, the product catalog, the invoices that flow between them, and the ledgers those invoices land in.\n\nThis app covers the read and write surface of that core. Customers are created as either a company or an individual — two distinct endpoints with different required fields — and looked up by id or listed with Pennylane's cursor pagination and JSON filter language. Suppliers and products follow the same shape, with the product write carrying the price, VAT rate and revenue substance the catalogue is valued by. Customer invoices can be created as drafts (where the invoice lines are still editable) or finalized in one call, then sent to the customer by email once Pennylane has generated the PDF; supplier invoices are listed and read. Journals, ledger accounts, analytic categories and bank transactions round out the ledger side, and a profile action reports the user, the company and the scopes the current OAuth grant actually holds.\n\nThe connection is OAuth 2.0, the \"integration partner\" path Pennylane's own walkthrough documents: an authorization-code flow against app.pennylane.com, with a per-resource scope list covering exactly the nine resources this app touches. Health checks follow Pennylane's own status page — anchored on the dedicated `API (app.pennylane.com/api)` component rather than the page-wide roll-up — and read the per-token rate-limit headers off the same `GET /me` probe the credential check uses. Pennylane also documents a static Company API Token for single-company integrators; this app ships OAuth 2.0 only.",
+    "categories": [
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": { "48x48": "./assets/icon.png" },
+        "alt": "Pennylane"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.pennylane.com",
+        "status.pennylane.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

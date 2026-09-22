@@ -57,6 +57,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
 | bexio | accounting, crm | oauth2 | 25 |
 | bigcommerce | commerce, crm | access-token | 38 |
+| bigin | crm | oauth2 | 23 |
 | bigquery | data-warehousing, databases | oauth2 | 18 |
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
@@ -91,6 +92,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | clickhouse | databases, data-warehousing | api-key, service | 15 |
 | clockify | productivity | api-key | 10 |
 | close | crm | api-key | 21 |
+| cloudbeds | hospitality, commerce | oauth2 | 13 |
 | cloudconvert | documents, developer-tools | api-token | 18 |
 | cloudflare | devops | api-token | 8 |
 | cloudinary | storage, documents, developer-tools | basic | 21 |
@@ -288,6 +290,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | neverbounce | email, marketing | api-key | 10 |
 | newrelic | monitoring, analytics, devops | user-key | 17 |
 | nocodb | spreadsheets, databases | api-token | 13 |
+| nocrm | crm | api-key, user-token | 21 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
 | nutshell | crm | basic | 13 |
 | odoo | crm, commerce | api-key | 21 |
@@ -315,6 +318,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pdfco | documents | api-key | 24 |
 | pdfmonkey | documents, developer-tools | bearer-token | 13 |
 | pendo | analytics, product-analytics | api-key | 11 |
+| pennylane | accounting, finance | oauth2 | 22 |
 | perplexity | ai | api-key | 5 |
 | personio | hr | client-credentials | 16 |
 | phantombuster | automation, developer-tools, ai | api-key | 14 |
@@ -329,6 +333,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | posthog | analytics | personal-api-key | 8 |
 | postmark | email, communication | api-key | 13 |
 | powerbi | analytics | oauth2 | 18 |
+| practicebetter | scheduling, healthcare | client-credentials | 26 |
 | processstreet | productivity, project-management | api-key | 15 |
 | productboard | project-management, productivity, support | api-token | 41 |
 | pushbullet | communication, productivity | access-token | 24 |
@@ -466,7 +471,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-441 apps, 8291 actions.
+446 apps, 8396 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

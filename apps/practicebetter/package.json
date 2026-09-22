@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/practicebetter",
+  "version": "0.1.0",
+  "description": "Run a health and wellness practice on Practice Better: client records, sessions, packages, invoices, tags, reminders and webhook subscriptions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.practicebetter",
+    "displayName": "Practice Better",
+    "longDescription": "Practice Better is the practice-management platform a nutritionist, health coach or wellness clinic runs on, and this app covers the day-to-day a workflow is asked to answer for: who the clients are, what is on the calendar, what they have bought, and what they owe.\n\nThe client side is the spine. A workflow can list and read client records with the filters the practice actually uses — active or archived, child or clinician records, and everything modified inside a window — create a record from a profile, and update one. Update is a full-replace fragment in Practice Better's own words, so the action documents that a partial body erases the fields it omits and points the caller at reading the record first.\n\nThe scheduling side books and unwinds sessions: list them filtered by consultant, client, service and date window, read one (scoped to a single enrollee for group sessions), book a session with its duration, service type, fee, office location, time zone and telehealth settings, then cancel or delete it. Two vendor list endpoints feed those calls — the practice's bookable services, and the time-zone names the `timeZone` field expects.\n\nMoney and packaging are read where the spec allows it: the base package templates a practice offers, the instances its clients have purchased, and invoices with their due, paid, payable, refunded and written-off amounts. Tags and reminders round out organization and follow-up, and webhook subscriptions let a workflow react to Practice Better's own events instead of polling for them — including the event-type catalogue the subscription body needs and a handshake token Practice Better verifies before events start flowing.\n\nEverything here talks to the public Practice Better API over a machine-to-machine OAuth2 client-credentials token, so it keeps working in scheduled and background runs, and the health surface reads Practice Better's own status page scoped to its `Practice Better API` component.",
+    "categories": [
+      "crm",
+      "calendar",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Practice Better"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.practicebetter.io",
+        "status.practicebetter.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
