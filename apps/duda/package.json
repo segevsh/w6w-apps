@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/duda",
+  "version": "0.1.0",
+  "description": "Manage Duda sites, pages, form submissions, collections and accounts through the Partner API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.duda",
+    "displayName": "Duda",
+    "longDescription": "Duda is a website builder that agencies and SaaS platforms white-label: each of their customers gets a site, an editor and a set of hosted pages. This app is the Partner API front end for the sites those customers live on — listing and fetching them, creating one from a template, and pushing it live or taking it back down again.\n\nIt reads the page tree of a site and the contact-form submissions a site has collected, and it works with Collections — Duda's structured-data tables — end to end: listing the collections on a site, reading one's fields and rows, and creating, overwriting or deleting rows in bulk.\n\nAccounts round it out, since a partner provisions the people who own those sites: an account can be fetched by name or created outright. Health checks track Duda's own status page and declare, as a positive fact, that Duda publishes no machine-readable quota. Both regions Duda runs — US and EU — are selectable per Connection.",
+    "categories": [
+      "cms",
+      "forms",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Duda"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.duda.co",
+        "api.eu.duda.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
