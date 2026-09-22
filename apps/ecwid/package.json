@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/ecwid",
+  "version": "0.1.0",
+  "description": "Manage an Ecwid store: products and stock, categories, orders, customers, discount coupons and the store profile.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ecwid",
+    "displayName": "Ecwid",
+    "longDescription": "Ecwid by Lightspeed is an eCommerce platform, and this app covers the store management a workflow actually automates: the product catalog and its stock, the category tree, orders from placement to fulfillment, customer records, discount coupons, and the store's own profile and settings.\n\nEverything a store-run needs to react to is here. Search the catalog by keyword, SKU, category or availability and write products back with their variations' stock; move stock by delta so a sale or a return never clobbers a concurrent one; read and amend orders with their totals, addresses and statuses; find customers by name, email, phone or group and keep their consents and tax details straight; and create the coupons a campaign hands out. The store profile read returns the settings, languages, formats and company address that the rest of the store is configured from.\n\nThe connection is a single store — an Ecwid store id plus a custom app's secret access token, sent as a bearer token with the id in every request's path — which is the configuration Ecwid's own documentation recommends for single-store integrations instead of an OAuth app. Health checks follow Ecwid's own status page, keyed on its `API` component rather than the page-wide roll-up, and the app states plainly that Ecwid publishes no readable quota headroom rather than inventing a probe for it.",
+    "categories": [
+      "commerce",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Ecwid"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.ecwid.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
