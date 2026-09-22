@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.138.0",
+  "version": "0.139.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -320,6 +320,9 @@
     },
     {
       "path": "./apps/ebay"
+    },
+    {
+      "path": "./apps/ecwid"
     },
     {
       "path": "./apps/elastic"
@@ -979,6 +982,9 @@
       "path": "./apps/reddit"
     },
     {
+      "path": "./apps/relevanceai"
+    },
+    {
       "path": "./apps/replicate"
     },
     {
@@ -1013,6 +1019,9 @@
     },
     {
       "path": "./apps/sendblue"
+    },
+    {
+      "path": "./apps/sendfox"
     },
     {
       "path": "./apps/sender"
@@ -1133,6 +1142,9 @@
     },
     {
       "path": "./apps/teams"
+    },
+    {
+      "path": "./apps/teamup"
     },
     {
       "path": "./apps/teamwork"
