@@ -104,6 +104,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | constantcontact | marketing, email | oauth2 | 22 |
 | contentful | cms | access-token | 10 |
 | copper | crm | api-key | 24 |
+| creditrepaircloud | crm, finance | custom | 8 |
 | crisp | support, communication | basic | 12 |
 | crunchbase | crm, analytics | api-key | 7 |
 | cursor | developer-tools, ai, finance | basic | 24 |
@@ -126,6 +127,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | drip | marketing, email | api-key | 14 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | dropbox-sign | legal, documents, productivity | api-key, oauth2 | 27 |
+| duda | cms, forms, marketing | basic | 14 |
 | dust | ai, productivity | api-key | 11 |
 | easypost | commerce, developer-tools | api-key | 19 |
 | ebay | commerce | custom | 4 |
@@ -165,12 +167,14 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | gerrit | version-control, developer-tools | http-password | 11 |
 | getresponse | marketing, email | api-key | 14 |
 | ghost | cms, productivity | admin-api-key | 11 |
+| giphy | social-media, search | api-key | 12 |
 | gitea | version-control, developer-tools, devops | token | 26 |
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | givebutter | crm, commerce, communication | api-key | 43 |
 | glide | databases, developer-tools, productivity | api-token | 14 |
 | gmail | communication, email | oauth2, service-account | 25 |
+| gocardless | commerce, finance | bearer-token | 16 |
 | google-admin | security, productivity | oauth2, service-account | 18 |
 | google-ads | marketing, analytics | oauth2 | 14 |
 | google-analytics | analytics, marketing | oauth2 | 23 |
@@ -344,6 +348,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | quo | communication, crm | api-key | 43 |
 | raindrop | productivity, search, storage | test-token, oauth2 | 39 |
 | razorpay | commerce, finance | basic | 44 |
+| rdstation | crm | api-key | 10 |
 | readwise | productivity | api-token | 20 |
 | recharge | commerce, finance | api-token | 29 |
 | recruitee | hr | bearer-token | 17 |

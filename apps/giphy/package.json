@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/giphy",
+  "version": "0.1.1",
+  "description": "Search GIPHY's GIF and sticker library, fetch trending and random picks, translate a phrase into a GIF, and look up GIFs by id.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.giphy",
+    "displayName": "GIPHY",
+    "longDescription": "GIPHY is the GIF and sticker library most chat and social products embed, and its public API is a read-only, key-authenticated search surface over that library.\n\nThis app covers it end to end: search GIFs and stickers by phrase, list what is trending, pull a random pick, translate a phrase into the single best GIF GIPHY can find, look up one GIF by id or up to a hundred by id at once, and read the category tree. Every response is GIPHY's own envelope — `data`, plus `meta` (which is where GIPHY states its real status) and `pagination` on the list endpoints.\n\nThe API key travels as a required query-string parameter, `api_key` — GIPHY has no header-based auth option at all — so the connection's `sign` hook merges it into each request's existing query string rather than stamping a header. That is why the key is signed in one place and never enters an action.\n\nOne response-code quirk is worth knowing before you use it: GIPHY echoes its own status into the body's `meta.status`, so a call can answer HTTP 200 while the body says 401. Every success/failure decision in this app reads the body, never the status line. A health check reads GIPHY's real Statuspage feed, so a vendor incident and an expired key are reported as the different problems they are.",
+    "categories": [
+      "social-media",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "GIPHY"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "GIPHY"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.giphy.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
