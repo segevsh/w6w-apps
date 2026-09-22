@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/gocardless",
+  "version": "0.1.0",
+  "description": "Collect bank debits with GoCardless: customers, mandates, payments, subscriptions, payouts and refunds.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gocardless",
+    "displayName": "GoCardless",
+    "longDescription": "GoCardless collects bank debits — Direct Debit in the UK, EUR and SEPA zones, Bacs, ACH and the open-banking \"Pay by Bank\" rails — so a workflow can take recurring payments straight from a customer's bank account instead of a card.\n\nThe path a GoCardless integration actually walks is: a customer, a mandate (the bank authorisation to debit them), and then payments and subscriptions against that mandate. This app covers the customer read/create, the mandate read/list/cancel, the payment read/list/create/cancel, subscription create/list/cancel, and the two books-keeping surfaces a payment operation needs — refunds and payouts — so a workflow can reconcile what was collected against what landed in the bank.\n\nBoth GoCardless environments are supported as one explicit choice at connect time: live (api.gocardless.com) and sandbox (api-sandbox.gocardless.com) are completely separate accounts with separate tokens, and nothing in the token's own shape says which one it belongs to. Health checks track GoCardless's own incident.io status feed and the live request-rate headroom GoCardless reports on every response.",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "GoCardless"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.gocardless.com",
+        "api-sandbox.gocardless.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
