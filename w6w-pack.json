@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.139.0",
+  "version": "0.140.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -104,6 +104,9 @@
     },
     {
       "path": "./apps/bigcommerce"
+    },
+    {
+      "path": "./apps/bigin"
     },
     {
       "path": "./apps/bigquery"
@@ -212,6 +215,9 @@
     },
     {
       "path": "./apps/close"
+    },
+    {
+      "path": "./apps/cloudbeds"
     },
     {
       "path": "./apps/cloudconvert"
@@ -811,6 +817,9 @@
       "path": "./apps/nocodb"
     },
     {
+      "path": "./apps/nocrm"
+    },
+    {
       "path": "./apps/notion"
     },
     {
@@ -892,6 +901,9 @@
       "path": "./apps/pendo"
     },
     {
+      "path": "./apps/pennylane"
+    },
+    {
       "path": "./apps/perplexity"
     },
     {
@@ -935,6 +947,9 @@
     },
     {
       "path": "./apps/powerbi"
+    },
+    {
+      "path": "./apps/practicebetter"
     },
     {
       "path": "./apps/processstreet"
