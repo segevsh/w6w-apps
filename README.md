@@ -359,7 +359,9 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | salesforce | crm | access-token, oauth2 | 12 |
 | salesloft | crm, communication | api-key, oauth2 | 26 |
 | sanity | cms, databases, developer-tools | token | 11 |
+| scoreapp | forms, marketing, crm | api-key | 6 |
 | segment | analytics | write-key | 6 |
+| semrush | marketing, analytics | api-key | 13 |
 | sendblue | communication | api-key | 47 |
 | sender | email, marketing | bearer-token | 39 |
 | sendfox | email, marketing | bearer | 22 |
@@ -375,9 +377,11 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | shortcut | project-management, productivity | api-token | 36 |
 | signnow | documents | custom | 16 |
 | signrequest | legal, documents, productivity | api-key | 26 |
+| simpletexting | communication | api-key | 27 |
 | simplybook | calendar | login | 14 |
 | slack | communication | access-token, oauth2 | 47 |
 | smartsheet | spreadsheets, productivity | access-token | 16 |
+| smartsuite | project-management, productivity, databases | api-key | 17 |
 | snowflake | data-warehousing | key-pair | 5 |
 | snyk | security, developer-tools | api-token | 20 |
 | softr | developer-tools, databases | api-key | 18 |
@@ -448,6 +452,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
 | workable | hr | access-token | 15 |
+| workiz | crm, project-management | custom | 20 |
 | workos | security, developer-tools | api-key | 23 |
 | wrike | project-management, productivity | permanent-token | 29 |
 | wufoo | forms, productivity | api-key | 8 |
@@ -471,7 +476,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-446 apps, 8396 actions.
+451 apps, 8479 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a

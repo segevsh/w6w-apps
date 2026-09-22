@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.140.0",
+  "version": "0.141.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -1030,7 +1030,13 @@
       "path": "./apps/sanity"
     },
     {
+      "path": "./apps/scoreapp"
+    },
+    {
       "path": "./apps/segment"
+    },
+    {
+      "path": "./apps/semrush"
     },
     {
       "path": "./apps/sendblue"
@@ -1081,6 +1087,9 @@
       "path": "./apps/signrequest"
     },
     {
+      "path": "./apps/simpletexting"
+    },
+    {
       "path": "./apps/simplybook"
     },
     {
@@ -1088,6 +1097,9 @@
     },
     {
       "path": "./apps/smartsheet"
+    },
+    {
+      "path": "./apps/smartsuite"
     },
     {
       "path": "./apps/snowflake"
@@ -1301,6 +1313,9 @@
     },
     {
       "path": "./apps/workable"
+    },
+    {
+      "path": "./apps/workiz"
     },
     {
       "path": "./apps/workos"
