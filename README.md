@@ -200,6 +200,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | hedy | ai, productivity | api-key | 4 |
 | helpscout | support | oauth2 | 13 |
 | heygen | ai | api-key | 18 |
+| heyreach | marketing, social-media, crm | api-key | 30 |
 | highlevel | crm, marketing | oauth2 | 18 |
 | homeassistant | iot, productivity | token | 19 |
 | hotmart | commerce, finance | client-credentials | 17 |
