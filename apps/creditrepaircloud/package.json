@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/creditrepaircloud",
+  "version": "0.1.0",
+  "description": "Create, update, delete and read the Lead/Client and Affiliate records a Credit Repair Cloud account runs on.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.creditrepaircloud",
+    "displayName": "Credit Repair Cloud",
+    "longDescription": "Credit Repair Cloud is the CRM a credit-repair business runs on, and its Web API is deliberately small: eight endpoints, four for Lead/Client records and four for Affiliate records, each a single-record insert, update, delete or view.\n\nThis app is exactly those eight, one action each, so a workflow can create a lead from a form or another CRM, keep a client's contact details and status fresh, retire records that are no longer wanted, and look one up by id — for clients and for the affiliates who refer them, which are a separate resource with their own statuses, fields and portal access.\n\nEverything talks to the vendor's own endpoint shape, including the parts its documentation states inconsistently: the two credentials travel in the URL query string (added only by the connection's sign hook, never by an action) while the XML payload travels as a form-encoded POST body, so both of the vendor's contradictory instructions are honoured at once. Responses are XML and are read with a small hand-rolled parser, because the vendor's documentation never shows a successful response body — actions return the vendor's envelope generically rather than claiming field names nobody has observed.\n\nThe health surface answers two questions: whether Credit Repair Cloud's own status page reports the API component it names as operational, and whether the stored API key and secret key are live, classified from the vendor's own error codes rather than from an HTTP status (this vendor answers 200 for everything, including a wrong key).",
+    "categories": [
+      "crm",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Credit Repair Cloud"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.creditrepaircloud.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
