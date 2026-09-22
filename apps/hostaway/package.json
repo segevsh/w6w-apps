@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/hostaway",
+  "version": "0.1.0",
+  "description": "Manage Hostaway vacation-rental listings, calendars, reservations, guest conversations, reviews, tasks and financial reports.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.hostaway",
+    "displayName": "Hostaway",
+    "longDescription": "Hostaway is vacation-rental / property-management software: it sits between a host's own listings and the channels they sell on (Airbnb, Booking.com, Vrbo, Marriott, direct) and owns the calendar, the reservation, the guest conversation, the review and the money.\n\nThis app covers that operational surface end to end. Listings can be listed and searched (by city, country, contact, property type or name) and read or partially updated. A listing's calendar can be read for a date range and updated in one call with a price/availability/stay-restriction interval. Reservations can be listed with the documented arrival/departure/date-type filters, read, created, updated and cancelled. Guest conversations can be listed and read, their messages listed, and a message sent (that endpoint is rate-limited to 30 requests per minute per account). Reviews can be listed with the documented filters and read individually, tasks listed and created, and the account's static reference data — amenities and property types — can be read so a workflow can resolve the ids those writes expect. A financial standard report can be requested as CSV, gated on a doc-commented account feature.\n\nAuthentication is OAuth2 client credentials against Hostaway's single public API version: the numeric Hostaway account ID and the account's client secret are exchanged for a bearer token, so the app works in scheduled, unattended runs with no browser sign-in.\n\nHealth comes from the API itself rather than a status page, because Hostaway publishes none that exists: a signed GET /v1/users?limit=1 probe classified from Hostaway's own status envelope, an unsigned probe of the same endpoint that proves the API is reachable when no credential is available, and a declared absence recording that no machine-readable Hostaway status surface exists.",
+    "categories": [
+      "crm",
+      "calendar"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Hostaway"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.hostaway.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
