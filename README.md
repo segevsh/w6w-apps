@@ -346,6 +346,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pushbullet | communication, productivity | access-token | 24 |
 | pushover | communication, monitoring | app-token | 4 |
 | qdrant | search, databases, ai | api-key | 19 |
+| qualtrics | forms, analytics | api-token | 15 |
 | quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
 | quo | communication, crm | api-key | 43 |

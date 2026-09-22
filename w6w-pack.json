@@ -988,6 +988,9 @@
       "path": "./apps/qdrant"
     },
     {
+      "path": "./apps/qualtrics"
+    },
+    {
       "path": "./apps/quickbase"
     },
     {
