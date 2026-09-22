@@ -25,7 +25,7 @@ methods. Sixty-six apps add a fourth question — **is this tenant's own host re
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **1,072 checks**: 421 live probes, 263 declared absences, and 390
+Across the pack that comes to **1,078 checks**: 422 live probes, 265 declared absences, and 391
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -202,6 +202,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [hedy](apps/hedy/README.md) | none published — `hedy.statuspage.io` is genuinely claimed (`page.name: "Hedy"`) but its two components are Statuspage's unconfigured `"API (example)"`/`"Management Portal (example)"` defaults, never wired to anything real; declared `informational` | no | `GET /sessions?limit=1` — a 404 here means "wrong path," never a bad credential (that's a 401 with a structured body) | yes — undocumented but live `x-ratelimit-*` headers on every response, read off the same auth-probe call | ~~service~~ · `quota` · 1 derived |
 | [helpscout](apps/helpscout/README.md) | [Statuspage](https://status.helpscout.com/api/v2/summary.json) | yes | `GET /users/me` | yes | `service` · `quota` · 1 derived |
 | [heygen](apps/heygen/README.md) | [Statuspage](https://status.heygen.com/api/v2/summary.json) — anchored on the `api.heygen.com` component | yes | `GET /v3/users/me` | yes — billing-type-gated balance/credits, no early-warning threshold | `service` · `quota` · ~~request-rate~~ · 1 derived |
+| [heyreach](apps/heyreach/README.md) | real but unreadable — `status.heyreach.io` self-identifies as "HeyReach Status" and is CNAMEd to UptimeRobot, yet every Statuspage-shaped path 404s and the only JSON is keyed by a token scraped from the page itself; declared `informational` | no | `GET /api/public/auth/CheckApiKey` — a 401 here is `Missing API key` or `Invalid API key` in PLAIN TEXT, so classification is from the body only; a schema-correct auth answer is proof the API is reachable | no — the document declares a 429 on every operation but no rate-limit header and no quota endpoint; declared `informational` | `api` · ~~service~~ · ~~quota~~ · 1 derived |
 | [highlevel](apps/highlevel/README.md) | [Atom](https://status.gohighlevel.com/feed.atom) | yes | `GET /locations/{locationId}` | yes | `service` · `quota` · 1 derived |
 | [homeassistant](apps/homeassistant/README.md) | [Statuspage](https://status.home-assistant.io/api/v2/summary.json) — covers the PROJECT's infrastructure and Nabu Casa Cloud, not your instance; probed anyway because a Remote UI outage is what makes a healthy instance unreachable. Capped at degraded | yes | `GET /api/` | no | `service` · `instance` · `entities` · ~~quota~~ · 1 derived |
 | [hotmart](apps/hotmart/README.md) | none published — `status.hotmart.com` is a client-rendered SPA answering the identical 975-byte shell for every path tried, and `hotmart.statuspage.io` is the unclaimed-Statuspage decoy (302 to statuspage.io's own marketing page) | no | token exchange (`POST /security/oauth/token`) | yes (`RateLimit-*`/`X-RateLimit-*-Minute` on `GET /user/api/v1/me`) | ~~service~~ · `quota` · 1 derived |

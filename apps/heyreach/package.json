@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/heyreach",
+  "version": "0.1.0",
+  "description": "Run HeyReach LinkedIn outreach from a workflow: campaigns, lead lists, leads, senders, inbox and blacklist.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.heyreach",
+    "displayName": "HeyReach",
+    "longDescription": "HeyReach is a LinkedIn outreach and automation platform for sales teams, and this app exposes the half of it a workflow can act on: the leads, lists and campaigns that outreach runs on.\n\nLeads are looked up by profile URL, tagged, and pushed in bulk into either a lead list or directly into a campaign paired with the sending LinkedIn account — which is HeyReach's own unit of work, since a lead is always worked by a specific sender. Campaigns can be listed, read, created as drafts, started, paused, resumed, and their sequence read back, so a workflow can drive outreach state rather than only inspect it.\n\nAround that, the app covers the supporting surfaces a scaling operation needs: the connected LinkedIn sender accounts and their live connection status, the lead and company lists those campaigns draw from, inbox conversations and message sending, workspace-wide statistics per day and per campaign, webhook registration for reacting to replies and connections instead of polling, and the blacklist that keeps leads out of every campaign.\n\nAuthorization is HeyReach's own single X-API-KEY header, and the app ships a health check that reads the API's own auth answer rather than trusting an HTTP status alone.",
+    "categories": [
+      "marketing",
+      "social-media",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "HeyReach"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.heyreach.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
