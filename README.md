@@ -245,6 +245,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | linkedin-conversions | marketing, analytics | oauth2 | 7 |
 | littlegreenlight | crm, finance | bearer-token | 12 |
 | livestorm | video, communication | api-key | 40 |
+| lofty | crm, communication | api-key | 32 |
 | lokalise | developer-tools, cms | api-token | 31 |
 | looker | analytics, data-warehousing | api-credentials | 11 |
 | loops | email, marketing, communication | api-key | 21 |

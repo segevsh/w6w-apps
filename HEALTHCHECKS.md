@@ -25,7 +25,7 @@ methods. Sixty-six apps add a fourth question — **is this tenant's own host re
 as a `kind: "dependency"` check, because "the site is gone" and "the token expired" are
 different problems with different fixes.
 
-Across the pack that comes to **1,069 checks**: 420 live probes, 262 declared absences, and 389
+Across the pack that comes to **1,072 checks**: 421 live probes, 263 declared absences, and 390
 `auth:*` checks derived for free from existing `test` hooks.
 
 Per-app detail, including why each probe was chosen over the obvious alternatives and how
@@ -246,6 +246,7 @@ each check is annotated, is in `apps/<app>/README.md`. This table is the index.
 | [linkedin-conversions](apps/linkedin-conversions/README.md) | [Statuspage](https://www.linkedin-apistatus.com/api/v2/summary.json) — same page as the sibling `linkedin`/`linkedin-ads` apps | yes | `GET /rest/conversions?q=account&account=urn:li:sponsoredAccount:0` | no — no rate-limit header, only prose-documented request ceilings | `service` · ~~quota~~ · 1 derived |
 | [littlegreenlight](apps/littlegreenlight/README.md) | none — `status.littlegreenlight.com`/`littlegreenlight.statuspage.io` both redirect to Atlassian's own marketing page, the unclaimed-Statuspage pattern | no | `GET /api/v1/constituents.json?limit=1` | no — no rate-limit/quota header or endpoint found live or documented | ~~service~~ · ~~quota~~ · 1 derived |
 | [livestorm](apps/livestorm/README.md) | [Statuspage](https://status.livestorm.co/api/v2/summary.json) — one page-wide `"Livestorm app"` component | yes | `GET /v1/ping` — documented 200 carries no body at all | yes — `RateLimit-Monthly-*` and `RateLimit-Interval-*`, two independent windows | `service` · `quota` · 1 derived |
+| [lofty](apps/lofty/README.md) | [Statuspage](https://status.lofty.com/api/v2/summary.json) — dedicated `API` component, other components (Dialer, Website) excluded | yes | `GET /v1.0/me` — classified from the body (a JSON string is a failure, an object with `id` is live) | no (declared unavailable) | `service` · ~~quota~~ · 1 derived |
 | [lokalise](apps/lokalise/README.md) | [Statuspage](https://status.lokalise.com/api/v2/summary.json), verified not a decoy custom domain (byte-identical to `lokalise.statuspage.io`) | yes | `GET /projects?limit=1` | yes — `x-ratelimit-remaining` is genuinely live on every response | `service` · `quota` · `request-rate` · 1 derived |
 | [looker](apps/looker/README.md) | none — there is no Looker SERVICE to have a status: every deployment is its own instance (hosted at `{name}.cloud.looker.com` or self-hosted), and a healthy Looker in front of a struggling WAREHOUSE presents to a workflow as a Looker failure, which no status page covers | no | `GET /api/4.0/user` (SIGNED — Looker offers no unauthenticated health endpoint; a connection failure is reported as the self-hosted API PORT 19999, a 401 as a missed refresh of the one-hour token, and a DISABLED user as down rather than ok) | no — Looker rate-limits per instance and publishes no header at all; the ceiling that binds is the database CONNECTION POOL, reported by `connection-list` | ~~service~~ · `instance` · 1 derived |
 | [loops](apps/loops/README.md) | [Statuspage](https://status.loops.so/api/v2/components.json) | yes | `GET /v1/api-key` | no | `service` · ~~quota~~ · 1 derived |
