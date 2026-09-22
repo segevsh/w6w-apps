@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/google-meet",
+  "version": "0.1.1",
+  "description": "Create and manage Google Meet spaces, and read conference records, participants, recordings and transcripts.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-meet",
+    "displayName": "Google Meet",
+    "longDescription": "Google Meet is the video-conferencing product behind meet.google.com, and its REST API is organized around two things: the space, a durable room that always has the same join link, and the conference record, a single instance of a call held in that space.\n\nThis app lets a workflow create a space (and tune who can join, how, and what artifacts Meet generates), read or patch its settings, and end a live conference in it. It also reads the full recording of what happened: the conference records for a space, who attended, when each person joined and left, and any recordings and transcripts Meet produced — down to the individual transcript entries.\n\nSpace co-hosts can be listed and read here, but not yet changed; and the newer smartNotes resource is deliberately left out (see the README).\n\nA fit for standing up a recurring meeting room, auditing who actually attended a call, or pulling a transcript into another system once a recording lands in Drive.",
+    "categories": [
+      "video",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Meet"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Google Meet"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "meet.googleapis.com",
+        "www.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
