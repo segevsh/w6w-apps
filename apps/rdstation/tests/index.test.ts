@@ -110,10 +110,11 @@ Deno.test("index: the declared icon is a real file next to the manifest", async 
 
 /**
  * The vendor's lockup is a single dark-navy ink (`#002233`) — perfect on the
- * light tile, invisible on the host's dark one (the pack's icon-legibility audit
- * measures ΔE 9.8 there). The pack's sanctioned fix is a dark variant with the
- * same artwork re-inked white, which `_tools/icon-legibility.ts` writes; this
- * pins that the app still ships it.
+ * light tile, invisible on the host's dark one. RD Station's own CDN publishes
+ * a matching white-ink variant of the identical artwork right alongside the
+ * light one (verified: same 10 paths, same `viewBox`, only the fill differs),
+ * so this app ships that vendor file verbatim as `assets/icon.dark.svg` rather
+ * than a locally re-inked copy; this pins that it is still declared and present.
  */
 Deno.test("index: a white-on-dark variant of the same artwork is declared and present", async () => {
   const ref = manifest.w6w.appearance.darkMode?.icon?.svg;
@@ -122,8 +123,10 @@ Deno.test("index: a white-on-dark variant of the same artwork is declared and pr
 
   const dark = await Deno.readTextFile(new URL("../assets/icon.dark.svg", import.meta.url));
   assert(dark.includes('viewBox="0 0 370 64"'), "the dark variant is not the same artwork");
-  assert(dark.includes('fill="#ffffff"'), "the dark variant is not re-inked");
-  assert(!dark.includes("#002233"), "the dark variant still carries the invisible ink");
+  // Hex casing is not semantic in SVG — this app ships the vendor's own dark
+  // asset verbatim (`fill="#FFFFFF"`, uppercase), not a locally re-inked copy.
+  assert(/fill="#ffffff"/i.test(dark), "the dark variant is not re-inked");
+  assert(!/#002233/i.test(dark), "the dark variant still carries the invisible ink");
 });
 
 Deno.test("index: the status feed host is NOT in network.allow (the feed host is implicit)", () => {

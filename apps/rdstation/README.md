@@ -175,10 +175,12 @@ slug, and there is no RD Station node in n8n's `nodes-base` to borrow one from. 
 never re-wrapped or hand-edited.
 
 Because that lockup is painted in a single dark navy (`#002233`) — legible on the light icon tile,
-invisible on the dark one — the app also declares `appearance.darkMode.icon`:
-`assets/icon.dark.svg` is the *same artwork re-inked white*, written by the pack's own
-`_tools/icon-legibility.ts fix` (the sanctioned treatment for a one-colour mark). Only the paint
-differs; every path, size and `viewBox` is the vendor's.
+invisible on the dark one — the app also declares `appearance.darkMode.icon`. RD Station's own CDN
+turned out to publish a matching white-ink variant of the identical artwork right alongside the
+light one (`files.readme.io/…-logo-370x64-dark.svg`, confirmed 200, same 10 paths, same
+`viewBox="0 0 370 64"`, only `fill="#FFFFFF"` differs), so `assets/icon.dark.svg` is that verified
+vendor file downloaded verbatim — not a locally re-inked copy. Only the paint differs from the light
+variant; every path, size and `viewBox` is the vendor's.
 
 ## Tests
 
