@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/docuseal",
+  "version": "0.1.0",
+  "description": "Build DocuSeal templates, send submissions for signature, manage submitters, and read completed documents.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.docuseal",
+    "displayName": "DocuSeal",
+    "longDescription": "DocuSeal is an open-source document signing platform, and this app covers its two hosted API hosts — the templates that define what gets signed, and the submissions that send them out and track who has signed. A template can be built from an HTML fragment with inline field tags, from a PDF or DOCX with fields placed by coordinate, or created and updated through the Studio UI and then driven from here by id; templates can also be cloned or merged into a new one. A submission turns a template (or a fresh set of documents) into a live signature request for one or more submitters, in a fixed or parallel signing order, and this app covers the whole lifecycle — creating it, listing and reading submissions and their documents, updating or archiving one, and reading or updating an individual submitter's own record (including re-sending their invite or marking them signed on their behalf).\n\nDocuSeal hosts every account on one of two fixed API hosts — the global service or the EU one — chosen once at connect time; nothing about the account moves between them afterward. Deliberately out of scope: uploading documents outside a submission/template call (this app sends base64 content or a downloadable URL, exactly as the API accepts, never a local file the sandbox cannot produce), and the vendor's self-hosted deployment path, since the two hosted API hosts are the only ones this app's network allowlist can name.",
+    "categories": [
+      "documents",
+      "legal",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "DocuSeal"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.docuseal.com",
+        "api.docuseal.eu"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

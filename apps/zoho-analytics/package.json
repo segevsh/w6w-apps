@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/zoho-analytics",
+  "version": "0.1.0",
+  "description": "Manage workspaces, rows and data exports/imports in Zoho Analytics, across every Zoho data centre.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-analytics",
+    "displayName": "Zoho Analytics",
+    "longDescription": "Zoho Analytics puts a BI workspace's tables into a workflow — discover owned and shared workspaces, look up a workspace's details, add, update and delete rows by criteria, export a table or view as CSV/JSON/XML/HTML, import a CSV or JSON file into a brand-new table, and list a workspace's users or an organization's admins.\n\nZoho hosts every account in one of eight regional data centres, each with its own dedicated Analytics API host and, almost always, its own connection endpoint, so this app routes each region through its own dedicated connection rather than one that could silently send an EU account's requests through the US region instead. Canada is the one region where the connection endpoint AND the API host itself break the naming pattern the other seven follow, and this app points at the real endpoints rather than the ones the pattern would suggest.\n\nThe Asynchronous Import/Export APIs, importing into an existing table, workspace/view/column administration (create, rename, delete, copy), formulas, variables, email schedules, embedding and single sign-on are deliberately left out as not core to workflow automation of a workspace's data — several of those are large enough to be their own app.",
+    "categories": [
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho Analytics"
+      }
+    },
+    "network": {
+      "allow": [
+        "analyticsapi.zoho.com",
+        "analyticsapi.zoho.eu",
+        "analyticsapi.zoho.in",
+        "analyticsapi.zoho.com.au",
+        "analyticsapi.zoho.jp",
+        "analyticsapi.zohocloud.ca",
+        "analyticsapi.zoho.com.cn",
+        "analyticsapi.zoho.sa"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

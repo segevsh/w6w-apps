@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/webex",
+  "version": "0.1.1",
+  "description": "Manage Webex spaces, messages, memberships, teams and webhooks — the Webex Messaging API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.webex",
+    "displayName": "Webex",
+    "longDescription": "Cisco Webex is the messaging, meeting and calling platform behind Webex App and Webex Calling. This app covers the Webex Messaging REST API: rooms (spaces) — creating, reading, updating, deleting and listing them; messages — posting, editing, reading, deleting and listing, including direct 1:1 threads; memberships — adding, updating, removing and listing who belongs to a room; teams and team memberships — the same lifecycle one level up, for a named group of rooms; and webhooks — subscribing to the resource/event pairs Webex fires so a workflow can react instead of poll.\n\nA handful of read-only People lookups round it out (your own profile, another person's profile, and organization search) — Webex's own guidance is that People is being superseded by SCIM 2.0 for provisioning, so this app does not add, update or remove people; it only reads.\n\nA fit for turning an external event into a Webex space with the right people in it and a first message posted, keeping a team's space roster in sync with some other system of record, or wiring a webhook so a workflow starts the moment someone posts, joins or leaves.",
+    "categories": [
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Webex"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Webex"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "webexapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

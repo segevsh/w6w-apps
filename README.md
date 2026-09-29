@@ -123,6 +123,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | digitalocean | devops, storage | token | 15 |
 | discord | communication | bot-token, oauth2 | 19 |
 | discourse | communication, social-media | api-key | 26 |
+| docuseal | documents, productivity | api-key | 23 |
 | documenso | legal, documents, productivity | api-key | 20 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
 | donorbox | commerce | basic | 7 |
@@ -383,6 +384,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | servicem8 | crm | api-key | 18 |
 | servicenow | support, devops | basic, oauth2 | 9 |
 | sharepoint | documents, productivity | oauth2 | 16 |
+| sharetribe | commerce, developer-tools | client-credentials | 19 |
 | shippo | commerce, developer-tools | api-key | 14 |
 | shipstation | ecommerce | api-key | 18 |
 | shopify | commerce | access-token | 18 |
@@ -452,9 +454,11 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | vercel | devops, developer-tools | access-token, oauth2 | 28 |
 | videoask | forms, video | oauth2 | 38 |
 | vimeo | video, social-media | access-token | 36 |
+| wappalyzer | developer-tools | api-key | 9 |
 | wati | communication, support | api-token | 12 |
 | wave | finance | oauth2, full-access-token | 21 |
 | wealthbox | crm | api-key | 21 |
+| webex | communication | oauth2 | 34 |
 | webflow | cms | api-token, oauth2 | 14 |
 | webinargeek | video, communication | api-key | 14 |
 | webinarjam | video, marketing | api-key | 5 |
@@ -478,6 +482,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zendesk-sell | crm, marketing | oauth2 | 31 |
 | zerobounce | email, marketing | api-key | 4 |
 | zoho | crm | oauth2 | 21 |
+| zoho-analytics | analytics | oauth2 (×8 DCs) | 10 |
 | zoho-bookings | scheduling, calendar | oauth2 (×8 DCs) | 9 |
 | zoho-calendar | calendar | oauth2 (×8 DCs) | 13 |
 | zoho-campaigns | marketing, email | oauth2 (×8 DCs) | 24 |
