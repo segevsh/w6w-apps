@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/beehiiv",
+  "version": "0.1.0",
+  "description": "Manage beehiiv publications, posts, subscriptions and segments — the newsletter platform's core content and audience surface.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.beehiiv",
+    "displayName": "beehiiv",
+    "longDescription": "beehiiv is a newsletter platform: publications hold posts (the emails/web pages sent to subscribers) and subscriptions (the subscriber list).\n\nThis app covers the surface a workflow actually automates: list and read publications; create, update, read, list and delete posts (including beehiiv's asynchronous Send API creation flow); and create, read, list, update and look up (by email) subscriptions.\n\nDeliberately left out: the Ad Network (beta, per the vendor's own spec), bulk subscription actions, automations/journeys, newsletter lists, segments, custom fields, authors, polls, podcasts, premium tiers, complimentary access, condition sets, data-privacy deletion requests, email blasts, engagements, subscriber exports, the referral program, webhooks, post templates and publication fields, and every workspace-scoped (cross-publication) endpoint. See the README for why.",
+    "categories": [
+      "email",
+      "marketing",
+      "cms"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "beehiiv"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.beehiiv.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/redtail-crm",
+  "version": "0.1.0",
+  "description": "Manage Redtail CRM contacts, addresses, notes, activities and opportunities via the Redtail REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.redtail-crm",
+    "displayName": "Redtail CRM",
+    "longDescription": "Redtail is a CRM built for financial advisors: a Contact (person, business, trust or association) sits at the center, with addresses, notes, scheduled activities (tasks, appointments, phone calls) and sales opportunities hung off it. This app covers that core over Redtail's public REST API (`crm.redtailtechnology.com/api/public/v1`, documented at documenter.getpostman.com/view/7873823): creating, finding, updating and deleting contacts; managing their addresses and notes; scheduling and completing activities, optionally linked to a contact; and running opportunities through a sales pipeline.\n\nGood for syncing new leads/clients from a signup or intake form, logging a call or meeting note against the right contact from another tool's event, creating follow-up tasks tied to a contact, or keeping an opportunity's stage and amount current as a deal progresses elsewhere.",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Redtail CRM"
+      }
+    },
+    "network": {
+      "allow": [
+        "crm.redtailtechnology.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
