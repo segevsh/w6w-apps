@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.144.0",
+  "version": "0.145.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -311,6 +311,9 @@
     },
     {
       "path": "./apps/documenso"
+    },
+    {
+      "path": "./apps/docuseal"
     },
     {
       "path": "./apps/docusign"
@@ -1105,6 +1108,9 @@
       "path": "./apps/sharepoint"
     },
     {
+      "path": "./apps/sharetribe"
+    },
+    {
       "path": "./apps/shippo"
     },
     {
@@ -1315,6 +1321,9 @@
       "path": "./apps/vimeo"
     },
     {
+      "path": "./apps/wappalyzer"
+    },
+    {
       "path": "./apps/wati"
     },
     {
@@ -1322,6 +1331,9 @@
     },
     {
       "path": "./apps/wealthbox"
+    },
+    {
+      "path": "./apps/webex"
     },
     {
       "path": "./apps/webflow"
@@ -1391,6 +1403,9 @@
     },
     {
       "path": "./apps/zoho"
+    },
+    {
+      "path": "./apps/zoho-analytics"
     },
     {
       "path": "./apps/zoho-bookings"

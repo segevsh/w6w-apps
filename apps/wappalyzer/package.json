@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/wappalyzer",
+  "version": "0.1.0",
+  "description": "Look up the technologies behind any website, discover its subdomains, verify an email address, and build technographic lead lists.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.wappalyzer",
+    "displayName": "Wappalyzer",
+    "longDescription": "Wappalyzer identifies the technologies used on public websites — CMSs, ecommerce platforms, analytics tools, web frameworks, CRMs, CDNs and more — and packages that data into lookup, technographic prospecting, enrichment and monitoring workflows.\n\nThe core of this app is the Lookup API: point it at up to ten URLs and get back the detected technology stack for each, either from Wappalyzer's own dataset (fast, cached) or from a fresh live crawl. Around that sit three more real, documented endpoints — subdomain discovery for mapping a company's web footprint, email verification for keeping bad addresses out of an outreach workflow, and lead lists for turning \"which companies use Shopify\" into a downloadable prospect set.\n\nEvery endpoint, field and header here — including the exact 403 behaviour, the credit-accounting headers on every response, and the async crawl/callback lifecycle — was verified against Wappalyzer's own published OpenAPI 3.1 contract and live probes against api.wappalyzer.com, not a third-party integration directory.",
+    "categories": [
+      "developer-tools",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Wappalyzer"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.wappalyzer.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
