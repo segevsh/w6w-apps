@@ -55,6 +55,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | base44 | ai, developer-tools | api-key | 11 |
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
+| beehiiv | email, marketing, cms | api-key | 12 |
 | bexio | accounting, crm | oauth2 | 25 |
 | bigcommerce | commerce, crm | access-token | 38 |
 | bigin | crm | oauth2 | 23 |
@@ -319,6 +320,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | openai | ai, developer-tools | api-key | 13 |
 | openrouter | ai | api-key | 6 |
 | opusclip | video, ai, social-media | api-key | 21 |
+| otter | ai, productivity, video | api-key | 7 |
 | outlook | communication, email, calendar | oauth2 | 18 |
 | paddle | commerce, finance | api-key | 21 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
@@ -364,6 +366,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | recruitee | hr | bearer-token | 17 |
 | recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
+| redtail-crm | crm | database-credentials | 25 |
 | relevanceai | ai, productivity, developer-tools | api-key | 12 |
 | replyio | marketing, crm, email | api-key | 18 |
 | resend | email, communication | api-key | 24 |
@@ -500,7 +503,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoom | video, communication | server-to-server, oauth2 | 14 |
 | zuora | finance | client-credentials | 14 |
 
-461 apps, 8695 actions.
+464 apps, 8739 actions.
 
 `upstash` and `supabase` are **not** raw Redis/Postgres — this pack's Apps run in a
 network-less sandbox that only reaches the network via `ctx.fetch` over HTTP(S) to a
