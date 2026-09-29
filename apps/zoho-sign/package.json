@@ -1,0 +1,41 @@
+{
+  "name": "@w6w-apps/zoho-sign",
+  "version": "0.1.0",
+  "description": "Upload documents, send them for signature, and manage templates in Zoho Sign, across every Zoho data centre.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-sign",
+    "displayName": "Zoho Sign",
+    "longDescription": "Zoho Sign is how a document gets signed — upload it, record who needs to sign and in what order, send it out, track its status, and clean up afterward — and this app covers that lifecycle over Zoho Sign's own REST API.\n\nIt creates a document draft from an uploaded file and a list of recipients, sends it out for signature, lists and reads request status, recalls or deletes a request, and sends a reminder to whoever hasn't signed yet. On the template side it uploads a reusable template with recipient roles, reads back the fields a document created from it needs, fills those roles with real people and sends the result for signature in one call, and deletes a template.\n\nZoho hosts every organization in one of ten regional data centres, each with its own dedicated `sign.zoho.<tld>` API host and (almost always) its own `accounts.zoho.<tld>` OAuth host, so this app routes each region through its own dedicated connection rather than one that could silently send a UK organization's requests through the US region instead. Canada is the one region where BOTH of those hosts break the naming pattern the other nine follow, and this app points at the real endpoints rather than the ones the pattern would suggest.\n\nUser management, folder management, document-type/field-type administration, PDF and completion-certificate download, full field-by-field re-placement on update, signer groups, and Aadhaar/e-stamping are deliberately left out — either their exact endpoints were never located in Zoho's documentation, or they are a large editor-shaped surface this app does not attempt to model generically. See README.md for the complete list.",
+    "categories": [
+      "documents",
+      "legal",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho Sign"
+      }
+    },
+    "network": {
+      "allow": [
+        "sign.zoho.com",
+        "sign.zoho.eu",
+        "sign.zoho.in",
+        "sign.zoho.com.au",
+        "sign.zoho.jp",
+        "sign.zohocloud.ca",
+        "sign.zoho.sa",
+        "sign.zoho.uk",
+        "sign.zoho.sg",
+        "sign.zoho.ae"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
