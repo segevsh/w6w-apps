@@ -247,6 +247,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | knack | databases, productivity | application-key | 5 |
 | kommo | crm | long-lived-token | 12 |
 | kustomer | support, crm | api-key | 23 |
+| kvcore | crm | bearer-token | 26 |
 | launchdarkly | devops, developer-tools | api-key | 21 |
 | lawmatics | legal, crm | oauth2 | 11 |
 | learnworlds | crm, commerce | client-credentials | 12 |
@@ -322,6 +323,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | paddle | commerce, finance | api-key | 21 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | pandadoc | documents, legal, productivity | api-key | 16 |
+| paperform | forms-surveys | bearer-token | 25 |
 | parseur | documents, ai | api-key | 29 |
 | particle | iot, devops | access-token | 13 |
 | patreon | commerce, crm | creator-access-token, oauth2 | 11 |
@@ -486,10 +488,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho-bookings | scheduling, calendar | oauth2 (×8 DCs) | 9 |
 | zoho-calendar | calendar | oauth2 (×8 DCs) | 13 |
 | zoho-campaigns | marketing, email | oauth2 (×8 DCs) | 24 |
+| zoho-creator | app-builder | oauth2 (×9 DCs) | 10 |
 | zoho-inventory | commerce, accounting | oauth2 (×8 DCs) | 17 |
 | zoho-invoice | accounting, finance | oauth2 (×8 DCs) | 22 |
 | zoho-recruit | hr, crm | oauth2 (×10 DCs) | 22 |
 | zoho-sheet | productivity, spreadsheets | oauth2 (×7 DCs) | 10 |
+| zoho-sign | documents, legal | oauth2 (×10 DCs) | 12 |
 | zohobooks | accounting | oauth2 (×8 DCs) | 22 |
 | zohodesk | support | oauth2 (×10 DCs) | 27 |
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |

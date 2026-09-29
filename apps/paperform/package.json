@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/paperform",
+  "version": "0.1.0",
+  "description": "Manage Paperform forms, fields, submissions and webhooks over the Paperform API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.paperform",
+    "displayName": "Paperform",
+    "longDescription": "Paperform is a document-style form and survey builder — payments, e-signature requests, quizzes and multi-step workflows presented as one continuous page rather than a grid of boxes. This app covers the Paperform API v1's form/submission lifecycle: list and read forms, read and update their fields, list, read and delete full and partial (in-progress, not-yet-submitted) submissions, manage per-form webhooks, and read spaces (the folders forms are organised into).\n\nA form's fields and a submission's answers are both free-form — Paperform's own field catalog spans two dozen types (text, choices, products, signature, calculations, matrix, and more), each with a different options shape — so this app exposes a field update and a submission's answer data as JSON matching Paperform's own wire shape, rather than a generated per-type form that would drift out of sync with it.\n\nSeparately, Paperform also sells Papersign, a standalone e-signature product with its own section of this same API (`/papersign/*`). It is not covered here — see the README for why.",
+    "categories": [
+      "forms"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Paperform"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.paperform.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/kvcore",
+  "version": "0.1.0",
+  "description": "Manage contacts, notes, tags, users, offices and teams in kvCORE / BoldTrail, Inside Real Estate's real-estate CRM.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.kvcore",
+    "displayName": "kvCORE",
+    "longDescription": "kvCORE (by Inside Real Estate, now rebranded BoldTrail) is a real-estate CRM and lead-engine platform: brokerages and agent teams run their contact database, lead routing, agent websites and office/team structure through it. This app covers the kvCORE Public API V2 — the API that is actually live today at `api.kvcore.com` — for contact and lead management (create, read, list, update, tag, and note contacts) and account administration (create, read, list, update and delete users, offices and teams, including team/office membership).\n\nInside Real Estate is mid-rebrand: its developer hub now documents a *second*, OAuth-based BoldTrail API (`api.boldtrail.com`) that its own docs describe as beta and invite-only as of this writing, with no self-serve way to obtain a client. This app deliberately targets the V2 API instead, because it is the one a workflow can actually authenticate against today: any kvCORE user can self-issue a scoped bearer token from their own Lead Dropbox, no partner approval required.\n\nEvery endpoint, field and error shape here was verified against the vendor's own OpenAPI 3.1 document (embedded in `developer.insiderealestate.com`'s reference pages, fetched 2026-09-29) plus a live, unauthenticated probe against `api.kvcore.com` on the same day.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": { "32x32": "./assets/icon.png" },
+        "alt": "kvCORE"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.kvcore.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

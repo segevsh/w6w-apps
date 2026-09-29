@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/zoho-creator",
+  "version": "0.1.0",
+  "description": "List, add, update and delete records — plus upload/download files — in Zoho Creator custom applications, across every Zoho data centre.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-creator",
+    "displayName": "Zoho Creator",
+    "longDescription": "Zoho Creator is a low-code platform for building custom business applications — forms, reports, workflows and dashboards a team designs without a developer. This app puts a Creator application's own data into a workflow: discover the applications, forms, reports and fields a connection can reach, list records from a report (optionally filtered by criteria), add or update records, delete records matching a criteria, and upload/download the file stored in a record's file/image/audio/video/signature field.\n\nEvery Creator application is addressed by a specific account-owner-name + app-link-name pair in its URL path — a single connection's token can reach many different owners' apps, so these are required per-action parameters rather than a fixed connection field. Run List Applications first to discover them.\n\nZoho hosts every account in one of nine regional data centres, each with its own OAuth accounts host and, for the API itself, the same shared www.zohoapis.<tld> gateway Zoho Books/Invoice use — not a dedicated creator.zoho.<tld> host. Canada is the one region where the OAuth accounts host breaks the naming pattern the other eight follow (accounts.zohocloud.ca, not accounts.zoho.ca); unlike this pack's other multi-DC Zoho apps, Creator's *API* host does not carry that same substitution — www.zohoapis.ca is a normal member of the family.\n\nThe legacy Deluge-script custom-functions surface, the Publish API (anonymous public form submission via a privatelink, a different auth model entirely), and the asynchronous Bulk Read API (a create-job/poll/download-zip flow for very large exports) are deliberately left out — different mechanisms, or large enough to be their own app/action pair.",
+    "categories": [
+      "productivity",
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho Creator"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.zohoapis.com",
+        "www.zohoapis.eu",
+        "www.zohoapis.in",
+        "www.zohoapis.com.au",
+        "www.zohoapis.jp",
+        "www.zohoapis.ca",
+        "www.zohoapis.sa",
+        "www.zohoapis.com.cn",
+        "www.zohoapis.ae"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
