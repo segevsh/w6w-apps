@@ -122,6 +122,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | deputy | hr, scheduling | permanent-token | 18 |
 | devin | developer-tools, ai | api-key | 12 |
 | dialpad | communication, support | api-key | 35 |
+| digistore24 | commerce | api-key | 36 |
 | digitalocean | devops, storage | token | 15 |
 | discord | communication | bot-token, oauth2 | 19 |
 | discourse | communication, social-media | api-key | 26 |
@@ -220,6 +221,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | heyreach | marketing, social-media, crm | api-key | 30 |
 | highlevel | crm, marketing | oauth2 | 18 |
 | homeassistant | iot, productivity | token | 19 |
+| honeybook | crm, project-management | oauth2 | 38 |
 | hostaway | crm, calendar | client-credentials | 21 |
 | hotmart | commerce, finance | client-credentials | 17 |
 | housecallpro | crm, calendar, finance | api-key, oauth2 | 39 |
@@ -228,6 +230,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | huggingface | ai, developer-tools | token | 14 |
 | hunter | email, marketing, crm | api-key | 20 |
 | insightly | crm | api-key | 20 |
+| instagram-for-business | social-media, marketing | access-token, oauth2 | 26 |
 | instantly | marketing, email, crm | api-key | 38 |
 | instapaper | productivity | xauth | 17 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
@@ -347,6 +350,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pipefy | productivity, project-management | client-credentials, personal-access-token | 29 |
 | plaid | finance, databases | client-secret, client-secret-sandbox | 14 |
 | planningcenter | crm, calendar, finance | personal-access-token | 6 |
+| plaud | ai, productivity | custom | 7 |
 | podio | project-management, databases, productivity | app-auth, oauth2 | 29 |
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
@@ -378,6 +382,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | respondio | support, crm, communication | api-token | 28 |
 | retellai | ai, communication | api-key | 9 |
 | ringcentral | communication, productivity | oauth2, jwt-bearer | 13 |
+| rippling | hr, productivity | api-token | 44 |
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | salesloft | crm, communication | api-key, oauth2 | 26 |

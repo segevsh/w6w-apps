@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/rippling",
+  "version": "0.1.0",
+  "description": "Read and manage Rippling workers, users, org structure, time off and custom objects through the Rippling REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.rippling",
+    "displayName": "Rippling",
+    "longDescription": "Rippling is an HR, IT and payroll platform, and its REST API exposes the same employee system of record the product runs on. This app lets a workflow read workers and users, walk the org structure (departments, teams, work locations, employment types, levels, titles and legal entities), and work with time off — listing requests and balances, creating a request, approving or rejecting one by changing its status.\n\nIt also reaches Rippling's custom fields and custom objects: list an object's field definitions, query and page through its records, and create, update or delete a record by id or look one up by external id.\n\nAuthentication is a Rippling API token, scoped when it is created. What each action returns is bounded by that token's scopes and by its owner's permission profile; fields the token may not see come back as null, and every list action reports exactly which ones in `redactedFields`. Health checks read the Platform API component of Rippling's status page rather than the company-wide indicator, so a Payroll incident does not mark the API as down.",
+    "categories": [
+      "hr",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Rippling"
+      }
+    },
+    "network": {
+      "allow": [
+        "rest.ripplingapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/instagram-for-business",
+  "version": "0.1.0",
+  "description": "Manage an Instagram professional account via the Instagram Graph API: profile, media, publishing, comments, mentions, hashtag search and insights.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.instagram-for-business",
+    "displayName": "Instagram for Business",
+    "longDescription": "This app works with an Instagram professional account (a Business or Creator account) through Meta's Instagram Graph API, reached with Facebook Login. It reads the account's profile and media, publishes new photos, reels, stories and carousels through Instagram's two-step container flow, and moderates the conversation underneath: reading comments and replies, replying, hiding, deleting, and switching comments on or off for a post.\n\nIt also surfaces what other people do around the account: media the account has been tagged in, media whose caption @mentions it, and a reply action for those mentions. Hashtag search (find a hashtag's id, then read its recent or top public media) and account and media insights round it out, along with a check of the account's remaining daily publishing allowance so a workflow can see headroom before it posts.\n\nThe app deliberately targets the Facebook Login flavour of Meta's API (graph.facebook.com): the account is reached through the Facebook Page it is linked to, and the Pages list action finds the Instagram account id every other action needs. It is distinct from the Facebook Pages app in this pack, which manages the Page itself rather than the Instagram account behind it.",
+    "categories": [
+      "social-media",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Instagram"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Instagram"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "graph.facebook.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

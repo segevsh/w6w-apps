@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/honeybook",
+  "version": "0.1.0",
+  "description": "Manage HoneyBook contacts, projects, workspaces and the pipeline \u2014 the clientflow CRM for service businesses.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.honeybook",
+    "displayName": "HoneyBook",
+    "longDescription": "HoneyBook is the clientflow platform service businesses run on: leads, projects, client communication, contracts, invoices and payments in one place. This app drives the part of it HoneyBook's v3 API exposes \u2014 contacts, the sales pipeline, workspaces (the per-project rooms a client and team share) and projects with their dates, spaces and payroll employees.\n\nA workflow can create or update a contact the moment a lead arrives elsewhere, tag it, open a project for it, add the right team members to its workspace, mark the work booked, and read the pipeline back to see where every lead stands. The app also surfaces scheduling conflicts for a project, so a booking flow can check availability before it commits.\n\nAccess is by request: HoneyBook's API is in preview, registers applications itself, and authenticates them with a signed key pair rather than a client secret. The health check tracks HoneyBook's own status page.",
+    "categories": [
+      "crm",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "HoneyBook"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.honeybook.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
