@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/read-ai",
+  "version": "0.1.0",
+  "description": "Read AI meeting reports: list meetings, fetch one with its summary, action items, transcript and metrics, and read a live meeting's transcript.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.read-ai",
+    "displayName": "Read AI",
+    "longDescription": "Read AI is an AI meeting assistant that joins Zoom, Google Meet and Microsoft Teams calls and produces a report for each one: a summary, chapter summaries, action items, key questions, topics, a transcript and engagement metrics.\n\nThis app reads those reports over Read AI's public REST API (open beta): list meetings newest-first with a start-time window, page through them by cursor, fetch a single meeting with any of the eight expandable fields (summary, chapter summaries, action items, key questions, topics, transcript, metrics, recording download), and pull the live transcript of a meeting still in progress.\n\nThe API is read-only and authenticates with OAuth 2.1 (authorization code with refresh tokens) against a client you register yourself through Read AI's dynamic client registration. Access tokens last ten minutes and refresh tokens rotate on every use, so the connection must be refreshed by the host.",
+    "categories": [
+      "ai",
+      "productivity",
+      "video"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Read AI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.read.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

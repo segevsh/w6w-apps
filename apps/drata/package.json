@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/drata",
+  "version": "0.1.0",
+  "description": "Drata compliance automation: workspaces, controls, monitoring tests, evidence, personnel, vendors, risks, policies, devices and assets.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.drata",
+    "displayName": "Drata",
+    "longDescription": "Drata is a compliance automation platform: it continuously tests a company's systems against frameworks such as SOC 2, ISO 27001, HIPAA and GDPR, and keeps the evidence an auditor asks for. This app lets a workflow read and act on that data through the Drata Public API v2.\n\nIt covers the working surface of a compliance program: workspaces, controls and their monitoring tests (including which resources are failing and since when), the evidence library with file and link artifacts, personnel and users, the vendor register, risk registers and risks, policies, devices, assets and the account's event log. Lists are cursor-paginated and return related objects only when asked for with Expand.\n\nA connection holds one API key and the region the Drata account lives in (North America, Europe or Asia-Pacific); the key's own permissions decide what each action may do, so a read-only key is a supported configuration. Health checks watch the Public API component for the connection's own region on Drata's status page.",
+    "categories": [
+      "legal",
+      "security"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Drata"
+      }
+    },
+    "network": {
+      "allow": [
+        "public-api.drata.com",
+        "public-api.eu.drata.com",
+        "public-api.apac.drata.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
