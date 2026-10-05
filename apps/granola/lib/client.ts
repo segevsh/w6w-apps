@@ -52,7 +52,7 @@ export class GranolaClient {
   }
 
   /** Issue the request and return the raw `Response`, without an ok-check. Lets a caller branch on a specific status (e.g. Get Note's `413 TRANSCRIPT_TOO_LARGE`) before the generic error path runs. */
-  async requestRaw(path: string, options: RequestOptions = {}): Promise<Response> {
+  requestRaw(path: string, options: RequestOptions = {}): Promise<Response> {
     const url = this.buildUrl(path, options.query);
     const headers: Record<string, string> = { accept: "application/json" };
     const init: RequestInit = { method: options.method ?? "GET", headers };
@@ -185,3 +185,13 @@ export interface GranolaCustodianInput {
   email?: string;
   id?: string;
 }
+
+/** Strip `undefined` so an omitted optional field is omitted on the wire, not sent as null. */
+export function compact<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) if (v !== undefined) out[k] = v;
+  return out as Partial<T>;
+}
+
+/** Path-segment-safe ID. Granola IDs are alphanumeric, but never trust a templated input. */
+export const encodeId = (id: string): string => encodeURIComponent(String(id).trim());

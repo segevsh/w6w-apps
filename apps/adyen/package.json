@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/adyen",
+  "version": "0.1.0",
+  "description": "Take and manage payments on Adyen's Checkout API: sessions, payments, payment links, captures, refunds, cancels, stored payment methods and donations.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.adyen",
+    "displayName": "Adyen",
+    "longDescription": "Adyen is a payments platform that processes cards and local payment methods for online merchants. This app drives its Checkout API (v72) from a workflow: start a payment session or a hosted payment link, submit or complete a payment, and then manage it afterwards with captures, cancels, refunds, reversals and authorised-amount updates.\n\nIt also covers the supporting calls a checkout needs: listing the payment methods available to a shopper, checking a gift card balance, looking up card brands, creating and deleting stored payment methods (tokens), listing a shopper's saved methods, running donation campaigns, and creating or cancelling partial-payment orders.\n\nOne connection holds an API key, the merchant account, and whether you are on the test environment or on your company's live endpoint. Money-moving calls carry the workflow invocation id as Adyen's Idempotency-Key, so a retried step does not charge or refund twice.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Adyen"
+      }
+    },
+    "network": {
+      "allow": [
+        "checkout-test.adyen.com",
+        "*.adyenpayments.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

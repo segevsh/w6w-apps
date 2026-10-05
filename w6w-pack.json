@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.149.0",
+  "version": "0.150.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -17,6 +17,9 @@
     },
     {
       "path": "./apps/addevent"
+    },
+    {
+      "path": "./apps/adyen"
     },
     {
       "path": "./apps/affinity"
@@ -556,6 +559,9 @@
       "path": "./apps/grain"
     },
     {
+      "path": "./apps/granola"
+    },
+    {
       "path": "./apps/gravityforms"
     },
     {
@@ -868,6 +874,9 @@
       "path": "./apps/netlify"
     },
     {
+      "path": "./apps/netsuite"
+    },
+    {
       "path": "./apps/neverbounce"
     },
     {
@@ -953,6 +962,9 @@
     },
     {
       "path": "./apps/patreon"
+    },
+    {
+      "path": "./apps/payhip"
     },
     {
       "path": "./apps/paypal"
@@ -1412,6 +1424,9 @@
     },
     {
       "path": "./apps/workable"
+    },
+    {
+      "path": "./apps/workday"
     },
     {
       "path": "./apps/workiz"

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/workday",
+  "version": "0.1.0",
+  "description": "Read Workday HCM data: workers, jobs, organizations, absence balances and time off, contact information and time totals, and request time off.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.workday",
+    "displayName": "Workday",
+    "longDescription": "Workday is the system of record for people at a large share of the enterprise, and its REST API is how the rest of the stack reads it. This app covers the read-heavy core of that API: look up workers and their jobs, walk the org chart through direct reports and supervisory organizations, read job profiles and families, and pull a person's work email, phone and address.\n\nIt also covers time off. A workflow can list the absence types a worker is eligible for, validate the dates they want, read their balances, time off entries and leaves of absence, and submit the request itself through Workday's own Request Time Off business process. Time totals for the current pay period are included for time-tracking reports.\n\nIt connects with a Workday API client and its non-expiring refresh token, per tenant: you give it your data-center host and tenant name, and it refreshes its own short-lived access tokens. Everything runs under the security policies of the Integration System User behind the client, so it only sees what that user may see. It does not run job changes or other staffing business processes, payroll, recruiting or the SOAP APIs.",
+    "categories": [
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Workday"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.workday.com",
+        "*.myworkday.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

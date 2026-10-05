@@ -13,8 +13,7 @@
     "longDescription": "Granola is an AI meeting assistant that turns raw meeting audio into structured notes: a summary, an optional full transcript, calendar context and attendee list, all addressable over Granola's own REST API rather than through export.\n\nThis app covers Granola's four API surfaces. Notes and Folders are the read path a workflow actually wants: list notes (filterable by date and folder), fetch one note with its AI summary and — when it fits inline — transcript, or page through a large transcript directly. Folders round out that path, since folder IDs are the only way to scope a notes listing to a subset of the workspace.\n\nWebhook Endpoints let a workflow react to a note being generated or edited instead of polling for it, with full CRUD over the endpoint's URL, event subscriptions and folder filter. Legal Holds is workspace-admin surface for litigation/investigation preservation: create and release holds, and add, list or remove the custodians named on one. Audit Events closes the loop with a read-only log of who did what in the workspace, for workflows that need to react to or archive that trail.\n\nEvery credential this app holds is a Granola API key scoped by the user or admin who issued it (Personal notes, Public notes, or a workspace-wide key) — the app itself never chooses scope, it only uses what the key can reach.",
     "categories": [
       "ai",
-      "productivity",
-      "legal"
+      "productivity"
     ],
     "appearance": {
       "icon": {

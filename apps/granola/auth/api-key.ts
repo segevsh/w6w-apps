@@ -40,8 +40,7 @@ const apiKey: AuthDefinition = {
   key: "api-key",
   type: "bearer",
   displayName: "API Key",
-  description:
-    "Paste a personal or workspace API key from Granola desktop app > Settings > " +
+  description: "Paste a personal or workspace API key from Granola desktop app > Settings > " +
     "Connectors > API keys (or Workspace API keys, for admins).",
   fields: [
     {

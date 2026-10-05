@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/payhip",
+  "version": "0.1.0",
+  "description": "Verify, enable, disable and count uses of Payhip software license keys (the only thing Payhip's public API covers).",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.payhip",
+    "displayName": "Payhip",
+    "longDescription": "Payhip sells digital products, and its public API covers one thing: the software license keys it issues with a sale. This app lets a workflow verify a key, enable or disable it, and raise or lower its use count, so an activation flow or a refund-handling flow can gate access on a real purchase.\n\nVerify is read-only and does not consume a use. Connect with a per-product secret key (current v2 API, safe for one product) or the legacy account API key. Products, orders, customers and payouts are not exposed by Payhip's API and are not covered.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Payhip"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Payhip"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "payhip.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
