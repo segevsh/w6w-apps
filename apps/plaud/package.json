@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/plaud",
+  "version": "0.1.0",
+  "description": "Plaud Dev API: register devices, upload audio to Plaud storage and transcribe it with Plaud's speech models.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.plaud",
+    "displayName": "Plaud",
+    "longDescription": "Plaud makes AI voice recorders, and its Dev API (Plaud Embedded) lets a company build the recording and transcription into its own product. This app covers the parts of that API a workflow can call from a server: the cloud device registry (bind, unbind, read a device's binding state), audio upload to Plaud storage, and asynchronous transcription with language, speaker and custom-vocabulary options.\n\nIt is built for pipelines that turn conversation audio into text: upload or point at a recording, submit it, poll until it is done, and hand the transcript and its time-aligned segments to the next step. It authenticates as a Plaud partner application (client id and secret key from the Plaud developer portal) acting as one end user, and the app mints and renews the 24-hour user token itself. Transcription needs the application's separate API key.\n\nIt does not record, pair, or read recordings from a personal Plaud account. The Bluetooth half of binding and the recording itself belong to Plaud's mobile Embedded SDK, and a personal account's recordings are reachable only through Plaud's MCP and CLI, which sign in as a person.",
+    "categories": [
+      "ai",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Plaud"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Plaud"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "platform-us.plaud.ai",
+        "platform-jp.plaud.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

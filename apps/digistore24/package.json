@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/digistore24",
+  "version": "0.1.0",
+  "description": "Digistore24 digital-product commerce: purchases, refunds and rebilling, buyers, products, affiliate commissions, vouchers, deliveries and IPN connections.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.digistore24",
+    "displayName": "Digistore24",
+    "longDescription": "Digistore24 is a digital-product marketplace and payment platform: vendors sell courses, software and subscriptions, affiliates promote them for a commission, and Digistore24 handles checkout, tax, invoicing and payouts as the merchant of record.\n\nThis app gives a workflow the vendor's side of that account. Read purchases and their transactions, look up the buyer behind an order, refund a purchase (fully, partially, or one transaction) and stop or resume a subscription's rebilling, or resend the confirmation mail. Manage the catalogue by listing, reading, creating and updating products, set an affiliate's commission per product, and run voucher codes. For physical goods, read and update deliveries with tracking data. IPN connections can be listed, created and removed, so a workflow can register itself as the receiver of Digistore24's instant payment notifications.\n\nA key can be read-only or writable on Digistore24's side: with a read-only key every action that changes data is refused by the vendor, so scope the key to what the workflows using this connection actually do.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Digistore24"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.digistore24.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

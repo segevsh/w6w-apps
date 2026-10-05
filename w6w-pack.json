@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.148.0",
+  "version": "0.149.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -307,6 +307,9 @@
       "path": "./apps/dialpad"
     },
     {
+      "path": "./apps/digistore24"
+    },
+    {
       "path": "./apps/digitalocean"
     },
     {
@@ -604,6 +607,9 @@
       "path": "./apps/homeassistant"
     },
     {
+      "path": "./apps/honeybook"
+    },
+    {
       "path": "./apps/hostaway"
     },
     {
@@ -626,6 +632,9 @@
     },
     {
       "path": "./apps/insightly"
+    },
+    {
+      "path": "./apps/instagram-for-business"
     },
     {
       "path": "./apps/instantly"
@@ -988,6 +997,9 @@
       "path": "./apps/planningcenter"
     },
     {
+      "path": "./apps/plaud"
+    },
+    {
       "path": "./apps/podio"
     },
     {
@@ -1085,6 +1097,9 @@
     },
     {
       "path": "./apps/ringcentral"
+    },
+    {
+      "path": "./apps/rippling"
     },
     {
       "path": "./apps/s3"
