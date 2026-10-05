@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/samcart",
+  "version": "0.1.0",
+  "description": "Read SamCart orders, charges, customers, products, refunds and subscriptions, and refund, cancel or reschedule them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.samcart",
+    "displayName": "SamCart",
+    "longDescription": "SamCart is a checkout and cart platform for selling digital and physical products and subscriptions. This app gives a workflow the merchant's side of that: look up orders, charges, failed charges, customers (with their addresses) and the product catalogue, walk from an order or subscription to its charges, customer and plan, and read refunds.\n\nIt can also act: add a product to an existing order and charge for it (singly or in a batch of up to 5,000 orders), issue a full or partial refund against a charge, cancel a subscription now or schedule the cancellation, move its next rebilling date, and write an order's custom field.\n\nSamCart's public API is in private beta and gated by plan, so a key needs a plan that includes API access.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SamCart"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.samcart.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

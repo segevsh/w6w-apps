@@ -120,6 +120,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | deepgram | ai, video, developer-tools | api-key | 19 |
 | deepl | ai | api-key | 8 |
 | deepseek | ai | bearer-token | 4 |
+| demio | video, communication | api-key | 6 |
 | deputy | hr, scheduling | permanent-token | 18 |
 | devin | developer-tools, ai | api-key | 12 |
 | dialpad | communication, support | api-key | 35 |
@@ -291,10 +292,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mautic | marketing, email | client-credentials | 28 |
 | meilisearch | search, databases, developer-tools | api-key | 24 |
 | meistertask | project-management, productivity | personal-access-token, oauth2 | 34 |
+| memberstack | security, commerce, databases | secret-key | 15 |
 | mercury | finance | bearer-token | 30 |
 | messagebird | communication, phone-sms | api-key | 7 |
 | metabase | analytics, databases | api-key | 17 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
+| mighty-networks | communication, social-media | api-token | 31 |
 | mindee | ai, documents | api-key | 16 |
 | miro | productivity, project-management | oauth2 | 27 |
 | missive | communication, support, productivity | api-token | 42 |
@@ -390,6 +393,8 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | salesloft | crm, communication | api-key, oauth2 | 26 |
+| salesmsg | communication, marketing | access-token | 27 |
+| samcart | commerce | api-key | 38 |
 | sanity | cms, databases, developer-tools | token | 11 |
 | scoreapp | forms, marketing, crm | api-key | 6 |
 | segment | analytics | write-key | 6 |

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mighty-networks",
+  "version": "0.1.0",
+  "description": "Manage members, spaces, posts, comments, events, invites and tags in a Mighty Networks community via the Admin API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mighty-networks",
+    "displayName": "Mighty Networks",
+    "longDescription": "Mighty Networks is a community platform for creators and brands \u2014 spaces, courses, events, posts and paid plans under one branded Network \u2014 and this app runs it through the Mighty Networks Admin API.\n\nIt covers the operational core of a Network: members (list, look up by id or email, create, update, add to or remove from spaces, tag), spaces, posts and comments, events with RSVPs, invitations, tags, plans and course content. A connection is one Network: the Network ID or subdomain is stored with the Admin API token, so no action asks for it again.\n\nGood for onboarding automation \u2014 create a member or send an invite and drop them into the right spaces and tags \u2014 for publishing posts and scheduling events from another system, and for reading a Network's membership, plans and course structure into a CRM or reporting tool. The Admin API needs the Scale, Growth or Mighty Pro plan.",
+    "categories": [
+      "communication",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mighty Networks"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mn.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

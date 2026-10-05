@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/memberstack",
+  "version": "0.1.0",
+  "description": "Manage Memberstack members and free-plan connections, verify member tokens, and read and write Data Table records through the Memberstack Admin REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.memberstack",
+    "displayName": "Memberstack",
+    "longDescription": "Memberstack adds sign-up, login, gated content and Stripe-backed plans to a site without a backend of its own. This app drives its server-side Admin REST API: the calls a backend, a no-code automation or a migration script makes on a member's behalf with a secret key.\n\nIt lists, fetches, creates, updates and deletes members (looked up by id or by email), adds and removes free plans, and verifies the JWT a member's browser presents so a workflow can trust who is calling. It also covers Data Tables, Memberstack's structured record store: list the tables, read a table's schema, and create, query, update and delete records, optionally owned by a member.\n\nThe secret key is a live key (sk_) or a sandbox key (sk_sb_); the key itself decides which environment every call touches. The front-end DOM SDK, webhooks and paid-plan checkout are not part of the Admin REST API and are not covered.",
+    "categories": [
+      "security",
+      "commerce",
+      "databases"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Memberstack"
+      }
+    },
+    "network": {
+      "allow": [
+        "admin.memberstack.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

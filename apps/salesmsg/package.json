@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/salesmsg",
+  "version": "0.1.0",
+  "description": "Send business SMS and MMS, and manage contacts, conversations, tags, inboxes and numbers in Salesmsg.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.salesmsg",
+    "displayName": "Salesmsg",
+    "longDescription": "Salesmsg is a business texting platform: shared team inboxes, two-way SMS and MMS conversations, contact records with tags and custom fields, and CRM integrations. This app drives its public API (v2.3) with a Personal Access Token.\n\nIt covers the day-to-day surface a workflow needs: send a text to a phone number from a chosen inbox, or into an existing conversation (optionally scheduled, with media); list, search, create, update and delete contacts; opt contacts in and out; create tags and attach or detach them; list, open, close and assign conversations; read a conversation's messages; and look up the organization, its members, inboxes (teams) and phone numbers.\n\nSalesmsg is not a drop-in REST API in the usual sense: most writes take their fields in the query string rather than a JSON body, and list endpoints answer three different envelopes, which this app normalises to `items` and `meta`. Broadcasts, triggers, keywords, groups, voice, analytics, billing and the administrative surface (numbers purchase, team and member management, agency) are deliberately left out.\n\nHealth checks derive credential validity from the connection and state plainly that the vendor's status page does not cover the API and that no quota is published.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Salesmsg"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.salesmessage.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

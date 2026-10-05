@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.150.0",
+  "version": "0.151.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -299,6 +299,9 @@
     },
     {
       "path": "./apps/deepseek"
+    },
+    {
+      "path": "./apps/demio"
     },
     {
       "path": "./apps/deputy"
@@ -820,6 +823,9 @@
       "path": "./apps/meistertask"
     },
     {
+      "path": "./apps/memberstack"
+    },
+    {
       "path": "./apps/mercury"
     },
     {
@@ -830,6 +836,9 @@
     },
     {
       "path": "./apps/microsoft-todo"
+    },
+    {
+      "path": "./apps/mighty-networks"
     },
     {
       "path": "./apps/mindee"
@@ -1121,6 +1130,12 @@
     },
     {
       "path": "./apps/salesloft"
+    },
+    {
+      "path": "./apps/salesmsg"
+    },
+    {
+      "path": "./apps/samcart"
     },
     {
       "path": "./apps/sanity"
