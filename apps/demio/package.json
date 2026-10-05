@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/demio",
+  "version": "0.1.0",
+  "description": "List Demio webinar events and sessions, register attendees, and read participant reports.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.demio",
+    "displayName": "Demio",
+    "longDescription": "Demio is a webinar platform, and this app lets a workflow drive it: list the events on the account, read one event with every scheduled, running and finished session, register a person for an event and get back their unique join link, and pull the participant report for a finished session to see who attended, who left early and who never showed.\n\nThe usual shape is a registration funnel and a follow-up loop. A form, CRM stage change or checkout registers the person for the right session (by event ID, or by the registration page URL when only the link is known) and sends them the join link; after the session, the participant report splits attendees from no-shows so each group gets the right follow-up.\n\nThe public API is deliberately small, and this app covers all of it: events, sessions, registration and the participant report, authenticated with the account's API key and API secret.",
+    "categories": [
+      "video",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Demio"
+      }
+    },
+    "network": {
+      "allow": [
+        "my.demio.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
