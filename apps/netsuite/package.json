@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/netsuite",
+  "version": "0.1.0",
+  "description": "Oracle NetSuite ERP: create, read, update, upsert and delete any record, transform and act on records, and run SuiteQL queries over the SuiteTalk REST Web Services.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.netsuite",
+    "displayName": "NetSuite",
+    "longDescription": "Oracle NetSuite is a cloud ERP: financials, orders, inventory, customers and vendors in one system of record. This app gives a workflow the SuiteTalk REST Web Services of one NetSuite account.\n\nThe generic record actions work on any record type your account exposes, standard or custom: get, list with a filter, create, update, upsert by external id, and delete. Records can be transformed into another type (a sales order into an invoice) and record actions such as approve can be triggered, mirroring the buttons in the UI. SuiteQL queries run with bound parameters and can page through every result. Typed shortcuts cover the places the raw REST shape is awkward: creating customers, finding customers by email or name, and creating sales orders with their line sublist.\n\nConnect with OAuth 2.0, which Oracle recommends, or with Token-Based Authentication for accounts that already have a TBA integration record; Oracle ends TBA for new integrations from NetSuite 2027.1. Every NetSuite account has its own hostname, so the connection records your account id and the app only ever calls hosts under suitetalk.api.netsuite.com.",
+    "categories": [
+      "finance",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Oracle NetSuite"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.suitetalk.api.netsuite.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

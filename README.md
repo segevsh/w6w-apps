@@ -28,6 +28,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | acuityscheduling | calendar | basic, oauth2 | 9 |
 | adalo | developer-tools, databases | api-key | 5 |
 | addevent | calendar, scheduling | bearer-token | 22 |
+| adyen | commerce | api-key | 24 |
 | affinity | crm | bearer-token | 39 |
 | agencyzoom | crm, project-management | custom | 23 |
 | airbyte | data-warehousing, devops | application | 12 |
@@ -205,6 +206,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | goto-webinar | video, communication | oauth2 | 13 |
 | grafana | monitoring | service-account-token | 8 |
 | grain | ai | api-key | 19 |
+| granola | ai, productivity | api-key | 17 |
 | gravityforms | forms, productivity | basic | 12 |
 | greenhouse | hr | oauth-client-credentials, api-key | 24 |
 | grist | spreadsheets, databases, productivity | api-key, oauth2 | 15 |
@@ -307,6 +309,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mux | video, developer-tools, analytics | basic | 14 |
 | nationbuilder | crm | api-token, oauth2 | 23 |
 | netlify | devops | personal-access-token | 10 |
+| netsuite | finance, crm | oauth2, tba | 15 |
 | neverbounce | email, marketing | api-key | 10 |
 | newrelic | monitoring, analytics, devops | user-key | 17 |
 | nocodb | spreadsheets, databases | api-token | 13 |
@@ -336,6 +339,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | parseur | documents, ai | api-key | 29 |
 | particle | iot, devops | access-token | 13 |
 | patreon | commerce, crm | creator-access-token, oauth2 | 11 |
+| payhip | commerce | product-secret-key, api-key | 5 |
 | paypal | commerce, finance | client-credentials | 13 |
 | pdfco | documents | api-key | 24 |
 | pdfmonkey | documents, developer-tools | bearer-token | 13 |
@@ -485,6 +489,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |
 | workable | hr | access-token | 15 |
+| workday | hr | refresh-token | 25 |
 | workiz | crm, project-management | custom | 20 |
 | workos | security, developer-tools | api-key | 23 |
 | wrike | project-management, productivity | permanent-token | 29 |
