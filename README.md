@@ -63,6 +63,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | bitbucket | developer-tools | basic, access-token | 12 |
 | bitly | marketing, analytics | access-token | 8 |
 | bitrix24 | crm, productivity | webhook | 15 |
+| bitwarden | security | client-credentials | 28 |
 | blandai | ai, communication | api-key | 19 |
 | bluesky | social-media, communication | app-password | 21 |
 | boldsign | documents | api-key | 12 |
@@ -128,6 +129,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | documenso | legal, documents, productivity | api-key | 20 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
 | donorbox | commerce | basic | 7 |
+| drata | legal, security | api-key | 27 |
 | drip | marketing, email | api-key | 14 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | dropbox-sign | legal, documents, productivity | api-key, oauth2 | 27 |
@@ -148,6 +150,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | fathom | ai, productivity, video | api-key | 11 |
 | feedly | productivity, security | bearer-token | 14 |
+| fellow | ai, productivity | api-key | 23 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | fillout | forms, productivity | api-key | 8 |
 | firecrawl | ai, developer-tools | bearer-token | 10 |
@@ -205,6 +208,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | greenhouse | hr | oauth-client-credentials, api-key | 24 |
 | grist | spreadsheets, databases, productivity | api-key, oauth2 | 15 |
 | groq | ai | bearer | 16 |
+| gumroad | commerce | access-token | 53 |
 | guru | productivity, search, ai | basic | 16 |
 | gusto | hr, finance, productivity | oauth2, oauth2-demo | 23 |
 | hackernews | social-media, developer-tools | none | 10 |
@@ -361,6 +365,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | raindrop | productivity, search, storage | test-token, oauth2 | 39 |
 | razorpay | commerce, finance | basic | 44 |
 | rdstation | crm | api-key | 10 |
+| read-ai | ai, productivity, video | oauth2 | 4 |
 | readwise | productivity | api-token | 20 |
 | recharge | commerce, finance | api-token | 29 |
 | recruitee | hr | bearer-token | 17 |

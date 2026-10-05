@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.147.0",
+  "version": "0.148.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -122,6 +122,9 @@
     },
     {
       "path": "./apps/bitrix24"
+    },
+    {
+      "path": "./apps/bitwarden"
     },
     {
       "path": "./apps/blandai"
@@ -325,6 +328,9 @@
       "path": "./apps/donorbox"
     },
     {
+      "path": "./apps/drata"
+    },
+    {
       "path": "./apps/drip"
     },
     {
@@ -383,6 +389,9 @@
     },
     {
       "path": "./apps/feedly"
+    },
+    {
+      "path": "./apps/fellow"
     },
     {
       "path": "./apps/figma"
@@ -554,6 +563,9 @@
     },
     {
       "path": "./apps/groq"
+    },
+    {
+      "path": "./apps/gumroad"
     },
     {
       "path": "./apps/guru"
@@ -1031,6 +1043,9 @@
     },
     {
       "path": "./apps/rdstation"
+    },
+    {
+      "path": "./apps/read-ai"
     },
     {
       "path": "./apps/readwise"

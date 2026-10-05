@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/fellow",
+  "version": "0.1.0",
+  "description": "Read Fellow meeting notes, recordings, transcripts and action items, edit note agendas, upload recordings and manage webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.fellow",
+    "displayName": "Fellow",
+    "longDescription": "Fellow is an AI meeting assistant: it joins and records meetings, transcribes them, writes the notes and pulls out the decisions and action items. This app puts that output into your workflows through Fellow's Developer API.\n\nRead notes and recordings (with transcripts and AI-generated sections on request), list and filter them by meeting, channel, attendee or date, and walk the results page by page. Action items can be listed, completed, reopened and archived, so a workflow can push a meeting's follow-ups into a task tracker and close them back out. Note agendas can be replaced, appended to, prepended to, or edited with an exact find-and-replace, and notes renamed.\n\nRecordings made elsewhere can be sent to Fellow for transcription from a media URL, with the import status tracked afterwards. Webhooks for new AI notes, notes shared to a channel, and action items assigned or completed can be registered and managed, which is how a workflow reacts to a meeting ending instead of polling for it.\n\nA Super Admin key additionally unlocks workspace-wide reads, acting on behalf of another user, workspace-scoped webhooks and permanent deletion of notes and recordings. Each Fellow workspace has its own host, so the connection takes your workspace subdomain.",
+    "categories": [
+      "ai",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Fellow"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.fellow.app"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

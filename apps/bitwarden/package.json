@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/bitwarden",
+  "version": "0.1.1",
+  "description": "Manage a Bitwarden organization: members, groups, collections, policies, event logs, subscription limits and directory import.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.bitwarden",
+    "displayName": "Bitwarden",
+    "longDescription": "Bitwarden is an open-source password manager, and its organization Public API is how a company runs it as part of the rest of its people operations. This app covers that API end to end: inviting, updating, revoking, restoring and removing members; creating and maintaining groups and their membership; assigning collection access; reading and changing the organization's policies; and reading the audit event log.\n\nIt is built for onboarding and offboarding workflows and for compliance reporting: provision a new hire into the right groups, revoke a leaver the moment HR closes the record, enforce a policy such as two-step login or a minimum master-password length, or pull the last day's events into a log store. Bulk directory import and seat and autoscale limits are included for teams that sync from an identity provider.\n\nIt authenticates with the organization API key (client id and secret) on the US or EU cloud, and refreshes its one-hour access token itself. It does not touch vault items: reading or editing passwords is the separate Vault Management API, which runs locally through the Bitwarden CLI rather than as a hosted service.",
+    "categories": [
+      "security"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Bitwarden"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Bitwarden"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.bitwarden.com",
+        "identity.bitwarden.com",
+        "api.bitwarden.eu",
+        "identity.bitwarden.eu"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

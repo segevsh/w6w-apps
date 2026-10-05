@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/gumroad",
+  "version": "0.1.0",
+  "description": "Manage Gumroad products, sales, subscribers, licenses, offer codes and payouts, and subscribe to sale webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gumroad",
+    "displayName": "Gumroad",
+    "longDescription": "Gumroad is where creators sell digital products, courses, memberships and coffee-tip pages without running a store. This app gives a workflow the seller's side of that: read and edit the product catalogue, pull sales and refund, revoke or restore a buyer's access, list memberships and their subscribers, and manage the license keys that gate your software.\n\nIt also covers the merchandising levers around a product — variant categories and variants, offer codes, and checkout custom fields — plus the account-level refund policy, payouts, and the annual earnings summary.\n\nFor event-driven flows, resource subscriptions register a URL that Gumroad POSTs to on a sale, refund, dispute, cancellation or subscription change, so a workflow reacts instead of polling.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gumroad"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Gumroad"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.gumroad.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
