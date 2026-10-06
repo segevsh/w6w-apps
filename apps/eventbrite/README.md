@@ -1,13 +1,34 @@
 # Eventbrite
 
-Read events, orders, attendees and ticket classes from Eventbrite.
+Create and run Eventbrite events end to end: events, tickets, inventory, discounts, orders, attendees, venues, questions and webhooks.
 
 - **Categories** — commerce, calendar
 - **Auth methods** — personal-token, oauth2
-- **Actions** — 10
+- **Actions** — 93
 - **Egress allowlist** — `www.eventbriteapi.com`
 - **Website** — https://www.eventbrite.com
 - **API docs** — https://www.eventbrite.com/platform/api
+
+## API coverage
+
+Every endpoint in Eventbrite's public API v3 blueprint is covered, except:
+
+| Endpoint | Why not |
+|---|---|
+| `GET /events/search/` | Marked deprecated in the blueprint. |
+| `POST /webhooks/`, `GET /webhooks/` | Deprecated user-level webhook routes. `create-webhook` / `list-webhooks` use the organization routes instead. |
+| `GET /balance/{organization}/events/{event}/` | An internal service: it lives on separate `balance-api` hosts and needs an Eventbrite service token, not a user's credential. |
+
+Where the blueprint disagrees with itself, the actions follow the vendor's working form:
+
+- **Default (canned) questions** — the blueprint writes get/update/delete as
+  `/event/{id}/canned_questions/{qid}` (singular, no trailing slash). The actions use
+  `/events/{id}/canned_questions/{qid}/`, matching list/create and the resource's own `resource_uri`.
+- **Media upload is three steps.** `get-media-upload` returns an upload URL and token; the file
+  goes to that URL, which is a storage host outside this app's egress allowlist; then `upload-media`
+  finalizes it with the token. A workflow does the middle step with an HTTP step.
+- **Reports** (`get-sales-report`, `get-attendee-report`) send `event_ids` comma-separated.
+- **`update-ticket-class`** sends only the fields you set, though the blueprint marks them all required.
 
 ## Health check
 

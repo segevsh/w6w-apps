@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { EVENT_OUTPUT } from "./create-event.ts";
 
 interface Input {
   eventId: string;
@@ -9,6 +10,7 @@ interface Input {
 const getEvent: ActionDefinition<Input> = {
   key: "get-event",
   type: "read",
+  idempotent: true,
   resource: "event",
   title: "Get Event",
   description: "Retrieve a single event by ID.",
@@ -16,10 +18,11 @@ const getEvent: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "expand", label: "Expand", type: "string", default: "venue,ticket_classes" },
   ],
+  output: [...EVENT_OUTPUT],
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
-    return client.request(`/events/${input.eventId}/`, {
+    return client.request(`/events/${encodeURIComponent(input.eventId)}/`, {
       query: { expand: input.expand ?? "venue,ticket_classes" },
     });
   },

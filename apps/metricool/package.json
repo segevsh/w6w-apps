@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/metricool",
+  "version": "0.1.1",
+  "description": "Manage Metricool brands, schedule and edit social posts, and read analytics and competitor data.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.metricool",
+    "displayName": "Metricool",
+    "longDescription": "Metricool is a social media management platform: one place to plan and publish posts across networks and to read how each brand's accounts perform.\n\nThis app lists your brands, then schedules, updates, reschedules, reads and deletes a brand's scheduled posts; reads a brand's metrics as a time series, a single total or a distribution for networks such as Instagram, Facebook, TikTok, YouTube, LinkedIn, X, Pinterest, Twitch and Google Business Profile; lists published posts with their metrics and popular hashtags; and tracks competitors.\n\nA connection holds your Metricool user token and user id. Each brand-scoped action takes the brand's blogId, which List Brands returns. API access requires a Metricool plan that includes it.",
+    "categories": [
+      "social-media",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Metricool"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Metricool"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "app.metricool.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

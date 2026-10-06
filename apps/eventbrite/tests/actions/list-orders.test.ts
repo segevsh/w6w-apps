@@ -41,3 +41,15 @@ Deno.test("list-orders: scope=organization routes to /organizations/{id}/orders/
   assertEquals(p.get("page_size"), "10");
   assertEquals(p.get("continuation"), "c1");
 });
+
+Deno.test("list-orders: scope=user routes to /users/{id}/orders/", async () => {
+  const { ctx, calls } = mockCtx([{ body: { orders: [], pagination: {} } }]);
+  await action.execute!(
+    { scope: "user", scopeId: "u-1", timeFilter: "past", changedSince: "2026-01-01T00:00:00Z" },
+    ctx,
+  );
+  const url = new URL(calls[0].url);
+  assertEquals(url.pathname, "/v3/users/u-1/orders/");
+  assertEquals(url.searchParams.get("time_filter"), "past");
+  assertEquals(url.searchParams.get("changed_since"), "2026-01-01T00:00:00Z");
+});

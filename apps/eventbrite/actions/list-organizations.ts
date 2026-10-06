@@ -2,6 +2,7 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 
 interface Input {
+  userId?: string;
   page?: number;
 }
 
@@ -10,8 +11,14 @@ const listOrganizations: ActionDefinition<Input> = {
   type: "read",
   resource: "organization",
   title: "List Organizations",
-  description: "List the organizations the connected user belongs to.",
+  description: "List the organizations a user belongs to (the connected user by default).",
   params: [
+    {
+      key: "userId",
+      label: "User ID",
+      type: "string",
+      hint: "Defaults to the connected user (`me`).",
+    },
     { key: "page", label: "Page", type: "number", default: 1 },
   ],
   output: [
@@ -22,7 +29,7 @@ const listOrganizations: ActionDefinition<Input> = {
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
     return client.request<EventbriteListResponse<"organizations">>(
-      `/users/me/organizations/`,
+      `/users/${input.userId ? encodeURIComponent(input.userId) : "me"}/organizations/`,
       { query: { page: input.page } },
     );
   },

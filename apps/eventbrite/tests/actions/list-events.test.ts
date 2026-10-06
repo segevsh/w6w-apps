@@ -47,3 +47,57 @@ Deno.test("list-events: omits undefined optional filters", async () => {
   assert(!params.has("time_filter"));
   assert(!params.has("continuation"));
 });
+
+Deno.test("list-events: scopeId works like organizationId by default", async () => {
+  const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
+  await action.execute!({ scopeId: "acct-2", orderBy: "start_desc" }, ctx);
+  const url = new URL(calls[0].url);
+  assertEquals(url.pathname, "/v3/organizations/acct-2/events/");
+  assertEquals(url.searchParams.get("order_by"), "start_desc");
+});
+
+Deno.test("list-events: venue scope", async () => {
+  const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
+  await action.execute!(
+    { scope: "venue", scopeId: "v1", status: "live,draft", onlyPublic: true, nameFilter: "x" },
+    ctx,
+  );
+  const url = new URL(calls[0].url);
+  assertEquals(calls[0].method, "GET");
+  assertEquals(url.pathname, "/v3/venues/v1/events/");
+  assertEquals(url.searchParams.get("status"), "live,draft");
+  assertEquals(url.searchParams.get("only_public"), "true");
+  assert(!url.searchParams.has("name_filter"));
+});
+
+Deno.test("list-events: series scope", async () => {
+  const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
+  await action.execute!(
+    {
+      scope: "series",
+      scopeId: "s1",
+      timeFilter: "past",
+      startDateRangeStart: "2026-01-01T00:00:00Z",
+      startDateRangeEnd: "2026-12-31T00:00:00Z",
+      status: "live",
+    },
+    ctx,
+  );
+  const url = new URL(calls[0].url);
+  assertEquals(url.pathname, "/v3/series/s1/events/");
+  assertEquals(url.searchParams.get("time_filter"), "past");
+  assertEquals(url.searchParams.get("start_date.range_start"), "2026-01-01T00:00:00Z");
+  assertEquals(url.searchParams.get("start_date.range_end"), "2026-12-31T00:00:00Z");
+  assert(!url.searchParams.has("status"));
+});
+
+Deno.test("list-events: missing id throws", async () => {
+  const { ctx } = mockCtx([]);
+  let threw = false;
+  try {
+    await action.execute!({}, ctx);
+  } catch {
+    threw = true;
+  }
+  assert(threw);
+});

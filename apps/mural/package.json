@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/mural",
+  "version": "0.1.0",
+  "description": "Manage Mural workspaces, rooms, murals, sticky notes, text boxes, comments and tags.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mural",
+    "displayName": "Mural",
+    "longDescription": "Mural is a visual collaboration canvas. This app drives its public REST API from a workflow: list workspaces, rooms and murals, create, rename, archive, duplicate and delete them, search by text, and read who has access.\n\nOn a mural's canvas it can list and read widgets, add sticky notes, text boxes and comment pins, edit a sticky note, delete any widget, and manage the mural's tags - enough to turn a form submission, a ticket or an AI summary into notes on a board.\n\nMural only offers OAuth 2.0 (authorization code); there is no API key, so a Mural developer app must be registered and its client ID and secret entered when connecting. Voting sessions, timers, templates, exports, file/image/area/arrow/table widgets and membership management exist in the API and are not covered; the README lists them.",
+    "categories": [
+      "productivity",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mural"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Mural"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "app.mural.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
