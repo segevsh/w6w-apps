@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/procore",
+  "version": "0.1.0",
+  "description": "Read and manage Procore construction projects: companies, projects, users, RFIs, submittals, observations, punch items and project documents.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.procore",
+    "displayName": "Procore",
+    "longDescription": "Procore is construction project-management software. This app covers the core of its REST API (v1.0): the companies and projects a user can reach, company and project directories, RFIs, submittals, observations, punch items, and the project Documents tool (folders and files), with create actions for RFIs, observations, punch items and folders.\n\nProcore routes every call by company: each request except `me` and the company list must carry a `Procore-Company-Id` header. A connection records a default company ID once, and every action also takes an optional per-call company ID override, so one connection can work across several companies.\n\nAuthentication is OAuth 2.0 authorization code against login.procore.com, with a separate connection method for Procore's sandbox (login-sandbox.procore.com / sandbox.procore.com). Collection endpoints are page/per_page paginated; list actions return the items plus the next-page marker parsed from Procore's Link header. See the README for the areas of the API this app does not cover.",
+    "categories": [
+      "project-management",
+      "documents"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "Procore"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.procore.com",
+        "sandbox.procore.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

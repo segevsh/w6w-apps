@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/thanksio",
+  "version": "0.1.0",
+  "description": "Send handwritten-style postcards, letters, notecards and gift cards through thanks.io, manage mailing lists and recipients, price orders before placing them, and track delivery.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.thanksio",
+    "displayName": "thanks.io",
+    "longDescription": "thanks.io mails real, handwritten-looking direct mail — postcards, letters, notecards, Magnacards and gift cards — from an API call. A workflow can send any of those mailers to a mailing list or to recipients passed inline, price an order before placing it (the estimate endpoint charges nothing and mails nothing), then follow the order: track its delivery summary, list its individual pieces with per-piece status and QR-scan counts, cancel it while it is still in review, or replay it to the same or new recipients.\n\nThe app also manages the audience those mailers go to: mailing lists, single and bulk recipient creation, recipient updates and deletes, plus read access to handwriting styles, gift card brands, and image and message templates.\n\nEvery send action spends real money and mails a physical piece. Use the Estimate Order action, the `preview` flag, or the account's API Testing Mode (which cancels orders) while building.",
+    "categories": [
+      "marketing",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "thanks.io"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.thanks.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
