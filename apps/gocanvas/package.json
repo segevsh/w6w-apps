@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/gocanvas",
+  "version": "0.1.0",
+  "description": "Forms, submissions, dispatches, customers, sites, projects, users and webhooks in GoCanvas.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gocanvas",
+    "displayName": "GoCanvas",
+    "longDescription": "GoCanvas is a mobile forms and field-data platform: teams design a Form once, field staff fill it in on a phone or tablet, and every completed Form becomes a Submission that can be reported on, routed through a Workflow or pushed to another system.\n\nThis app covers the GoCanvas REST API v3. A workflow can read the Forms a company has published and the Submissions captured against them, create or correct a Submission from another system, and Dispatch a pre-filled Form to a specific mobile user (immediately, on a schedule, or on a recurring schedule). Around that sit the records a Form hangs off: Customers, Sites and Projects, Departments, Users, Groups and Reference Data.\n\nWebhooks are managed per Form, so a workflow can subscribe an endpoint to submission, dispatch and handoff events and send a test payload before relying on it. Authentication is the HTTP Basic login of a GoCanvas user, so use a dedicated API user whose role carries only the rights the workflow needs.",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "GoCanvas"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.gocanvas.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

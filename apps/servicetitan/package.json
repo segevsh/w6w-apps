@@ -1,0 +1,41 @@
+{
+  "name": "@w6w-apps/servicetitan",
+  "version": "0.1.0",
+  "description": "Manage ServiceTitan customers, locations, leads, jobs, appointments, technicians and business units.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.servicetitan",
+    "displayName": "ServiceTitan",
+    "longDescription": "ServiceTitan is the operating system for home and commercial service trades — HVAC, plumbing, electrical and the like — and this app puts the daily loop of running one behind a workflow: customers, service locations, leads, jobs and appointments.\n\nCustomer and location actions let a workflow search, create and update the records a booking hangs off. Leads can be listed and created, jobs can be listed, read, created with their first appointment, noted and cancelled, and appointments, technicians, employees and business units can be listed so a workflow can look up the ids the create actions need.\n\nAuthentication is OAuth2 client credentials plus the app key ServiceTitan requires on every call: register an app in the developer portal, have the tenant install it, and paste the Client ID, Client Secret, App Key and numeric Tenant ID. Production and the integration sandbox are separate hosts with separate credentials. Health checks track ServiceTitan's own status page (judged on its Core Product Features components only) and a live reachability probe of the API gateway for the connection's environment.\n\nDeliberately out of scope for this first pass: accounting (invoices, payments, bills), pricebook, inventory, payroll, memberships, marketing, telecom, forms, reporting and webhooks — each is its own module in ServiceTitan's API, left for a future pass.",
+    "categories": [
+      "crm",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "ServiceTitan"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "ServiceTitan"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.servicetitan.io",
+        "auth.servicetitan.io",
+        "api-integration.servicetitan.io",
+        "auth-integration.servicetitan.io",
+        "status.servicetitan.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
