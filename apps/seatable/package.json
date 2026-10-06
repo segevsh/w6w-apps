@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/seatable",
+  "version": "0.1.0",
+  "description": "Read and write SeaTable Cloud bases: rows, SQL, links, tables, columns, views and row comments.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.seatable",
+    "displayName": "SeaTable",
+    "longDescription": "SeaTable is a cloud spreadsheet-database: tables of typed columns, linked records and views, with an API for everything you can do in the grid.\n\nThis app connects to one SeaTable Cloud base with that base's API token and lets a workflow list, fetch, append, update, delete and lock rows, run SQL against the base (SELECT, UPDATE and DELETE, with bound parameters), and read and change the structure around the data: tables, columns, views and the links between records.\n\nIt also reads and writes row comments and lists the base's collaborators. SeaTable's API uses a two-step credential: the long-lived API token is exchanged for a short-lived Base-Token, and this app does that exchange and the renewal for you, so a workflow only ever supplies the API token once.\n\nOnly SeaTable Cloud (cloud.seatable.io) is covered. A self-hosted SeaTable Server or Dedicated instance lives on a host of its own that a manifest cannot name in advance.",
+    "categories": [
+      "databases",
+      "spreadsheets",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SeaTable"
+      }
+    },
+    "network": {
+      "allow": [
+        "cloud.seatable.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

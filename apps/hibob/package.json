@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/hibob",
+  "version": "0.1.0",
+  "description": "Read and manage HiBob (Bob) employees, time off, tasks, reports and attendance over the Bob public API with a service user.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.hibob",
+    "displayName": "HiBob",
+    "longDescription": "HiBob (Bob) is a modern HR platform, and this app gives a workflow direct access to the people data and processes inside it, through Bob's public API and a service user's ID and token.\n\nOn the people side, a workflow can search employees in bulk or read one by ID with exactly the fields it needs, read the public profile directory, create new hires, update fields, and terminate employees. Metadata actions list every employee field and company list so a workflow can discover the field ids and list values Bob expects, and history actions read an employee's work, employment and lifecycle tables.\n\nTime off is covered end to end: submit, read and cancel requests, check balances for a policy type, list policy types, see who is out today or across a date range, and poll for request changes since the last run. Tasks can be listed company-wide or per employee and completed, reports can be listed and downloaded as JSON or CSV, and attendance entries can be searched by employee and date range.\n\nBob only returns what the service user's permission group allows, and omits anything else silently, so the app documents where that bites. Health checks track the Public API component on Bob's status page and the per-endpoint rate limit headroom.",
+    "categories": [
+      "hr",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "HiBob"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.hibob.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

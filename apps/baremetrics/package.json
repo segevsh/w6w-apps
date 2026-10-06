@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/baremetrics",
+  "version": "0.1.0",
+  "description": "Read SaaS subscription metrics and manage API-sourced customers, plans, subscriptions and charges in Baremetrics.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.baremetrics",
+    "displayName": "Baremetrics",
+    "longDescription": "Baremetrics turns subscription billing data into the metrics a SaaS business steers by: MRR, ARR, churn, LTV, trials and more. This app reads those metrics over any date range, broken out by plan or down to the customers behind a number, and lists the customers, plans, subscriptions, charges and refunds in each connected source.\n\nFor teams that bill outside Stripe, Recurly or Braintree, it can also write to the Baremetrics API source: create, update and delete customers, plans, subscriptions and charges. Data that comes from a payment-provider source is read-only, as Baremetrics itself enforces.\n\nHealth checks verify the API key and track the hourly request allowance from Baremetrics' own rate-limit headers.",
+    "categories": [
+      "analytics",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Baremetrics"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.baremetrics.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
