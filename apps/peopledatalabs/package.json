@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/peopledatalabs",
+  "version": "0.1.0",
+  "description": "Enrich and search people and companies, identify people, resolve IPs, clean company/school/location strings, autocomplete fields and search job postings on People Data Labs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.peopledatalabs",
+    "displayName": "People Data Labs",
+    "longDescription": "People Data Labs (PDL) is a person and company data provider. This app enriches a person (one match, a bulk batch of up to 100, or a free-field preview) from an email, phone, social profile or name plus context, identifies the likely people behind loose inputs, and searches the person, company and job posting datasets with Elasticsearch or SQL queries passed through as written.\n\nIt enriches a company by name, website, ticker or profile (single or bulk), resolves an IP address to its company, cleans messy company, school and location strings to canonical records, suggests valid field values for building queries, and enriches a job title with similar titles and skills. Every PDL-billed action can run against the free sandbox host instead.\n\nHealth checks verify the API key, whether api.peopledatalabs.com is answering, the platform status page, and the remaining credit balance.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "People Data Labs"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.peopledatalabs.com",
+        "sandbox.api.peopledatalabs.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/gladia",
+  "version": "0.1.0",
+  "description": "Transcribe pre-recorded audio and video with Gladia: submit a job, poll its result, list and delete jobs, and register a remote file.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.gladia",
+    "displayName": "Gladia",
+    "longDescription": "Gladia is a speech-to-text API for audio and video. This app starts pre-recorded transcription jobs from an audio URL (with language selection, speaker diarization, subtitles, translation, summarization, sentences, named entities, sentiment, custom vocabulary and spelling, PII redaction and a completion callback), reads a job's status and result, lists and deletes jobs, registers a remote file with Gladia, and lists the available models. Live (WebSocket) streaming is not covered.",
+    "categories": [
+      "ai",
+      "video"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Gladia"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.gladia.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

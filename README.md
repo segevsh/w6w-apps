@@ -81,6 +81,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | booqable | crm, commerce | access-token | 26 |
 | box | storage | oauth2 | 10 |
 | braintree | commerce, finance | api-keys | 20 |
+| brandfetch | marketing, developer-tools | api-key | 9 |
 | braze | marketing, communication | api-key | 22 |
 | brevo | marketing, email | api-key | 15 |
 | brex | finance, accounting | api-token | 23 |
@@ -196,6 +197,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | flodesk | marketing, email | api-key, oauth2 | 22 |
 | folk | crm | api-key | 12 |
 | followupboss | crm | api-key | 26 |
+| formbricks | forms, marketing, analytics | api-key | 25 |
 | formidableforms | forms, productivity | basic | 15 |
 | formspark | forms, developer-tools | api-token | 16 |
 | formstack | forms, productivity | access-token | 9 |
@@ -218,6 +220,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | github | version-control, developer-tools | access-token, oauth2 | 24 |
 | gitlab | developer-tools, version-control | access-token, oauth2 | 16 |
 | givebutter | crm, commerce, communication | api-key | 43 |
+| gladia | ai, video | api-key | 6 |
 | glide | databases, developer-tools, productivity | api-token | 14 |
 | gmail | communication, email | oauth2, service-account | 25 |
 | gocardless | commerce, finance | bearer-token | 16 |
@@ -319,6 +322,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
 | linkedin-ads | marketing, analytics | oauth2, oauth2-audiences | 23 |
 | linkedin-conversions | marketing, analytics | oauth2 | 7 |
+| linkup | ai, search, developer-tools | api-key | 18 |
 | littlegreenlight | crm, finance | bearer-token | 12 |
 | livechat | support, communication | personal-access-token | 22 |
 | livestorm | video, communication | api-key | 40 |
@@ -413,6 +417,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pdfmonkey | documents, developer-tools | bearer-token | 13 |
 | pendo | analytics, product-analytics | api-key | 11 |
 | pennylane | accounting, finance | oauth2 | 22 |
+| peopledatalabs | crm, marketing | api-key | 15 |
 | perplexity | ai | api-key | 5 |
 | personio | hr | client-credentials | 16 |
 | perspective | marketing, crm, analytics | api-key | 8 |
@@ -446,6 +451,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | qualtrics | forms, analytics | api-token | 15 |
 | quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
+| quickchart | analytics, developer-tools, documents | api-key (optional) | 13 |
 | quo | communication, crm | api-key | 43 |
 | raindrop | productivity, search, storage | test-token, oauth2 | 39 |
 | raisely | crm, commerce, marketing | api-key | 22 |
@@ -470,6 +476,8 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | retellai | ai, communication | api-key | 9 |
 | ringcentral | communication, productivity | oauth2, jwt-bearer | 13 |
 | rippling | hr, productivity | api-token | 44 |
+| rocketchat | communication | personal-access-token | 25 |
+| rootly | monitoring, developer-tools | api-token | 32 |
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | salesloft | crm, communication | api-key, oauth2 | 26 |
@@ -526,6 +534,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | streamtime | project-management, finance, productivity | api-token | 84 |
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
+| supadata | ai, video, developer-tools | api-key | 19 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
 | synthflow | ai, communication | api-key | 26 |
 | systemeio | marketing | api-key | 41 |
@@ -626,6 +635,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zohodesk | support | oauth2 (×10 DCs) | 27 |
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
 | zoom | video, communication | server-to-server, oauth2 | 14 |
+| zulip | communication, productivity | basic | 25 |
 | zuora | finance | client-credentials | 14 |
 
 464 apps, 8739 actions.

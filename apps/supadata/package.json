@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/supadata",
+  "version": "0.1.0",
+  "description": "Fetch video transcripts and metadata, extract structured data from video, search YouTube, and scrape or crawl the web through Supadata.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.supadata",
+    "displayName": "Supadata",
+    "longDescription": "Supadata turns videos and web pages into text. This app exposes its REST API to a workflow, authenticated with an API key.\n\nA workflow can fetch the transcript of a YouTube, TikTok, Instagram, X (Twitter) or Facebook video, or of a public media file, falling back to AI transcription when no native transcript exists. It can read unified metadata for any of those posts, ask AI to extract structured data from a video with a prompt or JSON Schema, scrape a web page to Markdown, map a site's URLs, and crawl a whole site. For YouTube it can also search, read channels and playlists and their video ids, translate a transcript, and run batch jobs over many videos. Long-running work (generated transcripts, extraction, crawls and batches) is asynchronous: each has a start action that returns a job id and a matching action that polls it.\n\nEvery call spends credits from the account's monthly allowance; the Get Account action reads the plan and the credits used.",
+    "categories": [
+      "ai",
+      "video",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Supadata"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.supadata.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
