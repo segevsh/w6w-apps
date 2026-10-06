@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/solapi",
+  "version": "0.1.0",
+  "description": "Send SMS, LMS, MMS and Kakao AlimTalk through SOLAPI, manage message groups and schedules, and read balance, sender numbers, statistics and Kakao channels and templates.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.solapi",
+    "displayName": "SOLAPI",
+    "longDescription": "SOLAPI (솔라피) is a Korean messaging platform that sends SMS, LMS, MMS, Kakao AlimTalk and Brand Messages, RCS and more through one REST API. This app covers the messaging core a workflow needs: send a single message or a batch, send a Kakao AlimTalk template with variable substitution, and use SOLAPI's group flow to assemble a large batch, schedule it, send it, or cancel it before it goes out.\n\nIt also reads the account state a sender depends on: the current balance and points, the registered sender numbers (Korean regulation requires a pre-registered caller ID), delivery status by message and by group, sending statistics for a date range, stored image files, and the Kakao channels and AlimTalk templates linked to the account.\n\nSOLAPI signs every request with an HMAC-SHA256 Authorization header built from an API key, a fresh timestamp and a random salt. The app's Auth `sign` hook builds that header for each request, so actions never see the API secret, and a connection test proves the key pair against the balance endpoint.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SOLAPI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.solapi.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

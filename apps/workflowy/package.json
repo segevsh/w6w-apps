@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/workflowy",
+  "version": "0.1.0",
+  "description": "Capture, edit, organise and export WorkFlowy outline nodes: bullets, todos, notes, mirrors and the Inbox.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.workflowy",
+    "displayName": "Workflowy",
+    "longDescription": "WorkFlowy is an infinitely nestable outliner: every bullet is a node that can hold children, a note, a todo state and a header style. This app covers the whole of WorkFlowy's public API v1, so a workflow can capture a thought into the Inbox, drop a task onto today's calendar node, tick it off when the work is done, or sweep the whole outline out for backup.\n\nNodes can be created, read, updated, listed by parent, moved, completed, uncompleted and deleted, and any node can be mirrored under a second parent so its content shows in two places at once. Parents are addressed the way WorkFlowy addresses them: a full node id, the 12-character short id from a WorkFlowy URL, a shortcut key you defined, or a built-in target such as inbox, today, tomorrow or a YYYY-MM-DD calendar day.\n\nA targets listing shows which shortcut keys exist on the account, and a full-outline export returns every node as a flat list for backups or analysis.",
+    "categories": [
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Workflowy"
+      }
+    },
+    "network": {
+      "allow": [
+        "workflowy.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

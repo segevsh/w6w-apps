@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/superchat",
+  "version": "0.1.0",
+  "description": "Send WhatsApp, SMS, email and social messages, and manage contacts, conversations, notes, templates and webhooks in Superchat.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.superchat",
+    "displayName": "Superchat",
+    "longDescription": "Superchat is a shared inbox for customer messaging — WhatsApp, SMS, email, Instagram, Facebook Messenger, Telegram and a web chat widget in one workspace — and this app drives it from a workflow through one API key.\n\nIts centre is a single Send Message action that works across every connected channel: pass a channel, a recipient (a contact, an E.164 phone number or an email address; an unknown one creates the contact) and a content type — text, media, email, generic or WhatsApp template, quick reply or list. Templates, template folders, files and message delivery analytics are covered, so a workflow can start a WhatsApp conversation with an approved template and later read whether it was delivered, read or clicked.\n\nThe rest is the CRM around those messages: create, search, update and delete contacts and custom attributes, manage contact lists, read and update conversations (status, assignee, labels, snooze), keep internal notes, export a conversation, and manage the webhook subscriptions that report inbound messages and contact changes back out. Health checks cover Superchat's own status page and API reachability; webhook signing secrets are redacted from every read so they do not land in run records.",
+    "categories": [
+      "communication",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Superchat"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.superchat.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

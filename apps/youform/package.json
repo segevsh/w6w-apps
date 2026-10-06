@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/youform",
+  "version": "0.1.0",
+  "description": "Read Youform forms and submissions, manage submission webhooks and enable submission refill links.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.youform",
+    "displayName": "Youform",
+    "longDescription": "Youform is a form and survey builder with a deliberately small developer API, and this app covers all of it: the account profile, the list of forms, a single form's definition, the submissions collected by a form, the webhooks that push submissions to another system, and the refill link that lets a respondent reopen a submission.\n\nIt can list completed and partial submissions with sorting and page size, read a form's block definition so submission answers (keyed by block id) can be mapped back to question titles, register a webhook for a form and remove it again, and switch a submission's refill link on or off.\n\nGood for pulling new form answers into a CRM or sheet on a schedule, wiring a form to a workflow through a webhook subscription, following up on abandoned partial submissions, and sending a respondent their refill link to correct an answer. Youform's API cannot create or edit forms, so this app does not either.",
+    "categories": [
+      "forms"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Youform"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.youform.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

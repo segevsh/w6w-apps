@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/talentlms",
+  "version": "0.1.0",
+  "description": "Manage TalentLMS users, courses, enrollments, groups, branches and learning progress.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.talentlms",
+    "displayName": "TalentLMS",
+    "longDescription": "TalentLMS is a cloud learning management system, and this app drives the administrative side of it: creating, editing, deactivating and deleting users, building courses, and enrolling people in them. It covers the full roster of a learning account — users with their courses, certifications and badges; courses with their units and prerequisites; categories, groups and branches — and the operations that connect them, such as adding a user to a group or branch, or a course to either.\n\nBeyond administration it reads learning progress: a user's status and per-unit scores inside a course, the answers they gave in a test or a survey, the sessions of an instructor-led unit, and the account timeline of events such as course completions and certification issues. It can reset a learner's progress or mint a one-time URL that signs a learner in and drops them into a course.\n\nA fit for onboarding workflows that create a user and enroll them in a curriculum when someone is hired, offboarding flows that deactivate them, and reporting flows that pull completions and scores into another system. Every account has its own TalentLMS subdomain, which the connection records once so no action needs to carry it.",
+    "categories": [
+      "hr",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "TalentLMS"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.talentlms.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
