@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/seven",
+  "version": "0.1.0",
+  "description": "Send SMS and voice calls, look up and validate phone numbers (HLR, MNP, CNAM), and manage contacts, groups and webhooks on seven.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.seven",
+    "displayName": "seven",
+    "longDescription": "seven (seven.io, formerly sms77) is a messaging gateway for SMS, voice and phone-number intelligence. This app covers the HTTP gateway a workflow actually drives: sending an SMS to numbers, contacts or groups now or at a scheduled time (with sender, label, TTL, flash and performance-tracking options), deleting a scheduled SMS before it goes out, placing text-to-speech voice calls (plain text or SSML) and hanging an active call up.\n\nThe lookup endpoints answer what a number is before you message it: format and carrier, HLR (is it valid and reachable, is it ported or roaming), MNP (the current network), CNAM (caller-ID name) and RCS capabilities.\n\nAround the send it reads the account: balance, per-country pricing, usage analytics, and the outbound, inbound and voice logbooks (the way to read delivery status, since the old status endpoint is deprecated). It manages the audience, contacts and groups, subscribes webhooks for inbound SMS, delivery reports, voice events and click tracking, and lists the phone numbers available to book and the ones the account already holds.\n\nseven answers every request with HTTP 200 and signals errors in the body as a numeric code, so this app reads those codes (900 bad key, 902 missing scope, 500 no credit, 202 invalid number, ...) rather than the status. Health checks report seven's own status feed, an unauthenticated reachability probe of the API, and the account's remaining balance alongside the credential check derived from the connection.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "seven"
+      }
+    },
+    "network": {
+      "allow": [
+        "gateway.seven.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

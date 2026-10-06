@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/document360",
+  "version": "0.1.0",
+  "description": "Document360 knowledge base: projects, workspaces, categories, articles, drive, team accounts and readers.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.document360",
+    "displayName": "Document360",
+    "longDescription": "Document360 is a knowledge-base platform for product documentation, help centres and internal wikis. This app drives its v3 Customer API from a workflow: list projects and workspaces, browse the category tree, read, create, update, publish, unpublish, fork, archive and delete articles, manage categories, search a workspace, work with the Drive (folders and files), and read team accounts, groups and readers.\n\nAuthentication is a single v3 API key (d360_sk_…) sent in the X-API-Key header. The key carries its own portal role, content role and content-access scope, so what a workflow can do follows what that key was granted. Document360 hosts each project in one data centre, so the connection asks for the region (Europe, United States or Canada) and optionally a default project id; if the key can see exactly one project, the app fills the project in for you.\n\nThe v3 API is the current one. The older v1 and v2 APIs, which authenticate with an api_token header, are not covered.",
+    "categories": [
+      "cms",
+      "documents"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Document360"
+      }
+    },
+    "network": {
+      "allow": [
+        "apihub.document360.io",
+        "apihub.us.document360.io",
+        "apihub.ca.document360.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

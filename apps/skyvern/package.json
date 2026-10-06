@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/skyvern",
+  "version": "0.1.0",
+  "description": "Automate any website with Skyvern's AI browser agents: run natural-language tasks, run saved agents (workflows), and manage runs, browser sessions, browser profiles and credentials.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.skyvern",
+    "displayName": "Skyvern",
+    "longDescription": "Skyvern drives a real browser with LLMs and computer vision, so a workflow can automate websites that have no API: log in, fill forms, extract data, download files and complete multi-step jobs from a plain-language goal.\n\nTwo things can be run. A task is a one-off goal (a prompt, an optional start URL and an optional data-extraction schema). An agent is a saved, reusable multi-step automation (what older Skyvern docs and operation ids call a workflow) that is started by id with parameters. Both produce a run: poll it, read its output, cancel it, list past runs, or pull its artifacts (recordings, screenshots, logs) and its block-by-block timeline.\n\nThe app also manages the pieces a run uses: persistent browser sessions (keep a live browser across several runs, extend or close it), browser profiles (saved cookies and local storage to stay logged in), and stored credentials (listed by name and type; Skyvern never returns the secret).\n\nThis app covers Skyvern Cloud (api.skyvern.com). Scripts, schedules, tags, folders, custom LLMs, job recipes, creating or editing agents, and writing credentials are left out and listed in the README.",
+    "categories": [
+      "ai",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Skyvern"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.skyvern.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

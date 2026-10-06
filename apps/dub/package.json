@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/dub",
+  "version": "0.1.0",
+  "description": "Create and manage Dub short links, domains, tags, folders and customers, read click analytics and events, and track lead and sale conversions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.dub",
+    "displayName": "Dub",
+    "longDescription": "Dub is a link management and attribution platform. This app creates, updates, upserts and deletes short links one at a time or in bulk of up to 100, lists and counts them, and manages the domains, tags and folders that organise them.\n\nIt reads click, lead and sale analytics (grouped by time, location, device, referrer, UTM and more) and the raw event stream, lists and edits tracked customers, and records lead and sale conversions server-side.\n\nHealth checks verify the API key, whether api.dub.co is answering, Dub's own status page, and the hourly rate-limit headroom.",
+    "categories": [
+      "marketing",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Dub"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.dub.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

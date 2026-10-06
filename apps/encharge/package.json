@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/encharge",
+  "version": "0.1.0",
+  "description": "Encharge marketing automation: create and update people, tag them, read segments and person fields, send transactional email, track events and subscribe webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.encharge",
+    "displayName": "Encharge",
+    "longDescription": "Encharge is a marketing-automation platform for SaaS: it keeps a profile for every person, tags and segments them from what they do in your product, and sends the right email at the right time. This app gives a workflow the same levers without opening the Encharge editor.\n\nIt creates or updates people (singly or in batches), reads them back, archives or permanently erases them, unsubscribes them and adds or removes tags, which is how a workflow starts or stops an Encharge flow. It reads dynamic segments and the people inside them, manages custom person fields, and reads account information.\n\nIt also sends transactional email from a template, custom HTML or plain text, records product events through the Ingest API (so events can trigger flows), and subscribes a URL to Encharge events such as a new person or a tag being added. Health checks confirm the API is serving; Encharge publishes no status page or rate-limit signal, so those are declared as absent.",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Encharge"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.encharge.io",
+        "ingest.encharge.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

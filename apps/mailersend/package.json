@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mailersend",
+  "version": "0.1.0",
+  "description": "Send transactional and bulk email with MailerSend, and manage templates, domains, sender identities, suppressions, webhooks, activity and analytics.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mailersend",
+    "displayName": "MailerSend",
+    "longDescription": "MailerSend is a transactional email service, and this app covers the whole sending loop a workflow needs: send a single email or up to 500 in one bulk request, optionally scheduled up to 72 hours ahead, with templates, per-recipient personalization, tags and attachments.\n\nAround the send it covers what keeps mail deliverable: creating and verifying sending domains and reading the DNS records they need, sender identities for addresses without a verified domain, and the suppression lists (blocklist, hard bounces, spam complaints, unsubscribes, on-hold) that decide who is never mailed. After the send, it reads the individual emails, their delivery activity and the aggregate analytics, so a workflow can act on a bounce or an open, and it manages webhooks for reacting to those events as they happen.\n\nMailerSend tokens are scoped per area, so a connection works with exactly the permissions it was given; an action that needs a scope the token lacks says so instead of failing opaquely. Health checks track MailerSend's own status page, live API reachability and the remaining daily request quota.",
+    "categories": [
+      "email",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "MailerSend"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mailersend.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

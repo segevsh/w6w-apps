@@ -1,0 +1,42 @@
+{
+  "name": "@w6w-apps/browserless",
+  "version": "0.1.0",
+  "description": "Render, scrape, search and crawl the web through Browserless's headless-browser REST APIs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.browserless",
+    "displayName": "Browserless",
+    "longDescription": "Browserless runs headless Chrome as a service. This app exposes its REST APIs to a workflow, authenticated with an API token.\n\nA workflow can screenshot or print a page to PDF, fetch its fully rendered HTML, pull text and attributes for CSS selectors, run its own Puppeteer function, export a page with its assets, run a Lighthouse audit and load bot-protected pages through the stealth browser. It can also map a site's URLs, search the web and scrape the results, smart-scrape a URL to markdown, and start, follow, list and cancel asynchronous crawls, and read the account's unit usage.\n\nAn account works in one of three regions (US West, London, Amsterdam), each on its own host; the region is chosen once on the connection and only those hosts and api.browserless.io are called. Images, PDFs and archives come back as base64. Usage is billed in units: one per 30 seconds of browser time, plus proxy traffic and CAPTCHA solves.",
+    "categories": [
+      "developer-tools",
+      "ai",
+      "documents"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Browserless"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Browserless"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "production-sfo.browserless.io",
+        "production-lon.browserless.io",
+        "production-ams.browserless.io",
+        "api.browserless.io",
+        "status.browserless.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

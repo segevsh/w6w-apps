@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.168.0",
+  "version": "0.169.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -185,6 +185,9 @@
     },
     {
       "path": "./apps/browseai"
+    },
+    {
+      "path": "./apps/browserless"
     },
     {
       "path": "./apps/bubble"
@@ -376,6 +379,9 @@
       "path": "./apps/documenso"
     },
     {
+      "path": "./apps/document360"
+    },
+    {
       "path": "./apps/docuseal"
     },
     {
@@ -395,6 +401,9 @@
     },
     {
       "path": "./apps/dropbox-sign"
+    },
+    {
+      "path": "./apps/dub"
     },
     {
       "path": "./apps/duda"
@@ -425,6 +434,9 @@
     },
     {
       "path": "./apps/emailoctopus"
+    },
+    {
+      "path": "./apps/encharge"
     },
     {
       "path": "./apps/erpnext"
@@ -703,6 +715,9 @@
       "path": "./apps/honeybook"
     },
     {
+      "path": "./apps/hospitable"
+    },
+    {
       "path": "./apps/hostaway"
     },
     {
@@ -908,6 +923,9 @@
     },
     {
       "path": "./apps/mailerlite"
+    },
+    {
+      "path": "./apps/mailersend"
     },
     {
       "path": "./apps/mailgun"
@@ -1207,6 +1225,9 @@
       "path": "./apps/printavo"
     },
     {
+      "path": "./apps/printnode"
+    },
+    {
       "path": "./apps/processstreet"
     },
     {
@@ -1214,6 +1235,9 @@
     },
     {
       "path": "./apps/productboard"
+    },
+    {
+      "path": "./apps/productive"
     },
     {
       "path": "./apps/pushbullet"
@@ -1381,6 +1405,9 @@
       "path": "./apps/servicenow"
     },
     {
+      "path": "./apps/seven"
+    },
+    {
       "path": "./apps/sharepoint"
     },
     {
@@ -1418,6 +1445,9 @@
     },
     {
       "path": "./apps/simplybook"
+    },
+    {
+      "path": "./apps/skyvern"
     },
     {
       "path": "./apps/slack"
