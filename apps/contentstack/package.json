@@ -1,0 +1,43 @@
+{
+  "name": "@w6w-apps/contentstack",
+  "version": "0.1.1",
+  "description": "Manage Contentstack entries, assets, releases, webhooks and publishing through the Content Management API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.contentstack",
+    "displayName": "Contentstack",
+    "longDescription": "Contentstack is a headless, API-first content management system. This app exposes its Content Management API (CMA) to a workflow, authenticated with a stack API key and a management token.\n\nA workflow can read content types, global fields, locales, environments and branches, list and fetch entries and assets, and create, update and delete entries. It can publish and unpublish entries and assets to environments and locales immediately or on a schedule, publish or unpublish up to ten items at a time in bulk and follow the resulting job, move an entry through a workflow stage, build and deploy releases, and manage webhooks that notify other systems when content changes.\n\nA stack lives in one of seven regions (AWS North America, Europe and Australia, Azure North America and Europe, GCP North America and Europe), each on its own API host; the region is chosen once on the connection and only those seven hosts are ever called. The Content Management API is rate limited to ten requests per second per organization (one per second for bulk actions), and the action descriptions call out the per-request item limits.",
+    "categories": [
+      "cms",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Contentstack"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Contentstack"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.contentstack.io",
+        "eu-api.contentstack.com",
+        "au-api.contentstack.com",
+        "azure-na-api.contentstack.com",
+        "azure-eu-api.contentstack.com",
+        "gcp-na-api.contentstack.com",
+        "gcp-eu-api.contentstack.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

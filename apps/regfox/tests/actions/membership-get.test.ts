@@ -1,0 +1,34 @@
+import { assertEquals } from "@std/assert";
+import action from "../../actions/membership-get.ts";
+import { envelope, exec, mockCtx, pathOf, queryOf } from "../_helpers.ts";
+
+Deno.test("membership-get: gets the membership by id with the product and returns it", async () => {
+  const { ctx, calls } = mockCtx([{ body: envelope({ id: 42 }) }]);
+  const out = await exec(action, { membershipId: "42", product: "regfox.com" }, ctx);
+  assertEquals(calls[0].method, "GET");
+  assertEquals(pathOf(calls[0].url), "/v2/public/search/memberships/42");
+  assertEquals(queryOf(calls[0].url).product, "regfox.com");
+  assertEquals(action.params!.some((p) => p.key === "expand"), false);
+  assertEquals(out.membership, { id: 42 });
+});
+
+Deno.test("membership-get: the id is path-encoded and required", async () => {
+  const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
+  await exec(action, { membershipId: "a/b", product: "regfox.com" }, ctx);
+  assertEquals(pathOf(calls[0].url), "/v2/public/search/memberships/a%2Fb");
+  assertEquals(action.params!.find((p) => p.key === "membershipId")?.required, true);
+});
+
+Deno.test("membership-get: a 404 error envelope throws", async () => {
+  const { ctx } = mockCtx([{
+    status: 404,
+    body: { responseCode: 404, error: { code: 4404, description: "not found" } },
+  }]);
+  let threw = false;
+  try {
+    await exec(action, { membershipId: "1", product: "regfox.com" }, ctx);
+  } catch {
+    threw = true;
+  }
+  assertEquals(threw, true);
+});

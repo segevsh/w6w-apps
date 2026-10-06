@@ -117,6 +117,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | connecteam | hr, productivity, calendar | api-key | 27 |
 | constantcontact | marketing, email | oauth2 | 22 |
 | contentful | cms | access-token | 10 |
+| contentstack | cms, developer-tools | management-token | 34 |
 | copper | crm | api-key | 24 |
 | creditrepaircloud | crm, finance | custom | 8 |
 | crisp | support, communication | basic | 12 |
@@ -262,6 +263,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | instapaper | productivity | xauth | 17 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | invoiceninja | commerce, finance | api-token | 40 |
+| ironclad | legal, productivity | oauth2, oauth2-eu1, oauth2-demo, client-credentials | 28 |
 | iterable | marketing, email | api-key | 54 |
 | jenkins | devops | basic | 6 |
 | jibble | productivity, hr | client-credentials | 25 |
@@ -429,6 +431,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
 | redtail-crm | crm | database-credentials | 25 |
+| regfox | forms, commerce | api-key | 31 |
 | relevanceai | ai, productivity, developer-tools | api-key | 12 |
 | replyio | marketing, crm, email | api-key | 18 |
 | resend | email, communication | api-key | 24 |
@@ -532,6 +535,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | uscreen | video, commerce | api-key | 33 |
 | vanta | legal, security, monitoring | client-credentials | 25 |
 | vapi | ai, communication | private-key | 18 |
+| vbout | marketing, email | api-key | 26 |
 | vercel | devops, developer-tools | access-token, oauth2 | 28 |
 | videoask | forms, video | oauth2 | 38 |
 | vimeo | video, social-media | access-token | 36 |
@@ -577,6 +581,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho-recruit | hr, crm | oauth2 (×10 DCs) | 22 |
 | zoho-sheet | productivity, spreadsheets | oauth2 (×7 DCs) | 10 |
 | zoho-sign | documents, legal | oauth2 (×10 DCs) | 12 |
+| zoho-workdrive | documents, storage | oauth2-us, oauth2-eu, oauth2-in, oauth2-au, oauth2-jp, oauth2-cn, oauth2-ae, oauth2-ca, oauth2-sa | 24 |
 | zohobooks | accounting | oauth2 (×8 DCs) | 22 |
 | zohodesk | support | oauth2 (×10 DCs) | 27 |
 | zohomail | communication, email | oauth2 (×8 DCs) | 16 |
