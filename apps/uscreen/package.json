@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/uscreen",
+  "version": "0.1.0",
+  "description": "Manage Uscreen customers, subscriptions and product access, groups, invoices, offers, content visibility and view analytics.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.uscreen",
+    "displayName": "Uscreen",
+    "longDescription": "Uscreen is a video membership and OTT platform: a creator sells subscriptions, rentals and one-off purchases of videos, collections and live events from a branded storefront and apps. This app drives the Publisher API from a workflow: invite and update customers, grant or revoke product access, start and cancel subscriptions, manage group (team) seats, read invoices and offers, publish, unpublish or schedule content, mint single-sign-on links, and pull view analytics.",
+    "categories": [
+      "video",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Uscreen"
+      }
+    },
+    "network": {
+      "allow": [
+        "uscreen.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

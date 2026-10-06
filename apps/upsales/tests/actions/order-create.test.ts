@@ -1,0 +1,124 @@
+import { assertEquals, assertRejects } from "@std/assert";
+import orderCreate from "../../actions/order-create.ts";
+import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
+
+Deno.test("order-create: POSTs /orders with the mapped body", async () => {
+  const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
+  const out = await orderCreate.execute({
+    "description": "10 licenses",
+    "date": "2018-07-23",
+    "closeDate": "2018-08-01",
+    "notes": "Net 30",
+    "clientId": 2,
+    "userId": 1,
+    "contactId": 5,
+    "stageId": 9,
+    "probability": 25,
+    "orderRows": [{ "quantity": 1, "price": 9000, "product": { "id": 1 } }],
+  }, ctx);
+
+  assertEquals(calls[0].method, "POST");
+  assertEquals(calls[0].url.split("?")[0], `${API_ROOT}/orders`);
+  assertEquals(queryOf(calls[0].url), {});
+  assertEquals(calls[0].headers["content-type"], "application/json");
+  assertEquals(JSON.parse(calls[0].body!), {
+    "description": "10 licenses",
+    "date": "2018-07-23",
+    "closeDate": "2018-08-01",
+    "notes": "Net 30",
+    "client": { "id": 2 },
+    "user": { "id": 1 },
+    "contact": { "id": 5 },
+    "stage": { "id": 9 },
+    "probability": 25,
+    "orderRow": [{ "quantity": 1, "price": 9000, "product": { "id": 1 } }],
+  });
+  assertEquals(out, { data: { id: 7 } });
+});
+
+Deno.test("order-create: the free-form fields object is merged and typed params win", async () => {
+  const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
+  await orderCreate.execute(
+    {
+      "description": "10 licenses",
+      "fields": { "extraKey": { "a": 1 }, "description": "SHOULD-LOSE" },
+    } as never,
+    ctx,
+  );
+  const sent = JSON.parse(calls[0].body!);
+  assertEquals(sent.extraKey, { a: 1 });
+  assertEquals(sent["description"], "10 licenses");
+});
+
+Deno.test("order-create: fields may be a JSON string", async () => {
+  const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
+  await orderCreate.execute(
+    { "description": "10 licenses", "fields": '{"extraKey":1}' } as never,
+    ctx,
+  );
+  assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
+});
+
+Deno.test("order-create: invalid fields JSON is refused before any request", async () => {
+  const { ctx, calls } = mockCtx([]);
+  await assertRejects(
+    async () => await orderCreate.execute({ "fields": "{nope" } as never, ctx),
+    Error,
+    "not valid JSON",
+  );
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("order-create: required params are declared", () => {
+  const required = (orderCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
+  assertEquals(required, ["clientId"]);
+});
+
+Deno.test("order-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+  const { ctx } = mockCtx([{
+    status: 401,
+    headers: { "content-type": "text/plain" },
+    body: "Unauthorized",
+  }]);
+  await assertRejects(
+    async () =>
+      await orderCreate.execute({
+        "description": "10 licenses",
+        "date": "2018-07-23",
+        "closeDate": "2018-08-01",
+        "notes": "Net 30",
+        "clientId": 2,
+        "userId": 1,
+        "contactId": 5,
+        "stageId": 9,
+        "probability": 25,
+        "orderRows": [{ "quantity": 1, "price": 9000, "product": { "id": 1 } }],
+      }, ctx),
+    Error,
+    "401",
+  );
+});
+
+Deno.test("order-create: a JSON error envelope surfaces the vendor key", async () => {
+  const { ctx } = mockCtx([{
+    status: 429,
+    body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },
+  }]);
+  await assertRejects(
+    async () =>
+      await orderCreate.execute({
+        "description": "10 licenses",
+        "date": "2018-07-23",
+        "closeDate": "2018-08-01",
+        "notes": "Net 30",
+        "clientId": 2,
+        "userId": 1,
+        "contactId": 5,
+        "stageId": 9,
+        "probability": 25,
+        "orderRows": [{ "quantity": 1, "price": 9000, "product": { "id": 1 } }],
+      }, ctx),
+    Error,
+    "ThrottleLimit",
+  );
+});

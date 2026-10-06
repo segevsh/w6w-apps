@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/fortnox",
+  "version": "0.1.0",
+  "description": "Manage customers, suppliers, articles, invoices, orders, offers, supplier invoices, vouchers, accounts, projects and payments in Fortnox, the Swedish cloud accounting and ERP platform.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.fortnox",
+    "displayName": "Fortnox",
+    "longDescription": "Fortnox is the most widely used cloud accounting, invoicing and ERP platform for small and medium businesses in Sweden. This app covers Fortnox's REST API v3 (`api.fortnox.se`) for the core accounting objects: customers, suppliers, articles, customer invoices (create, update, book, cancel, credit, email), orders, offers, supplier invoices, vouchers and voucher series, the chart of accounts, invoice payments, projects, cost centers, financial years and the connected company.\n\nEvery path, verb, query parameter, body field and enum was read on 2026-10-06 from Fortnox's own OpenAPI 3.0.3 document (embedded in the Redoc page at `api.fortnox.se/apidocs`) and the developer guides at `fortnox.se/developer`, plus a live check of the Statuspage at `status.fortnox.se`.\n\nThree details are easy to get wrong: bodies and responses are wrapped in a resource key (`{\"Customer\": {...}}`, lists as `{\"Customers\": [...], \"MetaInformation\": {...}}`); refresh tokens rotate, so every refresh invalidates the previous one; and OAuth scopes are per resource (customer, invoice, bookkeeping, …), each granting read and write, with `access_type=offline` required to receive a refresh token.",
+    "categories": [
+      "finance",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "Fortnox"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.fortnox.se"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
