@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/klicktipp",
+  "version": "0.1.0",
+  "description": "Manage KlickTipp contacts, tags, data fields and opt-in processes, and sign contacts in through a Listbuilding API key.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.klicktipp",
+    "displayName": "KlickTipp",
+    "longDescription": "KlickTipp is a German email-marketing and marketing-automation platform. This app covers its documented Management API — adding, updating, searching, tagging, untagging, unsubscribing and deleting contacts, reading them singly, in bulk or as a changed-since feed, managing tags, listing data fields and opt-in processes — and its Listbuilding API for signing a contact in, out or off through a Listbuilding API key.\n\nA connection is either an API user's username and password (Management actions) or a Listbuilding API key (the three Listbuilding actions). API access needs a KlickTipp Premium plan or higher.",
+    "categories": [
+      "email",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "KlickTipp"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.klicktipp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

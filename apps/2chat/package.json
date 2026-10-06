@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/2chat",
+  "version": "0.1.0",
+  "description": "Send WhatsApp messages and statuses, manage contacts, groups, webhooks and connected numbers, and send WABA templates through 2Chat.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.2chat",
+    "displayName": "2Chat",
+    "longDescription": "2Chat is a WhatsApp messaging-automation platform with a REST API. It runs two kinds of WhatsApp channel side by side: WhatsApp Web numbers, which are ordinary phones paired by QR code (so a workflow can message any contact, join groups and post statuses), and WhatsApp Business API (WABA) numbers, which use Meta-approved templates and a 24-hour customer-service window.\n\nThis app covers the account-level surface a workflow needs: contacts (create, list, get, update, delete, search), webhook subscriptions, the connected-number list and its connection status and connect/disconnect commands, WhatsApp Web messaging (send text, media or a map pin to a person or a group; list messages and conversations; read a message's delivery state; delete a message), number checking, statuses, groups and their participants, and WABA template messaging (send, list templates, check the conversation window).\n\nEvery path, verb and field was read on 2026-10-06 from 2Chat's own developer reference (developers.2chat.co, indexed by llms.txt) and cross-read against the vendor's agent skills; where the two disagree the README says which spelling the app sends. Every API call spends one credit on the account's plan. See the README for what was left out (catalog, SMS, phone numbers and calls, Slack linking, WABA template creation) and the vendor quirks that shaped the design.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "256x256": "./assets/icon.png"
+        },
+        "alt": "2Chat"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.p.2chat.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
