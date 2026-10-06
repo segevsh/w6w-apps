@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.153.0",
+  "version": "0.154.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -613,6 +613,9 @@
       "path": "./apps/helpscout"
     },
     {
+      "path": "./apps/hex"
+    },
+    {
       "path": "./apps/heygen"
     },
     {
@@ -638,6 +641,9 @@
     },
     {
       "path": "./apps/housecallpro"
+    },
+    {
+      "path": "./apps/htmlcsstoimage"
     },
     {
       "path": "./apps/hubspot"
@@ -790,6 +796,9 @@
       "path": "./apps/loops"
     },
     {
+      "path": "./apps/loyverse"
+    },
+    {
       "path": "./apps/luma"
     },
     {
@@ -806,6 +815,9 @@
     },
     {
       "path": "./apps/mailjet"
+    },
+    {
+      "path": "./apps/maintainx"
     },
     {
       "path": "./apps/mandrill"
@@ -1454,6 +1466,9 @@
     },
     {
       "path": "./apps/wise"
+    },
+    {
+      "path": "./apps/wistia"
     },
     {
       "path": "./apps/wix"

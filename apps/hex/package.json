@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/hex",
+  "version": "0.1.0",
+  "description": "Run Hex projects, poll or cancel runs, and read projects, users, groups, collections and data connections.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.hex",
+    "displayName": "Hex",
+    "longDescription": "Hex is a collaborative analytics workspace where notebooks and data apps run SQL and Python against a team's warehouse. This app lets a workflow trigger a published Hex project on demand, hand it input parameters, poll the run until it reaches a terminal state, and cancel it if it should not finish.\n\nAround that core it reads the workspace itself: projects and their metadata, the runs of each project filtered by status or trigger, the warehouse tables a project queries, and the users, groups, collections and data connections that organise access.\n\nA run always executes the latest published version of a project and answers with a run handle rather than a result, so a workflow starts a run, polls its status, and reads results where the project publishes them. Health checks track Hex's status page, reading the components the API and runs depend on.",
+    "categories": [
+      "analytics",
+      "data-warehousing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Hex"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.hex.tech"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
