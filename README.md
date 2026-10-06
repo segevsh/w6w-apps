@@ -83,6 +83,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | brevo | marketing, email | api-key | 15 |
 | brex | finance, accounting | api-token | 23 |
 | browseai | ai, developer-tools | api-key | 18 |
+| browserless | developer-tools, ai, documents | api-token | 16 |
 | buffer | social-media, marketing | oauth2, api-key | 14 |
 | cal | calendar | api-key | 8 |
 | calendly | calendar, productivity | personal-access-token, oauth2 | 12 |
@@ -144,6 +145,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | discourse | communication, social-media | api-key | 26 |
 | dixa | support, communication | api-token | 28 |
 | docparser | documents, ai | api-key | 10 |
+| document360 | cms, documents | api-key | 37 |
 | docuseal | documents, productivity | api-key | 23 |
 | documenso | legal, documents, productivity | api-key | 20 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
@@ -152,6 +154,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | drip | marketing, email | api-key | 14 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | dropbox-sign | legal, documents, productivity | api-key, oauth2 | 27 |
+| dub | marketing, analytics | api-key | 29 |
 | duda | cms, forms, marketing | basic | 14 |
 | dust | ai, productivity | api-key | 11 |
 | easypost | commerce, developer-tools | api-key | 19 |
@@ -162,6 +165,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | elastic-email | email, communication | api-key | 20 |
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
+| encharge | marketing, email | api-key | 17 |
 | erpnext | crm, commerce | api-key | 10 |
 | esignatures | legal, documents | secret-token | 24 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 93 |
@@ -253,6 +257,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | highlevel | crm, marketing | oauth2 | 18 |
 | homeassistant | iot, productivity | token | 19 |
 | honeybook | crm, project-management | oauth2 | 38 |
+| hospitable | calendar, communication, commerce | personal-access-token | 28 |
 | hostaway | crm, calendar | client-credentials | 21 |
 | hotmart | commerce, finance | client-credentials | 17 |
 | housecallpro | crm, calendar, finance | api-key, oauth2 | 39 |
@@ -321,6 +326,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailcheck | email, marketing | api-key | 4 |
 | mailchimp | marketing, communication | api-key, oauth2 | 15 |
 | mailerlite | marketing, email | api-key | 16 |
+| mailersend | email, communication | api-token | 43 |
 | mailgun | email, communication | api-key | 14 |
 | mailjet | email, marketing | basic | 17 |
 | maintainx | productivity, iot, project-management | api-key | 20 |
@@ -419,9 +425,11 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | powerbi | analytics | oauth2 | 18 |
 | practicebetter | scheduling, healthcare | client-credentials | 26 |
 | printavo | crm, finance, commerce | credentials | 38 |
+| printnode | documents, iot | api-key | 18 |
 | processstreet | productivity, project-management | api-key | 15 |
 | procore | project-management, documents | oauth2, oauth2-sandbox | 20 |
 | productboard | project-management, productivity, support | api-token | 41 |
+| productive | project-management, productivity, finance | api-token | 57 |
 | pushbullet | communication, productivity | access-token | 24 |
 | pushover | communication, monitoring | app-token | 4 |
 | qdrant | search, databases, ai | api-key | 19 |
@@ -475,6 +483,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | sentry | monitoring, developer-tools | auth-token, oauth2 | 21 |
 | servicem8 | crm | api-key | 18 |
 | servicenow | support, devops | basic, oauth2 | 9 |
+| seven | communication, marketing | api-key | 31 |
 | sharepoint | documents, productivity | oauth2 | 16 |
 | sharetribe | commerce, developer-tools | client-credentials | 19 |
 | shippo | commerce, developer-tools | api-key | 14 |
@@ -488,6 +497,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | simplero | marketing, crm, commerce | api-key | 35 |
 | simpletexting | communication | api-key | 27 |
 | simplybook | calendar | login | 14 |
+| skyvern | ai, developer-tools | api-key | 20 |
 | slack | communication | access-token, oauth2 | 47 |
 | smartsheet | spreadsheets, productivity | access-token | 16 |
 | smartsuite | project-management, productivity, databases | api-key | 17 |

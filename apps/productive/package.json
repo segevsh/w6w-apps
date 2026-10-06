@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/productive",
+  "version": "0.1.0",
+  "description": "Productive.io project and agency management: projects, tasks, boards, to-dos, comments, people, companies, deals and budgets, time entries, bookings, invoices, Docs pages and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.productive",
+    "displayName": "Productive.io",
+    "longDescription": "Productive.io is project, resource and financial management for agencies and professional-services teams. This app drives its REST API from a workflow: create and update projects, tasks and task lists, keep to-do checklists and comments, and read people, companies and Docs pages.\n\nIt also covers the money side: deals and budgets, the services inside a budget, time entries logged against them, resource bookings, and invoices (read), plus webhooks so a workflow can react to Productive events.\n\nAuthentication is a personal API token (X-Auth-Token) together with the numeric organization id (X-Organization-Id). The token acts as its owner, so what a workflow can see and change follows that person's role. Lists return flattened resources with the vendor's page metadata and a cursor for the next page.",
+    "categories": [
+      "project-management",
+      "productivity",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Productive.io"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.productive.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

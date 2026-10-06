@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/printnode",
+  "version": "0.1.0",
+  "description": "Send print jobs to cloud-connected printers, track their state, read scales and manage webhooks with PrintNode.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.printnode",
+    "displayName": "PrintNode",
+    "longDescription": "PrintNode connects printers to the internet: install the PrintNode Client on a computer and every printer attached to it becomes addressable through one API. This app lets a workflow print a PDF or raw printer data (labels, receipts, barcodes) to any of those printers, from a URL or as base64 content, with the usual print options such as copies, duplex, paper size, tray and page ranges.\n\nBeyond printing it covers the whole job lifecycle: list and look up print jobs, read their full state history (new, sent to client, done, error, expired), and cancel jobs that have not yet reached the client. It also lists the computers and printers on the account, including each printer's capabilities, reads live weight readings from attached USB scales, and manages the webhooks PrintNode uses to push computer and print job state changes.\n\nThe app keeps two vendor quirks out of your way: PrintNode returns a webhook's shared secret in clear on every read, and the app removes it before a result is stored; and the bulk delete forms that would remove every computer or every print job are never built, so a missing id cannot wipe an account.",
+    "categories": [
+      "documents",
+      "iot"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "PrintNode"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.printnode.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

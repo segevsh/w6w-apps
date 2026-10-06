@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/hospitable",
+  "version": "0.1.0",
+  "description": "Manage Hospitable short-term-rental properties, reservations, guest messages, reviews, calendars and operations tasks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.hospitable",
+    "displayName": "Hospitable",
+    "longDescription": "Hospitable is host-automation software for short-term rentals: it syncs a host's Airbnb, Vrbo, Booking.com and direct-booking listings into one inbox, calendar and set of reservations. This app drives the Hospitable Public API v2 with a Personal Access Token.\n\nA workflow can read the account's properties, search them for availability on given dates, and read or edit each property's calendar (availability, nightly price, minimum stay, check-in and check-out restrictions). Reservations can be listed with filters, fetched by UUID or reservation code, created manually, updated or cancelled, with guest, financials, property and review data embedded on request.\n\nThe guest-communication side is covered end to end: read a reservation's messages, send a reply to a reservation or to a pre-booking inquiry, list inquiries, list a property's reviews and publish the host's response to one. Operations tasks (cleanings and the like) and the teammates who perform them can be listed, created, updated and deleted, and the account's payouts and transactions can be read.\n\nA fit for pushing a dynamic-pricing result into a calendar, auto-replying to guests when a booking lands, creating a cleaning task when a reservation is confirmed, or syncing reservations into a CRM or accounting system.",
+    "categories": [
+      "calendar",
+      "communication",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Hospitable"
+      }
+    },
+    "network": {
+      "allow": [
+        "public.api.hospitable.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
