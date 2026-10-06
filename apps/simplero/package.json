@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/simplero",
+  "version": "0.1.0",
+  "description": "Manage Simplero contacts, tags, lists, automations, courses, products, purchases and sites through the Simplero API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.simplero",
+    "displayName": "Simplero",
+    "longDescription": "Simplero is an all-in-one platform for coaches, course creators and membership businesses: email lists and broadcasts, automations, products and payments, courses and member sites. This app lets a workflow work with the contact and commerce side of a Simplero account through the Simplero API v2.\n\nCreate, update and look up contacts, tag and untag them, subscribe them to or remove them from an email list, start or stop an automation for them, grant or revoke access to a course or a member site, and record a product purchase or cancellation without taking payment. Read-side actions list and fetch tags, email lists, products, purchases, list subscriptions, courses, access grants, sites, broadcasts and automations, with Simplero's own page, per-page and cursor pagination.\n\nSimplero's API calls people \"customers\" in its paths but \"contacts\" everywhere in its interface; this app uses \"contact\". The v2 API has no delete endpoint for contacts and no webhook-management endpoints, so neither is offered here.",
+    "categories": [
+      "marketing",
+      "crm",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Simplero"
+      }
+    },
+    "network": {
+      "allow": [
+        "simplero.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -25,6 +25,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | App | Categories | Auth | Actions |
 |-----|------------|------|--------:|
 | 2chat | communication, marketing | api-key | 28 |
+| acculynx | crm | bearer-token | 29 |
 | activecampaign | marketing, crm | api-key | 13 |
 | acuityscheduling | calendar | basic, oauth2 | 9 |
 | adalo | developer-tools, databases | api-key | 5 |
@@ -315,6 +316,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mercury | finance | bearer-token | 30 |
 | messagebird | communication, phone-sms | api-key | 7 |
 | metabase | analytics, databases | api-key | 17 |
+| microsoft-entra-id | security, productivity | oauth2 | 28 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
 | mighty-networks | communication, social-media | api-token | 31 |
 | mindee | ai, documents | api-key | 16 |
@@ -358,6 +360,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | pandadoc | documents, legal, productivity | api-key | 16 |
 | paperform | forms-surveys | bearer-token | 25 |
+| pardot | marketing, crm | oauth2, oauth2-sandbox, access-token | 25 |
 | parseur | documents, ai | api-key | 29 |
 | particle | iot, devops | access-token | 13 |
 | patreon | commerce, crm | creator-access-token, oauth2 | 11 |
@@ -441,6 +444,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | signnow | documents | custom | 16 |
 | signrequest | legal, documents, productivity | api-key | 26 |
 | signwell | documents, legal, productivity | api-key | 18 |
+| simplero | marketing, crm, commerce | api-key | 35 |
 | simpletexting | communication | api-key | 27 |
 | simplybook | calendar | login | 14 |
 | slack | communication | access-token, oauth2 | 47 |
@@ -541,6 +545,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho-bookings | scheduling, calendar | oauth2 (×8 DCs) | 9 |
 | zoho-calendar | calendar | oauth2 (×8 DCs) | 13 |
 | zoho-campaigns | marketing, email | oauth2 (×8 DCs) | 24 |
+| zoho-cliq | communication, productivity | oauth2-us, oauth2-eu, oauth2-in, oauth2-au, oauth2-jp, oauth2-ca, oauth2-cn, oauth2-sa, oauth2-uk | 32 |
 | zoho-creator | app-builder | oauth2 (×9 DCs) | 10 |
 | zoho-inventory | commerce, accounting | oauth2 (×8 DCs) | 17 |
 | zoho-invoice | accounting, finance | oauth2 (×8 DCs) | 22 |

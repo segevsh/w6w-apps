@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/zoho-cliq",
+  "version": "0.1.0",
+  "description": "Post messages, manage channels, teams, reminders and files in Zoho Cliq, across every Zoho data centre.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-cliq",
+    "displayName": "Zoho Cliq",
+    "longDescription": "Zoho Cliq is Zoho's team chat. This app puts it into a workflow: post messages to channels, group chats, bots and individual users (with replies and bot identities), edit and delete messages, read chat history, create and manage channels and their members, look up users and teams, share files, and create and complete reminders.\n\nZoho hosts every organization in one of nine regional data centres, each with its own Cliq API host and its own OAuth accounts host, so each region gets its own connection method rather than one that could silently send an EU organization's requests through the US region. Canada is the one region where BOTH hosts break the naming pattern (cliq.zohocloud.ca, accounts.zohocloud.ca), and this app points at the real hosts.\n\nOrganization-level APIs only: Cliq network (external collaboration) endpoints, events/calendars, user and role administration, databases, custom domain/email, extensions and the CSV maintenance exports are deliberately left out.",
+    "categories": [
+      "communication",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho Cliq"
+      }
+    },
+    "network": {
+      "allow": [
+        "cliq.zoho.com",
+        "cliq.zoho.eu",
+        "cliq.zoho.in",
+        "cliq.zoho.com.au",
+        "cliq.zoho.com.cn",
+        "cliq.zoho.jp",
+        "cliq.zoho.sa",
+        "cliq.zoho.uk",
+        "cliq.zohocloud.ca"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
