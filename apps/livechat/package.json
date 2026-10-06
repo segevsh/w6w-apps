@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/livechat",
+  "version": "0.1.1",
+  "description": "Read and manage LiveChat chats, threads, customers, agents, groups and tags, and send messages into a chat.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.livechat",
+    "displayName": "LiveChat",
+    "longDescription": "LiveChat (by Text) is a live chat and customer-support platform. This app puts its Agent Chat and Configuration APIs into a workflow: start a chat, send a message or an internal note into it, transfer or close it, and tag its threads.\n\nOn the read side it lists active chats and searches the chat archive by text, date, customer, agent, group or tag, and reads a chat with its full event history. Customers can be looked up and updated, and the license's agents, groups, tags and channels can be listed, so a workflow can route a conversation or enrich a record from the people and groups LiveChat already knows about.\n\nAgent availability is covered too: read every agent's routing status and flip one between accepting and not accepting chats, for example when a shift ends. Health checks track LiveChat's own status page, keyed on its API component, plus an unauthenticated reachability probe of the API.",
+    "categories": [
+      "support",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "LiveChat"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "LiveChat"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.livechatinc.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

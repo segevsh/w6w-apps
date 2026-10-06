@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/salla",
+  "version": "0.1.0",
+  "description": "Manage products, orders, customers, categories, coupons and brands in Salla, the Saudi e-commerce platform.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.salla",
+    "displayName": "Salla",
+    "longDescription": "Salla is a Saudi e-commerce platform that lets merchants run an online store. This app covers the Salla Merchant API (`api.salla.dev/admin/v2`): products (including lookup by SKU and availability changes), orders (list, details, status changes, history notes), customers, categories, brands, discount coupons and the store's own details.\n\nEvery path, verb, query parameter and body field was read on 2026-10-06 from Salla's own OpenAPI pages at docs.salla.dev and its guides, plus a live check of the Instatus page at status.salla.com.\n\nThree details are easy to get wrong: a 401 can mean a missing OAuth scope rather than a bad token; refresh tokens rotate and are single-use, so a second use revokes the whole grant; and `per_page` is capped at 60 with a plan-dependent rate limit.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Salla"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Salla"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.salla.dev",
+        "accounts.salla.sa"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
