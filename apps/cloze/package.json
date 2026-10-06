@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/cloze",
+  "version": "0.1.0",
+  "description": "Cloze relationship CRM: people, companies, projects, timeline notes and to-dos, and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.cloze",
+    "displayName": "Cloze",
+    "longDescription": "Cloze is a relationship-management CRM that builds a timeline of every email, call and meeting around the people, companies and projects (deals) you work with. This app drives the Cloze API from a workflow.\n\nSearch, read, create, update and delete people, companies and projects; stream changes with the cursored feeds; read a record's timeline and the messages on it; add to-dos, notes and communication records to a timeline; read your stages, segments, steps, custom fields, tags and team; and subscribe webhooks to record changes.\n\nIt authenticates with a Cloze API key sent as a bearer token. The analytics endpoints, team-member updates, form submission and CardDAV are not part of this app.",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Cloze"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.cloze.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
