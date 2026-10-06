@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/tavily",
+  "version": "0.1.0",
+  "description": "Search the web, extract and crawl pages, map sites and run cited research reports with Tavily, built for AI agents.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.tavily",
+    "displayName": "Tavily",
+    "longDescription": "Tavily is a web access layer built for AI agents: a search engine that returns ranked, cleaned snippets (and optionally an LLM-written answer), plus tools to pull the full content out of known URLs, crawl a whole site, map its URL structure, and run multi-step research that ends in a cited report.\n\nThis app covers the whole core surface in one connection: Search, Extract, Crawl and Map for fast, credit-metered reads of the live web, and Research, which starts an asynchronous report and lets a workflow poll for it. It also reads the account's credit usage, so a workflow can check headroom before it starts an expensive crawl or research task.\n\nEvery call is metered in Tavily credits, so the app prefills conservative defaults, and health checks track Tavily's own status page and the plan's remaining credits.",
+    "categories": [
+      "ai",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Tavily"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.tavily.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

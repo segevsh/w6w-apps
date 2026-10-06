@@ -47,6 +47,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | assemblyai | ai, developer-tools | api-token | 11 |
 | attio | crm | api-key | 29 |
 | auth0 | security, developer-tools | client-credentials | 18 |
+| avoma | ai, productivity, analytics | api-key | 19 |
 | aweber | email, marketing | oauth2 | 33 |
 | azure-blob | storage, devops | shared-key | 14 |
 | azuredevops | version-control, devops, project-management | pat | 19 |
@@ -102,6 +103,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cloudinary | storage, documents, developer-tools | basic | 21 |
 | coda | productivity, documents | api-token | 11 |
 | cognitoforms | forms, productivity | bearer-token | 12 |
+| coingecko | finance, analytics | demo-api-key, pro-api-key | 18 |
 | companycam | project-management, documents, productivity | access-token, oauth2 | 62 |
 | confluence | documents, productivity | api-token, oauth2 | 22 |
 | connecteam | hr, productivity, calendar | api-key | 27 |
@@ -416,6 +418,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | shippo | commerce, developer-tools | api-key | 14 |
 | shipstation | ecommerce | api-key | 18 |
 | shopify | commerce | access-token | 18 |
+| short-io | marketing, developer-tools | api-key | 18 |
 | shortcut | project-management, productivity | api-token | 36 |
 | signnow | documents | custom | 16 |
 | signrequest | legal, documents, productivity | api-key | 26 |
@@ -447,6 +450,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | tailscale | security, devops | api-key, oauth-client | 16 |
 | tally | forms, productivity | api-key | 38 |
 | tapfiliate | marketing, crm | api-key | 46 |
+| tavily | ai, developer-tools | api-key | 7 |
 | teachable | commerce, productivity | api-key | 21 |
 | teamleader | crm | oauth2 | 15 |
 | teams | communication | oauth2 | 16 |
@@ -504,6 +508,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | workos | security, developer-tools | api-key | 23 |
 | wrike | project-management, productivity | permanent-token | 29 |
 | wufoo | forms, productivity | api-key | 8 |
+| xai | ai | api-key | 14 |
 | xero | finance | oauth2 | 13 |
 | yelp-leads | marketing, crm | oauth2 | 7 |
 | youcanbookme | calendar | basic | 9 |

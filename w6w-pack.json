@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.152.0",
+  "version": "0.153.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -74,6 +74,9 @@
     },
     {
       "path": "./apps/auth0"
+    },
+    {
+      "path": "./apps/avoma"
     },
     {
       "path": "./apps/aweber"
@@ -245,6 +248,9 @@
     },
     {
       "path": "./apps/cognitoforms"
+    },
+    {
+      "path": "./apps/coingecko"
     },
     {
       "path": "./apps/companycam"
@@ -436,13 +442,13 @@
       "path": "./apps/followupboss"
     },
     {
+      "path": "./apps/formidableforms"
+    },
+    {
       "path": "./apps/formstack"
     },
     {
       "path": "./apps/freeagent"
-    },
-    {
-      "path": "./apps/formidableforms"
     },
     {
       "path": "./apps/freshbooks"
@@ -1165,10 +1171,10 @@
       "path": "./apps/sendblue"
     },
     {
-      "path": "./apps/sendfox"
+      "path": "./apps/sender"
     },
     {
-      "path": "./apps/sender"
+      "path": "./apps/sendfox"
     },
     {
       "path": "./apps/sendgrid"
@@ -1202,6 +1208,9 @@
     },
     {
       "path": "./apps/shopify"
+    },
+    {
+      "path": "./apps/short-io"
     },
     {
       "path": "./apps/shortcut"
@@ -1295,6 +1304,9 @@
     },
     {
       "path": "./apps/tapfiliate"
+    },
+    {
+      "path": "./apps/tavily"
     },
     {
       "path": "./apps/teachable"
@@ -1469,6 +1481,9 @@
     },
     {
       "path": "./apps/wufoo"
+    },
+    {
+      "path": "./apps/xai"
     },
     {
       "path": "./apps/xero"
