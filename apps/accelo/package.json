@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/accelo",
+  "version": "0.1.0",
+  "description": "Work with Accelo PSA: companies, contacts, activities and time, tasks, jobs, issues, requests, prospects, invoices and staff.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.accelo",
+    "displayName": "Accelo",
+    "longDescription": "Accelo is a professional services automation (PSA) platform that runs client work from first request to final invoice: prospects and quotes, projects (jobs) and their tasks, ongoing retainers, support issues, time tracking and billing, all tied to the companies and contacts they belong to.\n\nThis app lets a workflow read and write the core of that record: create and update companies and contacts, log notes, calls and meetings (and billable time) against any object, open and update tasks, jobs and issues, capture inbound requests, move prospects through the pipeline, and read invoices and staff.\n\nEvery Accelo customer has its own API host, so a connection records the deployment it belongs to and the app only ever calls that account's own subdomain. It authenticates as a Service Application using OAuth 2 client credentials, so it runs in scheduled and background workflows with no browser sign-in. Health checks track Accelo's status page, this account's host, and the hourly request allowance.",
+    "categories": [
+      "project-management",
+      "crm",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Accelo"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.api.accelo.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

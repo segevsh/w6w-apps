@@ -1,0 +1,52 @@
+{
+  "name": "@w6w-apps/autotask",
+  "version": "0.1.0",
+  "description": "Query and manage Datto Autotask PSA tickets, companies, contacts, time entries, projects, tasks and opportunities through the Autotask REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.autotask",
+    "displayName": "Autotask PSA",
+    "longDescription": "Datto Autotask PSA is the professional services automation platform many managed service providers run their business on: service desk tickets, companies and contacts, time entries, projects and tasks, contracts, configuration items and the sales pipeline all live in one database.\n\nThis app gives a workflow the whole of that surface through the Autotask REST API. Three generic actions (query, count, get by id) reach every entity the API exposes, with Autotask's own filter grammar passed through untouched, and typed create and update actions cover the entities a workflow most often writes: tickets and ticket notes, companies, contacts, time entries, projects, project tasks and opportunities.\n\nAutotask is split into numbered zones, and a tenant's data lives on exactly one of them. The connection asks for the zone (it is the number in your Autotask web address) and the app only ever talks to that zone's host. Health checks follow the vendor's published status page and the account's own hourly API request budget, which Autotask caps at 10,000 requests per hour per database across every integration.",
+    "categories": [
+      "support",
+      "crm",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Datto Autotask PSA"
+      }
+    },
+    "network": {
+      "allow": [
+        "webservices.autotask.net",
+        "webservices1.autotask.net",
+        "webservices2.autotask.net",
+        "webservices3.autotask.net",
+        "webservices4.autotask.net",
+        "webservices5.autotask.net",
+        "webservices6.autotask.net",
+        "webservices11.autotask.net",
+        "webservices12.autotask.net",
+        "webservices14.autotask.net",
+        "webservices15.autotask.net",
+        "webservices16.autotask.net",
+        "webservices17.autotask.net",
+        "webservices18.autotask.net",
+        "webservices19.autotask.net",
+        "webservices22.autotask.net",
+        "webservices24.autotask.net",
+        "webservices25.autotask.net",
+        "webservices26.autotask.net",
+        "webservices28.autotask.net",
+        "webservices29.autotask.net"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

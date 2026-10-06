@@ -25,6 +25,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | App | Categories | Auth | Actions |
 |-----|------------|------|--------:|
 | 2chat | communication, marketing | api-key | 28 |
+| accelo | project-management, crm, productivity | client-credentials | 34 |
 | acculynx | crm | bearer-token | 29 |
 | actionnetwork | crm, marketing | api-key | 70 |
 | activecampaign | marketing, crm | api-key | 13 |
@@ -45,6 +46,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | alegra | finance | basic | 24 |
 | algolia | search, developer-tools | api-key | 22 |
 | amplitude | analytics, marketing | api-keys | 15 |
+| anchor | finance, crm | api-key | 33 |
 | anthropic | ai | api-key | 14 |
 | apify | developer-tools, storage, ai | api-token | 31 |
 | apitemplateio | developer-tools | api-key | 5 |
@@ -54,6 +56,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | assemblyai | ai, developer-tools | api-token | 11 |
 | attio | crm | api-key | 29 |
 | auth0 | security, developer-tools | client-credentials | 18 |
+| autotask | support, crm, project-management | api-user | 21 |
 | avoma | ai, productivity, analytics | api-key | 19 |
 | aweber | email, marketing | oauth2 | 33 |
 | axonaut | crm, finance | api-key | 31 |
@@ -98,6 +101,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | canny | project-management, support | api-key | 39 |
 | canva | productivity, documents | oauth2 | 29 |
 | capsulecrm | crm | personal-access-token | 19 |
+| certifier | documents, marketing | access-token | 19 |
 | chargebee | commerce, finance | api-key | 17 |
 | chatbase | ai, support, communication | api-key | 35 |
 | chatwork | communication, productivity | api-token | 32 |
@@ -155,6 +159,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | dixa | support, communication | api-token | 28 |
 | docparser | documents, ai | api-key | 10 |
 | document360 | cms, documents | api-key | 37 |
+| documerge | documents | api-token | 36 |
 | docuseal | documents, productivity | api-key | 23 |
 | documenso | legal, documents, productivity | api-key | 20 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
@@ -172,11 +177,13 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | economic | finance | api-key | 29 |
 | ecwid | commerce, productivity | bearer | 23 |
 | edenai | ai, developer-tools | api-key | 30 |
+| egnyte | storage, productivity | access-token | 19 |
 | elastic | search | api-key, basic | 9 |
 | elastic-email | email, communication | api-key | 20 |
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
 | encharge | marketing, email | api-key | 17 |
+| enrichlayer | crm, marketing | api-key | 25 |
 | erpnext | crm, commerce | api-key | 10 |
 | esignatures | legal, documents | secret-token | 24 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 93 |
@@ -190,6 +197,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | facebook-custom-audiences | marketing, social-media | oauth2 | 9 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | facebook-messenger | communication | page-token | 19 |
+| fareharbor | calendar, commerce | api-keys | 24 |
 | fathom | ai, productivity, video | api-key | 11 |
 | feedly | productivity, security | bearer-token | 14 |
 | fellow | ai, productivity | api-key | 23 |
@@ -207,6 +215,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | followupboss | crm | api-key | 26 |
 | formbricks | forms, marketing, analytics | api-key | 25 |
 | formidableforms | forms, productivity | basic | 15 |
+| formsite | forms | token | 8 |
 | formspark | forms, developer-tools | api-token | 16 |
 | formstack | forms, productivity | access-token | 9 |
 | fortnox | finance, productivity | oauth2 | 54 |

@@ -1,0 +1,71 @@
+import { updateAction } from "../lib/actions.ts";
+
+export default updateAction({
+  key: "issue-update",
+  resource: "issue",
+  path: "/issues",
+  idKey: "issueId",
+  idLabel: "Issue ID",
+  title: "Update Issue",
+  description:
+    "Change an issue's title, assignee, priority, status or resolution. Unset fields are left alone.",
+  fields: [
+    { key: "title", wire: "title", label: "Title" },
+    { key: "description", wire: "description", label: "Description", type: "text" },
+    { key: "assignee", wire: "assignee", label: "Assignee staff ID", type: "number" },
+    {
+      key: "priorityId",
+      wire: "priority_id",
+      label: "Priority ID",
+      type: "number",
+      advanced: true,
+    },
+    { key: "classId", wire: "class_id", label: "Class ID", type: "number", advanced: true },
+    {
+      key: "statusId",
+      wire: "status_id",
+      label: "Status ID",
+      type: "number",
+      row: "status",
+      hint: "Bypasses progressions — use deliberately. Preferred over standing.",
+    },
+    {
+      key: "standing",
+      wire: "standing",
+      label: "Standing",
+      row: "status",
+      hint: "submitted, open, resolved, closed or inactive. Bypasses progressions.",
+    },
+    {
+      key: "resolutionId",
+      wire: "resolution_id",
+      label: "Resolution ID",
+      type: "number",
+      advanced: true,
+      row: "resolution",
+      hint: "Only shown when the standing is resolved.",
+    },
+    {
+      key: "resolutionDetail",
+      wire: "resolution_detail",
+      label: "Resolution detail",
+      advanced: true,
+      row: "resolution",
+    },
+    {
+      key: "contractId",
+      wire: "contract_id",
+      label: "Contract ID",
+      type: "number",
+      advanced: true,
+    },
+    {
+      key: "dateDue",
+      wire: "date_due",
+      label: "Due",
+      type: "number",
+      advanced: true,
+      hint: "Unix timestamp, seconds.",
+    },
+  ],
+});

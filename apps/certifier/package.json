@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/certifier",
+  "version": "0.1.0",
+  "description": "Create, issue, send and search digital certificates and badges, and manage the credential templates and designs behind them, in Certifier.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.certifier",
+    "displayName": "Certifier",
+    "longDescription": "Certifier issues digital certificates and badges that recipients keep in a shareable digital wallet, and verifies them for whoever they show them to. This app puts the whole issuing path in a workflow: create a credential for a recipient from a credential template, issue it, and send it by email, or do all three in one call when a course completes or a form is submitted.\n\nBeyond issuing, a workflow can search credentials by status, recipient, dates and template, update a credential's recipient or dates, read the design previews (PNG and PDF) a recipient will see, and delete a credential. It can also manage credential templates (Certifier calls them groups) and read the certificate and badge designs they are built from, and read or record the interaction events (views, shares to LinkedIn, downloads, verifications) that tell you whether a credential is being used.\n\nThe app authenticates with a workspace access token from Certifier's Developers settings, pinned to the 2022-10-26 API version. Health checks track Certifier's own status page, including its API monitor, and whether the API is answering.",
+    "categories": [
+      "documents",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Certifier"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.certifier.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
