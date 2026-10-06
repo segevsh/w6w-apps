@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/webscrapingai",
+  "version": "0.1.0",
+  "description": "Scrape pages with JS rendering and proxies, extract by CSS selector, ask an LLM about a page, search Google and read structured site data through WebScraping.AI.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.webscrapingai",
+    "displayName": "WebScraping.AI",
+    "longDescription": "WebScraping.AI is a scraping API with headless-Chromium JavaScript rendering, rotating datacenter, residential and stealth proxies, and built-in HTML parsing. This app exposes its REST API to a workflow, authenticated with an API key.\n\nA workflow can fetch a page's HTML or its visible text as Markdown, pull the HTML of one or many CSS selectors in a single fetch, and run its own JavaScript on a page. Two LLM endpoints answer a free-form question about a page or extract a set of named fields from it. It can also run a Google search and get parsed results, read structured JSON for a page on a supported site (YouTube, TikTok, X, LinkedIn, Instagram, Reddit and more), and read the account's remaining credits.\n\nEvery call spends credits from the account; proxy tier and JavaScript rendering change the price, and failed requests are not billed.",
+    "categories": [
+      "developer-tools",
+      "ai",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "WebScraping.AI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.webscraping.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

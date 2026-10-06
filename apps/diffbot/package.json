@@ -1,0 +1,26 @@
+{
+  "name": "@w6w-apps/diffbot",
+  "version": "0.1.0",
+  "description": "Extract structured data from any web page, search the Diffbot Knowledge Graph, enrich people and companies, analyze text and crawl whole sites with Diffbot.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.diffbot",
+    "displayName": "Diffbot",
+    "longDescription": "Diffbot turns the web into structured data. Point the Extract APIs at any URL and get clean JSON back: articles with author, date, sentiment and tags, products with price and specs, images, videos, discussions, events, listings and job posts, or let Analyze classify the page first. HTML you already hold can be sent straight to the same extractors.\n\nThe Knowledge Graph holds billions of organizations, people, articles and products. A workflow can search it with DQL, or enrich a partial record (a name, a website, an email) into the best matching person or company. The Natural Language API reads raw text for entities, sentiment, facts, categories and a summary, and Web Search queries Diffbot's web index.\n\nCrawl jobs spider a whole site and run every matching page through an Extract API; a workflow can create, poll, pause, restart, delete and download them. Account usage is readable at any time.\n\nThe connection holds a Diffbot API token. Credits are billed per call (1 per extracted page, 25 per Knowledge Graph entity), so the actions that spend more say so.",
+    "categories": ["ai", "search", "developer-tools"],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Diffbot"
+      }
+    },
+    "network": {
+      "allow": ["api.diffbot.com", "kg.diffbot.com", "nl.diffbot.com", "llm.diffbot.com"]
+    },
+    "entry": "./index.ts"
+  }
+}

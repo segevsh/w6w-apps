@@ -1,0 +1,26 @@
+{
+  "name": "@w6w-apps/dropcontact",
+  "version": "0.1.0",
+  "description": "Enrich and verify B2B contacts with Dropcontact: submit batches, poll or force results, read credits, and manage the default webhook.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.dropcontact",
+    "displayName": "Dropcontact",
+    "longDescription": "Dropcontact finds and verifies business email addresses and enriches B2B contacts and companies: civility, qualified emails (nominative, generic, catch-all), phone, job level and function, company website, LinkedIn, SIREN/SIRET, VAT, NAF code, headcount and turnover.\n\nEnrichment is asynchronous. A workflow submits up to 250 contacts as one batch and gets a request id back, then either polls for the result (Dropcontact asks for roughly 30 seconds between polls), asks for whatever is ready so far, or lets Dropcontact call a webhook when the batch is done. A single-contact action wraps the submit-and-poll loop and can wait for the answer inside the step. The remaining credits are readable without spending any.\n\nThe connection holds a Dropcontact API access token, sent in the X-Access-Token header. Dropcontact charges on success only: a credit is spent when a verified email is returned or when an email you supply is verified.",
+    "categories": ["crm", "marketing"],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Dropcontact"
+      }
+    },
+    "network": {
+      "allow": ["api.dropcontact.com"]
+    },
+    "entry": "./index.ts"
+  }
+}

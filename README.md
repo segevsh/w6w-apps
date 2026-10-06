@@ -102,6 +102,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | circle | communication, social-media | api-token | 33 |
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
+| clearout | email, marketing | api-key | 27 |
 | clerk | developer-tools, security | api-key | 30 |
 | cleverreach | marketing, communication | access-token, client-credentials | 24 |
 | clicksend | communication | basic-auth | 16 |
@@ -142,6 +143,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | deputy | hr, scheduling | permanent-token | 18 |
 | devin | developer-tools, ai | api-key | 12 |
 | dialpad | communication, support | api-key | 35 |
+| diffbot | ai, search, developer-tools | api-token | 20 |
 | digistore24 | commerce | api-key | 36 |
 | digitalocean | devops, storage | token | 15 |
 | discord | communication | bot-token, oauth2 | 19 |
@@ -157,6 +159,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | drip | marketing, email | api-key | 14 |
 | dropbox | storage | access-token, oauth2 | 12 |
 | dropbox-sign | legal, documents, productivity | api-key, oauth2 | 27 |
+| dropcontact | crm, marketing | api-key | 7 |
 | dub | marketing, analytics | api-key | 29 |
 | duda | cms, forms, marketing | basic | 14 |
 | dust | ai, productivity | api-key | 11 |
@@ -372,6 +375,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | moneybird | finance, accounting | personal-token, oauth2 | 11 |
 | mongodb-atlas | databases, devops | service-account | 19 |
 | motion | productivity, project-management, calendar | api-key | 27 |
+| msg91 | communication, marketing | authkey | 16 |
 | mural | productivity, project-management | oauth2 | 30 |
 | mux | video, developer-tools, analytics | basic | 14 |
 | nationbuilder | crm | api-token, oauth2 | 23 |
@@ -427,6 +431,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pinterest | social-media, marketing | oauth2 | 16 |
 | pipedrive | crm | api-token, oauth2 | 14 |
 | pipefy | productivity, project-management | client-credentials, personal-access-token | 29 |
+| placid | marketing, documents, video | bearer-token | 26 |
 | plaid | finance, databases | client-secret, client-secret-sandbox | 14 |
 | planningcenter | crm, calendar, finance | personal-access-token | 6 |
 | plaud | ai, productivity | custom | 7 |
@@ -446,6 +451,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | prospeo | crm, marketing | api-key | 8 |
 | pushbullet | communication, productivity | access-token | 24 |
 | pushover | communication, monitoring | app-token | 4 |
+| pylon | support, crm | api-token | 30 |
 | qdrant | search, databases, ai | api-key | 19 |
 | quaderno | finance, commerce | api-key | 24 |
 | qualtrics | forms, analytics | api-token | 15 |
@@ -477,6 +483,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | ringcentral | communication, productivity | oauth2, jwt-bearer | 13 |
 | rippling | hr, productivity | api-token | 44 |
 | rocketchat | communication | personal-access-token | 25 |
+| rocketreach | crm, marketing | api-key | 15 |
 | rootly | monitoring, developer-tools | api-token | 32 |
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
@@ -516,6 +523,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | simplybook | calendar | login | 14 |
 | skyvern | ai, developer-tools | api-key | 20 |
 | slack | communication | access-token, oauth2 | 47 |
+| slite | productivity, documents, ai | api-key | 23 |
 | smartsheet | spreadsheets, productivity | access-token | 16 |
 | smartsuite | project-management, productivity, databases | api-key | 17 |
 | snowflake | data-warehousing | key-pair | 5 |
@@ -593,12 +601,14 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | webflow | cms | api-token, oauth2 | 14 |
 | webinargeek | video, communication | api-key | 14 |
 | webinarjam | video, marketing | api-key | 5 |
+| webscrapingai | developer-tools, ai, search | api-key | 9 |
 | whatconverts | marketing, analytics, crm | basic | 25 |
 | whatsapp | communication | access-token | 9 |
 | whop | commerce, finance | api-key | 35 |
 | wise | finance, commerce | api-token | 19 |
 | wistia | video, marketing, analytics | api-token | 22 |
 | wix | cms, crm, commerce | api-key | 24 |
+| wiza | crm, marketing | api-key | 13 |
 | woocommerce | commerce | api-key | 13 |
 | woodpecker | marketing, email | api-key | 30 |
 | wordpress | cms | basic, oauth2 | 15 |

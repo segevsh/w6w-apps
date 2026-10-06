@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/pylon",
+  "version": "0.1.0",
+  "description": "Read and manage Pylon support issues, replies and internal notes, accounts, contacts, users, teams and tags, through the Pylon B2B support platform API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.pylon",
+    "displayName": "Pylon",
+    "longDescription": "Pylon is a B2B customer support platform that unifies Slack, Microsoft Teams, email, chat and portal conversations into one issue queue tied to customer accounts. This app connects a workflow to its REST API with an API token, in either the US or the EU region.\n\nA workflow can list, fetch, search, create, update and snooze issues, read an issue's messages, threads and followers, send a customer-facing reply or post an internal note, and list the issue statuses. It can list, fetch, search, create and update accounts and contacts, look up users and teams, and manage tags.\n\nThe API wraps every record in `{data, pagination, request_id}`; this app unwraps it, returning each record directly and each list under a named key with `nextCursor` where Pylon paginates. Errors are reported with Pylon's stable `code`. Health checks verify the token, whether the API answers, and Pylon's own status page.",
+    "categories": [
+      "support",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Pylon"
+      },
+      "darkMode": {
+        "icon": {
+          "url": "./assets/icon.dark.png",
+          "alt": "Pylon"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.usepylon.com",
+        "api.eu.usepylon.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
