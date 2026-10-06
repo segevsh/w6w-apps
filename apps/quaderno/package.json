@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/quaderno",
+  "version": "0.1.0",
+  "description": "Create invoices, credit notes and expenses, manage contacts and products, and calculate sales tax with Quaderno.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.quaderno",
+    "displayName": "Quaderno",
+    "longDescription": "Quaderno handles tax-compliant billing: it works out the right VAT, GST or sales tax for each sale and issues the invoice. This app lets a workflow manage customers and vendors (contacts), create, fetch, list, email, void and record payments on invoices, and raise credit notes to refund them.\n\nIt also creates and lists expenses and estimates (Quaderno calls them proformas), reads the product catalog, and calls the tax calculator on its own to get the rate and tax amount for a sale to any location before an invoice exists. Webhook endpoints can be listed.\n\nConnects with an API key and the account name from your Quaderno URL (acme.quadernoapp.com). Quaderno limits calls to 100 per 15 seconds.",
+    "categories": [
+      "finance",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Quaderno"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.quadernoapp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

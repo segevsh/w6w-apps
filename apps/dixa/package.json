@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/dixa",
+  "version": "0.1.0",
+  "description": "Work Dixa customer-support conversations, end users, agents, tags and queues.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.dixa",
+    "displayName": "Dixa",
+    "longDescription": "Dixa is a customer-service platform that routes email, chat, phone, SMS and messaging conversations to agents through queues. This app lets a workflow open an email conversation for an end user, read a conversation and its messages and internal notes, add a reply or a private note, assign it to an agent, move it to another queue, tag it, set its custom attributes, and close or reopen it.\n\nIt also manages the people on the other side: create, look up, list and update end users, list the conversations a given end user has had, and search conversations by text. Agents, tags, queues and custom-attribute definitions can be listed so a workflow can resolve names to the ids the other actions take.\n\nBuilt on Dixa's v1 REST API at dev.dixa.io with one API token.",
+    "categories": [
+      "support",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Dixa"
+      }
+    },
+    "network": {
+      "allow": [
+        "dev.dixa.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

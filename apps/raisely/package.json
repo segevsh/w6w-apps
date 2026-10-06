@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/raisely",
+  "version": "0.1.0",
+  "description": "Read and manage Raisely campaigns, fundraiser profiles, donations, supporters (users), recurring subscriptions and tags — the peer-to-peer fundraising platform.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.raisely",
+    "displayName": "Raisely",
+    "longDescription": "Raisely is a fundraising platform for nonprofits: campaigns (donation pages, peer-to-peer and event fundraising), the fundraiser profiles that raise money inside them, the one-off donations and recurring subscriptions they collect, and the users (supporters/donors) behind all of it. This app covers that core surface over the Raisely API v3 — listing and reading campaigns, profiles, donations, users, subscriptions and tags; updating campaigns, profiles, donations, users and subscriptions; creating users and offline donations; and assigning or removing tags on records.\n\nThree things about Raisely's API are worth knowing before scripting against it. First, most reads work with NO credential at all — Raisely serves public data to anonymous callers — so this app always asks for the private (full) record, which is what a key is for. Second, every request and response is wrapped in a `data` envelope, and lists carry a `pagination` object (`total`, `pages`, `offset`, `limit`) driven by `limit`/`offset`. Third, Raisely returns each user's own `accessToken` inside user records; this app strips that field from every response so a supporter's login token never lands in a workflow run.",
+    "categories": [
+      "crm",
+      "commerce",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Raisely"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.raisely.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

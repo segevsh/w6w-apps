@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/cleverreach",
+  "version": "0.1.0",
+  "description": "Manage CleverReach receivers, groups, attributes, tags, mailings, reports and the blacklist.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.cleverreach",
+    "displayName": "CleverReach",
+    "longDescription": "CleverReach is a European email-marketing platform. This app lets a workflow keep its subscriber data in step with the rest of the business: add, update, upsert, activate, deactivate and delete receivers; manage the groups (receiver lists) they belong to; create attributes; tag receivers; and read the blacklist and add to it.\n\nIt also reads what happened after a send: list mailings and fetch one, and list and fetch the reports for them, so a workflow can react to a campaign that finished or stop sending to an address that bounced.\n\nIt connects with a REST API access token pasted from Account > Extras > REST API, or with an OAuth app's client id and secret, which the app exchanges for a token and renews itself. The vendor's forms endpoints are deprecated and are not covered.",
+    "categories": [
+      "marketing",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "CleverReach"
+      }
+    },
+    "network": {
+      "allow": [
+        "rest.cleverreach.com",
+        "status.cleverreach.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
