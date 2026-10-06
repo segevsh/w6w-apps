@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/betterstack",
+  "version": "0.1.0",
+  "description": "Manage Better Stack Uptime: monitors, heartbeats, incidents, on-call calendars and status pages.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.betterstack",
+    "displayName": "Better Stack",
+    "longDescription": "Better Stack Uptime monitors websites, ports, cron jobs and APIs, pages the on-call person when something breaks, and publishes the status page customers read. This app drives that Uptime API from a workflow.\n\nCreate, pause, update and delete monitors and heartbeats; read their availability and response times; open, acknowledge, resolve and reopen incidents and read their timelines and comments; look up who is on call and the escalation policies behind them; and read status pages, their resources and their published reports.\n\nMonitor reads are scrubbed: a proxy password, environment variable or Authorization header a user typed into a monitor is redacted before it reaches a workflow's run record. The Better Stack Telemetry API (logs and metrics) is a separate product and is not part of this app.",
+    "categories": [
+      "monitoring",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Better Stack"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Better Stack"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "uptime.betterstack.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

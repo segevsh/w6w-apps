@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.162.0",
+  "version": "0.163.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -32,6 +32,9 @@
     },
     {
       "path": "./apps/agencyzoom"
+    },
+    {
+      "path": "./apps/aidbase"
     },
     {
       "path": "./apps/airbyte"
@@ -119,6 +122,9 @@
     },
     {
       "path": "./apps/beehiiv"
+    },
+    {
+      "path": "./apps/betterstack"
     },
     {
       "path": "./apps/bexio"
@@ -790,6 +796,9 @@
       "path": "./apps/kommo"
     },
     {
+      "path": "./apps/kudosity"
+    },
+    {
       "path": "./apps/kustomer"
     },
     {
@@ -986,6 +995,9 @@
     },
     {
       "path": "./apps/newrelic"
+    },
+    {
+      "path": "./apps/ninox"
     },
     {
       "path": "./apps/nocodb"
@@ -1211,6 +1223,9 @@
     },
     {
       "path": "./apps/recruitee"
+    },
+    {
+      "path": "./apps/recruiterflow"
     },
     {
       "path": "./apps/recurly"

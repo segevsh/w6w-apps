@@ -33,6 +33,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | adyen | commerce | api-key | 24 |
 | affinity | crm | bearer-token | 39 |
 | agencyzoom | crm, project-management | custom | 23 |
+| aidbase | support, ai | api-key | 43 |
 | airbyte | data-warehousing, devops | application | 12 |
 | aircall | communication, support, crm | basic | 38 |
 | airparser | ai, documents | api-key | 11 |
@@ -62,6 +63,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
 | beehiiv | email, marketing, cms | api-key | 12 |
+| betterstack | monitoring, developer-tools | api-token | 30 |
 | bexio | accounting, crm | oauth2 | 25 |
 | bigcommerce | commerce, crm | access-token | 38 |
 | bigin | crm | oauth2 | 23 |
@@ -281,6 +283,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | klicktipp | email, marketing | session, listbuilding-key | 25 |
 | knack | databases, productivity | application-key | 5 |
 | kommo | crm | long-lived-token | 12 |
+| kudosity | communication, marketing | api-key | 18 |
 | kustomer | support, crm | api-key | 23 |
 | kvcore | crm | bearer-token | 26 |
 | landbot | communication, support, marketing | agent-token | 28 |
@@ -347,6 +350,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | netsuite | finance, crm | oauth2, tba | 15 |
 | neverbounce | email, marketing | api-key | 10 |
 | newrelic | monitoring, analytics, devops | user-key | 17 |
+| ninox | databases, productivity | api-key | 22 |
 | nocodb | spreadsheets, databases | api-token | 13 |
 | nocrm | crm | api-key, user-token | 21 |
 | notion | productivity, documents | internal-secret, oauth2 | 17 |
@@ -421,6 +425,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | recharge | commerce, finance | api-token | 29 |
 | recruit-crm | crm, hr | api-token | 24 |
 | recruitee | hr | bearer-token | 17 |
+| recruiterflow | hr, crm | api-key | 24 |
 | recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
 | redtail-crm | crm | database-credentials | 25 |
