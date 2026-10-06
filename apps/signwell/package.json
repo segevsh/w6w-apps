@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/signwell",
+  "version": "0.1.0",
+  "description": "Send documents and templates out for e-signature with SignWell, track and remind recipients, run bulk sends, and fetch completed PDFs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.signwell",
+    "displayName": "SignWell",
+    "longDescription": "SignWell is an e-signature service, and this app covers its REST API for the full send-and-track loop. Create a document from a file URL or base64 content, or from one or more saved templates with the template's fields pre-filled; keep it as a draft or send it to its recipients, in a fixed signing order or all at once, by email or SMS, with a passcode if needed. Read a document back to see where each recipient stands, remind the ones who have not signed, correct a recipient's name or email, delete a document, and fetch a download link for the completed PDF (optionally with the audit page, or as a zip). Templates can be created, read, updated and deleted, and a template can be sent to many people at once through a bulk send built from a CSV. The account call returns who the key belongs to and what plan it is on, and webhooks can be listed, registered and removed so a workflow can react to signing events.\n\nSignWell has one API host and one credential, an API key sent as the X-Api-Key header. Deliberately out of scope: the API application endpoints, authentication updates, bulk-send CSV helpers, and the Mexico NOM-151 certificate; and the completed-document download is always returned as a link, never as raw PDF bytes, because the sandbox has no place to put a binary body.",
+    "categories": [
+      "documents",
+      "legal",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SignWell"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.signwell.com",
+        "status.signwell.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

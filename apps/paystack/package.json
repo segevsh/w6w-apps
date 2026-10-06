@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/paystack",
+  "version": "0.1.0",
+  "description": "Accept and verify Paystack payments, manage customers, plans and subscriptions, send transfers, issue refunds and read balances.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.paystack",
+    "displayName": "Paystack",
+    "longDescription": "Paystack is a payments platform for businesses in Nigeria, Ghana, Kenya, South Africa and Cote d'Ivoire. This app lets a workflow start a checkout (initialize a transaction and hand the customer the authorization URL), verify the outcome by reference, and list or fetch past transactions.\n\nIt also manages the records around a payment: customers, subscription plans and the subscriptions on them; creates transfer recipients and sends payouts from the Paystack balance; issues full or partial refunds; and reads bank lists and balances.\n\nConnect with a secret key (sk_test_ or sk_live_) from Dashboard > Settings > API Keys & Webhooks. Amounts are always in the currency's smallest unit (kobo, pesewas, cents).",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Paystack"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.paystack.co",
+        "status.paystack.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
