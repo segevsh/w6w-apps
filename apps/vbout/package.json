@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/vbout",
+  "version": "0.1.0",
+  "description": "VBOUT marketing automation: contact lists, contacts, tags, email campaigns, social channels and goals.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.vbout",
+    "displayName": "VBOUT",
+    "longDescription": "VBOUT is an all-in-one digital marketing platform: email marketing, marketing automation, social media publishing, landing pages and a CRM-style contact timeline. This app drives its REST API from a workflow, centred on the email-marketing surface.\n\nManage contact lists, create, update, sync, move and delete contacts (with list custom fields), tag contacts, record custom timeline activities and read a contact's timeline. Read email campaigns and their open, bounce, unsubscribe and click statistics, audiences and email templates, plus connected social channels, social link statistics and conversion goals.\n\nAuthentication is a single VBOUT API key, sent as the key query parameter by the host so a workflow never handles it. Health checks cover API reachability and credential validity; VBOUT publishes no status page and no usage endpoint, and both are declared as such.",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "VBOUT"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.vbout.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

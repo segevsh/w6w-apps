@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/ironclad",
+  "version": "0.1.0",
+  "description": "Launch and manage Ironclad contract workflows, read and write repository records and entities, and subscribe to contract events.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ironclad",
+    "displayName": "Ironclad",
+    "longDescription": "Ironclad is a contract lifecycle management platform: contracts are requested through launch forms, move through review, approval and signature as workflows, and land in a searchable repository of records tied to the legal entities behind them.\n\nThis app covers the three objects a contract automation touches. Workflows: launch one from a template, read and update its attributes, follow approvals, comments and signers, and pause, resume or cancel it. Records: list, read, create, update and delete the repository's contract records, and read the record schema so a workflow knows which properties exist. Entities: the counterparties and subsidiaries that records point at.\n\nIt also manages webhooks, so a flow can react to a contract being signed instead of polling for it, and reports the token's own user and granted scopes. Connections use OAuth 2.0, either the authorization code grant for a signed-in user or the client credentials grant for a service identity acting as a named user, against the US, EU or demo environment.",
+    "categories": [
+      "legal",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Ironclad"
+      }
+    },
+    "network": {
+      "allow": [
+        "ironcladapp.com",
+        "eu1.ironcladapp.com",
+        "demo.ironcladapp.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

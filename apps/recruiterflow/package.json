@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/recruiterflow",
+  "version": "0.1.0",
+  "description": "Manage candidates, jobs, clients, contacts, deals and users in Recruiterflow: search and update the pipeline, add candidates to jobs, move them between stages and log notes.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.recruiterflow",
+    "displayName": "Recruiterflow",
+    "longDescription": "Recruiterflow is an applicant tracking system and recruiting CRM for staffing agencies and in-house recruiting teams. This app lets a workflow work the recruiting pipeline: list, fetch and search candidates, jobs, client companies, contacts, deals and users, and read the account's tags and job stage names.\n\nOn the write side it creates and updates candidates, adds a candidate to a job (as Sourced or Applied), moves them between pipeline stages by id or name, disqualifies them with a reason, and logs notes. It also creates contacts and client companies. Search actions accept Recruiterflow's own filter objects, so any saved-search style query the vendor supports is reachable.\n\nAuthentication is a single account API key. Health checks cover API reachability and the key's liveness; Recruiterflow publishes no status page.",
+    "categories": [
+      "hr",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Recruiterflow"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.recruiterflow.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.162.0",
+  "version": "0.164.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -32,6 +32,9 @@
     },
     {
       "path": "./apps/agencyzoom"
+    },
+    {
+      "path": "./apps/aidbase"
     },
     {
       "path": "./apps/airbyte"
@@ -119,6 +122,9 @@
     },
     {
       "path": "./apps/beehiiv"
+    },
+    {
+      "path": "./apps/betterstack"
     },
     {
       "path": "./apps/bexio"
@@ -284,6 +290,9 @@
     },
     {
       "path": "./apps/contentful"
+    },
+    {
+      "path": "./apps/contentstack"
     },
     {
       "path": "./apps/copper"
@@ -724,6 +733,9 @@
       "path": "./apps/invoiceninja"
     },
     {
+      "path": "./apps/ironclad"
+    },
+    {
       "path": "./apps/iterable"
     },
     {
@@ -788,6 +800,9 @@
     },
     {
       "path": "./apps/kommo"
+    },
+    {
+      "path": "./apps/kudosity"
     },
     {
       "path": "./apps/kustomer"
@@ -986,6 +1001,9 @@
     },
     {
       "path": "./apps/newrelic"
+    },
+    {
+      "path": "./apps/ninox"
     },
     {
       "path": "./apps/nocodb"
@@ -1213,6 +1231,9 @@
       "path": "./apps/recruitee"
     },
     {
+      "path": "./apps/recruiterflow"
+    },
+    {
       "path": "./apps/recurly"
     },
     {
@@ -1220,6 +1241,9 @@
     },
     {
       "path": "./apps/redtail-crm"
+    },
+    {
+      "path": "./apps/regfox"
     },
     {
       "path": "./apps/relevanceai"
@@ -1537,6 +1561,9 @@
       "path": "./apps/vapi"
     },
     {
+      "path": "./apps/vbout"
+    },
+    {
       "path": "./apps/vercel"
     },
     {
@@ -1673,6 +1700,9 @@
     },
     {
       "path": "./apps/zoho-sign"
+    },
+    {
+      "path": "./apps/zoho-workdrive"
     },
     {
       "path": "./apps/zohobooks"
