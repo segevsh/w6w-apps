@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/phrase",
+  "version": "0.1.0",
+  "description": "Manage Phrase Strings localization projects: locales, keys, translations, file uploads and downloads, and jobs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.phrase",
+    "displayName": "Phrase Strings",
+    "longDescription": "Phrase Strings is a localization platform for software: developers push source strings in, translators and machine translation fill in every language, and the finished files flow back into the build. This app puts that loop inside a workflow.\n\nIt covers the day-to-day surface of the Strings API: projects and their locales, translation keys (create, tag, search, update, delete), translations (set, edit, verify), file uploads in any of Phrase's formats with a pollable processing state, locale downloads in any export format, and translation jobs that route keys to translators.\n\nBoth Phrase data centres are supported: pick EU or US on the connection and every call goes to the right host. List actions return a uniform page object with the total and the next page number so a workflow can walk a large project safely. Health checks follow Phrase's own status page for the connection's data centre and the live rate-limit window.",
+    "categories": [
+      "developer-tools",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Phrase"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.phrase.com",
+        "api.us.app.phrase.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

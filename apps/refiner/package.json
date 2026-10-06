@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/refiner",
+  "version": "0.1.0",
+  "description": "Read Refiner NPS and CSAT survey responses and reports, manage surveys, contacts and segments, and push user traits and events from a workflow.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.refiner",
+    "displayName": "Refiner",
+    "longDescription": "Refiner is an in-product survey tool for NPS, CSAT and product-feedback surveys shown inside a web or mobile app, or sent as a link. This app lets a workflow close the loop around those surveys.\n\nOn the way out, it reads survey responses (filtered by survey, date range, segment, tag, answer or user trait, with cursor pagination for large sets) and pulls aggregated NPS, CSAT, rating, distribution and view/response-count reports. On the way in, it identifies users and attaches traits, tracks events that trigger surveys, stores responses collected somewhere else, tags responses, and adds or removes users from manual segments.\n\nIt also manages the surveys themselves: list, publish or unpublish, duplicate, archive and read a survey's change history. Contacts can be listed, fetched and deleted for compliance. Health checks read the account's monthly tracked-user, page-view and survey-response usage against the plan limits.",
+    "categories": [
+      "forms",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Refiner"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.refiner.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

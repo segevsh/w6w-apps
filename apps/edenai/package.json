@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/edenai",
+  "version": "0.1.0",
+  "description": "Run LLMs, embeddings, images, speech, OCR, translation, web scraping and 500+ other AI models from many providers through Eden AI's single API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.edenai",
+    "displayName": "Eden AI",
+    "longDescription": "Eden AI is an AI gateway: one API key and one request shape reach 500+ models from 50+ providers, with provider fallback, routing and per-call cost reporting built in. This app covers the V3 API in two halves.\n\nThe LLM half is OpenAI-compatible: chat completions, the stateful Responses API, embeddings, content moderation, image generation, text-to-speech and video generation. Name a model as provider/model to pin a vendor, or give a bare model name and let Eden AI route by price, speed or latency.\n\nThe Universal AI half runs the non-LLM \"expert models\" - translation, OCR, resume parsing, entity extraction, AI-text detection, PII anonymization, web search and scraping - by naming a feature/subfeature/provider and swapping providers without changing the workflow. Long-running features (multipage OCR, speech-to-text, crawling, deep research) are a start action plus a job-status action. A generic Universal AI action and feature-discovery actions reach every other expert model.",
+    "categories": [
+      "ai",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Eden AI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.edenai.run"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

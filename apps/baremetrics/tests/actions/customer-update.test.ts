@@ -1,0 +1,60 @@
+import { assert, assertEquals } from "@std/assert";
+import customerUpdate from "../../actions/customer-update.ts";
+import { mockCtx, pathOf } from "../_helpers.ts";
+
+Deno.test("customer-update: PUT /v1/src1/customers/o%201 with the documented query/body", async () => {
+  const { ctx, calls } = mockCtx([{ body: { customer: {} } }]);
+  const out = await customerUpdate.execute({
+    source_id: "src1",
+    oid: "o 1",
+    name: "x1",
+    email: "x1",
+    notes: "x1",
+    created: 5,
+  }, ctx) as Record<string, unknown>;
+
+  assertEquals(calls.length, 1);
+  assertEquals(calls[0].method, "PUT");
+  assertEquals(pathOf(calls[0].url), "/v1/src1/customers/o%201");
+  assertEquals(JSON.parse(calls[0].body ?? "null"), {
+    name: "x1",
+    email: "x1",
+    notes: "x1",
+    created: 5,
+  });
+  assertEquals(calls[0].headers["content-type"], "application/json");
+  assert("customer" in out);
+});
+
+Deno.test("customer-update: omits unset optional body fields", async () => {
+  const { ctx, calls } = mockCtx([{ body: {} }]);
+  await customerUpdate.execute({ source_id: "src1", oid: "o 1" }, ctx);
+  assertEquals(Object.keys(JSON.parse(calls[0].body ?? "{}")).sort(), [].sort());
+});
+
+Deno.test("customer-update: declares type perform and every required param", () => {
+  assertEquals(customerUpdate.type, "perform");
+  const required = (customerUpdate.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
+  assertEquals(required, ["oid", "source_id"]);
+});
+
+Deno.test("customer-update: surfaces a vendor error as a thrown message", async () => {
+  const { ctx } = mockCtx([{
+    status: 401,
+    body: { error: "Unauthorized. API Key not found (001)" },
+  }]);
+  let message = "";
+  try {
+    await customerUpdate.execute({
+      source_id: "src1",
+      oid: "o 1",
+      name: "x1",
+      email: "x1",
+      notes: "x1",
+      created: 5,
+    }, ctx);
+  } catch (e) {
+    message = (e as Error).message;
+  }
+  assert(message.includes("401") && message.includes("Unauthorized"), message);
+});
