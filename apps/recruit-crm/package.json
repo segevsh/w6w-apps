@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/recruit-crm",
+  "version": "0.1.0",
+  "description": "Search and manage Recruit CRM candidates, companies, contacts and jobs, assign candidates to jobs and move them through hiring stages.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.recruit-crm",
+    "displayName": "Recruit CRM",
+    "longDescription": "Recruit CRM is an applicant tracking system and CRM for recruitment agencies. This app connects a workflow to a Recruit CRM account so candidate, client and job data can flow between the ATS and the rest of the stack.\n\nSearch and read candidates, companies, contacts and jobs; create candidates, companies and contacts as leads arrive from forms or sourcing tools; assign a candidate to a job and move them through the hiring pipeline; and attach notes to any record.\n\nConnect with the account's API token from Admin Settings.",
+    "categories": [
+      "crm",
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Recruit CRM"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.recruitcrm.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

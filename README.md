@@ -130,6 +130,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | digitalocean | devops, storage | token | 15 |
 | discord | communication | bot-token, oauth2 | 19 |
 | discourse | communication, social-media | api-key | 26 |
+| docparser | documents, ai | api-key | 10 |
 | docuseal | documents, productivity | api-key | 23 |
 | documenso | legal, documents, productivity | api-key | 20 |
 | docusign | documents, legal, productivity | oauth2, oauth2-demo | 16 |
@@ -144,6 +145,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | ebay | commerce | custom | 4 |
 | ecwid | commerce, productivity | bearer | 23 |
 | elastic | search | api-key, basic | 9 |
+| elastic-email | email, communication | api-key | 20 |
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
 | erpnext | crm, commerce | api-key | 10 |
@@ -353,6 +355,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | patreon | commerce, crm | creator-access-token, oauth2 | 11 |
 | payhip | commerce | product-secret-key, api-key | 5 |
 | paypal | commerce, finance | client-credentials | 13 |
+| paystack | commerce | secret-key | 20 |
 | pdfco | documents | api-key | 24 |
 | pdfmonkey | documents, developer-tools | bearer-token | 13 |
 | pendo | analytics, product-analytics | api-key | 11 |
@@ -388,6 +391,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | read-ai | ai, productivity, video | oauth2 | 4 |
 | readwise | productivity | api-token | 20 |
 | recharge | commerce, finance | api-token | 29 |
+| recruit-crm | crm, hr | api-token | 24 |
 | recruitee | hr | bearer-token | 17 |
 | recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
@@ -426,6 +430,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | shortcut | project-management, productivity | api-token | 36 |
 | signnow | documents | custom | 16 |
 | signrequest | legal, documents, productivity | api-key | 26 |
+| signwell | documents, legal, productivity | api-key | 18 |
 | simpletexting | communication | api-key | 27 |
 | simplybook | calendar | login | 14 |
 | slack | communication | access-token, oauth2 | 47 |

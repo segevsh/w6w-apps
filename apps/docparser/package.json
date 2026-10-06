@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/docparser",
+  "version": "0.1.0",
+  "description": "Import documents into Docparser parsers and fetch the structured data parsed from them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.docparser",
+    "displayName": "Docparser",
+    "longDescription": "Docparser turns PDFs, scans and images into structured data using document parsers you configure in its app. This app lets a workflow list those parsers and their model layouts, send a document in (by public URL or as base64 content), check where it is in the import and processing pipeline, and read back the parsed results for one document or many.\n\nIt can also schedule documents for re-parsing after a parser's rules change, or for re-integration so the parser's configured integrations and webhooks fire again.\n\nBuilt on Docparser's v1/v2 REST API with a single secret API key. Parsers themselves are created and edited in the Docparser app; the API does not expose that.",
+    "categories": [
+      "documents",
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Docparser"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.docparser.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

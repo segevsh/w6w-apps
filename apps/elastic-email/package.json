@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/elastic-email",
+  "version": "0.1.0",
+  "description": "Send transactional and bulk email through Elastic Email, and manage its contacts, lists, templates, campaigns, suppressions and statistics.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.elastic-email",
+    "displayName": "Elastic Email",
+    "longDescription": "Elastic Email is an email delivery and email marketing platform. This app connects a workflow to an Elastic Email account over its v4 API.\n\nSend a transactional email (to, cc, bcc, HTML and plain-text bodies, merge fields, a stored template, attachments already uploaded to the account) or a bulk merge send with per-recipient fields, then follow the delivery with the transaction status. Add, read, list and delete contacts, manage lists and their members, browse templates and campaigns, review and clear suppressions, and read account-wide send statistics.\n\nConnect with an API key from Settings > Manage API Keys; the key's access level decides which actions it may run.",
+    "categories": [
+      "email",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Elastic Email"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.elasticemail.com",
+        "elasticemail.statuspage.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

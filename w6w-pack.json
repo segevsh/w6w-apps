@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.154.0",
+  "version": "0.155.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -331,6 +331,9 @@
       "path": "./apps/discourse"
     },
     {
+      "path": "./apps/docparser"
+    },
+    {
       "path": "./apps/documenso"
     },
     {
@@ -371,6 +374,9 @@
     },
     {
       "path": "./apps/elastic"
+    },
+    {
+      "path": "./apps/elastic-email"
     },
     {
       "path": "./apps/elevenlabs"
@@ -1006,6 +1012,9 @@
       "path": "./apps/paypal"
     },
     {
+      "path": "./apps/paystack"
+    },
+    {
       "path": "./apps/pdfco"
     },
     {
@@ -1112,6 +1121,9 @@
     },
     {
       "path": "./apps/recharge"
+    },
+    {
+      "path": "./apps/recruit-crm"
     },
     {
       "path": "./apps/recruitee"
@@ -1232,6 +1244,9 @@
     },
     {
       "path": "./apps/signrequest"
+    },
+    {
+      "path": "./apps/signwell"
     },
     {
       "path": "./apps/simpletexting"
