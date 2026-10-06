@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.172.0",
+  "version": "0.173.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -133,6 +133,9 @@
       "path": "./apps/beehiiv"
     },
     {
+      "path": "./apps/beeminder"
+    },
+    {
       "path": "./apps/betterstack"
     },
     {
@@ -185,6 +188,9 @@
     },
     {
       "path": "./apps/braze"
+    },
+    {
+      "path": "./apps/breezyhr"
     },
     {
       "path": "./apps/brevo"
@@ -272,6 +278,9 @@
     },
     {
       "path": "./apps/clockify"
+    },
+    {
+      "path": "./apps/clockodo"
     },
     {
       "path": "./apps/close"
@@ -970,6 +979,9 @@
       "path": "./apps/mailerlite"
     },
     {
+      "path": "./apps/maileroo"
+    },
+    {
       "path": "./apps/mailersend"
     },
     {
@@ -1039,6 +1051,9 @@
       "path": "./apps/mighty-networks"
     },
     {
+      "path": "./apps/millionverifier"
+    },
+    {
       "path": "./apps/mindee"
     },
     {
@@ -1076,6 +1091,9 @@
     },
     {
       "path": "./apps/mural"
+    },
+    {
+      "path": "./apps/murf"
     },
     {
       "path": "./apps/mux"
@@ -1345,6 +1363,9 @@
       "path": "./apps/readwise"
     },
     {
+      "path": "./apps/recallai"
+    },
+    {
       "path": "./apps/recharge"
     },
     {
@@ -1396,6 +1417,9 @@
       "path": "./apps/ringcentral"
     },
     {
+      "path": "./apps/ringover"
+    },
+    {
       "path": "./apps/rippling"
     },
     {
@@ -1406,6 +1430,9 @@
     },
     {
       "path": "./apps/rootly"
+    },
+    {
+      "path": "./apps/runway"
     },
     {
       "path": "./apps/s3"
@@ -1832,6 +1859,9 @@
     },
     {
       "path": "./apps/zendesk-sell"
+    },
+    {
+      "path": "./apps/zeplin"
     },
     {
       "path": "./apps/zerobounce"

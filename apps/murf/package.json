@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/murf",
+  "version": "0.1.0",
+  "description": "Generate speech with Murf: Gen2 text-to-speech, voice library, cloned voices, voice changer, text translation and Murf Dub dubbing jobs and projects.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.murf",
+    "displayName": "Murf",
+    "longDescription": "Murf is an AI voice platform. This app synthesizes speech from text with the Gen2 model (voice, locale, style, speed, pitch, pronunciation dictionary, output format, optional zero-retention Base64 audio), browses the voice library with locale, gender and style filters, lists, checks and deletes cloned voices, converts an audio file at a URL into another voice with the Voice Changer, and translates text between languages.\n\nIt also drives the Murf Dub automation API: list the source and destination dubbing languages, create transient dubbing jobs or project-based jobs from a file URL, poll a job for its download links, and create, list and update dubbing projects. Murf Dub uses a separate API key from the speech API, so the connection takes both.\n\nHealth checks track Murf's own status page (the API component) and whether api.murf.ai is serving.",
+    "categories": [
+      "ai",
+      "video"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "Murf"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.murf.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

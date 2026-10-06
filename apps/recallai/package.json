@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/recallai",
+  "version": "0.1.0",
+  "description": "Send Recall.ai meeting bots to Zoom, Google Meet, Teams and Webex calls, and read back recordings, transcripts, participant events and calendar events.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.recallai",
+    "displayName": "Recall.ai",
+    "longDescription": "Recall.ai is an API for meeting bots: a bot joins a Zoom, Google Meet, Microsoft Teams, Webex or GoTo meeting, records it, and hands back the video, audio, transcript and participant data. This app connects a workflow to the Recall.ai REST API with an API key, in any of Recall's four regions (US East, US West, EU, Asia).\n\nA workflow can create a bot now or at a scheduled time, update or delete a scheduled bot, remove a bot from a call, make it post to the meeting chat or play audio, and start, pause, resume or stop its recording. It can list and fetch bots, recordings, transcripts, participant events and meeting metadata, run an asynchronous transcript on a finished recording, and delete recordings and transcripts. For Calendar V2 it can list calendars and events and schedule or unschedule a bot for an event. It can also read the workspace's bot usage.\n\nRecall hosts each region separately, so the connection records the region and every call goes to that host. Errors are reported with Recall's own code. The OAuth secrets Recall echoes back on calendar objects are removed. Health checks verify the key and whether the API answers.",
+    "categories": [
+      "video",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Recall.ai"
+      }
+    },
+    "network": {
+      "allow": [
+        "us-east-1.recall.ai",
+        "us-west-2.recall.ai",
+        "eu-central-1.recall.ai",
+        "ap-northeast-1.recall.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

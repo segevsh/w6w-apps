@@ -1,0 +1,26 @@
+{
+  "name": "@w6w-apps/millionverifier",
+  "version": "0.1.0",
+  "description": "Verify email addresses in real time, verify whole lists in bulk and check your credits with MillionVerifier.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.millionverifier",
+    "displayName": "MillionVerifier",
+    "longDescription": "MillionVerifier is an email verification service: it checks whether an address will actually be delivered before you send to it, so bad addresses never reach a list or a campaign.\n\nA workflow can verify one address in real time (result and result code, quality, the detailed subresult, free-provider and role-account flags, a did-you-mean correction and the credits left), or upload a list for bulk verification, poll the file until it is finished, download the results filtered to the statuses you want, stop a file that is still running and delete it afterwards. The account's remaining and renewing credits are readable for free.\n\nThe connection holds a MillionVerifier API key (app.millionverifier.com/api). The vendor sends it as a query parameter, which the connection adds to each request for you; the single API (api.millionverifier.com) and the bulk API (bulkapi.millionverifier.com) name that parameter differently and both are handled. Verification and bulk files spend credits; the vendor's test key API_KEY_FOR_TEST returns random results at no cost.",
+    "categories": ["email", "marketing"],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.ico",
+        "alt": "MillionVerifier"
+      }
+    },
+    "network": {
+      "allow": ["api.millionverifier.com", "bulkapi.millionverifier.com"]
+    },
+    "entry": "./index.ts"
+  }
+}
