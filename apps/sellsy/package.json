@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/sellsy",
+  "version": "0.1.0",
+  "description": "Search, read and write Sellsy CRM and invoicing data: companies, individuals, contacts, opportunities, tasks, estimates, invoices, items and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.sellsy",
+    "displayName": "Sellsy",
+    "longDescription": "Sellsy is a French CRM and invoicing platform: prospects and clients, sales pipelines, quotes, invoices and payments in one account. This app drives the Sellsy API v2 so a workflow can keep that account in step with the rest of a stack.\n\nIt covers the CRM core (companies, individuals and their contacts, opportunities and pipelines, tasks and comments), the billing side (searching and reading estimates, invoices, items and payments, and moving an estimate through its statuses), webhooks for reacting to Sellsy events instead of polling, and the account's own request quotas.\n\nSign in with a personal OAuth client (client credentials, works unattended) or with the authorization-code flow for a public or private client; either way the connection is limited to the scopes the Sellsy client was granted.",
+    "categories": [
+      "crm",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Sellsy"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.sellsy.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

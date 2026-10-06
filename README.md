@@ -60,6 +60,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | balena | iot, devops | api-key | 16 |
 | bamboohr | hr | api-key | 18 |
 | bannerbear | marketing, video, developer-tools | bearer-token | 61 |
+| baremetrics | analytics, finance | api-key | 30 |
 | base44 | ai, developer-tools | api-key | 11 |
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
@@ -156,6 +157,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | easypost | commerce, developer-tools | api-key | 19 |
 | ebay | commerce | custom | 4 |
 | ecwid | commerce, productivity | bearer | 23 |
+| edenai | ai, developer-tools | api-key | 30 |
 | elastic | search | api-key, basic | 9 |
 | elastic-email | email, communication | api-key | 20 |
 | elevenlabs | ai | api-key | 22 |
@@ -247,6 +249,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | hex | analytics, data-warehousing | api-token | 15 |
 | heygen | ai | api-key | 18 |
 | heyreach | marketing, social-media, crm | api-key | 30 |
+| hibob | hr, productivity | service-user | 27 |
 | highlevel | crm, marketing | oauth2 | 18 |
 | homeassistant | iot, productivity | token | 19 |
 | honeybook | crm, project-management | oauth2 | 38 |
@@ -311,6 +314,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | lofty | crm, communication | api-key | 32 |
 | lokalise | developer-tools, cms | api-token | 31 |
 | looker | analytics, data-warehousing | api-credentials | 11 |
+| loop-returns | commerce, support | api-key | 30 |
 | loops | email, marketing, communication | api-key | 21 |
 | loyverse | commerce | access-token, oauth2 | 21 |
 | luma | calendar, commerce | api-key | 29 |
@@ -379,6 +383,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | opusclip | video, ai, social-media | api-key | 21 |
 | otter | ai, productivity, video | api-key | 7 |
 | outlook | communication, email, calendar | oauth2 | 18 |
+| outreach | crm, marketing | oauth2 | 30 |
 | paddle | commerce, finance | api-key | 21 |
 | pagerduty | monitoring, devops | api-token, oauth2 | 14 |
 | pandadoc | documents, legal, productivity | api-key | 16 |
@@ -398,6 +403,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | personio | hr | client-credentials | 16 |
 | perspective | marketing, crm, analytics | api-key | 8 |
 | phantombuster | automation, developer-tools, ai | api-key | 14 |
+| phrase | developer-tools, productivity | access-token (EU/US) | 32 |
 | pinecone | ai, databases, search | api-key | 24 |
 | pinterest | social-media, marketing | oauth2 | 16 |
 | pipedrive | crm | api-token, oauth2 | 14 |
@@ -437,6 +443,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | recurly | finance, commerce | api-key | 17 |
 | reddit | social-media | oauth2 | 8 |
 | redtail-crm | crm | database-credentials | 25 |
+| refiner | forms, analytics | api-key | 19 |
 | regfox | forms, commerce | api-key | 31 |
 | relevanceai | ai, productivity, developer-tools | api-key | 12 |
 | rendex | developer-tools, monitoring | api-key | 18 |
@@ -454,8 +461,11 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | salla | commerce | oauth2 | 31 |
 | samcart | commerce | api-key | 38 |
 | sanity | cms, databases, developer-tools | token | 11 |
+| savvycal | calendar, productivity | personal-access-token, oauth2 | 21 |
 | scoreapp | forms, marketing, crm | api-key | 6 |
+| seatable | databases, spreadsheets, productivity | api-token | 23 |
 | segment | analytics | write-key | 6 |
+| sellsy | crm, finance | client-credentials, oauth2 | 39 |
 | semrush | marketing, analytics | api-key | 13 |
 | sendblue | communication | api-key | 47 |
 | sender | email, marketing | bearer-token | 39 |

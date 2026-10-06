@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/savvycal",
+  "version": "0.1.0",
+  "description": "Manage SavvyCal scheduling links, book and cancel events, read availability, and register webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.savvycal",
+    "displayName": "SavvyCal",
+    "longDescription": "SavvyCal is a scheduling tool: people book time through your scheduling links. This app drives the SavvyCal Meetings API (api.savvycal.com/v1) from a workflow.\n\nIt can list and read booked events, create an event on a link at an available slot, and cancel one; create, update, duplicate, toggle and delete scheduling links (personal or under a team scope); read a link's open time slots so a workflow can pick a real one before booking; and look up the signed-in user, time zones, and workflow rules.\n\nIt also registers and removes SavvyCal webhooks, so a workflow can be told when an event is created, rescheduled or canceled instead of polling. Connect with a personal access token for your own account, or with OAuth when acting on behalf of other users. Health checks track SavvyCal's Instatus status page.",
+    "categories": [
+      "calendar",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "SavvyCal"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.savvycal.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

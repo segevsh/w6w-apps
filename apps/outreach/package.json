@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/outreach",
+  "version": "0.1.0",
+  "description": "Manage prospects, accounts, opportunities, sequences, tasks and webhooks in Outreach through its JSON:API REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.outreach",
+    "displayName": "Outreach",
+    "longDescription": "Outreach is a sales engagement platform: prospects and accounts are worked through multi-step sequences of emails, calls and tasks, and the results flow into opportunities. This app gives a workflow the core of that surface over Outreach's JSON:API REST API (v2).\n\nIt covers the full create/read/update/delete lifecycle for prospects and accounts, reading and creating opportunities, listing sequences, and the sequence-state lifecycle that actually starts and stops outreach to a prospect: enrolling a prospect in a sequence, then pausing, resuming or finishing them. It also lists and creates tasks, marks them complete, creates prospect notes, lists mailings and users, and manages webhooks so a workflow can react to Outreach events instead of polling.\n\nEvery list action speaks Outreach's own filter, sort, include, sparse-fieldset and cursor-pagination grammar, and returns the JSON:API document as Outreach sent it plus a ready-to-use `nextCursor`. Webhook signing secrets and cleanup tokens are removed from every response, and the health checks read Outreach's documented rate-limit headers.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Outreach"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.outreach.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
