@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/timelinesai",
+  "version": "0.1.0",
+  "description": "Send WhatsApp messages and notes, manage chats, labels, files, reactions and webhooks, and read workspace quota through TimelinesAI.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.timelinesai",
+    "displayName": "TimelinesAI",
+    "longDescription": "TimelinesAI puts a team's WhatsApp numbers into a shared inbox with a REST API. A number is an ordinary WhatsApp account connected to the workspace, so a workflow can message any phone, reply inside an existing chat or group, and keep CRM-style state on the conversation: labels, an assigned teammate, an open/closed flag, internal notes and a read state.\n\nThis app covers the Public API: sending a message to a phone number, a chat id or a WhatsApp JID (with an uploaded file, an attachment template, or as a reply); reading chats, message history, a single message, its delivery history and its reactions; adding internal notes; adding or replacing a chat's labels; updating a chat (rename, assign, close, mark read); uploading a file from a URL and listing, fetching or deleting uploaded files; managing the webhook subscriptions that push new messages, new chats, assignments, calls and account events to your endpoint; and reading the workspace, its connected WhatsApp accounts and its teammates.\n\nEvery path, verb and field was read on 2026-10-06 from TimelinesAI's own reference at timelines.ai/docs, whose pages embed a full OpenAPI document. Sends spend message credits and are rate limited per IP; the WhatsApp Business Platform (WABA) endpoints are a separate surface and are not covered. See the README for what was left out and the quirks that shaped the design.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "TimelinesAI"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.timelines.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

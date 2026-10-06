@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/fareharbor",
+  "version": "0.1.0",
+  "description": "Read FareHarbor companies, items and availability, and validate, create, cancel and check in bookings over the External API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.fareharbor",
+    "displayName": "FareHarbor",
+    "longDescription": "FareHarbor is booking and reservation software for tour and activity operators. This app lets a workflow work with the External API that FareHarbor issues to approved integration partners: list the companies your keys may book, read their items (bookable products), pull availability for a date or a date range, and read bookings by availability, by creation date or by UUID.\n\nIt can also write: validate a booking before creating it, create one (with transportation, rebooking and custom fields), update a booking's note, check customers in, cancel a booking and re-send confirmation emails.\n\nAuthentication is FareHarbor's two keys, an App key and a User key; the User key is tied to one currency, so use one connection per currency. FareHarbor limits requests per IP address (30 a second and 3,000 per 5 minutes) and times availability ranges out at 60 seconds, so pull availability in short ranges. Only the production API is supported, not the demo sandbox.",
+    "categories": [
+      "calendar",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "FareHarbor"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "FareHarbor"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "fareharbor.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

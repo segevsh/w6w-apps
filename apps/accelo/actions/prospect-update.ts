@@ -1,0 +1,58 @@
+import { updateAction } from "../lib/actions.ts";
+
+export default updateAction({
+  key: "prospect-update",
+  resource: "prospect",
+  path: "/prospects",
+  idKey: "prospectId",
+  idLabel: "Prospect ID",
+  title: "Update Prospect",
+  description: "Change a prospect's title, value, owner or progress. Unset fields are left alone.",
+  fields: [
+    { key: "title", wire: "title", label: "Title" },
+    { key: "comments", wire: "comments", label: "Comments", type: "text" },
+    { key: "value", wire: "value", label: "Value", type: "number", row: "worth" },
+    { key: "weighting", wire: "weighting", label: "Weighting (0-5)", type: "number", row: "worth" },
+    { key: "progress", wire: "progress", label: "Progress (0-100)", type: "number", row: "worth" },
+    {
+      key: "success",
+      wire: "success",
+      label: "Won",
+      type: "boolean",
+      bool: "yesno",
+      advanced: true,
+    },
+    { key: "staffId", wire: "staff_id", label: "Manager staff ID", type: "number", advanced: true },
+    {
+      key: "affiliationId",
+      wire: "affiliation_id",
+      label: "Affiliation ID",
+      type: "number",
+      advanced: true,
+      hint: "May relocate the prospect to a new company.",
+    },
+    {
+      key: "probabilityId",
+      wire: "probability_id",
+      label: "Probability ID",
+      type: "number",
+      advanced: true,
+    },
+    {
+      key: "statusId",
+      wire: "status_id",
+      label: "Status ID",
+      type: "number",
+      advanced: true,
+      hint: "Bypasses progressions — use deliberately.",
+    },
+    {
+      key: "dateDue",
+      wire: "date_due",
+      label: "Due",
+      type: "number",
+      advanced: true,
+      hint: "Unix timestamp, seconds.",
+    },
+  ],
+});

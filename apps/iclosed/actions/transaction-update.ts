@@ -1,0 +1,93 @@
+import type { ActionDefinition } from "@w6w/types";
+import { compact, IClosedClient } from "../lib/client.ts";
+
+/**
+ * `PUT /v1/transactions` — Update a transaction.
+ *
+ * Verified 2026-10-06 against iClosed's OpenAPI 3.0 document
+ * (`api-docs-iclosed.redocly.app/_bundle/openapi/v1/openapi.yaml`). The vendor's
+ * parsed body is returned verbatim; see `lib/client.ts` for why nothing is unwrapped.
+ */
+interface Input {
+  id: number;
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+  description?: string;
+  value?: number;
+  source?: string;
+}
+
+const transactionUpdate: ActionDefinition<Input> = {
+  key: "transaction-update",
+  type: "perform",
+  resource: "transaction",
+  title: "Update transaction",
+  description: "Update a transaction.",
+  idempotent: true,
+  params: [
+    {
+      key: "id",
+      label: "Transaction ID",
+      type: "number",
+      validation: { integer: true },
+      required: true,
+    },
+    {
+      key: "name",
+      label: "Name",
+      type: "string",
+    },
+    {
+      key: "email",
+      label: "Email",
+      type: "string",
+    },
+    {
+      key: "phoneNumber",
+      label: "Phone number",
+      type: "string",
+    },
+    {
+      key: "description",
+      label: "Description",
+      type: "text",
+    },
+    {
+      key: "value",
+      label: "Value",
+      type: "number",
+    },
+    {
+      key: "source",
+      label: "Source",
+      type: "select",
+      options: [{ value: "Zapier", label: "Zapier" }, { value: "Stripe", label: "Stripe" }, {
+        value: "Make",
+        label: "Make",
+      }, { value: "Other", label: "Other" }],
+    },
+  ],
+  output: [
+    { key: "message", type: "string", label: "Result message" },
+    { key: "status", type: "number", label: "Status" },
+    { key: "data", type: "object", label: "{transaction}" },
+  ],
+
+  execute(input, ctx) {
+    return new IClosedClient(ctx).json("/transactions", {
+      method: "PUT",
+      body: compact({
+        id: input.id,
+        name: input.name,
+        email: input.email,
+        phoneNumber: input.phoneNumber,
+        description: input.description,
+        value: input.value,
+        source: input.source,
+      }),
+    });
+  },
+};
+
+export default transactionUpdate;

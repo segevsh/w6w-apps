@@ -1,0 +1,59 @@
+{
+  "name": "@w6w-apps/ses",
+  "version": "0.1.0",
+  "description": "Send transactional and templated email, and manage identities, templates, suppression and contacts, in Amazon SES.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ses",
+    "displayName": "Amazon SES",
+    "longDescription": "Amazon SES sends a workflow's email through your own AWS account — a single transactional message, a stored template rendered with per-message data, or a bulk send of one template to up to 50 recipients, each with its own values. Sends can carry a configuration set and message tags so delivery, bounce and complaint events stay attributable to the workflow that caused them.\n\nBeyond sending, the app covers the account state a sender depends on: registering and inspecting verified email and domain identities (including the DKIM records to publish), keeping stored templates in sync, reading and editing the suppression list that stops mail to bounced or complaining addresses, and managing contact lists and their contacts.\n\nEvery request is signed locally with AWS Signature Version 4 against the SES v2 API in the region chosen on the connection, so no AWS SDK is needed. Health checks follow AWS's per-region SES status and the account's live 24-hour sending quota, so a workflow can see a sandbox limit or a suspended account before the next send fails.",
+    "categories": [
+      "email",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Amazon SES"
+      }
+    },
+    "network": {
+      "allow": [
+        "email.af-south-1.amazonaws.com",
+        "email.ap-northeast-1.amazonaws.com",
+        "email.ap-northeast-2.amazonaws.com",
+        "email.ap-northeast-3.amazonaws.com",
+        "email.ap-south-1.amazonaws.com",
+        "email.ap-south-2.amazonaws.com",
+        "email.ap-southeast-1.amazonaws.com",
+        "email.ap-southeast-2.amazonaws.com",
+        "email.ap-southeast-3.amazonaws.com",
+        "email.ap-southeast-5.amazonaws.com",
+        "email.ca-central-1.amazonaws.com",
+        "email.ca-west-1.amazonaws.com",
+        "email.eu-central-1.amazonaws.com",
+        "email.eu-central-2.amazonaws.com",
+        "email.eu-north-1.amazonaws.com",
+        "email.eu-south-1.amazonaws.com",
+        "email.eu-west-1.amazonaws.com",
+        "email.eu-west-2.amazonaws.com",
+        "email.eu-west-3.amazonaws.com",
+        "email.il-central-1.amazonaws.com",
+        "email.me-central-1.amazonaws.com",
+        "email.me-south-1.amazonaws.com",
+        "email.sa-east-1.amazonaws.com",
+        "email.us-east-1.amazonaws.com",
+        "email.us-east-2.amazonaws.com",
+        "email.us-west-1.amazonaws.com",
+        "email.us-west-2.amazonaws.com",
+        "email.us-gov-east-1.amazonaws.com",
+        "email.us-gov-west-1.amazonaws.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

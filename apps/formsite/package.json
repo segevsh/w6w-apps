@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/formsite",
+  "version": "0.1.0",
+  "description": "Read Formsite forms, items and results, and manage result-completed webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.formsite",
+    "displayName": "Formsite",
+    "longDescription": "Formsite is an online form and survey builder, and its REST API is built around one job: getting submitted results out. This app lets a workflow list the forms on an account, read a form's items (the question labels that give result data meaning), and pull results with the same filters the Formsite API offers — date and result-ID windows, a saved Results View, sorting, and per-item search by equals, contains, begins-with or ends-with.\n\nFor reacting to submissions instead of polling for them, the app manages Formsite's result-completed webhooks: list the webhooks on a form, create or update one (with an optional handshake key your receiver can verify), and delete one by URL.\n\nFormsite accounts live on numbered servers (fs1, fs2, and so on) and are addressed by a user directory, so a connection records both next to the access token. API access requires a Professional-level Formsite plan, and the API is limited to 50 calls per minute and 10,000 per day per account.",
+    "categories": [
+      "forms"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Formsite"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.formsite.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

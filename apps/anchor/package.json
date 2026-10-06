@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/anchor",
+  "version": "0.1.0",
+  "description": "Manage Anchor proposals, agreements, invoices, payouts, contacts and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.anchor",
+    "displayName": "Anchor",
+    "longDescription": "Anchor is billing and proposal software for service businesses: you send a client a proposal, they approve and sign it, and it becomes an agreement that bills on a schedule.\n\nThis app covers that whole lifecycle through Anchor's public API: create contacts, clone a proposal template into a draft, publish it to the client, withdraw and republish it for edits, and approve on the client's behalf. Once an agreement exists you can read it, rename it, add credits and submit one-off or out-of-scope charges to issue an invoice now or on a future date.\n\nFor money coming in, read invoices and payouts, including the invoice charges that make up each payout, and filter by status, issue date or QuickBooks and Xero sync state. Webhook subscribe and unsubscribe actions let a workflow react to proposal, agreement, invoice and payout events instead of polling.",
+    "categories": [
+      "finance",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Anchor"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.sayanchor.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

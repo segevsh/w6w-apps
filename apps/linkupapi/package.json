@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/linkupapi",
+  "version": "0.1.0",
+  "description": "LinkedIn, WhatsApp and email outreach, lead sourcing, messaging, posting and email enrichment through LinkupAPI's V2 API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.linkupapi",
+    "displayName": "LinkupAPI",
+    "longDescription": "LinkupAPI puts one API in front of LinkedIn, WhatsApp and email for sales and recruiting automation. You connect a channel account once in LinkupAPI's own dashboard, and every call from a workflow names that account by its account_id, so w6w holds only the API key and never a LinkedIn password or session.\n\nThis app covers the V2 surface: reading and searching profiles, companies and posts; sending connection requests and managing received, sent and withdrawn invitations; sending, reading and replying to LinkedIn, WhatsApp and email messages; publishing, reacting to, commenting on and reposting content; recruiter job postings, candidates and CVs; email finding, validation and reverse lookup; and webhooks with a pollable event stream for reacting to replies and accepted invitations.\n\nLinkupAPI drives real LinkedIn accounts on the account holder's behalf, which LinkedIn's terms restrict, and the vendor's own guidance is to stay well under LinkedIn's limits (about 100 invitations a day on a paid account). Credits are metered per call, and a credit-balance health check shows how many remain.",
+    "categories": [
+      "crm",
+      "marketing",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "LinkupAPI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.linkupapi.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

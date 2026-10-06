@@ -4,10 +4,13 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.174.0",
+  "version": "0.177.0",
   "apps": [
     {
       "path": "./apps/2chat"
+    },
+    {
+      "path": "./apps/accelo"
     },
     {
       "path": "./apps/acculynx"
@@ -70,6 +73,9 @@
       "path": "./apps/amplitude"
     },
     {
+      "path": "./apps/anchor"
+    },
+    {
       "path": "./apps/anthropic"
     },
     {
@@ -95,6 +101,9 @@
     },
     {
       "path": "./apps/auth0"
+    },
+    {
+      "path": "./apps/autotask"
     },
     {
       "path": "./apps/avoma"
@@ -233,6 +242,9 @@
     },
     {
       "path": "./apps/capsulecrm"
+    },
+    {
+      "path": "./apps/certifier"
     },
     {
       "path": "./apps/chargebee"
@@ -409,6 +421,9 @@
       "path": "./apps/document360"
     },
     {
+      "path": "./apps/documerge"
+    },
+    {
       "path": "./apps/docuseal"
     },
     {
@@ -457,6 +472,9 @@
       "path": "./apps/edenai"
     },
     {
+      "path": "./apps/egnyte"
+    },
+    {
       "path": "./apps/elastic"
     },
     {
@@ -470,6 +488,9 @@
     },
     {
       "path": "./apps/encharge"
+    },
+    {
+      "path": "./apps/enrichlayer"
     },
     {
       "path": "./apps/erpnext"
@@ -509,6 +530,9 @@
     },
     {
       "path": "./apps/facebook-messenger"
+    },
+    {
+      "path": "./apps/fareharbor"
     },
     {
       "path": "./apps/fathom"
@@ -562,10 +586,16 @@
       "path": "./apps/formidableforms"
     },
     {
+      "path": "./apps/formsite"
+    },
+    {
       "path": "./apps/formspark"
     },
     {
       "path": "./apps/formstack"
+    },
+    {
+      "path": "./apps/formstack-documents"
     },
     {
       "path": "./apps/fortnox"
@@ -632,6 +662,9 @@
     },
     {
       "path": "./apps/gmail"
+    },
+    {
+      "path": "./apps/gocanvas"
     },
     {
       "path": "./apps/gocardless"
@@ -793,6 +826,12 @@
       "path": "./apps/hunter"
     },
     {
+      "path": "./apps/hyros"
+    },
+    {
+      "path": "./apps/iclosed"
+    },
+    {
       "path": "./apps/inoreader"
     },
     {
@@ -941,6 +980,9 @@
     },
     {
       "path": "./apps/linkup"
+    },
+    {
+      "path": "./apps/linkupapi"
     },
     {
       "path": "./apps/littlegreenlight"
@@ -1201,6 +1243,9 @@
       "path": "./apps/outreach"
     },
     {
+      "path": "./apps/outseta"
+    },
+    {
       "path": "./apps/paddle"
     },
     {
@@ -1292,6 +1337,9 @@
     },
     {
       "path": "./apps/podio"
+    },
+    {
+      "path": "./apps/podium"
     },
     {
       "path": "./apps/postbin"
@@ -1486,6 +1534,9 @@
       "path": "./apps/scoreapp"
     },
     {
+      "path": "./apps/seamlessai"
+    },
+    {
       "path": "./apps/seatable"
     },
     {
@@ -1525,6 +1576,12 @@
       "path": "./apps/servicenow"
     },
     {
+      "path": "./apps/servicetitan"
+    },
+    {
+      "path": "./apps/ses"
+    },
+    {
       "path": "./apps/seven"
     },
     {
@@ -1547,6 +1604,9 @@
     },
     {
       "path": "./apps/shortcut"
+    },
+    {
+      "path": "./apps/sierrainteractive"
     },
     {
       "path": "./apps/signnow"
@@ -1589,6 +1649,9 @@
     },
     {
       "path": "./apps/softr"
+    },
+    {
+      "path": "./apps/solapi"
     },
     {
       "path": "./apps/splitwise"
@@ -1636,6 +1699,9 @@
       "path": "./apps/supadata"
     },
     {
+      "path": "./apps/superchat"
+    },
+    {
       "path": "./apps/surveymonkey"
     },
     {
@@ -1649,6 +1715,9 @@
     },
     {
       "path": "./apps/tailscale"
+    },
+    {
+      "path": "./apps/talentlms"
     },
     {
       "path": "./apps/tally"
@@ -1712,6 +1781,9 @@
     },
     {
       "path": "./apps/tiktok-lead-generation"
+    },
+    {
+      "path": "./apps/timelinesai"
     },
     {
       "path": "./apps/tldv"
@@ -1858,6 +1930,9 @@
       "path": "./apps/workday"
     },
     {
+      "path": "./apps/workflowy"
+    },
+    {
       "path": "./apps/workiz"
     },
     {
@@ -1880,6 +1955,9 @@
     },
     {
       "path": "./apps/youcanbookme"
+    },
+    {
+      "path": "./apps/youform"
     },
     {
       "path": "./apps/youtube"

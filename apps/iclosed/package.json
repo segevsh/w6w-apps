@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/iclosed",
+  "version": "0.1.0",
+  "description": "Manage iClosed sales-call scheduling: contacts, booked calls, deals, products, transactions and custom fields.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.iclosed",
+    "displayName": "iClosed",
+    "longDescription": "iClosed is scheduling and CRM software built for sales calls: prospects book a call through a qualifying form, closers work the call, and the result is recorded as an outcome and a deal.\n\nThis app covers the public API end to end: create, update and search contacts and their notes; list, book, reschedule and cancel calls and read the open slots for an event; record call outcomes, deals, products and payment transactions; and read or write the custom fields and answers that qualify a lead.\n\nAuthentication is an API key from Settings → Developer → API Keys (Business or Enterprise plan). Health checks track iClosed's own status page and an unsigned reachability probe of the API.",
+    "categories": [
+      "calendar",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "iClosed"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "iClosed"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "public.api.iclosed.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

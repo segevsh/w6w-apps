@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/egnyte",
+  "version": "0.1.2",
+  "description": "Browse, upload, share and search files and folders in Egnyte.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.egnyte",
+    "displayName": "Egnyte",
+    "longDescription": "Egnyte stores and shares company files, and this app lets a workflow work with that content directly: browse folders, create, move, copy and delete files and folders, upload and download file content, and lock a file while a process edits it.\n\nIt also covers sharing and discovery. A workflow can create shareable links with an access level, expiry and password, list or revoke existing links, and search file names and text content across everything the connected user can see. User lookups round out the picture so a step can resolve who owns or uploaded a document.\n\nA fit for filing generated reports into the right project folder, handing a customer a time-limited download link, archiving finished work by moving it between folders, or kicking off a process when a search finds a matching document. Every Egnyte customer has its own domain, so each connection records the domain it belongs to.",
+    "categories": [
+      "storage",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Egnyte"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Egnyte"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*.egnyte.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

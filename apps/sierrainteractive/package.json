@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/sierrainteractive",
+  "version": "0.1.0",
+  "description": "Leads, notes, tasks, saved listings, showing requests and action plans in Sierra Interactive.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.sierrainteractive",
+    "displayName": "Sierra Interactive",
+    "longDescription": "Sierra Interactive is a real-estate CRM and website platform: it captures leads from IDX search sites, assigns them to agents, tracks their saved searches and listings, and runs action plans (drip sequences) on them.\n\nThis app lets a workflow push and pull that data. Create or update a lead from a form, an ad or another CRM; find a lead by email; add a note or a follow-up task; record a saved listing, a request for information or a showing request; apply or stop a traditional or fully automated action plan; and read the reference lists (agents, sites, lead sources, statuses, tags, MLS regions, action plans) needed to fill those requests in correctly.\n\nA Sierra API key is the only credential. It covers the Zapier-facing integration surface that Sierra publishes in its Swagger document.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Sierra Interactive"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Sierra Interactive"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.sierrainteractivedev.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
