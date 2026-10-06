@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/rendex",
+  "version": "0.1.0",
+  "description": "Capture screenshots and PDFs of URLs, HTML and Markdown, extract page content and monitor pages for changes with Rendex.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.rendex",
+    "displayName": "Rendex",
+    "longDescription": "Rendex is a rendering API: it loads a page in real Chrome and hands back a screenshot or PDF, renders HTML or Markdown (optionally filled from a Mustache template and a data object) to an image or PDF, and turns a page into clean reader-mode Markdown. It is a quick way to produce invoices, certificates, OG images, page archives and LLM-ready page text from a workflow without running a browser.\n\nThis app covers rendering a URL, HTML or Markdown to PNG, JPEG, WebP or PDF (returned as base64), minting signed hosted render links for og:image and img tags, extracting page content, building branded PDF/PNG artifacts with share links, queueing asynchronous screenshot batches and reading their jobs, reading plan and credit usage, and Rendex Watch: create, test, list, run, pause, update and delete page-change monitors and read their run history.\n\nEvery render spends credits and Rendex takes no idempotency key, so the rendering actions are not marked retry-safe. On the Free plan images carry a light rendex.dev watermark.",
+    "categories": [
+      "developer-tools",
+      "monitoring"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Rendex"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.rendex.dev"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
