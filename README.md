@@ -24,6 +24,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 
 | App | Categories | Auth | Actions |
 |-----|------------|------|--------:|
+| 2chat | communication, marketing | api-key | 28 |
 | activecampaign | marketing, crm | api-key | 13 |
 | acuityscheduling | calendar | basic, oauth2 | 9 |
 | adalo | developer-tools, databases | api-key | 5 |
@@ -154,10 +155,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
 | exa | ai, search, developer-tools | api-key | 9 |
 | excel | spreadsheets, productivity | oauth2 | 16 |
+| eztexting | communication, marketing | basic | 31 |
 | facebook | social-media, marketing | oauth2, page-token | 14 |
 | facebook-conversions | marketing, analytics, social-media | conversions-token, oauth2 | 5 |
 | facebook-custom-audiences | marketing, social-media | oauth2 | 9 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
+| facebook-messenger | communication | page-token | 19 |
 | fathom | ai, productivity, video | api-key | 11 |
 | feedly | productivity, security | bearer-token | 14 |
 | fellow | ai, productivity | api-key | 23 |
@@ -172,6 +175,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | folk | crm | api-key | 12 |
 | followupboss | crm | api-key | 26 |
 | formidableforms | forms, productivity | basic | 15 |
+| formspark | forms, developer-tools | api-token | 16 |
 | formstack | forms, productivity | access-token | 9 |
 | freeagent | finance | oauth2 | 28 |
 | freshbooks | accounting, finance, productivity | oauth2 | 19 |
@@ -265,6 +269,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | kintone | productivity, databases | api-token | 12 |
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
+| klicktipp | email, marketing | session, listbuilding-key | 25 |
 | knack | databases, productivity | application-key | 5 |
 | kommo | crm | long-lived-token | 12 |
 | kustomer | support, crm | api-key | 23 |

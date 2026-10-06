@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/facebook-messenger",
+  "version": "0.1.1",
+  "description": "Send Messenger messages, read conversations, manage the Messenger profile and route threads for a Facebook Page through the Messenger Platform.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.facebook-messenger",
+    "displayName": "Facebook Messenger",
+    "longDescription": "This app talks to people who message a Facebook Page, through the Messenger Platform's Send API. It sends text, images, audio, video and files, button and generic (carousel) templates, and quick replies, and it shows typing, read and emoji-reaction indicators — everything a Page needs to hold a conversation from a workflow.\n\nIt also reads what has already been said: it lists a Page's conversations, lists the messages inside one, and fetches a single message with its sender, recipient and reply context. The Messenger profile — greeting text, Get Started button, ice breakers and the persistent menu — can be read, set and cleared, and media can be uploaded once and reused by attachment id. When more than one app is connected to a Page, thread control can be passed to or taken back from another app.\n\nMessenger enforces a messaging window: a Page may only message a person who has contacted it first, and outside the standard window a message needs an approved message tag. This app does not work around that — Meta's errors are returned verbatim so a workflow can see exactly why a send was refused. It authenticates with a Page access token, because every Messenger endpoint is Page-scoped.",
+    "categories": [
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Messenger"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Messenger"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "graph.facebook.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/formspark",
+  "version": "0.1.0",
+  "description": "Create and manage Formspark forms, edit their email templates, and read or delete their submissions.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.formspark",
+    "displayName": "Formspark",
+    "longDescription": "Formspark is a form backend: you point your own HTML form at a URL and it stores the submissions, emails you about them and forwards them to your other tools. This app drives Formspark's management API, so a workflow can create and configure forms, read what has been submitted, and clean up afterwards.\n\nIt covers workspaces (list, create, rename), forms (list, read, create, update, delete, including notification emails, webhook URL, Slack channel, spam filter and challenge settings), the notification and autoresponder email templates (read, write, delete, preview), and submissions, read per form or across a whole workspace with search and cursor pagination, plus deletion of a single submission.\n\nThe management API is only available on upgraded workspaces. A free workspace can still list its workspaces and describe its token, which is how this app proves a connection is live, but every form and submission call is refused with an upgrade_required error until the workspace is upgraded.",
+    "categories": [
+      "forms",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Formspark"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.formspark.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

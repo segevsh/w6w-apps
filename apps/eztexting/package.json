@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/eztexting",
+  "version": "0.1.0",
+  "description": "Send SMS and MMS, manage contacts and groups, read the inbox, and subscribe webhooks on EZ Texting.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.eztexting",
+    "displayName": "EZ Texting",
+    "longDescription": "EZ Texting is a business text-messaging platform, and this app covers the messaging surface a workflow actually drives: sending an SMS or MMS to phone numbers or contact groups now or at a scheduled time, listing and deleting messages, reading a sent message's recipients and credit cost, pulling its delivery, engagement and link-click report, and blocking outbound texts to a number.\n\nAround the send it manages the audience: contacts (list, look up by phone number, create-or-update, batch import, delete) and contact groups (list, get, create, rename, delete, add and remove members), plus the media files used for MMS (created from a URL), the keywords an account has purchased (list, read settings, check availability), and the two-way inbox (list conversations and read one conversation's messages).\n\nIt also reads the account's credit balance, and subscribes webhooks to inbound texts, keyword opt-ins and new contacts so workflows can react to replies.\n\nHealth checks report EZ Texting's own status page, anchored on its dedicated \"EZ Texting API\" component, and the account's remaining credit balance alongside the credential check derived from the connection.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "EZ Texting"
+      }
+    },
+    "network": {
+      "allow": [
+        "a.eztexting.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

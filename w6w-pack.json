@@ -4,8 +4,11 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.156.0",
+  "version": "0.157.0",
   "apps": [
+    {
+      "path": "./apps/2chat"
+    },
     {
       "path": "./apps/activecampaign"
     },
@@ -403,6 +406,9 @@
       "path": "./apps/excel"
     },
     {
+      "path": "./apps/eztexting"
+    },
+    {
       "path": "./apps/facebook"
     },
     {
@@ -413,6 +419,9 @@
     },
     {
       "path": "./apps/facebook-lead-ads"
+    },
+    {
+      "path": "./apps/facebook-messenger"
     },
     {
       "path": "./apps/fathom"
@@ -455,6 +464,9 @@
     },
     {
       "path": "./apps/formidableforms"
+    },
+    {
+      "path": "./apps/formspark"
     },
     {
       "path": "./apps/formstack"
@@ -740,6 +752,9 @@
     },
     {
       "path": "./apps/klaviyo"
+    },
+    {
+      "path": "./apps/klicktipp"
     },
     {
       "path": "./apps/knack"
