@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/braintree",
+  "version": "0.1.1",
+  "description": "Charge, authorize, capture, refund, void and reverse Braintree payments, vault and delete payment methods, manage customers, and search transactions through the Braintree GraphQL API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.braintree",
+    "displayName": "Braintree",
+    "longDescription": "Braintree is PayPal's payment gateway. This app drives its GraphQL API: it charges or authorizes a vaulted or single-use payment method, captures an authorization in full or in part, and voids, refunds or reverses a transaction (reverse picks void or refund depending on settlement).\n\nIt also vaults and deletes payment methods, creates, reads, updates, deletes and searches customers, searches transactions by status, date, amount, order and customer, mints client tokens for the browser SDKs, and converts legacy REST/SDK ids to GraphQL ids.\n\nOne connection targets either the sandbox or the production environment and sends the API key as HTTP Basic. Health checks verify the credential and whether the GraphQL endpoint is answering.",
+    "categories": [
+      "commerce",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Braintree"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Braintree"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "payments.braintree-api.com",
+        "payments.sandbox.braintree-api.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

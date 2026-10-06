@@ -1,0 +1,101 @@
+import { assert, assertEquals, assertRejects } from "@std/assert";
+import action from "../../actions/event-update.ts";
+import { mockCtx } from "../_helpers.ts";
+
+const INPUT: Record<string, unknown> = {
+  "eventId": "action_network:eventid",
+  "title": "title text",
+  "name": "name text",
+  "description": "description text",
+  "browserUrl": "browserUrl text",
+  "tagList": [
+    "alpha",
+    "beta",
+  ],
+  "instructions": "instructions text",
+  "startDate": "2026-01-02T03:04:05Z",
+  "endDate": "2026-01-02T03:04:05Z",
+  "venue": "venue text",
+  "addressLine": "addressLine text",
+  "locality": "locality text",
+  "region": "region text",
+  "postalCode": "postalCode text",
+  "country": "country text",
+  "status": "confirmed",
+  "visibility": "public",
+  "capacity": 2,
+  "guestsCanInviteOthers": true,
+};
+
+const REPLY = { identifiers: ["action_network:abc"], x: 1, _links: {} };
+
+Deno.test("event-update: sends PUT with the mapped input", async () => {
+  const { ctx, calls } = mockCtx([{ body: REPLY }]);
+  const out = await action.execute!(INPUT, ctx);
+  assertEquals(calls.length, 1);
+  assertEquals(calls[0].method, "PUT");
+  assertEquals(calls[0].url, "https://actionnetwork.org/api/v2/events/eventid");
+  assertEquals(calls[0].body === null ? null : JSON.parse(calls[0].body), {
+    "title": "title text",
+    "name": "name text",
+    "description": "description text",
+    "browser_url": "browserUrl text",
+    "tag_list": [
+      "alpha",
+      "beta",
+    ],
+    "instructions": "instructions text",
+    "start_date": "2026-01-02T03:04:05Z",
+    "end_date": "2026-01-02T03:04:05Z",
+    "location": {
+      "venue": "venue text",
+      "address_lines": [
+        "addressLine text",
+      ],
+      "locality": "locality text",
+      "region": "region text",
+      "postal_code": "postalCode text",
+      "country": "country text",
+    },
+    "status": "confirmed",
+    "visibility": "public",
+    "capacity": 2,
+    "guests_can_invite_others": true,
+  });
+  assertEquals(out, {
+    "id": "abc",
+    "identifiers": [
+      "action_network:abc",
+    ],
+    "x": 1,
+  });
+});
+
+Deno.test("event-update: sends no credential header of its own", async () => {
+  const { ctx, calls } = mockCtx([{ body: REPLY }]);
+  await action.execute!(INPUT, ctx);
+  assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
+  assert(!("osdi-api-token" in calls[0].headers), "the sign hook injects credentials, not actions");
+  assertEquals(calls[0].headers.accept, "application/hal+json, application/json");
+});
+
+Deno.test("event-update: surfaces a vendor error and never echoes the key", async () => {
+  const { ctx } = mockCtx([{
+    status: 401,
+    body: { error: "API Key invalid or not present sk_live_SECRET" },
+  }]);
+  const err = await assertRejects(async () => await action.execute!(INPUT, ctx), Error, "HTTP 401");
+  assert(
+    !String(err.message).includes("sk_live_SECRET"),
+    "the vendor echoes the key; it must be cut",
+  );
+});
+
+Deno.test("event-update: declares its type, params and output", () => {
+  assertEquals(action.key, "event-update");
+  assertEquals(action.resource, "event");
+  assertEquals(action.type, "perform");
+  assertEquals(action.idempotent, true);
+  assert(action.params!.length === 19);
+  assertEquals(Array.isArray(action.output) ? action.output.length : 0, 18);
+});

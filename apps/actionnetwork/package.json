@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/actionnetwork",
+  "version": "0.1.0",
+  "description": "Manage Action Network people, tags, petitions, events, forms, fundraising pages, advocacy campaigns and mass email, and record signatures, RSVPs, submissions, donations and outreaches.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.actionnetwork",
+    "displayName": "Action Network",
+    "longDescription": "Action Network is the online organizing platform used by progressive groups, campaigns and unions. This app reads and writes its v2 API (OSDI, HAL+JSON): it creates and updates people (with tags and custom fields), tags and untags them, and manages petitions, events, forms, fundraising pages, advocacy (letter and call) campaigns and event campaigns.\n\nIt records what people do on those pages, creating or updating the person in the same call: petition signatures, event RSVPs and check-ins, form submissions, donations and outreaches. It lists and reads the saved queries, email wrappers and lists behind mass email, and creates, edits, schedules, sends and stops messages.\n\nHealth checks verify the API key and whether the public API entry point is answering. Action Network publishes no status page or rate-limit signal, and both are declared as such. Surveys, unique ID lists, list items and custom-field metadata are not covered.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "300x300": "./assets/icon.png"
+        },
+        "alt": "Action Network"
+      }
+    },
+    "network": {
+      "allow": [
+        "actionnetwork.org"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
