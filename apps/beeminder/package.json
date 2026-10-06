@@ -1,0 +1,26 @@
+{
+  "name": "@w6w-apps/beeminder",
+  "version": "0.1.0",
+  "description": "Track goals, log datapoints, manage pledges and charge yourself with Beeminder's commitment-contract goal tracker.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.beeminder",
+    "displayName": "Beeminder",
+    "longDescription": "Beeminder is a goal tracker with teeth: each goal has a bright red line to stay on the right side of, and derailing costs a pledge you set in advance.\n\nA workflow can read a user and their goals (active or archived), create and update goals, push data into a goal as a datapoint (single or batch, with a request id so a retried step never double-counts), edit or delete datapoints, and read them back with sorting and paging. It can also manage the commitment itself: ratchet a goal's safety buffer down, step the pledge down or cancel a scheduled step-down, short-circuit a pledge up, force an autodata refresh, call Uncle to derail a goal on purpose, or create an arbitrary charge.\n\nThe connection holds the personal auth token from beeminder.com/api/v1/auth_token.json (while logged in), sent as the `auth_token` query parameter by the sign hook. Note that Uncle, short-circuit and charge actions move real money and cannot be undone.",
+    "categories": ["productivity"],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Beeminder"
+      }
+    },
+    "network": {
+      "allow": ["www.beeminder.com"]
+    },
+    "entry": "./index.ts"
+  }
+}

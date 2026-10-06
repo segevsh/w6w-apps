@@ -1,0 +1,29 @@
+{
+  "name": "@w6w-apps/runway",
+  "version": "0.1.0",
+  "description": "Generate video, images, speech and sound with Runway: start generation tasks, poll them to completion, run saved workflows and model routers, and read credits and usage.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.runway",
+    "displayName": "Runway",
+    "longDescription": "Runway is a generative media platform. Its developer API starts video, image, audio and speech generations on Runway's own and partner models and returns a task id that is polled to completion.\n\nA workflow can start a text-to-video, image-to-video or video-to-video generation, make an image from a prompt and reference images, upscale an image or video, convert a video to HDR, drive a character with a reference performance, speak a script, convert, dub or isolate a voice, or generate a sound effect. Every generation returns a task id; Get Task reads its status, progress, cost and (once it has SUCCEEDED) the temporary output URLs, and Cancel Task stops or deletes it. A saved Model Router can pick the model for a video generation instead of naming one, a published Runway workflow can be run and its invocation read back, and the account's credit balance, usage tier and per-model credit usage are readable for free. Avatars, custom voices and routers can be listed and read.\n\nThe connection holds a Runway API secret (Developer Portal, key_...), sent as a bearer token. Generation spends credits; request fields differ per model, so each generation action takes the model id plus the commonly used fields and an `extra` JSON object for any model-specific field.",
+    "categories": ["ai", "video"],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "Runway"
+      }
+    },
+    "network": {
+      "allow": ["api.dev.runwayml.com"]
+    },
+    "entry": "./index.ts"
+  }
+}

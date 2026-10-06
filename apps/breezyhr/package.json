@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/breezyhr",
+  "version": "0.1.0",
+  "description": "Manage Breezy HR positions, candidates, pipelines, scorecards, notes, messages and webhooks through the Breezy HR applicant tracking API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.breezyhr",
+    "displayName": "Breezy HR",
+    "longDescription": "Breezy HR is an applicant tracking system: companies post positions, candidates move through a pipeline of stages, and the hiring team scores, messages and notes them. This app connects a workflow to its v3 REST API with a Personal Access Token.\n\nA workflow can list the companies a token belongs to and read their departments, categories, pipelines and custom field definitions. It can list, read, create, update and publish or close positions; list, read, create and update candidates on a position, find a candidate by exact email or search the whole company by free text, move a candidate to a pipeline stage or to another position, record a scorecard rating, post an internal note, send the candidate a message, and read a candidate's activity stream and conversation. It can also manage the company's webhook endpoints, which is how Breezy pushes candidate and position events out.\n\nBreezy returns the bare resource with no envelope and answers a bad token with HTTP 400 rather than 401; this app reads the error `type` and reports it. Health checks verify the token, whether the API answers and the rate-limit headroom.",
+    "categories": [
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Breezy HR"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.breezy.hr"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

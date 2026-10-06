@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/ringover",
+  "version": "0.1.0",
+  "description": "Query calls, contacts, users, groups, numbers, SMS conversations and tags, place callbacks and send SMS, through the Ringover cloud telephony public API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ringover",
+    "displayName": "Ringover",
+    "longDescription": "Ringover is a cloud telephony and business communications platform: phone numbers, call routing, SMS and a shared contact book for sales and support teams. This app connects a workflow to its public API with an API key, on either the Europe or the United States host.\n\nA workflow can list and search terminated calls (by date range, call type, tags, stars, users, groups, IVRs or contacts), read one call's log entries, see the calls in progress right now, and read a call's transcription. It can place a callback (Ringover rings your user first, then dials the recipient), send an SMS, and opt a number out of or back in to SMS. It can list and read conversations and their messages, manage the contact book (list, search, create, update, delete, add and remove phone numbers), and read the team, its users and their presence, call groups, phone numbers, call tags and the team blacklist.\n\nRingover answers a list with an empty 204 when nothing matches; this app returns an empty list instead, and unwraps each response into named lists with counts. Health checks verify the API key and whether the API answers.",
+    "categories": [
+      "communication",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Ringover"
+      }
+    },
+    "network": {
+      "allow": [
+        "public-api.ringover.com",
+        "public-api-us.ringover.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

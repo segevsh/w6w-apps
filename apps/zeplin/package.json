@@ -1,0 +1,34 @@
+{
+  "name": "@w6w-apps/zeplin",
+  "version": "0.1.0",
+  "description": "Read Zeplin projects, screens, components, colors, text styles, design tokens and styleguides, and comment on screens, through the Zeplin API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zeplin",
+    "displayName": "Zeplin",
+    "longDescription": "Zeplin is the design handoff tool where designers publish screens and components from Figma, Sketch and others, and developers pick up specs, assets and styleguides. This app exposes its REST API to a workflow, authenticated with a personal access token.\n\nA workflow can list the projects and organizations a user belongs to, read a project's screens, screen versions (image, layers, assets), sections and components, and read its colors, text styles and design tokens. It can read styleguides with their colors and components, including those linked to a project.\n\nIt can also write back: add notes and replies to a screen, resolve or move a note, delete one, update a project's name, description, workflow status or linked styleguide, update a screen's description and tags, and create a project color.\n\nThe API allows 200 requests per minute per user; list actions page with limit and offset.",
+    "categories": [
+      "developer-tools",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "Zeplin"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.zeplin.dev"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

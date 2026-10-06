@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/maileroo",
+  "version": "0.1.0",
+  "description": "Send transactional, templated and bulk email, read delivery logs, statistics, domains, suppressions and templates, and run OTP verifications with Maileroo.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.maileroo",
+    "displayName": "Maileroo",
+    "longDescription": "Maileroo is an email delivery platform with an SMTP relay and a REST API. This app sends a transactional email, an email rendered from a dashboard template, or a personalised batch of up to 500, optionally scheduled up to 21 days ahead, and lists or cancels scheduled emails.\n\nIt reads the account's plan and hourly/monthly usage, sending statistics, delivery logs (search by recipient, subject, tags or outcome, fetch the stored raw message, resend it), domains with their DNS-record status and analytics, templates and applications, and manages the suppression list. It also drives Maileroo OTP Verification: send a one-time code by SMS, voice, WhatsApp, Telegram or email, check the code the user enters, and read or cancel verifications.\n\nA connection holds up to two keys, because Maileroo uses two credentials: a Sending Key for the Email API (the sending and scheduled-email actions) and a scoped Account API Key for everything else. Provide the one or both your workflow needs; each action's description says which.\n\nHealth checks report whether both API hosts answer and how much of the plan's hourly and monthly sending allowance is left.",
+    "categories": [
+      "email",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Maileroo"
+      }
+    },
+    "network": {
+      "allow": [
+        "smtp.maileroo.com",
+        "api.maileroo.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

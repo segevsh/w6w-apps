@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/clockodo",
+  "version": "0.1.0",
+  "description": "Track time with Clockodo: time entries, the running clock, customers, projects, services, users and absences.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.clockodo",
+    "displayName": "Clockodo",
+    "longDescription": "Clockodo is a German time-tracking and time-reporting service. This app lists, reads, creates, edits and deletes time entries (as a time span, a lump sum or a lump-sum service), and starts, reads and stops the running clock.\n\nIt also manages the master data entries are booked against \u2014 customers, projects (with budgets, deadlines and completion) and services \u2014 reads users and the authenticated user, and records, approves and deletes absences such as holidays and sick days.\n\nThe health check tracks whether the Clockodo API is serving; Clockodo publishes no status page.",
+    "categories": [
+      "productivity",
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Clockodo"
+      }
+    },
+    "network": {
+      "allow": [
+        "my.clockodo.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -66,6 +66,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | basecamp | project-management, productivity | oauth | 11 |
 | baserow | databases, spreadsheets, productivity | database-token | 12 |
 | beehiiv | email, marketing, cms | api-key | 12 |
+| beeminder | productivity | auth-token | 18 |
 | betterstack | monitoring, developer-tools | api-token | 30 |
 | bexio | accounting, crm | oauth2 | 25 |
 | bigcommerce | commerce, crm | access-token | 38 |
@@ -83,6 +84,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | braintree | commerce, finance | api-keys | 20 |
 | brandfetch | marketing, developer-tools | api-key | 9 |
 | braze | marketing, communication | api-key | 22 |
+| breezyhr | hr | access-token | 32 |
 | brevo | marketing, email | api-key | 15 |
 | brex | finance, accounting | api-token | 23 |
 | browseai | ai, developer-tools | api-key | 18 |
@@ -111,6 +113,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | clio | crm | oauth2 (×4 regions) | 25 |
 | clickhouse | databases, data-warehousing | api-key, service | 15 |
 | clockify | productivity | api-key | 10 |
+| clockodo | productivity, hr | api-key | 29 |
 | close | crm | api-key | 21 |
 | cloudbeds | hospitality, commerce | oauth2 | 13 |
 | cloudconvert | documents, developer-tools | api-token | 18 |
@@ -341,6 +344,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mailcheck | email, marketing | api-key | 4 |
 | mailchimp | marketing, communication | api-key, oauth2 | 15 |
 | mailerlite | marketing, email | api-key | 16 |
+| maileroo | email, communication | api-keys | 28 |
 | mailersend | email, communication | api-token | 43 |
 | mailgun | email, communication | api-key | 14 |
 | mailjet | email, marketing | basic | 17 |
@@ -364,6 +368,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | microsoft-entra-id | security, productivity | oauth2 | 28 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
 | mighty-networks | communication, social-media | api-token | 31 |
+| millionverifier | email, marketing | api-key | 8 |
 | mindee | ai, documents | api-key | 16 |
 | miro | productivity, project-management | oauth2 | 27 |
 | missive | communication, support, productivity | api-token | 42 |
@@ -377,6 +382,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | motion | productivity, project-management, calendar | api-key | 27 |
 | msg91 | communication, marketing | authkey | 16 |
 | mural | productivity, project-management | oauth2 | 30 |
+| murf | ai, video | api-key | 15 |
 | mux | video, developer-tools, analytics | basic | 14 |
 | nationbuilder | crm | api-token, oauth2 | 23 |
 | netlify | devops | personal-access-token | 10 |
@@ -465,6 +471,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | rdstation | crm | api-key | 10 |
 | read-ai | ai, productivity, video | oauth2 | 4 |
 | readwise | productivity | api-token | 20 |
+| recallai | video, communication | api-key | 29 |
 | recharge | commerce, finance | api-token | 29 |
 | recruit-crm | crm, hr | api-token | 24 |
 | recruitee | hr | bearer-token | 17 |
@@ -481,10 +488,12 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | respondio | support, crm, communication | api-token | 28 |
 | retellai | ai, communication | api-key | 9 |
 | ringcentral | communication, productivity | oauth2, jwt-bearer | 13 |
+| ringover | communication, crm | api-key | 30 |
 | rippling | hr, productivity | api-token | 44 |
 | rocketchat | communication | personal-access-token | 25 |
 | rocketreach | crm, marketing | api-key | 15 |
 | rootly | monitoring, developer-tools | api-token | 32 |
+| runway | ai, video | api-key | 29 |
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | salesloft | crm, communication | api-key, oauth2 | 26 |
@@ -625,6 +634,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | youtube | video, social-media | api-key, oauth2 | 16 |
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zendesk-sell | crm, marketing | oauth2 | 31 |
+| zeplin | developer-tools, productivity | personal-access-token | 28 |
 | zerobounce | email, marketing | api-key | 4 |
 | zoho | crm | oauth2 | 21 |
 | zoho-analytics | analytics | oauth2 (×8 DCs) | 10 |
