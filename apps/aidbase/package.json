@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/aidbase",
+  "version": "0.1.0",
+  "description": "Aidbase AI support: manage knowledge sources, chatbots, email inboxes and ticket forms, get chatbot replies, read chats, emails and tickets, and reply to, update or block them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.aidbase",
+    "displayName": "Aidbase",
+    "longDescription": "Aidbase builds AI support agents trained on your own content. This app drives its REST API from a workflow: create and train knowledge sources (websites, YouTube videos, uploaded documents and FAQs), attach them to chatbots, email inboxes and ticket forms, and keep the answers current without opening the dashboard.\n\nOn the conversation side it asks a chatbot for an AI reply (continuing a session), lists and reads chats, inbox emails and form tickets over a date range, and acts on them: reply to an email or ticket, change a status or priority, or block an abusive sender.\n\nAuthentication is a single Aidbase API key sent as a bearer token. Keys carry scopes chosen when the key is created, so what a workflow may change follows the key's permissions.",
+    "categories": [
+      "support",
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Aidbase"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.aidbase.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

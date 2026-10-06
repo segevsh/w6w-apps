@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/kudosity",
+  "version": "0.1.0",
+  "description": "Send SMS, MMS, WhatsApp and RCS messages, check RCS reachability, read message history and manage webhooks with Kudosity's Transmit Message API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.kudosity",
+    "displayName": "Kudosity",
+    "longDescription": "Kudosity (formerly Transmit SMS, Burst SMS and ClickSend-style bulk messaging for Australia, New Zealand, the UK and the US) is an A2P messaging platform: one account, one API key, several channels. This app covers the Transmit Message API v2 — the current, single-key API — so a workflow can send an SMS, an MMS, a templated or free-form WhatsApp message, or an RCS message, and read any of them back with delivery status.\n\nBeyond sending, it can check whether a list of numbers can receive RCS before you choose a channel, list message history per channel with the filters each endpoint documents (cursor-paged for WhatsApp and RCS, page-numbered for SMS), manage the webhooks that push delivery receipts, inbound replies, link hits and opt-outs to your own endpoint, and list the sender registrations on the account.\n\nHealth checks probe the v2 gateway without a credential — a schema-correct 401 proves it is serving — because Kudosity publishes no status page and no rate-limit or usage signal. The older Transmit SMS v1 API (key and secret, HTTP Basic) is deliberately not covered here.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Kudosity"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.transmitmessage.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
