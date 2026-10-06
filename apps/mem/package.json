@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mem",
+  "version": "0.1.0",
+  "description": "Mem: create, search and organize notes and collections, and read the tasks, projects and follow-ups Mem derives.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mem",
+    "displayName": "Mem",
+    "longDescription": "Mem is an AI note-taking workspace. This app drives its v2 API from a workflow.\n\nCreate, read, replace, trash, restore and permanently delete notes (markdown, first line is the title); search them by relevance, including content attached to them; find related notes; organize them into collections; hand raw text to Mem It and let Mem file it; and read the tasks, projects and follow-ups Mem extracts from your notes.\n\nA Mem API key acts as its owner on all of their notes. The legacy v0/v1 routes and calendar, session, audio and agent endpoints are not part of this app.",
+    "categories": [
+      "productivity",
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Mem"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mem.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

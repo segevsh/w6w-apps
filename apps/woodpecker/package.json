@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/woodpecker",
+  "version": "0.1.0",
+  "description": "Run Woodpecker cold email and multichannel campaigns: campaigns, prospects, mailboxes, inbox replies and the blacklist.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.woodpecker",
+    "displayName": "Woodpecker",
+    "longDescription": "Woodpecker sends cold email and multichannel (email plus LinkedIn) outreach sequences and keeps the replies in one inbox. This app drives its REST API from a workflow.\n\nList, inspect, update, run, pause, stop and delete campaigns and read their statistics; add, update, search, list and delete prospects, in the account database or in a specific campaign; read connected mailboxes, LinkedIn accounts, users and manual tasks; read inbox replies and answer them; and manage the blacklist of domains and emails that must never be contacted.\n\nProspects and the campaign list are on Woodpecker's v1 API and everything else on v2; the app hides the difference. Woodpecker processes one request at a time per account and queues six more, so run bulk imports as few large requests (up to 20,000 prospects each) rather than many small ones. Reports, Lead Finder, domain ordering, webhooks and the Agency API are not part of this app.",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Woodpecker"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Woodpecker"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.woodpecker.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

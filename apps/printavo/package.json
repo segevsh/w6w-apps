@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/printavo",
+  "version": "0.1.0",
+  "description": "Manage customers, contacts, quotes, invoices, tasks, inquiries and payments in Printavo, the print-shop management system, via its GraphQL API v2.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.printavo",
+    "displayName": "Printavo",
+    "longDescription": "Printavo is shop-management software for screen printers, embroiderers and promotional-product shops: customers and contacts, quotes that become invoices, production statuses, tasks, inquiries and payments. This app covers that core over Printavo's GraphQL API v2 (`POST https://www.printavo.com/api/v2`, authenticated with your Printavo email and API token): list, read, create, update and delete customers, contacts, quotes, invoices and tasks; move a quote or invoice to a new status; record payments; read inquiries, payment requests and the product catalog.",
+    "categories": [
+      "crm",
+      "finance",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Printavo"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.printavo.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
