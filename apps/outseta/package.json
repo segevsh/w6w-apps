@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/outseta",
+  "version": "0.1.0",
+  "description": "Manage Outseta people, accounts, deals, email lists, support cases, plans, subscriptions and invoices through the Outseta REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.outseta",
+    "displayName": "Outseta",
+    "longDescription": "Outseta is an all-in-one back office for SaaS products: user accounts and sign-up, subscription billing, a CRM, email marketing and a support desk, sold as one platform. This app lets a workflow read and change that data without a second integration.\n\nOn the CRM side it can list, look up, create, update and delete people, accounts and deals, attach people to accounts and record or withdraw a cancellation request. For marketing it lists email lists and their subscribers and subscribes or removes people. Support cases can be listed, read and opened, and the knowledge base can be searched.\n\nFor billing it reads plans, plan families, subscriptions, invoices and an account's transactions, and records metered usage against a usage-billed add-on. Activity feeds can be read, and custom events written, so a workflow can drive Outseta's drip campaigns.\n\nEvery Outseta account lives on its own subdomain, so a connection takes the subdomain plus an API key and secret from Settings > Integrations > API Keys. List actions share Outseta's paging, field-selection, ordering and property-filter options.",
+    "categories": [
+      "crm",
+      "finance",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Outseta"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.outseta.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/seamlessai",
+  "version": "0.1.0",
+  "description": "Search Seamless.AI's B2B contact and company database, research the records you pick, and manage the lists, campaigns, tasks and saved searches around them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.seamlessai",
+    "displayName": "Seamless.AI",
+    "longDescription": "Seamless.AI is a B2B sales-intelligence database: contacts with verified emails and direct phone numbers, and the companies they work for. This app covers its public API end to end.\n\nThe core path is search, then research. Searching contacts or companies by title, seniority, location, company size, revenue, technology or funding returns lightweight results; researching the ones you pick enriches them into full records. Research is asynchronous - one action starts it and returns request IDs, and a second polls until each record is done - so a workflow can fan out a lead list and collect the enriched rows when they land.\n\nAround that sit the records your organization already owns - researched contacts and companies listed by date window and sorted into lists - plus saved searches, engagement campaigns and their metrics, tasks, templates, call logging and the activity feed. Credit balances are readable at any time, and a health check tracks the balance so a workflow can see the pool running dry before a 422 stops it.\n\nAuthentication is a single API key created under Settings > Public API in Seamless.AI.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Seamless.AI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.seamless.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

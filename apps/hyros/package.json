@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/hyros",
+  "version": "0.1.0",
+  "description": "Send leads, orders, calls and clicks to Hyros and read back the ad attribution it computes.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.hyros",
+    "displayName": "Hyros",
+    "longDescription": "Hyros is an ad-attribution platform: it ties each sale and call back to the ad, ad set or campaign that really produced it, so spend decisions are made on revenue rather than on what an ad platform self-reports.\n\nThis app covers both directions of that loop. Workflows can push the conversion events Hyros attributes from: leads (with tags and stages), orders and refunds, calls, products, server-side clicks and manual custom costs. They can also read back what Hyros knows: leads, sales, calls and subscriptions, tracked sources and ads, lead stages, tags, and the attribution reports at ad, ad-set, campaign and ad-account level under the last-click, first-click or scientific model.\n\nAuthentication is a single API key from Hyros Settings > API, sent in an API-Key header.",
+    "categories": [
+      "marketing",
+      "analytics",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Hyros"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.hyros.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

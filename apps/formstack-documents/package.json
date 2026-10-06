@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/formstack-documents",
+  "version": "0.1.0",
+  "description": "Generate documents from templates: merge data into Formstack Documents (WebMerge) templates and data routes, manage deliveries, and combine, convert, compress, encrypt or split PDFs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.formstack-documents",
+    "displayName": "Formstack Documents",
+    "longDescription": "Formstack Documents (formerly WebMerge) turns data into finished documents: you design a template once \u2014 an HTML page, a fillable PDF, or a Word, Excel or PowerPoint file with merge fields \u2014 and every merge fills it from the data a workflow sends and produces a PDF, Office file or email.\n\nThis app covers the whole template lifecycle: create, update, copy and delete documents, list them by folder or search term, read their merge fields and uploaded files, and attach email or webhook deliveries. Merge a document directly, or merge through a data route that applies conditions and loops to decide which documents to produce and combines them into one PDF. Merges can run in test mode and can return the generated file, base64-encoded, for a later step to store or send.\n\nThe PDF tools round it out \u2014 combine files, convert Word, Excel, PowerPoint, image or HTML files to PDF, compress, password-protect and split PDFs \u2014 so a workflow can assemble, secure and deliver a document packet without leaving w6w. Authentication is the account's API key and secret; merging also needs the document's own merge key, which the merge actions look up when it is not supplied.",
+    "categories": [
+      "documents",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Formstack Documents"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.webmerge.me"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

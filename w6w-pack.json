@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.175.0",
+  "version": "0.176.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -595,6 +595,9 @@
       "path": "./apps/formstack"
     },
     {
+      "path": "./apps/formstack-documents"
+    },
+    {
       "path": "./apps/fortnox"
     },
     {
@@ -659,6 +662,9 @@
     },
     {
       "path": "./apps/gmail"
+    },
+    {
+      "path": "./apps/gocanvas"
     },
     {
       "path": "./apps/gocardless"
@@ -820,6 +826,12 @@
       "path": "./apps/hunter"
     },
     {
+      "path": "./apps/hyros"
+    },
+    {
+      "path": "./apps/iclosed"
+    },
+    {
       "path": "./apps/inoreader"
     },
     {
@@ -968,6 +980,9 @@
     },
     {
       "path": "./apps/linkup"
+    },
+    {
+      "path": "./apps/linkupapi"
     },
     {
       "path": "./apps/littlegreenlight"
@@ -1228,6 +1243,9 @@
       "path": "./apps/outreach"
     },
     {
+      "path": "./apps/outseta"
+    },
+    {
       "path": "./apps/paddle"
     },
     {
@@ -1319,6 +1337,9 @@
     },
     {
       "path": "./apps/podio"
+    },
+    {
+      "path": "./apps/podium"
     },
     {
       "path": "./apps/postbin"
@@ -1513,6 +1534,9 @@
       "path": "./apps/scoreapp"
     },
     {
+      "path": "./apps/seamlessai"
+    },
+    {
       "path": "./apps/seatable"
     },
     {
@@ -1550,6 +1574,9 @@
     },
     {
       "path": "./apps/servicenow"
+    },
+    {
+      "path": "./apps/servicetitan"
     },
     {
       "path": "./apps/seven"

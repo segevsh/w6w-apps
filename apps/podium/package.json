@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/podium",
+  "version": "0.1.0",
+  "description": "Send messages, manage contacts and conversations, read reviews, calls and appointments, and subscribe to events in Podium, the customer-messaging platform for local businesses.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.podium",
+    "displayName": "Podium",
+    "longDescription": "Podium is the messaging and reviews platform local businesses use to talk to customers: text and email conversations, review invitations and replies, campaigns, appointments, phone calls and payments, all tied to one or more locations. This app drives the Podium API v4 from a workflow: create or update contacts and tag them, send an SMS or email, read and assign conversations, post internal notes, request and answer reviews, list calls, feedback and appointments, push events into a data feed, and manage webhook subscriptions. Authentication is OAuth 2 against a Podium developer app.",
+    "categories": [
+      "communication",
+      "marketing",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Podium"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.podium.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
