@@ -38,6 +38,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | airparser | ai, documents | api-key | 11 |
 | airtable | spreadsheets, databases, productivity | personal-access-token, oauth2, api-key | 10 |
 | airtop | ai, developer-tools | api-key | 24 |
+| alegra | finance | basic | 24 |
 | algolia | search, developer-tools | api-key | 22 |
 | amplitude | analytics, marketing | api-keys | 15 |
 | anthropic | ai | api-key | 14 |
@@ -51,6 +52,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | auth0 | security, developer-tools | client-credentials | 18 |
 | avoma | ai, productivity, analytics | api-key | 19 |
 | aweber | email, marketing | oauth2 | 33 |
+| axonaut | crm, finance | api-key | 31 |
 | azure-blob | storage, devops | shared-key | 14 |
 | azuredevops | version-control, devops, project-management | pat | 19 |
 | balena | iot, devops | api-key | 16 |
@@ -96,6 +98,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cleverreach | marketing, communication | access-token, client-credentials | 24 |
 | clicksend | communication | basic-auth | 16 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
+| clientify | crm, marketing | api-key | 27 |
 | clio | crm | oauth2 (×4 regions) | 25 |
 | clickhouse | databases, data-warehousing | api-key, service | 15 |
 | clockify | productivity | api-key | 10 |
@@ -250,6 +253,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | hubstaff | productivity, hr | organization-access-token | 19 |
 | huggingface | ai, developer-tools | token | 14 |
 | hunter | email, marketing, crm | api-key | 20 |
+| inoreader | productivity, cms | oauth2 | 15 |
 | insightly | crm | api-key | 20 |
 | instagram-for-business | social-media, marketing | access-token, oauth2 | 26 |
 | instantly | marketing, email, crm | api-key | 38 |
@@ -279,6 +283,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | kommo | crm | long-lived-token | 12 |
 | kustomer | support, crm | api-key | 23 |
 | kvcore | crm | bearer-token | 26 |
+| landbot | communication, support, marketing | agent-token | 28 |
 | launchdarkly | devops, developer-tools | api-key | 21 |
 | lawmatics | legal, crm | oauth2 | 11 |
 | learnworlds | crm, commerce | client-credentials | 12 |
