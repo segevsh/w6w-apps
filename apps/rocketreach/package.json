@@ -1,0 +1,26 @@
+{
+  "name": "@w6w-apps/rocketreach",
+  "version": "0.1.0",
+  "description": "Find professional emails, phone numbers and company data with RocketReach: search and look up people and companies, bulk lookups, and email verification.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.rocketreach",
+    "displayName": "RocketReach",
+    "longDescription": "RocketReach is a contact-data API covering 700M+ professionals and 60M+ companies. A workflow can search people by title, employer, company domain, location, department, seniority and more, then look a person up by RocketReach ID, LinkedIn URL, email, phone, or name plus employer to reveal their emails (with deliverability grades) and phone numbers. Lookups are asynchronous: a lookup that is still running is polled with Check Lookup Status, or delivered to a webhook configured in the RocketReach account. Up to 100 people can be looked up in one bulk request.\n\nCompanies can be searched and looked up by domain, name, LinkedIn URL or ticker for firmographics (size, revenue, industry, tech stack, funding investors, growth). Email Verify checks one address for deliverability.\n\nRocketReach runs two credit systems. Essentials, Pro and Ultimate plans use the standard actions; accounts on Universal Credits use the Universal actions, which reveal each data type (professional email, personal email, phone, detailed enrichment) only when asked, per profile. The connection holds one API key, sent in the Api-Key header.",
+    "categories": ["crm", "marketing"],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "RocketReach"
+      }
+    },
+    "network": {
+      "allow": ["api.rocketreach.co"]
+    },
+    "entry": "./index.ts"
+  }
+}

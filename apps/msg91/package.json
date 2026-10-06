@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/msg91",
+  "version": "0.1.1",
+  "description": "Send SMS, OTPs, email and WhatsApp messages and read delivery reports through MSG91.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.msg91",
+    "displayName": "MSG91",
+    "longDescription": "MSG91 is an Indian cloud-communications platform (CPaaS) for transactional and marketing messaging. This app drives its v5 API from a workflow.\n\nSMS goes out through DLT-approved templates (flows) to one or many numbers with per-recipient variables. One-time passwords can be sent, verified and resent by text or voice, with the verify step returning a plain true/false instead of an error when the code is wrong or expired. Email sends from a template through a verified domain with cc, bcc, reply-to, variables and attachments, and any address can be checked for deliverability, disposable domains and role addresses.\n\nOn WhatsApp it sends approved templates to one or many recipients, sends in-session text replies, and lists the integrated numbers, a number's templates and its prepaid balance. Delivery logs (OTP, email, WhatsApp; three-day windows) and SMS analytics (31 days) close the loop.\n\nVoice, RCS, Segmento contacts, campaigns, the Hello inbox, sub-accounts, template creation, the OTP widget and OneAPI flows are not part of this app.",
+    "categories": [
+      "communication",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "MSG91"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "MSG91"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "control.msg91.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

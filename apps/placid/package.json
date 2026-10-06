@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/placid",
+  "version": "0.1.0",
+  "description": "Generate images, PDFs and videos from Placid templates, and manage templates, collections, fonts and uploaded media.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.placid",
+    "displayName": "Placid",
+    "longDescription": "Placid is a creative-automation service: you design a template in its editor, name the layers you want to change, and the REST API (v2.0) renders a finished image, PDF or video from your data. This app covers the documented REST surface: create, retrieve and delete images, PDFs (including merging existing PDFs by URL) and videos; list, create, retrieve, update and delete templates; manage template collections; manage custom fonts; and upload media to Placid storage for use in picture layers.\n\nEvery render is asynchronous. A create call answers with a queued record carrying a `polling_url`; poll the matching Retrieve action, or pass a `webhook_success` URL and Placid will POST the finished record. Layer content is passed as one JSON object keyed by the layer names from the template (`{\"title\": {\"text\": \"Hello\"}}`), exactly as the API takes it.\n\nHealth is reported from what the API exposes. Placid has no whoami or account endpoint, so the credential probe is a cheap template-list read, an unsigned reachability check treats the API's own `{\"message\":\"Unauthenticated.\"}` 401 as proof the API is serving, and a quota check reads the documented `X-RateLimit-*` headers (60 requests per minute). Placid's status page (status.placid.app) is real but client-rendered with no JSON, RSS or Atom feed, so vendor status is declared unavailable rather than faked.",
+    "categories": [
+      "marketing",
+      "documents",
+      "video"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "180x180": "./assets/icon.png"
+        },
+        "alt": "Placid"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.placid.app"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

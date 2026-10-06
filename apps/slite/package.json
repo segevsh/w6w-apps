@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/slite",
+  "version": "0.1.0",
+  "description": "Read, write, search and curate Slite notes, ask questions of your knowledge base, and look up users and groups.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.slite",
+    "displayName": "Slite",
+    "longDescription": "Slite is a team knowledge base: notes organised under channels and parent notes, with owners, review states and an AI that answers questions from what the team has written. This app lets a workflow work with that knowledge base the way a person would.\n\nIt can create, read, update, archive and delete notes in Markdown, HTML or Slite's own SliteML format, list a note's children, search notes with review-state and date filters, and push structured content into a tile inside a note. It can set a note's owner, mark it Verified (with an optional expiry) or flag it as Outdated with a reason, and page through the knowledge-management views that surface stale, public, inactive and empty notes.\n\nIt can also ask Slite a question in natural language and get back an answer with its sources, polling the answer thread when Slite needs longer than its synchronous deadline, and look up users and groups to resolve who owns what. Slite publishes a status page but no machine-readable feed, so health is tracked by an unauthenticated reachability check on the API plus the credential check.",
+    "categories": [
+      "productivity",
+      "documents",
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Slite"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.slite.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
