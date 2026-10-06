@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/everhour",
+  "version": "0.1.0",
+  "description": "Everhour time tracking: projects, tasks, time records, timers, timecards, timesheets, expenses, invoices, clients, schedule, time off and reports.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.everhour",
+    "displayName": "Everhour",
+    "longDescription": "Everhour is a time tracker that lives inside the project tools a team already uses. This app drives its REST API from a workflow: read and manage projects, sections and tasks (including task estimates and custom fields), log time or run a timer against a task, and read per-user, per-task and per-project time.\n\nBeyond time entries it covers the rest of the Everhour account: clients and their budgets, expenses and expense categories, invoices (create, refresh from tracked time, mark draft/sent/paid, export), the resource-planner schedule, time off with its types and allocations, timecards (clock in/out), weekly timesheets with approval, project/client/user reports, and webhooks for reacting to Everhour events.\n\nAuthentication is a single personal API key sent as the X-Api-Key header. The key acts as its owner, so what a workflow can see and change follows that user's role.",
+    "categories": [
+      "productivity",
+      "project-management",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Everhour"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.everhour.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.158.0",
+  "version": "0.160.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -400,7 +400,13 @@
       "path": "./apps/erpnext"
     },
     {
+      "path": "./apps/esignatures"
+    },
+    {
       "path": "./apps/eventbrite"
+    },
+    {
+      "path": "./apps/everhour"
     },
     {
       "path": "./apps/exa"
@@ -473,6 +479,9 @@
     },
     {
       "path": "./apps/formstack"
+    },
+    {
+      "path": "./apps/fortnox"
     },
     {
       "path": "./apps/freeagent"
@@ -703,6 +712,9 @@
       "path": "./apps/invoiceninja"
     },
     {
+      "path": "./apps/iterable"
+    },
+    {
       "path": "./apps/jenkins"
     },
     {
@@ -812,6 +824,9 @@
     },
     {
       "path": "./apps/livestorm"
+    },
+    {
+      "path": "./apps/lob"
     },
     {
       "path": "./apps/lodgify"
@@ -1066,6 +1081,9 @@
       "path": "./apps/personio"
     },
     {
+      "path": "./apps/perspective"
+    },
+    {
       "path": "./apps/phantombuster"
     },
     {
@@ -1088,6 +1106,9 @@
     },
     {
       "path": "./apps/plaud"
+    },
+    {
+      "path": "./apps/plivo"
     },
     {
       "path": "./apps/podio"
@@ -1447,6 +1468,9 @@
       "path": "./apps/twilio"
     },
     {
+      "path": "./apps/twist"
+    },
+    {
       "path": "./apps/twitch"
     },
     {
@@ -1465,10 +1489,16 @@
       "path": "./apps/unbounce"
     },
     {
+      "path": "./apps/upsales"
+    },
+    {
       "path": "./apps/upstash"
     },
     {
       "path": "./apps/uptimerobot"
+    },
+    {
+      "path": "./apps/uscreen"
     },
     {
       "path": "./apps/vanta"

@@ -153,7 +153,9 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
 | erpnext | crm, commerce | api-key | 10 |
+| esignatures | legal, documents | secret-token | 24 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
+| everhour | productivity, project-management, finance | api-key | 97 |
 | exa | ai, search, developer-tools | api-key | 9 |
 | excel | spreadsheets, productivity | oauth2 | 16 |
 | eztexting | communication, marketing | basic | 31 |
@@ -178,6 +180,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | formidableforms | forms, productivity | basic | 15 |
 | formspark | forms, developer-tools | api-token | 16 |
 | formstack | forms, productivity | access-token | 9 |
+| fortnox | finance, productivity | oauth2 | 54 |
 | freeagent | finance | oauth2 | 28 |
 | freshbooks | accounting, finance, productivity | oauth2 | 19 |
 | freshdesk | support | api-key | 13 |
@@ -253,6 +256,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | instapaper | productivity | xauth | 17 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | invoiceninja | commerce, finance | api-token | 40 |
+| iterable | marketing, email | api-key | 54 |
 | jenkins | devops | basic | 6 |
 | jibble | productivity, hr | client-credentials | 25 |
 | jinaai | ai, developer-tools | bearer-token | 15 |
@@ -289,6 +293,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | linkedin-conversions | marketing, analytics | oauth2 | 7 |
 | littlegreenlight | crm, finance | bearer-token | 12 |
 | livestorm | video, communication | api-key | 40 |
+| lob | marketing, developer-tools | api-key | 37 |
 | lodgify | crm, calendar | api-key | 30 |
 | lofty | crm, communication | api-key | 32 |
 | lokalise | developer-tools, cms | api-token | 31 |
@@ -373,6 +378,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pennylane | accounting, finance | oauth2 | 22 |
 | perplexity | ai | api-key | 5 |
 | personio | hr | client-credentials | 16 |
+| perspective | marketing, crm, analytics | api-key | 8 |
 | phantombuster | automation, developer-tools, ai | api-key | 14 |
 | pinecone | ai, databases, search | api-key | 24 |
 | pinterest | social-media, marketing | oauth2 | 16 |
@@ -381,6 +387,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | plaid | finance, databases | client-secret, client-secret-sandbox | 14 |
 | planningcenter | crm, calendar, finance | personal-access-token | 6 |
 | plaud | ai, productivity | custom | 7 |
+| plivo | communication | basic | 21 |
 | podio | project-management, databases, productivity | app-auth, oauth2 | 29 |
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
@@ -497,14 +504,17 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | trustpilot | marketing, reviews | api-key, client-credentials | 11 |
 | tumblr | social-media, cms | oauth2 | 23 |
 | twilio | communication | api-key | 2 |
+| twist | communication, productivity | oauth2, api-token | 111 |
 | twitch | video, social-media, communication | app-access-token, user-access-token | 28 |
 | twitter | social-media | oauth2 | 8 |
 | typeform | forms, productivity | personal-access-token, oauth2 | 10 |
 | typefully | social-media, marketing | api-key | 25 |
 | typesense | search, databases | api-key | 16 |
 | unbounce | marketing, forms, analytics | api-key, oauth2 | 24 |
+| upsales | crm, marketing | api-key | 68 |
 | upstash | databases | rest-token | 15 |
 | uptimerobot | monitoring | api-key | 8 |
+| uscreen | video, commerce | api-key | 33 |
 | vanta | legal, security, monitoring | client-credentials | 25 |
 | vapi | ai, communication | private-key | 18 |
 | vercel | devops, developer-tools | access-token, oauth2 | 28 |

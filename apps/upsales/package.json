@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/upsales",
+  "version": "0.1.0",
+  "description": "Manage Upsales CRM data: contacts, companies, opportunities and orders, activities, appointments, products, tickets and more.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.upsales",
+    "displayName": "Upsales",
+    "longDescription": "Upsales is a Nordic sales and marketing CRM. This app covers its core CRM objects over the Upsales API v2: contacts, companies, opportunities and orders, activities (to-dos and phone calls), appointments, campaigns, products and product categories, price lists, order stages, comments, support tickets, subscriptions and users, plus read-only lookups for activity types, appointment types, currencies and custom-field definitions.\n\nEvery list action pages with limit and offset and accepts Upsales' own filter syntax (attribute=comparison:value, for example probability=gte:1), so a workflow can pull exactly the slice it needs without paging the whole account. Writes take the common fields as typed parameters and any other field, including custom fields, through a JSON escape hatch.\n\nAuthentication is an Upsales API key, which the platform attaches to each request as the token query parameter. Health checks track Upsales' public status page, the reachability of the API host, and the API key's own rate-limit headroom.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Upsales"
+      }
+    },
+    "network": {
+      "allow": [
+        "integration.upsales.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
