@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/zoho-people",
+  "version": "0.1.0",
+  "description": "Read and write Zoho People HR forms and employee records, attendance check-in/out, leave and time-tracker time logs, across every Zoho data centre.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-people",
+    "displayName": "Zoho People",
+    "longDescription": "Zoho People is an HR system, and this app covers its core automation surface: list the account's forms, their fields and views; fetch, create and update records in any form (Employee, Leave, a custom form); look up an employee by email or employee id; read a day's attendance entries and record a check-in/check-out; read leave types and balances and holidays, apply for leave and cancel a leave record; and list time-tracker jobs, projects, time logs and timesheets and add a time log.\n\nZoho hosts every People account in one of ten regional data centres, each with its own API host and (almost always) its own OAuth host, so this app routes each region through its own dedicated connection rather than one that could silently send an EU account's requests through the US region.\n\nScoped to Zoho People specifically; Zoho's other products (CRM, Recruit, Books, Desk, Mail) are separate apps in this pack. Attendance bulk import, timesheet create/approve/delete, timer start/stop, time-log modify/delete and the time-tracker's client/project/job write APIs are deliberately left out.",
+    "categories": [
+      "hr"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho People"
+      }
+    },
+    "network": {
+      "allow": [
+        "people.zoho.com",
+        "people.zoho.eu",
+        "people.zoho.in",
+        "people.zoho.com.au",
+        "people.zoho.jp",
+        "people.zoho.com.cn",
+        "people.zoho.sa",
+        "people.zohocloud.ca",
+        "people.zoho.sg",
+        "people.zoho.ae"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

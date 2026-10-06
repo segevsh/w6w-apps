@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/fullenrich",
+  "version": "0.1.0",
+  "description": "Waterfall-enrich contacts with verified work emails, personal emails and phone numbers, reverse-look-up an email to a person, search and look up people and companies, and check credits.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.fullenrich",
+    "displayName": "FullEnrich",
+    "longDescription": "FullEnrich is a waterfall contact-enrichment service: it queries 20+ data providers in turn to find a person's verified work email, personal email and mobile phone number. This app starts a bulk enrichment of up to 100 contacts (by name plus company domain or name, or by LinkedIn URL) and reads the result back, optionally with a webhook URL FullEnrich will POST to when the batch or each contact finishes.\n\nIt also does a reverse email lookup (an email address to the person and company behind it), searches people and companies by filters, looks up a single person or company by identifier, verifies the API key and reads the credit balance.\n\nHealth checks verify the API key, whether the API is answering, FullEnrich's status page, and the remaining credit balance.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "FullEnrich"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.fullenrich.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/findymail",
+  "version": "0.1.0",
+  "description": "Find and verify work emails, find phone numbers and companies, run Intellimatch searches, manage lists and exclusion lists, monitor buying signals and read credit usage on Findymail.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.findymail",
+    "displayName": "Findymail",
+    "longDescription": "Findymail is an email finder and verifier for outbound prospecting. This app finds a verified work email from a name and company or from a LinkedIn profile, verifies an address, reverse-looks-up a profile from an email, finds a phone number, finds employees by job title, and looks up company data and technology stacks.\n\nIt runs Intellimatch (plain-language company search with optional contact enrichment, polled by hash), finds lookalike companies, manages contact lists and Intellimatch exclusion lists and their domains, manages signal monitors and reads the signals they raise, and reads credit balances and usage.\n\nHealth checks verify the API key, whether app.findymail.com is answering, and the credit balance. Findymail publishes no status page.",
+    "categories": [
+      "email",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.ico",
+        "alt": "Findymail"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.findymail.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

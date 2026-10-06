@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/klipfolio",
+  "version": "0.1.0",
+  "description": "Manage Klipfolio data sources, Klips, dashboards, users, clients and groups, and queue data source refreshes.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.klipfolio",
+    "displayName": "Klipfolio",
+    "longDescription": "Klipfolio is a business dashboard platform: data sources feed Klips (charts, tables and metrics) that are arranged on dashboards (formerly tabs). This app reads and manages those assets through the Klipfolio REST API.\n\nIt lists, creates, updates, enables, disables and deletes data sources, queues refreshes of one data source instance or many data sources at once, and reads instance data. It lists, creates, updates and deletes Klips and dashboards, manages users, groups and group membership, and administers client accounts for partner setups.\n\nHealth checks verify the API key and whether the Klipfolio API is answering.",
+    "categories": [
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "512x512": "./assets/icon.png"
+        },
+        "alt": "Klipfolio"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.klipfolio.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

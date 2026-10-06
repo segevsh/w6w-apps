@@ -4,13 +4,16 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.169.0",
+  "version": "0.170.0",
   "apps": [
     {
       "path": "./apps/2chat"
     },
     {
       "path": "./apps/acculynx"
+    },
+    {
+      "path": "./apps/actionnetwork"
     },
     {
       "path": "./apps/activecampaign"
@@ -173,6 +176,9 @@
     },
     {
       "path": "./apps/box"
+    },
+    {
+      "path": "./apps/braintree"
     },
     {
       "path": "./apps/braze"
@@ -457,6 +463,9 @@
       "path": "./apps/excel"
     },
     {
+      "path": "./apps/expensify"
+    },
+    {
       "path": "./apps/eztexting"
     },
     {
@@ -488,6 +497,12 @@
     },
     {
       "path": "./apps/fillout"
+    },
+    {
+      "path": "./apps/findymail"
+    },
+    {
+      "path": "./apps/fireberry"
     },
     {
       "path": "./apps/firecrawl"
@@ -542,6 +557,9 @@
     },
     {
       "path": "./apps/front"
+    },
+    {
+      "path": "./apps/fullenrich"
     },
     {
       "path": "./apps/gamma"
@@ -826,6 +844,9 @@
       "path": "./apps/klicktipp"
     },
     {
+      "path": "./apps/klipfolio"
+    },
+    {
       "path": "./apps/knack"
     },
     {
@@ -851,6 +872,9 @@
     },
     {
       "path": "./apps/learnworlds"
+    },
+    {
+      "path": "./apps/leexi"
     },
     {
       "path": "./apps/lemlist"
@@ -1238,6 +1262,9 @@
     },
     {
       "path": "./apps/productive"
+    },
+    {
+      "path": "./apps/prospeo"
     },
     {
       "path": "./apps/pushbullet"
@@ -1778,6 +1805,9 @@
     },
     {
       "path": "./apps/zoho-invoice"
+    },
+    {
+      "path": "./apps/zoho-people"
     },
     {
       "path": "./apps/zoho-projects"
