@@ -26,6 +26,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 |-----|------------|------|--------:|
 | 2chat | communication, marketing | api-key | 28 |
 | acculynx | crm | bearer-token | 29 |
+| actionnetwork | crm, marketing | api-key | 70 |
 | activecampaign | marketing, crm | api-key | 13 |
 | acuityscheduling | calendar | basic, oauth2 | 9 |
 | acumbamail | marketing, email | auth-token | 32 |
@@ -79,6 +80,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | boldsign | documents | api-key | 12 |
 | booqable | crm, commerce | access-token | 26 |
 | box | storage | oauth2 | 10 |
+| braintree | commerce, finance | api-keys | 20 |
 | braze | marketing, communication | api-key | 22 |
 | brevo | marketing, email | api-key | 15 |
 | brex | finance, accounting | api-token | 23 |
@@ -172,6 +174,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | everhour | productivity, project-management, finance | api-key | 97 |
 | exa | ai, search, developer-tools | api-key | 9 |
 | excel | spreadsheets, productivity | oauth2 | 16 |
+| expensify | finance, hr | partner-credentials | 15 |
 | eztexting | communication, marketing | basic | 31 |
 | facebook | social-media, marketing | oauth2, page-token | 14 |
 | facebook-conversions | marketing, analytics, social-media | conversions-token, oauth2 | 5 |
@@ -183,6 +186,8 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | fellow | ai, productivity | api-key | 23 |
 | figma | productivity, developer-tools | personal-access-token, oauth2 | 10 |
 | fillout | forms, productivity | api-key | 8 |
+| findymail | email, marketing | api-key | 35 |
+| fireberry | crm | token | 14 |
 | firecrawl | ai, developer-tools | bearer-token | 10 |
 | fireflies | ai, productivity, video | api-key | 25 |
 | firestore | databases, developer-tools | oauth2 | 12 |
@@ -201,6 +206,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | freshsales | crm, sales, productivity | api-key | 20 |
 | freshservice | support, devops | api-key | 23 |
 | front | support, communication, productivity | api-token | 30 |
+| fullenrich | crm, marketing | api-key | 10 |
 | gamma | ai, productivity | api-key | 20 |
 | gcs | storage, devops | service-account | 16 |
 | gemini | ai | api-key | 6 |
@@ -293,6 +299,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | kit | marketing, email | api-key | 18 |
 | klaviyo | marketing, email | api-key | 23 |
 | klicktipp | email, marketing | session, listbuilding-key | 25 |
+| klipfolio | analytics | api-key | 42 |
 | knack | databases, productivity | application-key | 5 |
 | kommo | crm | long-lived-token | 12 |
 | kudosity | communication, marketing | api-key | 18 |
@@ -302,6 +309,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | launchdarkly | devops, developer-tools | api-key | 21 |
 | lawmatics | legal, crm | oauth2 | 11 |
 | learnworlds | crm, commerce | client-credentials | 12 |
+| leexi | ai, productivity, video | basic | 39 |
 | lemlist | marketing, email | api-key | 18 |
 | lemonsqueezy | commerce, finance | api-key | 36 |
 | lever | hr, productivity | api-key | 12 |
@@ -430,6 +438,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | procore | project-management, documents | oauth2, oauth2-sandbox | 20 |
 | productboard | project-management, productivity, support | api-token | 41 |
 | productive | project-management, productivity, finance | api-token | 57 |
+| prospeo | crm, marketing | api-key | 8 |
 | pushbullet | communication, productivity | access-token | 24 |
 | pushover | communication, monitoring | app-token | 4 |
 | qdrant | search, databases, ai | api-key | 19 |
@@ -607,6 +616,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho-creator | app-builder | oauth2 (×9 DCs) | 10 |
 | zoho-inventory | commerce, accounting | oauth2 (×8 DCs) | 17 |
 | zoho-invoice | accounting, finance | oauth2 (×8 DCs) | 22 |
+| zoho-people | hr | oauth2 (×10 DCs) | 19 |
 | zoho-projects | project-management | oauth2 (×11 DCs) | 34 |
 | zoho-recruit | hr, crm | oauth2 (×10 DCs) | 22 |
 | zoho-sheet | productivity, spreadsheets | oauth2 (×7 DCs) | 10 |
