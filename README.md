@@ -541,6 +541,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | servicem8 | crm | api-key | 18 |
 | servicenow | support, devops | basic, oauth2 | 9 |
 | servicetitan | crm, commerce | client-credentials | 17 |
+| ses | email, communication | aws-iam | 23 |
 | seven | communication, marketing | api-key | 31 |
 | sharepoint | documents, productivity | oauth2 | 16 |
 | sharetribe | commerce, developer-tools | client-credentials | 19 |
@@ -549,6 +550,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | shopify | commerce | access-token | 18 |
 | short-io | marketing, developer-tools | api-key | 18 |
 | shortcut | project-management, productivity | api-token | 36 |
+| sierrainteractive | crm, marketing | api-key | 27 |
 | signnow | documents | custom | 16 |
 | signrequest | legal, documents, productivity | api-key | 26 |
 | signwell | documents, legal, productivity | api-key | 18 |
@@ -563,6 +565,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | snowflake | data-warehousing | key-pair | 5 |
 | snyk | security, developer-tools | api-token | 20 |
 | softr | developer-tools, databases | api-key | 18 |
+| solapi | communication, marketing | api-key | 22 |
 | splitwise | finance, productivity | api-key | 26 |
 | splunk | monitoring, devops | token | 8 |
 | spotify | productivity | oauth2 | 9 |
@@ -578,11 +581,13 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
 | supadata | ai, video, developer-tools | api-key | 19 |
+| superchat | communication, crm | api-key | 53 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
 | synthflow | ai, communication | api-key | 26 |
 | systemeio | marketing | api-key | 41 |
 | tableau | analytics, productivity | personal-access-token | 15 |
 | tailscale | security, devops | api-key, oauth-client | 16 |
+| talentlms | hr, productivity | api-key | 45 |
 | tally | forms, productivity | api-key | 38 |
 | tapfiliate | marketing, crm | api-key | 46 |
 | taskade | project-management, productivity | personal-token | 35 |
@@ -604,6 +609,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | tidio | support, communication | client-credentials | 24 |
 | tidycal | calendar, productivity | personal-token, oauth2 | 18 |
 | tiktok-lead-generation | marketing, social-media | access-token | 4 |
+| timelinesai | communication, marketing | api-token | 27 |
 | tldv | ai, productivity, video | api-key | 5 |
 | todoist | productivity | api-token, oauth2 | 14 |
 | toggl | productivity | api-token | 10 |
@@ -651,6 +657,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | wordpress | cms | basic, oauth2 | 15 |
 | workable | hr | access-token | 15 |
 | workday | hr | refresh-token | 25 |
+| workflowy | productivity | api-key | 12 |
 | workiz | crm, project-management | custom | 20 |
 | workos | security, developer-tools | api-key | 23 |
 | wrike | project-management, productivity | permanent-token | 29 |
@@ -659,6 +666,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | xero | finance | oauth2 | 13 |
 | yelp-leads | marketing, crm | oauth2 | 7 |
 | youcanbookme | calendar | basic | 9 |
+| youform | forms | api-token | 7 |
 | youtube | video, social-media | api-key, oauth2 | 16 |
 | zendesk | support, crm | api-token, oauth2 | 17 |
 | zendesk-sell | crm, marketing | oauth2 | 31 |

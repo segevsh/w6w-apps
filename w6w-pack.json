@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.176.0",
+  "version": "0.177.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -1579,6 +1579,9 @@
       "path": "./apps/servicetitan"
     },
     {
+      "path": "./apps/ses"
+    },
+    {
       "path": "./apps/seven"
     },
     {
@@ -1601,6 +1604,9 @@
     },
     {
       "path": "./apps/shortcut"
+    },
+    {
+      "path": "./apps/sierrainteractive"
     },
     {
       "path": "./apps/signnow"
@@ -1643,6 +1649,9 @@
     },
     {
       "path": "./apps/softr"
+    },
+    {
+      "path": "./apps/solapi"
     },
     {
       "path": "./apps/splitwise"
@@ -1690,6 +1699,9 @@
       "path": "./apps/supadata"
     },
     {
+      "path": "./apps/superchat"
+    },
+    {
       "path": "./apps/surveymonkey"
     },
     {
@@ -1703,6 +1715,9 @@
     },
     {
       "path": "./apps/tailscale"
+    },
+    {
+      "path": "./apps/talentlms"
     },
     {
       "path": "./apps/tally"
@@ -1766,6 +1781,9 @@
     },
     {
       "path": "./apps/tiktok-lead-generation"
+    },
+    {
+      "path": "./apps/timelinesai"
     },
     {
       "path": "./apps/tldv"
@@ -1912,6 +1930,9 @@
       "path": "./apps/workday"
     },
     {
+      "path": "./apps/workflowy"
+    },
+    {
       "path": "./apps/workiz"
     },
     {
@@ -1934,6 +1955,9 @@
     },
     {
       "path": "./apps/youcanbookme"
+    },
+    {
+      "path": "./apps/youform"
     },
     {
       "path": "./apps/youtube"
