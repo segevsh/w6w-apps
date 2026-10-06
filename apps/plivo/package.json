@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/plivo",
+  "version": "0.1.0",
+  "description": "Send SMS/MMS, place and manage voice calls, search and manage phone numbers, and read account details via Plivo.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.plivo",
+    "displayName": "Plivo",
+    "longDescription": "Plivo is a CPaaS (communications platform as a service) for SMS, MMS and voice. This app lets a workflow send text and picture messages, look up what happened to them afterwards, place outbound phone calls and hang them up, and manage the phone numbers and applications on a Plivo account.\n\nMessaging covers sending (SMS or MMS, from a number you own or a Powerpack), fetching one message record, listing message records with filters, and listing the media attached to an MMS. Voice covers placing a call, fetching and listing call detail records, listing live calls, hanging up one call, cancelling a queued call request, and reading recording metadata. Numbers covers searching Plivo's inventory, renting a number, and listing, reading and updating the numbers already on the account. Applications (the Answer/Hangup/Message URL bundles that a number is pointed at) can be listed, read and created, and the account's own details and credit balance can be read.\n\nA fit for appointment reminders, one-time codes, alerting by text or call, delivery-status reconciliation, and provisioning a number for a new customer as part of an onboarding workflow.",
+    "categories": [
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Plivo"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.plivo.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

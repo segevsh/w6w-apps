@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/twist",
+  "version": "0.1.0",
+  "description": "Post and read Twist threads, comments and conversations; manage channels, groups, workspace users, reactions and the inbox.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.twist",
+    "displayName": "Twist",
+    "longDescription": "Twist is Doist's async team messaging tool: conversations live in threads inside channels, so a message is a post that can be answered whenever people get to it. This app puts that structure in a workflow.\n\nIt covers the working loop of a team that uses Twist: post a thread to a channel, comment on it, close or reopen it, pin or star it, and move it between channels; send direct messages in a conversation; add reactions; and read the inbox, unread threads and search results to decide what needs a reply.\n\nBeyond messaging, the app manages the structure around it — workspaces, channels, groups, and workspace members — plus notification settings, join links, loop-in email addresses and event webhooks, so a workflow can react to Twist events instead of polling for them. Sign in with OAuth for a shared connection, or paste a personal test token for development.\n\nTwist's file-upload endpoint takes multipart bytes and is not offered, and the user-account endpoints that handle passwords or rotate the API token are deliberately left out, so a workflow can never change or expose the login behind a connection.",
+    "categories": [
+      "communication",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Twist"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.twist.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

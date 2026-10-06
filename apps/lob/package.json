@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/lob",
+  "version": "0.1.0",
+  "description": "Print and mail postcards, letters, checks and self-mailers, verify and autocomplete addresses, and manage address books, templates and bank accounts through Lob.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.lob",
+    "displayName": "Lob",
+    "longDescription": "Lob is a developer API for physical mail and address data. This app lets a workflow put a real postcard, letter, self-mailer or check in the post from any trigger, and verify the address it is going to before it does.\n\nIt covers the full lifecycle of each mailpiece: create it (inline address or a saved one, HTML or a saved template as the artwork, optionally scheduled up to 180 days ahead), list and look it up with its tracking events, and cancel it while Lob still allows. Around that it manages the address book, HTML templates and their versions, and the bank accounts checks are drawn on, including micro-deposit verification.\n\nAddress verification covers US addresses, international addresses, US autocomplete for typeahead and ZIP code lookup. Lob issues separate test and live keys against the same host, so connect one of each: a test key prints and bills nothing. The app sends an idempotency key with every mailpiece create, so a retried step does not mail twice, and it keeps a bank account's full number out of workflow results.",
+    "categories": [
+      "marketing",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Lob"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.lob.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
