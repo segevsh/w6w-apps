@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/moonclerk",
+  "version": "0.1.0",
+  "description": "Read MoonClerk payment forms, customers (plans) and payments through the MoonClerk read-only API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.moonclerk",
+    "displayName": "MoonClerk",
+    "longDescription": "MoonClerk builds payment forms on top of Stripe: one-time checkouts, subscriptions and installment plans, with a hosted page where a customer manages their own plan. This app connects a workflow to MoonClerk's read-only REST API with an API key.\n\nA workflow can list and read payment forms with their volume and checkout counts; list and read customers (what the MoonClerk dashboard calls plans) with their subscription, plan amount, next payment date, discount, custom-field answers and self-service management URL, filtered by form, checkout date, next-payment date or subscription status; and list and read payments, filtered by form, customer, charge date or status, with the Stripe fee, refunded amount and Stripe references. Nothing can be created, changed or cancelled: MoonClerk's API is read-only.\n\nMoonClerk answers a bad key with a plain-text HTTP 401 `HTTP Token: Access denied.`; this app reads that body. Health checks verify the key and whether the API answers.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "MoonClerk"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.moonclerk.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

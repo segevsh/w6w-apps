@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/ahrefs",
+  "version": "0.1.0",
+  "description": "Query Ahrefs SEO data \u2014 domain rating, backlinks, referring domains, organic keywords, top pages, keyword research, SERP overview, Rank Tracker and Site Audit \u2014 and check API unit usage.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ahrefs",
+    "displayName": "Ahrefs",
+    "longDescription": "Ahrefs is an SEO and search-intelligence platform. This app connects a workflow to its v3 REST API with an API key, so a flow can pull the same data the Ahrefs reports show: a domain's Domain Rating and its history, backlink and referring-domain profiles, anchor text, broken backlinks, organic keywords, top pages and organic competitors, plus search volume, difficulty and traffic potential for keywords, the live SERP for a keyword, Rank Tracker positions and Site Audit health scores and issues.\n\nEvery data call is a GET that takes a `select` list of columns, an optional `where` filter and `order_by`, and a `limit`. Ahrefs bills each request in API units (a 50-unit minimum, more per returned column and row), so each action returns the units the call actually cost, and a Limits and usage action reads the key's monthly allowance and spend without consuming any. Free test targets (ahrefs.com, yep.com, firehose.com) cost nothing.\n\nAhrefs answers a bad key with HTTP 401 and a missing one with 403, both as a bare JSON array; this app reads the body rather than the status. Health checks verify the key against the free limits-and-usage call, whether the API answers, and the remaining unit headroom.",
+    "categories": [
+      "marketing",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Ahrefs"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.ahrefs.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

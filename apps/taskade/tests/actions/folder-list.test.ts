@@ -1,0 +1,33 @@
+import { assertEquals, assertRejects } from "@std/assert";
+import action from "../../actions/folder-list.ts";
+import { mockCtx } from "../_helpers.ts";
+
+Deno.test("folder-list: calls GET /workspaces/{workspaceId}/folders", async () => {
+  const { ctx, calls } = mockCtx([{ body: { ok: true, items: [{ id: "x1" }, { id: "x2" }] } }]);
+  const out = await action.execute!({ "workspaceId": "workspaceId-1" }, ctx) as Record<
+    string,
+    unknown
+  >;
+  assertEquals(calls[0].method, "GET");
+  assertEquals(calls[0].url, "https://www.taskade.com/api/v1/workspaces/workspaceId-1/folders");
+  assertEquals(out.count, 2);
+});
+
+Deno.test("folder-list: a failure envelope is an error", async () => {
+  const { ctx } = mockCtx([
+    {
+      status: 401,
+      body: {
+        ok: false,
+        message: "Unauthorized",
+        code: "UNAUTHORIZED",
+        statusMessage: "Unauthorized",
+      },
+    },
+  ]);
+  await assertRejects(
+    async () => await action.execute!({ "workspaceId": "workspaceId-1" }, ctx),
+    Error,
+    "UNAUTHORIZED",
+  );
+});

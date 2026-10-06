@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/stackexchange",
+  "version": "0.1.0",
+  "description": "Search and read questions, answers, comments, users, tags and badges across Stack Overflow and the 170+ other Stack Exchange sites.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.stackexchange",
+    "displayName": "Stack Exchange",
+    "longDescription": "Stack Exchange is the network behind Stack Overflow and more than a hundred and seventy other question-and-answer communities. This app reads it through the public Stack Exchange API (v2.3): search questions by title, tag or full text, fetch a question with its answers and comments, look up users, their reputation history and badges, walk a tag's wiki, synonyms, related tags and top answerers, and enumerate the sites on the network.\n\nEvery call takes the site to read from (stackoverflow by default), so one connection covers the whole network. Results carry the API's own paging flag and daily quota counters, so a workflow can page with has_more and stop before it spends its quota.\n\nThe app authenticates with an application key from stackapps.com, which lifts the daily limit from 300 to 10,000 requests. It is read-only: writing to Stack Exchange needs a per-user OAuth access token, which is not modelled here. Health checks track the live quota and API reachability.",
+    "categories": [
+      "developer-tools",
+      "search"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Stack Exchange"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.stackexchange.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

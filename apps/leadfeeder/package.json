@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/leadfeeder",
+  "version": "0.1.0",
+  "description": "Identify website visitors, search companies and contacts, and manage lists, tags and campaigns through the Leadfeeder (Dealfront) API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.leadfeeder",
+    "displayName": "Leadfeeder",
+    "longDescription": "Leadfeeder, now part of Dealfront, identifies the companies visiting your website and pairs that with a global company and contact database. This app connects a workflow to the current Leadfeeder API (`/v1`) with a personal API key.\n\nA workflow can list accounts and read their credit balance, list the companies that visited the site in a date range or read individual visits, and read custom feeds and campaigns. It can search and match companies, fetch a company or its financial reports, search and read contacts, resolve an IP address to the company behind it, and organise results by creating and deleting lists, adding companies and contacts to lists, creating tags and assigning them to companies.\n\nThe documentation at docs.leadfeeder.com/api describes the legacy API, which no longer issues keys; this app targets the current one. Search, match and financials calls consume credits. Health checks track the Leadfeeder API component of the vendor's status page, API reachability and the key.",
+    "categories": [
+      "marketing",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Leadfeeder"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.leadfeeder.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

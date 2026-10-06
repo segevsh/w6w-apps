@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.173.0",
+  "version": "0.174.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -38,6 +38,9 @@
     },
     {
       "path": "./apps/agencyzoom"
+    },
+    {
+      "path": "./apps/ahrefs"
     },
     {
       "path": "./apps/aidbase"
@@ -443,6 +446,9 @@
     },
     {
       "path": "./apps/ebay"
+    },
+    {
+      "path": "./apps/economic"
     },
     {
       "path": "./apps/ecwid"
@@ -898,6 +904,9 @@
       "path": "./apps/lawmatics"
     },
     {
+      "path": "./apps/leadfeeder"
+    },
+    {
       "path": "./apps/learnworlds"
     },
     {
@@ -968,6 +977,9 @@
     },
     {
       "path": "./apps/luma"
+    },
+    {
+      "path": "./apps/lusha"
     },
     {
       "path": "./apps/mailcheck"
@@ -1066,6 +1078,9 @@
       "path": "./apps/mistral"
     },
     {
+      "path": "./apps/mixmax"
+    },
+    {
       "path": "./apps/mixpanel"
     },
     {
@@ -1082,6 +1097,9 @@
     },
     {
       "path": "./apps/mongodb-atlas"
+    },
+    {
+      "path": "./apps/moonclerk"
     },
     {
       "path": "./apps/motion"
@@ -1295,6 +1313,9 @@
     },
     {
       "path": "./apps/printavo"
+    },
+    {
+      "path": "./apps/printful"
     },
     {
       "path": "./apps/printnode"
@@ -1585,6 +1606,9 @@
       "path": "./apps/squarespace-commerce"
     },
     {
+      "path": "./apps/stackexchange"
+    },
+    {
       "path": "./apps/statuspage"
     },
     {
@@ -1631,6 +1655,9 @@
     },
     {
       "path": "./apps/tapfiliate"
+    },
+    {
+      "path": "./apps/taskade"
     },
     {
       "path": "./apps/tavily"
@@ -1763,6 +1790,9 @@
     },
     {
       "path": "./apps/vimeo"
+    },
+    {
+      "path": "./apps/wakatime"
     },
     {
       "path": "./apps/wappalyzer"
