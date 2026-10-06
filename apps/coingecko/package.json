@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/coingecko",
+  "version": "0.1.0",
+  "description": "Crypto prices, market data, charts, search, trending and exchange data from CoinGecko.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.coingecko",
+    "displayName": "CoinGecko",
+    "longDescription": "CoinGecko is the independent crypto data aggregator, and this app puts its market data into a workflow: current prices for any number of coins in any number of currencies, ranked market listings with 24-hour change and market cap, full coin profiles, historical snapshots, price/market-cap/volume charts and OHLC candles, plus search, trending, global market statistics, exchanges and coin categories.\n\nIt works with either CoinGecko plan. A Demo key (free) is served from api.coingecko.com and a Pro-family key (Basic, Analyst, Lite, Pro, Enterprise) from pro-api.coingecko.com; the two are separate auth methods because the host and the header name both differ and a key sent to the wrong host is refused. Every action calls the same v3 paths on either host, so a workflow is portable between plans.\n\nCoverage is the read-only core of the v3 API: simple price, coin lists and market data, coin detail, history and charts, search, trending, global data, exchanges and categories. On-chain (GeckoTerminal), NFT, derivatives, treasury and RWA endpoints are not covered yet.",
+    "categories": [
+      "finance",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "CoinGecko"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.coingecko.com",
+        "pro-api.coingecko.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

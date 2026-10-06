@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/avoma",
+  "version": "0.1.0",
+  "description": "Read Avoma meetings, recordings, transcripts, AI notes, insights, scorecards and users, and submit call recordings for analysis.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.avoma",
+    "displayName": "Avoma",
+    "longDescription": "Avoma is an AI meeting assistant that records, transcribes and summarizes customer conversations. This app lets a workflow pull that conversation data out: list meetings in a date window by attendee, CRM association or call type, then read each meeting's transcript, AI-generated notes, keyword insights, sentiment, topic segments and expiring recording URLs.\n\nIt also covers the coaching side — scorecard templates and the evaluations completed against meetings — plus the organization's users and smart categories. For teams with their own dialer, a workflow can submit a call recording to Avoma for transcription and analysis, look the call up again by its external id, and remove Avoma's notetaker bot from a meeting it is attending.\n\nAvoma's API requires a date window on its main list endpoints and rate-limits to 60 requests a minute, so the actions validate dates up front and page by the vendor's own next-page URL. Avoma publishes no status page, so health is tracked by an unauthenticated reachability check on the API plus the credential check.",
+    "categories": [
+      "ai",
+      "productivity",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Avoma"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.avoma.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

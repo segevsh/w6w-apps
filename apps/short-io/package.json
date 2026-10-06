@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/short-io",
+  "version": "0.1.0",
+  "description": "Create, update, list and delete Short.io branded short links, and read the domains, tags, folders and QR codes around them.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.short-io",
+    "displayName": "Short.io",
+    "longDescription": "Short.io is a branded link shortener: every short link lives on a domain you own, so a workflow can mint links like go.example.com/spring instead of a generic shared host.\n\nThis app covers the link lifecycle end to end: create a link (or up to 1,000 in one call), look one up by its id or by its domain and path, update where it points, archive or unarchive it, duplicate it, and delete it singly or in bulk. It also lists the links on a domain with cursor pagination, and reads the account's domains, the tags used on a domain, and its link folders.\n\nA workflow can also ask Short.io to render a QR code for any link. Health checks track Short.io's own status page, which names the API as its own component.",
+    "categories": [
+      "marketing",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Short.io"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.short.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
