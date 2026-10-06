@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/alegra",
+  "version": "0.1.0",
+  "description": "Manage Alegra accounting data — invoices, contacts, items, payments, quotes and supplier bills — through Alegra's REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.alegra",
+    "displayName": "Alegra",
+    "longDescription": "Alegra is a cloud accounting and invoicing platform used by small and mid-sized businesses across Latin America and Spain. This app covers the core bookkeeping loop: list, read, create, void, delete and email sales invoices; manage contacts (clients and providers) and the product and service catalogue; register and void payments; and read quotes, supplier bills, taxes and the company profile.\n\nAuthentication is the account email plus the API token generated under Configuración > API in Alegra. Alegra identifiers are strings, lists return at most 30 records per call, and country-specific invoice fields (electronic-invoicing stamps, fiscal codes) can be supplied through each create action's additional-fields object.\n\nHealth checks track the API Alegra Contabilidad component on Alegra's status page, API reachability, and the documented 150-requests-per-minute rate-limit headroom.",
+    "categories": [
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Alegra"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.alegra.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

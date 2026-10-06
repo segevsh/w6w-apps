@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/inoreader",
+  "version": "0.1.0",
+  "description": "Read and manage an Inoreader account: subscriptions, folders and tags, unread counts, stream contents and item ids, read/starred state.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.inoreader",
+    "displayName": "Inoreader",
+    "longDescription": "Inoreader is an RSS and news reader. Its developer API (a Google-Reader-compatible surface at www.inoreader.com/reader/api/0) lets a workflow list a user's subscriptions, folders and tags, read unread counts, pull article streams and item ids, follow or unfollow feeds, and change article state (read, starred, custom tags). Connect a user's account through OAuth 2.0 with an Inoreader developer application. The API is only available to paid (Pro and above) plans, and is metered in two daily zones: zone 1 for reads and zone 2 for writes.",
+    "categories": [
+      "productivity",
+      "cms"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Inoreader"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.inoreader.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

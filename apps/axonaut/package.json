@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/axonaut",
+  "version": "0.1.0",
+  "description": "Axonaut CRM and invoicing: companies, employees, quotations, invoices, products, opportunities, tasks and projects.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.axonaut",
+    "displayName": "Axonaut",
+    "longDescription": "Axonaut is a French all-in-one CRM and invoicing platform for small businesses. This app drives its REST API (v2) from a workflow: read and manage companies (customers, prospects, suppliers) and their contacts, create quotations and invoices, maintain the product catalogue, move sales opportunities through the pipeline and mark them won or lost, and create tasks and read projects.\n\nAuthentication is a single user API key sent in the userApiKey header. The key acts as its owner, so what a workflow can see and change follows that user's rights in Axonaut.",
+    "categories": [
+      "crm",
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Axonaut"
+      }
+    },
+    "network": {
+      "allow": [
+        "axonaut.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

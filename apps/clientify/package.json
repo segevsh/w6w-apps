@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/clientify",
+  "version": "0.1.0",
+  "description": "Manage contacts, companies, deals, tasks and notes in Clientify CRM.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.clientify",
+    "displayName": "Clientify",
+    "longDescription": "Clientify is a CRM and marketing-automation platform popular with small and mid-sized businesses in Spain and Latin America. This app covers the core CRM surface of its v1 REST API: list, search, create, update and delete contacts, companies and deals; add notes and tags; close a deal as won or lost; create and complete tasks; and read the account's users, deal pipelines (with their stages) and task types so a workflow can resolve the ids and URLs those calls need.\n\nAuthentication is the account API key, sent as `Authorization: Token <key>`. A health check tracks Clientify's own status page for the V1 API components (the app only calls /v1), and a second check confirms the API host is answering without spending a credential. Clientify documents no rate limit or usage endpoint, so quota headroom is declared unavailable rather than guessed.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Clientify"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.clientify.net"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
