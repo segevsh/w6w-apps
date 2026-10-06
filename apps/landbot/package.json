@@ -1,0 +1,35 @@
+{
+  "name": "@w6w-apps/landbot",
+  "version": "0.1.0",
+  "description": "Landbot chatbot platform: read channels and customers, send messages and WhatsApp templates, assign conversations to agents or bots, manage customer fields and message webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.landbot",
+    "displayName": "Landbot",
+    "longDescription": "Landbot is a no-code conversational platform: bots that talk to customers over web chat, WhatsApp and Messenger, with human agents able to take a conversation over. This app drives its Platform API from a workflow.\n\nIt reads channels and the customers (conversations) in them, pulls a customer's full message transcript, and sends text, images, locations and approved WhatsApp templates into a conversation. It also moves a conversation around: assign it to yourself, a specific agent or a bot (optionally starting the bot at a chosen node), unassign, archive, block or opt a customer out of WhatsApp.\n\nPer-customer custom fields can be read, created, changed and deleted, so a workflow can feed the data a bot collected into the rest of a stack or seed what a bot should know. Message hooks register a URL that Landbot calls for every message on a channel.\n\nAuthentication is one workspace-wide agent token. Channel tokens and hook secrets that Landbot's read endpoints return are never passed back out of this app.",
+    "categories": [
+      "communication",
+      "support",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "sizes": {
+          "32x32": "./assets/icon.png"
+        },
+        "alt": "Landbot"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.landbot.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

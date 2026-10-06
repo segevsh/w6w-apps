@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.160.0",
+  "version": "0.162.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -49,6 +49,9 @@
       "path": "./apps/airtop"
     },
     {
+      "path": "./apps/alegra"
+    },
+    {
       "path": "./apps/algolia"
     },
     {
@@ -86,6 +89,9 @@
     },
     {
       "path": "./apps/aweber"
+    },
+    {
+      "path": "./apps/axonaut"
     },
     {
       "path": "./apps/azure-blob"
@@ -230,6 +236,9 @@
     },
     {
       "path": "./apps/clickup"
+    },
+    {
+      "path": "./apps/clientify"
     },
     {
       "path": "./apps/clio"
@@ -694,6 +703,9 @@
       "path": "./apps/hunter"
     },
     {
+      "path": "./apps/inoreader"
+    },
+    {
       "path": "./apps/insightly"
     },
     {
@@ -784,6 +796,9 @@
       "path": "./apps/kvcore"
     },
     {
+      "path": "./apps/landbot"
+    },
+    {
       "path": "./apps/launchdarkly"
     },
     {
@@ -821,6 +836,9 @@
     },
     {
       "path": "./apps/littlegreenlight"
+    },
+    {
+      "path": "./apps/livechat"
     },
     {
       "path": "./apps/livestorm"
@@ -1000,6 +1018,9 @@
       "path": "./apps/onenote"
     },
     {
+      "path": "./apps/onepagecrm"
+    },
+    {
       "path": "./apps/onepassword"
     },
     {
@@ -1135,6 +1156,9 @@
       "path": "./apps/processstreet"
     },
     {
+      "path": "./apps/procore"
+    },
+    {
       "path": "./apps/productboard"
     },
     {
@@ -1235,6 +1259,9 @@
     },
     {
       "path": "./apps/salesmsg"
+    },
+    {
+      "path": "./apps/salla"
     },
     {
       "path": "./apps/samcart"
@@ -1424,6 +1451,9 @@
     },
     {
       "path": "./apps/textmagic"
+    },
+    {
+      "path": "./apps/thanksio"
     },
     {
       "path": "./apps/thinkific"
