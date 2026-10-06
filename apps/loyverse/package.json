@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/loyverse",
+  "version": "0.1.0",
+  "description": "Read and manage a Loyverse POS back office: items, categories, customers, receipts, inventory, stores, employees, discounts, taxes and payment types.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.loyverse",
+    "displayName": "Loyverse",
+    "longDescription": "Loyverse is a free point-of-sale system for small retail and food-service businesses. This app connects a workflow to a merchant's Loyverse back office so sales, stock and customers can flow into the rest of the stack.\n\nRead receipts as they are rung up, pull items, categories, discounts, taxes and payment types for a catalogue sync, list stores, employees and shifts, and watch per-store stock levels. Write back customers, categories and inventory counts so an external system of record stays authoritative.\n\nConnect with a personal access token for your own account, or with OAuth 2.0 to act for another merchant with only the scopes you request.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Loyverse"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.loyverse.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

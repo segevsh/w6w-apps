@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/maintainx",
+  "version": "0.1.0",
+  "description": "Work orders, assets, locations, parts, users, vendors and meters in MaintainX.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.maintainx",
+    "displayName": "MaintainX",
+    "longDescription": "MaintainX is a maintenance and operations platform: technicians and managers run work orders, track the assets and locations those orders are about, stock the spare parts they consume, and log meter readings that trigger preventive maintenance.\n\nThis app lets a workflow work with that data. Create a work order when a monitoring alert fires, move it through its statuses, comment on it, and list the open ones; look up assets, locations, parts, users, teams and vendors to enrich or route a request; register new assets and locations as equipment is commissioned; and push meter readings in batches from a sensor feed.\n\nAn API key from a MaintainX Premium or Enterprise plan is the only credential needed. Accounts that span several organizations can pick the organization per action. Health checks follow MaintainX's own status page for the REST API.",
+    "categories": [
+      "productivity",
+      "iot",
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "MaintainX"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.getmaintainx.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

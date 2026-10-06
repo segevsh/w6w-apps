@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/wistia",
+  "version": "0.1.0",
+  "description": "Manage Wistia media and folders, read captions, and pull video and account stats.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.wistia",
+    "displayName": "Wistia",
+    "longDescription": "Wistia hosts and analyzes marketing video. This app lets a workflow list, rename, tag, move and delete media; import a video from a URL and poll the background job that processes it; and create, update and delete folders and read their subfolders.\n\nIt also reads what happens after publishing: per-video and account-wide stats (loads, plays, play rate, hours watched, engagement), caption tracks and transcripts, tags, and the account's plan and usage, so a workflow can react to a video that is performing, or stop uploading when the plan is full.\n\nBuilt on Wistia's current /modern API with a single API token. Folders are what Wistia used to call projects.",
+    "categories": [
+      "video",
+      "marketing",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Wistia"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.wistia.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

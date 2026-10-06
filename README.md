@@ -224,6 +224,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | heartbeat | communication, social-media | bearer-token | 54 |
 | hedy | ai, productivity | api-key | 4 |
 | helpscout | support | oauth2 | 13 |
+| hex | analytics, data-warehousing | api-token | 15 |
 | heygen | ai | api-key | 18 |
 | heyreach | marketing, social-media, crm | api-key | 30 |
 | highlevel | crm, marketing | oauth2 | 18 |
@@ -232,6 +233,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | hostaway | crm, calendar | client-credentials | 21 |
 | hotmart | commerce, finance | client-credentials | 17 |
 | housecallpro | crm, calendar, finance | api-key, oauth2 | 39 |
+| htmlcsstoimage | developer-tools, marketing | basic | 12 |
 | hubspot | crm, marketing | private-app-token, oauth2, api-key | 42 |
 | hubstaff | productivity, hr | organization-access-token | 19 |
 | huggingface | ai, developer-tools | token | 14 |
@@ -281,12 +283,14 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | lokalise | developer-tools, cms | api-token | 31 |
 | looker | analytics, data-warehousing | api-credentials | 11 |
 | loops | email, marketing, communication | api-key | 21 |
+| loyverse | commerce | access-token, oauth2 | 21 |
 | luma | calendar, commerce | api-key | 29 |
 | mailcheck | email, marketing | api-key | 4 |
 | mailchimp | marketing, communication | api-key, oauth2 | 15 |
 | mailerlite | marketing, email | api-key | 16 |
 | mailgun | email, communication | api-key | 14 |
 | mailjet | email, marketing | basic | 17 |
+| maintainx | productivity, iot, project-management | api-key | 20 |
 | mandrill | email, marketing | api-key | 17 |
 | manus | ai | api-key | 32 |
 | manychat | marketing, communication, social-media | api-token | 25 |
@@ -499,6 +503,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | whatsapp | communication | access-token | 9 |
 | whop | commerce, finance | api-key | 35 |
 | wise | finance, commerce | api-token | 19 |
+| wistia | video, marketing, analytics | api-token | 22 |
 | wix | cms, crm, commerce | api-key | 24 |
 | woocommerce | commerce | api-key | 13 |
 | wordpress | cms | basic, oauth2 | 15 |

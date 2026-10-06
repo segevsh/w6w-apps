@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/htmlcsstoimage",
+  "version": "0.1.0",
+  "description": "Render HTML/CSS, web pages and saved templates to images and PDFs with HTML/CSS to Image (hcti.io).",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.htmlcsstoimage",
+    "displayName": "HTML/CSS to Image",
+    "longDescription": "HTML/CSS to Image turns markup into pictures: send HTML and CSS, a public URL, or the values for a saved template, and get back a permanent image URL (PNG, JPG, WebP or PDF) served from a CDN. It is the usual way to generate social cards, receipts, certificates, product graphics and page screenshots from a workflow without running a browser.\n\nThis app covers the three ways to create an image (HTML/CSS, URL screenshot, and a saved template, optionally pinned to a version), reading and listing the images an account has made, deleting them, and the template lifecycle: create a template, save a new version of it, list templates and their versions, and remove one. It also reads the account's image usage by hour, day, month and billing period.\n\nImage creation spends image credits on the vendor's side, so none of the creation actions is marked retry-safe; use the vendor's duplicate-detection window (`dedupe_duration_s`) when a retry could otherwise bill twice.",
+    "categories": [
+      "developer-tools",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "HTML/CSS to Image"
+      }
+    },
+    "network": {
+      "allow": [
+        "hcti.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
