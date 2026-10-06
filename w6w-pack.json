@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.170.0",
+  "version": "0.171.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -179,6 +179,9 @@
     },
     {
       "path": "./apps/braintree"
+    },
+    {
+      "path": "./apps/brandfetch"
     },
     {
       "path": "./apps/braze"
@@ -529,6 +532,9 @@
       "path": "./apps/followupboss"
     },
     {
+      "path": "./apps/formbricks"
+    },
+    {
       "path": "./apps/formidableforms"
     },
     {
@@ -593,6 +599,9 @@
     },
     {
       "path": "./apps/givebutter"
+    },
+    {
+      "path": "./apps/gladia"
     },
     {
       "path": "./apps/glide"
@@ -904,6 +913,9 @@
       "path": "./apps/linkedin-conversions"
     },
     {
+      "path": "./apps/linkup"
+    },
+    {
       "path": "./apps/littlegreenlight"
     },
     {
@@ -1186,6 +1198,9 @@
       "path": "./apps/pennylane"
     },
     {
+      "path": "./apps/peopledatalabs"
+    },
+    {
       "path": "./apps/perplexity"
     },
     {
@@ -1288,6 +1303,9 @@
       "path": "./apps/quickbooks"
     },
     {
+      "path": "./apps/quickchart"
+    },
+    {
       "path": "./apps/quo"
     },
     {
@@ -1361,6 +1379,12 @@
     },
     {
       "path": "./apps/rippling"
+    },
+    {
+      "path": "./apps/rocketchat"
+    },
+    {
+      "path": "./apps/rootly"
     },
     {
       "path": "./apps/s3"
@@ -1532,6 +1556,9 @@
     },
     {
       "path": "./apps/supabase"
+    },
+    {
+      "path": "./apps/supadata"
     },
     {
       "path": "./apps/surveymonkey"
@@ -1835,6 +1862,9 @@
     },
     {
       "path": "./apps/zoom"
+    },
+    {
+      "path": "./apps/zulip"
     },
     {
       "path": "./apps/zuora"

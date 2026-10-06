@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/quickchart",
+  "version": "0.1.0",
+  "description": "Render charts, QR codes, barcodes, word clouds, tables, Graphviz diagrams and watermarked images as images with QuickChart, and save a chart to a short URL.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.quickchart",
+    "displayName": "QuickChart",
+    "longDescription": "QuickChart turns a description into an image. This app exposes its rendering APIs to a workflow.\n\nA workflow can render a Chart.js chart (Chart.js v2, v3 or v4) to PNG, JPEG, WebP, SVG or PDF, save a chart to a short URL that can be dropped into an email or chat message, validate a chart before rendering it, and draft a Chart.js config from a plain-English description. It can also render QR codes (styled, with a centre logo or caption) and read one back from an image, render barcodes in over a hundred symbologies, word clouds, tables, Graphviz diagrams, and watermark one image onto another.\n\nNo account is needed: the API answers anonymously within a shared rate limit. A paid API key can be added to the connection for higher limits and longer-lived short URLs; without a connection every action still runs. Images are written to the run's file store and returned as a file reference; SVG output also comes back as text.",
+    "categories": [
+      "analytics",
+      "developer-tools",
+      "documents"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "QuickChart"
+      }
+    },
+    "network": {
+      "allow": [
+        "quickchart.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/rootly",
+  "version": "0.1.0",
+  "description": "Declare, update, mitigate and resolve incidents, manage alerts, services, teams and on-call, through Rootly's incident-management API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.rootly",
+    "displayName": "Rootly",
+    "longDescription": "Rootly is an incident-management platform. This app connects a workflow to its REST API with an API token.\\n\\nA workflow can list and fetch incidents, declare one, update it, mitigate it and resolve it, add timeline notes and action items, and read the timeline back. It can list, create, update and resolve alerts, browse and edit the service and team catalog, list severities, environments and functionalities, look up users, and read schedules, shifts and who is on call right now.\\n\\nRootly speaks JSON:API; this app hides the envelope, taking plain fields in and returning each record flattened to its attributes plus `id` and `type`. Side-loaded related records come back under `included`. The rate limit is 3,000 requests per 60 seconds.",
+    "categories": [
+      "monitoring",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Rootly"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.rootly.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

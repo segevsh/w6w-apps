@@ -1,0 +1,38 @@
+{
+  "name": "@w6w-apps/formbricks",
+  "version": "0.1.0",
+  "description": "Manage Formbricks surveys, responses, contacts, action classes and webhooks through the Management API on Formbricks Cloud.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.formbricks",
+    "displayName": "Formbricks",
+    "longDescription": "Formbricks is an open-source survey and experience-management platform: link surveys, in-app and website surveys, and the contacts and attributes that let a team target and attribute feedback. This app drives the Formbricks Cloud Management API from a workflow.\n\nIt creates, reads, updates and deletes surveys and generates single-use links; lists, reads, creates, updates and deletes responses (which runs Formbricks' own response pipeline, so webhooks and follow-up emails fire); reads contacts, contact attributes and attribute keys; manages the action classes that trigger in-app surveys; and manages webhooks that call back when a response is created, updated or finished.\n\nA key is bound to the workspaces you granted it, so every call stays within them. Health checks cover the Formbricks Cloud app, and the key's live rate-limit headroom.",
+    "categories": [
+      "forms",
+      "marketing",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Formbricks"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Formbricks"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "app.formbricks.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

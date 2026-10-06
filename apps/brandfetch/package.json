@@ -1,0 +1,26 @@
+{
+  "name": "@w6w-apps/brandfetch",
+  "version": "0.1.0",
+  "description": "Look up a brand's logos, colors, fonts and company data by domain, ticker, ISIN, crypto symbol or card transaction with Brandfetch.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.brandfetch",
+    "displayName": "Brandfetch",
+    "longDescription": "Brandfetch turns a company identifier into its brand: logos and icons in SVG, PNG and WebP, the color palette, fonts, imagery, social links, description and company facts (industry, employees, founding year, headquarters, ticker and ISIN).\n\nA workflow can look a brand up by domain, website URL, email address, brand id, stock or ETF ticker, ISIN or crypto symbol, search brands by name, read a brand's narrative context (positioning, voice and visual style) as JSON or Markdown, and resolve a raw card-transaction label to the merchant behind it. Account usage against the plan's credit allowance is readable for free.\n\nThe connection holds a Brandfetch API key, sent as a bearer token. An optional Brand Search client ID can be added; it is sent only on name searches. The Logo CDN (cdn.brandfetch.io) is not an action: it serves images straight from a URL and needs no call.",
+    "categories": ["marketing", "developer-tools"],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Brandfetch"
+      }
+    },
+    "network": {
+      "allow": ["api.brandfetch.io"]
+    },
+    "entry": "./index.ts"
+  }
+}

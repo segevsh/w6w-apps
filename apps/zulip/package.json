@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/zulip",
+  "version": "0.1.0",
+  "description": "Send, read, edit and react to Zulip messages, and manage channels, topics, subscriptions and users on a Zulip Cloud organization.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zulip",
+    "displayName": "Zulip",
+    "longDescription": "Zulip is open-source team chat organised around channels and topics. This app sends channel and direct messages, reads message history with narrow filters, edits, moves, deletes and flags messages, adds and removes emoji reactions, lists, creates, updates and archives channels, lists a channel's topics and subscribers, manages the caller's subscriptions, and looks up users. It targets Zulip Cloud organizations (<org>.zulipchat.com) and authenticates as a user or bot with its email and API key.",
+    "categories": [
+      "communication",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zulip"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.zulipchat.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

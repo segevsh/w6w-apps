@@ -1,0 +1,36 @@
+{
+  "name": "@w6w-apps/rocketchat",
+  "version": "0.1.1",
+  "description": "Post and manage Rocket.Chat messages, channels, private groups, direct messages and users over the REST API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.rocketchat",
+    "displayName": "Rocket.Chat",
+    "longDescription": "Rocket.Chat is the open-source team chat platform many organizations run for internal and customer communication. This app connects a workflow to a Rocket.Chat Cloud workspace so it can talk where the team already talks.\n\nPost messages to channels, private groups or individual users, reply inside threads, attach rich cards, edit or delete what was sent, react, and pin. Read the other direction too: pull channel, group and direct-message history for a time range, search a room, and look up users and their profiles.\n\nRoom management covers the everyday cases: list and fetch channels and private groups, create them with their initial members, invite more people, and set a channel topic. Direct messages are opened with a username and the returned room is ready for the next message.\n\nIt authenticates with a Personal Access Token and the user ID it was issued to, so the workflow acts as that user with exactly that user's permissions. Cloud workspaces on a rocket.chat subdomain are supported; self-hosted servers on their own domain are not.",
+    "categories": [
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Rocket.Chat"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Rocket.Chat"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*.rocket.chat"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

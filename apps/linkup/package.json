@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/linkup",
+  "version": "0.1.0",
+  "description": "Search the web, fetch pages, run research and batch tasks through Linkup's AI web-search API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.linkup",
+    "displayName": "Linkup",
+    "longDescription": "Linkup is a web search and fetch API built for LLMs and agents. This app exposes it to a workflow, authenticated with an API key.\n\nA workflow can search the web at four depths (flash, fast, standard, deep) and get back ranked sources with content snippets, a sourced natural-language answer (optionally with inline citations), or JSON matching a schema it supplies, with or without the sources behind it. It can fetch a single page as clean markdown (optionally rendering JavaScript, using the pro retrieval mode, pulling images or raw content, or extracting typed JSON with a schema), run a multi-step research agent, batch up to 100 search, fetch and research jobs asynchronously, and follow any of those jobs by id. It can also search and fetch the web as it was on a past day (Rewind, beta), run the closed-beta Extract agent that turns a listing page into rows, call the OpenAI-compatible responses endpoint, and read the account's credit balance.\n\nEvery call is billed in credits. Search, fetch and research are synchronous or asynchronous depending on the action: research, extract and tasks return an id to poll.",
+    "categories": [
+      "ai",
+      "search",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Linkup"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.linkup.so"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
