@@ -1,0 +1,37 @@
+{
+  "name": "@w6w-apps/wakatime",
+  "version": "0.1.1",
+  "description": "Read coding-time stats, summaries, durations, projects, goals and leaderboards from WakaTime, and send heartbeats and external durations.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.wakatime",
+    "displayName": "WakaTime",
+    "longDescription": "WakaTime tracks the time developers spend coding, automatically, through editor and IDE plugins. This app brings that data into a workflow: read a user's stats for a period, daily summaries, durations and raw heartbeats, per-project time and commits, goals, and private leaderboards.\n\nIt also writes: send heartbeats (singly or in bulk of up to 25) and external durations for activity no editor plugin sees, such as meetings, and request a data export. Insights and the all-time total give a workflow a cheap way to post a weekly coding report or react to a goal.\n\nAuthentication is the account's secret API key, sent over HTTP Basic. Health checks watch the API host; WakaTime publishes no machine-readable status feed or rate-limit headers, so those are declared unavailable.",
+    "categories": [
+      "developer-tools",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "WakaTime"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "WakaTime"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "api.wakatime.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

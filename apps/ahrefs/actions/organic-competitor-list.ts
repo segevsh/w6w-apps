@@ -1,0 +1,117 @@
+import type { ActionDefinition } from "@w6w/types";
+import { AhrefsClient, country } from "../lib/client.ts";
+
+interface Input {
+  target: string;
+  date: string;
+  country: string;
+  select?: string;
+  where?: string;
+  orderBy?: string;
+  limit?: number;
+  mode?: string;
+  protocol?: string;
+}
+const DEFAULT_SELECT =
+  "competitor_domain,domain_rating,keywords_common,keywords_competitor,traffic,share";
+/** `GET /site-explorer/organic-competitors` — response key `competitors`. */
+const organicCompetitorList: ActionDefinition<Input> = {
+  key: "organic-competitor-list",
+  type: "read",
+  resource: "domain",
+  title: "List Organic Competitors",
+  description: "List the domains that compete with a target for organic keywords.",
+  params: [
+    {
+      key: "target",
+      label: "Target",
+      type: "string",
+      required: true,
+      hint: "The domain or URL to analyse, e.g. `example.com` or `example.com/blog/`.",
+    },
+    {
+      key: "date",
+      label: "Date",
+      type: "string",
+      required: true,
+      hint: "Report date, `YYYY-MM-DD`.",
+    },
+    {
+      key: "country",
+      label: "Country",
+      type: "string",
+      required: true,
+      hint:
+        "Two-letter ISO 3166-1 country code, e.g. `us`. Omit to sum across all countries (where optional).",
+    },
+    {
+      key: "select",
+      label: "Columns",
+      type: "string",
+      hint:
+        "Comma-separated columns to return. Each extra column adds API units. Default: `competitor_domain,domain_rating,keywords_common,keywords_competitor,traffic,share`.",
+    },
+    {
+      key: "where",
+      label: "Filter",
+      type: "string",
+      hint:
+        'Optional Ahrefs filter expression (JSON text), e.g. `{"field":"is_dofollow","is":["eq",1]}`. See Ahrefs \'Filter syntax\'.',
+    },
+    {
+      key: "orderBy",
+      label: "Order by",
+      type: "string",
+      hint: "A column, optionally with direction, e.g. `traffic:desc`.",
+    },
+    {
+      key: "limit",
+      label: "Limit",
+      type: "number",
+      hint:
+        "Maximum rows to return. Ahrefs has no offset: limit is the only paging control, and every row costs units.",
+      validation: { min: 1, integer: true },
+    },
+    {
+      key: "mode",
+      label: "Scope",
+      type: "select",
+      hint: "How the target is matched. Omit for Ahrefs' default (`subdomains`).",
+      options: [{ value: "exact", label: "Exact URL" }, { value: "prefix", label: "Path prefix" }, {
+        value: "domain",
+        label: "Domain (no subdomains)",
+      }, { value: "subdomains", label: "Domain and subdomains" }],
+    },
+    {
+      key: "protocol",
+      label: "Protocol",
+      type: "select",
+      hint: "Which protocol of the target to include. Omit for `both`.",
+      options: [{ value: "both", label: "Both" }, { value: "http", label: "HTTP" }, {
+        value: "https",
+        label: "HTTPS",
+      }],
+    },
+  ],
+  output: [
+    { key: "competitors", type: "array", label: "Organic competitors" },
+    { key: "unitsCost", type: "number", label: "API units this call consumed" },
+    { key: "rows", type: "number", label: "Rows returned" },
+  ],
+
+  execute(input, ctx) {
+    return new AhrefsClient(ctx).report("/site-explorer/organic-competitors", {
+      target: input.target,
+      date: input.date,
+      country: country(input.country),
+      select: input.select ?? DEFAULT_SELECT,
+      where: input.where,
+      order_by: input.orderBy,
+      limit: input.limit,
+      mode: input.mode,
+      protocol: input.protocol,
+    });
+  },
+};
+
+export default organicCompetitorList;

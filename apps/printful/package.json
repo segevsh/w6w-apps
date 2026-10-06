@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/printful",
+  "version": "0.1.0",
+  "description": "Manage Printful print-on-demand products, orders, shipping rates, files and webhooks through the Printful API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.printful",
+    "displayName": "Printful",
+    "longDescription": "Printful is a print-on-demand and dropshipping service: you upload a design, Printful prints it on a blank product (shirts, mugs, posters and so on), packs it and ships it to your customer. This app connects a workflow to the Printful v1 REST API with a private token.\n\nA workflow can browse the product catalog (products, variants, categories, size guides), list and read the products synced into a store, create and delete synced products, add print files to the file library, and read their processing status. It can create orders as drafts or submit them for fulfillment, update, confirm and cancel them, list and read orders, estimate order costs and calculate shipping rates for a recipient. It can also set, read and disable the store's webhook, which is how Printful pushes shipping, order and stock events out.\n\nPrintful wraps every response in a `{code, result, paging}` envelope and reports errors with an `error.reason`; this app unwraps the envelope and reports the reason. An account-level token additionally takes a Store ID. Health checks read the API component of Printful's status page, whether the API answers, and the rate-limit headroom.",
+    "categories": [
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Printful"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.printful.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

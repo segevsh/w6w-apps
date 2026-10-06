@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/taskade",
+  "version": "0.1.0",
+  "description": "Manage Taskade workspaces, folders, projects, tasks, assignees, due dates, notes and AI agents through the Taskade REST API v1.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.taskade",
+    "displayName": "Taskade",
+    "longDescription": "Taskade is a collaborative workspace where projects are outlines of tasks that teams, AI agents and automations work on together. This app connects a workflow to the Taskade REST API (v1) with a Personal Access Token.\n\nA workflow can list the workspaces a token can see, the folders (subspaces) inside a workspace and the projects, AI agents, media and project templates inside a folder. It can read, create, copy, complete and restore projects; list, read, create, edit, move, complete, reopen and delete the tasks inside a project; read and set a task's assignees, due date and note; and read a project's members, custom fields and share link. It can also read an AI agent and its conversations.\n\nTaskade answers every failure with an `ok: false` envelope carrying a stable `code`, and this app reports that code. Health checks verify the token, whether the API answers, the per-token rate-limit headroom and Taskade's own status page.",
+    "categories": [
+      "project-management",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Taskade"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.taskade.com",
+        "taskade.statuspage.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

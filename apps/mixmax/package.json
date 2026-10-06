@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/mixmax",
+  "version": "0.1.0",
+  "description": "Send and schedule email, manage sequences and their recipients, and read templates, tasks, teams and unsubscribes through the Mixmax API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.mixmax",
+    "displayName": "Mixmax",
+    "longDescription": "Mixmax is an email engagement and sales-outreach platform that works inside Gmail and Outlook: tracked email, templates, scheduled sends, meeting links and multi-step sequences. This app connects a workflow to the Mixmax REST API with an API token created under Settings > Integrations.\n\nA workflow can list and read messages, create a draft email and send it (optionally updating it first), and run sequences: list sequences and folders, add recipients with per-recipient variables and a scheduled time, list a sequence's recipients, look up a recipient's status across sequences by email, and exit recipients (or everyone) from a sequence. It can read templates and snippets, list tasks with Mixmax's task query language, read teams and their members, and manage the unsubscribe list that stops every sequence from emailing a contact.\n\nLists are returned as results with the cursor and a has-more flag for the next page. Health checks watch the API components of Mixmax's status page and whether the API answers, and verify the token.",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Mixmax"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.mixmax.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
