@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/acumbamail",
+  "version": "0.1.0",
+  "description": "Manage Acumbamail email marketing: subscriber lists, subscribers, campaigns, templates, transactional email, SMS and list webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.acumbamail",
+    "displayName": "Acumbamail",
+    "longDescription": "Acumbamail is an email and SMS marketing platform. This app drives its REST API from a workflow.\n\nCreate and delete subscriber lists, read their stats and fields, add merge fields; add, batch-add, search, unsubscribe and delete subscribers; create and send campaigns and read their totals, openers, clickers, links and ISP/browser/OS breakdowns; create and duplicate templates; send a transactional email or SMS; and configure a list's event webhook.\n\nAcumbamail's API is a flat set of named functions (https://acumbamail.com/api/1/{function}/) authenticated by a per-account auth token; the vendor documents several functions with per-minute request limits, and answers 429 past them.",
+    "categories": [
+      "marketing",
+      "email"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Acumbamail"
+      }
+    },
+    "network": {
+      "allow": [
+        "acumbamail.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

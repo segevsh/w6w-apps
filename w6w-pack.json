@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.165.0",
+  "version": "0.166.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -17,6 +17,9 @@
     },
     {
       "path": "./apps/acuityscheduling"
+    },
+    {
+      "path": "./apps/acumbamail"
     },
     {
       "path": "./apps/adalo"
@@ -949,6 +952,9 @@
       "path": "./apps/metabase"
     },
     {
+      "path": "./apps/metricool"
+    },
+    {
       "path": "./apps/microsoft-entra-id"
     },
     {
@@ -989,6 +995,9 @@
     },
     {
       "path": "./apps/motion"
+    },
+    {
+      "path": "./apps/mural"
     },
     {
       "path": "./apps/mux"
@@ -1256,6 +1265,9 @@
     },
     {
       "path": "./apps/relevanceai"
+    },
+    {
+      "path": "./apps/rendex"
     },
     {
       "path": "./apps/replicate"
@@ -1706,6 +1718,9 @@
     },
     {
       "path": "./apps/zoho-invoice"
+    },
+    {
+      "path": "./apps/zoho-projects"
     },
     {
       "path": "./apps/zoho-recruit"

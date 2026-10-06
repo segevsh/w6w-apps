@@ -28,6 +28,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | acculynx | crm | bearer-token | 29 |
 | activecampaign | marketing, crm | api-key | 13 |
 | acuityscheduling | calendar | basic, oauth2 | 9 |
+| acumbamail | marketing, email | auth-token | 32 |
 | adalo | developer-tools, databases | api-key | 5 |
 | addevent | calendar, scheduling | bearer-token | 22 |
 | adyen | commerce | api-key | 24 |
@@ -334,6 +335,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mercury | finance | bearer-token | 30 |
 | messagebird | communication, phone-sms | api-key | 7 |
 | metabase | analytics, databases | api-key | 17 |
+| metricool | social-media, marketing | user-token | 18 |
 | microsoft-entra-id | security, productivity | oauth2 | 28 |
 | microsoft-todo | productivity, project-management | oauth2 | 19 |
 | mighty-networks | communication, social-media | api-token | 31 |
@@ -348,6 +350,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | moneybird | finance, accounting | personal-token, oauth2 | 11 |
 | mongodb-atlas | databases, devops | service-account | 19 |
 | motion | productivity, project-management, calendar | api-key | 27 |
+| mural | productivity, project-management | oauth2 | 30 |
 | mux | video, developer-tools, analytics | basic | 14 |
 | nationbuilder | crm | api-token, oauth2 | 23 |
 | netlify | devops | personal-access-token | 10 |
@@ -436,6 +439,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | redtail-crm | crm | database-credentials | 25 |
 | regfox | forms, commerce | api-key | 31 |
 | relevanceai | ai, productivity, developer-tools | api-key | 12 |
+| rendex | developer-tools, monitoring | api-key | 18 |
 | replyio | marketing, crm, email | api-key | 18 |
 | resend | email, communication | api-key | 24 |
 | respondio | support, crm, communication | api-token | 28 |
@@ -583,6 +587,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | zoho-creator | app-builder | oauth2 (×9 DCs) | 10 |
 | zoho-inventory | commerce, accounting | oauth2 (×8 DCs) | 17 |
 | zoho-invoice | accounting, finance | oauth2 (×8 DCs) | 22 |
+| zoho-projects | project-management | oauth2 (×11 DCs) | 34 |
 | zoho-recruit | hr, crm | oauth2 (×10 DCs) | 22 |
 | zoho-sheet | productivity, spreadsheets | oauth2 (×7 DCs) | 10 |
 | zoho-sign | documents, legal | oauth2 (×10 DCs) | 12 |

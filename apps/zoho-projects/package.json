@@ -1,0 +1,40 @@
+{
+  "name": "@w6w-apps/zoho-projects",
+  "version": "0.1.0",
+  "description": "Manage Zoho Projects portals, projects, tasks, task lists, milestones, issues and time logs.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-projects",
+    "displayName": "Zoho Projects",
+    "longDescription": "Zoho Projects puts project management into a workflow: list portals, users and projects, create, update, trash and restore projects, manage task lists, tasks, milestones and issues (bugs), and read, log and edit time.\n\nIt uses the current V3 API (`/api/v3`). Zoho hosts every account in one of eleven regional data centres, each with its own sign-in endpoint and API host, so this app routes each region through its own dedicated connection rather than one that could send a request to the wrong region.\n\nFilters, bulk operations, comments, attachments, dependencies, custom fields, forums, documents, users administration, templates and automation are deliberately left out.",
+    "categories": [
+      "project-management"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho Projects"
+      }
+    },
+    "network": {
+      "allow": [
+        "projects.zoho.com",
+        "projects.zoho.eu",
+        "projects.zoho.in",
+        "projects.zoho.com.au",
+        "projects.zoho.jp",
+        "projects.zohocloud.ca",
+        "projects.zoho.com.cn",
+        "projects.zoho.sa",
+        "projects.zoho.uk",
+        "projects.zoho.ae",
+        "projects.zoho.sg"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
