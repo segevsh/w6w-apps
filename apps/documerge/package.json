@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/documerge",
+  "version": "0.1.0",
+  "description": "Generate documents from DocuMerge templates and routes, manage their fields and delivery methods, and run its PDF tools from a workflow.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.documerge",
+    "displayName": "DocuMerge",
+    "longDescription": "DocuMerge generates documents (PDF, Word, Excel, HTML, images, email) by merging data into templates. This app lets a workflow drive it end to end.\n\nIt manages documents (templates) and routes (packs that merge several documents into one): list, fetch, create, update, copy and delete them, and manage each one's merge fields and delivery methods (webhook, email and so on). A merge is queued by the document's or route's key with the field values to merge in, and DocuMerge delivers the result through the configured delivery methods.\n\nIt also exposes the PDF tools: combine several files into one PDF or Word file, compress, convert, password-protect and split PDFs. Tool results come back as base64 so a later step can store or send them.",
+    "categories": [
+      "documents"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "DocuMerge"
+      }
+    },
+    "network": {
+      "allow": [
+        "app.documerge.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

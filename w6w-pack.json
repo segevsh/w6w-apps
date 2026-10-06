@@ -4,10 +4,13 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.174.0",
+  "version": "0.175.0",
   "apps": [
     {
       "path": "./apps/2chat"
+    },
+    {
+      "path": "./apps/accelo"
     },
     {
       "path": "./apps/acculynx"
@@ -70,6 +73,9 @@
       "path": "./apps/amplitude"
     },
     {
+      "path": "./apps/anchor"
+    },
+    {
       "path": "./apps/anthropic"
     },
     {
@@ -95,6 +101,9 @@
     },
     {
       "path": "./apps/auth0"
+    },
+    {
+      "path": "./apps/autotask"
     },
     {
       "path": "./apps/avoma"
@@ -233,6 +242,9 @@
     },
     {
       "path": "./apps/capsulecrm"
+    },
+    {
+      "path": "./apps/certifier"
     },
     {
       "path": "./apps/chargebee"
@@ -409,6 +421,9 @@
       "path": "./apps/document360"
     },
     {
+      "path": "./apps/documerge"
+    },
+    {
       "path": "./apps/docuseal"
     },
     {
@@ -457,6 +472,9 @@
       "path": "./apps/edenai"
     },
     {
+      "path": "./apps/egnyte"
+    },
+    {
       "path": "./apps/elastic"
     },
     {
@@ -470,6 +488,9 @@
     },
     {
       "path": "./apps/encharge"
+    },
+    {
+      "path": "./apps/enrichlayer"
     },
     {
       "path": "./apps/erpnext"
@@ -509,6 +530,9 @@
     },
     {
       "path": "./apps/facebook-messenger"
+    },
+    {
+      "path": "./apps/fareharbor"
     },
     {
       "path": "./apps/fathom"
@@ -560,6 +584,9 @@
     },
     {
       "path": "./apps/formidableforms"
+    },
+    {
+      "path": "./apps/formsite"
     },
     {
       "path": "./apps/formspark"

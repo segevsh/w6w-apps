@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/enrichlayer",
+  "version": "0.1.0",
+  "description": "Enrich people, companies, jobs and schools: profile lookups, dataset search, work and personal emails and phones, reverse email and phone lookup, and the credit balance.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.enrichlayer",
+    "displayName": "Enrich Layer",
+    "longDescription": "Enrich Layer is a B2B data enrichment API with structured data on over a billion people, tens of millions of companies and hundreds of millions of jobs. This app covers the v2 API: get a person, company, school or job profile from a public profile URL; look people up by name and company, by role at a company, or by email or phone number; search the people and company datasets by criteria; list a company's employees or a school's students; count employees and open jobs; find personal emails and phone numbers, request a work email, and check whether an address is disposable.\n\nEvery call spends credits, and each action's description states its cost (profile lookups 1 to 3 credits; employee and student listings per result; search 3 credits per result). The credit balance, the profile pictures and the ID and disposable-email lookups are free.\n\nHealth checks verify the API key, whether the API is answering, Enrich Layer's per-endpoint status page, and the remaining credit balance.",
+    "categories": [
+      "crm",
+      "marketing"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Enrich Layer"
+      }
+    },
+    "network": {
+      "allow": [
+        "enrichlayer.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
