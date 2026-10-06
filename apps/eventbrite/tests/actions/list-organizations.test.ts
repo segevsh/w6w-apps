@@ -21,3 +21,9 @@ Deno.test("list-organizations: omits page when undefined", async () => {
   const url = new URL(calls[0].url);
   assert(!url.searchParams.has("page"), "page must not be sent when undefined");
 });
+
+Deno.test("list-organizations: userId routes to /users/{id}/organizations/", async () => {
+  const { ctx, calls } = mockCtx([{ body: { organizations: [], pagination: {} } }]);
+  await action.execute!({ userId: "u-9" }, ctx);
+  assertEquals(new URL(calls[0].url).pathname, "/v3/users/u-9/organizations/");
+});

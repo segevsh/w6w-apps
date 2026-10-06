@@ -162,7 +162,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | emailoctopus | marketing, email | api-key | 25 |
 | erpnext | crm, commerce | api-key | 10 |
 | esignatures | legal, documents | secret-token | 24 |
-| eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
+| eventbrite | commerce, calendar | personal-token, oauth2 | 93 |
 | everhour | productivity, project-management, finance | api-key | 97 |
 | exa | ai, search, developer-tools | api-key | 9 |
 | excel | spreadsheets, productivity | oauth2 | 16 |

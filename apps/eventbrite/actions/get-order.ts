@@ -12,6 +12,7 @@ const DEFAULT_EXPAND =
 const getOrder: ActionDefinition<Input> = {
   key: "get-order",
   type: "read",
+  idempotent: true,
   resource: "order",
   title: "Get Order",
   description: "Retrieve a single order by ID.",
@@ -19,10 +20,21 @@ const getOrder: ActionDefinition<Input> = {
     { key: "orderId", label: "Order ID", type: "string", required: true },
     { key: "expand", label: "Expand", type: "string", default: DEFAULT_EXPAND },
   ],
+  output: [
+    { key: "id", type: "string", label: "Order ID" },
+    { key: "created", type: "string", label: "Created" },
+    { key: "changed", type: "string", label: "Changed" },
+    { key: "name", type: "string", label: "Buyer name" },
+    { key: "email", type: "string", label: "Buyer email" },
+    { key: "status", type: "string", label: "Status" },
+    { key: "costs", type: "object", label: "Costs" },
+    { key: "event_id", type: "string", label: "Event ID" },
+    { key: "attendees", type: "array", label: "Attendees" },
+  ],
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
-    return client.request(`/orders/${input.orderId}/`, {
+    return client.request(`/orders/${encodeURIComponent(input.orderId)}/`, {
       query: { expand: input.expand ?? DEFAULT_EXPAND },
     });
   },

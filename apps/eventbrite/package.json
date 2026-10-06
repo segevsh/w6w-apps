@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/eventbrite",
-  "version": "0.2.4",
-  "description": "Read events, orders, attendees and ticket classes from Eventbrite.",
+  "version": "0.3.0",
+  "description": "Create and run Eventbrite events end to end: events, tickets, inventory, discounts, orders, attendees, venues, questions and webhooks.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -10,7 +10,7 @@
   "w6w": {
     "id": "io.w6w.eventbrite",
     "displayName": "Eventbrite",
-    "longDescription": "Eventbrite reads events, orders and attendees directly into a workflow — listing and fetching events, pulling the orders and attendees tied to them, and reading ticket classes to see what was actually offered for sale.\n\nOrganizations and organizers are available too: an account's organizations can be listed, and organizers can be listed or fetched individually, which matters for anyone managing events across more than one Eventbrite organizer profile.\n\nA fit for keeping attendee and order data in sync with a CRM or spreadsheet, triggering follow-up actions once an event's attendee list is known, or reporting on ticket sales without logging into Eventbrite's own dashboard. This app reads Eventbrite data; it does not create or modify events, orders or tickets.",
+    "longDescription": "Eventbrite covers the whole event lifecycle from a workflow: create, update, copy, publish, unpublish, cancel and delete events, set their description and structured content, and add schedules to event series. Ticket classes, ticket groups, inventory tiers, capacity and seat maps can be read and changed, as can discounts, display settings and the checkout questions a buyer answers.\n\nOn the sales side it lists and fetches orders and attendees, refunds orders, and pulls sales and attendee reports. Venues, organizers, organization members and roles, event teams, categories, formats and media are available too, and organization webhooks can be created, listed and deleted.\n\nA fit for publishing events from a CRM or content system, keeping attendee and order data in sync with a spreadsheet, opening a discount code when a campaign starts, or following up once an event's attendee list is known. Uploading an image is the one step that needs outside help: Eventbrite sends the file to a separate storage host, which this app cannot reach.",
     "categories": [
       "commerce",
       "calendar"

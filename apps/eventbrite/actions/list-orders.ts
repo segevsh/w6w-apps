@@ -2,10 +2,11 @@ import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 
 interface Input {
-  scope: "event" | "organization";
+  scope: "event" | "organization" | "user";
   scopeId: string;
   status?: string;
   changedSince?: string;
+  timeFilter?: string;
   onlyEmails?: string;
   excludeEmails?: string;
   expand?: string;
@@ -21,7 +22,7 @@ const listOrders: ActionDefinition<Input> = {
   type: "read",
   resource: "order",
   title: "List Orders",
-  description: "List orders for an event or organization.",
+  description: "List orders for an event, an organization, or a user.",
   params: [
     {
       key: "scope",
@@ -32,6 +33,7 @@ const listOrders: ActionDefinition<Input> = {
       options: [
         { value: "event", label: "Event" },
         { value: "organization", label: "Organization" },
+        { value: "user", label: "User" },
       ],
     },
     {
@@ -39,7 +41,8 @@ const listOrders: ActionDefinition<Input> = {
       label: "Scope ID",
       type: "string",
       required: true,
-      hint: "Event ID when scope is `event`, organization ID when scope is `organization`.",
+      hint:
+        "Event ID when scope is `event`, organization ID when scope is `organization`, user ID when scope is `user`.",
     },
     {
       key: "status",
@@ -48,6 +51,17 @@ const listOrders: ActionDefinition<Input> = {
       hint: "e.g. `placed`, `refunded`, `transferred`.",
     },
     { key: "changedSince", label: "Changed since (ISO datetime)", type: "string" },
+    {
+      key: "timeFilter",
+      label: "Time filter",
+      type: "select",
+      hint: "Only used when scope is `user`.",
+      options: [
+        { value: "all", label: "All" },
+        { value: "past", label: "Past" },
+        { value: "current_future", label: "Current and future" },
+      ],
+    },
     { key: "onlyEmails", label: "Only emails (comma-separated)", type: "string" },
     { key: "excludeEmails", label: "Exclude emails (comma-separated)", type: "string" },
     { key: "expand", label: "Expand", type: "string", default: DEFAULT_EXPAND },
@@ -61,13 +75,17 @@ const listOrders: ActionDefinition<Input> = {
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
+    const id = encodeURIComponent(input.scopeId);
     const path = input.scope === "organization"
-      ? `/organizations/${input.scopeId}/orders/`
-      : `/events/${input.scopeId}/orders/`;
+      ? `/organizations/${id}/orders/`
+      : input.scope === "user"
+      ? `/users/${id}/orders/`
+      : `/events/${id}/orders/`;
     return client.request<EventbriteListResponse<"orders">>(path, {
       query: {
         status: input.status,
         changed_since: input.changedSince,
+        time_filter: input.scope === "user" ? input.timeFilter : undefined,
         only_emails: input.onlyEmails,
         exclude_emails: input.excludeEmails,
         expand: input.expand ?? DEFAULT_EXPAND,
