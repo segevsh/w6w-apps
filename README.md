@@ -109,6 +109,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | cloudconvert | documents, developer-tools | api-token | 18 |
 | cloudflare | devops | api-token | 8 |
 | cloudinary | storage, documents, developer-tools | basic | 21 |
+| cloze | crm | api-key | 41 |
 | coda | productivity, documents | api-token | 11 |
 | cognitoforms | forms, productivity | bearer-token | 12 |
 | coingecko | finance, analytics | demo-api-key, pro-api-key | 18 |
@@ -328,6 +329,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | mautic | marketing, email | client-credentials | 28 |
 | meilisearch | search, databases, developer-tools | api-key | 24 |
 | meistertask | project-management, productivity | personal-access-token, oauth2 | 34 |
+| mem | productivity, ai | api-key | 26 |
 | memberstack | security, commerce, databases | secret-key | 15 |
 | mercury | finance | bearer-token | 30 |
 | messagebird | communication, phone-sms | api-key | 7 |
@@ -407,6 +409,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | postmark | email, communication | api-key | 13 |
 | powerbi | analytics | oauth2 | 18 |
 | practicebetter | scheduling, healthcare | client-credentials | 26 |
+| printavo | crm, finance, commerce | credentials | 38 |
 | processstreet | productivity, project-management | api-key | 15 |
 | procore | project-management, documents | oauth2, oauth2-sandbox | 20 |
 | productboard | project-management, productivity, support | api-token | 41 |
@@ -512,6 +515,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | thrivecart | commerce, marketing | api-token | 33 |
 | tickettailor | commerce | api-key | 41 |
 | ticktick | productivity, project-management | oauth2 | 23 |
+| tidio | support, communication | client-credentials | 24 |
 | tidycal | calendar, productivity | personal-token, oauth2 | 18 |
 | tiktok-lead-generation | marketing, social-media | access-token | 4 |
 | tldv | ai, productivity, video | api-key | 5 |
@@ -554,6 +558,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | wistia | video, marketing, analytics | api-token | 22 |
 | wix | cms, crm, commerce | api-key | 24 |
 | woocommerce | commerce | api-key | 13 |
+| woodpecker | marketing, email | api-key | 30 |
 | wordpress | cms | basic, oauth2 | 15 |
 | workable | hr | access-token | 15 |
 | workday | hr | refresh-token | 25 |

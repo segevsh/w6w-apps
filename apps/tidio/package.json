@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/tidio",
+  "version": "0.1.0",
+  "description": "Manage Tidio: contacts, conversations, tickets, operators and Lyro AI knowledge.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.tidio",
+    "displayName": "Tidio",
+    "longDescription": "Tidio is a customer-service platform: a live chat widget, the Lyro AI agent, automation flows and a ticketing system. This app drives Tidio's OpenAPI from a workflow.\n\nCreate, read, update, delete and batch-write contacts and their custom properties; read a contact's conversation and viewed pages, and post a message as the contact; create, list, update, reply to and delete tickets; and look up operators, departments, ticket tags and custom fields. It can also list Lyro data sources and add a Q&A item to Lyro's knowledge.\n\nThe OpenAPI needs a Plus or Premium Tidio plan (the Products endpoints need a paid Lyro plan and are not part of this app). Analytics API and webhooks are separate surfaces and are not covered.",
+    "categories": [
+      "support",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Tidio"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.tidio.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

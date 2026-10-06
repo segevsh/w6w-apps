@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.164.0",
+  "version": "0.165.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -266,6 +266,9 @@
     },
     {
       "path": "./apps/cloudinary"
+    },
+    {
+      "path": "./apps/cloze"
     },
     {
       "path": "./apps/coda"
@@ -931,6 +934,9 @@
       "path": "./apps/meistertask"
     },
     {
+      "path": "./apps/mem"
+    },
+    {
       "path": "./apps/memberstack"
     },
     {
@@ -1169,6 +1175,9 @@
     },
     {
       "path": "./apps/practicebetter"
+    },
+    {
+      "path": "./apps/printavo"
     },
     {
       "path": "./apps/processstreet"
@@ -1492,6 +1501,9 @@
       "path": "./apps/ticktick"
     },
     {
+      "path": "./apps/tidio"
+    },
+    {
       "path": "./apps/tidycal"
     },
     {
@@ -1619,6 +1631,9 @@
     },
     {
       "path": "./apps/woocommerce"
+    },
+    {
+      "path": "./apps/woodpecker"
     },
     {
       "path": "./apps/wordpress"
