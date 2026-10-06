@@ -18,7 +18,15 @@ const getEvent: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "expand", label: "Expand", type: "string", default: "venue,ticket_classes" },
   ],
-  output: [...EVENT_OUTPUT],
+  // `expand` (default `venue,ticket_classes`) inlines these alongside the event.
+  output: [
+    ...EVENT_OUTPUT,
+    { key: "venue", type: "object", label: "Venue (expanded)" },
+    { key: "venue.name", type: "string", label: "Venue name" },
+    { key: "venue.address.localized_address_display", type: "string", label: "Venue address" },
+    { key: "venue.address.city", type: "string", label: "Venue city" },
+    { key: "ticket_classes", type: "array", label: "Ticket classes (expanded)" },
+  ],
 
   execute(input, ctx) {
     const client = new EventbriteClient(ctx);
