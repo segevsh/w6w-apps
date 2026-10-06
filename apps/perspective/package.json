@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/perspective",
+  "version": "0.1.0",
+  "description": "Read Perspective funnel workspaces, contacts and analytics, and create or update CRM contacts.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.perspective",
+    "displayName": "Perspective",
+    "longDescription": "Perspective is a mobile-first funnel builder for marketing and recruiting teams: quiz, lead-generation and booking funnels that capture contacts as visitors work through them. This app connects a workflow to the funnels a company already runs in Perspective, through its External REST API.\n\nA workflow can discover the workspaces and funnels (campaigns) behind an API key, page through a funnel's CRM contacts with their UTM attribution, custom properties and sent messages, create a contact, and write a single field or custom property on an existing one. On the analytics side it reads the three metric families Perspective exposes: single-number KPIs such as conversion and completion rate, chart series such as page-to-page conversion and top UTM sources, and per-question insights that count each answer a funnel's respondents chose.\n\nPerspective's documented REST surface is small and this app covers all of it. Email sequences, funnel building and brands are managed through Perspective's MCP server rather than REST, so they are not part of this app. The API allows 100 requests per minute and answers every failure with a JSON error body, which the actions surface verbatim.",
+    "categories": [
+      "marketing",
+      "crm",
+      "analytics"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Perspective"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.perspective.co"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

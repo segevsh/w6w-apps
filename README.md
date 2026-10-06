@@ -153,6 +153,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | elevenlabs | ai | api-key | 22 |
 | emailoctopus | marketing, email | api-key | 25 |
 | erpnext | crm, commerce | api-key | 10 |
+| esignatures | legal, documents | secret-token | 24 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
 | exa | ai, search, developer-tools | api-key | 9 |
 | excel | spreadsheets, productivity | oauth2 | 16 |
@@ -178,6 +179,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | formidableforms | forms, productivity | basic | 15 |
 | formspark | forms, developer-tools | api-token | 16 |
 | formstack | forms, productivity | access-token | 9 |
+| fortnox | finance, productivity | oauth2 | 54 |
 | freeagent | finance | oauth2 | 28 |
 | freshbooks | accounting, finance, productivity | oauth2 | 19 |
 | freshdesk | support | api-key | 13 |
@@ -373,6 +375,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pennylane | accounting, finance | oauth2 | 22 |
 | perplexity | ai | api-key | 5 |
 | personio | hr | client-credentials | 16 |
+| perspective | marketing, crm, analytics | api-key | 8 |
 | phantombuster | automation, developer-tools, ai | api-key | 14 |
 | pinecone | ai, databases, search | api-key | 24 |
 | pinterest | social-media, marketing | oauth2 | 16 |
@@ -503,8 +506,10 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | typefully | social-media, marketing | api-key | 25 |
 | typesense | search, databases | api-key | 16 |
 | unbounce | marketing, forms, analytics | api-key, oauth2 | 24 |
+| upsales | crm, marketing | api-key | 68 |
 | upstash | databases | rest-token | 15 |
 | uptimerobot | monitoring | api-key | 8 |
+| uscreen | video, commerce | api-key | 33 |
 | vanta | legal, security, monitoring | client-credentials | 25 |
 | vapi | ai, communication | private-key | 18 |
 | vercel | devops, developer-tools | access-token, oauth2 | 28 |
