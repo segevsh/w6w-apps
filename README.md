@@ -155,6 +155,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | erpnext | crm, commerce | api-key | 10 |
 | esignatures | legal, documents | secret-token | 24 |
 | eventbrite | commerce, calendar | personal-token, oauth2 | 10 |
+| everhour | productivity, project-management, finance | api-key | 97 |
 | exa | ai, search, developer-tools | api-key | 9 |
 | excel | spreadsheets, productivity | oauth2 | 16 |
 | eztexting | communication, marketing | basic | 31 |
@@ -255,6 +256,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | instapaper | productivity | xauth | 17 |
 | intercom | support, communication, crm | access-token, oauth2 | 14 |
 | invoiceninja | commerce, finance | api-token | 40 |
+| iterable | marketing, email | api-key | 54 |
 | jenkins | devops | basic | 6 |
 | jibble | productivity, hr | client-credentials | 25 |
 | jinaai | ai, developer-tools | bearer-token | 15 |
@@ -291,6 +293,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | linkedin-conversions | marketing, analytics | oauth2 | 7 |
 | littlegreenlight | crm, finance | bearer-token | 12 |
 | livestorm | video, communication | api-key | 40 |
+| lob | marketing, developer-tools | api-key | 37 |
 | lodgify | crm, calendar | api-key | 30 |
 | lofty | crm, communication | api-key | 32 |
 | lokalise | developer-tools, cms | api-token | 31 |
@@ -384,6 +387,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | plaid | finance, databases | client-secret, client-secret-sandbox | 14 |
 | planningcenter | crm, calendar, finance | personal-access-token | 6 |
 | plaud | ai, productivity | custom | 7 |
+| plivo | communication | basic | 21 |
 | podio | project-management, databases, productivity | app-auth, oauth2 | 29 |
 | postbin | developer-tools | none | 5 |
 | posthog | analytics | personal-api-key | 8 |
@@ -500,6 +504,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | trustpilot | marketing, reviews | api-key, client-credentials | 11 |
 | tumblr | social-media, cms | oauth2 | 23 |
 | twilio | communication | api-key | 2 |
+| twist | communication, productivity | oauth2, api-token | 111 |
 | twitch | video, social-media, communication | app-access-token, user-access-token | 28 |
 | twitter | social-media | oauth2 | 8 |
 | typeform | forms, productivity | personal-access-token, oauth2 | 10 |
