@@ -1,0 +1,32 @@
+{
+  "name": "@w6w-apps/pardot",
+  "version": "0.1.0",
+  "description": "Manage prospects, lists, tags, campaigns and marketing assets in Salesforce Account Engagement (Pardot) through API v5.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.pardot",
+    "displayName": "Pardot",
+    "longDescription": "Pardot, now Salesforce Account Engagement, is Salesforce's B2B marketing automation platform. This app brings its prospect database into a workflow on the current API v5: create, update, upsert by email and delete prospects, tag them, and move them on and off lists.\n\nQuery actions cover the rest of what a marketing workflow needs to look up first \u2014 campaigns, prospect accounts, custom fields, forms, form handlers, landing pages and sent emails \u2014 plus visitors and visitor activities, so a workflow can react to what a prospect actually did. Every query pages with the API's own page token and defaults to a useful field list that you can widen, including custom fields.\n\nConnect with Salesforce OAuth (production or sandbox) or a pasted access token, together with your business unit id. A health check tracks Account Engagement's own Salesforce Trust status and whether the API host is answering.",
+    "categories": [
+      "marketing",
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Pardot"
+      }
+    },
+    "network": {
+      "allow": [
+        "pi.pardot.com",
+        "pi.demo.pardot.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

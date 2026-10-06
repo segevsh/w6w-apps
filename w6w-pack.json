@@ -4,10 +4,13 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.157.0",
+  "version": "0.158.0",
   "apps": [
     {
       "path": "./apps/2chat"
+    },
+    {
+      "path": "./apps/acculynx"
     },
     {
       "path": "./apps/activecampaign"
@@ -892,6 +895,9 @@
       "path": "./apps/metabase"
     },
     {
+      "path": "./apps/microsoft-entra-id"
+    },
+    {
       "path": "./apps/microsoft-todo"
     },
     {
@@ -1019,6 +1025,9 @@
     },
     {
       "path": "./apps/paperform"
+    },
+    {
+      "path": "./apps/pardot"
     },
     {
       "path": "./apps/parseur"
@@ -1277,6 +1286,9 @@
     },
     {
       "path": "./apps/signwell"
+    },
+    {
+      "path": "./apps/simplero"
     },
     {
       "path": "./apps/simpletexting"
@@ -1580,6 +1592,9 @@
     },
     {
       "path": "./apps/zoho-campaigns"
+    },
+    {
+      "path": "./apps/zoho-cliq"
     },
     {
       "path": "./apps/zoho-creator"

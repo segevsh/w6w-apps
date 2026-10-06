@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/microsoft-entra-id",
+  "version": "0.1.0",
+  "description": "Manage Microsoft Entra ID users, groups, directory roles, applications and deleted items through the Microsoft Graph API.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.microsoft-entra-id",
+    "displayName": "Microsoft Entra ID",
+    "longDescription": "Microsoft Entra ID (formerly Azure Active Directory) is the identity directory behind Microsoft 365 and Azure, and this app manages it through the Microsoft Graph API.\n\nIt covers the day-to-day work of an identity administrator: listing, finding, creating, updating, disabling and deleting users; resetting a password; creating and managing security and Microsoft 365 groups, including their members and owners; reading which directory roles are activated and who holds them; looking up the app registrations and service principals in a tenant; reading the organization's profile; and listing and restoring deleted users and groups before the 30-day recycle window closes.\n\nTwo things from Microsoft's own model are worth knowing before you build a workflow on it. Nearly every permission here needs a tenant administrator to consent, and the signed-in user also needs a directory role such as User Administrator for writes. And directory queries that filter on anything unusual, sort, search or count have to opt into Graph's advanced query path, which reads from an index that can lag a write by a few moments. The app handles the header for you.\n\nIt does not manage licenses, conditional access policies, role assignments, sign-in logs, devices or app registrations' secrets; those are separate Graph surfaces.",
+    "categories": [
+      "security",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Microsoft Entra ID"
+      }
+    },
+    "network": {
+      "allow": [
+        "graph.microsoft.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
