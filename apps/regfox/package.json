@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/regfox",
+  "version": "0.1.0",
+  "description": "Search RegFox (Webconnex) orders, registrants, tickets, transactions, customers and memberships, check attendees in and out, manage coupons and webhooks, and read forms and inventory.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.regfox",
+    "displayName": "RegFox",
+    "longDescription": "RegFox is Webconnex's event-registration product, and the Webconnex API reaches the same account data for its sibling products TicketSpice, RedPodium and GivingFuel. This app lets a workflow look up what happened on a registration form: search and fetch orders, registrants, tickets, transactions, customers, recurring subscriptions and memberships, with every date and id filter the API documents, and expand an order or form to include its children in one call.\n\nOn the day of the event it checks a registrant in or out by id or by the display id printed on their ticket. For promotion it creates, reads and deletes coupons (global or form-scoped), and reads a form's live inventory so a workflow can react to a sell-out. It also manages webhooks, so a registration, publish, coupon or inventory event can start a workflow, and it can read a webhook's delivery log and resend a delivery that failed.\n\nThe API key is sent as an `apiKey` header. Webhook signing secrets are never returned from list or read actions.",
+    "categories": [
+      "forms",
+      "commerce"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "RegFox"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.webconnex.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

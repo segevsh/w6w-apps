@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/zoho-workdrive",
+  "version": "0.1.0",
+  "description": "Manage Zoho WorkDrive files, folders, team folders, search and share links.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.zoho-workdrive",
+    "displayName": "Zoho WorkDrive",
+    "longDescription": "Zoho WorkDrive puts a team file store into a workflow: list teams and team members, browse and create team folders and folders, list a folder's contents, read file metadata and versions, rename, move, copy, trash, restore or permanently delete files and folders, upload a file, search a team by name and content, and create, list and revoke external download links.\\n\\nZoho hosts every account in one of nine regional data centres, each with its own sign-in endpoint, so this app routes each region through its own dedicated connection rather than one that could send a request to the wrong region.\\n\\nChunked uploads over 250 MB, binary downloads, workflows, data templates, collections, comments, groups, labels and member sharing are deliberately left out.",
+    "categories": [
+      "documents",
+      "storage"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Zoho WorkDrive"
+      }
+    },
+    "network": {
+      "allow": [
+        "www.zohoapis.com",
+        "www.zohoapis.eu",
+        "www.zohoapis.in",
+        "www.zohoapis.com.au",
+        "www.zohoapis.jp",
+        "www.zohoapis.com.cn",
+        "www.zohoapis.ae",
+        "www.zohoapis.ca",
+        "www.zohoapis.sa"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
