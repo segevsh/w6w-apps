@@ -91,6 +91,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | circleci | devops, developer-tools | api-token | 8 |
 | clearbit | marketing, crm | api-key | 9 |
 | clerk | developer-tools, security | api-key | 30 |
+| cleverreach | marketing, communication | access-token, client-credentials | 24 |
 | clicksend | communication | basic-auth | 16 |
 | clickup | project-management, productivity | api-token, oauth2 | 12 |
 | clio | crm | oauth2 (×4 regions) | 25 |
@@ -130,6 +131,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | digitalocean | devops, storage | token | 15 |
 | discord | communication | bot-token, oauth2 | 19 |
 | discourse | communication, social-media | api-key | 26 |
+| dixa | support, communication | api-token | 28 |
 | docparser | documents, ai | api-key | 10 |
 | docuseal | documents, productivity | api-key | 23 |
 | documenso | legal, documents, productivity | api-key | 20 |
@@ -273,6 +275,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | lemlist | marketing, email | api-key | 18 |
 | lemonsqueezy | commerce, finance | api-key | 36 |
 | lever | hr, productivity | api-key | 12 |
+| lexware-office | finance | api-key | 22 |
 | line | communication, marketing | channel-access-token | 17 |
 | linear | project-management, developer-tools | api-key, oauth2 | 11 |
 | linkedin | social-media, marketing | oauth2, oauth2-community-management | 6 |
@@ -381,11 +384,13 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | pushbullet | communication, productivity | access-token | 24 |
 | pushover | communication, monitoring | app-token | 4 |
 | qdrant | search, databases, ai | api-key | 19 |
+| quaderno | finance, commerce | api-key | 24 |
 | qualtrics | forms, analytics | api-token | 15 |
 | quickbase | databases, productivity, project-management | user-token | 20 |
 | quickbooks | finance | oauth2 | 20 |
 | quo | communication, crm | api-key | 43 |
 | raindrop | productivity, search, storage | test-token, oauth2 | 39 |
+| raisely | crm, commerce, marketing | api-key | 22 |
 | razorpay | commerce, finance | basic | 44 |
 | rdstation | crm | api-key | 10 |
 | read-ai | ai, productivity, video | oauth2 | 4 |

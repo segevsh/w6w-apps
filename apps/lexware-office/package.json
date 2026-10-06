@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/lexware-office",
+  "version": "0.1.0",
+  "description": "Read and manage a Lexware Office (formerly lexoffice) account: contacts, articles, invoices, quotations, order confirmations, credit notes, the voucher list, payment data and reference lists.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.lexware-office",
+    "displayName": "Lexware Office",
+    "longDescription": "Lexware Office (formerly lexoffice) is German cloud accounting and invoicing software for small businesses. This app connects a workflow to a Lexware Office organization through its Public API.\n\nLook up and maintain contacts (customers and vendors) and articles, create invoices, quotations, order confirmations and credit notes as drafts or finalized documents, search the voucher list across every document type, read payment status for a voucher, and download rendered PDF or XML documents. Reference lists (countries, posting categories, payment conditions) are available so documents can be built without guessing ids.\n\nConnect with an API key generated at app.lexware.de/addons/public-api. The key acts for the whole organization and the API allows two requests per second.",
+    "categories": [
+      "finance"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Lexware Office"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.lexware.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
