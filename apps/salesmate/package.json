@@ -1,0 +1,30 @@
+{
+  "name": "@w6w-apps/salesmate",
+  "version": "0.1.0",
+  "description": "Manage Salesmate contacts, companies, deals, activities and notes (API v4).",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.salesmate",
+    "displayName": "Salesmate",
+    "longDescription": "Salesmate is a sales CRM, and this app covers the objects a sales workflow actually moves between on its v4 API: contacts, companies, deals and activities can each be created, fetched, searched, updated and deleted, notes can be added to, edited, pinned and removed from any of them, and the active users of the account can be listed to find an owner id.\n\nEvery account lives on its own host (`yourname.salesmate.io`), so the connection collects the account's link name and the user's access token once; the link name is validated so it can only ever resolve to a host under salesmate.io.\n\nA fit for routing an external event — a form submission, a support escalation, a signup — into a new contact or deal, moving a deal through its pipeline, logging a call or follow-up task against a record, or syncing contact and company data between Salesmate and another system. Products, custom modules and lookup-field updates are not covered; see the README.",
+    "categories": [
+      "crm"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Salesmate"
+      }
+    },
+    "network": {
+      "allow": [
+        "*.salesmate.io"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

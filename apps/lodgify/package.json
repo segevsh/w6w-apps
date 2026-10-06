@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/lodgify",
+  "version": "0.1.0",
+  "description": "Manage Lodgify vacation-rental properties, availability, rates, bookings, enquiries, quotes, guest messages and webhooks.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.lodgify",
+    "displayName": "Lodgify",
+    "longDescription": "Lodgify is vacation-rental software: a property manager keeps listings, rates, availability and guest bookings in one place and distributes them to booking channels and a direct-booking website.\n\nThis app covers the Lodgify Public API's operational surface, preferring the v2 endpoints where v2 covers the operation and using v1 where only v1 does. Properties can be listed (paged, optionally localised to a website) and read, with their room types and the ids of deleted properties. Availability can be read for every property, one property or one room type, and the number of available units set for a date range. Nightly rates can be read with the property's rate settings (fees, taxes, promotions) and rates saved for a property and room type. Bookings can be listed with the documented stay and trash filters, read, created, updated, moved to the trash, moved through the Booked / Tentative / Declined / Open lifecycle, checked in and out, and given room access key codes. Enquiries can be read and created. Quotes can be priced for a stay, read for a booking, created for a booking, and a payment link requested and read. Message threads can be read and messages added to a booking or an enquiry. Webhook subscriptions can be listed, created and removed.\n\nAuthentication is a Lodgify API key sent in the X-ApiKey header, so the app works in scheduled, unattended runs.\n\nHealth comes from the API itself because Lodgify's status page is behind a bot challenge: a signed GET /v2/properties?size=1 probe, an unsigned probe of the public GET /v1/countries list that proves the API is reachable, and declared absences for the status page and for quota headroom.",
+    "categories": [
+      "crm",
+      "calendar"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Lodgify"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.lodgify.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

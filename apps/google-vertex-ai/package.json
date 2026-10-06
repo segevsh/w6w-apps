@@ -1,0 +1,76 @@
+{
+  "name": "@w6w-apps/google-vertex-ai",
+  "version": "0.1.0",
+  "description": "Gemini, embeddings, models, endpoints and batch prediction on Google Vertex AI, through a Google Cloud project.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.google-vertex-ai",
+    "displayName": "Google Vertex AI",
+    "longDescription": "Call Google's Vertex AI from a workflow with a Google Cloud project and IAM behind it, rather than an API key. Generate Gemini responses, count tokens before sending a prompt, turn text into embeddings, and call any publisher model's predict method such as the text-embedding family.\n\nOn the deployed side, list and read the models in a project's Model Registry and the endpoints serving them, and send instances to a deployed endpoint for predictions. Batch prediction jobs can be created over Cloud Storage or BigQuery input, then tracked, listed and cancelled.\n\nVertex AI is regional: models and endpoints live in one region, and each region is its own host. A connection carries a project and a default region, any action can override either, and a full resource name copied from a list result goes to the region it names. Sign in with Google, or use a service account for server-to-server access.",
+    "categories": [
+      "ai",
+      "devops"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Vertex AI"
+      }
+    },
+    "network": {
+      "allow": [
+        "aiplatform.googleapis.com",
+        "africa-south1-aiplatform.googleapis.com",
+        "asia-east1-aiplatform.googleapis.com",
+        "asia-east2-aiplatform.googleapis.com",
+        "asia-northeast1-aiplatform.googleapis.com",
+        "asia-northeast2-aiplatform.googleapis.com",
+        "asia-northeast3-aiplatform.googleapis.com",
+        "asia-south1-aiplatform.googleapis.com",
+        "asia-south2-aiplatform.googleapis.com",
+        "asia-southeast1-aiplatform.googleapis.com",
+        "asia-southeast2-aiplatform.googleapis.com",
+        "australia-southeast1-aiplatform.googleapis.com",
+        "australia-southeast2-aiplatform.googleapis.com",
+        "europe-central2-aiplatform.googleapis.com",
+        "europe-north1-aiplatform.googleapis.com",
+        "europe-north2-aiplatform.googleapis.com",
+        "europe-southwest1-aiplatform.googleapis.com",
+        "europe-west1-aiplatform.googleapis.com",
+        "europe-west10-aiplatform.googleapis.com",
+        "europe-west12-aiplatform.googleapis.com",
+        "europe-west15-aiplatform.googleapis.com",
+        "europe-west2-aiplatform.googleapis.com",
+        "europe-west3-aiplatform.googleapis.com",
+        "europe-west4-aiplatform.googleapis.com",
+        "europe-west6-aiplatform.googleapis.com",
+        "europe-west8-aiplatform.googleapis.com",
+        "europe-west9-aiplatform.googleapis.com",
+        "me-central1-aiplatform.googleapis.com",
+        "me-central2-aiplatform.googleapis.com",
+        "me-west1-aiplatform.googleapis.com",
+        "northamerica-northeast1-aiplatform.googleapis.com",
+        "northamerica-northeast2-aiplatform.googleapis.com",
+        "southamerica-east1-aiplatform.googleapis.com",
+        "southamerica-west1-aiplatform.googleapis.com",
+        "us-central1-aiplatform.googleapis.com",
+        "us-central2-aiplatform.googleapis.com",
+        "us-east1-aiplatform.googleapis.com",
+        "us-east4-aiplatform.googleapis.com",
+        "us-east5-aiplatform.googleapis.com",
+        "us-east7-aiplatform.googleapis.com",
+        "us-south1-aiplatform.googleapis.com",
+        "us-west1-aiplatform.googleapis.com",
+        "us-west2-aiplatform.googleapis.com",
+        "us-west3-aiplatform.googleapis.com",
+        "us-west4-aiplatform.googleapis.com",
+        "us-west8-aiplatform.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@w6w-apps/facebook-custom-audiences",
+  "version": "0.1.0",
+  "description": "Manage Meta custom audiences \u2014 customer lists, members and lookalikes \u2014 through the Marketing API, with Meta's required SHA-256 customer-data hashing applied in-app.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.facebook-custom-audiences",
+    "displayName": "Facebook Custom Audiences",
+    "longDescription": "Custom audiences are the lists of people an advertiser tells Meta to target \u2014 or exclude \u2014 in its ads. This app creates and manages them on a Meta ad account through the Marketing API: create an empty customer-list audience, add people to it or remove them, rename or delete it, read back its size and delivery status, and build a lookalike audience from it.\n\nCustomer contact data (email, phone, name, date of birth, city and so on) is normalised and SHA-256 hashed inside this app before it leaves, following the rules in Meta's Customer File Custom Audiences guide, so a workflow can pass a plain email address from a CRM or order system without hand-rolling the hashing. Lists larger than 10,000 people are uploaded in batches that share a session id.\n\nThis app manages audiences only. It does not create campaigns or ads, send conversion events (that is the Conversions API app) or read Pages and lead forms. Meta publishes no machine-readable status feed, so the health check reports live rate-limit headroom instead.",
+    "categories": [
+      "marketing",
+      "social-media"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Facebook Custom Audiences"
+      }
+    },
+    "network": {
+      "allow": [
+        "graph.facebook.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

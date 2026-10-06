@@ -150,6 +150,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | excel | spreadsheets, productivity | oauth2 | 16 |
 | facebook | social-media, marketing | oauth2, page-token | 14 |
 | facebook-conversions | marketing, analytics, social-media | conversions-token, oauth2 | 5 |
+| facebook-custom-audiences | marketing, social-media | oauth2 | 9 |
 | facebook-lead-ads | marketing, social-media | oauth2, page-token | 2 |
 | fathom | ai, productivity, video | api-key | 11 |
 | feedly | productivity, security | bearer-token | 14 |
@@ -200,6 +201,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | google-sheets | spreadsheets, productivity | oauth2, service-account | 12 |
 | google-slides | documents, productivity | oauth2, service-account | 17 |
 | google-tasks | productivity, project-management | oauth2 | 13 |
+| google-vertex-ai | ai, devops | oauth2, service-account | 14 |
 | googlechat | communication | oauth2 | 18 |
 | googlesearchconsole | marketing, analytics | oauth2 | 10 |
 | gorgias | support | basic | 22 |
@@ -272,6 +274,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | linkedin-conversions | marketing, analytics | oauth2 | 7 |
 | littlegreenlight | crm, finance | bearer-token | 12 |
 | livestorm | video, communication | api-key | 40 |
+| lodgify | crm, calendar | api-key | 30 |
 | lofty | crm, communication | api-key | 32 |
 | lokalise | developer-tools, cms | api-token | 31 |
 | looker | analytics, data-warehousing | api-credentials | 11 |
@@ -393,6 +396,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | s3 | storage | aws-iam | 9 |
 | salesforce | crm | access-token, oauth2 | 12 |
 | salesloft | crm, communication | api-key, oauth2 | 26 |
+| salesmate | crm | access-token | 28 |
 | salesmsg | communication, marketing | access-token | 27 |
 | samcart | commerce | api-key | 38 |
 | sanity | cms, databases, developer-tools | token | 11 |
@@ -437,6 +441,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | stripe | commerce, finance | api-key | 23 |
 | supabase | databases | api-key | 7 |
 | surveymonkey | forms, productivity | oauth2 | 12 |
+| synthflow | ai, communication | api-key | 26 |
 | systemeio | marketing | api-key | 41 |
 | tableau | analytics, productivity | personal-access-token | 15 |
 | tailscale | security, devops | api-key, oauth-client | 16 |
