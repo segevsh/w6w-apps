@@ -1,0 +1,33 @@
+{
+  "name": "@w6w-apps/synthflow",
+  "version": "0.1.0",
+  "description": "Place single and batch voice AI calls, read call transcripts, and manage contacts, chats and the agent, phone-number, voice and knowledge-base catalogs on Synthflow AI.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.synthflow",
+    "displayName": "Synthflow AI",
+    "longDescription": "Synthflow builds voice AI agents that answer and place phone calls. The unit this app moves around is the call: start an outbound call or a whole batch against an existing agent, watch a batch's progress (pause, resume, cancel), and pull a finished call's transcript and metadata. Around that sit the catalogs a workflow picks from \u2014 agents, phone numbers, voices, knowledge bases \u2014 plus contacts (create, update, delete) and text chat sessions.\n\nAgent, action, knowledge-base, simulation and subaccount authoring is deliberately not covered: those are deeply nested configuration objects meant to be built once in the Synthflow dashboard and then referenced by id. A workspace lives in exactly one cluster (Global, US or EU) and a key only works there, so the connection asks for the region and the app reaches only that cluster's host.\n\nHealth checks track the Synthflow API and End to End calling components of status.synthflow.ai alongside the derived credential check; Synthflow publishes no usage or rate-limit surface, so quota is declared unavailable.",
+    "categories": [
+      "ai",
+      "communication"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Synthflow AI"
+      }
+    },
+    "network": {
+      "allow": [
+        "api.synthflow.ai",
+        "api.us.synthflow.ai",
+        "api.eu.synthflow.ai"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}

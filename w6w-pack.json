@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.151.0",
+  "version": "0.152.0",
   "apps": [
     {
       "path": "./apps/activecampaign"
@@ -391,6 +391,9 @@
       "path": "./apps/facebook-conversions"
     },
     {
+      "path": "./apps/facebook-custom-audiences"
+    },
+    {
       "path": "./apps/facebook-lead-ads"
     },
     {
@@ -539,6 +542,9 @@
     },
     {
       "path": "./apps/google-tasks"
+    },
+    {
+      "path": "./apps/google-vertex-ai"
     },
     {
       "path": "./apps/googlechat"
@@ -761,6 +767,9 @@
     },
     {
       "path": "./apps/livestorm"
+    },
+    {
+      "path": "./apps/lodgify"
     },
     {
       "path": "./apps/lofty"
@@ -1132,6 +1141,9 @@
       "path": "./apps/salesloft"
     },
     {
+      "path": "./apps/salesmate"
+    },
+    {
       "path": "./apps/salesmsg"
     },
     {
@@ -1265,6 +1277,9 @@
     },
     {
       "path": "./apps/surveymonkey"
+    },
+    {
+      "path": "./apps/synthflow"
     },
     {
       "path": "./apps/systemeio"
