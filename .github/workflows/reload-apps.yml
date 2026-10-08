@@ -69,6 +69,7 @@ jobs:
           node-version: "22"
 
       - name: Run the reload script
+        id: reload
         env:
           W6W_API_URL: ${{ vars.W6W_API_URL }}
           OPS_JWT_SECRET: ${{ secrets.OPS_JWT_SECRET }}
@@ -79,7 +80,15 @@ jobs:
       # Mints a token scoped to ONLY w6w-frontend, even though the App may be
       # installed on other repos too — least privilege per call, one shared
       # App registration.
+      #
+      # Skipped when a PUSH changed nothing in the catalog (`changed=0` from the script: every
+      # entry was an idempotent no-op — a test-only or internals-only app edit). The site renders
+      # its app pages from the catalog, so there is nothing new to publish, and the rebuild is a
+      # fixed ~4 minutes. A `workflow_dispatch` always rebuilds: it is the retry after a failed
+      # push run, and that failed run may already have imported the new apps — so this retry sees
+      # them as unchanged while the site still has never shown them.
       - name: Mint a token scoped to w6w-frontend
+        if: steps.reload.outputs.changed != '0' || github.event_name == 'workflow_dispatch'
         id: app-token
         uses: actions/create-github-app-token@v1
         with:
@@ -89,6 +98,7 @@ jobs:
           repositories: w6w-frontend
 
       - name: Trigger the frontend rebuild
+        if: steps.reload.outputs.changed != '0' || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: gh workflow run "Build + Deploy" --repo w6w-io/w6w-frontend --ref main
