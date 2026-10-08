@@ -1,3 +1,18 @@
 {
-  "docs": []
+  "docs": [
+    {
+      "path": "testing.md",
+      "slug": "testing",
+      "section": "build-apps",
+      "title": "Testing an app",
+      "order": 10
+    },
+    {
+      "path": "publishing.md",
+      "slug": "publishing",
+      "section": "build-apps",
+      "title": "Publishing an app",
+      "order": 20
+    }
+  ]
 }
