@@ -21,6 +21,14 @@ export type EventbriteListResponse<K extends string, T = unknown> = {
   pagination: EventbritePagination;
 } & { [P in K]: T[] };
 
+/** A non-2xx Eventbrite response. `status` lets a caller tell a 404 from an outage. */
+export class EventbriteError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "EventbriteError";
+  }
+}
+
 export interface RequestOptions {
   method?: string;
   query?: Record<string, string | number | boolean | undefined | null>;
@@ -55,10 +63,11 @@ export class EventbriteClient {
       try {
         detail = await res.text();
       } catch { /* ignore */ }
-      throw new Error(
+      throw new EventbriteError(
         `Eventbrite ${res.status} ${res.statusText} for ${
           options.method ?? "GET"
         } ${url.pathname}: ${detail}`,
+        res.status,
       );
     }
     if (res.status === 204) return undefined as T;

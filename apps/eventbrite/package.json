@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/eventbrite",
-  "version": "0.3.1",
-  "description": "Create and run Eventbrite events end to end: events, tickets, inventory, discounts, orders, attendees, venues, questions and webhooks.",
+  "version": "0.4.0",
+  "description": "Create and run Eventbrite events end to end: events, tickets, inventory, discounts, orders, attendees, venues and webhooks, plus triggers on orders, check-ins and event changes.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -10,7 +10,7 @@
   "w6w": {
     "id": "io.w6w.eventbrite",
     "displayName": "Eventbrite",
-    "longDescription": "Eventbrite covers the whole event lifecycle from a workflow: create, update, copy, publish, unpublish, cancel and delete events, set their description and structured content, and add schedules to event series. Ticket classes, ticket groups, inventory tiers, capacity and seat maps can be read and changed, as can discounts, display settings and the checkout questions a buyer answers.\n\nOn the sales side it lists and fetches orders and attendees, refunds orders, and pulls sales and attendee reports. Venues, organizers, organization members and roles, event teams, categories, formats and media are available too, and organization webhooks can be created, listed and deleted.\n\nA fit for publishing events from a CRM or content system, keeping attendee and order data in sync with a spreadsheet, opening a discount code when a campaign starts, or following up once an event's attendee list is known. Uploading an image is the one step that needs outside help: Eventbrite sends the file to a separate storage host, which this app cannot reach.",
+    "longDescription": "Eventbrite covers the whole event lifecycle from a workflow: create, update, copy, publish, unpublish, cancel and delete events, set their description and structured content, and add schedules to event series. Ticket classes, ticket groups, inventory tiers, capacity and seat maps can be read and changed, as can discounts, display settings and the checkout questions a buyer answers.\n\nOn the sales side it lists and fetches orders and attendees, refunds orders, and pulls sales and attendee reports. Venues, organizers, organization members and roles, event teams, categories, formats and media are available too, and organization webhooks can be created, listed and deleted.\n\nSixteen triggers start a workflow when something happens in Eventbrite: a new order, a refund, an attendee checking in or out, an event created, published, updated or unpublished, a ticket class, organizer or venue changing, or any chosen mix of these. Subscribing registers the webhook with Eventbrite and unsubscribing removes it, and each run receives the full order, attendee or event record, not just a notification.\n\nA fit for publishing events from a CRM or content system, keeping attendee and order data in sync with a spreadsheet, opening a discount code when a campaign starts, or following up once an event's attendee list is known. Uploading an image is the one step that needs outside help: Eventbrite sends the file to a separate storage host, which this app cannot reach.",
     "categories": [
       "commerce",
       "calendar"
