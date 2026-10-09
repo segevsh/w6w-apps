@@ -17,7 +17,7 @@
     ],
     "appearance": {
       "icon": {
-        "svg": "./assets/icon.svg",
+        "url": "./assets/icon.png",
         "alt": "Gotify"
       }
     },

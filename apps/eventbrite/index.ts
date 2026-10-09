@@ -94,6 +94,22 @@ import getFormat from "./actions/get-format.ts";
 import getMedia from "./actions/get-media.ts";
 import getMediaUpload from "./actions/get-media-upload.ts";
 import uploadMedia from "./actions/upload-media.ts";
+import orderPlaced from "./triggers/order-placed.ts";
+import orderRefunded from "./triggers/order-refunded.ts";
+import orderUpdated from "./triggers/order-updated.ts";
+import attendeeCheckedIn from "./triggers/attendee-checked-in.ts";
+import attendeeCheckedOut from "./triggers/attendee-checked-out.ts";
+import attendeeUpdated from "./triggers/attendee-updated.ts";
+import eventCreated from "./triggers/event-created.ts";
+import eventPublished from "./triggers/event-published.ts";
+import eventUpdated from "./triggers/event-updated.ts";
+import eventUnpublished from "./triggers/event-unpublished.ts";
+import ticketClassCreated from "./triggers/ticket-class-created.ts";
+import ticketClassUpdated from "./triggers/ticket-class-updated.ts";
+import ticketClassDeleted from "./triggers/ticket-class-deleted.ts";
+import organizerUpdated from "./triggers/organizer-updated.ts";
+import venueUpdated from "./triggers/venue-updated.ts";
+import activity from "./triggers/activity.ts";
 import service from "./health/service.ts";
 import quota from "./health/quota.ts";
 
@@ -192,6 +208,24 @@ export default {
     getMedia,
     getMediaUpload,
     uploadMedia,
+  ],
+  triggers: [
+    orderPlaced,
+    orderRefunded,
+    orderUpdated,
+    attendeeCheckedIn,
+    attendeeCheckedOut,
+    attendeeUpdated,
+    eventCreated,
+    eventPublished,
+    eventUpdated,
+    eventUnpublished,
+    ticketClassCreated,
+    ticketClassUpdated,
+    ticketClassDeleted,
+    organizerUpdated,
+    venueUpdated,
+    activity,
   ],
   auth: [personalToken, oauth2],
   healthChecks: [service, quota],

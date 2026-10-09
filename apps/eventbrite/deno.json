@@ -7,10 +7,10 @@
     "@std/assert": "jsr:@std/assert@^1.0.0"
   },
   "tasks": {
-    "test": "deno test -A tests/",
-    "check": "deno check index.ts actions/ auth/ health/ lib/ tests/",
-    "fmt": "deno fmt index.ts actions/ auth/ health/ lib/ tests/",
-    "lint": "deno lint index.ts actions/ auth/ health/ lib/ tests/",
+    "test": "deno test -A --unstable-worker-options tests/",
+    "check": "deno check index.ts actions/ auth/ health/ lib/ triggers/ tests/",
+    "fmt": "deno fmt index.ts actions/ auth/ health/ lib/ triggers/ tests/",
+    "lint": "deno lint index.ts actions/ auth/ health/ lib/ triggers/ tests/",
     "validate": "deno run --no-check -A --config ./deno.json ../../_tools/audit.ts eventbrite"
   },
   "fmt": {

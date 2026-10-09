@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { WEBHOOK_ACTIONS } from "../lib/triggers.ts";
 
 interface Input {
   organizationId: string;
@@ -8,24 +9,6 @@ interface Input {
   eventId?: string;
   extra?: Record<string, unknown>;
 }
-
-const WEBHOOK_ACTIONS = [
-  "attendee.checked_in",
-  "attendee.checked_out",
-  "attendee.updated",
-  "event.created",
-  "event.published",
-  "event.updated",
-  "event.unpublished",
-  "order.placed",
-  "order.refunded",
-  "order.updated",
-  "organizer.updated",
-  "ticket_class.created",
-  "ticket_class.deleted",
-  "ticket_class.updated",
-  "venue.updated",
-];
 
 const createWebhook: ActionDefinition<Input> = {
   key: "create-webhook",
