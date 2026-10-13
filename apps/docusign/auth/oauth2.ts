@@ -91,6 +91,13 @@ export function createDocusignOAuth(environment: Environment): AuthDefinition {
       refreshUrl: `https://${host}${TOKEN_PATH}`,
       scopes: ["signature", "extended"],
       pkce: true,
+      setup: {
+        instructions:
+          "In Docusign open Settings → Apps and Keys, add an app and integration key, then " +
+          "generate a secret key for it and add the callback URL as a redirect URI.",
+        clientIdHint: 'The "Integration key" of your Docusign app.',
+        clientSecretHint: 'The "Secret key" generated for that integration key.',
+      },
     },
 
     sign({ request, credential }) {

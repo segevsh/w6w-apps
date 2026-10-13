@@ -101,6 +101,11 @@ const oauth2: AuthDefinition = {
     scopes: ["basic", "write", "offline_access"],
     scopeSeparator: " ",
     pkce: true,
+    setup: {
+      instructions: "Register an application at tumblr.com/oauth/apps and use its OAuth " +
+        "consumer key and secret key.",
+      clientIdHint: 'The "OAuth consumer key" of your Tumblr application.',
+    },
   },
 
   /** The only hook handed the raw credential. Runs network-less. */
