@@ -45,3 +45,17 @@ Deno.test("oauth2: test returns the upstream status on non-2xx", async () => {
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
+
+Deno.test("oauth2: setup guidance names Eventbrite's own labels", () => {
+  const s = auth.oauth2?.setup;
+  assertEquals(s?.consoleUrl, "https://www.eventbrite.com/account-settings/apps");
+  assert(s?.clientIdHint?.includes("API key"));
+  assert(!s?.clientIdHint?.includes("Private token"));
+  assert(!s?.clientIdHint?.includes("Public token"));
+  assert(s?.clientSecretHint?.includes("Client secret"));
+  assert(s?.redirectUriHint?.includes("OAuth Redirect URI"));
+  assertEquals(s?.extraHint, "Leave this as {}");
+  assertEquals(s?.extraTemplate, undefined);
+  assert(s?.instructions?.includes("Developer Links"));
+  assert(s?.instructions?.includes("Do not use the Private token"));
+});

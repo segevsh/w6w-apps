@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import oauth2, { authHeaders, classifyAuthFailure } from "../../auth/oauth2.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -79,4 +79,8 @@ Deno.test("oauth2.afterConnect: silent on failure — never throws", async () =>
   const { ctx } = mockCtx([{ status: 500, body: { meta: { status: 500, msg: "Error" } } }]);
   const out = await oauth2.afterConnect!({ credential: { accessToken: "tok" } } as never, ctx);
   assertEquals(out, {});
+});
+
+Deno.test("oauth2: setup guidance names Tumblr's consumer key", () => {
+  assert(/consumer key/i.test(oauth2.oauth2?.setup?.clientIdHint ?? ""));
 });

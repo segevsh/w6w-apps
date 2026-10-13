@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assert, assertEquals, assertRejects } from "@std/assert";
 import type { SignableRequest } from "@w6w/types";
 import prodAuth, { createDocusignOAuth } from "../../auth/oauth2.ts";
 import demoAuth from "../../auth/oauth2-demo.ts";
@@ -203,4 +203,13 @@ Deno.test("the factory produces two distinct methods from one implementation", (
   assertEquals(b.key, "oauth2-demo");
   assertEquals(a.connectionLabel, b.connectionLabel);
   assertEquals(a.oauth2?.authorizationUrl === b.oauth2?.authorizationUrl, false);
+});
+
+Deno.test("oauth2: setup guidance names Docusign's own labels on both methods", () => {
+  for (const a of [prodAuth, demoAuth]) {
+    const s = a.oauth2?.setup;
+    assert(/integration key/i.test(s?.clientIdHint ?? ""));
+    assert(/secret key/i.test(s?.clientSecretHint ?? ""));
+    assert(s?.instructions?.includes("Apps and Keys"));
+  }
 });

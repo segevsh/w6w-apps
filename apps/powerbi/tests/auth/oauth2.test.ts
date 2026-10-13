@@ -97,3 +97,10 @@ Deno.test("oauth2: a rejection with no error-info header still reports the statu
 Deno.test("oauth2: declares no afterConnect — Power BI's REST API has no whoami endpoint to label a connection from", () => {
   assertEquals(auth.afterConnect, undefined);
 });
+
+Deno.test("oauth2: setup guidance names Entra's Application (client) ID", () => {
+  const hint = auth.oauth2?.setup?.clientIdHint ?? "";
+  assert(hint.includes("Application (client) ID"));
+  assert(!hint.includes("App ID URI"));
+  assert(!hint.includes("analysis.windows.net"));
+});

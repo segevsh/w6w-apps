@@ -98,6 +98,11 @@ const oauth2: AuthDefinition = {
     tokenUrl: TOKEN_URL,
     scopes: SCOPES,
     pkce: true,
+    setup: {
+      instructions: "In the Microsoft Entra admin center register an application under " +
+        'App registrations and add the "Power BI Service" API permission.',
+      clientIdHint: 'The "Application (client) ID" shown on the app registration\'s Overview.',
+    },
   },
 
   sign({ request, credential }) {
