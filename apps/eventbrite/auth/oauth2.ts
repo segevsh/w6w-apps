@@ -3,7 +3,7 @@ import { API_URL } from "../lib/client.ts";
 
 /**
  * OAuth 2.0 (`oauth2`) — the "public integrator" path. You register an app
- * on Eventbrite (Account Settings → App Management → Create a new app),
+ * on Eventbrite (Account Settings → Developer Links → API keys),
  * store the resulting `client_id` + `client_secret` + `redirect_uri` on the
  * w6w server via PUT /apps/:id/oauth-config/oauth2, and end users then
  * connect via the browser authorization dance.
@@ -31,6 +31,17 @@ const oauth2: AuthDefinition = {
     // Eventbrite doesn't support incremental scopes — leaving `scopes` unset
     // maps to the token's full account access.
     pkce: false,
+    setup: {
+      consoleUrl: "https://www.eventbrite.com/account-settings/apps",
+      instructions:
+        "In Eventbrite open Account Settings → Developer Links → API keys and use the app's " +
+        "API key and Client secret. Do not use the Private token or the Public token shown on " +
+        "that page.",
+      clientIdHint: 'The "API key" of your Eventbrite app.',
+      clientSecretHint: 'The "Client secret" of your Eventbrite app.',
+      redirectUriHint: 'Paste the callback URL into the app\'s "OAuth Redirect URI" field.',
+      extraHint: "Leave this as {}",
+    },
   },
 
   sign({ request, credential }) {
