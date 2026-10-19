@@ -9,5 +9,5 @@ Deno.test("create-page: POSTs /pages under a parent page with a title property",
   assertEquals(calls[0].method, "POST");
   const sent = JSON.parse(calls[0].body ?? "{}");
   assertEquals(sent.parent, { page_id: "parent-1" });
-  assertEquals(sent.properties.title[0].text.content, "Welcome");
+  assertEquals(sent.properties.title.title[0].text.content, "Welcome");
 });

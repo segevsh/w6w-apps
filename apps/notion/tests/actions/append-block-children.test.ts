@@ -12,5 +12,6 @@ Deno.test("append-block-children: PATCHes /blocks/{id}/children with the childre
   assertEquals(calls[0].method, "PATCH");
   const sent = JSON.parse(calls[0].body ?? "{}");
   assertEquals(sent.children, children);
-  assertEquals(sent.after, "blk-anchor");
+  assertEquals(sent.position, { type: "after_block", after_block: { id: "blk-anchor" } });
+  assertEquals("after" in sent, false);
 });

@@ -17,5 +17,5 @@ Deno.test("search-databases: forwards query, sort and cursor to /search", async 
   assertEquals(sent.sort, { direction: "descending", timestamp: "last_edited_time" });
   assertEquals(sent.page_size, 25);
   assertEquals(sent.start_cursor, "cur-1");
-  assertEquals(sent.filter, { property: "object", value: "database" });
+  assertEquals(sent.filter, { property: "object", value: "data_source" });
 });

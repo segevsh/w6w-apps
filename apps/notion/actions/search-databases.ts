@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { NotionClient, type NotionListResponse } from "../lib/client.ts";
+import { searchDatabaseContainers } from "../lib/databases.ts";
 
 interface Sort {
   direction?: "ascending" | "descending";
@@ -13,11 +14,7 @@ interface Input {
   startCursor?: string;
 }
 
-/**
- * Search across databases by title text. Same /search endpoint as
- * list-databases, just with an optional `query` string and an optional sort.
- */
-const searchDatabases: ActionDefinition<Input> = {
+const searchDatabases: ActionDefinition<Input, NotionListResponse> = {
   key: "search-databases",
   type: "search",
   resource: "database",
@@ -48,13 +45,13 @@ const searchDatabases: ActionDefinition<Input> = {
   execute(input, ctx) {
     const client = new NotionClient(ctx);
     const body: Record<string, unknown> = {
-      filter: { property: "object", value: "database" },
+      filter: { property: "object", value: "data_source" },
       page_size: input.pageSize ?? 100,
     };
     if (input.query) body.query = input.query;
     if (input.sort) body.sort = input.sort;
     if (input.startCursor) body.start_cursor = input.startCursor;
-    return client.request<NotionListResponse>("/search", { method: "POST", body });
+    return searchDatabaseContainers(client, body);
   },
 };
 

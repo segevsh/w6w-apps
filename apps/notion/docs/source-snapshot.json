@@ -1,0 +1,25 @@
+{
+  "retrievedAt": "2026-10-19",
+  "index": "https://developers.notion.com/llms.txt",
+  "files": 257,
+  "bytes": 9757782,
+  "specs": {
+    "openapi.json": {
+      "url": "https://developers.notion.com/openapi.json",
+      "sha256": "cdb48b858846c78bf87a2145da1f5055f508b4c6702d2b7b1a03a93002f90e87"
+    },
+    "openapi-adminApi.json": {
+      "url": "https://developers.notion.com/openapi-adminApi.json",
+      "sha256": "04852565ed9438ece2fde6b489f459a1605b9863bb451caa796e0d01fb1ec1dd"
+    },
+    "openapi-undocumented.json": {
+      "url": "https://developers.notion.com/openapi-undocumented.json",
+      "sha256": "6ef12c257d1812ff270bd7a32bdb680c475c82c96718e78a4f52720b769b21c7"
+    }
+  },
+  "publicVersion": "2026-03-11",
+  "adminVersion": "2026-06-01",
+  "operations": 107,
+  "actions": 119,
+  "excluded": "Private/internal operations from openapi-undocumented.json are downloaded for reference but not exposed as supported public actions. Legacy documentation aliases map to current routes; webhook events are not REST operations."
+}

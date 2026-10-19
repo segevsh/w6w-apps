@@ -1,0 +1,751 @@
+[
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/users/me",
+    "operationId": "get-self",
+    "action": "get-self"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/users/{user_id}",
+    "operationId": "get-user",
+    "action": "get-user"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/users",
+    "operationId": "get-users",
+    "action": "get-many-users"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/pages",
+    "operationId": "post-page",
+    "action": "create-page"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/pages/{page_id}",
+    "operationId": "retrieve-a-page",
+    "action": "get-page"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/pages/{page_id}",
+    "operationId": "patch-page",
+    "action": "update-page"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/pages/{page_id}/move",
+    "operationId": "move-page",
+    "action": "move-page"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/pages/{page_id}/properties/{property_id}",
+    "operationId": "retrieve-a-page-property",
+    "action": "get-page-property"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/pages/{page_id}/markdown",
+    "operationId": "retrieve-page-markdown",
+    "action": "get-page-markdown"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/pages/{page_id}/markdown",
+    "operationId": "update-page-markdown",
+    "action": "update-page-markdown"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/async_tasks/{task_id}",
+    "operationId": "retrieve-async-task",
+    "action": "get-async-task"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/blocks/{block_id}",
+    "operationId": "retrieve-a-block",
+    "action": "get-block"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/blocks/{block_id}",
+    "operationId": "update-a-block",
+    "action": "update-block"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "DELETE",
+    "path": "/v1/blocks/{block_id}",
+    "operationId": "delete-a-block",
+    "action": "delete-block"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/blocks/{block_id}/children",
+    "operationId": "get-block-children",
+    "action": "get-many-blocks"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/blocks/{block_id}/children",
+    "operationId": "patch-block-children",
+    "action": "append-block-children"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/data_sources/{data_source_id}",
+    "operationId": "retrieve-a-data-source",
+    "action": "get-data-source"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/data_sources/{data_source_id}",
+    "operationId": "update-a-data-source",
+    "action": "update-data-source"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/data_sources/{data_source_id}/query",
+    "operationId": "post-database-query",
+    "action": "query-data-source"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/data_sources",
+    "operationId": "create-a-database",
+    "action": "create-data-source"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/data_sources/{data_source_id}/templates",
+    "operationId": "list-data-source-templates",
+    "action": "list-data-source-templates"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/databases/{database_id}",
+    "operationId": "retrieve-database",
+    "action": "get-database"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/databases/{database_id}",
+    "operationId": "update-database",
+    "action": "update-database"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/databases",
+    "operationId": "create-database",
+    "action": "create-database"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/search",
+    "operationId": "post-search",
+    "action": "search"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/comments",
+    "operationId": "create-a-comment",
+    "action": "create-comment"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/comments",
+    "operationId": "list-comments",
+    "action": "list-comments"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/comments/{comment_id}",
+    "operationId": "retrieve-comment",
+    "action": "get-comment"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/comments/{comment_id}",
+    "operationId": "update-a-comment",
+    "action": "update-comment"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "DELETE",
+    "path": "/v1/comments/{comment_id}",
+    "operationId": "delete-a-comment",
+    "action": "delete-comment"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/file_uploads",
+    "operationId": "create-file",
+    "action": "create-file-upload"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/file_uploads",
+    "operationId": "list-file-uploads",
+    "action": "list-file-uploads"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/file_uploads/{file_upload_id}/send",
+    "operationId": "upload-file",
+    "action": "send-file-upload"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/file_uploads/{file_upload_id}/complete",
+    "operationId": "complete-file-upload",
+    "action": "complete-file-upload"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/file_uploads/{file_upload_id}",
+    "operationId": "retrieve-file-upload",
+    "action": "get-file-upload"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/custom_emojis",
+    "operationId": "list-custom-emojis",
+    "action": "list-custom-emojis"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/views",
+    "operationId": "list-views",
+    "action": "list-views"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/views",
+    "operationId": "create-view",
+    "action": "create-view"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/views/{view_id}",
+    "operationId": "retrieve-a-view",
+    "action": "get-view"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/views/{view_id}",
+    "operationId": "update-a-view",
+    "action": "update-view"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "DELETE",
+    "path": "/v1/views/{view_id}",
+    "operationId": "delete-view",
+    "action": "delete-view"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/views/{view_id}/queries",
+    "operationId": "create-view-query",
+    "action": "create-view-query"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/views/{view_id}/queries/{query_id}",
+    "operationId": "get-view-query-results",
+    "action": "get-view-query-results"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "DELETE",
+    "path": "/v1/views/{view_id}/queries/{query_id}",
+    "operationId": "delete-view-query",
+    "action": "delete-view-query"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/blocks/meeting_notes",
+    "operationId": "create-meeting-note",
+    "action": "create-meeting-note"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/blocks/meeting_notes/query",
+    "operationId": "query-meeting-notes",
+    "action": "query-meeting-notes"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/agents/query",
+    "operationId": "query-agents",
+    "action": "query-agents"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/agents/{agent_id}",
+    "operationId": "get-agent",
+    "action": "get-agent"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "DELETE",
+    "path": "/v1/agents/{agent_id}",
+    "operationId": "delete-agent",
+    "action": "delete-agent"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/agents/{agent_id}/insights",
+    "operationId": "get-agent-insights",
+    "action": "get-agent-insights"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/agents/{agent_id}/status",
+    "operationId": "update-agent-status",
+    "action": "update-agent-status"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "PATCH",
+    "path": "/v1/agents/{agent_id}/credit_limit",
+    "operationId": "update-agent-credit-limit",
+    "action": "update-agent-credit-limit"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/agents/batch",
+    "operationId": "agent-batch",
+    "action": "batch-manage-agents"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/ai/plugins",
+    "operationId": "list-skills-plugins",
+    "action": "list-plugins"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/ai/plugins/{id}",
+    "operationId": "get-plugin-directory",
+    "action": "get-plugin-directory"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/ai/skills/{id}",
+    "operationId": "get-skill-directory",
+    "action": "get-skill-directory"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/sessions",
+    "operationId": "update-session",
+    "action": "update-session"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "GET",
+    "path": "/v1/sessions/{session_id}",
+    "operationId": "retrieve-session",
+    "action": "get-session"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/sessions/query",
+    "operationId": "query-sessions",
+    "action": "query-sessions"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/sessions/{session_id}/events/query",
+    "operationId": "query-session-events",
+    "action": "query-session-events"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/sessions/{session_id}/cancel",
+    "operationId": "cancel-session",
+    "action": "cancel-session"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/oauth/token",
+    "operationId": "create-a-token",
+    "action": "create-token"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/oauth/revoke",
+    "operationId": "revoke-token",
+    "action": "revoke-token"
+  },
+  {
+    "spec": "openapi.json",
+    "method": "POST",
+    "path": "/v1/oauth/introspect",
+    "operationId": "introspect-token",
+    "action": "introspect-token"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/analytics/ai_usage/reports/{job_id}",
+    "operationId": "get-ai-usage-analytics-report",
+    "action": "admin-get-ai-usage-analytics-report"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/analytics/content_pages/reports/{job_id}",
+    "operationId": "get-content-pages-analytics-report",
+    "action": "admin-get-content-pages-analytics-report"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/analytics/user_activity/reports/{job_id}",
+    "operationId": "get-user-activity-analytics-report",
+    "action": "admin-get-user-activity-analytics-report"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/analytics/reports",
+    "operationId": "list-analytics-reports",
+    "action": "admin-list-analytics-reports"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/export",
+    "operationId": "export-legal-hold",
+    "action": "admin-export-legal-hold"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}",
+    "operationId": "get-legal-hold",
+    "action": "admin-get-legal-hold"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}",
+    "operationId": "update-legal-hold",
+    "action": "admin-update-legal-hold"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/users",
+    "operationId": "list-legal-hold-users",
+    "action": "admin-list-legal-hold-users"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/users",
+    "operationId": "add-legal-hold-users",
+    "action": "admin-add-legal-hold-users"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds",
+    "operationId": "list-legal-holds",
+    "action": "admin-list-legal-holds"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds",
+    "operationId": "create-legal-hold",
+    "action": "admin-create-legal-hold"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/workspaces",
+    "operationId": "list-legal-hold-workspaces",
+    "action": "admin-list-legal-hold-workspaces"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/release",
+    "operationId": "release-legal-hold",
+    "action": "admin-release-legal-hold"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "DELETE",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/users/{user_id}",
+    "operationId": "remove-legal-hold-user",
+    "action": "admin-remove-legal-hold-user"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/spaces/{space_id}/exports",
+    "operationId": "enqueue-space-export",
+    "action": "admin-enqueue-space-export"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/exports/{export_job_id}",
+    "operationId": "get-space-export-status",
+    "action": "admin-get-space-export-status"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/{legal_hold_id}/spaces/{space_id}/pages",
+    "operationId": "list-legal-hold-pages",
+    "action": "admin-list-legal-hold-pages"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/managed_users/revoke_session",
+    "operationId": "revoke-user-session",
+    "action": "admin-revoke-user-session"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/mcp_client_connections",
+    "operationId": "list-mcp-client-connections",
+    "action": "admin-list-mcp-client-connections"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PUT",
+    "path": "/admin/v1/mcp_client_connections/enterprise_managed_access",
+    "operationId": "update-mcp-client-connection-enterprise-managed-access",
+    "action": "admin-update-mcp-client-connection-enterprise-managed-access"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/mcp_client_connections/revoke",
+    "operationId": "revoke-mcp-client-connection",
+    "action": "admin-revoke-mcp-client-connection"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}",
+    "operationId": "retrieve-permission-group",
+    "action": "admin-retrieve-permission-group"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}",
+    "operationId": "update-permission-group",
+    "action": "admin-update-permission-group"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}",
+    "operationId": "delete-permission-group",
+    "action": "admin-delete-permission-group"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/groups",
+    "operationId": "list-permission-groups",
+    "action": "admin-list-permission-groups"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/spaces/{space_id}/groups",
+    "operationId": "create-permission-group",
+    "action": "admin-create-permission-group"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/users",
+    "operationId": "list-users",
+    "action": "admin-list-users"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}/members",
+    "operationId": "list-permission-group-members",
+    "action": "admin-list-permission-group-members"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "POST",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}/members",
+    "operationId": "add-permission-group-member",
+    "action": "admin-add-permission-group-member"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}/members/users/{user_id}",
+    "operationId": "update-permission-group-member",
+    "action": "admin-update-permission-group-member"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/{space_id}/groups/{group_id}/members/users/{user_id}",
+    "operationId": "remove-permission-group-member",
+    "action": "admin-remove-permission-group-member"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/personal_access_tokens",
+    "operationId": "list-personal-access-tokens",
+    "action": "admin-list-personal-access-tokens"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/{space_id}/personal_access_tokens/{bot_id}",
+    "operationId": "revoke-personal-access-token",
+    "action": "admin-revoke-personal-access-token"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/{space_id}/agents/creation_policy",
+    "operationId": "update-agent-creation-policy",
+    "action": "admin-update-agent-creation-policy"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/{space_id}/credit_limit",
+    "operationId": "update-workspace-credit-limit",
+    "action": "admin-update-workspace-credit-limit"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/{space_id}/agents/{agent_id}/status",
+    "operationId": "update-agent-status",
+    "action": "admin-update-agent-status"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/{space_id}/agents/{agent_id}",
+    "operationId": "delete-agent",
+    "action": "admin-delete-agent"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/agents",
+    "operationId": "get-workflows-metadata-for-space",
+    "action": "admin-get-workflows-metadata-for-space"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/agents/{agent_id}/credit_usage",
+    "operationId": "get-agent-credit-usage",
+    "action": "admin-get-agent-credit-usage"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/agents/{agent_id}/permissions",
+    "operationId": "get-agent-permissions",
+    "action": "admin-get-agent-permissions"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/{space_id}/agents/{agent_id}/permissions",
+    "operationId": "update-agent-permissions",
+    "action": "admin-update-agent-permissions"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "GET",
+    "path": "/admin/v1/spaces/{space_id}/agents/credit_usage",
+    "operationId": "get-agents-credit-usage",
+    "action": "admin-get-agents-credit-usage"
+  },
+  {
+    "spec": "openapi-adminApi.json",
+    "method": "PUT",
+    "path": "/admin/v1/spaces/{space_id}/agents/{agent_id}/credit_limit",
+    "operationId": "update-agent-credit-limit",
+    "action": "admin-update-agent-credit-limit"
+  }
+]

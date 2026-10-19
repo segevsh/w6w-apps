@@ -1,0 +1,2327 @@
+[
+  {
+    "action": "get-self",
+    "method": "GET",
+    "path": "/v1/users/me",
+    "input": {},
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-user",
+    "method": "GET",
+    "path": "/v1/users/sample-value",
+    "input": {
+      "userId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-many-users",
+    "method": "GET",
+    "path": "/v1/users",
+    "input": {
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-page",
+    "method": "GET",
+    "path": "/v1/pages/sample-value",
+    "input": {
+      "pageId": "sample-value",
+      "filterProperties": [
+        "sample-value"
+      ]
+    },
+    "query": {
+      "filter_properties": [
+        "sample-value"
+      ]
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-page",
+    "method": "PATCH",
+    "path": "/v1/pages/sample-value",
+    "input": {
+      "pageId": "sample-value",
+      "filterProperties": [
+        "sample-value"
+      ],
+      "properties": {},
+      "icon": {
+        "file_upload": {}
+      },
+      "cover": {
+        "file_upload": {}
+      },
+      "isLocked": false,
+      "template": {
+        "type": "default"
+      },
+      "eraseContent": false,
+      "notifications": {
+        "mode": "default"
+      },
+      "inTrash": false,
+      "isArchived": false
+    },
+    "query": {
+      "filter_properties": [
+        "sample-value"
+      ]
+    },
+    "body": {
+      "properties": {},
+      "icon": {
+        "file_upload": {}
+      },
+      "cover": {
+        "file_upload": {}
+      },
+      "is_locked": false,
+      "template": {
+        "type": "default"
+      },
+      "erase_content": false,
+      "notifications": {
+        "mode": "default"
+      },
+      "in_trash": false,
+      "is_archived": false
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "move-page",
+    "method": "POST",
+    "path": "/v1/pages/sample-value/move",
+    "input": {
+      "pageId": "sample-value",
+      "parent": {
+        "page_id": "sample-value"
+      }
+    },
+    "query": {},
+    "body": {
+      "parent": {
+        "page_id": "sample-value"
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-page-property",
+    "method": "GET",
+    "path": "/v1/pages/sample-value/properties/sample-value",
+    "input": {
+      "pageId": "sample-value",
+      "propertyId": "sample-value",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-page-markdown",
+    "method": "GET",
+    "path": "/v1/pages/sample-value/markdown",
+    "input": {
+      "pageId": "sample-value",
+      "includeTranscript": false,
+      "markdownVersion": "v1"
+    },
+    "query": {
+      "include_transcript": false,
+      "markdown_version": "v1"
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-page-markdown",
+    "method": "PATCH",
+    "path": "/v1/pages/sample-value/markdown",
+    "input": {
+      "pageId": "sample-value",
+      "allowAsync": false,
+      "markdownVersion": "v1",
+      "type": "replace_content",
+      "insertContent": {
+        "content": "sample-value"
+      },
+      "replaceContentRange": {
+        "content": "sample-value",
+        "content_range": "sample-value"
+      },
+      "updateContent": {
+        "content_updates": [
+          {
+            "old_str": "sample-value",
+            "new_str": "sample-value"
+          }
+        ]
+      },
+      "replaceContent": {
+        "new_str": "sample-value"
+      }
+    },
+    "query": {},
+    "body": {
+      "allow_async": false,
+      "markdown_version": "v1",
+      "type": "replace_content",
+      "insert_content": {
+        "content": "sample-value"
+      },
+      "replace_content_range": {
+        "content": "sample-value",
+        "content_range": "sample-value"
+      },
+      "update_content": {
+        "content_updates": [
+          {
+            "old_str": "sample-value",
+            "new_str": "sample-value"
+          }
+        ]
+      },
+      "replace_content": {
+        "new_str": "sample-value"
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-async-task",
+    "method": "GET",
+    "path": "/v1/async_tasks/sample-value",
+    "input": {
+      "taskId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-block",
+    "method": "GET",
+    "path": "/v1/blocks/sample-value",
+    "input": {
+      "blockId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-block",
+    "method": "PATCH",
+    "path": "/v1/blocks/sample-value",
+    "input": {
+      "blockId": "sample-value",
+      "embed": {},
+      "type": "column",
+      "inTrash": false,
+      "bookmark": {},
+      "image": {},
+      "video": {},
+      "pdf": {},
+      "file": {},
+      "audio": {},
+      "code": {},
+      "equation": {
+        "expression": "sample-value"
+      },
+      "divider": {},
+      "breadcrumb": {},
+      "tab": {},
+      "tableOfContents": {},
+      "linkToPage": {
+        "page_id": "sample-value"
+      },
+      "tableRow": {
+        "cells": [
+          []
+        ]
+      },
+      "heading_1": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "heading_2": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "heading_3": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "heading_4": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "paragraph": {},
+      "bulletedListItem": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "numberedListItem": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "quote": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "toDo": {},
+      "toggle": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "template": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "callout": {},
+      "syncedBlock": {
+        "synced_from": {
+          "block_id": "sample-value"
+        }
+      },
+      "table": {},
+      "column": {}
+    },
+    "query": {},
+    "body": {
+      "embed": {},
+      "type": "column",
+      "in_trash": false,
+      "bookmark": {},
+      "image": {},
+      "video": {},
+      "pdf": {},
+      "file": {},
+      "audio": {},
+      "code": {},
+      "equation": {
+        "expression": "sample-value"
+      },
+      "divider": {},
+      "breadcrumb": {},
+      "tab": {},
+      "table_of_contents": {},
+      "link_to_page": {
+        "page_id": "sample-value"
+      },
+      "table_row": {
+        "cells": [
+          []
+        ]
+      },
+      "heading_1": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "heading_2": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "heading_3": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "heading_4": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "paragraph": {},
+      "bulleted_list_item": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "numbered_list_item": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "quote": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "to_do": {},
+      "toggle": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "template": {
+        "rich_text": [
+          "sample-value"
+        ]
+      },
+      "callout": {},
+      "synced_block": {
+        "synced_from": {
+          "block_id": "sample-value"
+        }
+      },
+      "table": {},
+      "column": {}
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "delete-block",
+    "method": "DELETE",
+    "path": "/v1/blocks/sample-value",
+    "input": {
+      "blockId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-many-blocks",
+    "method": "GET",
+    "path": "/v1/blocks/sample-value/children",
+    "input": {
+      "blockId": "sample-value",
+      "startCursor": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "pageSize": 1
+    },
+    "query": {
+      "start_cursor": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-data-source",
+    "method": "GET",
+    "path": "/v1/data_sources/sample-value",
+    "input": {
+      "dataSourceId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-data-source",
+    "method": "PATCH",
+    "path": "/v1/data_sources/sample-value",
+    "input": {
+      "dataSourceId": "sample-value",
+      "title": [
+        "sample-value"
+      ],
+      "icon": {
+        "file_upload": {}
+      },
+      "properties": {},
+      "inTrash": false,
+      "parent": {
+        "database_id": "sample-value"
+      }
+    },
+    "query": {},
+    "body": {
+      "title": [
+        "sample-value"
+      ],
+      "icon": {
+        "file_upload": {}
+      },
+      "properties": {},
+      "in_trash": false,
+      "parent": {
+        "database_id": "sample-value"
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "query-data-source",
+    "method": "POST",
+    "path": "/v1/data_sources/sample-value/query",
+    "input": {
+      "dataSourceId": "sample-value",
+      "filterProperties": [
+        "sample-value"
+      ],
+      "sorts": [
+        {
+          "property": "sample-value",
+          "direction": "ascending"
+        }
+      ],
+      "filter": {
+        "or": []
+      },
+      "startCursor": "sample-value",
+      "pageSize": 1,
+      "isArchived": false,
+      "resultType": "page"
+    },
+    "query": {
+      "filter_properties": [
+        "sample-value"
+      ]
+    },
+    "body": {
+      "sorts": [
+        {
+          "property": "sample-value",
+          "direction": "ascending"
+        }
+      ],
+      "filter": {
+        "or": []
+      },
+      "start_cursor": "sample-value",
+      "page_size": 1,
+      "is_archived": false,
+      "result_type": "page"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-data-source",
+    "method": "POST",
+    "path": "/v1/data_sources",
+    "input": {
+      "parent": {
+        "database_id": "sample-value"
+      },
+      "properties": {},
+      "title": [
+        "sample-value"
+      ],
+      "icon": {
+        "file_upload": {}
+      }
+    },
+    "query": {},
+    "body": {
+      "parent": {
+        "database_id": "sample-value"
+      },
+      "properties": {},
+      "title": [
+        "sample-value"
+      ],
+      "icon": {
+        "file_upload": {}
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "list-data-source-templates",
+    "method": "GET",
+    "path": "/v1/data_sources/sample-value/templates",
+    "input": {
+      "dataSourceId": "sample-value",
+      "name": "sample-value",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "name": "sample-value",
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-database",
+    "method": "GET",
+    "path": "/v1/databases/sample-value",
+    "input": {
+      "databaseId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-database",
+    "method": "PATCH",
+    "path": "/v1/databases/sample-value",
+    "input": {
+      "databaseId": "sample-value",
+      "parent": "sample-value",
+      "title": [
+        "sample-value"
+      ],
+      "description": [
+        "sample-value"
+      ],
+      "isInline": false,
+      "icon": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      },
+      "cover": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      },
+      "inTrash": false,
+      "isLocked": false
+    },
+    "query": {},
+    "body": {
+      "parent": "sample-value",
+      "title": [
+        "sample-value"
+      ],
+      "description": [
+        "sample-value"
+      ],
+      "is_inline": false,
+      "icon": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      },
+      "cover": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      },
+      "in_trash": false,
+      "is_locked": false
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-database",
+    "method": "POST",
+    "path": "/v1/databases",
+    "input": {
+      "parent": "sample-value",
+      "title": [
+        "sample-value"
+      ],
+      "description": [
+        "sample-value"
+      ],
+      "isInline": false,
+      "initialDataSource": {},
+      "databaseType": "tasks",
+      "icon": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      },
+      "cover": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      }
+    },
+    "query": {},
+    "body": {
+      "parent": "sample-value",
+      "title": [
+        "sample-value"
+      ],
+      "description": [
+        "sample-value"
+      ],
+      "is_inline": false,
+      "initial_data_source": {},
+      "database_type": "tasks",
+      "icon": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      },
+      "cover": {
+        "file_upload": {
+          "id": "sample-value"
+        }
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "search",
+    "method": "POST",
+    "path": "/v1/search",
+    "input": {
+      "filterProperties": [
+        "sample-value"
+      ],
+      "sort": {
+        "timestamp": "last_edited_time",
+        "direction": "ascending"
+      },
+      "query": "sample-value",
+      "startCursor": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "pageSize": 1,
+      "filter": {
+        "property": "object",
+        "value": "page"
+      }
+    },
+    "query": {
+      "filter_properties": [
+        "sample-value"
+      ]
+    },
+    "body": {
+      "sort": {
+        "timestamp": "last_edited_time",
+        "direction": "ascending"
+      },
+      "query": "sample-value",
+      "start_cursor": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "page_size": 1,
+      "filter": {
+        "property": "object",
+        "value": "page"
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-comment",
+    "method": "POST",
+    "path": "/v1/comments",
+    "input": {
+      "attachments": [
+        {
+          "file_upload_id": "sample-value"
+        }
+      ],
+      "displayName": {
+        "type": "integration"
+      },
+      "markdownVersion": "v1",
+      "parent": {
+        "page_id": "sample-value"
+      },
+      "richText": [
+        "sample-value"
+      ],
+      "markdown": "sample-value",
+      "discussionId": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "attachments": [
+        {
+          "file_upload_id": "sample-value"
+        }
+      ],
+      "display_name": {
+        "type": "integration"
+      },
+      "markdown_version": "v1",
+      "parent": {
+        "page_id": "sample-value"
+      },
+      "rich_text": [
+        "sample-value"
+      ],
+      "markdown": "sample-value",
+      "discussion_id": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "list-comments",
+    "method": "GET",
+    "path": "/v1/comments",
+    "input": {
+      "blockId": "sample-value",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "block_id": "sample-value",
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-comment",
+    "method": "GET",
+    "path": "/v1/comments/sample-value",
+    "input": {
+      "commentId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-comment",
+    "method": "PATCH",
+    "path": "/v1/comments/sample-value",
+    "input": {
+      "commentId": "sample-value",
+      "markdownVersion": "v1",
+      "richText": [
+        "sample-value"
+      ],
+      "markdown": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "markdown_version": "v1",
+      "rich_text": [
+        "sample-value"
+      ],
+      "markdown": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "delete-comment",
+    "method": "DELETE",
+    "path": "/v1/comments/sample-value",
+    "input": {
+      "commentId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-file-upload",
+    "method": "POST",
+    "path": "/v1/file_uploads",
+    "input": {
+      "mode": "single_part",
+      "filename": "sample-value",
+      "contentType": "sample-value",
+      "numberOfParts": 1,
+      "externalUrl": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "mode": "single_part",
+      "filename": "sample-value",
+      "content_type": "sample-value",
+      "number_of_parts": 1,
+      "external_url": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "list-file-uploads",
+    "method": "GET",
+    "path": "/v1/file_uploads",
+    "input": {
+      "status": "pending",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "status": "pending",
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "complete-file-upload",
+    "method": "POST",
+    "path": "/v1/file_uploads/sample-value/complete",
+    "input": {
+      "fileUploadId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-file-upload",
+    "method": "GET",
+    "path": "/v1/file_uploads/sample-value",
+    "input": {
+      "fileUploadId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "list-custom-emojis",
+    "method": "GET",
+    "path": "/v1/custom_emojis",
+    "input": {
+      "startCursor": "sample-value",
+      "pageSize": 1,
+      "name": "sample-value"
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "page_size": 1,
+      "name": "sample-value"
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "list-views",
+    "method": "GET",
+    "path": "/v1/views",
+    "input": {
+      "databaseId": "sample-value",
+      "dataSourceId": "sample-value",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "database_id": "sample-value",
+      "data_source_id": "sample-value",
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-view",
+    "method": "POST",
+    "path": "/v1/views",
+    "input": {
+      "dataSourceId": "sample-value",
+      "name": "sample-value",
+      "type": "table",
+      "databaseId": "sample-value",
+      "viewId": "sample-value",
+      "filter": {},
+      "sorts": [
+        {}
+      ],
+      "quickFilters": {},
+      "createDatabase": {
+        "parent": {
+          "type": "page_id",
+          "page_id": "sample-value"
+        }
+      },
+      "configuration": {
+        "type": "table"
+      },
+      "position": {
+        "type": "start"
+      },
+      "placement": {
+        "type": "new_row"
+      }
+    },
+    "query": {},
+    "body": {
+      "data_source_id": "sample-value",
+      "name": "sample-value",
+      "type": "table",
+      "database_id": "sample-value",
+      "view_id": "sample-value",
+      "filter": {},
+      "sorts": [
+        {}
+      ],
+      "quick_filters": {},
+      "create_database": {
+        "parent": {
+          "type": "page_id",
+          "page_id": "sample-value"
+        }
+      },
+      "configuration": {
+        "type": "table"
+      },
+      "position": {
+        "type": "start"
+      },
+      "placement": {
+        "type": "new_row"
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-view",
+    "method": "GET",
+    "path": "/v1/views/sample-value",
+    "input": {
+      "viewId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-view",
+    "method": "PATCH",
+    "path": "/v1/views/sample-value",
+    "input": {
+      "viewId": "sample-value",
+      "name": "sample-value",
+      "filter": {},
+      "sorts": [
+        {
+          "property": "sample-value",
+          "direction": "ascending"
+        }
+      ],
+      "quickFilters": {},
+      "configuration": {
+        "type": "table"
+      }
+    },
+    "query": {},
+    "body": {
+      "name": "sample-value",
+      "filter": {},
+      "sorts": [
+        {
+          "property": "sample-value",
+          "direction": "ascending"
+        }
+      ],
+      "quick_filters": {},
+      "configuration": {
+        "type": "table"
+      }
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "delete-view",
+    "method": "DELETE",
+    "path": "/v1/views/sample-value",
+    "input": {
+      "viewId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-view-query",
+    "method": "POST",
+    "path": "/v1/views/sample-value/queries",
+    "input": {
+      "viewId": "sample-value",
+      "pageSize": 1
+    },
+    "query": {},
+    "body": {
+      "page_size": 1
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-view-query-results",
+    "method": "GET",
+    "path": "/v1/views/sample-value/queries/sample-value",
+    "input": {
+      "viewId": "sample-value",
+      "queryId": "sample-value",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "delete-view-query",
+    "method": "DELETE",
+    "path": "/v1/views/sample-value/queries/sample-value",
+    "input": {
+      "viewId": "sample-value",
+      "queryId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-meeting-note",
+    "method": "POST",
+    "path": "/v1/blocks/meeting_notes",
+    "input": {
+      "title": "sample-value",
+      "language": "auto",
+      "options": {},
+      "source": {
+        "type": "block",
+        "block_id": "sample-value"
+      },
+      "parent": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "title": "sample-value",
+      "language": "auto",
+      "options": {},
+      "source": {
+        "type": "block",
+        "block_id": "sample-value"
+      },
+      "parent": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "query-meeting-notes",
+    "method": "POST",
+    "path": "/v1/blocks/meeting_notes/query",
+    "input": {
+      "filter": {
+        "operator": "and"
+      },
+      "sort": [
+        {
+          "property": "title",
+          "direction": "ascending"
+        }
+      ],
+      "limit": 1
+    },
+    "query": {},
+    "body": {
+      "filter": {
+        "operator": "and"
+      },
+      "sort": [
+        {
+          "property": "title",
+          "direction": "ascending"
+        }
+      ],
+      "limit": 1
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "query-agents",
+    "method": "POST",
+    "path": "/v1/agents/query",
+    "input": {
+      "query": "sample-value",
+      "filter": {
+        "property": "id",
+        "id": {}
+      },
+      "sorts": [
+        {
+          "property": "created_time",
+          "direction": "ascending"
+        }
+      ],
+      "startCursor": "sample-value",
+      "pageSize": 1,
+      "verbose": false,
+      "includeDeleted": false
+    },
+    "query": {},
+    "body": {
+      "query": "sample-value",
+      "filter": {
+        "property": "id",
+        "id": {}
+      },
+      "sorts": [
+        {
+          "property": "created_time",
+          "direction": "ascending"
+        }
+      ],
+      "start_cursor": "sample-value",
+      "page_size": 1,
+      "verbose": false,
+      "include_deleted": false
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-agent",
+    "method": "GET",
+    "path": "/v1/agents/sample-value",
+    "input": {
+      "agentId": "sample-value",
+      "verbose": false
+    },
+    "query": {
+      "verbose": false
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "delete-agent",
+    "method": "DELETE",
+    "path": "/v1/agents/sample-value",
+    "input": {
+      "agentId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-agent-insights",
+    "method": "GET",
+    "path": "/v1/agents/sample-value/insights",
+    "input": {
+      "agentId": "sample-value",
+      "startTime": 1,
+      "endTime": 1
+    },
+    "query": {
+      "start_time": 1,
+      "end_time": 1
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-agent-status",
+    "method": "PATCH",
+    "path": "/v1/agents/sample-value/status",
+    "input": {
+      "agentId": "sample-value",
+      "status": "active"
+    },
+    "query": {},
+    "body": {
+      "status": "active"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-agent-credit-limit",
+    "method": "PATCH",
+    "path": "/v1/agents/sample-value/credit_limit",
+    "input": {
+      "agentId": "sample-value",
+      "creditLimit": 1
+    },
+    "query": {},
+    "body": {
+      "credit_limit": 1
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "batch-manage-agents",
+    "method": "POST",
+    "path": "/v1/agents/batch",
+    "input": {
+      "operations": [
+        {
+          "action": "update_status",
+          "agent_id": "sample-value",
+          "fields": {}
+        }
+      ]
+    },
+    "query": {},
+    "body": {
+      "operations": [
+        {
+          "action": "update_status",
+          "agent_id": "sample-value",
+          "fields": {}
+        }
+      ]
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "list-plugins",
+    "method": "GET",
+    "path": "/v1/ai/plugins",
+    "input": {
+      "pageSize": 1,
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "page_size": 1,
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-plugin-directory",
+    "method": "GET",
+    "path": "/v1/ai/plugins/sample-value",
+    "input": {
+      "id": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-skill-directory",
+    "method": "GET",
+    "path": "/v1/ai/skills/sample-value",
+    "input": {
+      "id": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "update-session",
+    "method": "POST",
+    "path": "/v1/sessions",
+    "input": {
+      "message": "sample-value",
+      "agentId": "sample-value",
+      "sessionId": "sample-value",
+      "attachments": [
+        {
+          "file_upload": {
+            "id": "sample-value"
+          }
+        }
+      ],
+      "metadata": {},
+      "promptContext": "sample-value",
+      "actions": [
+        {
+          "action_id": "sample-value",
+          "option_id": "approve"
+        }
+      ]
+    },
+    "query": {},
+    "body": {
+      "message": "sample-value",
+      "agent_id": "sample-value",
+      "session_id": "sample-value",
+      "attachments": [
+        {
+          "file_upload": {
+            "id": "sample-value"
+          }
+        }
+      ],
+      "metadata": {},
+      "prompt_context": "sample-value",
+      "actions": [
+        {
+          "action_id": "sample-value",
+          "option_id": "approve"
+        }
+      ]
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "get-session",
+    "method": "GET",
+    "path": "/v1/sessions/sample-value",
+    "input": {
+      "sessionId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-03-11"
+  },
+  {
+    "action": "query-sessions",
+    "method": "POST",
+    "path": "/v1/sessions/query",
+    "input": {
+      "query": "sample-value",
+      "filter": {
+        "property": "id",
+        "string": {
+          "equals": "sample-value"
+        }
+      },
+      "sorts": [
+        {
+          "property": "created_at",
+          "direction": "ascending"
+        }
+      ],
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {},
+    "body": {
+      "query": "sample-value",
+      "filter": {
+        "property": "id",
+        "string": {
+          "equals": "sample-value"
+        }
+      },
+      "sorts": [
+        {
+          "property": "created_at",
+          "direction": "ascending"
+        }
+      ],
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "query-session-events",
+    "method": "POST",
+    "path": "/v1/sessions/sample-value/events/query",
+    "input": {
+      "sessionId": "sample-value",
+      "filter": {
+        "property": "id",
+        "string": {
+          "equals": "sample-value"
+        }
+      },
+      "sorts": [
+        {
+          "property": "sequence",
+          "direction": "ascending"
+        }
+      ],
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {},
+    "body": {
+      "filter": {
+        "property": "id",
+        "string": {
+          "equals": "sample-value"
+        }
+      },
+      "sorts": [
+        {
+          "property": "sequence",
+          "direction": "ascending"
+        }
+      ],
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "cancel-session",
+    "method": "POST",
+    "path": "/v1/sessions/sample-value/cancel",
+    "input": {
+      "sessionId": "sample-value",
+      "eventId": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "event_id": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "create-token",
+    "method": "POST",
+    "path": "/v1/oauth/token",
+    "input": {
+      "grantType": "refresh_token",
+      "code": "sample-value",
+      "redirectUri": "sample-value",
+      "externalAccount": {
+        "key": "sample-value",
+        "name": "sample-value"
+      },
+      "refreshToken": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "grant_type": "refresh_token",
+      "code": "sample-value",
+      "redirect_uri": "sample-value",
+      "external_account": {
+        "key": "sample-value",
+        "name": "sample-value"
+      },
+      "refresh_token": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "revoke-token",
+    "method": "POST",
+    "path": "/v1/oauth/revoke",
+    "input": {
+      "token": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "token": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "introspect-token",
+    "method": "POST",
+    "path": "/v1/oauth/introspect",
+    "input": {
+      "token": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "token": "sample-value"
+    },
+    "version": "2026-03-11"
+  },
+  {
+    "action": "admin-get-ai-usage-analytics-report",
+    "method": "GET",
+    "path": "/admin/v1/analytics/ai_usage/reports/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "jobId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {
+      "workspace_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-content-pages-analytics-report",
+    "method": "GET",
+    "path": "/admin/v1/analytics/content_pages/reports/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "jobId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {
+      "workspace_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-user-activity-analytics-report",
+    "method": "GET",
+    "path": "/admin/v1/analytics/user_activity/reports/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "jobId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {
+      "workspace_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-analytics-reports",
+    "method": "GET",
+    "path": "/admin/v1/analytics/reports",
+    "input": {
+      "workspaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "pageSize": 1,
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "workspace_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "page_size": 1,
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-export-legal-hold",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/export",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "legalHoldExportId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "requestingUserId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": {
+      "legal_hold_export_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "requesting_user_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "space_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-legal-hold",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-legal-hold",
+    "method": "PATCH",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "description": "sample-value",
+      "icon": "sample-value",
+      "name": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "description": "sample-value",
+      "icon": "sample-value",
+      "name": "sample-value"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-legal-hold-users",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/users",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-add-legal-hold-users",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/users",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "userIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ]
+    },
+    "query": {},
+    "body": {
+      "user_ids": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ]
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-legal-holds",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds",
+    "input": {
+      "startCursor": "sample-value",
+      "userId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "user_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-create-legal-hold",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds",
+    "input": {
+      "name": "sample-value",
+      "startDate": 1,
+      "userIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "userInteractionType": [
+        "page.created"
+      ],
+      "description": "sample-value",
+      "endDate": 1,
+      "icon": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "name": "sample-value",
+      "start_date": 1,
+      "user_ids": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "user_interaction_type": [
+        "page.created"
+      ],
+      "description": "sample-value",
+      "end_date": 1,
+      "icon": "sample-value"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-legal-hold-workspaces",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/workspaces",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-release-legal-hold",
+    "method": "POST",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/release",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-remove-legal-hold-user",
+    "method": "DELETE",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/users/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "userId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-enqueue-space-export",
+    "method": "POST",
+    "path": "/admin/v1/spaces/sample-value/exports",
+    "input": {
+      "spaceId": "sample-value",
+      "exportType": "html",
+      "onBehalfOfUserEmail": "sample-value",
+      "collectionViewExportType": "all",
+      "flattenExportFiletree": false,
+      "includeComments": false,
+      "includeContents": "everything",
+      "locale": "sample-value",
+      "teamspaceIds": [
+        "sample-value"
+      ],
+      "timeZone": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "export_type": "html",
+      "on_behalf_of_user_email": "sample-value",
+      "collection_view_export_type": "all",
+      "flatten_export_filetree": false,
+      "include_comments": false,
+      "include_contents": "everything",
+      "locale": "sample-value",
+      "teamspace_ids": [
+        "sample-value"
+      ],
+      "time_zone": "sample-value"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-space-export-status",
+    "method": "GET",
+    "path": "/admin/v1/spaces/sample-value/exports/sample-value",
+    "input": {
+      "exportJobId": "sample-value",
+      "spaceId": "sample-value"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-legal-hold-pages",
+    "method": "GET",
+    "path": "/admin/v1/legal_holds/a3f51b10-0216-4c72-8983-956c44a70d25/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/pages",
+    "input": {
+      "legalHoldId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-revoke-user-session",
+    "method": "POST",
+    "path": "/admin/v1/managed_users/revoke_session",
+    "input": {
+      "user": {
+        "type": "email",
+        "email": "sample-value"
+      }
+    },
+    "query": {},
+    "body": {
+      "user": {
+        "type": "email",
+        "email": "sample-value"
+      }
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-mcp-client-connections",
+    "method": "GET",
+    "path": "/admin/v1/mcp_client_connections",
+    "input": {
+      "startCursor": "sample-value",
+      "cursor": "sample-value",
+      "pageSize": "sample-value",
+      "userIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "workspaceIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ]
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "cursor": "sample-value",
+      "page_size": "sample-value",
+      "user_ids[]": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "workspace_ids[]": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ]
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-mcp-client-connection-enterprise-managed-access",
+    "method": "PUT",
+    "path": "/admin/v1/mcp_client_connections/enterprise_managed_access",
+    "input": {
+      "access": "allowed",
+      "userId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": {
+      "access": "allowed",
+      "user_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspace_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-revoke-mcp-client-connection",
+    "method": "POST",
+    "path": "/admin/v1/mcp_client_connections/revoke",
+    "input": {
+      "clientKey": "sample-value",
+      "userId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": {
+      "client_key": "sample-value",
+      "user_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "workspace_id": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-retrieve-permission-group",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value",
+    "input": {
+      "groupId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-permission-group",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value",
+    "input": {
+      "groupId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "name": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "name": "sample-value"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-delete-permission-group",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value",
+    "input": {
+      "groupId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "transferToOwnerId": "sample-value"
+    },
+    "query": {
+      "transfer_to_owner_id": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-permission-groups",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "pageSize": 1,
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "page_size": 1,
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-create-permission-group",
+    "method": "POST",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "name": "sample-value"
+    },
+    "query": {},
+    "body": {
+      "name": "sample-value"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-users",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/users",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "startCursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-permission-group-members",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value/members",
+    "input": {
+      "groupId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "pageSize": 1,
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "page_size": 1,
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-add-permission-group-member",
+    "method": "POST",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value/members",
+    "input": {
+      "groupId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "member": {
+        "type": "user",
+        "user_id": "sample-value"
+      },
+      "role": "owner"
+    },
+    "query": {},
+    "body": {
+      "member": {
+        "type": "user",
+        "user_id": "sample-value"
+      },
+      "role": "owner"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-permission-group-member",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value/members/users/sample-value",
+    "input": {
+      "groupId": "sample-value",
+      "userId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "role": "owner"
+    },
+    "query": {},
+    "body": {
+      "role": "owner"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-remove-permission-group-member",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/groups/sample-value/members/users/sample-value",
+    "input": {
+      "groupId": "sample-value",
+      "userId": "sample-value",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-list-personal-access-tokens",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/personal_access_tokens",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "startCursor": "sample-value",
+      "cursor": "sample-value",
+      "pageSize": "sample-value",
+      "status": [
+        "active"
+      ],
+      "creatorIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "search": "sample-value"
+    },
+    "query": {
+      "start_cursor": "sample-value",
+      "cursor": "sample-value",
+      "page_size": "sample-value",
+      "status": [
+        "active"
+      ],
+      "creator_ids": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "search": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-revoke-personal-access-token",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/personal_access_tokens/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "botId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-agent-creation-policy",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/creation_policy",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "policy": "all_workspace_members",
+      "disableExistingAgents": false
+    },
+    "query": {},
+    "body": {
+      "policy": "all_workspace_members",
+      "disable_existing_agents": false
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-workspace-credit-limit",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/credit_limit",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "defaultAgentCreditLimit": 1
+    },
+    "query": {},
+    "body": {
+      "default_agent_credit_limit": 1
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-agent-status",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/a3f51b10-0216-4c72-8983-956c44a70d25/status",
+    "input": {
+      "agentId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "adminStatus": "active"
+    },
+    "query": {},
+    "body": {
+      "admin_status": "active"
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-delete-agent",
+    "method": "DELETE",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/a3f51b10-0216-4c72-8983-956c44a70d25",
+    "input": {
+      "agentId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25"
+    },
+    "query": {},
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-workflows-metadata-for-space",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "name": "sample-value",
+      "createdByIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "createdTimeFrom": "sample-value",
+      "createdTimeTo": "sample-value",
+      "lastEditedTimeFrom": "sample-value",
+      "lastEditedTimeTo": "sample-value",
+      "creditUsageTimeFrom": "sample-value",
+      "creditUsageTimeTo": "sample-value",
+      "status": [
+        "active"
+      ],
+      "integrationTypes": [
+        "sample-value"
+      ],
+      "mcpServerNames": [
+        "sample-value"
+      ],
+      "models": [
+        "sample-value"
+      ],
+      "sharedWithUserIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "sharedWithGroupIds": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "cursor": "sample-value",
+      "pageSize": 1
+    },
+    "query": {
+      "name": "sample-value",
+      "created_by_ids": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "created_time_from": "sample-value",
+      "created_time_to": "sample-value",
+      "last_edited_time_from": "sample-value",
+      "last_edited_time_to": "sample-value",
+      "credit_usage_time_from": "sample-value",
+      "credit_usage_time_to": "sample-value",
+      "status": [
+        "active"
+      ],
+      "integration_types": [
+        "sample-value"
+      ],
+      "mcp_server_names": [
+        "sample-value"
+      ],
+      "models": [
+        "sample-value"
+      ],
+      "shared_with_user_ids": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "shared_with_group_ids": [
+        "a3f51b10-0216-4c72-8983-956c44a70d25"
+      ],
+      "cursor": "sample-value",
+      "page_size": 1
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-agent-credit-usage",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/a3f51b10-0216-4c72-8983-956c44a70d25/credit_usage",
+    "input": {
+      "agentId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "startCursor": "sample-value"
+    },
+    "query": {
+      "start_cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-agent-permissions",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/a3f51b10-0216-4c72-8983-956c44a70d25/permissions",
+    "input": {
+      "agentId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "cursor": "sample-value"
+    },
+    "query": {
+      "cursor": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-agent-permissions",
+    "method": "PATCH",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/a3f51b10-0216-4c72-8983-956c44a70d25/permissions",
+    "input": {
+      "agentId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "set": [
+        {
+          "principal": {},
+          "role": "edit"
+        }
+      ],
+      "remove": [
+        {
+          "group_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+          "type": "group"
+        }
+      ]
+    },
+    "query": {},
+    "body": {
+      "set": [
+        {
+          "principal": {},
+          "role": "edit"
+        }
+      ],
+      "remove": [
+        {
+          "group_id": "a3f51b10-0216-4c72-8983-956c44a70d25",
+          "type": "group"
+        }
+      ]
+    },
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-get-agents-credit-usage",
+    "method": "GET",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/credit_usage",
+    "input": {
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "cursor": "sample-value",
+      "pageSize": 1,
+      "includeDeleted": "false",
+      "creditUsageTimeFrom": "sample-value",
+      "creditUsageTimeTo": "sample-value"
+    },
+    "query": {
+      "cursor": "sample-value",
+      "page_size": 1,
+      "include_deleted": "false",
+      "credit_usage_time_from": "sample-value",
+      "credit_usage_time_to": "sample-value"
+    },
+    "body": null,
+    "version": "2026-06-01"
+  },
+  {
+    "action": "admin-update-agent-credit-limit",
+    "method": "PUT",
+    "path": "/admin/v1/spaces/a3f51b10-0216-4c72-8983-956c44a70d25/agents/a3f51b10-0216-4c72-8983-956c44a70d25/credit_limit",
+    "input": {
+      "agentId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "spaceId": "a3f51b10-0216-4c72-8983-956c44a70d25",
+      "creditLimit": 1
+    },
+    "query": {},
+    "body": {
+      "credit_limit": 1
+    },
+    "version": "2026-06-01"
+  }
+]

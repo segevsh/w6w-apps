@@ -1,46 +1,55 @@
 import type { ActionDefinition } from "@w6w/types";
-import { NotionClient, type NotionListResponse } from "../lib/client.ts";
+import { NotionClient, pathId } from "../lib/client.ts";
 
 interface Input {
   blockId: string;
-  pageSize?: number;
   startCursor?: string;
+  pageSize?: number;
 }
 
-/**
- * Fetches the direct children of a block. Notion nests blocks arbitrarily
- * (toggle -> paragraph -> …), and the n8n node had a `fetchNestedBlocks`
- * expander. We keep the surface flat: return the direct children only and
- * let the caller drive their own recursion — cheaper by default, no hidden
- * fan-out cost.
- */
-const getManyBlocks: ActionDefinition<Input, NotionListResponse> = {
+/** GET /v1/blocks/{block_id}/children — get-block-children. */
+const action: ActionDefinition<Input> = {
   key: "get-many-blocks",
   type: "read",
   resource: "block",
   title: "Get Many Blocks",
-  description:
-    "List the direct children of a block (or a page). Returns one page — pass `startCursor` back to walk.",
-  params: [
-    { key: "blockId", label: "Parent Block ID", type: "string", required: true },
-    { key: "pageSize", label: "Page size", type: "number", default: 100 },
-    { key: "startCursor", label: "Start cursor", type: "string" },
-  ],
+  description: "Retrieve block children.",
   output: [
-    { key: "results", type: "array", label: "Blocks" },
-    { key: "next_cursor", type: "string", label: "Next cursor" },
-    { key: "has_more", type: "boolean", label: "Has more" },
+    { "key": "type", "type": "string", "label": "Type" },
+    { "key": "block", "type": "object", "label": "Block" },
+    { "key": "object", "type": "string", "label": "Object" },
+    { "key": "next_cursor", "type": "string", "label": "Next cursor" },
+    { "key": "has_more", "type": "boolean", "label": "Has more" },
+    { "key": "results", "type": "array", "label": "Results" },
+  ],
+  params: [
+    {
+      "key": "blockId",
+      "label": "Block ID",
+      "type": "string",
+      "required": true,
+      "hint": "Notion resource ID. Use the corresponding list or search action to find it.",
+    },
+    { "key": "startCursor", "label": "Start Cursor", "type": "string" },
+    {
+      "key": "pageSize",
+      "label": "Page Size",
+      "type": "number",
+      "hint": "Number of results per page (1–100).",
+      "validation": { "min": 1, "max": 100 },
+    },
   ],
 
   execute(input, ctx) {
     const client = new NotionClient(ctx);
-    return client.request<NotionListResponse>(`/blocks/${input.blockId}/children`, {
+    return client.request(`/blocks/${pathId(input.blockId)}/children`, {
+      method: "GET",
       query: {
-        page_size: input.pageSize ?? 100,
-        start_cursor: input.startCursor,
+        "start_cursor": input.startCursor,
+        "page_size": input.pageSize ?? 100,
       },
     });
   },
 };
 
-export default getManyBlocks;
+export default action;

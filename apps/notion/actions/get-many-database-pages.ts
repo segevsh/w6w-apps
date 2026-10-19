@@ -1,57 +1,105 @@
 import type { ActionDefinition } from "@w6w/types";
-import { NotionClient, type NotionListResponse } from "../lib/client.ts";
+import { NotionClient, pathId, resolveDataSource } from "../lib/client.ts";
 
 interface Input {
-  databaseId: string;
-  filter?: unknown;
+  dataSourceId?: string;
+  databaseId?: string;
+  filterProperties?: string[];
   sorts?: unknown[];
-  pageSize?: number;
+  filter?: unknown;
   startCursor?: string;
+  pageSize?: number;
+  isArchived?: boolean;
+  resultType?: "page" | "data_source";
 }
 
-/**
- * Notion's /databases/:id/query is the canonical way to list rows in a
- * database. Filters and sorts are the same object shapes documented at
- * https://developers.notion.com/reference/post-database-query — we pass them
- * through verbatim so callers stay in lockstep with Notion's docs.
- */
-const getManyDatabasePages: ActionDefinition<Input, NotionListResponse> = {
+/** POST /v1/data_sources/{data_source_id}/query — post-database-query. */
+const action: ActionDefinition<Input> = {
   key: "get-many-database-pages",
   type: "read",
-  resource: "databasePage",
+  resource: "data-sources",
   title: "Get Many Database Pages",
-  description: "Query the pages in a database. Returns one page — pass `startCursor` back to walk.",
-  params: [
-    { key: "databaseId", label: "Database ID", type: "string", required: true },
-    {
-      key: "filter",
-      label: "Filter",
-      type: "json",
-      hint: "Notion filter object. See developers.notion.com filter reference.",
-    },
-    { key: "sorts", label: "Sorts", type: "json", hint: "Notion sort array." },
-    { key: "pageSize", label: "Page size", type: "number", default: 100 },
-    { key: "startCursor", label: "Start cursor", type: "string" },
-  ],
+  description:
+    "Query database rows. Provide a Data Source ID, or a Database ID containing exactly one data source.",
   output: [
-    { key: "results", type: "array", label: "Pages" },
-    { key: "next_cursor", type: "string", label: "Next cursor" },
-    { key: "has_more", type: "boolean", label: "Has more" },
+    { "key": "type", "type": "string", "label": "Type" },
+    { "key": "page_or_data_source", "type": "object", "label": "Page or data source" },
+    { "key": "object", "type": "string", "label": "Object" },
+    { "key": "next_cursor", "type": "string", "label": "Next cursor" },
+    { "key": "has_more", "type": "boolean", "label": "Has more" },
+    { "key": "results", "type": "array", "label": "Results" },
+    { "key": "request_status", "type": "object", "label": "Request status" },
+  ],
+  params: [
+    {
+      key: "databaseId",
+      label: "Database ID",
+      type: "string",
+      hint:
+        "Resolves the sole data source. For a database with multiple data sources, supply Data Source ID.",
+    },
+    {
+      "key": "dataSourceId",
+      "label": "Data Source ID",
+      "type": "string",
+      "hint": "Notion resource ID. Use the corresponding list or search action to find it.",
+    },
+    {
+      "key": "filterProperties",
+      "label": "Filter Properties",
+      "type": "array",
+      "item": { "type": "string" },
+      "hint":
+        "Property names or IDs to include in each page's `properties` object. Other properties are left out. Repeat the parameter to pass more than one value, for example `filter_properties=title&filter_properties=Status`. Pages that aren't in a data source always return only `title`.",
+    },
+    { "key": "sorts", "label": "Sorts", "type": "json" },
+    { "key": "filter", "label": "Filter", "type": "json" },
+    { "key": "startCursor", "label": "Start Cursor", "type": "string" },
+    {
+      "key": "pageSize",
+      "label": "Page Size",
+      "type": "number",
+      "hint": "Number of results per page (1–100).",
+      "validation": { "min": 1, "integer": true, "max": 100 },
+    },
+    {
+      "key": "isArchived",
+      "label": "Is Archived",
+      "type": "boolean",
+      "hint":
+        "Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.",
+    },
+    {
+      "key": "resultType",
+      "label": "Result Type",
+      "type": "select",
+      "options": [{ "value": "page", "label": "page" }, {
+        "value": "data_source",
+        "label": "data_source",
+      }],
+      "hint":
+        "Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.",
+    },
   ],
 
-  execute(input, ctx) {
+  async execute(input, ctx) {
     const client = new NotionClient(ctx);
-    const body: Record<string, unknown> = {
-      page_size: input.pageSize ?? 100,
-    };
-    if (input.filter) body.filter = input.filter;
-    if (input.sorts) body.sorts = input.sorts;
-    if (input.startCursor) body.start_cursor = input.startCursor;
-    return client.request<NotionListResponse>(`/databases/${input.databaseId}/query`, {
+    const dataSourceId = await resolveDataSource(client, input);
+    return client.request(`/data_sources/${pathId(dataSourceId)}/query`, {
       method: "POST",
-      body,
+      query: {
+        "filter_properties": input.filterProperties,
+      },
+      body: {
+        "sorts": input.sorts,
+        "filter": input.filter,
+        "start_cursor": input.startCursor,
+        "page_size": input.pageSize ?? 100,
+        "is_archived": input.isArchived,
+        "result_type": input.resultType,
+      },
     });
   },
 };
 
-export default getManyDatabasePages;
+export default action;

@@ -13,7 +13,7 @@ Deno.test("update-database-page: PATCHes /pages/{id} with only provided fields",
   assertEquals(calls[0].method, "PATCH");
   const sent = JSON.parse(calls[0].body ?? "{}");
   assertEquals(sent.properties.Status.select.name, "Done");
-  assertEquals(sent.archived, false);
+  assertEquals(sent.in_trash, false);
   assertEquals("icon" in sent, false);
   assertEquals("cover" in sent, false);
 });
