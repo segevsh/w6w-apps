@@ -412,7 +412,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | ninox | databases, productivity | api-key | 22 |
 | nocodb | spreadsheets, databases | api-token | 13 |
 | nocrm | crm | api-key, user-token | 21 |
-| notion | productivity, documents | internal-secret, oauth2 | 17 |
+| notion | productivity, documents | internal-secret, oauth2, personal-access-token, organization-token, oauth-client | 119 |
 | nutshell | crm | basic | 13 |
 | odoo | crm, commerce | api-key | 21 |
 | okta | security | api-token | 11 |

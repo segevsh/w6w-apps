@@ -12,7 +12,7 @@ import { API_URL, NOTION_VERSION } from "../lib/client.ts";
  *   - Token response is JSON and includes `access_token`, `workspace_id`,
  *     `workspace_name`, `workspace_icon`, `bot_id`, and `owner`. We capture
  *     those in `afterConnect` so downstream label/context is meaningful.
- *   - Tokens don't expire — no refresh hook needed.
+ *   - Notion returns refresh tokens; explicit token management uses OAuth Client auth.
  */
 const oauth2: AuthDefinition = {
   key: "oauth2",
@@ -24,6 +24,11 @@ const oauth2: AuthDefinition = {
   oauth2: {
     authorizationUrl: "https://api.notion.com/v1/oauth/authorize",
     tokenUrl: "https://api.notion.com/v1/oauth/token",
+    tokenAuthMethod: "client_secret_basic",
+    tokenBodyFormat: "json",
+    refreshUrl: "https://api.notion.com/v1/oauth/token",
+    revokeUrl: "https://api.notion.com/v1/oauth/revoke",
+    extraAuthParams: { owner: "user" },
     // Notion doesn't advertise PKCE; keep it off explicitly so we don't
     // accidentally enable it if defaults ever change.
     pkce: false,

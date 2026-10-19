@@ -1,23 +1,19 @@
 import type { ActionDefinition } from "@w6w/types";
 import { NotionClient, type NotionListResponse } from "../lib/client.ts";
+import { searchDatabaseContainers } from "../lib/databases.ts";
 
 interface Input {
   pageSize?: number;
   startCursor?: string;
 }
 
-/**
- * Notion has no dedicated "list databases" endpoint — the /search endpoint
- * with a `filter.property=object, value=database` clause is the sanctioned
- * pattern. That's exactly what n8n's databaseGetAll does under the hood.
- */
-const listDatabases: ActionDefinition<Input> = {
+const listDatabases: ActionDefinition<Input, NotionListResponse> = {
   key: "list-databases",
   type: "read",
   resource: "database",
   title: "List Databases",
   description:
-    "List all databases the integration has access to. One page per call — pass `startCursor` back to walk.",
+    "Find shared database containers via data source search. Search indexing is not exhaustive. One page per call — pass `startCursor` back to walk.",
   params: [
     { key: "pageSize", label: "Page size", type: "number", default: 100 },
     { key: "startCursor", label: "Start cursor", type: "string" },
@@ -30,13 +26,10 @@ const listDatabases: ActionDefinition<Input> = {
 
   execute(input, ctx) {
     const client = new NotionClient(ctx);
-    return client.request<NotionListResponse>("/search", {
-      method: "POST",
-      body: {
-        filter: { property: "object", value: "database" },
-        page_size: input.pageSize ?? 100,
-        start_cursor: input.startCursor,
-      },
+    return searchDatabaseContainers(client, {
+      filter: { property: "object", value: "data_source" },
+      page_size: input.pageSize ?? 100,
+      start_cursor: input.startCursor,
     });
   },
 };

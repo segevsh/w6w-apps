@@ -1,37 +1,44 @@
 import type { ActionDefinition } from "@w6w/types";
-import { NotionClient, type NotionListResponse } from "../lib/client.ts";
+import { NotionClient } from "../lib/client.ts";
 
 interface Input {
-  pageSize?: number;
   startCursor?: string;
+  pageSize?: number;
 }
 
-const getManyUsers: ActionDefinition<Input, NotionListResponse> = {
+/** GET /v1/users — get-users. */
+const action: ActionDefinition<Input> = {
   key: "get-many-users",
   type: "read",
   resource: "user",
   title: "Get Many Users",
-  description:
-    "List every user in the workspace. Returns one page — pass `startCursor` back to walk.",
-  params: [
-    { key: "pageSize", label: "Page size", type: "number", default: 100 },
-    { key: "startCursor", label: "Start cursor", type: "string" },
-  ],
+  description: "List all users.",
   output: [
-    { key: "results", type: "array", label: "Users" },
-    { key: "next_cursor", type: "string", label: "Next cursor" },
-    { key: "has_more", type: "boolean", label: "Has more" },
+    { "key": "type", "type": "string", "label": "Type" },
+    { "key": "user", "type": "object", "label": "User" },
+    { "key": "object", "type": "string", "label": "Object" },
+    { "key": "next_cursor", "type": "string", "label": "Next cursor" },
+    { "key": "has_more", "type": "boolean", "label": "Has more" },
+    { "key": "results", "type": "array", "label": "Results" },
   ],
+  params: [{ "key": "startCursor", "label": "Start Cursor", "type": "string" }, {
+    "key": "pageSize",
+    "label": "Page Size",
+    "type": "number",
+    "hint": "Number of results per page (1–100).",
+    "validation": { "min": 1, "max": 100 },
+  }],
 
   execute(input, ctx) {
     const client = new NotionClient(ctx);
-    return client.request<NotionListResponse>("/users", {
+    return client.request(`/users`, {
+      method: "GET",
       query: {
-        page_size: input.pageSize ?? 100,
-        start_cursor: input.startCursor,
+        "start_cursor": input.startCursor,
+        "page_size": input.pageSize ?? 100,
       },
     });
   },
 };
 
-export default getManyUsers;
+export default action;
