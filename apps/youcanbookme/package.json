@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.youcanbookme",
     "displayName": "YouCanBookMe",
+    "apiDocs": [
+      "https://web.archive.org/web/20210814150430id_/https://api.youcanbook.me/v1/api-docs?group=api"
+    ],
     "longDescription": "YouCanBookMe (YCBM) turns a calendar into a booking page: a visitor picks an open slot, fills in a form, and a booking (plus the underlying calendar event) is created automatically. This app brings that booking lifecycle into a workflow — list and read bookings across an account or a single booking page, create a booking directly (e.g. from a lead captured elsewhere), reschedule or cancel one, and delete it outright. It also covers a booking page's own setup: listing and reading booking pages (profiles), and adding the appointment types and team members that page offers.\n\nYCBM scopes every call to a specific account (a UUID) and authenticates with HTTP Basic — the account id as username, an API key as password — so every action takes the account id as an explicit input. This release does not cover availability queries, remote calendar accounts, or raw calendar events: YCBM's own current documentation lists only Profiles, Bookings, Team Members and Appointment Types as the account-scoped surface it exposes today, and this app's own live probes confirmed the older `remoteaccounts` and `queries` endpoints (still present in an archived 2021 spec) now return 404 on the live API.",
     "categories": [
       "calendar"

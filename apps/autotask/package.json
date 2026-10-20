@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.autotask",
     "displayName": "Autotask PSA",
+    "apiDocs": [
+      "https://autotask.net/help/DeveloperHelp/Content/APIs/REST/REST_API_Home.htm"
+    ],
     "longDescription": "Datto Autotask PSA is the professional services automation platform many managed service providers run their business on: service desk tickets, companies and contacts, time entries, projects and tasks, contracts, configuration items and the sales pipeline all live in one database.\n\nThis app gives a workflow the whole of that surface through the Autotask REST API. Three generic actions (query, count, get by id) reach every entity the API exposes, with Autotask's own filter grammar passed through untouched, and typed create and update actions cover the entities a workflow most often writes: tickets and ticket notes, companies, contacts, time entries, projects, project tasks and opportunities.\n\nAutotask is split into numbered zones, and a tenant's data lives on exactly one of them. The connection asks for the zone (it is the number in your Autotask web address) and the app only ever talks to that zone's host. Health checks follow the vendor's published status page and the account's own hourly API request budget, which Autotask caps at 10,000 requests per hour per database across every integration.",
     "categories": [
       "support",

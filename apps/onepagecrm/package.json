@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.onepagecrm",
     "displayName": "OnePageCRM",
+    "apiDocs": [
+      "https://app.onepagecrm.com/app/api"
+    ],
     "longDescription": "OnePageCRM is an action-focused CRM for small businesses: every contact is meant to carry a next action, so nothing is left without a follow-up. This app covers its core objects through the OnePageCRM API v3.\n\nIt lists, searches, creates, updates and deletes contacts, reads companies, creates and moves deals through pending, won and lost, and manages next actions: creating one on a contact and marking it done. It logs notes and calls against a contact, tags a contact or changes its status, and looks up the users, statuses, lead sources and pipelines whose ids the other actions need.\n\nGood for teams that want to create contacts and a first next action automatically from a form or another tool, keep deals in step with a billing or support system, log calls from an outside dialer, or hand a lead to the right owner.",
     "categories": [
       "crm"

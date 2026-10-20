@@ -10,6 +10,10 @@
   "w6w": {
     "id": "io.w6w.bubble",
     "displayName": "Bubble",
+    "apiDocs": [
+      "https://manual.bubble.io/help-guides/integrations/api/the-bubble-api",
+      "https://manual.bubble.io/core-resources/api/the-bubble-api/the-data-api/data-api-requests"
+    ],
     "longDescription": "Bubble is a no-code app builder, and this app talks to the two API surfaces a Bubble application itself exposes: the Data API (direct CRUD against whichever Data Types the builder has turned on) and the Workflow API (triggering the app's own named, server-side API Workflows).\n\nBecause every Bubble app is its own deployment with its own database schema, the shapes here stay generic — a Data Type name and a JSON object of fields, rather than fixed field lists — so this app works against any Bubble application, not one specific schema. Search, read, create, update, replace, delete and bulk-create cover the Data API's full surface; triggering an API Workflow by name covers the Workflow API, for anything the app builder has wired up beyond plain CRUD, from sending an email to running a multi-step process.\n\nLeft out on purpose: user-level authentication (logging a specific end-user in runs through a bespoke API Workflow every app builder designs differently, with no fixed endpoint to call generically) and bulk update/delete, which Bubble's Data API does not offer at all — only bulk create.",
     "categories": [
       "developer-tools",

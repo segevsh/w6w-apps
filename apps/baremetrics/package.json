@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.baremetrics",
     "displayName": "Baremetrics",
+    "apiDocs": [
+      "https://developers.baremetrics.com/reference"
+    ],
     "longDescription": "Baremetrics turns subscription billing data into the metrics a SaaS business steers by: MRR, ARR, churn, LTV, trials and more. This app reads those metrics over any date range, broken out by plan or down to the customers behind a number, and lists the customers, plans, subscriptions, charges and refunds in each connected source.\n\nFor teams that bill outside Stripe, Recurly or Braintree, it can also write to the Baremetrics API source: create, update and delete customers, plans, subscriptions and charges. Data that comes from a payment-provider source is read-only, as Baremetrics itself enforces.\n\nHealth checks verify the API key and track the hourly request allowance from Baremetrics' own rate-limit headers.",
     "categories": [
       "analytics",

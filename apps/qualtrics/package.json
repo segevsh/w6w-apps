@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.qualtrics",
     "displayName": "Qualtrics",
+    "apiDocs": [
+      "https://api.qualtrics.com/"
+    ],
     "longDescription": "Qualtrics is a survey and experience-management (XM) platform. Its REST API v3 is datacenter-sharded: every account lives on one of many regional hosts (`iad1.qualtrics.com`, `fra1.qualtrics.com`, `syd1.qualtrics.com`, …), and a connection records which one it belongs to.\n\nThis app covers the survey-and-collect path an automation actually drives. Surveys can be listed and fetched; XM Directory contact pools, mailing lists and their contacts can be read; distributions can be listed per survey; and the three-beat response-export flow — start a job, poll its progress, download the finished file — is modelled end to end.\n\nLibraries, account users, the current organization and event subscriptions round out the administrative surface. Health checks track Qualtrics' own status page (scoped to the API component, not the page-level roll-up), and the credential check probes `whoami`, which returns the caller's own profile and never the API token itself.\n\nA fit for syncing survey responses into a warehouse or CRM, keeping contact pools aligned with another system, or kicking off an export on a schedule without a person logging in.",
     "categories": [
       "forms",

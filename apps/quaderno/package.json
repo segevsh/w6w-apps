@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.quaderno",
     "displayName": "Quaderno",
+    "apiDocs": [
+      "https://developers.quaderno.io/api/"
+    ],
     "longDescription": "Quaderno handles tax-compliant billing: it works out the right VAT, GST or sales tax for each sale and issues the invoice. This app lets a workflow manage customers and vendors (contacts), create, fetch, list, email, void and record payments on invoices, and raise credit notes to refund them.\n\nIt also creates and lists expenses and estimates (Quaderno calls them proformas), reads the product catalog, and calls the tax calculator on its own to get the rate and tax amount for a sale to any location before an invoice exists. Webhook endpoints can be listed.\n\nConnects with an API key and the account name from your Quaderno URL (acme.quadernoapp.com). Quaderno limits calls to 100 per 15 seconds.",
     "categories": [
       "finance",

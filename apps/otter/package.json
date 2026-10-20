@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.otter",
     "displayName": "Otter.ai",
+    "apiDocs": [
+      "https://help.otter.ai/hc/en-us/articles/36130822688279"
+    ],
     "longDescription": "Otter.ai is an AI meeting assistant that records, transcribes and summarizes conversations, then turns them into searchable transcripts, abstractive summaries, action items, topic insights and outlines. This app reads that output into a workflow: list and search conversations, fetch one with any combination of its generated action items, insights, outline or full transcript, download the meeting's MP3, and organize by Channel (Otter's shared-folder concept) and workspace member.\n\nA `conversation-create` action covers the other direction — importing a publicly downloadable audio or video URL as a new Otter conversation, the documented path for pulling calls in from a dialer or another recording source.\n\nOtter's Public API is gated to Enterprise workspaces only; a Free, Pro or Business account has no access to any endpoint this app calls, and `Auth.test` reports that distinctly from a bad key. Real-time updates are documented as a separate Webhooks surface rather than anything pollable here — out of scope for this app's Actions, which only cover reads and the one documented write.",
     "categories": [
       "ai",

@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.iclosed",
     "displayName": "iClosed",
+    "apiDocs": [
+      "https://developer.iclosed.io"
+    ],
     "longDescription": "iClosed is scheduling and CRM software built for sales calls: prospects book a call through a qualifying form, closers work the call, and the result is recorded as an outcome and a deal.\n\nThis app covers the public API end to end: create, update and search contacts and their notes; list, book, reschedule and cancel calls and read the open slots for an event; record call outcomes, deals, products and payment transactions; and read or write the custom fields and answers that qualify a lead.\n\nAuthentication is an API key from Settings → Developer → API Keys (Business or Enterprise plan). Health checks track iClosed's own status page and an unsigned reachability probe of the API.",
     "categories": [
       "calendar",

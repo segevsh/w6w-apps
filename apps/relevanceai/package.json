@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.relevanceai",
     "displayName": "Relevance AI",
+    "apiDocs": [
+      "https://api-f1db6c.stack.tryrelevance.com/latest/openapi_schema.json"
+    ],
     "longDescription": "Relevance AI is an agent-building platform: you compose Agents (and the Tools they call) in its UI, then drive them from anywhere. This app covers the surface Relevance AI's own documentation declares supported — \"the Relevance AI API is officially supported only for triggering Agents and Tools\" — as twelve actions over the two resource families that surface names.\n\nAgents: trigger one with a message (continuing an existing conversation when you pass a conversation id), fetch it, list or search them, cancel a run, and list conversations. Tools (called `studios` in the API): trigger one synchronously or asynchronously, poll a job's progress, cancel a job, and fetch or list tool definitions. A final `auth-info-get` action reports which project and user a Connection is scoped to.\n\nEvery organization sits on its own region host, so a Connection collects the region id shown on your API Keys page alongside the key, and the app builds `https://api-<region-id>.stack.tryrelevance.com` from it. Health checks cover the vendor's status page (scoped to its three API Gateways components), whether this connection's region host answers at all, and a declared absence for quota headroom.",
     "categories": [
       "ai",

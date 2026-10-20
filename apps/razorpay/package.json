@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.razorpay",
     "displayName": "Razorpay",
+    "apiDocs": [
+      "https://razorpay.com/docs/api/"
+    ],
     "longDescription": "Razorpay is an India-focused payment gateway: collect payments over 180+ methods (UPI, cards, netbanking, wallets, EMI) via Orders, Payment Links, Payment Pages/Invoices and UPI QR codes, then capture, refund, settle and reconcile them.\n\nThis app covers that core payment-gateway surface — Orders, Payments (capture, refund), Refunds, Customers, Payment Links, Invoices, Items, Plans, Subscriptions, Settlements, Disputes and QR Codes — the path a workflow needs to accept a payment and later reconcile, refund or dispute it. RazorpayX (Razorpay's separate banking/payouts product: contacts, fund accounts, payouts, virtual accounts) and the Partner/Route sub-merchant APIs are a different activation and a different product, and are left out rather than half-covered.\n\nAmounts are always integers in the smallest currency sub-unit (paise for INR), with two documented exceptions this app's field hints call out: three-decimal currencies (KWD, BHD, OMR) drop the last decimal digit, and zero-decimal currencies (JPY) are passed as-is.",
     "categories": [
       "commerce",

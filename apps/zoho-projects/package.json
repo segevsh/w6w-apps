@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.zoho-projects",
     "displayName": "Zoho Projects",
+    "apiDocs": [
+      "https://projects.zoho.com/api-docs"
+    ],
     "longDescription": "Zoho Projects puts project management into a workflow: list portals, users and projects, create, update, trash and restore projects, manage task lists, tasks, milestones and issues (bugs), and read, log and edit time.\n\nIt uses the current V3 API (`/api/v3`). Zoho hosts every account in one of eleven regional data centres, each with its own sign-in endpoint and API host, so this app routes each region through its own dedicated connection rather than one that could send a request to the wrong region.\n\nFilters, bulk operations, comments, attachments, dependencies, custom fields, forums, documents, users administration, templates and automation are deliberately left out.",
     "categories": [
       "project-management"

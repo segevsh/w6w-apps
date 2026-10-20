@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.browserless",
     "displayName": "Browserless",
+    "apiDocs": [
+      "https://docs.browserless.io"
+    ],
     "longDescription": "Browserless runs headless Chrome as a service. This app exposes its REST APIs to a workflow, authenticated with an API token.\n\nA workflow can screenshot or print a page to PDF, fetch its fully rendered HTML, pull text and attributes for CSS selectors, run its own Puppeteer function, export a page with its assets, run a Lighthouse audit and load bot-protected pages through the stealth browser. It can also map a site's URLs, search the web and scrape the results, smart-scrape a URL to markdown, and start, follow, list and cancel asynchronous crawls, and read the account's unit usage.\n\nAn account works in one of three regions (US West, London, Amsterdam), each on its own host; the region is chosen once on the connection and only those hosts and api.browserless.io are called. Images, PDFs and archives come back as base64. Usage is billed in units: one per 30 seconds of browser time, plus proxy traffic and CAPTCHA solves.",
     "categories": [
       "developer-tools",

@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.google-vertex-ai",
     "displayName": "Google Vertex AI",
+    "apiDocs": [
+      "https://cloud.google.com/vertex-ai/docs/reference/rest"
+    ],
     "longDescription": "Call Google's Vertex AI from a workflow with a Google Cloud project and IAM behind it, rather than an API key. Generate Gemini responses, count tokens before sending a prompt, turn text into embeddings, and call any publisher model's predict method such as the text-embedding family.\n\nOn the deployed side, list and read the models in a project's Model Registry and the endpoints serving them, and send instances to a deployed endpoint for predictions. Batch prediction jobs can be created over Cloud Storage or BigQuery input, then tracked, listed and cancelled.\n\nVertex AI is regional: models and endpoints live in one region, and each region is its own host. A connection carries a project and a default region, any action can override either, and a full resource name copied from a list result goes to the region it names. Sign in with Google, or use a service account for server-to-server access.",
     "categories": [
       "ai",

@@ -10,6 +10,10 @@
   "w6w": {
     "id": "io.w6w.line",
     "displayName": "LINE",
+    "apiDocs": [
+      "https://developers.line.biz/en/reference/messaging-api/",
+      "https://developers.line.biz/en/reference/messaging-api/#message-objects"
+    ],
     "longDescription": "LINE is the dominant chat platform in Japan (and widely used across Taiwan, Thailand and Indonesia), and the Messaging API is how a business account — a LINE Official Account — sends and receives chat messages, images, stickers and rich menus through it.\n\nThis app covers the core of that surface: replying to an inbound event with its one-time reply token, pushing or multicast/broadcasting a message outside that window, reading a bot's own identity and a user's profile, retrieving media a user sent, and managing rich menus (the tappable menu bar under a LINE Official Account's chat). Message content itself — text, image, sticker, template, flex — is accepted as LINE's own JSON message-object array rather than being re-modelled per type, since the vendor's schema already covers dozens of message shapes and re-deriving each as a separate typed action would multiply this app's surface without adding anything the vendor's own object model doesn't already say.\n\nAuthentication is a single long-lived channel access token, issued once from the LINE Developers Console and used as a Bearer token on every call — LINE's more elaborate JWT-assertion token-issuance flow is left to the console rather than reimplemented here.",
     "categories": [
       "communication",

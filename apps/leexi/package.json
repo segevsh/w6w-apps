@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.leexi",
     "displayName": "Leexi",
+    "apiDocs": [
+      "https://docs.public-api.leexi.ai/llms.txt"
+    ],
     "longDescription": "Leexi is an AI meeting assistant and call recorder for sales and customer-facing teams. This app lists and reads calls and meetings with their transcripts, AI summaries (prompt completions), call topics, tasks and speakers; imports a call from an uploaded recording; reads, edits and deletes call notes; manages meeting events and sends the Leexi assistant to a meeting; administers users and teams; and, with a reseller key, manages client companies, their subscriptions, teams and users.",
     "categories": [
       "ai",

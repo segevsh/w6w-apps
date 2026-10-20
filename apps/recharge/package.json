@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.recharge",
     "displayName": "Recharge",
+    "apiDocs": [
+      "https://developer.getrecharge.com/"
+    ],
     "longDescription": "Recharge runs recurring billing for ecommerce stores — mostly Shopify, also BigCommerce and custom integrations — turning a one-time product into a subscription with its own billing schedule, retry logic and customer self-service.\n\nThis app covers the day-to-day operations a workflow needs around a subscription's lifecycle: creating and updating customers and their shipping addresses, creating subscriptions and one-time purchases, rescheduling or cancelling a subscription's next charge, and skipping, unskipping or refunding an individual charge. Reads cover customers, addresses, subscriptions, charges, orders, the product catalog, discounts, payment methods and webhooks.\n\nHealth checks track Recharge's own status page (scoped to its API component specifically, not the Shopify/BigCommerce integrations the same page also tracks) alongside the store's live rate-limit headroom.",
     "categories": [
       "commerce",

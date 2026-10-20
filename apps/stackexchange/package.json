@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.stackexchange",
     "displayName": "Stack Exchange",
+    "apiDocs": [
+      "https://api.stackexchange.com/docs"
+    ],
     "longDescription": "Stack Exchange is the network behind Stack Overflow and more than a hundred and seventy other question-and-answer communities. This app reads it through the public Stack Exchange API (v2.3): search questions by title, tag or full text, fetch a question with its answers and comments, look up users, their reputation history and badges, walk a tag's wiki, synonyms, related tags and top answerers, and enumerate the sites on the network.\n\nEvery call takes the site to read from (stackoverflow by default), so one connection covers the whole network. Results carry the API's own paging flag and daily quota counters, so a workflow can page with has_more and stop before it spends its quota.\n\nThe app authenticates with an application key from stackapps.com, which lifts the daily limit from 300 to 10,000 requests. It is read-only: writing to Stack Exchange needs a per-user OAuth access token, which is not modelled here. Health checks track the live quota and API reachability.",
     "categories": [
       "developer-tools",

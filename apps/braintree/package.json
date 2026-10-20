@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.braintree",
     "displayName": "Braintree",
+    "apiDocs": [
+      "https://developer.paypal.com/braintree/graphql/"
+    ],
     "longDescription": "Braintree is PayPal's payment gateway. This app drives its GraphQL API: it charges or authorizes a vaulted or single-use payment method, captures an authorization in full or in part, and voids, refunds or reverses a transaction (reverse picks void or refund depending on settlement).\n\nIt also vaults and deletes payment methods, creates, reads, updates, deletes and searches customers, searches transactions by status, date, amount, order and customer, mints client tokens for the browser SDKs, and converts legacy REST/SDK ids to GraphQL ids.\n\nOne connection targets either the sandbox or the production environment and sends the API key as HTTP Basic. Health checks verify the credential and whether the GraphQL endpoint is answering.",
     "categories": [
       "commerce",

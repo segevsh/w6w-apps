@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.ninox",
     "displayName": "Ninox",
+    "apiDocs": [
+      "https://docs.ninox.com/ninox-api/api-reference/introduction-to-ninox-public-api"
+    ],
     "longDescription": "Ninox 4 is a low-code platform for building business apps: a workspace holds modules, each module holds tables, and each table holds fields and records. This app connects a workflow to one Ninox workspace through its public API.\n\nIt reads and writes records (list with filters, sorting and field selection; create, update, delete and upsert in batches of records), polls the change log of a table or of the workspace schema for incremental sync, and runs a Ninox script against a record. It also exposes the structure around the data: modules, tables, fields, views, reports and global function scripts, and renders a report to a PDF for a record.\n\nA Ninox API key belongs to exactly one workspace, so a Connection is a workspace id plus its key. Creating or altering modules, tables and fields, file uploads and CSV import are not covered by this version.",
     "categories": [
       "databases",

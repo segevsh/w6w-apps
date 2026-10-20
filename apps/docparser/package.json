@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.docparser",
     "displayName": "Docparser",
+    "apiDocs": [
+      "https://app.docparser.com/assets/img/apple-touch-icon.png?v=2"
+    ],
     "longDescription": "Docparser turns PDFs, scans and images into structured data using document parsers you configure in its app. This app lets a workflow list those parsers and their model layouts, send a document in (by public URL or as base64 content), check where it is in the import and processing pipeline, and read back the parsed results for one document or many.\n\nIt can also schedule documents for re-parsing after a parser's rules change, or for re-integration so the parser's configured integrations and webhooks fire again.\n\nBuilt on Docparser's v1/v2 REST API with a single secret API key. Parsers themselves are created and edited in the Docparser app; the API does not expose that.",
     "categories": [
       "documents",

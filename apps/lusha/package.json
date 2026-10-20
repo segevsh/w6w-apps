@@ -10,6 +10,10 @@
   "w6w": {
     "id": "io.w6w.lusha",
     "displayName": "Lusha",
+    "apiDocs": [
+      "https://docs.lusha.com",
+      "https://docs.lusha.com/apis/openapi"
+    ],
     "longDescription": "Lusha is a B2B contact and company data platform used by sales and recruiting teams to find the right person at the right company and reach them. This app connects a workflow to the Lusha v3 API with an API key.\n\nA workflow can look up contacts and companies by identifier (Lusha id, LinkedIn URL, email, name plus company, domain) to get a free non-PII preview, then reveal emails and phone numbers or extra firmographics for the ones it wants, or do both in one call. It can prospect for contacts and companies against an ideal customer profile with Lusha's filters (and list the valid filter values), find lookalikes of a set of seed contacts or companies, read job-change and company signals such as hiring surges, headcount and IT-spend moves, and subscribe a webhook to signal events. When Lusha's data waterfall hands back a job instead of a final answer, the app polls it.\n\nEnrichment spends credits, so the app exposes the account's remaining credits, rate-limit windows and per-action pricing, and its health checks track the credit and request headroom next to the API's own status.",
     "categories": [
       "crm",

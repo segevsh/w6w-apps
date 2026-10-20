@@ -10,6 +10,10 @@
   "w6w": {
     "id": "io.w6w.holded",
     "displayName": "Holded",
+    "apiDocs": [
+      "https://api.holded.com/api/crm/v1",
+      "https://holded.readme.io/reference/"
+    ],
     "longDescription": "Holded is a Spanish business-management SaaS combining invoicing, accounting, projects, team and CRM in one product. This app covers Holded's CRM API: sales funnels (the customizable pipelines a business defines its own stages for), leads (opportunities placed in a funnel stage, with notes, tasks and a creation date a workflow can adjust), and calendar events (meetings and reminders that can be tied to a lead or a contact).\n\nGood for pushing a new website or form lead straight into a Holded funnel, updating a lead's stage as a deal progresses, logging a call or meeting as a lead note or task, and scheduling follow-up events without leaving the workflow that generated the lead.\n\nHolded's invoicing, accounting, projects and team APIs are separate API groups on the same host and are out of scope here — this app only reaches `/api/crm/v1`.",
     "categories": [
       "crm"

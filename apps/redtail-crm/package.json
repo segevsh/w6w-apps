@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.redtail-crm",
     "displayName": "Redtail CRM",
+    "apiDocs": [
+      "https://documenter.getpostman.com/view/7873823/SVzxXyzn"
+    ],
     "longDescription": "Redtail is a CRM built for financial advisors: a Contact (person, business, trust or association) sits at the center, with addresses, notes, scheduled activities (tasks, appointments, phone calls) and sales opportunities hung off it. This app covers that core over Redtail's public REST API (`crm.redtailtechnology.com/api/public/v1`, documented at documenter.getpostman.com/view/7873823): creating, finding, updating and deleting contacts; managing their addresses and notes; scheduling and completing activities, optionally linked to a contact; and running opportunities through a sales pipeline.\n\nGood for syncing new leads/clients from a signup or intake form, logging a call or meeting note against the right contact from another tool's event, creating follow-up tasks tied to a contact, or keeping an opportunity's stage and amount current as a deal progresses elsewhere.",
     "categories": [
       "crm"
