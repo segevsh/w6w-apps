@@ -416,6 +416,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | nutshell | crm | basic | 13 |
 | odoo | crm, commerce | api-key | 21 |
 | okta | security | api-token | 11 |
+| ollama | ai, developer-tools | server | 11 |
 | omnisend | marketing, email | api-key | 7 |
 | oncehub | scheduling | api-key | 30 |
 | onedrive | documents, storage | oauth2 | 18 |
