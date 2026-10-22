@@ -1,0 +1,40 @@
+{
+  "name": "@w6w-apps/ollama",
+  "version": "0.1.0",
+  "description": "Run prompts, chats and embeddings against your own Ollama server and manage its models.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ollama",
+    "displayName": "Ollama",
+    "apiDocs": [
+      "https://github.com/ollama/ollama/blob/main/docs/api.md"
+    ],
+    "longDescription": "Ollama runs open large language models on hardware you control, and this app talks to your own server: you give it the host, port and scheme when you connect, and it calls Ollama's REST API directly. A workflow can generate text from a prompt, continue a chat conversation, produce embeddings, and ask for structured JSON that matches a schema, with images for vision models and sampling options such as temperature, seed and context size. It can also look after the server itself: list the installed and the currently loaded models, inspect one's capabilities and context length, pull a new model, copy or delete one, and unload a model to free memory.\n\nBecause the server is yours, reachability is the part to get right. A LAN or localhost address works only when workflows run on the same network, through a self-hosted runner; hosted runs need a tunnel or a reverse proxy with a public hostname. Ollama listens on 127.0.0.1 unless started with OLLAMA_HOST=0.0.0.0, and has no authentication of its own, so the API key is optional and only sent when a proxy in front of the server needs one. Every call is non-streaming.",
+    "categories": [
+      "ai",
+      "developer-tools"
+    ],
+    "appearance": {
+      "icon": {
+        "url": "./assets/icon.png",
+        "alt": "Ollama"
+      },
+      "darkMode": {
+        "icon": {
+          "url": "./assets/icon.dark.png",
+          "alt": "Ollama"
+        }
+      }
+    },
+    "network": {
+      "allow": [
+        "*"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
