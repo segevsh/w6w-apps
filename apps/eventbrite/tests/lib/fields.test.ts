@@ -178,3 +178,34 @@ Deno.test("4xx rejects", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "x" } }]);
   await assertRejects(async () => await resolveEventbriteFields(input(["organizationId"]), ctx));
 });
+
+const dyn = { source: "resolveFields" };
+const find = (a: { params?: { key: string }[] }, k: string) =>
+  a.params?.find((p) => p.key === k) as unknown as Record<string, unknown>;
+
+Deno.test("params: create-event, create-venue, update-venue, get-organizer wired", async () => {
+  const { default: createEvent, eventFieldParams } = await import("../../actions/create-event.ts");
+  const { default: createVenue } = await import("../../actions/create-venue.ts");
+  const { default: updateVenue } = await import("../../actions/update-venue.ts");
+  const { default: getOrganizer } = await import("../../actions/get-organizer.ts");
+  for (const a of [createEvent, createVenue, updateVenue, getOrganizer]) {
+    assertEquals(a.resolveFields, resolveEventbriteFields);
+  }
+  for (const a of [createEvent, createVenue]) {
+    assertEquals(find(a, "organizationId").options, dyn);
+    assertEquals(find(a, "organizationId").config, { allowCustom: true });
+    assertEquals(find(a, "organizationId").required, true);
+    assertEquals(find(a, "organizerId").options, { ...dyn, refreshOn: ["organizationId"] });
+    assertEquals(find(a, "organizerId").config, { allowCustom: true });
+  }
+  for (const a of [updateVenue, getOrganizer]) {
+    assertEquals(find(a, "organizerId").options, dyn);
+    assertEquals(find(a, "organizerId").config, { allowCustom: true });
+  }
+  assertEquals(find(getOrganizer, "organizerId").required, true);
+  const upd = eventFieldParams({ create: false }).find((p) =>
+    p.key === "organizerId"
+  ) as unknown as Record<string, unknown>;
+  assertEquals(upd.options, undefined);
+  assertEquals(upd.config, undefined);
+});

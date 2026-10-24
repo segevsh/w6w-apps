@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import type { Param } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 import { deepMerge } from "../lib/merge.ts";
 
 export interface EventFields {
@@ -81,7 +82,15 @@ export function eventFieldParams(opts: { create: boolean }): Param[] {
     { key: "hideStartDate", label: "Hide start date", type: "boolean", advanced: true },
     { key: "hideEndDate", label: "Hide end date", type: "boolean", advanced: true },
     { key: "onlineEvent", label: "Online event", type: "boolean" },
-    { key: "organizerId", label: "Organizer ID", type: "string" },
+    opts.create
+      ? {
+        key: "organizerId",
+        label: "Organizer ID",
+        type: "string",
+        options: { source: "resolveFields", refreshOn: ["organizationId"] },
+        config: { allowCustom: true },
+      }
+      : { key: "organizerId", label: "Organizer ID", type: "string" },
     { key: "logoId", label: "Logo image ID", type: "string", advanced: true },
     { key: "venueId", label: "Venue ID", type: "string" },
     { key: "formatId", label: "Format ID", type: "string", advanced: true },
@@ -207,9 +216,17 @@ const createEvent: ActionDefinition<Input> = {
   description:
     "Create a new draft event in an organization on Eventbrite. Set Series parent to create a recurring-event parent, then add occurrences with Create Event Schedule. Publish it separately.",
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     ...eventFieldParams({ create: true }),
   ],
+  resolveFields: resolveEventbriteFields,
   output: [...EVENT_OUTPUT],
 
   execute(input, ctx) {

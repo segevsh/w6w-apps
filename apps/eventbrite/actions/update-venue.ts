@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 import { deepMerge } from "../lib/merge.ts";
 
 interface Input {
@@ -50,6 +51,8 @@ const updateVenue: ActionDefinition<Input> = {
       label: "Organizer ID",
       type: "string",
       hint: "Leave empty to use the default organizer.",
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
     },
     { key: "googlePlaceId", label: "Google place ID", type: "string" },
     {
@@ -69,6 +72,7 @@ const updateVenue: ActionDefinition<Input> = {
     { key: "longitude", label: "Longitude", type: "string" },
     { key: "extra", label: "Additional fields", type: "json" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "id", type: "string", label: "ID" },
     { key: "name", type: "string", label: "Name" },
