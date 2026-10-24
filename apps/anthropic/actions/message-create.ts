@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { AnthropicClient } from "../lib/client.ts";
+import { resolveAnthropicFields } from "../lib/fields.ts";
 
 interface Message {
   role: "user" | "assistant";
@@ -34,6 +35,7 @@ const messageCreate: ActionDefinition<Input> = {
   resource: "message",
   title: "Create Message",
   description: "Send a structured list of messages to Claude and get a completion.",
+  resolveFields: resolveAnthropicFields,
   params: [
     {
       key: "model",
@@ -41,7 +43,9 @@ const messageCreate: ActionDefinition<Input> = {
       type: "string",
       required: true,
       default: "claude-opus-4-1-20250805",
-      hint: "e.g. claude-opus-4-1-20250805, claude-sonnet-4-5, claude-haiku-4-5.",
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+      hint: "Pick a model or type any model id.",
     },
     {
       key: "messages",
