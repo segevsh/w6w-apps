@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/huggingface",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Search the Hugging Face Hub for models, datasets and Spaces, read repository files and dataset rows, manage repositories, and run chat inference through the router.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,11 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.huggingface",
+    "modelProvider": {
+      "modelTypes": [
+        "llm"
+      ]
+    },
     "displayName": "Hugging Face",
     "apiDocs": [
       "https://huggingface.co/docs/hub/api"
