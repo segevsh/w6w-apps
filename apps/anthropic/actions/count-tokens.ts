@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { AnthropicClient } from "../lib/client.ts";
+import { resolveAnthropicFields } from "../lib/fields.ts";
 
 interface Message {
   role: "user" | "assistant";
@@ -25,6 +26,7 @@ const countTokens: ActionDefinition<Input> = {
   resource: "message",
   title: "Count Tokens",
   description: "Count the input tokens a given prompt would consume against a Claude model.",
+  resolveFields: resolveAnthropicFields,
   params: [
     {
       key: "model",
@@ -32,6 +34,8 @@ const countTokens: ActionDefinition<Input> = {
       type: "string",
       required: true,
       default: "claude-opus-4-1-20250805",
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
     },
     {
       key: "messages",
