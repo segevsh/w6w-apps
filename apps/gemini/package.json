@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/gemini",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Call the Gemini Developer API — generate content, count tokens, embed content, list models.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,12 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.gemini",
+    "modelProvider": {
+      "modelTypes": [
+        "llm",
+        "embedding"
+      ]
+    },
     "displayName": "Google Gemini",
     "apiDocs": [
       "https://ai.google.dev/api",
