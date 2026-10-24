@@ -1,94 +1,113 @@
 name: Reload apps
 
 # ---------------------------------------------------------------------------
-# On every push to main, re-registers every app in w6w-pack.json against the
-# production w6w API (import for an id the catalog hasn't seen, refresh for
-# one it has), then — only if that succeeds — dispatches a rebuild of
-# w6w-frontend so its app pages pick up the change with no human step in
-# between.
+# On every push to main, builds every app in w6w-pack.json ONCE (app-build),
+# uploads the artifacts create-only to the blob bucket, and makes ONE
+# publish-index call to the production w6w API — then, only if that succeeds
+# and something changed, dispatches a rebuild of w6w-frontend so its app pages
+# pick up the change with no human step in between.
 #
-# The reload itself lives in .github/scripts/reload-apps.js — this file is
-# just the trigger, Node setup, and wiring env vars in from repo
-# secrets/variables. The frontend dispatch is a plain GitHub-to-GitHub API
-# call (workflow_dispatch on w6w-frontend's Build + Deploy workflow),
-# authenticated with a short-lived installation token from a GitHub App
-# installed on both repos — no production server, no GCP Secret Manager, no
-# Terraform involved. See actions/create-github-app-token's docs for the
-# token-minting step.
+# Builder source: @w6w/app-build is NOT on JSR (meta.json -> 404, checked
+# 2026-10-24), so this checks out w6w-io/w6w-core as a sibling of the apps
+# checkout (apps/<id>/deno.json maps ../../../core/packages/types) at a PINNED
+# commit sha and runs its packages/app-build/cli.ts. Bump the sha deliberately.
+#
+# The publish lives in .github/scripts/publish-apps.mjs; this file is the
+# trigger, tool setup, and env wiring. The frontend dispatch is a plain
+# GitHub-to-GitHub API call (workflow_dispatch on w6w-frontend's Build +
+# Deploy workflow) with a short-lived installation token from a GitHub App
+# installed on both repos.
 #
 # BEFORE THIS WORKFLOW DOES ANYTHING USEFUL, a human needs to configure on
 # this repo's (w6w-io/w6w-apps) settings:
-#   - Repo variable  W6W_API_URL       — the production API base URL (not secret)
-#   - Repo secret    OPS_JWT_SECRET    — signs short-lived ops JWTs (same key
-#                                        GCP Secret Manager's `ops-jwt-secret` holds)
-#   - Repo secret    APP_ID            — the w6w-ci-bot GitHub App's ID (or client ID)
-#   - Repo secret    APP_PRIVATE_KEY   — that App's private key (.pem)
+#   - Repo variable  W6W_API_URL        — the production API base URL (not secret)
+#   - Repo variable  GCP_WIF_PROVIDER   — Workload Identity provider resource name
+#   - Repo variable  GCP_PUBLISHER_SA   — service account email (objectCreator on the blob bucket)
+#   - Repo secret    OPS_JWT_SECRET     — signs short-lived ops JWTs (same key
+#                                         GCP Secret Manager's `ops-jwt-secret` holds)
+#   - Repo secret    APP_ID             — the w6w-ci-bot GitHub App's ID (or client ID)
+#   - Repo secret    APP_PRIVATE_KEY    — that App's private key (.pem)
 # The App must be installed on w6w-io/w6w-frontend with `actions: write`.
-# Until W6W_API_URL/OPS_JWT_SECRET are set, the reload step fails with its
-# own missing-env-var message; the dispatch step just doesn't run.
 # ---------------------------------------------------------------------------
 
 on:
-  # Manual re-run. The reload is idempotent, and without this the only way
-  # to retry a run that failed on something transient is to push a dummy
-  # commit — exactly the bind a 503 on one app left us in on 2026-08-03.
+  # Manual re-run. Publishing is idempotent (create-only uploads, publish-index
+  # skips current entries), so this is the retry path for a transient failure.
   workflow_dispatch:
   push:
     branches: [main]
     # Path-filtered: this triggers a LIVE write against the production
-    # catalog (and, on success, a live frontend redeploy), so a push
-    # touching only .github/ itself, root docs, etc. shouldn't fire it.
-    # Scoped to the app directories and the pack manifest, since those are
-    # the only paths the reload script reads.
+    # catalog, so a push touching only .github/ itself, root docs, etc.
+    # shouldn't fire it.
     paths:
       - "apps/**"
       - "w6w-pack.json"
 
-# A burst of pushes to main (e.g. several small app fixes landing back to
-# back) should not cancel a reload that's already partway through applying
-# the catalog — canceling mid-flight can leave some apps refreshed and
-# others not, which is worse than letting it finish and letting the next
-# push's run simply queue behind it.
+# A burst of pushes to main should not cancel a publish that is already
+# partway through; the next push's run queues behind it.
 concurrency:
   group: reload-apps-${{ github.ref }}
   cancel-in-progress: false
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   reload:
-    # Fork guard: this workflow reaches PRODUCTION (see the header) and a personal fork
-    # carries none of the secrets it needs, so on `segevsh/*` it fails on every push instead of
-    # doing nothing. Mirrors `w6w-io/w6w`'s deploy workflows, which have carried this since day one.
+    # Fork guard: this workflow reaches PRODUCTION and a personal fork
+    # carries none of the secrets/variables it needs.
     if: github.repository == 'w6w-io/w6w-apps'
     name: Reload apps
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          path: w6w-apps
+
+      # Sibling of w6w-apps (see header). Pinned by sha, not branch.
+      - uses: actions/checkout@v6
+        with:
+          repository: w6w-io/w6w-core
+          ref: f7f416181de2282f1038fac6614765d0d29392f6
+          path: core
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Run the reload script
-        id: reload
+      - name: Build every app once
+        working-directory: core
+        run: >-
+          deno run -A --unstable-worker-options packages/app-build/cli.ts
+          --pack ../w6w-apps/w6w-pack.json -o dist --minify
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_PUBLISHER_SA }}
+          token_format: access_token
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Upload artifacts and publish the index
+        id: publish
+        working-directory: core
         env:
           W6W_API_URL: ${{ vars.W6W_API_URL }}
           OPS_JWT_SECRET: ${{ secrets.OPS_JWT_SECRET }}
-        run: node .github/scripts/reload-apps.js
+        run: node ../w6w-apps/.github/scripts/publish-apps.mjs
 
-      # Only reached if the reload step above succeeded (default GitHub
-      # Actions behavior — a failed prior step skips the rest of the job).
-      # Mints a token scoped to ONLY w6w-frontend, even though the App may be
-      # installed on other repos too — least privilege per call, one shared
-      # App registration.
-      #
-      # Skipped when a PUSH changed nothing in the catalog (`changed=0` from the script: every
-      # entry was an idempotent no-op — a test-only or internals-only app edit). The site renders
-      # its app pages from the catalog, so there is nothing new to publish, and the rebuild is a
-      # fixed ~4 minutes. A `workflow_dispatch` always rebuilds: it is the retry after a failed
-      # push run, and that failed run may already have imported the new apps — so this retry sees
-      # them as unchanged while the site still has never shown them.
+      # Only reached if the publish step succeeded. Mints a token scoped to
+      # ONLY w6w-frontend. Skipped when a PUSH changed nothing in the catalog
+      # (`changed=0`); a `workflow_dispatch` always rebuilds (it is the retry
+      # after a failed push run that may already have published the apps).
       - name: Mint a token scoped to w6w-frontend
-        if: steps.reload.outputs.changed != '0' || github.event_name == 'workflow_dispatch'
+        if: steps.publish.outputs.changed != '0' || github.event_name == 'workflow_dispatch'
         id: app-token
         uses: actions/create-github-app-token@v1
         with:
@@ -98,7 +117,7 @@ jobs:
           repositories: w6w-frontend
 
       - name: Trigger the frontend rebuild
-        if: steps.reload.outputs.changed != '0' || github.event_name == 'workflow_dispatch'
+        if: steps.publish.outputs.changed != '0' || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: gh workflow run "Build + Deploy" --repo w6w-io/w6w-frontend --ref main
