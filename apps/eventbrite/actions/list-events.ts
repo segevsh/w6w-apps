@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   scope?: "organization" | "venue" | "series";
@@ -50,6 +51,8 @@ const listEvents: ActionDefinition<Input> = {
       label: "Organization ID",
       type: "string",
       hint: "Same as Scope ID when scope is `organization`.",
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
     },
     {
       key: "status",
@@ -114,6 +117,7 @@ const listEvents: ActionDefinition<Input> = {
     { key: "continuation", label: "Continuation token", type: "string" },
     { key: "expand", label: "Expand", type: "string", default: "venue,ticket_classes" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "events", type: "array", label: "Events" },
     { key: "pagination", type: "object", label: "Pagination" },
