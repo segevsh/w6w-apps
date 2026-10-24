@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -28,6 +29,8 @@ const action: ActionDefinition<Input> = {
       "label": "Organization ID",
       "type": "string",
       "required": true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
     },
     {
       "key": "scope",
@@ -146,6 +149,7 @@ const action: ActionDefinition<Input> = {
       "type": "string",
     },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     {
       "key": "discounts",
