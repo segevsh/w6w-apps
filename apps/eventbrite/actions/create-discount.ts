@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 import { deepMerge } from "../lib/merge.ts";
 
 type Obj = Record<string, unknown>;
@@ -54,6 +55,8 @@ const action: ActionDefinition<Input> = {
       "label": "Organization ID",
       "type": "string",
       "required": true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
     },
     {
       "key": "type",
@@ -167,6 +170,7 @@ const action: ActionDefinition<Input> = {
       "hint": "JSON object deep-merged into the request object for any field not listed above.",
     },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     {
       "key": "id",

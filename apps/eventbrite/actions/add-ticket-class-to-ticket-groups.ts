@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -17,11 +18,19 @@ const action: ActionDefinition<Input> = {
   description:
     "Set which of an organization's ticket groups contain a ticket class. Leave the group list empty to remove the ticket class from every ticket group of the organization.",
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     { key: "eventId", label: "Event ID", type: "string", required: true },
     { key: "ticketClassId", label: "Ticket class ID", type: "string", required: true },
     { key: "ticketGroupIds", label: "Ticket group IDs", type: "array", item: { type: "string" } },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [],
 
   async execute(input, ctx) {
