@@ -86,6 +86,39 @@ registered is refused (recorded as a failed call), and `api_url` must be on
 Eventbrite retries a delivery it did not get a 2xx for, so a run can see the same change twice:
 key on `trigger.event.id` (host-issued) or the record's own id when that matters.
 
+## Pickers
+
+Two params ask Eventbrite for their choices while the form is open, on the connection the
+step already uses:
+
+- `organizationId` — on the 17 actions that take an *Organization ID*, from
+  `GET /v3/users/me/organizations/`.
+- `organizerId` — on `create-event` (create only), `create-venue`, `update-venue` and
+  `get-organizer`, from `GET /v3/organizations/{organizationId}/organizers/`.
+
+The `resolveFields` hook pages both list endpoints (`continuation` when Eventbrite gives
+one, otherwise the next `page_number`) up to 1 000 options per field, labelling each option
+with its `name` and falling back to the id. When the form already holds an organization,
+only that organization's organizers are offered; when it does not — `update-venue` and
+`get-organizer` have no *Organization ID* of their own, and `create-event` /
+`create-venue` have one that may still be empty — every organizer the connection can see is
+offered, with its organization's name as the option's description. Committing a different
+*Organization ID* on `create-event` or `create-venue` reloads their organizers; those are
+the two params that set `refreshOn: ["organizationId"]`.
+
+All of these params set `config: { allowCustom: true }`, so the field is a combobox: an
+organization or organizer created after this App was published can be typed instead of
+picked. The hook runs with `ctx.connection` redacted, its requests are signed behind the
+same `network.allow` as any action, and it is capped at 10 seconds.
+
+**When nothing can be loaded.** With no connection picked yet the editor does not call the
+hook at all: the field falls back to a plain text input carrying the hint
+`Connect an account to load choices`, and the id is still typeable — nothing is cleared. A
+hook that throws or runs past its 10 s cap is reported on the fields that call asked for,
+with a **Retry**, not on the whole form.
+
+Nothing re-resolves at run time: whatever ids sit in the fields are what the action sends.
+
 ## Health check
 
 Three different questions get confused with each other, so this section keeps them

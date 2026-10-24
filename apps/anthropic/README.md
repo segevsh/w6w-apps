@@ -9,6 +9,35 @@ Call Anthropic's REST API — Claude messages, token counting, batches, files.
 - **Website** — https://www.anthropic.com
 - **API docs** — https://docs.anthropic.com
 
+## Pickers
+
+One param asks Anthropic for its choices while the form is open, on the connection the
+step already uses:
+
+| Param | Actions | Loaded from |
+|---|---|---|
+| `model` | `message-create`, `count-tokens` | `GET /v1/models` |
+
+The `resolveFields` hook pages `/v1/models` (`limit=1000`, then `after_id` until `has_more`
+is false) up to 1 000 models and sorts them newest first by `created_at`; the option's
+label is the model's `display_name` with the id as fallback, and its `created_at` is the
+description. Models are the list worth asking for: one released after this App was
+published shows up without a new App release.
+
+Both params also set `config: { allowCustom: true }`, so the field is a combobox — a model
+id the list does not show can still be typed. Message Create's hint says it plainly:
+`Pick a model or type any model id.` The hook runs with `ctx.connection` redacted, its
+requests are signed behind the same `network.allow` as any action, and it is capped at
+10 seconds.
+
+**When nothing can be loaded.** With no connection picked yet the editor does not call the
+hook at all: the field falls back to a plain text input carrying the hint
+`Connect an account to load choices`, and the id is still typeable — nothing is cleared. A
+hook that throws or runs past its 10 s cap is reported on the fields that call asked for,
+with a **Retry**, not on the whole form.
+
+Nothing re-resolves at run time: whatever id sits in the field is what the action sends.
+
 ## Health check
 
 Three different questions get confused with each other, so this section keeps them
