@@ -4,7 +4,7 @@ name: Docs dispatch
 # On every push to main that touches this repo's published docs (docs/ or the
 # root README), dispatches a rebuild of docs.w6w.io by triggering
 # w6w-io/docs's own "Build + Deploy" workflow by name. Mirrors this repo's own
-# ./reload-apps.yml:82-94's Mechanism B: a short-lived, per-call GitHub App
+# ./reload-apps.yml frontend-dispatch step (Mechanism B): a short-lived, per-call GitHub App
 # installation token scoped to ONLY w6w-io/docs, never a stored PAT and never
 # the ambient GITHUB_TOKEN. A separate, dedicated file rather than a step
 # wedged into reload-apps.yml — that workflow's own trigger/paths are scoped
@@ -12,7 +12,7 @@ name: Docs dispatch
 #
 # The App registration (w6w-ci-bot) and the APP_ID / APP_PRIVATE_KEY repo
 # secrets already exist on this repo — reload-apps.yml has used them since it
-# was added (see reload-apps.yml:19-26) — so this workflow only needs the App
+# was added (see the reload-apps.yml header) — so this workflow only needs the App
 # installed on w6w-io/docs (its own repositories: scope below) to go live.
 # ---------------------------------------------------------------------------
 
