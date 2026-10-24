@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/openai",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Call OpenAI's REST API — chat completions, images, audio, files, embeddings, moderations.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,15 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.openai",
+    "modelProvider": {
+      "modelTypes": [
+        "llm",
+        "embedding",
+        "moderation",
+        "image-generation",
+        "speech-to-text"
+      ]
+    },
     "displayName": "OpenAI",
     "apiDocs": [
       "https://platform.openai.com/docs/api-reference"
