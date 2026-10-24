@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.prospeo",
     "displayName": "Prospeo",
+    "apiDocs": [
+      "https://prospeo.io/api-docs"
+    ],
     "longDescription": "Prospeo is a B2B contact and company data platform. This app enriches a person (verified work email, optionally mobile) or a company from whatever you know about them, singly or in batches of up to 50, and searches Prospeo's lead and company database with its 40+ filters, up to 25 results per page.\n\nIt also resolves the exact filter values the search endpoints demand (locations, job titles, technologies, industries, NAICS/SIC codes and more) and reads your plan and remaining credits, which is free.\n\nHealth checks verify the API key, whether api.prospeo.io is answering, and credit headroom. Prospeo publishes no vendor status page, so none is declared.",
     "categories": [
       "crm",

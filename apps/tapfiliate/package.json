@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.tapfiliate",
     "displayName": "Tapfiliate",
+    "apiDocs": [
+      "https://tapfiliate.com/docs/rest/"
+    ],
     "longDescription": "Tapfiliate is an affiliate marketing platform: programs define how affiliates are paid, affiliates promote via referral links or coupons, and customers/conversions they bring in generate commissions that flow into payments.\n\nThis app covers that whole lifecycle — creating and managing affiliates, affiliate groups and prospects; tracking customers and conversions and attributing them to an affiliate via referral code, coupon, click id or tracking id; adding, approving and disapproving commissions; enrolling and approving affiliates into programs; and recording or cancelling payments. A small clicks surface (Enterprise-plan-only per the vendor's own docs) supports a REST-only tracking integration with no JS snippet.\n\nHealth checks track Tapfiliate's own status page (a SorryApp-hosted page, anchored on its \"Tapfiliate API\" component specifically) alongside the account's live rate-limit headroom.",
     "categories": [
       "marketing",

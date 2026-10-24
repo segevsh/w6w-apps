@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.teamwork",
     "displayName": "Teamwork",
+    "apiDocs": [
+      "https://apidocs.teamwork.com"
+    ],
     "longDescription": "Teamwork.com is a project management platform: projects, task lists, tasks, milestones and time tracking. This app covers the day-to-day work of running a project from a workflow — creating and updating projects, listing and managing tasks and the task lists that hold them, setting milestones, and logging or listing time against a task.\n\nEvery Teamwork account lives on its own subdomain (`{yourSiteName}.teamwork.com`), collected once at connect time rather than re-entered per action.\n\nA fit for routing an external event into a new task or project, updating task status as a workflow progresses, logging time recorded elsewhere back into Teamwork, or syncing project and milestone data with another system.",
     "categories": [
       "project-management"

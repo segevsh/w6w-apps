@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.iterable",
     "displayName": "Iterable",
+    "apiDocs": [
+      "https://api.iterable.com/api-docs"
+    ],
     "longDescription": "Iterable is a cross-channel marketing platform: it holds user profiles, records the events they generate, and uses lists, campaigns and journeys to message them over email, SMS, push and in-app. This app exposes Iterable's server-side REST API to a workflow.\n\nA workflow can create and update user profiles, record custom events and purchases, manage static lists and user subscriptions, trigger campaigns and journeys, send an individual email, SMS or push message through a triggered campaign (and cancel it while scheduled), and read campaigns, templates, channels and message types. It also manages catalogs and their items, the product or content data that templates draw on.\n\nIterable runs two separate data centers, US and EU. A project and its API keys live in exactly one, so the data center is chosen once on the connection, and only those two hosts are ever called. Several endpoints are asynchronous or have strict rate limits (list membership reads allow five requests a minute), which the action descriptions call out.",
     "categories": [
       "marketing",

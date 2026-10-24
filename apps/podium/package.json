@@ -10,6 +10,10 @@
   "w6w": {
     "id": "io.w6w.podium",
     "displayName": "Podium",
+    "apiDocs": [
+      "https://docs.podium.com",
+      "https://developer.podium.com"
+    ],
     "longDescription": "Podium is the messaging and reviews platform local businesses use to talk to customers: text and email conversations, review invitations and replies, campaigns, appointments, phone calls and payments, all tied to one or more locations. This app drives the Podium API v4 from a workflow: create or update contacts and tag them, send an SMS or email, read and assign conversations, post internal notes, request and answer reviews, list calls, feedback and appointments, push events into a data feed, and manage webhook subscriptions. Authentication is OAuth 2 against a Podium developer app.",
     "categories": [
       "communication",

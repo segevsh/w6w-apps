@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.metricool",
     "displayName": "Metricool",
+    "apiDocs": [
+      "https://app.metricool.com/api"
+    ],
     "longDescription": "Metricool is a social media management platform: one place to plan and publish posts across networks and to read how each brand's accounts perform.\n\nThis app lists your brands, then schedules, updates, reschedules, reads and deletes a brand's scheduled posts; reads a brand's metrics as a time series, a single total or a distribution for networks such as Instagram, Facebook, TikTok, YouTube, LinkedIn, X, Pinterest, Twitch and Google Business Profile; lists published posts with their metrics and popular hashtags; and tracks competitors.\n\nA connection holds your Metricool user token and user id. Each brand-scoped action takes the brand's blogId, which List Brands returns. API access requires a Metricool plan that includes it.",
     "categories": [
       "social-media",

@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.pendo",
     "displayName": "Pendo",
+    "apiDocs": [
+      "https://engageapi.pendo.io/api/collections/16265887/Tzm6jvKG"
+    ],
     "longDescription": "Pendo is a product analytics and in-app guide platform, and this app covers the parts of its REST API that a workflow actually reaches for: sending track events, reading back visitor, account, page, feature and guide data, setting or reading a metadata field on a visitor or account, running Pendo's own Aggregation pipeline language for analytics queries, pulling a saved report's results, and filing a GDPR/CCPA bulk-deletion request.\n\nThe API is really two credentials on five regional deployments. The main Integration Key reads and (optionally) writes everything under `/api/v1`; a separate Track Event Shared Secret — a DIFFERENT value from the integration key — is required for the ingest endpoint on the `data.*.pendo.io` hosts. Getting them mixed up is the most common way a Pendo connection looks broken when it isn't, so this app keeps them as two explicit fields and injects the right one per host.",
     "categories": [
       "analytics"

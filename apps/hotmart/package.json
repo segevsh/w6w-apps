@@ -10,6 +10,11 @@
   "w6w": {
     "id": "io.w6w.hotmart",
     "displayName": "Hotmart",
+    "apiDocs": [
+      "https://developers.hotmart.com/docs/en/start/about/",
+      "https://developers.hotmart.com/docs/en/start/rate-limit/",
+      "https://developers.hotmart.com/docs/en/start/sandbox/"
+    ],
     "longDescription": "Hotmart is a digital-products and online-course platform used by creators to sell ebooks, video courses, memberships and other digital goods, and to manage the affiliates, co-producers and subscribers around them.\n\nThis app covers the day-to-day of running that business from a workflow: reading sales history, summaries, participant and commission breakdowns and price detail for a transaction; issuing a refund or regenerating a boleto (bank payment slip); listing subscribers and the subscription summary Hotmart uses for recovery and retention, then cancelling, reactivating or moving a subscriber's billing day; listing a creator's products; and creating, listing or deleting the percentage-off coupons Hotmart's checkout applies at the offer level. It also reads the authenticated producer's own profile.\n\nEvery endpoint here was verified against Hotmart's own developer documentation (developers.hotmart.com) and against live, unauthenticated probes of the API host — not inferred from a sibling integration or Hotmart's marketing pages.",
     "categories": [
       "commerce",

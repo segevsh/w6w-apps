@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.replicate",
     "displayName": "Replicate",
+    "apiDocs": [
+      "https://replicate.com/docs/reference/http"
+    ],
     "categories": [
       "ai",
       "developer-tools"

@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.rdstation",
     "displayName": "RD Station CRM",
+    "apiDocs": [
+      "https://developers.rdstation.com/reference/crm-v1-introducao-e-requisitos"
+    ],
     "categories": [
       "crm"
     ],

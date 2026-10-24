@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.braze",
     "displayName": "Braze",
+    "apiDocs": [
+      "https://www.braze.com/docs/api/basics"
+    ],
     "longDescription": "Braze is a customer engagement platform that runs cross-channel marketing automation — email, push, SMS, in-app, and Canvas multi-step journeys — off a single user profile. This app covers the operations a workflow most needs around that profile and its outbound messaging: track custom events, purchases, and attribute updates onto a user; resolve aliases and identities; export full profiles; and delete users on request.\n\nOn the sending side, it triggers API-triggered Campaign and Canvas sends against an audience filter or an explicit recipient list, and sends immediate ad-hoc messages outside of any saved campaign. It manages email subscription state directly and reads back hard bounces and unsubscribes, and it reads and writes the supporting content a campaign is built from — Content Blocks and catalogs — plus lists campaigns, Canvases, and segments for discovery.\n\nBraze runs each customer's workspace on one of several fixed regional clusters rather than a single API host, and a REST key from one cluster is rejected by every other, so the app asks which instance a Connection is on rather than guessing.",
     "categories": [
       "marketing",

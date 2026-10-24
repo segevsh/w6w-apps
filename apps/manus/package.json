@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.manus",
     "displayName": "Manus",
+    "apiDocs": [
+      "https://open.manus.ai/docs/v2/introduction"
+    ],
     "longDescription": "Manus is a general-purpose AI agent platform — it browses, writes code, builds and publishes websites, and works through multi-step tasks the way a person would, rather than answering in a single turn. This app drives Manus's API v2: create a task from a prompt, poll its event stream for progress, send follow-up messages, and confirm the actions a task pauses on when it needs a human's go-ahead.\n\nBeyond the core task lifecycle, it covers the platform features a workflow actually touches: projects (shared instructions applied to every task inside them), file uploads a task can read, webhooks as an alternative to polling, the connectors and skills a task can be configured with, custom agents' subtasks, a team's online browser clients (for the human-in-the-loop browser-handoff flow), and the credit/usage accounting that decides whether a task can run at all. It also covers the websites a Manus task can build: checking publish status, browsing checkpoints, and publishing or updating one.\n\nManus's docs describe two API generations. v1 is explicitly deprecated in the vendor's own words (\"API v1 has been deprecated and will be removed in the future\") — every action here is built against v2 only.",
     "categories": [
       "ai",

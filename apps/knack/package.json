@@ -10,6 +10,11 @@
   "w6w": {
     "id": "io.w6w.knack",
     "displayName": "Knack",
+    "apiDocs": [
+      "https://docs.knack.com/reference",
+      "https://docs.knack.com/reference/response-format",
+      "https://docs.knack.com/reference/api-limits"
+    ],
     "longDescription": "Knack is a no-code database and app builder: every customer builds their own schema of Objects (tables) and Fields inside their own Knack application, then Knack generates a REST API over exactly that schema. This app is built around the one surface every Knack app shares regardless of what its builder designed — object-based record CRUD — because nothing else about a Knack app's API is fixed in advance.\n\nEach action takes the target Object's key (`object_1`, `object_2`, …) as a parameter, since a single Connection's credential can reach every table in the app, not just one. List records with Knack's own filter/sort/pagination query language, fetch one by its record ID, and create, update or delete records by posting the field values your Knack app defines (`field_1`, `field_2`, …).\n\nKnack's REST API publishes no schema-discovery endpoint and no generic whoami: every authenticated route, without exception, is scoped to an Object or a View. That shapes two things worth knowing before connecting — a Connection needs one real Object key up front just to verify the credential is live, and finding your app's Object and Field keys is a Builder task (enable System Fields on a table, or open the object's settings), not an API call this app can make for you.",
     "categories": [
       "databases",

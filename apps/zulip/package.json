@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.zulip",
     "displayName": "Zulip",
+    "apiDocs": [
+      "https://zulip.com/api/"
+    ],
     "longDescription": "Zulip is open-source team chat organised around channels and topics. This app sends channel and direct messages, reads message history with narrow filters, edits, moves, deletes and flags messages, adds and removes emoji reactions, lists, creates, updates and archives channels, lists a channel's topics and subscribers, manages the caller's subscriptions, and looks up users. It targets Zulip Cloud organizations (<org>.zulipchat.com) and authenticates as a user or bot with its email and API key.",
     "categories": [
       "communication",

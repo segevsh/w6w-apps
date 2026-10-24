@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.aweber",
     "displayName": "AWeber",
+    "apiDocs": [
+      "https://api.aweber.com/swagger.yaml"
+    ],
     "longDescription": "AWeber is an email marketing and newsletter platform built around Lists, Subscribers and Broadcasts. This app covers the API's full v1 surface for those three resources: reading and finding lists, adding, finding, updating, moving and removing subscribers (by ID or by email), tracking e-commerce purchases against a subscriber, and creating, updating, scheduling, cancelling and reading the open/click stats of broadcast newsletters. It also covers list-scoped Tags, Custom Fields and Segments, and the account-level resources every call is scoped under.\n\nAuthorization is OAuth 2.0 (AWeber's older OAuth 1.0a is still accepted by the API but is not implemented here — see the README). Health checks track AWeber's own status page alongside the credential's own liveness.",
     "categories": [
       "email",

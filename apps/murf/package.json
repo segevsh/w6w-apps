@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.murf",
     "displayName": "Murf",
+    "apiDocs": [
+      "https://murf.ai/api/docs"
+    ],
     "longDescription": "Murf is an AI voice platform. This app synthesizes speech from text with the Gen2 model (voice, locale, style, speed, pitch, pronunciation dictionary, output format, optional zero-retention Base64 audio), browses the voice library with locale, gender and style filters, lists, checks and deletes cloned voices, converts an audio file at a URL into another voice with the Voice Changer, and translates text between languages.\n\nIt also drives the Murf Dub automation API: list the source and destination dubbing languages, create transient dubbing jobs or project-based jobs from a file URL, poll a job for its download links, and create, list and update dubbing projects. Murf Dub uses a separate API key from the speech API, so the connection takes both.\n\nHealth checks track Murf's own status page (the API component) and whether api.murf.ai is serving.",
     "categories": [
       "ai",

@@ -10,6 +10,11 @@
   "w6w": {
     "id": "io.w6w.meistertask",
     "displayName": "MeisterTask",
+    "apiDocs": [
+      "https://developers.meistertask.com/reference/authentication",
+      "https://developers.meistertask.com/reference/error-handling",
+      "https://developers.meistertask.com/reference/rate-limiting"
+    ],
     "longDescription": "MeisterTask is a Kanban-style project and task manager from the Meister suite (alongside MindMeister). This app covers the everyday project-management path: creating and organising projects, moving work between the sections that make up a project board, and creating, updating and reading the tasks and subtasks that live on it.\n\nA task's supporting detail is covered too — checklists and checklist items for breaking work down further, labels for categorising tasks project-wide, and comments for discussion on a task — plus read access to the people who make up a team, so a workflow can look up who to assign work to.\n\nAuthentication follows the vendor's own two paths: a personal access token for a single account's own automations, or a full OAuth 2.0 flow (delegated through MindMeister's authorization server, which MeisterTask shares) for a public integration serving many end users.",
     "categories": [
       "project-management",

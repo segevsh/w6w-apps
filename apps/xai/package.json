@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.xai",
     "displayName": "Grok by xAI",
+    "apiDocs": [
+      "https://docs.x.ai/docs/api-reference"
+    ],
     "longDescription": "Grok by xAI puts xAI's Grok models inside a workflow. Chat completions, the stateful Responses API and the Anthropic-compatible Messages endpoint are each a step, so a workflow can summarize, classify, extract or draft with whichever request shape it already speaks. A stored Responses reply can be fetched or deleted later by id, and the Responses API can continue a conversation from a previous response id without resending the history.\n\nEmbeddings turn text into vectors for search and clustering, image generation produces images from a prompt (aspect ratio and resolution apply to the grok-imagine models), and token counting lets a workflow size a prompt before sending it. The model catalog can be listed — including the richer language-models listing with modalities and aliases — so a workflow's model choice never has to be hardcoded. Files already uploaded to xAI storage can be listed, inspected and deleted.\n\nA fit for adding a Grok step to a backend automation, or for routing the same prompt to xAI alongside other LLM vendors.",
     "categories": [
       "ai"

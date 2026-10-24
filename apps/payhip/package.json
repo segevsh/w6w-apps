@@ -10,6 +10,10 @@
   "w6w": {
     "id": "io.w6w.payhip",
     "displayName": "Payhip",
+    "apiDocs": [
+      "https://help.payhip.com/article/317-public-api",
+      "https://help.payhip.com/article/114-public-api"
+    ],
     "longDescription": "Payhip sells digital products, and its public API covers one thing: the software license keys it issues with a sale. This app lets a workflow verify a key, enable or disable it, and raise or lower its use count, so an activation flow or a refund-handling flow can gate access on a real purchase.\n\nVerify is read-only and does not consume a use. Connect with a per-product secret key (current v2 API, safe for one product) or the legacy account API key. Products, orders, customers and payouts are not exposed by Payhip's API and are not covered.",
     "categories": [
       "commerce"

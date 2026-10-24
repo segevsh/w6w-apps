@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.wiza",
     "displayName": "Wiza",
+    "apiDocs": [
+      "https://docs.wiza.co/swagger/v1/openapi.yaml"
+    ],
     "longDescription": "Wiza finds and verifies work emails and phone numbers for sales and recruiting prospects. This app reveals a single contact from a LinkedIn profile URL, an email, or a name plus company, asynchronously, and reads the result back; enriches whole lists of up to 2500 people; and builds lists straight from Wiza's prospect database with its job, location, company-size, technology and funding filters.\n\nIt also searches companies, enriches a company synchronously from a name, domain or LinkedIn identifier, resolves the exact location and technology values the filters demand, and reads the credit balance.\n\nHealth checks track Wiza's own status page (the API component), whether the API is serving, and the API credit balance.",
     "categories": [
       "crm",

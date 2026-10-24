@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.devin",
     "displayName": "Devin",
+    "apiDocs": [
+      "https://docs.devin.ai/api-reference/overview"
+    ],
     "longDescription": "Devin is Cognition's autonomous coding agent. This app drives the session-oriented API a workflow actually needs: create a session with a natural-language prompt, poll or fetch it, send follow-up messages into a running session, and list every session an organization has run.\n\nSecrets and file attachments round out the surface — a secret can be referenced by a session so credentials never travel through a prompt, and an attachment can be uploaded ahead of time and linked into a session or a message.\n\nDevin's REST API is deliberately small and entirely session-shaped: there is no endpoint for reading a diff, a file, or a commit directly. Everything Devin produces — code, pull requests, explanations — arrives as messages and pull-request links on the session object itself.",
     "categories": [
       "developer-tools",

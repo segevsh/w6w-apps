@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.economic",
     "displayName": "e-conomic",
+    "apiDocs": [
+      "https://restdocs.e-conomic.com/"
+    ],
     "longDescription": "e-conomic (Visma e-conomic) is a cloud accounting system for small and mid-sized businesses, used mostly in Denmark and the Nordics. This app connects a workflow to an agreement's books through the e-conomic REST API, with the two tokens e-conomic issues: the App Secret Token that identifies the integration and the Agreement Grant Token granted by the customer.\n\nA workflow can list and read customers and create or delete them, and do the same for products; list customer groups, product groups, payment terms, VAT zones, layouts, units and employees (the reference data a new customer, product or invoice needs); create a draft invoice with its lines, delete a draft, book it (optionally sending it by email or EAN e-invoice), and list or read draft and booked invoices. It can also list draft orders, suppliers, the chart of accounts, accounting years and the bookkeeping entries of a year, and read the connected agreement.\n\nEvery list takes e-conomic's filter and sort expressions and returns the page with a total and the page to ask for next. Health checks read e-conomic's status page for its dedicated REST API component, probe the API's reachability, and verify the tokens against the agreement.",
     "categories": [
       "finance"

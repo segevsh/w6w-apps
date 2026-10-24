@@ -10,6 +10,11 @@
   "w6w": {
     "id": "io.w6w.omnisend",
     "displayName": "Omnisend",
+    "apiDocs": [
+      "https://api-docs.omnisend.com/reference/get_contacts.md",
+      "https://api-docs.omnisend.com/reference/post_contacts-tags.md",
+      "https://api-docs.omnisend.com/reference/post_events.md"
+    ],
     "longDescription": "Omnisend manages the ecommerce marketing lifecycle from a workflow — creating and updating contacts, tagging them individually or in bulk by ID, email, phone, or segment, and sending the customer events (recommended events like \"placed order\", or free-form custom events) that trigger Omnisend's own automations, segments, and reporting.\n\nA fit for syncing storefront data (contacts, orders) into Omnisend as it happens, or triggering an Omnisend automation from an external condition detected elsewhere in a workflow.",
     "categories": [
       "marketing",

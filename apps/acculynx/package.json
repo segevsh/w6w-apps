@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.acculynx",
     "displayName": "AccuLynx",
+    "apiDocs": [
+      "https://apidocs.acculynx.com/reference/"
+    ],
     "longDescription": "AccuLynx is the job-management and CRM platform built for roofing and exterior contractors: every customer is a contact, every piece of work is a job that moves through a fixed milestone pipeline (Lead, Prospect, Approved, Completed, Invoiced, Closed), and estimates, invoices, payments, appointments and crew calendars hang off the job.\n\nThis app covers AccuLynx's v2 REST API: list, search, read and create jobs (a new job always starts as an unassigned Lead), correct a job's address, post to its message feed, and read its representatives, current milestone, estimates and invoices. It manages contacts (list, search, create, update, add notes, list a contact's jobs), reads company calendars and their appointments, and exposes the lookups other calls need: users, lead sources, countries and states, and company settings.\n\nAuthentication is a single API key sent as a bearer token. AccuLynx issues API keys to its own customers only; there is no sandbox. Health checks track AccuLynx's status page (its dedicated API component) and its unauthenticated ping endpoint.",
     "categories": [
       "crm"

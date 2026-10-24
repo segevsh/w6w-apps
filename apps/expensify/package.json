@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.expensify",
     "displayName": "Expensify",
+    "apiDocs": [
+      "https://integrations.expensify.com/Integration-Server/doc/"
+    ],
     "longDescription": "Expensify is expense management and reimbursement software. This app drives its Integration Server: it creates expenses, reports, policies and expense rules, reads policies, policy details and domain card lists, exports report data through a Freemarker template and downloads the generated file, and runs card reconciliation exports.\n\nIt also updates a policy's categories, tags and report fields, tag approvers and expense rules, marks approved reports as reimbursed, and provisions policy members through the Advanced Employee Updater.\n\nEvery call is one form-encoded job description posted to a single endpoint; the partner credentials are merged into it by the connection's sign hook, never by an action. Health checks verify the credentials, whether the Integration Server is answering, Expensify's status page (Integration APIs component), and declare that no rate-limit headroom signal exists.",
     "categories": [
       "finance",

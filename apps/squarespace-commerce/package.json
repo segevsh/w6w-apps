@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.squarespace-commerce",
     "displayName": "Squarespace Commerce",
+    "apiDocs": [
+      "https://developers.squarespace.com/commerce-apis/overview"
+    ],
     "longDescription": "Squarespace's Commerce APIs are the merchant-side surface of a Squarespace store — the orders it received, the inventory and products behind them, the store pages they are published on, the customer profiles that placed them and the transaction documents that record the money. This app covers exactly that surface, and deliberately nothing else: no Content API, no Forms API, no Webhook Subscriptions, no Contacts, no Discounts and no Analytics.\n\nThe everyday path is the one a store operator actually walks: list or fetch an order, read the inventory items a fulfilment depends on, adjust stock, and publish or edit the products and variants the catalogue is built from. A workflow can also create an order on behalf of an external sales channel and mark it fulfilled, and — for reconciliation — list the transaction documents for one specific order.\n\nHealth checks read Squarespace's own Statuspage feed, scoped to its Commerce component, and the credential probe is the same website-profile lookup users get as an action. Authentication is an API key only; OAuth is reserved for registered Squarespace Extensions and is out of scope here.",
     "categories": [
       "commerce",

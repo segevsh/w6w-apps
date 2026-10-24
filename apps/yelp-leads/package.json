@@ -10,6 +10,11 @@
   "w6w": {
     "id": "io.w6w.yelp-leads",
     "displayName": "Yelp Leads",
+    "apiDocs": [
+      "https://www.yelp.com/developers",
+      "https://docs.developer.yelp.com/docs/leads-api",
+      "https://docs.developer.yelp.com/reference/get-lead"
+    ],
     "longDescription": "The Yelp Leads API notifies a partner about every new interaction — a new lead, a new message, a phone-number opt-in — on the businesses it is subscribed to (Business Subscriptions API, subscription type WEBHOOK), and lets the partner read the full conversation and reply on the business's behalf.\n\nThis app covers the whole of that surface: reading a lead's details and its full event timeline (with cursor pagination), writing a text-message reply into an existing lead, marking a lead as replied through an out-of-Yelp channel (phone or email), marking events as read, listing the lead IDs a business has received (with time-range filtering), and reading a lead's cost metrics.\n\nAccess to the Leads API itself is restricted to Yelp advertising and listing-management reseller partners meeting a minimum spend requirement — Yelp's own recommendation for everyone else is its no-code Zapier integration.",
     "categories": [
       "marketing",

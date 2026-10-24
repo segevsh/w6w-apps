@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.tickettailor",
     "displayName": "Ticket Tailor",
+    "apiDocs": [
+      "https://developers.tickettailor.com/"
+    ],
     "longDescription": "Ticket Tailor is an event ticketing platform: event series and their occurrences, ticket types and groups, orders, holds, check-ins, discount codes and vouchers, all reachable over one straightforward REST API.\n\nThis app covers the full lifecycle a box office automates: create and publish an event series, add occurrences and ticket types, reserve inventory with holds, issue tickets directly or read them off orders, check attendees in at the door, and run discount codes and vouchers. It also surfaces box-office-wide visibility — the overview endpoint's revenue and ticket counts — so a workflow can report on a box office without a dashboard login.\n\nHealth checks track Ticket Tailor's own status page (Check-in app, Checkout, Dashboard, API) alongside the connection's own rate-limit headroom, which Ticket Tailor — unlike many vendors in this pack — actually exposes as a remaining count, not just a ceiling.",
     "categories": [
       "commerce"

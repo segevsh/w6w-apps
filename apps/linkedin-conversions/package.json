@@ -10,6 +10,9 @@
   "w6w": {
     "id": "io.w6w.linkedin-conversions",
     "displayName": "LinkedIn Conversions",
+    "apiDocs": [
+      "https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/conversions-api"
+    ],
     "longDescription": "The LinkedIn Conversions API lets an advertiser stream conversion events from its own server to LinkedIn, so campaign performance can be measured and optimized regardless of where the conversion actually happens (server-side purchases, CRM-qualified leads, offline events) rather than only what a client-side pixel can see.\n\nThis app covers the three steps LinkedIn's own docs lay out for that flow: create a Conversion Rule (the named, typed target conversion events attribute against), associate it with the campaign(s) that should get credit for it, then stream the conversion events themselves — singly or in a batch of up to 5,000 per request.\n\nIt is a separate product surface from this pack's linkedin-ads app: same host and the same Rest.li versioned-REST transport, but a distinct API family, a distinct pair of OAuth scopes (rw_conversions, r_ads — not linkedin-ads's rw_ads/r_ads_reporting), and a distinct approval gate. A health check tracks LinkedIn's own developer-API status page.",
     "categories": [
       "marketing",
