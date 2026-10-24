@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/perplexity",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Web-grounded chat completions, search, and embeddings via the Perplexity API.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,12 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.perplexity",
+    "modelProvider": {
+      "modelTypes": [
+        "llm",
+        "embedding"
+      ]
+    },
     "displayName": "Perplexity",
     "apiDocs": [
       "https://docs.perplexity.ai/openapi.json"

@@ -13,9 +13,9 @@ family, and omission is the safe reading.
 | ollama | llm, embedding / — | `apps/ollama/actions/chat.ts`, `generate.ts` (llm), `embed.ts` (embedding) | Model management actions (pull/copy/delete/show) are not inference. |
 | gemini | llm, embedding / — | `apps/gemini/actions/generate-content.ts` (llm), `embed-content.ts`, `batch-embed-contents.ts` (embedding) | generate-content is text-oriented here; no image/speech action declared. count-tokens is not inference. |
 | groq | llm, speech-to-text, text-to-speech / — | `apps/groq/actions/chat-complete.ts`, `response-create.ts` (llm), `audio-transcribe.ts`, `audio-translate.ts` (speech-to-text), `audio-speech.ts` (text-to-speech) | Batch/files/models are not inference types. |
-| mistral | TODO S2/S3 | TODO S2/S3 | TODO S2/S3 |
-| xai | TODO S2/S3 | TODO S2/S3 | TODO S2/S3 |
-| perplexity | TODO S2/S3 | TODO S2/S3 | TODO S2/S3 |
+| mistral | llm, embedding / — | `apps/mistral/actions/chat-completion.ts` (llm), `embeddings.ts` (embedding) | `extract-text.ts` calls Mistral OCR (a model), but no `MODEL_TYPES` entry describes document OCR. `list-models.ts` is not inference. |
+| xai | llm, embedding, image-generation / — | `apps/xai/actions/chat-complete.ts`, `create-response.ts`, `create-message.ts` (llm), `create-embedding.ts` (embedding), `generate-image.ts` (image-generation) | `tokenize-text.ts` is a tokenizer call, not an inference type. `list-models.ts`, `get-model.ts`, `list-language-models.ts` and the files actions are not inference. |
+| perplexity | llm, embedding / — | `apps/perplexity/actions/chat-completion.ts` (Sonar), `agent-response.ts` (Agent API) (llm), `create-embeddings.ts` (embedding) | `web-search.ts` is search-only (ranked results and page content, no model output of any declared type). The web grounding in the Sonar/Agent calls is retrieval around an llm, so it adds no type. `list-models.ts` is not inference. |
 | huggingface | TODO S2/S3 | TODO S2/S3 | TODO S2/S3 |
 | replicate | TODO S2/S3 | TODO S2/S3 | TODO S2/S3 |
 | elevenlabs | TODO S2/S3 | TODO S2/S3 | TODO S2/S3 |
