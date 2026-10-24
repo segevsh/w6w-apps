@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -14,9 +15,17 @@ const action: ActionDefinition<Input> = {
   description: "List an organization's roles.",
   idempotent: true,
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "roles", type: "array", label: "Roles" },
     { key: "pagination", type: "object", label: "Pagination" },

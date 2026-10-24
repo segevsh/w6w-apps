@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 import { WEBHOOK_ACTIONS } from "../lib/triggers.ts";
 
 interface Input {
@@ -19,7 +20,14 @@ const createWebhook: ActionDefinition<Input> = {
   description:
     "Create a webhook on an organization. Eventbrite will POST to the endpoint URL whenever one of the chosen actions occurs (optionally limited to one event). Creates a new webhook on Eventbrite.",
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     { key: "endpointUrl", label: "Endpoint URL", type: "string", required: true },
     {
       key: "actions",
@@ -36,6 +44,7 @@ const createWebhook: ActionDefinition<Input> = {
     },
     { key: "extra", label: "Additional fields", type: "json" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "id", type: "string", label: "Webhook ID" },
     { key: "resource_uri", type: "string", label: "Resource URI" },

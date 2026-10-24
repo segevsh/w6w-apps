@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Override {
   textCode: string;
@@ -39,7 +40,14 @@ const createTextOverrides: ActionDefinition<Input> = {
   description:
     "Set custom ticket-page text for an organization, venue or event. Each entry replaces a text code with a custom message or another default message code. If no locale is given, the event's locale is used when an event ID is set, otherwise the default locale. Changes the text shown to buyers on Eventbrite.",
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     {
       key: "strings",
       label: "Overrides",
@@ -65,6 +73,7 @@ const createTextOverrides: ActionDefinition<Input> = {
     { key: "venueId", label: "Venue ID", type: "string" },
     { key: "extra", label: "Additional fields", type: "json" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "text_code", type: "string", label: "Text code" },
     { key: "message", type: "string", label: "Message" },

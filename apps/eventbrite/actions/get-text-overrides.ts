@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -31,7 +32,14 @@ const getTextOverrides: ActionDefinition<Input> = {
     "Retrieve the text overrides for an organization in a locale, optionally filtered to an event or venue.",
   idempotent: true,
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     {
       key: "textCodes",
       label: "Text codes",
@@ -43,6 +51,7 @@ const getTextOverrides: ActionDefinition<Input> = {
     { key: "eventId", label: "Event ID", type: "string" },
     { key: "venueId", label: "Venue ID", type: "string" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "text_code", type: "string", label: "Text code" },
     { key: "message", type: "string", label: "Message" },
