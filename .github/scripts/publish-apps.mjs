@@ -235,6 +235,28 @@ export function summarizeResult(status, body) {
   return { ok: failed === 0, changed, lines };
 }
 
+/**
+ * The exec sha-256s the catalog already holds (`GET /system-ops/apps/digests`). A row only exists
+ * after the API verified its blob, and blobs are never deleted, so those execs are already in the
+ * bucket and need no upload. Best-effort: any failure returns an empty set (upload everything).
+ */
+export async function fetchKnownExecShas({ apiUrl, secret, fetchImpl = fetch }) {
+  try {
+    const res = await fetchImpl(`${apiUrl.replace(/\/+$/, "")}/system-ops/apps/digests`, {
+      headers: { authorization: `Bearer ${mintToken(secret)}` },
+      signal: AbortSignal.timeout(60_000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const body = await res.json();
+    return new Set(
+      Object.values(body ?? {}).map((r) => r?.execSha256).filter((s) => typeof s === "string" && SHA256_HEX.test(s)),
+    );
+  } catch (e) {
+    console.warn(`publish-apps: digests unavailable (${e instanceof Error ? e.message : e}); uploading every exec`);
+    return new Set();
+  }
+}
+
 /** ONE publish-index POST; a fresh token per attempt; retries 5xx / dropped connection once. */
 export async function postPublishIndex({ apiUrl, secret, indexSha256, fetchImpl = fetch, timeoutMs = PUBLISH_TIMEOUT_MS }) {
   const url = `${apiUrl.replace(/\/+$/, "")}/system-ops/apps/publish-index`;
@@ -303,8 +325,12 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   fs.writeFileSync(indexPath, indexJson);
   console.log(`publish-apps: ${artifacts.length} artifact(s), indexSha256=${indexSha256}`);
 
-  const plan = planUploads(index, artifacts, { dist: args.dist });
+  const known = await fetchKnownExecShas({ apiUrl: env.W6W_API_URL, secret: env.OPS_JWT_SECRET });
+  const knownKeys = new Set([...known].map(blobKeyExec));
+  const all = planUploads(index, artifacts, { dist: args.dist });
+  const plan = all.filter((p) => !knownKeys.has(p.key));
   plan.push({ key: blobKeyIndex(indexSha256), file: indexPath });
+  console.log(`publish-apps: ${all.length - plan.length + 1} exec(s) already in the catalog, skipped`);
 
   let put;
   if (localDir) {

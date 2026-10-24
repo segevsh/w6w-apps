@@ -165,6 +165,7 @@ test("main local-dir mode writes the same keys and treats re-run as success", as
   const posts = [];
   const realFetch = globalThis.fetch;
   globalThis.fetch = async (url, init) => {
+    if (String(url).endsWith("/system-ops/apps/digests")) return { ok: false, status: 503 };
     posts.push({ url, body: init.body });
     return {
       status: 200,
@@ -195,10 +196,11 @@ test("main exits nonzero when failed>0", async () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "pub-"));
   fs.writeFileSync(path.join(tmp, "index.json"), JSON.stringify({ apps: [], failures: [] }));
   const realFetch = globalThis.fetch;
-  globalThis.fetch = async () => ({
-    status: 200,
-    text: async () => JSON.stringify({ total: 1, changed: 0, failed: 1, results: [] }),
-  });
+  globalThis.fetch = async (url) =>
+    String(url).endsWith("/system-ops/apps/digests") ? { ok: false, status: 503 } : {
+      status: 200,
+      text: async () => JSON.stringify({ total: 1, changed: 0, failed: 1, results: [] }),
+    };
   const prev = process.exitCode;
   const log = console.log, err = console.error;
   console.log = console.error = () => {};
@@ -211,4 +213,34 @@ test("main exits nonzero when failed>0", async () => {
     console.error = err;
     globalThis.fetch = realFetch;
   }
+});
+
+test("main skips uploading execs the catalog already holds", async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "pub-"));
+  const dist = path.join(tmp, "dist");
+  const blobs = path.join(tmp, "blobs");
+  const a = mk("a", "A");
+  const b = mk("b", "B");
+  for (const x of [a, b]) {
+    const dir = path.join(dist, x.entry.id, x.entry.version);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "app.js"), x.entry.id.toUpperCase());
+    fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify(x.manifest));
+  }
+  fs.writeFileSync(path.join(dist, "index.json"), JSON.stringify({ apps: [a.entry, b.entry], failures: [] }));
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url) =>
+    String(url).endsWith("/system-ops/apps/digests")
+      ? { ok: true, json: async () => ({ a: { version: "1.0.0", execSha256: a.entry.execSha256 } }) }
+      : { status: 200, text: async () => JSON.stringify({ total: 2, changed: 1, failed: 0, results: [] }) };
+  const log = console.log;
+  console.log = () => {};
+  try {
+    await main(["--dist", dist, "--dry-run-local", blobs], { W6W_API_URL: "http://api", OPS_JWT_SECRET: "s" });
+  } finally {
+    console.log = log;
+    globalThis.fetch = realFetch;
+  }
+  assert.equal(fs.existsSync(path.join(blobs, `apps/exec/${a.entry.execSha256}.js`)), false);
+  assert.equal(fs.existsSync(path.join(blobs, `apps/exec/${b.entry.execSha256}.js`)), true);
 });
