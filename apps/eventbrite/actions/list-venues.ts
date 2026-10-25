@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -14,9 +15,17 @@ const listVenues: ActionDefinition<Input> = {
   description: "List venues belonging to an organization.",
   idempotent: true,
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "venues", type: "array", label: "Venues" },
     { key: "pagination", type: "object", label: "Pagination" },

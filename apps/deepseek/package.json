@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/deepseek",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Chat completions, FIM code completion, model listing and account balance via the DeepSeek API.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,11 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.deepseek",
+    "modelProvider": {
+      "modelTypes": [
+        "llm"
+      ]
+    },
     "displayName": "DeepSeek",
     "apiDocs": [
       "https://api-docs.deepseek.com/api/",

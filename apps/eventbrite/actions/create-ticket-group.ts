@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 import { deepMerge } from "../lib/merge.ts";
 
 interface Input {
@@ -19,7 +20,14 @@ const action: ActionDefinition<Input> = {
   description:
     "Create a ticket group in an organization on Eventbrite (max 300 live groups per organization).",
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     {
       key: "name",
       label: "Name",
@@ -49,6 +57,7 @@ const action: ActionDefinition<Input> = {
         "Merged (deep) into the request object for any field not listed above, using Eventbrite's snake_case names.",
     },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "id", type: "string", label: "ID" },
     { key: "name", type: "string", label: "Name" },

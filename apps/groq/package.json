@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/groq",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fast LLM inference, speech and batch processing via Groq's OpenAI-compatible API.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,13 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.groq",
+    "modelProvider": {
+      "modelTypes": [
+        "llm",
+        "speech-to-text",
+        "text-to-speech"
+      ]
+    },
     "displayName": "Groq",
     "apiDocs": [
       "https://console.groq.com/docs/api-reference"

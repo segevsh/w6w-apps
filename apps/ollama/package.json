@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/ollama",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run prompts, chats and embeddings against your own Ollama server and manage its models.",
   "license": "MIT",
   "author": {
@@ -9,6 +9,12 @@
   "private": true,
   "w6w": {
     "id": "io.w6w.ollama",
+    "modelProvider": {
+      "modelTypes": [
+        "llm",
+        "embedding"
+      ]
+    },
     "displayName": "Ollama",
     "apiDocs": [
       "https://github.com/ollama/ollama/blob/main/docs/api.md"

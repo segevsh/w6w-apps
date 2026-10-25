@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -14,9 +15,17 @@ const listOrganizers: ActionDefinition<Input> = {
   description:
     "List organizers belonging to an organization. Organizers are the public-facing event hosts (logo, bio, social links) — distinct from Organizations.",
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
     { key: "page", label: "Page", type: "number", default: 1 },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "organizers", type: "array", label: "Organizers" },
     { key: "pagination", type: "object", label: "Pagination" },
