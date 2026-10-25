@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -20,6 +21,8 @@ const action: ActionDefinition<Input> = {
       "label": "Organization ID",
       "type": "string",
       "required": true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
     },
     {
       "key": "venueId",
@@ -33,6 +36,7 @@ const action: ActionDefinition<Input> = {
       "hint": "Sub-string match on venue name.",
     },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     {
       "key": "seatmaps",

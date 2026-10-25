@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   organizationId: string;
@@ -13,8 +14,16 @@ const listWebhooks: ActionDefinition<Input> = {
   description: "List the webhooks configured for an organization.",
   idempotent: true,
   params: [
-    { key: "organizationId", label: "Organization ID", type: "string", required: true },
+    {
+      key: "organizationId",
+      label: "Organization ID",
+      type: "string",
+      required: true,
+      options: { source: "resolveFields" },
+      config: { allowCustom: true },
+    },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "webhooks", type: "array", label: "Webhooks" },
     { key: "pagination", type: "object", label: "Pagination" },
