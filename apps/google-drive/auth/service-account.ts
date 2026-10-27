@@ -1,171 +1,67 @@
 import type { AuthDefinition } from "@w6w/types";
-import { TOKEN_URL } from "../lib/client.ts";
+import { API_URL } from "../lib/client.ts";
 
 /**
- * Service Account — the "server-to-server" path. The user pastes the service
- * account email + PEM-encoded private key downloaded from Google Cloud
- * Console. On every request we mint a short-lived JWT bearer, exchange it at
- * `oauth2.googleapis.com/token` for an access_token (grant type
- * `urn:ietf:params:oauth:grant-type:jwt-bearer`), and use that.
+ * Service Account (`serviceAccount`). The user pastes the downloaded service
+ * account JSON key into one credential field; the host validates it, mints
+ * short-lived Google access tokens (domain-wide delegation when a
+ * `delegatedUser` is bound), and hands each signed request a derived token.
  *
- * See the sibling `apps/google-sheets` app once it lands for the shared JWT
- * signing pattern; the wire format is identical (only the `scope` claim
- * differs — Drive uses `https://www.googleapis.com/auth/drive`).
- *
- * NOTE: RS256 signing needs SubtleCrypto.importKey on the PEM. That is
- * available in Deno but non-trivial to get right in one shot, so the actual
- * signing is stubbed with a clear TODO. Everything upstream of the signing
- * step (the JWT header + claim set, the token exchange, the sign hook) is in
- * place so the sibling google-sheets implementation can drop in the working
- * signer verbatim.
+ * This module only attaches that token and probes the API. It holds no key
+ * material and mints nothing. The scopes below are the app's full scope set.
  */
-
-interface ServiceAccountCredential {
-  clientEmail: string;
-  privateKey: string;
-  /** Optional subject to impersonate via Domain-Wide Delegation. */
-  delegatedEmail?: string;
-  /** Cached bearer token minted from the JWT exchange. */
-  accessToken?: string;
-  /** Expiry (epoch seconds) of `accessToken`. */
-  expiresAt?: number;
-}
-
-const SCOPE = "https://www.googleapis.com/auth/drive";
-
-function base64url(bytes: Uint8Array): string {
-  let bin = "";
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-function base64urlJson(obj: unknown): string {
-  return base64url(new TextEncoder().encode(JSON.stringify(obj)));
-}
-
-/**
- * Build the JWT assertion header + claim set. The signature is left to
- * `signRs256`, which is stubbed. When wiring the real signer, hash SHA-256 of
- * the concatenated `${headerB64}.${payloadB64}` and RS256-sign with the
- * imported PKCS#8 private key.
- */
-export function buildAssertion(
-  credential: ServiceAccountCredential,
-  now: number = Math.floor(Date.now() / 1000),
-): { header: string; payload: string; signingInput: string } {
-  const header = base64urlJson({ alg: "RS256", typ: "JWT" });
-  const payload = base64urlJson({
-    iss: credential.clientEmail,
-    sub: credential.delegatedEmail || credential.clientEmail,
-    scope: SCOPE,
-    aud: TOKEN_URL,
-    iat: now,
-    exp: now + 3600,
-  });
-  return { header, payload, signingInput: `${header}.${payload}` };
-}
-
-/**
- * TODO(service-account): Implement RS256 signing.
- *
- *   const pem = credential.privateKey.replace(/\\n/g, "\n");
- *   const der = pemToDer(pem);   // strip PEM armor + base64-decode
- *   const key = await crypto.subtle.importKey(
- *     "pkcs8", der, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
- *   const sig = await crypto.subtle.sign(
- *     "RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(signingInput));
- *   return base64url(new Uint8Array(sig));
- *
- * See the sibling google-sheets app for the shared implementation.
- */
-function signRs256(
-  _credential: ServiceAccountCredential,
-  _signingInput: string,
-): Promise<string> {
-  throw new Error(
-    "service-account: RS256 signing not implemented — port from apps/google-sheets/auth/service-account.ts",
-  );
-}
-
-/** Exchange a JWT bearer for an access_token. Exported for testing. */
-export async function exchangeJwtForToken(
-  ctx: { fetch: typeof fetch },
-  assertion: string,
-): Promise<{ access_token: string; expires_in?: number }> {
-  const res = await ctx.fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion,
-    }).toString(),
-  });
-  if (!res.ok) throw new Error(`Google token endpoint returned ${res.status}`);
-  return await res.json() as { access_token: string; expires_in?: number };
-}
-
 const serviceAccount: AuthDefinition = {
   key: "service-account",
-  type: "custom",
-  displayName: "Service Account",
+  type: "serviceAccount",
+  displayName: "Google Service Account",
   description:
-    "Server-to-server auth using a Google Cloud service account. Paste the email + private key from the downloaded JSON credentials file.",
-  connectionLabel: "{{user.email}}",
+    "Google service account JSON key with domain-wide delegation. The host mints the access token; paste the key once.",
   fields: [
     {
-      key: "clientEmail",
-      label: "Service Account Email",
-      type: "string",
+      key: "serviceAccountKey",
+      label: "Service account key (JSON)",
+      type: "json",
+      secret: true,
       required: true,
-      hint: "e.g. name-808@project.iam.gserviceaccount.com",
-    },
-    {
-      key: "privateKey",
-      label: "Private Key",
-      type: "secret",
-      required: true,
-      hint: "The `private_key` field from the downloaded JSON, including the BEGIN/END lines.",
-    },
-    {
-      key: "delegatedEmail",
-      label: "Impersonated User (optional)",
-      type: "string",
-      hint:
-        "For Google Workspace Domain-Wide Delegation. Leave blank for standard service-account access.",
+      ui: "textarea",
+      hint: "Paste the whole JSON key file downloaded from Google Cloud for the service account.",
     },
   ],
+  serviceAccount: {
+    accepts: ["google-service-account.v1"],
+    scopes: [
+      "https://www.googleapis.com/auth/drive",
+    ],
+    impersonation: "optional",
+    bindingFields: [
+      {
+        key: "delegatedUser",
+        label: "Impersonated user",
+        type: "string",
+        hint:
+          "Optional Workspace user to impersonate via domain-wide delegation. Leave empty to act as the service account itself.",
+      },
+    ],
+  },
 
-  async sign({ request, credential }, ctx) {
-    const cred = credential as ServiceAccountCredential;
-    const now = Math.floor(Date.now() / 1000);
-    if (!cred.accessToken || !cred.expiresAt || cred.expiresAt - 60 <= now) {
-      const { signingInput } = buildAssertion(cred, now);
-      const signature = await signRs256(cred, signingInput);
-      const assertion = `${signingInput}.${signature}`;
-      const token = await exchangeJwtForToken(ctx, assertion);
-      cred.accessToken = token.access_token;
-      cred.expiresAt = now + (token.expires_in ?? 3600);
+  sign({ request, credential }) {
+    const token = (credential as { accessToken?: unknown } | null | undefined)?.accessToken;
+    if (typeof token !== "string" || token === "") {
+      throw new Error("service-account: no derived access token was provided");
     }
-    request.headers["authorization"] = `Bearer ${cred.accessToken}`;
+    request.headers["authorization"] = `Bearer ${token}`;
     return request;
   },
 
-  test({ credential }, _ctx) {
-    const cred = credential as ServiceAccountCredential;
-    if (!cred.clientEmail || !cred.privateKey) {
-      return { ok: false, message: "credential missing clientEmail or privateKey" };
-    }
-    // A real health-check would mint a token and hit /drive/v3/about; we can't
-    // do that until signRs256 is wired, so surface the pending state clearly.
+  async test(_input, ctx) {
+    // The runtime signs this request (D-A3); the hook never reads the credential.
+    const res = await ctx.fetch(`${API_URL}/about?fields=user`);
+    if (res.ok) return { ok: true };
     return {
       ok: false,
       message:
-        "service-account signing not yet implemented — port the RS256 signer from apps/google-sheets",
+        `Google Drive returned ${res.status}. Check the service account key, and that domain-wide delegation grants the required scopes.`,
     };
-  },
-
-  afterConnect(_input, _ctx) {
-    return {};
   },
 };
 

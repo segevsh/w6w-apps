@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-vertex-ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gemini, embeddings, models, endpoints and batch prediction on Google Vertex AI, through a Google Cloud project.",
   "license": "MIT",
   "author": {
