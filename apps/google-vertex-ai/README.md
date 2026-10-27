@@ -33,11 +33,11 @@ single scope is `.../auth/cloud-platform` (the discovery document lists
 
 ### Service account
 
-Paste the `client_email` and `private_key` from a downloaded JSON key. Each
-request signs an RS256 JWT, exchanges it at `oauth2.googleapis.com/token` for a
-`cloud-platform` access token, and sends it as a Bearer (the same flow as
-`google-sheets`' service-account method; the token is re-minted per request
-because the sandbox has no per-credential cache).
+Paste the downloaded JSON key into the one credential field. The host validates
+it, mints a short-lived `cloud-platform` access token, and signs each request
+with it as a Bearer (the same `serviceAccount` auth as `google-sheets`); the app
+never sees the key. The project and default location are connection settings, not
+credential fields.
 
 ## Locations and the egress allowlist
 

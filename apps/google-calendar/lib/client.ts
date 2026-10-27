@@ -1,7 +1,6 @@
 import type { HookContext } from "@w6w/types";
 
 export const API_URL = "https://www.googleapis.com/calendar/v3";
-export const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 export interface RequestOptions {
   method?: string;

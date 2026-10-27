@@ -1,176 +1,68 @@
 import type { AuthDefinition } from "@w6w/types";
+import { API_URL } from "../lib/client.ts";
 
 /**
- * Inlined base64url encoder — the app sandbox has `import: false`, so we
- * can't pull from jsr:@std/encoding at runtime. Same output as
- * @std/encoding's `encodeBase64Url`: url-safe, no `=` padding.
- */
-function encodeBase64Url(bytes: Uint8Array): string {
-  let s = "";
-  for (const b of bytes) s += String.fromCharCode(b);
-  return btoa(s).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
-}
-import { API_URL, TOKEN_URL } from "../lib/client.ts";
-
-/**
- * Service Account (JWT bearer) — the "server-to-server" path. You mint a
- * service account in the Google Cloud Console, download its JSON key, and
- * paste the `client_email` + `private_key` here. Optionally set an
- * `impersonate` address for domain-wide delegation.
+ * Service Account (`serviceAccount`). The user pastes the downloaded service
+ * account JSON key into one credential field; the host validates it, mints
+ * short-lived Google access tokens (domain-wide delegation when a
+ * `delegatedUser` is bound), and hands each signed request a derived token.
  *
- * Flow (RFC 7523, Google's `urn:ietf:params:oauth:grant-type:jwt-bearer`):
- *   1. Build a JWT with the service account as `iss`, Meet scopes,
- *      `aud = https://oauth2.googleapis.com/token`.
- *   2. Sign it with RS256 using the account's private key.
- *   3. POST to the token endpoint; receive an `access_token`.
- *   4. Cache the token in the credential; use it as `Bearer <token>`.
- *
- * NOTE on signing: Deno's Web Crypto can `importKey` PKCS#8 PEMs and sign
- * RS256 in principle, but wiring that into a portable, sandboxed hook is
- * non-trivial (PEM parsing, cache lifetime, key rotation). We therefore stub
- * the signing step here: the assertion body is built correctly, but the
- * signature is a fixed placeholder. The `TODO(rs256)` markers below flag
- * exactly where a real implementation should slot in — a host that wants
- * service-account auth today should provide it via `ctx.host` and call in
- * from `exchange`.
+ * This module only attaches that token and probes the API. It holds no key
+ * material and mints nothing. The scopes below are the app's full scope set.
  */
-interface ServiceAccountFields {
-  clientEmail: string;
-  privateKey: string;
-  impersonate?: string;
-}
-
-interface AccessTokenCredential {
-  accessToken: string;
-  expiresAt?: number;
-  clientEmail?: string;
-  impersonate?: string;
-}
-
-const SCOPES = [
-  "https://www.googleapis.com/auth/meetings.space.created",
-  "https://www.googleapis.com/auth/meetings.space.readonly",
-  "https://www.googleapis.com/auth/meetings.space.settings",
-];
-
-/**
- * Build the JWT header + claims Google expects. Signing itself is stubbed —
- * see the note on the auth definition. Exported for tests.
- */
-export function buildAssertion(
-  fields: ServiceAccountFields,
-  now: number = Math.floor(Date.now() / 1000),
-): { unsigned: string; header: string; payload: string } {
-  const header = { alg: "RS256", typ: "JWT" };
-  const payload = {
-    iss: fields.clientEmail,
-    sub: fields.impersonate || fields.clientEmail,
-    scope: SCOPES.join(" "),
-    aud: TOKEN_URL,
-    iat: now,
-    exp: now + 3600,
-  };
-  const enc = (o: unknown) => encodeBase64Url(new TextEncoder().encode(JSON.stringify(o)));
-  const encodedHeader = enc(header);
-  const encodedPayload = enc(payload);
-  return {
-    header: encodedHeader,
-    payload: encodedPayload,
-    unsigned: `${encodedHeader}.${encodedPayload}`,
-  };
-}
-
 const serviceAccount: AuthDefinition = {
   key: "service-account",
-  type: "custom",
-  displayName: "Service Account (JWT bearer)",
+  type: "serviceAccount",
+  displayName: "Google Service Account",
   description:
-    "Server-to-server auth using a Google Cloud service account. Paste the client_email + private_key from the downloaded JSON key. Signing is currently stubbed — see auth/service-account.ts for details.",
-  connectionLabel: "{{clientEmail}}",
+    "Google service account JSON key with domain-wide delegation. The host mints the access token; paste the key once.",
   fields: [
     {
-      key: "clientEmail",
-      label: "Service account email",
-      type: "string",
+      key: "serviceAccountKey",
+      label: "Service account key (JSON)",
+      type: "json",
+      secret: true,
       required: true,
-      hint: "Looks like name-XYZ@project.iam.gserviceaccount.com.",
-    },
-    {
-      key: "privateKey",
-      label: "Private key (PEM)",
-      type: "secret",
-      required: true,
-      hint: "The `private_key` field from the downloaded JSON key, including BEGIN/END lines.",
-    },
-    {
-      key: "impersonate",
-      label: "Impersonate user (optional)",
-      type: "string",
-      hint:
-        "Email address to impersonate via domain-wide delegation. Leave blank to act as the service account itself.",
+      ui: "textarea",
+      hint: "Paste the whole JSON key file downloaded from Google Cloud for the service account.",
     },
   ],
-
-  async exchange({ fields }, ctx) {
-    const f = (fields ?? {}) as unknown as ServiceAccountFields;
-    if (!f.clientEmail || !f.privateKey) {
-      throw new Error("service-account: clientEmail and privateKey are required");
-    }
-    const { unsigned } = buildAssertion(f);
-    // TODO(rs256): replace this placeholder with a real RS256 signature over
-    // `unsigned` using `f.privateKey`. Deno's Web Crypto can do this via
-    // `crypto.subtle.importKey('pkcs8', ..., { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, ...)`
-    // once the PEM is stripped to raw DER. Until that lands the token exchange
-    // will 400 with `invalid_grant` — the shape below is otherwise correct.
-    const signature = "TODO_RS256_SIGNATURE";
-    const assertion = `${unsigned}.${signature}`;
-
-    const body = new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion,
-    });
-    const res = await ctx.fetch(TOKEN_URL, {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      throw new Error(`Google token exchange failed: ${res.status} ${detail}`);
-    }
-    const json = await res.json() as { access_token?: string; expires_in?: number };
-    if (!json.access_token) throw new Error("Google token response missing access_token");
-    const credential: AccessTokenCredential = {
-      accessToken: json.access_token,
-      expiresAt: Math.floor(Date.now() / 1000) + (json.expires_in ?? 3600),
-      clientEmail: f.clientEmail,
-      impersonate: f.impersonate,
-    };
-    return credential;
+  serviceAccount: {
+    accepts: ["google-service-account.v1"],
+    scopes: [
+      "https://www.googleapis.com/auth/meetings.space.created",
+      "https://www.googleapis.com/auth/meetings.space.readonly",
+      "https://www.googleapis.com/auth/meetings.space.settings",
+    ],
+    impersonation: "optional",
+    bindingFields: [
+      {
+        key: "delegatedUser",
+        label: "Impersonated user",
+        type: "string",
+        hint:
+          "Optional Workspace user to impersonate via domain-wide delegation. Leave empty to act as the service account itself.",
+      },
+    ],
   },
 
   sign({ request, credential }) {
-    const { accessToken } = credential as AccessTokenCredential;
-    request.headers["authorization"] = `Bearer ${accessToken}`;
+    const token = (credential as { accessToken?: unknown } | null | undefined)?.accessToken;
+    if (typeof token !== "string" || token === "") {
+      throw new Error("service-account: no derived access token was provided");
+    }
+    request.headers["authorization"] = `Bearer ${token}`;
     return request;
   },
 
-  async test({ credential }, ctx) {
-    const { accessToken } = credential as AccessTokenCredential;
-    if (!accessToken) return { ok: false, message: "credential missing accessToken" };
-    // Same probe as OAuth: the cheapest read that proves a Meet scope is live.
-    const res = await ctx.fetch(`${API_URL}/conferenceRecords?pageSize=1`, {
-      headers: { authorization: `Bearer ${accessToken}` },
-    });
-    if (!res.ok) return { ok: false, message: `Google Meet returned ${res.status}` };
-    return { ok: true };
-  },
-
-  afterConnect({ credential }, _ctx) {
-    const c = credential as AccessTokenCredential;
+  async test(_input, ctx) {
+    // The runtime signs this request (D-A3); the hook never reads the credential.
+    const res = await ctx.fetch(`${API_URL}/conferenceRecords?pageSize=1`);
+    if (res.ok) return { ok: true };
     return {
-      clientEmail: c.clientEmail,
-      impersonate: c.impersonate,
+      ok: false,
+      message:
+        `Google Meet returned ${res.status}. Check the service account key, and that domain-wide delegation grants the required scopes.`,
     };
   },
 };

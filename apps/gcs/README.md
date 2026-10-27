@@ -6,8 +6,8 @@ signed URLs for handing one object to somebody who has no Google credentials.
 - **Categories** — storage, devops
 - **Auth methods** — service-account
 - **Actions** — 16
-- **Egress allowlist** — `storage.googleapis.com`, `oauth2.googleapis.com`,
-  `iamcredentials.googleapis.com`, `status.cloud.google.com`
+- **Egress allowlist** — `storage.googleapis.com`, `iamcredentials.googleapis.com`,
+  `status.cloud.google.com`
 - **Website** — https://cloud.google.com/storage
 - **API docs** — https://cloud.google.com/storage/docs/json_api
 

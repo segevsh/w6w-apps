@@ -2,7 +2,6 @@ import type { HookContext } from "@w6w/types";
 
 export const API_URL = "https://www.googleapis.com/drive/v3";
 export const UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3";
-export const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 export const FOLDER_MIME = "application/vnd.google-apps.folder";
 export const DOCUMENT_MIME = "application/vnd.google-apps.document";

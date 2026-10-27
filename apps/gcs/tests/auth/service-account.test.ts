@@ -1,158 +1,107 @@
-import { assert, assertEquals } from "@std/assert";
+import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/service-account.ts";
-import { TEST_CLIENT_EMAIL, TEST_PRIVATE_KEY } from "../lib/_vector.ts";
+import * as mod from "../../auth/service-account.ts";
+import app from "../../index.ts";
 
-const fields = { clientEmail: TEST_CLIENT_EMAIL, privateKey: TEST_PRIVATE_KEY };
-const token = { status: 200, body: { access_token: "ya29.test", expires_in: 3600 } };
+const SENTINEL = "SENTINEL-BODY-TEXT-do-not-leak";
+const PROBE = "https://storage.googleapis.com/storage/v1/b?project=p1&maxResults=1";
+const input = {
+  credential: null,
+  binding: { settings: { projectId: "p1" } },
+  credentialDisplay: { client_email: "sa@p1.iam.gserviceaccount.com" },
+} as never;
 
-/** The JWT-bearer grant: an assertion, not a client id and secret. */
-Deno.test("service-account: exchanges a signed JWT assertion for a token", async () => {
-  const { ctx, calls } = mockCtx([token]);
-  const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
-  assertEquals(calls[0].url, "https://oauth2.googleapis.com/token");
-  assertEquals(calls[0].method, "POST");
-
-  const body = new URLSearchParams(calls[0].body!);
-  assertEquals(body.get("grant_type"), "urn:ietf:params:oauth:grant-type:jwt-bearer");
-  const assertion = body.get("assertion")!;
-  assertEquals(assertion.split(".").length, 3, "a JWT is three segments");
-  assertEquals(credential.accessToken, "ya29.test");
-});
-
-Deno.test("service-account: the assertion claims the right issuer, audience and scope", async () => {
-  const { ctx, calls } = mockCtx([token]);
-  await auth.exchange!({ fields }, ctx);
-  const assertion = new URLSearchParams(calls[0].body!).get("assertion")!;
-  const [header, claims] = assertion.split(".").slice(0, 2).map((segment) =>
-    JSON.parse(atob(segment.replaceAll("-", "+").replaceAll("_", "/")))
+Deno.test("service-account: declares the serviceAccount shape", () => {
+  assertEquals(auth.key, "service-account");
+  assertEquals(auth.type, "serviceAccount");
+  const { bindingFields, ...rest } = auth.serviceAccount!;
+  assertEquals(rest, {
+    accepts: ["google-service-account.v1"],
+    scopes: ["https://www.googleapis.com/auth/devstorage.full_control"],
+    impersonation: "none",
+  });
+  assertEquals(
+    (bindingFields ?? []).map((f) => [f.key, f.required === true]),
+    [["projectId", false]],
   );
-  assertEquals(header.alg, "RS256");
-  assertEquals(claims.iss, TEST_CLIENT_EMAIL);
-  assertEquals(claims.aud, "https://oauth2.googleapis.com/token");
-  assertEquals(claims.scope, "https://www.googleapis.com/auth/devstorage.full_control");
-  assertEquals(claims.exp - claims.iat, 3600);
+  assertEquals(
+    (auth.fields ?? []).map((f) => [f.key, f.type, f.secret === true]),
+    [["serviceAccountKey", "json", true]],
+  );
+  assertEquals(app.auth!.map((x) => x.key), ["service-account"]);
 });
 
-/** Signed URLs need the account named, so the key is kept rather than dropped. */
-Deno.test("service-account: keeps the key and email alongside the token", async () => {
-  const { ctx } = mockCtx([token]);
-  const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
-  assertEquals(credential.clientEmail, TEST_CLIENT_EMAIL);
-  assertEquals(credential.privateKey, TEST_PRIVATE_KEY);
-  const ttl = new Date(String(credential.expiresAt)).getTime() - Date.now();
-  assert(ttl > 0 && ttl < 3600_000, `expiry ${ttl}ms is not inside the hour`);
+Deno.test("service-account: mint code is gone; only default is exported", () => {
+  assertEquals(Object.keys(mod), ["default"]);
+  assertEquals((auth as unknown as Record<string, unknown>).exchange, undefined);
+  assertEquals((auth as unknown as Record<string, unknown>).refresh, undefined);
 });
 
-Deno.test("service-account: refresh mints the same way from the stored key", async () => {
-  const { ctx, calls } = mockCtx([token]);
-  const credential = await auth.refresh!({ credential: fields }, ctx) as Record<string, unknown>;
-  assertEquals(calls[0].url, "https://oauth2.googleapis.com/token");
-  assertEquals(credential.accessToken, "ya29.test");
-});
-
-Deno.test("service-account: a rejected assertion surfaces Google's description", async () => {
-  const { ctx } = mockCtx([{
-    status: 400,
-    body: { error: "invalid_grant", error_description: "Invalid JWT Signature." },
-  }]);
-  let message = "";
-  try {
-    await auth.exchange!({ fields }, ctx);
-  } catch (err) {
-    message = String(err);
-  }
-  assert(/Invalid JWT Signature/.test(message), message);
-});
-
-Deno.test("service-account: exchange refuses without both values", async () => {
-  const { ctx, calls } = mockCtx([]);
-  let message = "";
-  try {
-    await auth.exchange!({ fields: { clientEmail: "x" } }, ctx);
-  } catch (err) {
-    message = String(err);
-  }
-  assert(/both required/.test(message), message);
-  assertEquals(calls.length, 0);
-});
-
-Deno.test("service-account: signs as a bearer", () => {
+Deno.test("service-account: sign attaches Bearer without any network call", async () => {
+  const { ctx, calls } = mockCtx();
   const request = {
-    url: "https://storage.googleapis.com/storage/v1/b",
+    url: "https://x.example/y",
+    method: "GET",
     headers: {} as Record<string, string>,
   };
-  const signed = auth.sign!(
-    { request, credential: { accessToken: "ya29.test" } } as never,
-    mockCtx([]).ctx,
-  ) as typeof request;
-  assertEquals(signed.headers["authorization"], "Bearer ya29.test");
-  assertEquals(auth.type, "custom");
-});
-
-/** Without a project there is nothing to list, so the test says so. */
-Deno.test("service-account: with no project, the test proves the token and says what it did not check", async () => {
-  const { ctx, calls } = mockCtx([]);
-  const result = await auth.test!(
-    { credential: { accessToken: "ya29.test", clientEmail: TEST_CLIENT_EMAIL } } as never,
+  const out = await auth.sign!(
+    { request, credential: { accessToken: "tok", tokenType: "Bearer", expiresAt: 1 } },
     ctx,
   );
-  assertEquals(result.ok, true);
-  assert(/bucket access has not been checked/.test(result.message!), result.message);
+  assertEquals(out.headers["authorization"], "Bearer tok");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-account: with a project, it lists buckets", async () => {
+Deno.test("service-account: sign throws on a missing token ({} and null)", async () => {
+  for (const credential of [{}, null]) {
+    const { ctx } = mockCtx();
+    const request = {
+      url: "https://x.example/y",
+      method: "GET",
+      headers: {} as Record<string, string>,
+    };
+    await assertRejects(async () => await auth.sign!({ request, credential }, ctx));
+  }
+});
+
+Deno.test("service-account: test lists one bucket page with no own authorization", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [{ name: "b" }] } }]);
-  const result = await auth.test!(
-    {
-      credential: { accessToken: "ya29.test", clientEmail: TEST_CLIENT_EMAIL, projectId: "p1" },
-    } as never,
-    ctx,
+  const out = await auth.test(input, ctx);
+  assertEquals(out.ok, true);
+  assertEquals(calls.length, 1);
+  assertEquals(calls[0].url, PROBE);
+  assertEquals(calls[0].headers["authorization"], undefined);
+});
+
+Deno.test("service-account: test without a project says so and makes no call", async () => {
+  const { ctx, calls } = mockCtx();
+  const out = await auth.test({ credential: null } as never, ctx);
+  assertEquals(out.ok, true);
+  assertStringIncludes(out.message ?? "", "not been checked");
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("service-account: test failures carry the status and reason, never the body", async () => {
+  const { ctx } = mockCtx([{
+    status: 403,
+    body: { error: { message: SENTINEL, errors: [{ reason: "forbidden", message: SENTINEL }] } },
+  }]);
+  const out = await auth.test(input, ctx);
+  assertEquals(out.ok, false);
+  assertStringIncludes(out.message ?? "", "403");
+  assertEquals((out.message ?? "").includes(SENTINEL), false);
+  const plain = mockCtx([{ status: 404, body: SENTINEL }]);
+  assertEquals(((await auth.test(input, plain.ctx)).message ?? "").includes(SENTINEL), false);
+});
+
+Deno.test("service-account: afterConnect reads the email from display and the project from the binding", () => {
+  assertEquals(auth.afterConnect!(input, mockCtx().ctx), {
+    clientEmail: "sa@p1.iam.gserviceaccount.com",
+    projectId: "p1",
+  });
+  assertEquals(
+    auth.afterConnect!({ credential: null } as never, mockCtx().ctx),
+    { clientEmail: undefined, projectId: undefined },
   );
-  assert(calls[0].url.includes("project=p1"), calls[0].url);
-  assertEquals(result.ok, true);
-  assert(/buckets are visible in p1/.test(result.message!), result.message);
-});
-
-/** Creating a key grants nothing — this is the state that follows. */
-Deno.test("service-account: no visible buckets is reported as possibly a missing role", async () => {
-  const { ctx } = mockCtx([{ status: 200, body: { items: [] } }]);
-  const result = await auth.test!(
-    {
-      credential: { accessToken: "ya29.test", clientEmail: TEST_CLIENT_EMAIL, projectId: "p1" },
-    } as never,
-    ctx,
-  );
-  assertEquals(result.ok, true);
-  assert(/creating a key grants nothing by itself/.test(result.message!), result.message);
-});
-
-Deno.test("service-account: a missing token or a rejection fails cleanly", async () => {
-  const none = mockCtx([]);
-  assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
-
-  const forbidden = mockCtx([{ status: 403, body: { error: { message: "no" } } }]);
-  const result = await auth.test!(
-    { credential: { accessToken: "x", projectId: "p1" } } as never,
-    forbidden.ctx,
-  );
-  assertEquals(result.ok, false);
-  assert(/grants nothing by itself/.test(result.message!), result.message);
-});
-
-/** The email is public metadata, and object-signed-url needs it. */
-Deno.test("service-account: afterConnect records the account address", () => {
-  const display = auth.afterConnect!(
-    { credential: { clientEmail: TEST_CLIENT_EMAIL, projectId: "p1", privateKey: "secret" } },
-    mockCtx([]).ctx,
-  ) as Record<string, unknown>;
-  assertEquals(display.clientEmail, TEST_CLIENT_EMAIL);
-  assertEquals(display.projectId, "p1");
-  assertEquals("privateKey" in display, false, "the key is never public metadata");
-});
-
-Deno.test("service-account: says creating the key grants nothing", () => {
-  assert(/Creating the key grants NOTHING/.test(auth.description!), auth.description);
-  assertEquals(auth.fields!.find((f) => f.key === "privateKey")!.type, "secret");
 });
