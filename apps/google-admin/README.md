@@ -26,10 +26,12 @@ fetched 2026-09-05):
   must go to Admin console → Security → Access and data control → API Controls → Domain-wide
   delegation → *Add new*, enter the service account's numeric **Client ID**, and authorize the
   exact comma-delimited scope list this app requests (see `auth/service-account.ts`). The
-  credential's `subject` field (the user to impersonate) is then **required** — omit it and Google
-  mints a token for the service account's own non-Workspace identity, which every call refuses.
-  `subject` must itself be a super admin or delegated admin; impersonating an ordinary user fails
-  every call with a 403 even though the JWT signs and exchanges successfully. This is the failure
+  credential is the pasted service account JSON key; the host mints the token. The connection's
+  **Impersonated user** (`delegatedUser`, the user to impersonate) is then **required** — without
+  it Google would mint a token for the service account's own non-Workspace identity, which every
+  call refuses. The impersonated user must itself be a super admin or delegated admin;
+  impersonating an ordinary user fails every call with a 403 even though the host mints the token
+  successfully. This is the failure
   mode that looks like a bug in the app but is a one-time admin-console step nobody did yet.
 
 Both paths are unusual in the same way: **the credential can be syntactically perfect and still
@@ -93,7 +95,7 @@ the three it performs itself.
 | Auth method | Probe |
 |---|---|
 | `oauth2` | `GET /admin/directory/v1/users?customer=my_customer&maxResults=1` |
-| `service-account` | `POST https://oauth2.googleapis.com/token` (JWT grant, `sub`=impersonated admin) |
+| `service-account` | `GET /admin/directory/v1/users?customer=my_customer&maxResults=1` (host-minted token, impersonating the admin) |
 
 The `oauth2` probe is the least-scope whoami available: there is no `/about` or `/me` endpoint on
 this API, so the cheapest real call is listing at most one user for the caller's own customer —
@@ -101,10 +103,10 @@ it needs only the `admin.directory.user[.readonly]` scope this app already reque
 non-admin token comes back a structured 403 rather than an empty 200, so the probe actually
 distinguishes "bad credential" from "valid but unprivileged."
 
-The `service-account` method proves the credential (and the Domain-Wide Delegation authorization,
-and the impersonated `subject`'s admin privilege) all in one shot, by minting a real access token
-— there is no user token to inspect, and a failure at any of those three steps surfaces as a
-distinct, non-overlapping error from `exchangeForAccessToken`.
+The `service-account` method makes the same call with the host-minted token, so it proves the
+credential, the Domain-Wide Delegation authorization and the impersonated user's admin privilege
+together. A non-admin impersonated user comes back as a 403, reported with its status only —
+never the response body.
 
 ### Do we have quota left?
 

@@ -1,97 +1,81 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding/base64";
+import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
 import { mockCtx } from "../_helpers.ts";
-import auth, { exchangeForAccessToken } from "../../auth/service-account.ts";
+import auth from "../../auth/service-account.ts";
+import * as mod from "../../auth/service-account.ts";
+import app from "../../index.ts";
 
-Deno.test("service-account: is a custom method with email + private key fields", () => {
+const PROBE_URL = "https://www.googleapis.com/drive/v3/about?fields=user";
+const SENTINEL = "SENTINEL-BODY-TEXT-do-not-leak";
+
+Deno.test("service-account: declares the serviceAccount shape", () => {
   assertEquals(auth.key, "service-account");
-  assertEquals(auth.type, "custom");
-  const fields = auth.fields ?? [];
-  assertEquals(fields.find((f) => f.key === "email")?.required, true);
-  const pk = fields.find((f) => f.key === "privateKey");
-  assertEquals(pk?.required, true);
-  assertEquals(pk?.type, "secret");
+  assertEquals(auth.type, "serviceAccount");
+  const { bindingFields, ...rest } = auth.serviceAccount!;
+  assertEquals(rest, {
+    accepts: ["google-service-account.v1"],
+    scopes: [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file",
+    ],
+    impersonation: "optional",
+  });
+  assertEquals(
+    (bindingFields ?? []).map((f) => [f.key, f.required === true]),
+    [["delegatedUser", false]],
+  );
+  assertEquals(
+    (auth.fields ?? []).map((f) => [f.key, f.type, f.secret === true]),
+    [["serviceAccountKey", "json", true]],
+  );
+  assertEquals(app.auth.map((x) => x.key), ["oauth2", "service-account"]);
 });
 
-Deno.test("service-account: test with missing credential parts reports the failure", async () => {
+Deno.test("service-account: mint code is gone; only default is exported", () => {
+  assertEquals(Object.keys(mod), ["default"]);
+  assertEquals((auth as unknown as Record<string, unknown>).exchange, undefined);
+  assertEquals((auth as unknown as Record<string, unknown>).refresh, undefined);
+});
+
+Deno.test("service-account: sign attaches Bearer without any network call", async () => {
   const { ctx, calls } = mockCtx();
-  const result = await auth.test({ credential: { email: "x@y.z" } }, ctx);
-  assertEquals(result.ok, false);
-  assert((result.message ?? "").includes("privateKey"));
+  const request = {
+    url: "https://x.example/y",
+    method: "GET",
+    headers: {} as Record<string, string>,
+  };
+  const out = await auth.sign!(
+    { request, credential: { accessToken: "tok", tokenType: "Bearer", expiresAt: 1 } },
+    ctx,
+  );
+  assertEquals(out.headers["authorization"], "Bearer tok");
   assertEquals(calls.length, 0);
 });
 
-// Generate an RSA keypair at test-time so `exchangeForAccessToken` exercises the
-// real JWT signing path end-to-end (mocking crypto.subtle would be misleading).
-async function generatePemPrivateKey(): Promise<string> {
-  const keyPair = await crypto.subtle.generateKey(
-    {
-      name: "RSASSA-PKCS1-v1_5",
-      modulusLength: 2048,
-      publicExponent: new Uint8Array([1, 0, 1]),
-      hash: "SHA-256",
-    },
-    true,
-    ["sign", "verify"],
-  );
-  const pkcs8 = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
-  const b64 = encodeBase64(new Uint8Array(pkcs8));
-  const wrapped = b64.match(/.{1,64}/g)?.join("\n") ?? b64;
-  return `-----BEGIN PRIVATE KEY-----\n${wrapped}\n-----END PRIVATE KEY-----\n`;
-}
-
-Deno.test("service-account: exchange builds a JWT assertion and forwards Google's access token", async () => {
-  const pem = await generatePemPrivateKey();
-  const { ctx, calls } = mockCtx([
-    { status: 200, body: { access_token: "acc-xyz", expires_in: 3600 } },
-  ]);
-
-  const token = await exchangeForAccessToken(
-    { email: "sa@proj.iam.gserviceaccount.com", privateKey: pem },
-    ctx.fetch,
-  );
-  assertEquals(token, "acc-xyz");
-  assertEquals(calls.length, 1);
-  assertEquals(new URL(calls[0].url).href, "https://oauth2.googleapis.com/token");
-  assertEquals(
-    calls[0].headers["content-type"],
-    "application/x-www-form-urlencoded",
-  );
-
-  const body = new URLSearchParams(calls[0].body ?? "");
-  assertEquals(body.get("grant_type"), "urn:ietf:params:oauth:grant-type:jwt-bearer");
-  const assertion = body.get("assertion");
-  assert(assertion, "assertion is present");
-  const parts = assertion!.split(".");
-  assertEquals(parts.length, 3);
-
-  // Decode base64url header/claims and confirm we set the Google-required fields.
-  const decode = (s: string) =>
-    JSON.parse(
-      new TextDecoder().decode(
-        Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)),
-      ),
-    );
-  assertEquals(decode(parts[0]).alg, "RS256");
-  const claims = decode(parts[1]);
-  assertEquals(claims.iss, "sa@proj.iam.gserviceaccount.com");
-  assertEquals(claims.aud, "https://oauth2.googleapis.com/token");
-  assert(claims.scope.includes("spreadsheets"));
+Deno.test("service-account: sign throws on a missing token ({} and null)", async () => {
+  for (const credential of [{}, null]) {
+    const { ctx } = mockCtx();
+    const request = {
+      url: "https://x.example/y",
+      method: "GET",
+      headers: {} as Record<string, string>,
+    };
+    await assertRejects(async () => await auth.sign!({ request, credential }, ctx));
+  }
 });
 
-Deno.test("service-account: sign injects the exchanged Bearer on the request", async () => {
-  const pem = await generatePemPrivateKey();
-  const { ctx } = mockCtx([
-    { status: 200, body: { access_token: "acc-bearer" } },
-  ]);
-  const request = {
-    url: "https://sheets.googleapis.com/v4/spreadsheets/x",
-    method: "GET" as const,
-    headers: {} as Record<string, string>,
-  };
-  const out = await auth.sign!({
-    request,
-    credential: { email: "sa@x.iam.gserviceaccount.com", privateKey: pem },
-  }, ctx);
-  assertEquals(out.headers["authorization"], "Bearer acc-bearer");
+Deno.test("service-account: test makes one unsigned probe call and succeeds on 2xx", async () => {
+  const { ctx, calls } = mockCtx([{ status: 200, body: { ok: true } }]);
+  const out = await auth.test({ credential: null }, ctx);
+  assertEquals(out.ok, true);
+  assertEquals(calls.length, 1);
+  assertEquals(calls[0].url, PROBE_URL);
+  assertEquals(calls[0].headers["authorization"], undefined);
+});
+
+Deno.test("service-account: test failure carries the status, never the body", async () => {
+  const { ctx } = mockCtx([{ status: 403, body: SENTINEL }]);
+  const out = await auth.test({ credential: null }, ctx);
+  assertEquals(out.ok, false);
+  assertStringIncludes(out.message ?? "", "403");
+  assertEquals((out.message ?? "").includes(SENTINEL), false);
 });
