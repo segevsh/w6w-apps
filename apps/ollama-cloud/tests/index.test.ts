@@ -11,7 +11,7 @@ const manifest = JSON.parse(
     network: { allow: string[] };
     categories: string[];
     apiDocs: string[];
-    appearance: { icon: { svg: string } };
+    appearance: { icon: { svg: string }; darkMode: { icon: { svg: string } } };
   };
 };
 
@@ -62,10 +62,9 @@ Deno.test("index: the manifest is the cloud provider — llm + embedding, one ho
   assertEquals(manifest.w6w.modelProvider.modelTypes, ["llm", "embedding"]);
   assertEquals(manifest.w6w.network.allow, ["ollama.com"]);
   assertEquals(manifest.w6w.categories, ["ai"]);
-  assert(
-    Deno.statSync(new URL(`../${manifest.w6w.appearance.icon.svg}`, import.meta.url)).isFile,
-    manifest.w6w.appearance.icon.svg,
-  );
+  for (const url of [manifest.w6w.appearance.icon.svg, manifest.w6w.appearance.darkMode.icon.svg]) {
+    assert(Deno.statSync(new URL(`../${url}`, import.meta.url)).isFile, url);
+  }
 });
 
 Deno.test("index: every streaming endpoint asks for a single result, not a stream", async () => {

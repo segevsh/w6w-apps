@@ -27,6 +27,12 @@
       "icon": {
         "svg": "./assets/icon.svg",
         "alt": "Ollama Cloud"
+      },
+      "darkMode": {
+        "icon": {
+          "svg": "./assets/icon.dark.svg",
+          "alt": "Ollama Cloud"
+        }
       }
     },
     "network": {
