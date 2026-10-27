@@ -306,6 +306,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | ironclad | legal, productivity | oauth2, oauth2-eu1, oauth2-demo, client-credentials | 28 |
 | iterable | marketing, email | api-key | 54 |
 | jenkins | devops | basic | 6 |
+| jev | ai | api-key | 2 |
 | jibble | productivity, hr | client-credentials | 25 |
 | jinaai | ai, developer-tools | bearer-token | 15 |
 | jira | project-management, developer-tools | api-token, oauth2 | 15 |
@@ -417,6 +418,7 @@ field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 | odoo | crm, commerce | api-key | 21 |
 | okta | security | api-token | 11 |
 | ollama | ai, developer-tools | server | 11 |
+| ollama-cloud | ai | api-key | 5 |
 | omnisend | marketing, email | api-key | 7 |
 | oncehub | scheduling | api-key | 30 |
 | onedrive | documents, storage | oauth2 | 18 |
