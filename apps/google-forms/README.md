@@ -104,15 +104,15 @@ with it — every other action works on `forms.body` + `forms.responses.readonly
 omits `refresh_token` for returning users. PKCE is off: this is a server-side app and the
 client secret is the trust anchor.
 
-**`service-account`** — JWT-bearer, for server-to-server runs. Paste a service account's
-`client_email` and PEM `private_key`; each request signs an RS256 assertion and exchanges it
-at `oauth2.googleapis.com/token`. Forms-specific caveats:
+**`service-account`** — for server-to-server runs. Paste the service account's JSON key into
+the credential; the host validates it and mints the access token, and each request is signed
+with that token. Forms-specific caveats:
 
 - A form the service account **creates** is owned by the service account, which has no Drive
   UI — nobody can open it. Create as a user, or hand ownership over afterwards.
 - A form it **reads or edits** must be shared with the service account's email, exactly like
   sharing with a person.
-- Domain-wide delegation (the optional `subject` field) is usually what you actually want, so
+- Domain-wide delegation (the optional **Impersonated user**, `delegatedUser`) is usually what you actually want, so
   the account acts as a real user and forms land in a real Drive.
 
 ## Health check
@@ -147,14 +147,14 @@ the three it performs itself.
 | Auth method | Probe |
 |---|---|
 | `oauth2` | `GET https://oauth2.googleapis.com/tokeninfo` |
-| `service-account` | `POST https://oauth2.googleapis.com/token` (JWT grant) |
+| `service-account` | `GET https://www.googleapis.com/drive/v3/about?fields=user` (host-minted token) |
 
 The Forms API is per-form: all five methods require a `formId`, and there is no whoami, ping,
 or list endpoint that a credential can reach without already knowing a form. So there is
 nothing cheap to probe on the API itself, and the check validates the *token* instead —
 the same choice, for the same reason, as the Sheets and Docs apps in this pack. The
-service-account method proves its credential by exchanging its signed JWT for an access
-token; there is no user token to introspect.
+service-account method has no user token to introspect either: the host mints the token
+from the pasted JSON key and the probe is the same Drive `about` call.
 
 ### Do we have quota left?
 
