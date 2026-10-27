@@ -42,14 +42,13 @@ Deno.test("index: exports the one auth method and both health checks", () => {
 });
 
 /**
- * Four hosts, and each is used: storage for the API, oauth2 for the token
- * exchange, iamcredentials for signing, and the status board. The OAuth
- * *scope* looks like a fifth and is not — nothing fetches an identifier.
+ * Three hosts, and each is used: storage for the API, iamcredentials for
+ * signing, and the status board. The token mint is the host's, not the app's
+ * (D-A1). The OAuth *scope* looks like a fourth and is not — nothing fetches an identifier.
  */
-Deno.test("index: the manifest allows the four hosts this app actually calls", () => {
+Deno.test("index: the manifest allows the three hosts this app actually calls", () => {
   assertEquals(manifest.w6w.network.allow, [
     "storage.googleapis.com",
-    "oauth2.googleapis.com",
     "iamcredentials.googleapis.com",
     "status.cloud.google.com",
   ]);
