@@ -1,0 +1,39 @@
+{
+  "name": "@w6w-apps/ollama-cloud",
+  "version": "0.1.0",
+  "description": "Run prompts, chats and embeddings against Ollama's hosted cloud API with an API key.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "w6w": {
+    "id": "io.w6w.ollama-cloud",
+    "modelProvider": {
+      "modelTypes": [
+        "llm",
+        "embedding"
+      ]
+    },
+    "displayName": "Ollama Cloud",
+    "apiDocs": [
+      "https://github.com/ollama/ollama/blob/main/docs/api.md"
+    ],
+    "longDescription": "Ollama Cloud serves the same models as a local Ollama install, hosted by the vendor, and this app calls it directly: you paste an API key from ollama.com and the app talks to https://ollama.com with it. A workflow can generate text from a prompt, continue a chat conversation, produce embeddings, and ask for structured JSON that matches a schema, with images for vision models and sampling options such as temperature, seed and context size. The models the account can call can be listed, and the service version read, so a workflow's model choice stays explicit rather than hardcoded.\n\nThe difference from the `Ollama` app is where the model runs. There is no server to host, no LAN address to reach and no hardware to size: the trade is an API key, a usage limit and the vendor's model list instead of your own. Every call is non-streaming. Model management stays with the vendor — the cloud API exposes no pull, copy, delete or unload — so a model the account does not have access to answers 404, and `List models` shows what it does.",
+    "categories": [
+      "ai"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Ollama Cloud"
+      }
+    },
+    "network": {
+      "allow": [
+        "ollama.com"
+      ]
+    },
+    "entry": "./index.ts"
+  }
+}
