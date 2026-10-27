@@ -9,7 +9,6 @@
     "id": "io.w6w.jev",
     "modelProvider": { "modelTypes": ["llm"] },
     "displayName": "Jev",
-    "apiDocs": ["https://docs.typesafe.ai/"],
     "longDescription": "Jev is TypeSafe's System One evaluation API. A workflow hands it a description of some state plus a map of typed questions, and gets back one typed answer per question — a structured verdict rather than free-form chat.\n\nThe app lists the models available to the API key and runs evaluations against any of them, so the model choice stays explicit in the workflow.\n\nA fit for classification, validation and decision steps where a downstream step needs a typed answer it can branch on.",
     "categories": ["ai"],
     "appearance": { "icon": { "svg": "./assets/icon.svg", "alt": "Jev" } },
