@@ -1,0 +1,44 @@
+{
+  "name": "@w6w-apps/google-forms",
+  "version": "0.2.0",
+  "description": "Create and update Google Forms, manage publish state, and read form responses.",
+  "license": "MIT",
+  "author": {
+    "name": "w6w"
+  },
+  "private": true,
+  "internal": {
+    "tier": 1,
+    "lastReviewed": null
+  },
+  "w6w": {
+    "id": "io.w6w.google-forms",
+    "displayName": "Google Forms",
+    "apiDocs": [
+      "https://developers.google.com/forms/api/reference/rest"
+    ],
+    "longDescription": "Google Forms creates and updates forms, manages whether a form is published and accepting responses, and reads back the responses submitted to it, against Google's own Forms API. A form is created with just a title, then built up through explicit follow-up updates — adding, moving and deleting items, and updating form settings — since Google's own create call accepts nothing beyond a title to begin with.\n\nItems — questions, page breaks, images, videos and grading — are passed through as the API's own structured JSON rather than flattened into a simplified field set, so the full range of question and grading options stays available without a second schema to maintain. Because items are addressed by position rather than by a stable id, moving or deleting one is treated as non-repeatable: running it twice acts on whatever now sits at that position, not the original item.\n\nA user's own Google sign-in covers personal forms, while a service account handles unattended, server-to-server runs — with the caveat that a form a service account creates has no owner who can open it in Drive unless ownership is handed to a real user afterward. Listing existing forms and reading responses round out the read side; watch subscriptions and quiz grading are left out, since the former needs infrastructure this app can't provide and the latter is already reachable through the same item JSON.",
+    "categories": [
+      "forms",
+      "productivity"
+    ],
+    "appearance": {
+      "icon": {
+        "svg": "./assets/icon.svg",
+        "alt": "Google Forms"
+      }
+    },
+    "network": {
+      "allow": [
+        "forms.googleapis.com",
+        "www.googleapis.com"
+      ]
+    },
+    "entry": "./index.ts",
+    "build": {
+      "include": [
+        "../_shared"
+      ]
+    }
+  }
+}

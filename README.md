@@ -22,6 +22,11 @@ Each app dir is a standalone w6w App: `package.json` (manifest under the `w6w`
 field), `index.ts` (default export of `AppDefinition`), `actions/`, `auth/`,
 `assets/icon.{svg,png}`, and its own `deno.json` / `tsconfig.json` / `tests/`.
 
+Providers with multiple integrations have a folder, for example `apps/google/gmail`,
+`apps/google/google-sheets`, and `apps/microsoft/outlook`. Shared source lives beside
+the apps (for example `apps/google/_shared`) and is explicitly included by each consumer.
+App IDs and versions are unchanged. See [provider folders and building](docs/provider-folders.md).
+
 | App | Categories | Auth | Actions |
 |-----|------------|------|--------:|
 | 2chat | communication, marketing | api-key | 28 |

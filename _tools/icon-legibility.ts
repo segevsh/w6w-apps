@@ -51,6 +51,8 @@
  * `check` exits 1 when any app fails, so CI and `audit.ts` can gate on it.
  */
 
+import { appPath, appPaths } from "./app-paths.ts";
+
 const ROOT = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 const APPS_DIR = `${ROOT}/apps`;
 
@@ -609,7 +611,7 @@ function resolveRef(
 
 /** Audit one app directory. */
 export async function verdictFor(app: string): Promise<IconVerdict> {
-  const dir = `${APPS_DIR}/${app}`;
+  const dir = `${APPS_DIR}/${appPath(app)}`;
   const pkg = JSON.parse(await Deno.readTextFile(`${dir}/package.json`));
   const appearance = appearanceOf(pkg);
   const lightPath = resolveRef(dir, pkg, appearance.icon);
@@ -739,7 +741,7 @@ async function fixApp(app: string, write: boolean): Promise<string> {
   if (v.hasDarkVariant) {
     return `${app}: declares a dark variant that still fails — fix by hand`;
   }
-  const dir = `${APPS_DIR}/${app}`;
+  const dir = `${APPS_DIR}/${appPath(app)}`;
   const pkg = JSON.parse(await Deno.readTextFile(`${dir}/package.json`));
   const lightPath = resolveRef(dir, pkg, appearanceOf(pkg).icon);
   if (!lightPath || !lightPath.endsWith(".svg")) {
@@ -770,11 +772,7 @@ async function fixApp(app: string, write: boolean): Promise<string> {
 // ---------------------------------------------------------------------- CLI --
 
 async function listApps(): Promise<string[]> {
-  const out: string[] = [];
-  for await (const e of Deno.readDir(APPS_DIR)) {
-    if (e.isDirectory) out.push(e.name);
-  }
-  return out.sort();
+  return appPaths();
 }
 
 if (import.meta.main) {

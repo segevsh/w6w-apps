@@ -23,6 +23,7 @@ import {
 } from "../../core/packages/validator/mod.ts";
 import { hostAllowed } from "@w6w/runtime";
 import { TILE, verdictFor } from "./icon-legibility.ts";
+import { appPath, appPaths } from "./app-paths.ts";
 
 const ROOT = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 const APPS_DIR = `${ROOT}/apps`;
@@ -423,7 +424,7 @@ function scanSources(
 // -------------------------------------------------------------- app  audit --
 
 async function auditApp(name: string): Promise<Issue[]> {
-  const dir = `${APPS_DIR}/${name}`;
+  const dir = `${APPS_DIR}/${appPath(name)}`;
   const issues: Issue[] = [];
   const add = (
     severity: Severity,
@@ -696,9 +697,7 @@ const args = Deno.args.filter((a) => !a.startsWith("--"));
 const asJson = Deno.args.includes("--json");
 const names = args.length
   ? args
-  : [...Deno.readDirSync(APPS_DIR)].filter((e) => e.isDirectory).map((e) =>
-    e.name
-  ).sort();
+  : appPaths();
 
 const report: Record<string, Issue[]> = {};
 let errors = 0, warns = 0;
