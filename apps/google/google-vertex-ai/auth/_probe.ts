@@ -13,6 +13,12 @@ export interface ProbeCredential {
   accessToken?: string;
   projectId?: string;
   location?: string;
+  /**
+   * Signed mode: the runtime attaches the host-derived bearer to `fetch`, so the
+   * probe sends no `authorization` header of its own and needs no `accessToken`.
+   * It also never repeats Google's free-text error message (it can echo input).
+   */
+  signed?: boolean;
 }
 
 /**
@@ -29,15 +35,24 @@ export async function probe(
   cred: ProbeCredential,
   fetchImpl: typeof fetch,
 ): Promise<{ ok: boolean; message?: string }> {
-  if (!cred.accessToken) return { ok: false, message: "credential missing accessToken" };
-  if (!cred.projectId) return { ok: false, message: "credential missing projectId" };
+  if (!cred.signed && !cred.accessToken) {
+    return { ok: false, message: "credential missing accessToken" };
+  }
+  if (!cred.projectId) {
+    return {
+      ok: false,
+      message: cred.signed ? "connection missing projectId" : "credential missing projectId",
+    };
+  }
   const location = cred.location || "us-central1";
   const url = `https://${hostFor(location)}/${API_VERSION}/${
     parentOf(encodeURIComponent(cred.projectId), location)
   }/endpoints?pageSize=1`;
 
   const res = await fetchImpl(url, {
-    headers: { authorization: `Bearer ${cred.accessToken}`, accept: "application/json" },
+    headers: cred.signed
+      ? { accept: "application/json" }
+      : { authorization: `Bearer ${cred.accessToken}`, accept: "application/json" },
   });
   if (res.ok) return { ok: true };
 
@@ -60,7 +75,9 @@ export async function probe(
     case "INVALID_ARGUMENT":
       return {
         ok: false,
-        message: `Google rejected the request: ${err.message ?? "invalid argument"}`,
+        message: cred.signed
+          ? "Google rejected the request (INVALID_ARGUMENT)"
+          : `Google rejected the request: ${err.message ?? "invalid argument"}`,
       };
   }
   return {

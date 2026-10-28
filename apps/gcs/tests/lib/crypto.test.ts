@@ -1,19 +1,6 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
-import {
-  encodeBase64Url,
-  encodeHex,
-  importPrivateKey,
-  sha256Hex,
-  signRs256,
-} from "../../lib/crypto.ts";
+import { encodeHex, importPrivateKey, sha256Hex, signRs256 } from "../../lib/crypto.ts";
 import { TEST_PRIVATE_KEY } from "./_vector.ts";
-
-/** The JWT assertion is three base64url segments, unpadded. */
-Deno.test("encodeBase64Url: url-safe alphabet, no padding", () => {
-  assertEquals(encodeBase64Url(new TextEncoder().encode("A")), "QQ");
-  assertEquals(encodeBase64Url(new Uint8Array([251, 255, 254])), "-__-");
-  assertEquals(encodeBase64Url(new Uint8Array([])), "");
-});
 
 Deno.test("encodeHex: lowercase, zero-padded", () => {
   assertEquals(encodeHex(new Uint8Array([0, 1, 15, 16, 222, 173])), "00010f10dead");

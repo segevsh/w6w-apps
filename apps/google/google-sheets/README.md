@@ -35,14 +35,15 @@ The auth methods probe different endpoints:
 | Auth method | Probe |
 |---|---|
 | `oauth2` | `GET https://oauth2.googleapis.com/tokeninfo` |
-| `service-account` | `POST https://oauth2.googleapis.com/token (JWT grant)` |
+| `service-account` | `GET https://www.googleapis.com/drive/v3/about?fields=user` (host-minted token) |
 
 Like Docs, the Sheets API is per-spreadsheet and has no listing endpoint — enumerating
 spreadsheets is Drive's job, not Sheets'. So the probe validates the token rather than
 the Sheets service.
 
-The service-account method proves the credential by exchanging its signed JWT for an
-access token — there is no user token to inspect.
+The service-account method has no user token to inspect either: the host mints the token
+from the pasted JSON key and the runtime signs the probe, which makes the same Drive `about`
+call as above (`drive.file` covers it).
 
 Nothing in this app calls that endpoint: it is out-of-band context for whoever is
 diagnosing a failure, and the host it lives on is not in `w6w.network.allow`, so an

@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-admin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage Google Workspace users, groups and organizational units via the Admin SDK Directory API.",
   "license": "MIT",
   "author": {

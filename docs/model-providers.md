@@ -1,6 +1,6 @@
 # Model-provider designations
 
-Audit of the 12 candidate AI apps against their own actions. An app declares `w6w.modelProvider`
+Audit of the 14 candidate AI apps against their own actions. An app declares `w6w.modelProvider`
 only when its actions perform model inference. Declarations are never derived from `categories`.
 `modelFamilies` is omitted everywhere so far (unknown): no vendor page was cited for an architecture
 family, and omission is the safe reading.
@@ -19,3 +19,5 @@ family, and omission is the safe reading.
 | huggingface | llm / — | `apps/huggingface/actions/chat-complete.ts` (POST router.huggingface.co/v1/chat/completions) | Only chat inference is an action; model/dataset/space search, repo and file actions and `inference-model-list.ts` are Hub management or discovery. The router can serve other tasks, but no action calls them. |
 | replicate | not designated | — | Generic run-any-model app: `prediction-create.ts`, `prediction-create-from-model.ts` and `deployment-prediction-create.ts` run whatever model the caller names, so no single model type is evident from the actions (output could be image, audio, text...). Declaring any type would be a guess and "all types" is forbidden; left undeclared. Other actions are catalogue, training and account management. |
 | elevenlabs | text-to-speech, speech-to-text, audio-generation / — | `apps/elevenlabs/actions/text-to-speech.ts`, `text-to-speech-with-timestamps.ts` (text-to-speech), `speech-to-text.ts` (speech-to-text), `sound-generation.ts` (audio-generation, POST /v1/sound-generation) | Voice, history, studio-project, subscription, usage and model-list actions are management, not inference. |
+| jev | llm / — | `apps/jev/actions/evaluate.ts` (POST /v1/systemone) | `list-models.ts` is model discovery, not inference. There is no chat/completion action: the API answers a map of typed questions about a state. |
+| ollama-cloud | llm, embedding / — | `apps/ollama-cloud/actions/chat.ts`, `generate.ts` (llm), `embed.ts` (embedding) | `model-list.ts` and `version.ts` are discovery and service metadata. Model management stays with the vendor (no pull/copy/delete/unload action exists), so there is nothing to declare. |

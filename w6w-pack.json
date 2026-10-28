@@ -4,7 +4,7 @@
   "name": "w6w-official",
   "displayName": "w6w Official Apps",
   "description": "First-party integrations shipped with w6w. Register the whole pack in one call via the registry's registerPack, or install a single app by pointing at its subdirectory.",
-  "version": "0.178.0",
+  "version": "0.179.0",
   "apps": [
     {
       "path": "./apps/2chat"
@@ -862,6 +862,9 @@
       "path": "./apps/jenkins"
     },
     {
+      "path": "./apps/jev"
+    },
+    {
       "path": "./apps/jibble"
     },
     {
@@ -1196,6 +1199,9 @@
     },
     {
       "path": "./apps/ollama"
+    },
+    {
+      "path": "./apps/ollama-cloud"
     },
     {
       "path": "./apps/omnisend"

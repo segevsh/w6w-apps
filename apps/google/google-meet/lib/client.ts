@@ -1,7 +1,6 @@
 import type { HookContext } from "@w6w/types";
 
 export const API_URL = "https://meet.googleapis.com/v2";
-export const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 export interface RequestOptions {
   method?: string;

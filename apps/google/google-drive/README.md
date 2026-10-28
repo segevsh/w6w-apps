@@ -35,14 +35,15 @@ The auth methods probe different endpoints:
 | Auth method | Probe |
 |---|---|
 | `oauth2` | `GET /about?fields=user` |
-| `service-account` | `POST https://oauth2.googleapis.com/token (JWT grant)` |
+| `service-account` | `GET /about?fields=user` |
 
 Drive's own whoami. `fields=user` is what keeps it cheap — `about` returns a large
 object if you do not narrow it, and Drive rejects the call outright without a `fields`
 mask.
 
-The service-account method proves the credential by exchanging its signed JWT for an
-access token — there is no user token to inspect.
+The service-account method probes the same endpoint. The host mints the access token from
+the pasted key and signs the request; the app never sees the key, so a passing probe proves
+the token the host derived can reach Drive.
 
 Nothing in this app calls that endpoint: it is out-of-band context for whoever is
 diagnosing a failure, and the host it lives on is not in `w6w.network.allow`, so an

@@ -35,16 +35,16 @@ The auth methods probe different endpoints:
 | Auth method | Probe |
 |---|---|
 | `oauth2` | `GET https://oauth2.googleapis.com/tokeninfo` |
-| `service-account` | `POST https://oauth2.googleapis.com/token (JWT grant)` |
+| `service-account` | `GET https://www.googleapis.com/drive/v3/about?fields=user` (host-minted token) |
 
 The Docs API is addressed strictly per document — there is nothing to list, so it offers
 no endpoint that can be called without already knowing a document id. The probe
 therefore validates the token itself rather than the Docs service. A Docs call would
 only be possible against a document the connection may not have.
 
-The service-account method has no user token to inspect, so it proves the credential by
-doing the thing that would fail if the key were wrong: exchanging the signed JWT for an
-access token.
+The service-account method has no user token to inspect either. The host mints the token
+from the pasted JSON key and the runtime signs the probe, so the same Drive `about` call
+fails if the key, the delegation or the scopes are wrong.
 
 Nothing in this app calls that endpoint: it is out-of-band context for whoever is
 diagnosing a failure, and the host it lives on is not in `w6w.network.allow`, so an

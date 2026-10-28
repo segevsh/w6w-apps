@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/google-slides",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Create and edit Google Slides presentations: slides, text, images, shapes and tables.",
   "license": "MIT",
   "author": {
