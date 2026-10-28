@@ -54,9 +54,6 @@ export const API_BASE = `${API_HOST}/storage/v1`;
 /** Content uploads. A different path, not a different host. */
 export const UPLOAD_BASE = `${API_HOST}/upload/storage/v1`;
 
-/** Where a service-account JWT assertion is exchanged for an access token. */
-export const TOKEN_URL = "https://oauth2.googleapis.com/token";
-
 /**
  * The OAuth scope this app requests. Read-only would be `devstorage.read_only`.
  *

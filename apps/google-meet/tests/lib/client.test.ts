@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
 import { mockCtx } from "../_helpers.ts";
-import { API_URL, GoogleMeetClient, TOKEN_URL } from "../../lib/client.ts";
+import { API_URL, GoogleMeetClient } from "../../lib/client.ts";
 
 Deno.test("client: prefixes API_URL and returns parsed JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
@@ -10,7 +10,6 @@ Deno.test("client: prefixes API_URL and returns parsed JSON", async () => {
   assertEquals(new URL(calls[0].url).host, "meet.googleapis.com");
   assertEquals(new URL(calls[0].url).pathname, "/v2/spaces/abc");
   assertEquals(API_URL, "https://meet.googleapis.com/v2");
-  assertEquals(TOKEN_URL, "https://oauth2.googleapis.com/token");
 });
 
 Deno.test("client: keeps slashes in a resource name and the custom-method colon", async () => {

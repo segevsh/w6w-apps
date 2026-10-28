@@ -153,9 +153,9 @@ Both actions therefore:
    template case, where zero matches means a placeholder was renamed and everything
    downstream is now silently wrong.
 
-The credential path has its own version of this: the service account's token exchange can
-answer 200 with no `access_token`. That is treated as a failure, and the resulting message
-quotes only Google's `error` field — never the signed assertion.
+The credential path has its own version of this: the service-account probe reads a
+sentinel presentation id and treats 404 as success (the token was accepted), 401 and 403 as
+distinct failures. The failure message carries only the HTTP status — never a response body.
 
 ### Not implemented, and why
 
@@ -214,18 +214,18 @@ requested:
 omits `refresh_token` for returning users. PKCE is off: this is a server-side app and the
 client secret is the trust anchor.
 
-**`service-account`** — JWT-bearer, for server-to-server runs. Paste a service account's
-`client_email` and PEM `private_key`; each request signs an RS256 assertion and exchanges it
-at `oauth2.googleapis.com/token` for the same single `presentations` scope. Slides-specific
+**`service-account`** — for server-to-server runs. Paste the service account's JSON key into
+the credential; the host validates it and mints the access token for the same single
+`presentations` scope, and each request is signed with that token. Slides-specific
 caveats:
 
 - A presentation the service account **creates** is owned by the service account, which has
   no Drive UI — nobody can open it. Create as a user, or hand ownership over afterwards.
 - A presentation it **reads or edits** must be shared with the service account's email,
   exactly like sharing with a person.
-- Domain-wide delegation (the optional `subject` field) is usually what you actually want,
+- Domain-wide delegation (the optional **Impersonated user**, `delegatedUser`) is usually what you actually want,
   so the account acts as a real user and decks land in a real Drive.
-- The optional `scopes` field is the supported way to add `spreadsheets` for chart requests.
+- The service-account method requests only `presentations`; charts that need `spreadsheets` are an OAuth-method feature.
 
 ## Health check
 
@@ -275,7 +275,7 @@ the three it performs itself.
 | Auth method | Probe |
 |---|---|
 | `oauth2` | `POST https://oauth2.googleapis.com/tokeninfo` (token in the **form body**) |
-| `service-account` | `POST https://oauth2.googleapis.com/token` (JWT grant) |
+| `service-account` | `GET https://slides.googleapis.com/v1/presentations/<sentinel id>` (host-minted token; 404 = ok) |
 
 The Slides API is per-presentation: all five methods require a `presentationId`, and there
 is no whoami, ping or list endpoint a credential can reach without already knowing a deck.
@@ -296,9 +296,10 @@ Two details of that choice, both deliberate:
   reason for choosing it, are identical. A test asserts the credential never appears in the
   URL.
 
-The service-account method proves its credential by exchanging its signed JWT for an access
-token; there is no user token to introspect, and a 200 carrying no `access_token` is treated
-as a failure.
+The service-account method has no user token to introspect. The host mints the token from
+the pasted JSON key and the probe reads a sentinel presentation id: 404 means the token was
+accepted and the API is reachable (Drive `about` would always 403 under the `presentations`
+scope), while 401 and 403 are reported as distinct failures.
 
 ### Do we have quota left?
 

@@ -1,20 +1,15 @@
 /**
  * RS256 signing from a service-account key, in the sandbox.
  *
- * Two things need it: the JWT assertion that gets an access token, and the V4
- * signature on a signed URL. Both are `RSASSA-PKCS1-v1_5` over SHA-256, which
- * is what `crypto.subtle` offers and what Google calls RS256.
+ * The V4 signature on a signed URL is `RSASSA-PKCS1-v1_5` over SHA-256, which
+ * is what `crypto.subtle` offers and what Google calls RS256. The app itself
+ * no longer signs with a service-account key (the host mints tokens and IAM
+ * `signBlob` signs URLs); these helpers remain for `lib/signing.ts` hashing and
+ * as the local reference signer its tests verify against.
  *
  * The app sandbox has no imports, so the encoders are inlined rather than
  * pulled from `@std/encoding`. Their output is identical.
  */
-
-/** base64url — url-safe alphabet, no padding. */
-export function encodeBase64Url(bytes: Uint8Array): string {
-  let s = "";
-  for (const b of bytes) s += String.fromCharCode(b);
-  return btoa(s).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
-}
 
 /** Lowercase hex, which is what a V4 signature is transmitted as. */
 export function encodeHex(bytes: Uint8Array): string {
