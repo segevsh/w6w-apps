@@ -10,7 +10,7 @@
     "icons": "deno run --allow-read icon-legibility.ts check",
     "icons:fix": "deno run --allow-read --allow-write icon-legibility.ts fix",
     "icons:normalize": "deno run --allow-read --allow-write --allow-run --allow-env icon-normalize.ts --all",
-    "test": "deno test -A audit.test.ts"
+    "test": "deno test -A audit.test.ts app-paths.test.ts"
   },
   "fmt": {
     "exclude": [

@@ -33,6 +33,18 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1"
-    ]
+    ],
+    "links": {
+      "jsr:@w6w/app-build@0.0.2": {},
+      "jsr:@w6w/expr@0.1.0": {},
+      "jsr:@w6w/runtime@0.0.9": {},
+      "jsr:@w6w/schema@0.0.2": {},
+      "jsr:@w6w/sources@0.0.1": {},
+      "jsr:@w6w/types@0.1.9": {},
+      "jsr:@w6w/validator@0.0.3": {},
+      "npm:@w6w/expr@0.1.0": {},
+      "npm:@w6w/types@0.1.8": {},
+      "npm:w6w-core@0.0.4": {}
+    }
   }
 }

@@ -115,10 +115,10 @@
       "path": "./apps/axonaut"
     },
     {
-      "path": "./apps/azure-blob"
+      "path": "./apps/microsoft/azure-blob"
     },
     {
-      "path": "./apps/azuredevops"
+      "path": "./apps/microsoft/azuredevops"
     },
     {
       "path": "./apps/balena"
@@ -157,13 +157,13 @@
       "path": "./apps/bigcommerce"
     },
     {
-      "path": "./apps/bigin"
+      "path": "./apps/zoho/bigin"
     },
     {
-      "path": "./apps/bigquery"
+      "path": "./apps/google/bigquery"
     },
     {
-      "path": "./apps/bitbucket"
+      "path": "./apps/atlassian/bitbucket"
     },
     {
       "path": "./apps/bitly"
@@ -328,7 +328,7 @@
       "path": "./apps/companycam"
     },
     {
-      "path": "./apps/confluence"
+      "path": "./apps/atlassian/confluence"
     },
     {
       "path": "./apps/connecteam"
@@ -439,10 +439,10 @@
       "path": "./apps/drip"
     },
     {
-      "path": "./apps/dropbox"
+      "path": "./apps/dropbox/dropbox"
     },
     {
-      "path": "./apps/dropbox-sign"
+      "path": "./apps/dropbox/dropbox-sign"
     },
     {
       "path": "./apps/dropcontact"
@@ -508,7 +508,7 @@
       "path": "./apps/exa"
     },
     {
-      "path": "./apps/excel"
+      "path": "./apps/microsoft/excel"
     },
     {
       "path": "./apps/expensify"
@@ -517,19 +517,19 @@
       "path": "./apps/eztexting"
     },
     {
-      "path": "./apps/facebook"
+      "path": "./apps/meta/facebook"
     },
     {
-      "path": "./apps/facebook-conversions"
+      "path": "./apps/meta/facebook-conversions"
     },
     {
-      "path": "./apps/facebook-custom-audiences"
+      "path": "./apps/meta/facebook-custom-audiences"
     },
     {
-      "path": "./apps/facebook-lead-ads"
+      "path": "./apps/meta/facebook-lead-ads"
     },
     {
-      "path": "./apps/facebook-messenger"
+      "path": "./apps/meta/facebook-messenger"
     },
     {
       "path": "./apps/fareharbor"
@@ -607,13 +607,13 @@
       "path": "./apps/freshbooks"
     },
     {
-      "path": "./apps/freshdesk"
+      "path": "./apps/freshworks/freshdesk"
     },
     {
-      "path": "./apps/freshsales"
+      "path": "./apps/freshworks/freshsales"
     },
     {
-      "path": "./apps/freshservice"
+      "path": "./apps/freshworks/freshservice"
     },
     {
       "path": "./apps/front"
@@ -628,7 +628,7 @@
       "path": "./apps/gcs"
     },
     {
-      "path": "./apps/gemini"
+      "path": "./apps/google/gemini"
     },
     {
       "path": "./apps/gerrit"
@@ -661,7 +661,7 @@
       "path": "./apps/glide"
     },
     {
-      "path": "./apps/gmail"
+      "path": "./apps/google/gmail"
     },
     {
       "path": "./apps/gocanvas"
@@ -670,55 +670,55 @@
       "path": "./apps/gocardless"
     },
     {
-      "path": "./apps/google-admin"
+      "path": "./apps/google/google-admin"
     },
     {
-      "path": "./apps/google-ads"
+      "path": "./apps/google/google-ads"
     },
     {
-      "path": "./apps/google-analytics"
+      "path": "./apps/google/google-analytics"
     },
     {
-      "path": "./apps/google-business-profile"
+      "path": "./apps/google/google-business-profile"
     },
     {
-      "path": "./apps/google-calendar"
+      "path": "./apps/google/google-calendar"
     },
     {
-      "path": "./apps/google-contacts"
+      "path": "./apps/google/google-contacts"
     },
     {
-      "path": "./apps/google-docs"
+      "path": "./apps/google/google-docs"
     },
     {
-      "path": "./apps/google-drive"
+      "path": "./apps/google/google-drive"
     },
     {
-      "path": "./apps/google-forms"
+      "path": "./apps/google/google-forms"
     },
     {
-      "path": "./apps/google-maps"
+      "path": "./apps/google/google-maps"
     },
     {
-      "path": "./apps/google-meet"
+      "path": "./apps/google/google-meet"
     },
     {
-      "path": "./apps/google-sheets"
+      "path": "./apps/google/google-sheets"
     },
     {
-      "path": "./apps/google-slides"
+      "path": "./apps/google/google-slides"
     },
     {
-      "path": "./apps/google-tasks"
+      "path": "./apps/google/google-tasks"
     },
     {
-      "path": "./apps/google-vertex-ai"
+      "path": "./apps/google/google-vertex-ai"
     },
     {
-      "path": "./apps/googlechat"
+      "path": "./apps/google/googlechat"
     },
     {
-      "path": "./apps/googlesearchconsole"
+      "path": "./apps/google/googlesearchconsole"
     },
     {
       "path": "./apps/gorgias"
@@ -838,7 +838,7 @@
       "path": "./apps/insightly"
     },
     {
-      "path": "./apps/instagram-for-business"
+      "path": "./apps/meta/instagram-for-business"
     },
     {
       "path": "./apps/instantly"
@@ -868,13 +868,13 @@
       "path": "./apps/jinaai"
     },
     {
-      "path": "./apps/jira"
+      "path": "./apps/atlassian/jira"
     },
     {
-      "path": "./apps/jira-data-center"
+      "path": "./apps/atlassian/jira-data-center"
     },
     {
-      "path": "./apps/jira-service-management"
+      "path": "./apps/atlassian/jira-service-management"
     },
     {
       "path": "./apps/jobber"
@@ -970,13 +970,13 @@
       "path": "./apps/linear"
     },
     {
-      "path": "./apps/linkedin"
+      "path": "./apps/linkedin/linkedin"
     },
     {
-      "path": "./apps/linkedin-ads"
+      "path": "./apps/linkedin/linkedin-ads"
     },
     {
-      "path": "./apps/linkedin-conversions"
+      "path": "./apps/linkedin/linkedin-conversions"
     },
     {
       "path": "./apps/linkup"
@@ -1006,7 +1006,7 @@
       "path": "./apps/lokalise"
     },
     {
-      "path": "./apps/looker"
+      "path": "./apps/google/looker"
     },
     {
       "path": "./apps/loop-returns"
@@ -1027,7 +1027,7 @@
       "path": "./apps/mailcheck"
     },
     {
-      "path": "./apps/mailchimp"
+      "path": "./apps/mailchimp/mailchimp"
     },
     {
       "path": "./apps/mailerlite"
@@ -1048,7 +1048,7 @@
       "path": "./apps/maintainx"
     },
     {
-      "path": "./apps/mandrill"
+      "path": "./apps/mailchimp/mandrill"
     },
     {
       "path": "./apps/manus"
@@ -1096,10 +1096,10 @@
       "path": "./apps/metricool"
     },
     {
-      "path": "./apps/microsoft-entra-id"
+      "path": "./apps/microsoft/microsoft-entra-id"
     },
     {
-      "path": "./apps/microsoft-todo"
+      "path": "./apps/microsoft/microsoft-todo"
     },
     {
       "path": "./apps/mighty-networks"
@@ -1204,10 +1204,10 @@
       "path": "./apps/oncehub"
     },
     {
-      "path": "./apps/onedrive"
+      "path": "./apps/microsoft/onedrive"
     },
     {
-      "path": "./apps/onenote"
+      "path": "./apps/microsoft/onenote"
     },
     {
       "path": "./apps/onepagecrm"
@@ -1240,7 +1240,7 @@
       "path": "./apps/otter"
     },
     {
-      "path": "./apps/outlook"
+      "path": "./apps/microsoft/outlook"
     },
     {
       "path": "./apps/outreach"
@@ -1357,7 +1357,7 @@
       "path": "./apps/postmark"
     },
     {
-      "path": "./apps/powerbi"
+      "path": "./apps/microsoft/powerbi"
     },
     {
       "path": "./apps/practicebetter"
@@ -1507,7 +1507,7 @@
       "path": "./apps/runway"
     },
     {
-      "path": "./apps/s3"
+      "path": "./apps/aws/s3"
     },
     {
       "path": "./apps/salesforce"
@@ -1543,7 +1543,7 @@
       "path": "./apps/seatable"
     },
     {
-      "path": "./apps/segment"
+      "path": "./apps/twilio/segment"
     },
     {
       "path": "./apps/sellsy"
@@ -1561,7 +1561,7 @@
       "path": "./apps/sendfox"
     },
     {
-      "path": "./apps/sendgrid"
+      "path": "./apps/twilio/sendgrid"
     },
     {
       "path": "./apps/sendpulse"
@@ -1582,13 +1582,13 @@
       "path": "./apps/servicetitan"
     },
     {
-      "path": "./apps/ses"
+      "path": "./apps/aws/ses"
     },
     {
       "path": "./apps/seven"
     },
     {
-      "path": "./apps/sharepoint"
+      "path": "./apps/microsoft/sharepoint"
     },
     {
       "path": "./apps/sharetribe"
@@ -1741,7 +1741,7 @@
       "path": "./apps/teamleader"
     },
     {
-      "path": "./apps/teams"
+      "path": "./apps/microsoft/teams"
     },
     {
       "path": "./apps/teamup"
@@ -1798,7 +1798,7 @@
       "path": "./apps/toggl"
     },
     {
-      "path": "./apps/trello"
+      "path": "./apps/atlassian/trello"
     },
     {
       "path": "./apps/tremendous"
@@ -1810,7 +1810,7 @@
       "path": "./apps/tumblr"
     },
     {
-      "path": "./apps/twilio"
+      "path": "./apps/twilio/twilio"
     },
     {
       "path": "./apps/twist"
@@ -1900,7 +1900,7 @@
       "path": "./apps/whatconverts"
     },
     {
-      "path": "./apps/whatsapp"
+      "path": "./apps/meta/whatsapp"
     },
     {
       "path": "./apps/whop"
@@ -1963,13 +1963,13 @@
       "path": "./apps/youform"
     },
     {
-      "path": "./apps/youtube"
+      "path": "./apps/google/youtube"
     },
     {
-      "path": "./apps/zendesk"
+      "path": "./apps/zendesk/zendesk"
     },
     {
-      "path": "./apps/zendesk-sell"
+      "path": "./apps/zendesk/zendesk-sell"
     },
     {
       "path": "./apps/zeplin"
@@ -1978,58 +1978,58 @@
       "path": "./apps/zerobounce"
     },
     {
-      "path": "./apps/zoho"
+      "path": "./apps/zoho/zoho"
     },
     {
-      "path": "./apps/zoho-analytics"
+      "path": "./apps/zoho/zoho-analytics"
     },
     {
-      "path": "./apps/zoho-bookings"
+      "path": "./apps/zoho/zoho-bookings"
     },
     {
-      "path": "./apps/zoho-calendar"
+      "path": "./apps/zoho/zoho-calendar"
     },
     {
-      "path": "./apps/zoho-campaigns"
+      "path": "./apps/zoho/zoho-campaigns"
     },
     {
-      "path": "./apps/zoho-cliq"
+      "path": "./apps/zoho/zoho-cliq"
     },
     {
-      "path": "./apps/zoho-creator"
+      "path": "./apps/zoho/zoho-creator"
     },
     {
-      "path": "./apps/zoho-inventory"
+      "path": "./apps/zoho/zoho-inventory"
     },
     {
-      "path": "./apps/zoho-invoice"
+      "path": "./apps/zoho/zoho-invoice"
     },
     {
-      "path": "./apps/zoho-people"
+      "path": "./apps/zoho/zoho-people"
     },
     {
-      "path": "./apps/zoho-projects"
+      "path": "./apps/zoho/zoho-projects"
     },
     {
-      "path": "./apps/zoho-recruit"
+      "path": "./apps/zoho/zoho-recruit"
     },
     {
-      "path": "./apps/zoho-sheet"
+      "path": "./apps/zoho/zoho-sheet"
     },
     {
-      "path": "./apps/zoho-sign"
+      "path": "./apps/zoho/zoho-sign"
     },
     {
-      "path": "./apps/zoho-workdrive"
+      "path": "./apps/zoho/zoho-workdrive"
     },
     {
-      "path": "./apps/zohobooks"
+      "path": "./apps/zoho/zohobooks"
     },
     {
-      "path": "./apps/zohodesk"
+      "path": "./apps/zoho/zohodesk"
     },
     {
-      "path": "./apps/zohomail"
+      "path": "./apps/zoho/zohomail"
     },
     {
       "path": "./apps/zoom"

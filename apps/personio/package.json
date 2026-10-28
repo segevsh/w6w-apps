@@ -7,6 +7,10 @@
     "name": "w6w"
   },
   "private": true,
+  "internal": {
+    "tier": 10,
+    "lastReviewed": null
+  },
   "w6w": {
     "id": "io.w6w.personio",
     "displayName": "Personio",

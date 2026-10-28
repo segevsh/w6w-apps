@@ -42,7 +42,9 @@
  * before measuring, so a second pass reproduces the first rather than nesting.
  */
 
-const APPS = "/app/packages/apps/apps";
+import { appPaths } from "./app-paths.ts";
+
+const APPS = new URL("../apps", import.meta.url).pathname;
 /** Fraction of the square canvas the ink's longer side fills. */
 const DEFAULT_FILL = 0.92;
 /** Render size used to measure the ink box. Larger = finer bbox, slower. */
@@ -287,11 +289,10 @@ if (import.meta.main) {
   const files: string[] = [];
 
   if (all) {
-    for await (const d of Deno.readDir(APPS)) {
-      if (!d.isDirectory) continue;
-      for await (const a of Deno.readDir(`${APPS}/${d.name}/assets`)) {
+    for (const app of appPaths()) {
+      for await (const a of Deno.readDir(`${APPS}/${app}/assets`)) {
         if (a.name.endsWith(".svg")) {
-          files.push(`${APPS}/${d.name}/assets/${a.name}`);
+          files.push(`${APPS}/${app}/assets/${a.name}`);
         }
       }
     }

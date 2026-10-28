@@ -27,7 +27,8 @@ rm -rf "$WORK" && mkdir -p "$WORK" "$OUT/sheets"
 
 if [ "$THEME" = "dark" ]; then TILE="#1f232c"; FG="#9aa4b2"; else TILE="#f0f2f6"; FG="#3a4250"; fi
 
-for dir in "$APPS"/*/; do
+find "$APPS" -name package.json -not -path '*/node_modules/*' | sort | while IFS= read -r package; do
+  dir=$(dirname "$package")
   app=$(basename "$dir")
   # The icon the host would actually show in this theme.
   if [ "$THEME" = "dark" ] && [ -f "$dir/assets/icon.dark.svg" ]; then
