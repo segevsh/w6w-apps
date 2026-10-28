@@ -80,6 +80,17 @@ jobs:
         with:
           node-version: "22"
 
+      # deno bundle installs its esbuild binary into the cache on first use; when
+      # app-build starts many bundles at once they race on that copy and one
+      # fails ("failed to copy esbuild binary ... No such file or directory").
+      # One serial bundle first leaves the binary in place for all of them.
+      - name: Pre-warm deno bundle (esbuild binary)
+        working-directory: core
+        run: |
+          d="$(mktemp -d)"
+          echo 'export const warm = 1;' > "$d/warm.ts"
+          deno bundle -q -o "$d/warm.js" "$d/warm.ts"
+
       - name: Build every app once
         working-directory: core
         run: >-
