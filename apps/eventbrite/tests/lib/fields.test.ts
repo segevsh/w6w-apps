@@ -209,3 +209,44 @@ Deno.test("params: create-event, create-venue, update-venue, get-organizer wired
   assertEquals(upd.options, undefined);
   assertEquals(upd.config, undefined);
 });
+
+const ORGS = {
+  body: { organizations: [{ id: "o1", name: "Acme" }], pagination: { has_more_items: false } },
+};
+
+Deno.test("scopeId: organization scope lists the user's organizations", async () => {
+  const { ctx, calls } = mockCtx([ORGS]);
+  const out = await resolveEventbriteFields(input(["scopeId"], { scope: "organization" }), ctx);
+  assertEquals(calls.length, 1);
+  assertEquals(calls[0].url, `${B}/users/me/organizations/`);
+  assertEquals(out.fields.scopeId?.options, [{ value: "o1", label: "Acme" }]);
+});
+
+Deno.test("scopeId: non-organization scopes yield no options and make no request", async () => {
+  for (const scope of ["event", "venue", "series", "user"]) {
+    const { ctx, calls } = mockCtx([]);
+    const out = await resolveEventbriteFields(input(["scopeId"], { scope }), ctx);
+    assertEquals(calls.length, 0, scope);
+    assertEquals(out.fields.scopeId, { options: [] }, scope);
+  }
+});
+
+Deno.test("scopeId: unresolved scope leaves scopeId out", async () => {
+  const { ctx, calls } = mockCtx([]);
+  const out = await resolveEventbriteFields(
+    input(["scopeId"], { scope: "organization" }, ["scope"]),
+    ctx,
+  );
+  assertEquals(calls.length, 0);
+  assertEquals("scopeId" in out.fields, false);
+});
+
+Deno.test("scopeId + organizationId requested together fetch organizations once", async () => {
+  const { ctx, calls } = mockCtx([ORGS]);
+  const out = await resolveEventbriteFields(
+    input(["organizationId", "scopeId"], { scope: "organization" }),
+    ctx,
+  );
+  assertEquals(calls.length, 1);
+  assertEquals(out.fields.organizationId?.options, out.fields.scopeId?.options);
+});

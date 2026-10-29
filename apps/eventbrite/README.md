@@ -88,9 +88,14 @@ key on `trigger.event.id` (host-issued) or the record's own id when that matters
 
 ## Pickers
 
-Two params ask Eventbrite for their choices while the form is open, on the connection the
+Three params ask Eventbrite for their choices while the form is open, on the connection the
 step already uses:
 
+- `scopeId` — on `list-events`, `list-attendees` and `list-orders`: one cascading *Scope ID*
+  whose label follows `scope` (via `when`) and which lists your organizations from
+  `GET /v3/users/me/organizations/` when `scope` is `organization` (other scopes stay a
+  typed id, `allowCustom`). `list-events` still accepts the old `organizationId` as a hidden
+  legacy alias.
 - `organizationId` — on the 17 actions that take an *Organization ID*, from
   `GET /v3/users/me/organizations/`.
 - `organizerId` — on `create-event` (create only), `create-venue`, `update-venue` and

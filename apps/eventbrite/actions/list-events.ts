@@ -43,14 +43,26 @@ const listEvents: ActionDefinition<Input> = {
       key: "scopeId",
       label: "Scope ID",
       type: "string",
-      hint:
-        "Organization, venue or event series ID depending on scope. For `organization` you may use Organization ID instead.",
+      hint: "Organization, venue or event series ID depending on scope.",
+      options: { source: "resolveFields", refreshOn: ["scope"] },
+      config: { allowCustom: true },
+      when: [
+        { if: { field: "scope", equals: "organization" }, set: { label: "Organization ID" } },
+        { if: { field: "scope", equals: "venue" }, set: { label: "Venue ID", required: true } },
+        {
+          if: { field: "scope", equals: "series" },
+          set: { label: "Event series ID", required: true },
+        },
+      ],
     },
     {
+      // Legacy alias for `scopeId` (scope=organization). Kept declared so the runtime hands it to
+      // `execute`; hidden unless a legacy value is present.
       key: "organizationId",
-      label: "Organization ID",
+      label: "Organization ID (legacy)",
       type: "string",
-      hint: "Same as Scope ID when scope is `organization`.",
+      hint: "Deprecated: use Scope ID.",
+      showIf: { field: "organizationId", truthy: true },
       options: { source: "resolveFields" },
       config: { allowCustom: true },
     },
