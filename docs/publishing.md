@@ -62,5 +62,11 @@ deno task convert
 2. Fork the pack repository and make your change on a branch in your fork.
 3. Open a pull request against `w6w-io/w6w-apps`. Never push directly to `main`.
 
+Once the pull request is merged, the `Reload apps` workflow publishes it. It builds every app,
+compares each one's digest with `apps/index.json` (the record of the last publish, kept in the
+blob bucket), uploads only the apps that changed, and asks the w6w API to load them. Apps you did
+not touch are not re-sent. An app the API refuses stays marked as changed, so the next run tries
+it again. To resend every app, run the workflow by hand with **full** checked.
+
 Each app's own `README.md` documents its usage and health check, and `HEALTHCHECKS.md` indexes them.
 For the spec behind the pack, see the [App contract](/reference-spec/app-contract/).
