@@ -35,9 +35,20 @@ const listOrganizers = (ctx: HookContext, orgId: string) =>
 export const resolveEventbriteFields: ResolveFieldsHook = async (input, ctx) => {
   const fields: Record<string, { options: Option[] }> = {};
 
+  // One `/users/me/organizations/` fetch serves both `organizationId` and an organization `scopeId`.
+  let orgs: Promise<Named[]> | undefined;
+  const orgsOnce = () => (orgs ??= listOrgs(ctx));
+  const orgOptions = async () =>
+    (await orgsOnce()).map((o) => ({ value: o.id, label: o.name ?? o.id }));
+
   if (input.fields.includes("organizationId")) {
-    const orgs = await listOrgs(ctx);
-    fields.organizationId = { options: orgs.map((o) => ({ value: o.id, label: o.name ?? o.id })) };
+    fields.organizationId = { options: await orgOptions() };
+  }
+
+  if (input.fields.includes("scopeId") && !input.unresolved.includes("scope")) {
+    fields.scopeId = {
+      options: input.form.scope === "organization" ? await orgOptions() : [],
+    };
   }
 
   if (input.fields.includes("organizerId") && !input.unresolved.includes("organizationId")) {
@@ -48,7 +59,7 @@ export const resolveEventbriteFields: ResolveFieldsHook = async (input, ctx) => 
       options = organizers.map((o) => ({ value: o.id, label: o.name ?? o.id }));
     } else {
       options = [];
-      for (const org of await listOrgs(ctx)) {
+      for (const org of await orgsOnce()) {
         if (options.length >= MAX_OPTIONS) break;
         for (const o of await listOrganizers(ctx, org.id)) {
           options.push({
