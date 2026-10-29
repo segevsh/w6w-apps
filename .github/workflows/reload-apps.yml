@@ -6,7 +6,7 @@ name: Reload apps
 #   2. downloads the remote index apps/index.json from the blob bucket (what the
 #      last successful run published, per app);
 #   3. compares digests to find the apps that changed;
-#   4. uploads only those apps' artifacts, create-only;
+#   4. uploads only those apps' artifacts, overwriting any already in the bucket;
 #   5. makes ONE publish-index call so the production w6w API reloads them;
 #   6. rewrites apps/index.json once the API has accepted them;
 # then, only if something changed, dispatches a rebuild of w6w-frontend so its
@@ -31,8 +31,8 @@ name: Reload apps
 #   - Repo variable  W6W_API_URL        — the production API base URL (not secret)
 #   - Repo variable  GCP_WIF_PROVIDER   — Workload Identity provider resource name
 #   - Repo variable  GCP_PUBLISHER_SA   — service account email. On the blob bucket it
-#                                         creates objects, and reads + overwrites
-#                                         apps/index.json (objectCreator alone can't overwrite)
+#                                         creates, reads and overwrites objects under apps/
+#                                         (objectCreator alone can't overwrite)
 #   - Repo secret    OPS_JWT_SECRET     — signs short-lived ops JWTs (same key
 #                                         GCP Secret Manager's `ops-jwt-secret` holds)
 #   - Repo secret    APP_ID             — the w6w-ci-bot GitHub App's ID (or client ID)
@@ -41,7 +41,7 @@ name: Reload apps
 # ---------------------------------------------------------------------------
 
 on:
-  # Manual re-run. Publishing is idempotent (create-only uploads, publish-index
+  # Manual re-run. Publishing is idempotent (uploads overwrite, publish-index
   # skips current entries), so this is the retry path for a transient failure.
   # `full` ignores apps/index.json and sends every app (the API still skips the
   # ones it holds): the recovery path when the catalog and the index disagree.

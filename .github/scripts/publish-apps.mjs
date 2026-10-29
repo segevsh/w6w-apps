@@ -9,13 +9,13 @@
  *      Absent (first run) or `--full` = no baseline;
  *   3. compares each built app against it: an app is CHANGED when it is missing there or its
  *      version, registry digest or exec sha-256 differ. Nothing changed ⇒ exit 0, no call;
- *   4. uploads CREATE-ONLY, for the changed apps only: each `app.js` to `apps/exec/<execSha256>.js`
+ *   4. uploads, overwriting, for the changed apps only: each `app.js` to `apps/exec/<execSha256>.js`
  *      (asserting the file's own sha-256 first), each `app.js.map` to `apps/map/<sha>.js.map`, and
  *      the artifact index of just those apps `{ artifactIndexVersion: 1, artifacts: [manifest, ...] }`
- *      (also written to `dist/publish-index.json`) to `apps/index/<indexSha256>.json`. GCS: JSON API
- *      with `ifGenerationMatch=0` (412 = already there = success), bounded concurrency, no process
- *      spawn per object. Local rehearsal (`--dry-run-local <dir>`): same keys under `<dir>/<key>`
- *      (the server's fs blob layout), create-only via hard link;
+ *      (also written to `dist/publish-index.json`) to `apps/index/<indexSha256>.json`. Every file of
+ *      a changed app is written, even when its key already exists. GCS: JSON API, bounded
+ *      concurrency, no process spawn per object. Local rehearsal (`--dry-run-local <dir>`): same
+ *      keys under `<dir>/<key>` (the server's fs blob layout), via rename;
  *   5. notifies the server: ONE `POST $W6W_API_URL/system-ops/apps/publish-index {"indexSha256"}`
  *      with a fresh HS256 ops JWT (aud `w6w:system-ops`, scope `apps:publish`, 120 s TTL); the
  *      server verifies and registers the changed apps, so its catalog reloads them;
@@ -37,8 +37,8 @@
  *
  * Env: `W6W_API_URL`, `OPS_JWT_SECRET` (always); for GCS: `W6W_BLOB_BUCKET` (default
  * `w6w-io-blobs`) and either `GCS_ACCESS_TOKEN` or a `gcloud` on PATH (authenticated by
- * `google-github-actions/auth`). The publisher identity needs to create objects, read
- * `apps/index.json`, and overwrite it.
+ * `google-github-actions/auth`). The publisher identity needs to create, read and overwrite
+ * objects under `apps/`.
  * Usage: `node .github/scripts/publish-apps.mjs [--dist dist] [--full] [--dry-run-local <blobdir>]`
  */
 import crypto from "node:crypto";
@@ -233,21 +233,19 @@ export function planUploads(index, artifacts, { dist, readFile = fs.readFileSync
 }
 
 /**
- * Run `put(item)` over `items` with at most `concurrency` in flight. `put` resolves
- * `"created" | "exists"`; a rejection is collected, not thrown mid-batch. Returns
- * `{ created, exists, errors: [{key, message}] }`.
+ * Run `put(item)` over `items` with at most `concurrency` in flight. `put` resolves once the
+ * object is written; a rejection is collected, not thrown mid-batch. Returns
+ * `{ uploaded, errors: [{key, message}] }`.
  */
 export async function uploadAll(items, put, concurrency = UPLOAD_CONCURRENCY) {
-  const out = { created: 0, exists: 0, errors: [] };
+  const out = { uploaded: 0, errors: [] };
   let next = 0;
   async function worker() {
     while (next < items.length) {
       const item = items[next++];
       try {
-        const r = await put(item);
-        if (r === "created") out.created++;
-        else if (r === "exists") out.exists++;
-        else throw new Error(`put returned ${String(r)}`);
+        await put(item);
+        out.uploaded++;
       } catch (e) {
         out.errors.push({ key: item.key, message: e instanceof Error ? e.message : String(e) });
       }
@@ -257,33 +255,24 @@ export async function uploadAll(items, put, concurrency = UPLOAD_CONCURRENCY) {
   return out;
 }
 
-/** Create-only put into a local blob dir (`<dir>/<key>`, the server's fs driver layout). */
+/** Put into a local blob dir (`<dir>/<key>`, the server's fs driver layout), overwriting. */
 export function makeLocalPut(dir) {
   return async ({ key, file, bytes }) => {
     const final = path.join(dir, key);
-    if (fs.existsSync(final)) return "exists";
     const tmpDir = path.join(dir, ".tmp");
     fs.mkdirSync(tmpDir, { recursive: true });
     fs.mkdirSync(path.dirname(final), { recursive: true });
     const tmp = path.join(tmpDir, `put.${crypto.randomUUID()}`);
     fs.writeFileSync(tmp, bytes ?? fs.readFileSync(file));
-    try {
-      fs.linkSync(tmp, final);
-      return "created";
-    } catch (e) {
-      if (e.code === "EEXIST") return "exists";
-      throw e;
-    } finally {
-      fs.rmSync(tmp, { force: true });
-    }
+    fs.renameSync(tmp, final);
   };
 }
 
-/** Create-only put into GCS via the JSON API (`ifGenerationMatch=0`; 412 = already there). */
+/** Put into GCS via the JSON API, overwriting any object already at `key`. */
 export function makeGcsPut(bucket, accessToken, fetchImpl = fetch) {
   return async ({ key, file, bytes }) => {
     const url = `https://storage.googleapis.com/upload/storage/v1/b/${encodeURIComponent(bucket)}/o` +
-      `?uploadType=media&ifGenerationMatch=0&name=${encodeURIComponent(key)}`;
+      `?uploadType=media&name=${encodeURIComponent(key)}`;
     const body = bytes ?? fs.readFileSync(file);
     for (let attempt = 1;; attempt++) {
       let res;
@@ -298,9 +287,9 @@ export function makeGcsPut(bucket, accessToken, fetchImpl = fetch) {
         if (attempt < 3) continue;
         throw e;
       }
-      if (res.ok) return "created";
-      if (res.status === 412) return "exists";
-      if (res.status >= 500 && attempt < 3) continue;
+      if (res.ok) return;
+      // 429/5xx are transient; GCS also answers 429 for >1 write/s to one object.
+      if ((res.status === 429 || res.status >= 500) && attempt < 3) continue;
       throw new Error(`GCS ${res.status} for ${key}`);
     }
   };
@@ -511,7 +500,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   const plan = planUploads(subIndex, subArtifacts, { dist: args.dist });
   plan.push({ key: blobKeyIndex(indexSha256), file: indexPath });
   const up = await uploadAll(plan, put);
-  console.log(`publish-apps: uploads created=${up.created} existing=${up.exists} errors=${up.errors.length}`);
+  console.log(`publish-apps: uploaded ${up.uploaded}/${plan.length} file(s), errors=${up.errors.length}`);
   if (up.errors.length) {
     for (const e of up.errors.slice(0, 20)) console.error(`  upload failed ${e.key}: ${e.message}`);
     throw new Error(`${up.errors.length} upload(s) failed; not calling publish-index`);

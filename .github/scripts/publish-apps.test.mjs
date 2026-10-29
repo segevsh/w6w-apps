@@ -96,7 +96,7 @@ test("mintToken: HS256 shape, aud/scope, exp-iat=120, verifiable", () => {
   assert.throws(() => mintToken(""));
 });
 
-test("uploadAll: collects errors, counts created/exists, bounds concurrency", async () => {
+test("uploadAll: collects errors, counts uploads, bounds concurrency", async () => {
   let inflight = 0, peak = 0;
   const items = Array.from({ length: 20 }, (_, i) => ({ key: `k${i}` }));
   const r = await uploadAll(items, async ({ key }) => {
@@ -105,25 +105,27 @@ test("uploadAll: collects errors, counts created/exists, bounds concurrency", as
     await new Promise((res) => setTimeout(res, 2));
     inflight--;
     if (key === "k3") throw new Error("boom");
-    return Number(key.slice(1)) % 2 ? "exists" : "created";
   }, 4);
   assert.ok(peak <= 4);
   assert.equal(r.errors.length, 1);
   assert.equal(r.errors[0].key, "k3");
-  assert.equal(r.created + r.exists, 19);
+  assert.equal(r.uploaded, 19);
 });
 
-test("GCS put is create-only (ifGenerationMatch=0); 412 is success; other errors throw", async () => {
+test("GCS put overwrites (no generation precondition); retries 429/5xx; other errors throw", async () => {
   const urls = [];
-  const mkFetch = (status) => async (url) => {
+  const mkFetch = (...statuses) => async (url) => {
     urls.push(url);
+    const status = statuses.shift();
     return { ok: status < 300, status };
   };
   const item = { key: "apps/exec/x.js", bytes: Buffer.from("x") };
-  assert.equal(await makeGcsPut("b", "tok", mkFetch(200))(item), "created");
-  assert.ok(urls[0].includes("ifGenerationMatch=0"));
+  await makeGcsPut("b", "tok", mkFetch(200))(item);
+  assert.ok(!urls[0].includes("ifGenerationMatch"));
   assert.ok(urls[0].includes(encodeURIComponent("apps/exec/x.js")));
-  assert.equal(await makeGcsPut("b", "tok", mkFetch(412))(item), "exists");
+  await makeGcsPut("b", "tok", mkFetch(429, 503, 200))(item);
+  assert.equal(urls.length, 4);
+  await assert.rejects(makeGcsPut("b", "tok", mkFetch(412))(item), /412/);
   await assert.rejects(makeGcsPut("b", "tok", mkFetch(403))(item), /403/);
 });
 
@@ -157,7 +159,7 @@ test("postPublishIndex: one POST, bearer JWT, body; no retry on 4xx", async () =
   assert.match(calls[0].init.headers.authorization, /^Bearer [\w-]+\.[\w-]+\.[\w-]+$/);
 });
 
-test("main local-dir mode writes the same keys and treats re-run as success", async () => {
+test("main local-dir mode writes the keys; a re-run with nothing changed calls nothing", async () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "pub-"));
   const dist = path.join(tmp, "dist");
   const blobs = path.join(tmp, "blobs");
@@ -408,4 +410,15 @@ test("main: an unreadable apps/index.json sends every app and only warns", async
   assert.equal(run.warnings.length, 2);
   assert.match(run.warnings[0], /^::warning title=publish-apps::cannot read apps\/index\.json/);
   assert.match(run.warnings[1], /apps\/index\.json not updated/);
+});
+
+test("main overwrites a changed app's files that already exist in the bucket", async () => {
+  const { dist, blobs } = tmpPair();
+  const a = mk("a", "A");
+  writeDist(dist, [a]);
+  const key = path.join(blobs, `apps/exec/${a.entry.execSha256}.js`);
+  fs.mkdirSync(path.dirname(key), { recursive: true });
+  fs.writeFileSync(key, "stale bytes");
+  await runMain(dist, blobs);
+  assert.equal(fs.readFileSync(key, "utf8"), "A");
 });
