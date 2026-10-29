@@ -1,6 +1,6 @@
 {
   "name": "@w6w-apps/notion",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Manage Notion pages, data sources, databases, blocks, comments, files, views, agents, and Enterprise administration.",
   "license": "MIT",
   "author": {

@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 import createPage from "../actions/create-page.ts";
 import createRow from "../actions/create-database-page.ts";
 import queryRows from "../actions/get-many-database-pages.ts";
@@ -40,22 +40,30 @@ Deno.test("Create Page accepts a copied Notion URL without treating its view que
   assertEquals(JSON.parse(calls[0].body!).parent, { page_id: "a3f51b1002164c728983956c44a70d25" });
 });
 
-Deno.test("Create Page rejects conflicting content and parent inputs before sending", () => {
+Deno.test("Create Page rejects conflicting content and parent inputs before sending", async () => {
   const { ctx, calls } = mockCtx();
-  assertThrows(
-    () => createPage.execute({ children: [], markdown: "x" }, ctx),
+  await assertRejects(
+    async () => await createPage.execute({ children: [], markdown: "x" }, ctx),
     Error,
     "only one content",
   );
-  assertThrows(
-    () => createPage.execute({ template: { type: "default" }, children: [] }, ctx),
+  await assertRejects(
+    async () => await createPage.execute({ template: { type: "default" }, children: [] }, ctx),
     Error,
     "template",
   );
-  assertThrows(() => createPage.execute({ markdownVersion: "v2" }, ctx), Error, "require Markdown");
-  assertThrows(() => createPage.execute({ parentType: "page" }, ctx), Error, "parent page ID");
-  assertThrows(
-    () => createPage.execute({ parentPageId: "a", dataSourceId: "b" }, ctx),
+  await assertRejects(
+    async () => await createPage.execute({ markdownVersion: "v2" }, ctx),
+    Error,
+    "require Markdown",
+  );
+  await assertRejects(
+    async () => await createPage.execute({ parentType: "page" }, ctx),
+    Error,
+    "parent page ID",
+  );
+  await assertRejects(
+    async () => await createPage.execute({ parentPageId: "a", dataSourceId: "b" }, ctx),
     Error,
     "only one parent",
   );
