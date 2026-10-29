@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
-import { NotionClient } from "../lib/client.ts";
+import { NotionClient, resolveDataSource } from "../lib/client.ts";
+import { titlePropertyName } from "../lib/databases.ts";
 import {
   buildPageBody,
   type PageContentInput,
@@ -87,11 +88,11 @@ const createPage: ActionDefinition<Input> = {
       label: "Title",
       type: "string",
       hint:
-        "Optional page title. For a data source, supply its title property by name in Properties instead.",
+        "Optional page title. For a data source row it fills the data source's title column, whatever that column is named.",
     },
     ...pageContentParams,
   ],
-  execute(input, ctx) {
+  async execute(input, ctx) {
     const parents = [input.parentPageId, input.dataSourceId, input.parent].filter(Boolean);
     if (parents.length > 1) {
       throw new Error("Choose only one parent: page, data source, or parent object.");
@@ -127,21 +128,28 @@ const createPage: ActionDefinition<Input> = {
     }
     const body = buildPageBody(input);
     if (parent) body.parent = parent;
-    if (input.title !== undefined) {
+    const client = new NotionClient(ctx);
+    // A cleared form field arrives as "" — that is no title, not an empty one.
+    const title = input.title?.trim() ? input.title : undefined;
+    if (title !== undefined) {
+      // A page's title property is always `title`; a data source row's is whichever column has
+      // type `title` ("Name", "Task", …), so look it up rather than make the caller know it.
+      let property = "title";
       if (parent?.data_source_id || parent?.database_id) {
-        throw new Error(
-          "For a database row, set the title in Properties using the data source's title property name.",
-        );
+        const dataSourceId = parent.data_source_id
+          ? String(parent.data_source_id)
+          : await resolveDataSource(client, { databaseId: String(parent.database_id) });
+        property = await titlePropertyName(client, dataSourceId);
       }
-      if (input.properties?.title !== undefined) {
-        throw new Error("Provide Title or properties.title, not both.");
+      if (input.properties?.[property] !== undefined) {
+        throw new Error(`Provide Title or properties.${property}, not both.`);
       }
       body.properties = {
         ...input.properties,
-        title: { title: [{ text: { content: input.title } }] },
+        [property]: { title: [{ text: { content: title } }] },
       };
     }
-    return new NotionClient(ctx).request("/pages", {
+    return client.request("/pages", {
       method: "POST",
       query: { filter_properties: input.filterProperties },
       body,

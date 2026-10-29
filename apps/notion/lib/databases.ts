@@ -1,5 +1,22 @@
 import { NotionClient, type NotionListResponse, pathId } from "./client.ts";
 
+/** The name of a data source's title column — every data source has exactly one. */
+export async function titlePropertyName(
+  client: NotionClient,
+  dataSourceId: string,
+): Promise<string> {
+  const source = await client.request<{ properties?: Record<string, { type?: string }> }>(
+    `/data_sources/${pathId(dataSourceId)}`,
+  );
+  const name = Object.entries(source.properties ?? {}).find(([, p]) => p.type === "title")?.[0];
+  if (!name) {
+    throw new Error(
+      "This data source has no title property, so Title cannot be set. Use Properties.",
+    );
+  }
+  return name;
+}
+
 interface DataSourceResult {
   parent?: { database_id?: string };
 }
