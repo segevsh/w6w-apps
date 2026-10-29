@@ -1,11 +1,19 @@
 name: Reload apps
 
 # ---------------------------------------------------------------------------
-# On every push to main, builds every app in w6w-pack.json ONCE (app-build),
-# uploads the artifacts create-only to the blob bucket, and makes ONE
-# publish-index call to the production w6w API — then, only if that succeeds
-# and something changed, dispatches a rebuild of w6w-frontend so its app pages
-# pick up the change with no human step in between.
+# On every push to main:
+#   1. builds every app in w6w-pack.json ONCE (app-build);
+#   2. downloads the remote index apps/index.json from the blob bucket (what the
+#      last successful run published, per app);
+#   3. compares digests to find the apps that changed;
+#   4. uploads only those apps' artifacts, create-only;
+#   5. makes ONE publish-index call so the production w6w API reloads them;
+#   6. rewrites apps/index.json once the API has accepted them;
+# then, only if something changed, dispatches a rebuild of w6w-frontend so its
+# app pages pick up the change with no human step in between.
+#
+# The index is written AFTER the API call (not before): a failed or unreachable
+# publish then leaves those apps "changed", and the next run sends them again.
 #
 # Builder source: @w6w/app-build is NOT on JSR (meta.json -> 404, checked
 # 2026-10-24), so this checks out w6w-io/w6w-core as a sibling of the apps
@@ -22,7 +30,9 @@ name: Reload apps
 # this repo's (w6w-io/w6w-apps) settings:
 #   - Repo variable  W6W_API_URL        — the production API base URL (not secret)
 #   - Repo variable  GCP_WIF_PROVIDER   — Workload Identity provider resource name
-#   - Repo variable  GCP_PUBLISHER_SA   — service account email (objectCreator on the blob bucket)
+#   - Repo variable  GCP_PUBLISHER_SA   — service account email. On the blob bucket it
+#                                         creates objects, and reads + overwrites
+#                                         apps/index.json (objectCreator alone can't overwrite)
 #   - Repo secret    OPS_JWT_SECRET     — signs short-lived ops JWTs (same key
 #                                         GCP Secret Manager's `ops-jwt-secret` holds)
 #   - Repo secret    APP_ID             — the w6w-ci-bot GitHub App's ID (or client ID)
@@ -33,7 +43,14 @@ name: Reload apps
 on:
   # Manual re-run. Publishing is idempotent (create-only uploads, publish-index
   # skips current entries), so this is the retry path for a transient failure.
+  # `full` ignores apps/index.json and sends every app (the API still skips the
+  # ones it holds): the recovery path when the catalog and the index disagree.
   workflow_dispatch:
+    inputs:
+      full:
+        description: "Send every app, ignoring apps/index.json"
+        type: boolean
+        default: false
   push:
     branches: [main]
     # Path-filtered: this triggers a LIVE write against the production
@@ -84,6 +101,10 @@ jobs:
       # app-build starts many bundles at once they race on that copy and one
       # fails ("failed to copy esbuild binary ... No such file or directory").
       # One serial bundle first leaves the binary in place for all of them.
+      - name: Test the publish script
+        working-directory: w6w-apps
+        run: node --test .github/scripts/publish-apps.test.mjs
+
       - name: Pre-warm deno bundle (esbuild binary)
         working-directory: core
         run: |
@@ -105,13 +126,14 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
-      - name: Upload artifacts and publish the index
+      - name: Upload changed apps, notify the API, update apps/index.json
         id: publish
         working-directory: core
         env:
           W6W_API_URL: ${{ vars.W6W_API_URL }}
           OPS_JWT_SECRET: ${{ secrets.OPS_JWT_SECRET }}
-        run: node ../w6w-apps/.github/scripts/publish-apps.mjs
+          FULL: ${{ inputs.full && '--full' || '' }}
+        run: node ../w6w-apps/.github/scripts/publish-apps.mjs $FULL
 
       # Only reached if the publish step succeeded. Mints a token scoped to
       # ONLY w6w-frontend. Skipped when a PUSH changed nothing in the catalog
