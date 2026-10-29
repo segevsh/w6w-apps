@@ -86,3 +86,47 @@ Deno.test("every action declaring an organizationId param is wired", () => {
     .filter((key) => !WIRED.includes(key));
   assertEquals(unwired, [], "actions with an organizationId param missing the picker wiring");
 });
+
+const SCOPED = ["list-events", "list-attendees", "list-orders"];
+const scopeWhen: Record<string, Array<[string, Record<string, unknown>]>> = {
+  "list-events": [
+    ["organization", { label: "Organization ID" }],
+    ["venue", { label: "Venue ID", required: true }],
+    ["series", { label: "Event series ID", required: true }],
+  ],
+  "list-attendees": [
+    ["event", { label: "Event ID" }],
+    ["organization", { label: "Organization ID" }],
+  ],
+  "list-orders": [
+    ["event", { label: "Event ID" }],
+    ["organization", { label: "Organization ID" }],
+    ["user", { label: "User ID" }],
+  ],
+};
+
+Deno.test("scopeId is one cascading, resolved picker on the three list actions", () => {
+  for (const key of SCOPED) {
+    const action = actions.get(key);
+    assert(action, `actions/ is missing ${key}`);
+    assert(action.resolveFields === resolveEventbriteFields, `${key}: resolveFields`);
+    const p = (action.params ?? []).find((x) => x.key === "scopeId");
+    assert(p, `${key}: scopeId`);
+    assertEquals(p.options, { source: "resolveFields", refreshOn: ["scope"] }, `${key}: options`);
+    assertEquals(p.config, { allowCustom: true }, `${key}: config`);
+    assertEquals(p.required === true, key !== "list-events", `${key}: base required`);
+    assertEquals(
+      p.when,
+      scopeWhen[key].map(([v, set]) => ({ if: { field: "scope", equals: v }, set })),
+      `${key}: when`,
+    );
+  }
+});
+
+Deno.test("list-events keeps organizationId declared as a hidden legacy alias", () => {
+  const p = orgParam(actions.get("list-events")!);
+  assert(p, "organizationId must stay declared so the runtime hands it to execute");
+  assertEquals(p.label, "Organization ID (legacy)");
+  assertEquals(p.showIf, { field: "organizationId", truthy: true });
+  assert(!p.required);
+});

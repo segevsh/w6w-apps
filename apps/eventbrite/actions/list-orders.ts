@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
+import { resolveEventbriteFields } from "../lib/fields.ts";
 
 interface Input {
   scope: "event" | "organization" | "user";
@@ -43,6 +44,13 @@ const listOrders: ActionDefinition<Input> = {
       required: true,
       hint:
         "Event ID when scope is `event`, organization ID when scope is `organization`, user ID when scope is `user`.",
+      options: { source: "resolveFields", refreshOn: ["scope"] },
+      config: { allowCustom: true },
+      when: [
+        { if: { field: "scope", equals: "event" }, set: { label: "Event ID" } },
+        { if: { field: "scope", equals: "organization" }, set: { label: "Organization ID" } },
+        { if: { field: "scope", equals: "user" }, set: { label: "User ID" } },
+      ],
     },
     {
       key: "status",
@@ -68,6 +76,7 @@ const listOrders: ActionDefinition<Input> = {
     { key: "pageSize", label: "Page size", type: "number", default: 50 },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
+  resolveFields: resolveEventbriteFields,
   output: [
     { key: "orders", type: "array", label: "Orders" },
     { key: "pagination", type: "object", label: "Pagination" },
