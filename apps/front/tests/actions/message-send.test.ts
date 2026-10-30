@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-send.ts";
 
-Deno.test("message-send: posts through the named channel", async () => {
+test("message-send: posts through the named channel", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { id: "msg_1" } }]);
   await action.execute!(
     { channelId: "cha_1", to: "ada@example.com", subject: "Hi", body: "<p>hi</p>" },
@@ -15,7 +16,7 @@ Deno.test("message-send: posts through the named channel", async () => {
 });
 
 /** Front archives the conversation it creates unless told otherwise. */
-Deno.test("message-send: archive is explicit and defaults to false here too", async () => {
+test("message-send: archive is explicit and defaults to false here too", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { id: "msg_1" } }]);
   await action.execute!({ channelId: "cha_1", to: "a@b.test", body: "x" }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -23,7 +24,7 @@ Deno.test("message-send: archive is explicit and defaults to false here too", as
   assertEquals(sent.options.archive, false);
 });
 
-Deno.test("message-send: a channel and a recipient are both required", async () => {
+test("message-send: a channel and a recipient are both required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ to: "a@b.test", body: "x" }, ctx),
@@ -39,7 +40,7 @@ Deno.test("message-send: a channel and a recipient are both required", async () 
 });
 
 /** `to` holds handles, not contact ids — the hint has to say so. */
-Deno.test("message-send: the recipient hint rules out contact ids", () => {
+test("message-send: the recipient hint rules out contact ids", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) => p.key === "to")!;
   assert(/NOT a contact id/.test(p.hint!), p.hint);
 });

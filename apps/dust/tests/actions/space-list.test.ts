@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import spaceList from "../../actions/space-list.ts";
 import { mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("space-list: hits /spaces with no query when kinds is unset", async () => {
+test("space-list: hits /spaces with no query when kinds is unset", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { spaces: [{ sId: "sp_1" }] } }]);
   const result = await spaceList.execute({}, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("space-list: hits /spaces with no query when kinds is unset", async ()
   assertEquals(result, { spaces: [{ sId: "sp_1" }] });
 });
 
-Deno.test("space-list: joins a multiselect array into a comma-separated kinds param", async () => {
+test("space-list: joins a multiselect array into a comma-separated kinds param", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { spaces: [] } }]);
   await spaceList.execute({ kinds: ["system", "project"] }, ctx);
   assertEquals(queryOf(calls[0].url), { kinds: "system,project" });

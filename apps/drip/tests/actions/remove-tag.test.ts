@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/remove-tag.ts";
 
-Deno.test("remove-tag: DELETEs /subscribers/:idOrEmail/tags/:tag (follows the docs' curl example)", async () => {
+test("remove-tag: DELETEs /subscribers/:idOrEmail/tags/:tag (follows the docs' curl example)", async () => {
   const { ctx, calls } = mockDripCtx([{ status: 204 }]);
   const out = await action.execute({ idOrEmail: "john@acme.com", tag: "Customer" }, ctx);
   assertEquals(

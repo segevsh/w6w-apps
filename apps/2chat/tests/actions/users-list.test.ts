@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { mockCtx } from "../_helpers.ts";
 import usersList from "../../actions/users-list.ts";
 
-Deno.test("users-list: lists users", async () => {
+test("users-list: lists users", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -12,9 +13,9 @@ Deno.test("users-list: lists users", async () => {
     },
   }]);
   const out = await usersList.execute!({} as never, ctx);
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "GET");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/users");
-  assertEquals(calls[0].body, null);
-  assertEquals((out as { data: { users: unknown[] } }).data.users.length, 1);
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "GET");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/users");
+  assert.deepStrictEqual(calls[0].body, null);
+  assert.deepStrictEqual((out as { data: { users: unknown[] } }).data.users.length, 1);
 });

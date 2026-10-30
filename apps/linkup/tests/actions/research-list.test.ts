@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import researchList from "../../actions/research-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("research-list: paginates", async () => {
+test("research-list: paginates", async () => {
   const l = mockCtx([{ body: { data: [{ id: "r" }], metadata: { total: 1 } } }]);
   assertEquals(await researchList.execute({ page: 3 }, l.ctx), {
     items: [{ id: "r" }],

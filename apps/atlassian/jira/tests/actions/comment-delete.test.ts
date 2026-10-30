@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJiraCtx } from "../_helpers.ts";
 import action from "../../actions/comment-delete.ts";
 
-Deno.test("comment-delete: DELETEs the comment", async () => {
+test("comment-delete: DELETEs the comment", async () => {
   const { ctx, calls } = mockJiraCtx([{ status: 204 }]);
   await action.execute({ issueKey: "ENG-1", commentId: "9" }, ctx);
   assertEquals(calls[0].method, "DELETE");

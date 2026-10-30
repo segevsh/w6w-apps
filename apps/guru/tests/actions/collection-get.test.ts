@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionGet from "../../actions/collection-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-get: fetches by id and strips the token", async () => {
+test("collection-get: fetches by id and strips the token", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "co1", name: "Eng", token: "live" } }]);
   const result = await collectionGet.execute({ collectionId: "co1" }, ctx);
 

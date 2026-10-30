@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/timelog-add.ts";
 
-Deno.test("timelog-add: POSTs addtimelog with the documented params and returns the id", async () => {
+test("timelog-add: POSTs addtimelog with the documented params and returns the id", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: {
       response: {
@@ -29,7 +30,7 @@ Deno.test("timelog-add: POSTs addtimelog with the documented params and returns 
   assertEquals(out.timeLogId, "55");
 });
 
-Deno.test("timelog-add: needs hours or a from/to pair; required ids first", async () => {
+test("timelog-add: needs hours or a from/to pair; required ids first", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ timeLogId: "1" }], status: 0 } },
   }]);
@@ -56,7 +57,7 @@ Deno.test("timelog-add: needs hours or a from/to pair; required ids first", asyn
   assertEquals(calls.length, 1);
 });
 
-Deno.test("timelog-add: vendor refusal (8008 weekend/holiday) is thrown; not idempotent", async () => {
+test("timelog-add: vendor refusal (8008 weekend/holiday) is thrown; not idempotent", async () => {
   const { ctx } = mockPeopleCtx([{
     status: 400,
     body: {

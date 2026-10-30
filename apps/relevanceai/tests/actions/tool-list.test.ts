@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import toolList from "../../actions/tool-list.ts";
 import { mockRelevanceCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tool-list: GETs /studios/list with query, paging, filters and sort", async () => {
+test("tool-list: GETs /studios/list with query, paging, filters and sort", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [{ studio_id: "s1" }] } }]);
   const out = await toolList.execute(
     {
@@ -28,13 +29,13 @@ Deno.test("tool-list: GETs /studios/list with query, paging, filters and sort", 
   assertEquals(out.results.length, 1);
 });
 
-Deno.test("tool-list: no query at all when nothing is supplied", async () => {
+test("tool-list: no query at all when nothing is supplied", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [] } }]);
   await toolList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("tool-list: only `results` is declared, and openapi_schema is not requested", async () => {
+test("tool-list: only `results` is declared, and openapi_schema is not requested", async () => {
   const output = toolList.output;
   assertEquals(Array.isArray(output) ? output.map((o) => o.key) : undefined, ["results"]);
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [] } }]);

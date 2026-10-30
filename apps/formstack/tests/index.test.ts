@@ -1,4 +1,6 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "./_assert.ts";
 import app from "../index.ts";
 import accessTokenAuth, { authHeaders, PROBE_PATH } from "../auth/access-token.ts";
 import {
@@ -21,19 +23,19 @@ import service, {
 import quota from "../health/quota.ts";
 import { BASE, errorBody, mockCtx, mockFormstackCtx, TOKEN } from "./_helpers.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assertEquals(app.actions.length, 9);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), key);
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type`);
     assert((a.description ?? "").length > 0, `${a.key}: no description`);
@@ -42,7 +44,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency, and creating one does not claim it", () => {
+test("index: every perform action states idempotency, and creating one does not claim it", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -50,7 +52,7 @@ Deno.test("index: every perform action states idempotency, and creating one does
   assertEquals(app.actions.find((a) => a.key === "submission-create")?.idempotent, false);
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert((p.key ?? "").length > 0, `${a.key}: param without a key`);
@@ -64,9 +66,9 @@ function code(src: string): string {
   return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential or calls global fetch", async () => {
+test("index: no action reads a credential or calls global fetch", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -78,7 +80,7 @@ Deno.test("index: no action reads a credential or calls global fetch", async () 
   }
 });
 
-Deno.test("index: the credential is never an action param", () => {
+test("index: the credential is never an action param", () => {
   const banned = /^(access_?token|api_?key|token|host|origin|base_?url)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) assert(!banned.test(p.key), `${a.key}/${p.key}`);
@@ -90,7 +92,7 @@ Deno.test("index: the credential is never an action param", () => {
  * credential for the wrong one presents as a rejected token. The bases must stay
  * distinct and the app must target V2025.
  */
-Deno.test("client: targets V2025, and the legacy base is named but never used", async () => {
+test("client: targets V2025, and the legacy base is named but never used", async () => {
   assertEquals(BASE_URL, "https://www.formstack.com/api/v2025");
   assertEquals(LEGACY_BASE_URL, "https://www.formstack.com/api/v2");
   for (const a of app.actions) {
@@ -98,7 +100,7 @@ Deno.test("client: targets V2025, and the legacy base is named but never used", 
   }
 });
 
-Deno.test("compact / flag / truncate: the small helpers behave", () => {
+test("compact / flag / truncate: the small helpers behave", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -112,7 +114,7 @@ Deno.test("compact / flag / truncate: the small helpers behave", () => {
   assert(truncate("x".repeat(50), 10).includes("50 bytes truncated"));
 });
 
-Deno.test("asJson / asOptionalJson: parse strings, pass objects, name the field", () => {
+test("asJson / asOptionalJson: parse strings, pass objects, name the field", () => {
   assertEquals(asJson({ a: 1 }, "Field values"), { a: 1 });
   assertEquals(asJson('{"a":1}', "Field values"), { a: 1 });
   assertThrows(() => asJson("{nope", "Field values"), Error, "Field values is not valid JSON");
@@ -124,7 +126,7 @@ Deno.test("asJson / asOptionalJson: parse strings, pass objects, name the field"
  * A 429 here is a DAY-long wall, not a moment's throttling, so the message must
  * not invite a retry.
  */
-Deno.test("formatFormstackError: a 429 explains the daily window", () => {
+test("formatFormstackError: a 429 explains the daily window", () => {
   const msg = formatFormstackError(429, "GET", "/api/v2025/forms", errorBodyJson("Rate limited"));
   assert(msg.includes("daily API quota"), msg);
   assert(msg.includes("retrying shortly will not help"), msg.toLowerCase());
@@ -134,7 +136,7 @@ function errorBodyJson(error: string): string {
   return JSON.stringify(errorBody(error));
 }
 
-Deno.test("formatFormstackError: surfaces the vendor's error string, or the raw body", () => {
+test("formatFormstackError: surfaces the vendor's error string, or the raw body", () => {
   const msg = formatFormstackError(401, "GET", "/api/v2025/forms", errorBodyJson("Unauthorized"));
   assert(msg.includes("401"), msg);
   assert(msg.includes("Unauthorized"), msg);
@@ -142,7 +144,7 @@ Deno.test("formatFormstackError: surfaces the vendor's error string, or the raw 
   assert(raw.includes("bad gateway"), raw);
 });
 
-Deno.test("client: sends JSON with an explicit content-type, since url-encoded is the default", async () => {
+test("client: sends JSON with an explicit content-type, since url-encoded is the default", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: {} }, { body: {} }]);
   const client = new FormstackClient(ctx);
   await client.request("/forms/1/submissions", { method: "POST", body: { "123": "Ada" } });
@@ -153,7 +155,7 @@ Deno.test("client: sends JSON with an explicit content-type, since url-encoded i
   assertEquals(calls[1].url, `${BASE}/forms`);
 });
 
-Deno.test("client: drops empty query values, and never sets an auth header", async () => {
+test("client: drops empty query values, and never sets an auth header", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: {} }]);
   await new FormstackClient(ctx).request("/forms", {
     query: { a: undefined, b: "", c: 0, d: false },
@@ -166,7 +168,7 @@ Deno.test("client: drops empty query values, and never sets an auth header", asy
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: a non-2xx throws with Formstack's own error text", async () => {
+test("client: a non-2xx throws with Formstack's own error text", async () => {
   const { ctx } = mockFormstackCtx([{ status: 401, body: errorBody("Unauthorized") }]);
   await assertRejects(
     async () => {
@@ -177,7 +179,7 @@ Deno.test("client: a non-2xx throws with Formstack's own error text", async () =
   );
 });
 
-Deno.test("auth: a single bearer secret, and the probe is the forms list", async () => {
+test("auth: a single bearer secret, and the probe is the forms list", async () => {
   assertEquals(accessTokenAuth.type, "bearer");
   assertEquals((accessTokenAuth.fields ?? []).map((f) => f.key), ["accessToken"]);
   assertEquals(accessTokenAuth.fields![0].type, "secret");
@@ -197,7 +199,7 @@ Deno.test("auth: a single bearer secret, and the probe is the forms list", async
  * to forms, unlike `apps/baserow`'s database token, so an empty account must not
  * block a first-run setup.
  */
-Deno.test("auth: an empty account is a valid connection, not a broken one", async () => {
+test("auth: an empty account is a valid connection, not a broken one", async () => {
   const { ctx } = mockCtx([{ body: { data: [], total: 0 } }]);
   assertEquals(
     await accessTokenAuth.test!({ credential: { accessToken: TOKEN } } as never, ctx),
@@ -205,7 +207,7 @@ Deno.test("auth: an empty account is a valid connection, not a broken one", asyn
   );
 });
 
-Deno.test("auth: a 401 points at the generation mix-up, which is the likely cause", async () => {
+test("auth: a 401 points at the generation mix-up, which is the likely cause", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthorized") }]);
   const result = await accessTokenAuth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
   assertEquals(result.ok, false);
@@ -214,14 +216,14 @@ Deno.test("auth: a 401 points at the generation mix-up, which is the likely caus
 });
 
 /** A 429 at connect time is a day-long quota, not a bad credential. */
-Deno.test("auth: a 429 is reported as the daily quota, not as a rejected token", async () => {
+test("auth: a 429 is reported as the daily quota, not as a rejected token", async () => {
   const { ctx } = mockCtx([{ status: 429, body: errorBody("Too Many Requests") }]);
   const result = await accessTokenAuth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("daily"), result.message);
 });
 
-Deno.test("auth: afterConnect publishes a count, never the token or the form names", async () => {
+test("auth: afterConnect publishes a count, never the token or the form names", async () => {
   const { ctx } = mockCtx([{
     body: { data: [{ id: "1", name: "Secret intake form" }], total: 42 },
   }]);
@@ -239,19 +241,19 @@ Deno.test("auth: afterConnect publishes a count, never the token or the form nam
  * The status page belongs to Intellistack, the parent brand — `status.formstack.com`
  * is a catch-all that serves the same HTML for every path.
  */
-Deno.test("service: probes the Intellistack page, and declares only that host", () => {
+test("service: probes the Intellistack page, and declares only that host", () => {
   assertEquals(STATUS_URL, "https://www.intellistackstatus.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["www.intellistackstatus.com"]);
   assertEquals(service.credential, "none");
 });
 
 /** 87 components across a whole portfolio — an unrelated product must not drag this down. */
-Deno.test("service: is informational, because the page covers the whole portfolio", () => {
+test("service: is informational, because the page covers the whole portfolio", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.scope, "app");
 });
 
-Deno.test("mapComponentStatus / mapIndicator: cover Statuspage's vocabularies", () => {
+test("mapComponentStatus / mapIndicator: cover Statuspage's vocabularies", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -262,14 +264,14 @@ Deno.test("mapComponentStatus / mapIndicator: cover Statuspage's vocabularies", 
 });
 
 /** The portfolio page repeats display names, so the vendor id is the key. */
-Deno.test("componentKey: prefers the vendor id, because names repeat across products", () => {
+test("componentKey: prefers the vendor id, because names repeat across products", () => {
   const a = { id: "c1", name: "Main Application" };
   const b = { id: "c2", name: "Main Application" };
   assert(componentKey(a, 0) !== componentKey(b, 1));
   assertEquals(componentKey({ name: "Formstack ID (FSID)" }, 3), "formstack-id-fsid-3");
 });
 
-Deno.test("service: reads the page indicator and reports each component", async () => {
+test("service: reads the page indicator and reports each component", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { id: "z9vl5j7rxtz7", name: "Intellistack", url: "https://www.intellistackstatus.com" },
@@ -287,7 +289,7 @@ Deno.test("service: reads the page indicator and reports each component", async 
   assertEquals(Object.keys(result.components ?? {}).sort(), ["c1", "c2"]);
 });
 
-Deno.test("service: a degraded component is named in the message", async () => {
+test("service: a degraded component is named in the message", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { name: "Intellistack", url: "https://www.intellistackstatus.com" },
@@ -303,7 +305,7 @@ Deno.test("service: a degraded component is named in the message", async () => {
 });
 
 /** It accepts either brand, because it has already followed one rebrand. */
-Deno.test("service: accepts the Formstack or Intellistack identity, refuses anything else", async () => {
+test("service: accepts the Formstack or Intellistack identity, refuses anything else", async () => {
   const other = mockCtx([{
     body: {
       page: { name: "Someone Else", url: "https://status.example.com" },
@@ -316,28 +318,28 @@ Deno.test("service: accepts the Formstack or Intellistack identity, refuses anyt
   assert(result.message!.includes("no longer identifies"), result.message);
 });
 
-Deno.test("service: an unreachable status page is unknown, not down", async () => {
+test("service: an unreachable status page is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({} as never, ctx)).state, "unknown");
 });
 
-Deno.test("quota: is declared unavailable, informational, and names the daily window", () => {
+test("quota: is declared unavailable, informational, and names the daily window", () => {
   assertEquals(typeof quota.check, "undefined");
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable!.reason.includes("daily"));
   assert(quota.unavailable!.reason.includes("per access token"));
 });
 
-Deno.test("index: the manifest names one fixed host", async () => {
+test("index: the manifest names one fixed host", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] } } };
   assertEquals(manifest.w6w.id, "io.w6w.formstack");
   assertEquals(manifest.w6w.network.allow, ["www.formstack.com"]);
   assert(!manifest.w6w.network.allow.includes("www.intellistackstatus.com"));
 });
 
-Deno.test("index: the comment stripper actually strips", () => {
+test("index: the comment stripper actually strips", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assert(code('const u = "https://x/y";').includes("https://x/y"));
 });

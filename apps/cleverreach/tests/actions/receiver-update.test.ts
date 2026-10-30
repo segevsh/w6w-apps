@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/receiver-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("receiver-update: PUTs the changed fields to the receiver in the group", async () => {
+test("receiver-update: PUTs the changed fields to the receiver in the group", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 11 } }]);
   await action.execute({
     groupId: "5",
@@ -21,7 +22,7 @@ Deno.test("receiver-update: PUTs the changed fields to the receiver in the group
   });
 });
 
-Deno.test("receiver-update: refuses an empty update without a request", async () => {
+test("receiver-update: refuses an empty update without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "5", receiver: "11" }, ctx),

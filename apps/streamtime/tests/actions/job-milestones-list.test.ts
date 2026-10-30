@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobMilestonesList from "../../actions/job-milestones-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-milestones-list: reads the nested route", async () => {
+test("job-milestones-list: reads the nested route", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 11, name: "Client Presentation" }] }]);
   const result = await jobMilestonesList.execute({ jobId: 1010 }, ctx) as {
     milestones: unknown[];

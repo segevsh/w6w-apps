@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import lines from "../../health/lines.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lines: all lines ONLINE reports ok with per-number components", async () => {
+test("lines: all lines ONLINE reports ok with per-number components", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -22,7 +23,7 @@ Deno.test("lines: all lines ONLINE reports ok with per-number components", async
   assertEquals(report.components?.["+15550002222"].state, "ok");
 });
 
-Deno.test("lines: one OFFLINE line drags the whole report down, others stay unaffected", async () => {
+test("lines: one OFFLINE line drags the whole report down, others stay unaffected", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -40,19 +41,19 @@ Deno.test("lines: one OFFLINE line drags the whole report down, others stay unaf
   assertEquals(report.components?.["+15550002222"].state, "down");
 });
 
-Deno.test("lines: DEGRADED reports degraded, not down", async () => {
+test("lines: DEGRADED reports degraded, not down", async () => {
   const { ctx } = mockCtx([{ body: { data: [{ sendblue_number: "+1", status: "DEGRADED" }] } }]);
   const report = await lines.check!({}, ctx);
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("lines: no assigned lines reports unknown, not down", async () => {
+test("lines: no assigned lines reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ body: { data: [] } }]);
   const report = await lines.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("lines: a broken endpoint reports unknown, never down", async () => {
+test("lines: a broken endpoint reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await lines.check!({}, ctx);
   assertEquals(report.state, "unknown");

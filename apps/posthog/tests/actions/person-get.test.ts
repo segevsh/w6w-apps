@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/person-get.ts";
 
 const conn = { display: { region: "us", projectId: "999" } };
 
-Deno.test("person-get: GETs /api/projects/{id}/persons/{personId}/", async () => {
+test("person-get: GETs /api/projects/{id}/persons/{personId}/", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { id: 1, uuid: "abc", name: "Ada" } }],
     { connection: conn },
@@ -14,7 +15,7 @@ Deno.test("person-get: GETs /api/projects/{id}/persons/{personId}/", async () =>
   assertEquals(result, { id: 1, uuid: "abc", name: "Ada" });
 });
 
-Deno.test("person-get: requires personId", async () => {
+test("person-get: requires personId", async () => {
   const { ctx, calls } = mockCtx([], { connection: conn });
   await assertRejects(
     async () => await action.execute!({ personId: "" }, ctx),

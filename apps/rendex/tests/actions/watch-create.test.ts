@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import watchCreate from "../../actions/watch-create.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
 const ok = () => mockCtx([{ body: envelope({ id: "w1" }) }]);
 
-Deno.test("watch-create: POSTs /watches with the documented fields", async () => {
+test("watch-create: POSTs /watches with the documented fields", async () => {
   const { ctx, calls } = ok();
   await watchCreate.execute({
     url: "https://stripe.com/pricing",

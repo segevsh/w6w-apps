@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import tableList from "../../actions/table-list.ts";
 
-Deno.test("table-list: lists an organization's Database Tables", async () => {
+test("table-list: lists an organization's Database Tables", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -19,7 +20,7 @@ Deno.test("table-list: lists an organization's Database Tables", async () => {
   );
 });
 
-Deno.test("table-list: throws when the organization does not resolve", async () => {
+test("table-list: throws when the organization does not resolve", async () => {
   const { ctx } = mockCtx([{ body: { data: { organization: null } } }]);
   let threw = false;
   try {
@@ -30,7 +31,7 @@ Deno.test("table-list: throws when the organization does not resolve", async () 
   assert(threw);
 });
 
-Deno.test("table-list: type/resource metadata", () => {
+test("table-list: type/resource metadata", () => {
   assertEquals(tableList.type, "read");
   assertEquals(tableList.resource, "table");
 });

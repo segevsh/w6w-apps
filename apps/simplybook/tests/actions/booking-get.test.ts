@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/booking-get.ts";
 
-Deno.test("booking-get: GETs /admin/bookings/{id}", async () => {
+test("booking-get: GETs /admin/bookings/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }], { display: TEST_DISPLAY });
   const result = await action.execute({ id: "42" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("booking-get: GETs /admin/bookings/{id}", async () => {
   assertEquals(result, { id: 42 });
 });
 
-Deno.test("booking-get: encodes the id into the path", async () => {
+test("booking-get: encodes the id into the path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display: TEST_DISPLAY });
   await action.execute({ id: "abc/def" }, ctx);
   assertEquals(pathOf(calls[0].url), "/admin/bookings/abc%2Fdef");

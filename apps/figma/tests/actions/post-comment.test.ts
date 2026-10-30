@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-comment.ts";
 
-Deno.test("post-comment: POSTs a new comment with just a message", async () => {
+test("post-comment: POSTs a new comment with just a message", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", message: "hi" } }]);
   await action.execute({ fileKey: "abc123", message: "hi" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("post-comment: POSTs a new comment with just a message", async () => {
   assertEquals(JSON.parse(calls[0].body!), { message: "hi" });
 });
 
-Deno.test("post-comment: includes comment_id and client_meta when given", async () => {
+test("post-comment: includes comment_id and client_meta when given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c2" } }]);
   await action.execute({
     fileKey: "abc123",

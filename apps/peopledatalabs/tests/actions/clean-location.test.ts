@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/clean-location.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("clean-location: GETs /v5/location/clean", async () => {
+test("clean-location: GETs /v5/location/clean", async () => {
   const { ctx, calls } = mockCtx([{
     body: { name: "portland, oregon, united states", geo: "45.52,-122.67" },
   }]);
@@ -17,7 +18,7 @@ Deno.test("clean-location: GETs /v5/location/clean", async () => {
   assertEquals(out.geo, "45.52,-122.67");
 });
 
-Deno.test("clean-location: location is required; 404 is found: false", async () => {
+test("clean-location: location is required; 404 is found: false", async () => {
   await assertRejects(
     async () => await action.execute!({ location: " " } as never, mockCtx([]).ctx),
     Error,

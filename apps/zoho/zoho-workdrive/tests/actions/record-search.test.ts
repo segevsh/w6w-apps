@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordSearch from "../../actions/record-search.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("record-search: GET /workdrive/api/v1/teams/t1/records", async () => {
+test("record-search: GET /workdrive/api/v1/teams/t1/records", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{
     body: {
       "data": [{ "id": "a1", "type": "files" }, { "id": "a2", "type": "files" }],

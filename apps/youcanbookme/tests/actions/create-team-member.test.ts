@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-team-member.ts";
 
-Deno.test("create-team-member: POSTs /{accountId}/profiles/{profileId}/teammembers/items", async () => {
+test("create-team-member: POSTs /{accountId}/profiles/{profileId}/teammembers/items", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "tm-1" } }]);
   await action.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("create-team-member: POSTs /{accountId}/profiles/{profileId}/teammembe
   );
 });
 
-Deno.test("create-team-member: defaults response fields", async () => {
+test("create-team-member: defaults response fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "tm-1" } }]);
   await action.execute({ accountId: "acc-1", profileId: "prof-1", name: "Jane Doe" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createGroup from "../../actions/create-group.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const CREATED = { group: { id: 7, name: "The Brain Trust" } };
 
-Deno.test("create-group: flattens members into users__i__prop", async () => {
+test("create-group: flattens members into users__i__prop", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   const out = await createGroup.execute({
     name: "The Brain Trust",
@@ -32,7 +33,7 @@ Deno.test("create-group: flattens members into users__i__prop", async () => {
  * The vendor's worked example sends `users__1__id`, its prose says the property
  * is `user_id`. The prose wins — `id` appears nowhere else in the API.
  */
-Deno.test("create-group: sends user_id, not the example's `id`", async () => {
+test("create-group: sends user_id, not the example's `id`", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await createGroup.execute({ name: "g", members: [{ user_id: 9 }] }, ctx);
   const body = bodyOf(calls[0]);
@@ -40,7 +41,7 @@ Deno.test("create-group: sends user_id, not the example's `id`", async () => {
   assertEquals(body.users__0__id, undefined);
 });
 
-Deno.test("create-group: a member with neither id nor email fails before the request", async () => {
+test("create-group: a member with neither id nor email fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await createGroup.execute({ name: "g", members: [{ first_name: "A" }] }, ctx),
@@ -50,13 +51,13 @@ Deno.test("create-group: a member with neither id nor email fails before the req
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-group: no members sends just the group fields", async () => {
+test("create-group: no members sends just the group fields", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await createGroup.execute({ name: "g", simplify_by_default: false }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "g", simplify_by_default: false });
 });
 
 /** Splitwise offers no idempotency key, and does not deduplicate by name. */
-Deno.test("create-group: is declared non-idempotent", () => {
+test("create-group: is declared non-idempotent", () => {
   assertEquals(createGroup.idempotent, false);
 });

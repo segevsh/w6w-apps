@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/synonym-save.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("synonym-save: PUTs the synonym body as given", async () => {
+test("synonym-save: PUTs the synonym body as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskID: 1, id: "s1" } }], { display });
   await action.execute!({
     indexName: "products",
@@ -19,7 +20,7 @@ Deno.test("synonym-save: PUTs the synonym body as given", async () => {
   assertEquals(JSON.parse(calls[0].body!), { type: "synonym", synonyms: ["sneaker", "trainer"] });
 });
 
-Deno.test("synonym-save: the synonym body is required", async () => {
+test("synonym-save: the synonym body is required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "p", objectID: "s1" }, ctx),

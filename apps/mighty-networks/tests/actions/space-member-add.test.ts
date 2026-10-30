@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { API, mockConnectedCtx, mockCtx, NET, queryOf } from "../_helpers.ts";
 import action from "../../actions/space-member-add.ts";
 
 const INPUT = { "spaceId": 7, "userId": 11 };
 
-Deno.test("space-member-add: POST /spaces/{space_id}/members on the connected Network", async () => {
+test("space-member-add: POST /spaces/{space_id}/members on the connected Network", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: 1 } }]);
   await action.execute(INPUT as never, ctx);
   const url = new URL(calls[0].url);
@@ -16,12 +17,12 @@ Deno.test("space-member-add: POST /spaces/{space_id}/members on the connected Ne
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("space-member-add: returns the API body", async () => {
+test("space-member-add: returns the API body", async () => {
   const { ctx } = mockConnectedCtx([{ body: { id: 42, marker: "x" } }]);
   assertEquals(await action.execute(INPUT as never, ctx), { id: 42, marker: "x" });
 });
 
-Deno.test("space-member-add: declares what it needs and what it returns", () => {
+test("space-member-add: declares what it needs and what it returns", () => {
   assertEquals(action.type, "perform");
   assertEquals((action.params ?? []).filter((p) => p.required).map((p) => p.key), [
     "spaceId",
@@ -31,13 +32,13 @@ Deno.test("space-member-add: declares what it needs and what it returns", () => 
   assert(Array.isArray(action.output) && action.output.length > 0);
 });
 
-Deno.test("space-member-add: refuses to run on a connection with no Network ID", async () => {
+test("space-member-add: refuses to run on a connection with no Network ID", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await assertRejects(async () => await action.execute(INPUT as never, ctx), Error, "Network ID");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("space-member-add: surfaces the vendor error with status and path", async () => {
+test("space-member-add: surfaces the vendor error with status and path", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 403,
     statusText: "Forbidden",

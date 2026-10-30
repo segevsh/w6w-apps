@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueAssign from "../../actions/issue-assign.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("issue-assign: PUTs the username, not an accountId", async () => {
+test("issue-assign: PUTs the username, not an accountId", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await issueAssign.execute({ issueKey: "ENG-1", username: "jdoe" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("issue-assign: PUTs the username, not an accountId", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "jdoe" });
 });
 
-Deno.test("issue-assign: an empty username unassigns with an explicit null", async () => {
+test("issue-assign: an empty username unassigns with an explicit null", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await issueAssign.execute({ issueKey: "ENG-1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: null });

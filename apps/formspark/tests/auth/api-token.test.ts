@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test as nodeTest } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken from "../../auth/api-token.ts";
 import { mockCtx, pathOf, problem, PROBLEM_HEADERS } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const ME = {
 // deno-lint-ignore no-explicit-any
 const test = (cred: unknown, ctx: any) => (apiToken.test as any)({ credential: cred }, ctx);
 
-Deno.test("auth: sign stamps the bearer header and nothing else", () => {
+nodeTest("auth: sign stamps the bearer header and nothing else", () => {
   // deno-lint-ignore no-explicit-any
   const out = (apiToken.sign as any)({
     request: { url: "u", method: "GET", headers: { accept: "x" } },
@@ -21,12 +22,12 @@ Deno.test("auth: sign stamps the bearer header and nothing else", () => {
   assertEquals(out.headers, { accept: "x", authorization: "Bearer fsk_live_abc" });
 });
 
-Deno.test("auth: declares a bearer method with one secret field", () => {
+nodeTest("auth: declares a bearer method with one secret field", () => {
   assertEquals(apiToken.type, "bearer");
   assertEquals(apiToken.fields?.map((f) => [f.key, f.type]), [["apiToken", "secret"]]);
 });
 
-Deno.test("auth: test probes GET /me with the token and passes on a token description", async () => {
+nodeTest("auth: test probes GET /me with the token and passes on a token description", async () => {
   const { ctx, calls } = mockCtx([{ body: ME }]);
   assertEquals(await test({ apiToken: " fsk_live_abc " }, ctx), { ok: true });
   assertEquals(calls[0].method, "GET");
@@ -34,7 +35,7 @@ Deno.test("auth: test probes GET /me with the token and passes on a token descri
   assertEquals(calls[0].headers["authorization"], "Bearer fsk_live_abc");
 });
 
-Deno.test("auth: test never returns the token in its message", async () => {
+nodeTest("auth: test never returns the token in its message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: PROBLEM_HEADERS,
@@ -44,7 +45,7 @@ Deno.test("auth: test never returns the token in its message", async () => {
   assert(!JSON.stringify(r).includes("fsk_live_SECRET"));
 });
 
-Deno.test("auth: test classifies by the problem code, not the status", async () => {
+nodeTest("auth: test classifies by the problem code, not the status", async () => {
   const bad = mockCtx([{
     status: 401,
     headers: PROBLEM_HEADERS,
@@ -68,7 +69,7 @@ Deno.test("auth: test classifies by the problem code, not the status", async () 
   );
 });
 
-Deno.test("auth: test without a token fails before any request", async () => {
+nodeTest("auth: test without a token fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const r = await test({}, ctx);
   assertEquals(r.ok, false);

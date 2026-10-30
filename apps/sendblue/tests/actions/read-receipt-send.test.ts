@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import readReceiptSend from "../../actions/read-receipt-send.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("read-receipt-send: POSTs to /api/mark-read", async () => {
+test("read-receipt-send: POSTs to /api/mark-read", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", number: "+2" } }]);
   await readReceiptSend.execute({ number: "+2", fromNumber: "+1" }, ctx);
 

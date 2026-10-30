@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { compact, formatReplyError, ReplyClient } from "../../lib/client.ts";
 import { mockCtx, page, pathOf, problem } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -10,7 +11,7 @@ Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", ()
   });
 });
 
-Deno.test("formatReplyError: surfaces the business-problem code and detail", () => {
+test("formatReplyError: surfaces the business-problem code and detail", () => {
   const msg = formatReplyError(
     400,
     "POST",
@@ -22,13 +23,13 @@ Deno.test("formatReplyError: surfaces the business-problem code and detail", () 
   assert(msg.includes("400"), msg);
 });
 
-Deno.test("formatReplyError: an empty body (the docs' documented 401 shape) is still readable", () => {
+test("formatReplyError: an empty body (the docs' documented 401 shape) is still readable", () => {
   const msg = formatReplyError(401, "GET", "/v3/whoami", "");
   assert(msg.includes("401"), msg);
   assert(msg.includes("empty body"), msg);
 });
 
-Deno.test("formatReplyError: a 429 adds the rate-limit hint", () => {
+test("formatReplyError: a 429 adds the rate-limit hint", () => {
   const msg = formatReplyError(
     429,
     "POST",
@@ -38,7 +39,7 @@ Deno.test("formatReplyError: a 429 adds the rate-limit hint", () => {
   assert(/rate-limits/i.test(msg), msg);
 });
 
-Deno.test("ReplyClient.list: reads the {items, hasMore} envelope", async () => {
+test("ReplyClient.list: reads the {items, hasMore} envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }], true) }]);
   const out = await new ReplyClient(ctx).list("/contacts");
 
@@ -46,19 +47,19 @@ Deno.test("ReplyClient.list: reads the {items, hasMore} envelope", async () => {
   assertEquals(out, { items: [{ id: 1 }], hasMore: true });
 });
 
-Deno.test("ReplyClient.json: parses a bare array with no envelope (custom-fields shape)", async () => {
+test("ReplyClient.json: parses a bare array with no envelope (custom-fields shape)", async () => {
   const { ctx } = mockCtx([{ body: [{ id: 1, title: "Budget" }] }]);
   const out = await new ReplyClient(ctx).json("/custom-fields");
   assertEquals(out, [{ id: 1, title: "Budget" }]);
 });
 
-Deno.test("ReplyClient.status: returns the HTTP status for a 204-with-no-body delete", async () => {
+test("ReplyClient.status: returns the HTTP status for a 204-with-no-body delete", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const status = await new ReplyClient(ctx).status("/contacts/1", { method: "DELETE" });
   assertEquals(status, 204);
 });
 
-Deno.test("ReplyClient: a non-ok response throws formatReplyError's message", async () => {
+test("ReplyClient: a non-ok response throws formatReplyError's message", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -74,7 +75,7 @@ Deno.test("ReplyClient: a non-ok response throws formatReplyError's message", as
   }
 });
 
-Deno.test("ReplyClient: query params drop undefined/null/empty but a body always sends JSON", async () => {
+test("ReplyClient: query params drop undefined/null/empty but a body always sends JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await new ReplyClient(ctx).list("/contacts", {
     query: { top: 10, skip: undefined, email: "" },
@@ -82,7 +83,7 @@ Deno.test("ReplyClient: query params drop undefined/null/empty but a body always
   assertEquals(calls[0].url, `https://api.reply.io/v3/contacts?top=10`);
 });
 
-Deno.test("ReplyClient: a POST body is JSON-encoded with the content-type header set", async () => {
+test("ReplyClient: a POST body is JSON-encoded with the content-type header set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await new ReplyClient(ctx).json("/contacts", { method: "POST", body: { email: "a@b.com" } });
   assertEquals(calls[0].method, "POST");

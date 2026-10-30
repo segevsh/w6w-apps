@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-enrich-job-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-enrich-job-get: GET /v3/contacts/jobs/{jobId}", async () => {
+test("contact-enrich-job-get: GET /v3/contacts/jobs/{jobId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await action.execute!({ "jobId": "j 1" } as never, ctx);
   assertEquals(calls[0].method, "GET");

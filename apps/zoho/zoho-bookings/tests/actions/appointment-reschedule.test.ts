@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-reschedule.ts";
 
-Deno.test("appointment-reschedule: POSTs the provided fields as form-data", async () => {
+test("appointment-reschedule: POSTs the provided fields as form-data", async () => {
   const { ctx, calls } = mockBookingsCtx([
     {
       body: {
@@ -26,7 +27,7 @@ Deno.test("appointment-reschedule: POSTs the provided fields as form-data", asyn
   });
 });
 
-Deno.test("appointment-reschedule: throws before requesting when none of staffId/groupId/startTime is set", async () => {
+test("appointment-reschedule: throws before requesting when none of staffId/groupId/startTime is set", async () => {
   const { ctx, calls } = mockBookingsCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ bookingId: "#AN-00014" }, ctx)),

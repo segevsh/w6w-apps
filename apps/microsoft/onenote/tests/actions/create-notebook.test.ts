@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-notebook.ts";
 
-Deno.test("create-notebook: POSTs { displayName } to /me/onenote/notebooks", async () => {
+test("create-notebook: POSTs { displayName } to /me/onenote/notebooks", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "n1", displayName: "My notebook" } }]);
   const out = await action.execute({ displayName: "My notebook" }, ctx) as { id: string };
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/onenote/notebooks");
@@ -11,7 +12,7 @@ Deno.test("create-notebook: POSTs { displayName } to /me/onenote/notebooks", asy
   assertEquals(out.id, "n1");
 });
 
-Deno.test("create-notebook: mints a new resource each call — not idempotent", () => {
+test("create-notebook: mints a new resource each call — not idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

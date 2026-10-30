@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { buildMultipart } from "../../lib/multipart.ts";
 
 function decode(bytes: Uint8Array): string {
   return new TextDecoder().decode(bytes);
 }
 
-Deno.test("buildMultipart: encodes text fields with the shared boundary", () => {
+test("buildMultipart: encodes text fields with the shared boundary", () => {
   const { body, contentType } = buildMultipart({ data: '{"a":1}' });
   const text = decode(body);
   const boundary = contentType.split("boundary=")[1];
@@ -15,7 +16,7 @@ Deno.test("buildMultipart: encodes text fields with the shared boundary", () => 
   assert(text.trimEnd().endsWith(`--${boundary}--`));
 });
 
-Deno.test("buildMultipart: splices a binary file part between text fields intact", () => {
+test("buildMultipart: splices a binary file part between text fields intact", () => {
   const fileBytes = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x00, 0xff, 0x01]); // "%PDF" + non-UTF8 bytes
   const { body } = buildMultipart({ data: "{}" }, {
     filename: "doc.pdf",
@@ -40,7 +41,7 @@ Deno.test("buildMultipart: splices a binary file part between text fields intact
   assertEquals(slice, fileBytes);
 });
 
-Deno.test("buildMultipart: escapes quotes/backslashes/newlines out of header values", () => {
+test("buildMultipart: escapes quotes/backslashes/newlines out of header values", () => {
   const { body } = buildMultipart({ 'weird"name': "value\r\nwith\\stuff" });
   const text = decode(body);
   assert(!text.includes('name="weird"name"'));

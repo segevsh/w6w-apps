@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import callList from "../../actions/call-list.ts";
 import { listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("call-list: calls GET /v1/calls and projects meta into the result", async () => {
+test("call-list: calls GET /v1/calls and projects meta into the result", async () => {
   const { ctx, calls } = mockCtx([
     { body: listBody("calls", [{ id: 812 }, { id: 813 }], { total: 2234, next_page_link: null }) },
   ]);
@@ -25,7 +26,7 @@ Deno.test("call-list: calls GET /v1/calls and projects meta into the result", as
  * cap at 10,000 reachable records while `total` keeps counting, so comparing the
  * two promises pages the API will refuse to serve.
  */
-Deno.test("call-list: hasMore follows next_page_link, not count vs total", async () => {
+test("call-list: hasMore follows next_page_link, not count vs total", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody("calls", [{ id: 1 }], {
@@ -40,7 +41,7 @@ Deno.test("call-list: hasMore follows next_page_link, not count vs total", async
   assertEquals(out.hasMore, false, "a huge total must not imply another page");
 });
 
-Deno.test("call-list: window, pagination and expansion params reach the query", async () => {
+test("call-list: window, pagination and expansion params reach the query", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", []) }]);
   await callList.execute({
     from: "1584998199",
@@ -72,7 +73,7 @@ Deno.test("call-list: window, pagination and expansion params reach the query", 
  * about how a false is parsed, so a false must be absence rather than
  * `?fetch_contact=false`.
  */
-Deno.test("call-list: a false expansion flag is omitted, not sent as false", async () => {
+test("call-list: a false expansion flag is omitted, not sent as false", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("calls", []) }]);
   await callList.execute({ fetchContact: false, fetchShortUrls: false }, ctx);
   const q = queryOf(calls[0].url);

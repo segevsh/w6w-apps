@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-transcript.ts";
 
-Deno.test("get-transcript: GETs the transcript by resource name", async () => {
+test("get-transcript: GETs the transcript by resource name", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import agentList from "../../actions/agent-list.ts";
 import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-list: POSTs the search to /agents/list and returns results", async () => {
+test("agent-list: POSTs the search to /agents/list and returns results", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [{ agent_id: "a1" }] } }]);
   const out = await agentList.execute(
     { query: "triage", page: 2, pageSize: 5 },
@@ -15,7 +16,7 @@ Deno.test("agent-list: POSTs the search to /agents/list and returns results", as
   assertEquals(out.results.length, 1);
 });
 
-Deno.test("agent-list: filters and sort are the vendor's own DSL, as JSON", async () => {
+test("agent-list: filters and sort are the vendor's own DSL, as JSON", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [] } }]);
   await agentList.execute(
     {
@@ -37,13 +38,13 @@ Deno.test("agent-list: filters and sort are the vendor's own DSL, as JSON", asyn
   assertEquals(bodyOf(calls[0]).sort, ["-update_date_"]);
 });
 
-Deno.test("agent-list: an empty body is sent when nothing is supplied", async () => {
+test("agent-list: an empty body is sent when nothing is supplied", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [] } }]);
   await agentList.execute({}, ctx);
   assertEquals(bodyOf(calls[0]), {});
 });
 
-Deno.test("agent-list: malformed filter JSON fails before any request is made", async () => {
+test("agent-list: malformed filter JSON fails before any request is made", async () => {
   const { ctx, calls } = mockRelevanceCtx();
   await assertRejects(
     async () => await agentList.execute({ filters: "{oops" }, ctx),
@@ -53,7 +54,7 @@ Deno.test("agent-list: malformed filter JSON fails before any request is made", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("agent-list: the deprecated flag is not exposed", () => {
+test("agent-list: the deprecated flag is not exposed", () => {
   // `include_public_agents` is documented as DEPRECATED and ignored — offering
   // it would invite a caller to depend on a no-op.
   assertEquals(agentList.params?.map((p) => p.key), [

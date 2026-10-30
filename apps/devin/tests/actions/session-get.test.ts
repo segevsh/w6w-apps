@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionGet from "../../actions/session-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("session-get: fetches the session by devin id", async () => {
+test("session-get: fetches the session by devin id", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       session_id: "devin-abc123",
@@ -17,13 +18,13 @@ Deno.test("session-get: fetches the session by devin id", async () => {
   assertEquals(out.status, "exit");
 });
 
-Deno.test("session-get: URL-encodes the session id", async () => {
+test("session-get: URL-encodes the session id", async () => {
   const { ctx, calls } = mockCtx([{ body: { session_id: "devin x", status: "new" } }]);
   await sessionGet.execute({ devinId: "devin x" }, ctx);
   assertEquals(calls[0].url, `${API_ROOT}/sessions/devin%20x`);
 });
 
-Deno.test("session-get: is a read action requiring devinId", () => {
+test("session-get: is a read action requiring devinId", () => {
   assertEquals(sessionGet.type, "read");
   assertEquals(sessionGet.params?.find((p) => p.key === "devinId")?.required, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import accessGrant from "../../actions/access-grant.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("access-grant: sends POST /customers/${seg(input.customerId)}/accesses", async () => {
+test("access-grant: sends POST /customers/${seg(input.customerId)}/accesses", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 9 } }]);
   const out = await accessGrant.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("access-grant: sends POST /customers/${seg(input.customerId)}/accesses
   assertEquals(out, { "id": 9 });
 });
 
-Deno.test("access-grant: a 422 surfaces the vendor's message", async () => {
+test("access-grant: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

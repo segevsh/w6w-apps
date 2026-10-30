@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import scheduleDelete from "../../actions/schedule-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("schedule-delete: DELETEs /schedules/{id}", async () => {
+test("schedule-delete: DELETEs /schedules/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await scheduleDelete.execute({ id: 562 }, ctx);
 

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updateTask from "../../actions/update-task.ts";
 
-Deno.test("update-task: PATCHes only what was supplied", async () => {
+test("update-task: PATCHes only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: { task_id: "t1" } } } }]);
   await updateTask.execute({ taskId: "t1", isCompleted: true }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -16,13 +17,13 @@ Deno.test("update-task: PATCHes only what was supplied", async () => {
  * is typed `["string","null"]`, so an explicit null CLEARS the deadline while
  * omission leaves it alone.
  */
-Deno.test("update-task: an explicit null deadline survives and clears it", async () => {
+test("update-task: an explicit null deadline survives and clears it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }]);
   await updateTask.execute({ taskId: "t1", deadlineAt: null }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { data: { deadline_at: null } });
 });
 
-Deno.test("update-task: converts assignees, and an empty array unassigns everyone", async () => {
+test("update-task: converts assignees, and an empty array unassigns everyone", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: {} } },
     { status: 200, body: { data: {} } },
@@ -37,7 +38,7 @@ Deno.test("update-task: converts assignees, and an empty array unassigns everyon
   assertEquals(JSON.parse(calls[1].body!), { data: { assignees: [] } });
 });
 
-Deno.test("update-task: says the content cannot be changed", () => {
+test("update-task: says the content cannot be changed", () => {
   assert(/text cannot be changed/i.test(updateTask.description!));
   assertEquals((updateTask.params ?? []).some((p) => p.key === "content"), false);
 });

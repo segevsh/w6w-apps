@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/data-import-new-table.ts";
 
-Deno.test("data-import-new-table: not idempotent", () => {
+test("data-import-new-table: not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("data-import-new-table: POSTs multipart FILE plus CONFIG, unwraps data", async () => {
+test("data-import-new-table: POSTs multipart FILE plus CONFIG, unwraps data", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {

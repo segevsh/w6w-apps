@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deal-get.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("deal-get: fetches crm.deal.get with the numeric id", async () => {
+test("deal-get: fetches crm.deal.get with the numeric id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: { ID: "8", TITLE: "A Deal" }, time: {} } },
   ], { display });
@@ -16,7 +17,7 @@ Deno.test("deal-get: fetches crm.deal.get with the numeric id", async () => {
   assertEquals(out, { ID: "8", TITLE: "A Deal" });
 });
 
-Deno.test("deal-get: rejects a non-numeric id before any network call", async () => {
+test("deal-get: rejects a non-numeric id before any network call", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ id: NaN }, ctx);

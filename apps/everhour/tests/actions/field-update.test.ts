@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fieldUpdate from "../../actions/field-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("field-update: PUT /fields/{fieldId} with the documented query and body", async () => {
+test("field-update: PUT /fields/{fieldId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await fieldUpdate.execute({
     "fieldId": 4456411,
@@ -29,7 +30,7 @@ Deno.test("field-update: PUT /fields/{fieldId} with the documented query and bod
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("field-update: an Everhour error surfaces its message and status", async () => {
+test("field-update: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -47,7 +48,7 @@ Deno.test("field-update: an Everhour error surfaces its message and status", asy
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("field-update: declares perform and idempotent=true", () => {
+test("field-update: declares perform and idempotent=true", () => {
   assertEquals(fieldUpdate.type, "perform");
   assertEquals(fieldUpdate.idempotent, true);
 });

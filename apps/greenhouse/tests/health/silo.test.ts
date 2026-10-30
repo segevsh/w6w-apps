@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import silo from "../../health/silo.ts";
 
-Deno.test("silo: is a declared absence, not a probe", () => {
+test("silo: is a declared absence, not a probe", () => {
   assertEquals(silo.check, undefined);
   assert(silo.unavailable !== undefined);
 });
@@ -12,7 +13,7 @@ Deno.test("silo: is a declared absence, not a probe", () => {
  * app's verdict at `unknown` forever — which is the opposite of what declaring
  * it is for.
  */
-Deno.test("silo: is informational, so declaring the gap cannot pin the verdict", () => {
+test("silo: is informational, so declaring the gap cannot pin the verdict", () => {
   assertEquals(silo.severity, "informational");
 });
 
@@ -21,7 +22,7 @@ Deno.test("silo: is informational, so declaring the gap cannot pin the verdict",
  * names both blockers: parsing a credential outside `sign`, and an undocumented
  * claim-to-component mapping.
  */
-Deno.test("silo: the reason names both reasons the answer is unavailable", () => {
+test("silo: the reason names both reasons the answer is unavailable", () => {
   const reason = silo.unavailable!.reason;
   assert(reason.includes("sign"), reason);
   assert(reason.toLowerCase().includes("claim"), reason);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("webhook-create: sends every input, unwraps data and credits", async () => {
+test("webhook-create: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -28,7 +29,7 @@ Deno.test("webhook-create: sends every input, unwraps data and credits", async (
   });
 });
 
-Deno.test("webhook-create: omits optional inputs that were not given", async () => {
+test("webhook-create: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -38,7 +39,7 @@ Deno.test("webhook-create: omits optional inputs that were not given", async () 
   assertEquals(JSON.parse(calls[0].body!), { "account_id": "accountId-v" });
 });
 
-Deno.test("webhook-create: an error envelope is thrown with the vendor code", async () => {
+test("webhook-create: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

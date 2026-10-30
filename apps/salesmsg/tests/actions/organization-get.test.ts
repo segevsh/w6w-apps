@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import organizationGet from "../../actions/organization-get.ts";
 import { API_ROOT, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("organization-get: sends the documented request and returns the answer", async () => {
+test("organization-get: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await organizationGet.execute({}, ctx) as { id: number };
 
@@ -13,7 +14,7 @@ Deno.test("organization-get: sends the documented request and returns the answer
   assertEquals(result.id, 1);
 });
 
-Deno.test("organization-get: a refused token surfaces the vendor message", async () => {
+test("organization-get: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

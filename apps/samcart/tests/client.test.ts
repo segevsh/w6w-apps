@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "./_assert.ts";
 import {
   compact,
   formatSamCartError,
@@ -10,18 +11,18 @@ import {
 } from "../lib/client.ts";
 import { mockCtx, pathOf } from "./_helpers.ts";
 
-Deno.test("client: intId accepts positive integers only", () => {
+test("client: intId accepts positive integers only", () => {
   assertEquals(intId(" 42 "), "42");
   for (const bad of ["", "0", "-1", "1.5", "1/2", "abc", undefined, null, "01"]) {
     assertThrows(() => intId(bad), Error, "positive integer");
   }
 });
 
-Deno.test("client: seg encodes one path segment", () => {
+test("client: seg encodes one path segment", () => {
   assertEquals(seg("a/b c"), "a%2Fb%20c");
 });
 
-Deno.test("client: compact keeps false and 0, drops unset", () => {
+test("client: compact keeps false and 0, drops unset", () => {
   assertEquals(compact({ a: false, b: 0, c: "", d: null, e: undefined, f: "x" }), {
     a: false,
     b: 0,
@@ -29,13 +30,13 @@ Deno.test("client: compact keeps false and 0, drops unset", () => {
   });
 });
 
-Deno.test("client: toIntList parses, trims and validates", () => {
+test("client: toIntList parses, trims and validates", () => {
   assertEquals(toIntList("1, 2,3", "ids"), [1, 2, 3]);
   assertEquals(toIntList([4, "5"], "ids"), [4, 5]);
   assertThrows(() => toIntList("1,x", "ids"), Error, "positive integer");
 });
 
-Deno.test("client: page extracts the next offset from the next URL", () => {
+test("client: page extracts the next offset from the next URL", () => {
   const p = page({
     data: [{ id: 1 }],
     pagination: { next: "https://api.samcart.com/v1/orders?offset=1337&dir=next", prev: null },
@@ -46,7 +47,7 @@ Deno.test("client: page extracts the next offset from the next URL", () => {
   assertEquals(page(null), { data: [], next: null, prev: null, nextOffset: null });
 });
 
-Deno.test("client: error bodies keep the vendor message, both shapes", () => {
+test("client: error bodies keep the vendor message, both shapes", () => {
   assertEquals(
     formatSamCartError(401, "GET", "/v1/x", '{"message":"Invalid authentication credentials"}')
       .includes("Invalid authentication credentials"),
@@ -60,7 +61,7 @@ Deno.test("client: error bodies keep the vendor message, both shapes", () => {
   assertEquals(formatSamCartError(500, "GET", "/v1/x", "boom").includes("boom"), true);
 });
 
-Deno.test("client: sends accept, drops empty query values and never an auth header", async () => {
+test("client: sends accept, drops empty query values and never an auth header", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new SamCartClient(ctx).call("GET", "/orders", { query: { a: "1", b: "", c: undefined } });
   assertEquals(pathOf(calls[0].url), "/v1/orders");
@@ -70,12 +71,12 @@ Deno.test("client: sends accept, drops empty query values and never an auth head
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: an empty 2xx body is null, not a parse error", async () => {
+test("client: an empty 2xx body is null, not a parse error", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   assertEquals(await new SamCartClient(ctx).call("POST", "/x"), null);
 });
 
-Deno.test("client: a non-JSON 2xx body is reported", async () => {
+test("client: a non-JSON 2xx body is reported", async () => {
   const { ctx } = mockCtx([{ body: "<html>" }]);
   let message = "";
   try {

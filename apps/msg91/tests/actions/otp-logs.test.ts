@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/otp-logs.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("otp-logs: GET /api/v5/report/logs/p/otp with the window, request id, fields and limit", async () => {
+test("otp-logs: GET /api/v5/report/logs/p/otp with the window, request id, fields and limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ status: "Delivered" }], metadata: { total: 6, paginationToken: "t" } },
   }]);
@@ -27,7 +28,7 @@ Deno.test("otp-logs: GET /api/v5/report/logs/p/otp with the window, request id, 
   assertEquals(out.data, [{ status: "Delivered" }]);
 });
 
-Deno.test("otp-logs: total falls back to the row count without metadata", async () => {
+test("otp-logs: total falls back to the row count without metadata", async () => {
   const { ctx } = mockCtx([{ body: { data: [{}, {}] } }]);
   const out = await action.execute({ startDate: "a", endDate: "b" }, ctx) as Record<
     string,
@@ -36,7 +37,7 @@ Deno.test("otp-logs: total falls back to the row count without metadata", async 
   assertEquals(out.total, 2);
 });
 
-Deno.test("otp-logs: puts no credential on the request (sign owns that)", async () => {
+test("otp-logs: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], metadata: { total: 0 } } }]);
   await action.execute({ startDate: "2026-10-04", endDate: "2026-10-06" }, ctx);
   assertEquals(calls[0].headers.authkey, undefined);
@@ -44,7 +45,7 @@ Deno.test("otp-logs: puts no credential on the request (sign owns that)", async 
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("otp-logs: a vendor error surfaces its own message", async () => {
+test("otp-logs: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ startDate: "2026-10-04", endDate: "2026-10-06" }, ctx)

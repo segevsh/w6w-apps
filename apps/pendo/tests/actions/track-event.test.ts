@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track-event.ts";
 
-Deno.test("track-event: posts to the data host with the track body", async () => {
+test("track-event: posts to the data host with the track body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({
     event: "Registered",
@@ -21,7 +22,7 @@ Deno.test("track-event: posts to the data host with the track body", async () =>
   assertEquals(result.deferred, false);
 });
 
-Deno.test("track-event: uses the current time when no timestamp is given", async () => {
+test("track-event: uses the current time when no timestamp is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const before = Date.now();
   await action.execute!({ event: "e", visitorId: "v" }, ctx);
@@ -29,7 +30,7 @@ Deno.test("track-event: uses the current time when no timestamp is given", async
   assert(body.timestamp >= before);
 });
 
-Deno.test("track-event: `event` and `visitorId` are required", async () => {
+test("track-event: `event` and `visitorId` are required", async () => {
   await assertRejects(
     async () => await action.execute!({ visitorId: "v" }, mockCtx([]).ctx),
     Error,
@@ -43,7 +44,7 @@ Deno.test("track-event: `event` and `visitorId` are required", async () => {
 });
 
 /** A timestamp in the past is silently deferred by Pendo — this action warns instead. */
-Deno.test("track-event: a stale timestamp is flagged as deferred and logs a warning", async () => {
+test("track-event: a stale timestamp is flagged as deferred and logs a warning", async () => {
   const { ctx, logs } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({
     event: "e",
@@ -54,7 +55,7 @@ Deno.test("track-event: a stale timestamp is flagged as deferred and logs a warn
   assert(logs.some((l) => l.level === "warn" && /daily\/weekly reprocessing/.test(l.message)));
 });
 
-Deno.test("track-event: a timestamp over 7 days old warns about possibly not being processed", async () => {
+test("track-event: a timestamp over 7 days old warns about possibly not being processed", async () => {
   const { ctx, logs } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({
     event: "e",
@@ -65,7 +66,7 @@ Deno.test("track-event: a timestamp over 7 days old warns about possibly not bei
   assert(logs.some((l) => l.level === "warn" && /may not process it at all/.test(l.message)));
 });
 
-Deno.test("track-event: properties and context are parsed JSON, passed through", async () => {
+test("track-event: properties and context are parsed JSON, passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await action.execute!({
     event: "e",
@@ -78,7 +79,7 @@ Deno.test("track-event: properties and context are parsed JSON, passed through",
   assertEquals(body.context, { ip: "1.2.3.4" });
 });
 
-Deno.test("track-event: a non-2xx response throws with Pendo's own detail", async () => {
+test("track-event: a non-2xx response throws with Pendo's own detail", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "bad request" }]);
   await assertRejects(
     async () => await action.execute!({ event: "e", visitorId: "v" }, ctx),

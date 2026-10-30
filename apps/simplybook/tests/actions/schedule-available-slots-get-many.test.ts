@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/schedule-available-slots-get-many.ts";
 
-Deno.test("schedule-available-slots-get-many: GETs with the four required params", async () => {
+test("schedule-available-slots-get-many: GETs with the four required params", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ date: "2026-09-05", time: "11:00" }] }], {
     display: TEST_DISPLAY,
   });
@@ -21,13 +22,13 @@ Deno.test("schedule-available-slots-get-many: GETs with the four required params
   assertEquals(result, [{ date: "2026-09-05", time: "11:00" }]);
 });
 
-Deno.test("schedule-available-slots-get-many: an explicit count overrides the default of 1", async () => {
+test("schedule-available-slots-get-many: an explicit count overrides the default of 1", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
   await action.execute({ serviceId: 7, providerId: 3, date: "2026-09-05", count: 4 }, ctx);
   assertEquals(queryOf(calls[0].url).count, "4");
 });
 
-Deno.test("schedule-available-slots-get-many: serializes product ids", async () => {
+test("schedule-available-slots-get-many: serializes product ids", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: TEST_DISPLAY });
   await action.execute({
     serviceId: 7,

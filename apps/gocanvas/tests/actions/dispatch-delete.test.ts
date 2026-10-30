@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/dispatch-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("dispatch-delete: DELETE /api/v3/dispatches/194781 with the documented shape", async () => {
+test("dispatch-delete: DELETE /api/v3/dispatches/194781 with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "message": "deleted" } }]);
   const out = await action.execute({ "dispatchId": 194781 } as never, ctx);
   assertEquals(calls.length, 1);

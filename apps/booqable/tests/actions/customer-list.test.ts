@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/customer-list.ts";
 
-Deno.test("customer-list: GETs /customers with flattened filter, include, sort and page", async () => {
+test("customer-list: GETs /customers with flattened filter, include, sort and page", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: [] } }]);
   await action.execute({
     filter: JSON.stringify({ archived: { eq: false } }),
@@ -21,7 +22,7 @@ Deno.test("customer-list: GETs /customers with flattened filter, include, sort a
   assertEquals(url.searchParams.get("page[size]"), "10");
 });
 
-Deno.test("customer-list: works with no params at all", async () => {
+test("customer-list: works with no params at all", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/4/customers");

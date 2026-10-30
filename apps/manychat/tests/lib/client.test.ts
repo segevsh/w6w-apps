@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_URL,
@@ -10,13 +11,13 @@ import {
 
 // ------------------------------------------------------------------- base URL
 
-Deno.test("client: base URL is the one Manychat's own PHP SDK hardcodes", () => {
+test("client: base URL is the one Manychat's own PHP SDK hardcodes", () => {
   assertEquals(API_URL, "https://api.manychat.com");
 });
 
 // -------------------------------------------------------------------- request
 
-Deno.test("client: GET puts query params on the URL and drops empty ones", async () => {
+test("client: GET puts query params on the URL and drops empty ones", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: [] } }]);
   await new ManychatClient(ctx).get("/fb/subscriber/getInfo", {
     subscriber_id: "123",
@@ -32,7 +33,7 @@ Deno.test("client: GET puts query params on the URL and drops empty ones", async
   assert(!url.searchParams.has("nulled"));
 });
 
-Deno.test("client: POST sends JSON with a content-type", async () => {
+test("client: POST sends JSON with a content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await new ManychatClient(ctx).post("/fb/page/createTag", { name: "vip" });
   assertEquals(calls[0].method, "POST");
@@ -40,7 +41,7 @@ Deno.test("client: POST sends JSON with a content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "vip" });
 });
 
-Deno.test("client: never sets an Authorization header — that is the sign hook's job", async () => {
+test("client: never sets an Authorization header — that is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await new ManychatClient(ctx).get("/fb/page/getInfo");
   assert(!("authorization" in calls[0].headers), "client must not sign");
@@ -48,7 +49,7 @@ Deno.test("client: never sets an Authorization header — that is the sign hook'
 
 // -------------------------------------------------------------------- failure
 
-Deno.test("client: a non-2xx throws with the vendor message, never the request", async () => {
+test("client: a non-2xx throws with the vendor message, never the request", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { status: "error", message: "Wrong token" } },
   ]);
@@ -60,7 +61,7 @@ Deno.test("client: a non-2xx throws with the vendor message, never the request",
   assert(err.message.includes("/fb/page/getInfo"), err.message);
 });
 
-Deno.test("client: a 200 carrying `status: error` is a failure, not a success", async () => {
+test("client: a 200 carrying `status: error` is a failure, not a success", async () => {
   // This is the trap `res.ok` alone would walk into.
   const { ctx } = mockCtx([
     { status: 200, body: { status: "error", message: "Subscriber not found" } },
@@ -72,7 +73,7 @@ Deno.test("client: a 200 carrying `status: error` is a failure, not a success", 
   assert(err.message.includes("Subscriber not found"), err.message);
 });
 
-Deno.test("client: a non-JSON error body degrades to the status alone", async () => {
+test("client: a non-JSON error body degrades to the status alone", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -88,7 +89,7 @@ Deno.test("client: a non-JSON error body degrades to the status alone", async ()
   assert(!err.message.includes("DOCTYPE"), "must not echo the HTML body");
 });
 
-Deno.test("client: a success envelope is returned whole, `status` included", async () => {
+test("client: a success envelope is returned whole, `status` included", async () => {
   const { ctx } = mockCtx([{ body: { status: "success", data: { id: 7 } } }]);
   const out = await new ManychatClient(ctx).get<{ status: string; data: { id: number } }>(
     "/fb/page/getInfo",
@@ -99,7 +100,7 @@ Deno.test("client: a success envelope is returned whole, `status` included", asy
 
 // ---------------------------------------------------------------- formatError
 
-Deno.test("formatError: folds details.messages[] into the summary", () => {
+test("formatError: folds details.messages[] into the summary", () => {
   const out = formatError(400, {
     status: "error",
     message: "Validation failed",
@@ -108,20 +109,20 @@ Deno.test("formatError: folds details.messages[] into the summary", () => {
   assertEquals(out, "HTTP 400: Validation failed — name is required; type is invalid");
 });
 
-Deno.test("formatError: renders the `code` variant", () => {
+test("formatError: renders the `code` variant", () => {
   assertEquals(
     formatError(400, { status: "error", message: "nope", code: 17 }),
     "HTTP 400 (code 17): nope",
   );
 });
 
-Deno.test("formatError: an absent body degrades to the status", () => {
+test("formatError: an absent body degrades to the status", () => {
   assertEquals(formatError(500, undefined), "HTTP 500");
 });
 
 // -------------------------------------------------------------------- compact
 
-Deno.test("compact: drops undefined, null and empty string but keeps false and 0", () => {
+test("compact: drops undefined, null and empty string but keeps false and 0", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }),
     { a: 1, e: false, f: 0 },
@@ -130,7 +131,7 @@ Deno.test("compact: drops undefined, null and empty string but keeps false and 0
 
 // --------------------------------------------------------- coerceFieldValue
 
-Deno.test("coerceFieldValue: coerces the two unambiguous string cases", () => {
+test("coerceFieldValue: coerces the two unambiguous string cases", () => {
   assertEquals(coerceFieldValue("true"), true);
   assertEquals(coerceFieldValue("false"), false);
   assertEquals(coerceFieldValue("42"), 42);
@@ -139,7 +140,7 @@ Deno.test("coerceFieldValue: coerces the two unambiguous string cases", () => {
   assertEquals(coerceFieldValue("3.5"), 3.5);
 });
 
-Deno.test("coerceFieldValue: leaves dates, reference codes and prose alone", () => {
+test("coerceFieldValue: leaves dates, reference codes and prose alone", () => {
   // A leading-zero reference code turned into an integer is data loss.
   assertEquals(coerceFieldValue("007"), "007");
   assertEquals(coerceFieldValue("2026-08-03"), "2026-08-03");
@@ -150,7 +151,7 @@ Deno.test("coerceFieldValue: leaves dates, reference codes and prose alone", () 
   assertEquals(coerceFieldValue("hello"), "hello");
 });
 
-Deno.test("coerceFieldValue: passes non-strings straight through", () => {
+test("coerceFieldValue: passes non-strings straight through", () => {
   assertEquals(coerceFieldValue(5), 5);
   assertEquals(coerceFieldValue(true), true);
   assertEquals(coerceFieldValue(undefined), undefined);

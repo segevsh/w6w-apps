@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationUnreadList from "../../actions/conversation-unread-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-unread-list: GET /api/v3/conversations/get_unread with every documented parameter", async () => {
+test("conversation-unread-list: GET /api/v3/conversations/get_unread with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await conversationUnreadList.execute({ "workspaceId": 100 }, ctx) as Record<
     string,
@@ -17,14 +18,14 @@ Deno.test("conversation-unread-list: GET /api/v3/conversations/get_unread with e
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }] });
 });
 
-Deno.test("conversation-unread-list: sends no credential of its own", async () => {
+test("conversation-unread-list: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await conversationUnreadList.execute({ "workspaceId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("conversation-unread-list: surfaces Twist's error body", async () => {
+test("conversation-unread-list: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

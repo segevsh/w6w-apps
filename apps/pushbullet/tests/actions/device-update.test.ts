@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deviceUpdate from "../../actions/device-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("device-update: POSTs to /v2/devices/{iden}", async () => {
+test("device-update: POSTs to /v2/devices/{iden}", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "d1", nickname: "Work Phone" } }]);
   const out = await deviceUpdate.execute({ iden: "d1", nickname: "Work Phone" }, ctx) as {
     nickname: string;
@@ -14,6 +15,6 @@ Deno.test("device-update: POSTs to /v2/devices/{iden}", async () => {
   assertEquals(out.nickname, "Work Phone");
 });
 
-Deno.test("device-update: is declared idempotent", () => {
+test("device-update: is declared idempotent", () => {
   assertEquals(deviceUpdate.idempotent, true);
 });

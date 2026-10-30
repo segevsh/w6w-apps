@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listGet from "../../actions/list-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-get: fetches one list by id", async () => {
+test("list-get: fetches one list by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "2", name: "Newsletter", total_subscribers: 40 },
   }]);

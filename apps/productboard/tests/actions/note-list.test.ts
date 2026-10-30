@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/note-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("note-list: GETs /v2/notes", async () => {
+test("note-list: GETs /v2/notes", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "n-1" }], "cur-1") }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -14,7 +15,7 @@ Deno.test("note-list: GETs /v2/notes", async () => {
  * The triage-inbox query. `processed=false` must reach the wire — if the
  * builder dropped a false the action would silently return every note.
  */
-Deno.test("note-list: processed=false and archived=false both survive", async () => {
+test("note-list: processed=false and archived=false both survive", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({ processed: false, archived: false }, ctx);
   assertEquals(queryOf(calls[0].url), { processed: "false", archived: "false" });
@@ -25,14 +26,14 @@ Deno.test("note-list: processed=false and archived=false both survive", async ()
  * /notes/search and on every entities endpoint. Sending the wrong one is
  * silently ignored, so the spelling is pinned.
  */
-Deno.test("note-list: the field selector is `fields`, WITHOUT brackets, on this endpoint", async () => {
+test("note-list: the field selector is `fields`, WITHOUT brackets, on this endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({ fields: "name,content" }, ctx);
   assertEquals(queryAll(calls[0].url, "fields"), ["name", "content"]);
   assertEquals(queryAll(calls[0].url, "fields[]"), []);
 });
 
-Deno.test("note-list: owner, creator and source filters use bracketed keys", async () => {
+test("note-list: owner, creator and source filters use bracketed keys", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({
     ownerEmail: "jane@example.com",
@@ -52,7 +53,7 @@ Deno.test("note-list: owner, creator and source filters use bracketed keys", asy
   });
 });
 
-Deno.test("note-list: note types are repeated type[] keys", async () => {
+test("note-list: note types are repeated type[] keys", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({ types: "textNote,conversationNote" }, ctx);
   assertEquals(queryAll(calls[0].url, "type[]"), ["textNote", "conversationNote"]);

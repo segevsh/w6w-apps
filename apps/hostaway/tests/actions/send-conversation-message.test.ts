@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-conversation-message.ts";
 
-Deno.test("send-conversation-message: POSTs only body + communicationType, defaulting to email", async () => {
+test("send-conversation-message: POSTs only body + communicationType, defaulting to email", async () => {
   const { ctx, calls } = mockCtx([envelope({ id: 326, status: "sent" })]);
   await action.execute({ conversationId: 1406, body: "hello guest" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("send-conversation-message: POSTs only body + communicationType, defau
   assertEquals(JSON.parse(calls[0].body!), { body: "hello guest", communicationType: "email" });
 });
 
-Deno.test("send-conversation-message: accepts the four documented communication types", async () => {
+test("send-conversation-message: accepts the four documented communication types", async () => {
   const { ctx, calls } = mockCtx([envelope({ id: 1 })]);
   await action.execute({ conversationId: 1, body: "hi", communicationType: "whatsapp" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { body: "hi", communicationType: "whatsapp" });
@@ -22,7 +23,7 @@ Deno.test("send-conversation-message: accepts the four documented communication 
   );
 });
 
-Deno.test("send-conversation-message: requires the message body and the conversation", async () => {
+test("send-conversation-message: requires the message body and the conversation", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ conversationId: 1406 }, ctx)),
@@ -37,7 +38,7 @@ Deno.test("send-conversation-message: requires the message body and the conversa
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-conversation-message: the 30/minute rate limit is documented on the action", () => {
+test("send-conversation-message: the 30/minute rate limit is documented on the action", () => {
   assert(
     /30 requests per minute/i.test(action.description ?? ""),
     "the description must carry the documented limit",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mmsSend from "../../actions/mms-send.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mms-send: POSTs content_urls", async () => {
+test("mms-send: POSTs content_urls", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m", status: "sent" } }]);
   await mmsSend.execute({
     sender: "S",
@@ -21,7 +22,7 @@ Deno.test("mms-send: POSTs content_urls", async () => {
   });
 });
 
-Deno.test("mms-send: accepts content URLs as a JSON string", async () => {
+test("mms-send: accepts content URLs as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await mmsSend.execute({
     sender: "S",
@@ -31,4 +32,4 @@ Deno.test("mms-send: accepts content URLs as a JSON string", async () => {
   assertEquals(bodyOf(calls[0]).content_urls, ["https://e.com/a.jpg"]);
 });
 
-Deno.test("mms-send: is not idempotent", () => assertEquals(mmsSend.idempotent, false));
+test("mms-send: is not idempotent", () => assertEquals(mmsSend.idempotent, false));

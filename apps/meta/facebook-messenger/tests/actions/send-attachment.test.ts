@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx, SENT } from "../_helpers.ts";
 import action from "../../actions/send-attachment.ts";
 
-Deno.test("send-attachment: URL asset is sent in message.attachment", async () => {
+test("send-attachment: URL asset is sent in message.attachment", async () => {
   const { ctx, calls } = mockCtx([{ body: SENT }]);
   await action.execute!({ recipientId: "p", type: "image", url: "https://x/y.jpg" }, ctx);
   assertEquals(bodyOf(calls[0]).message, {
@@ -10,7 +11,7 @@ Deno.test("send-attachment: URL asset is sent in message.attachment", async () =
   });
 });
 
-Deno.test("send-attachment: isReusable adds is_reusable", async () => {
+test("send-attachment: isReusable adds is_reusable", async () => {
   const { ctx, calls } = mockCtx([{ body: { ...SENT, attachment_id: "a1" } }]);
   const out = await action.execute!(
     { recipientId: "p", type: "video", url: "https://x/v.mp4", isReusable: true },
@@ -23,7 +24,7 @@ Deno.test("send-attachment: isReusable adds is_reusable", async () => {
   assertEquals(out.attachment_id, "a1");
 });
 
-Deno.test("send-attachment: a saved attachment id is used instead of a URL", async () => {
+test("send-attachment: a saved attachment id is used instead of a URL", async () => {
   const { ctx, calls } = mockCtx([{ body: SENT }]);
   await action.execute!({ recipientId: "p", type: "file", attachmentId: "123" }, ctx);
   assertEquals(bodyOf(calls[0]).message, {
@@ -31,7 +32,7 @@ Deno.test("send-attachment: a saved attachment id is used instead of a URL", asy
   });
 });
 
-Deno.test("send-attachment: needs exactly one of url / attachmentId", async () => {
+test("send-attachment: needs exactly one of url / attachmentId", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ recipientId: "p", type: "image" }, ctx),

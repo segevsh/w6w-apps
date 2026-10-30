@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-get.ts";
 
@@ -13,7 +14,7 @@ const device = {
   expires: new Date(Date.now() + 100 * 86_400_000).toISOString(),
 };
 
-Deno.test("device-get: fetches the device and asks for every field by default", async () => {
+test("device-get: fetches the device and asks for every field by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: device }]);
   const result = await action.execute({ deviceId: "n1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/device/n1");
@@ -24,7 +25,7 @@ Deno.test("device-get: fetches the device and asks for every field by default", 
 });
 
 /** An expired key takes a device offline while leaving it listed. */
-Deno.test("device-get: counts the days a key has left and warns when it has none", async () => {
+test("device-get: counts the days a key has left and warns when it has none", async () => {
   const ok = mockCtx([{ status: 200, body: device }]);
   const healthy = await action.execute({ deviceId: "n1" }, ok.ctx) as Record<string, unknown>;
   assertEquals(healthy.keyExpiresInDays, 100);
@@ -42,7 +43,7 @@ Deno.test("device-get: counts the days a key has left and warns when it has none
   );
 });
 
-Deno.test("device-get: a key expiring within a fortnight is noted, not warned", async () => {
+test("device-get: a key expiring within a fortnight is noted, not warned", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { ...device, expires: new Date(Date.now() + 3 * 86_400_000).toISOString() },
@@ -55,7 +56,7 @@ Deno.test("device-get: a key expiring within a fortnight is noted, not warned", 
 });
 
 /** Expiry disabled means the clock never runs out. */
-Deno.test("device-get: says nothing about expiry when expiry is disabled", async () => {
+test("device-get: says nothing about expiry when expiry is disabled", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: {
@@ -69,13 +70,13 @@ Deno.test("device-get: says nothing about expiry when expiry is disabled", async
   assertEquals(logs.length, 0);
 });
 
-Deno.test("device-get: requires an id", async () => {
+test("device-get: requires an id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`deviceId` is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("device-get: says the nodeId is the preferred identifier", () => {
+test("device-get: says the nodeId is the preferred identifier", () => {
   const param = action.params!.find((p) => p.key === "deviceId")!;
   assert(/`nodeId`.*is preferred/.test(param.hint!), param.hint);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: hits tags.json and forwards company/status/tag_level filters", async () => {
+test("tag-list: hits tags.json and forwards company/status/tag_level filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("tags", [{ id: 1, name: "Sales" }]) }]);
   const out = await tagList.execute(
     { accountId: "ACC1", companyId: "COM1", status: "enabled", tagLevel: "company" },

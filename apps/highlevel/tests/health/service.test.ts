@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import type { HealthFeedEntry, HealthFeedInput } from "@w6w/types";
@@ -16,7 +17,7 @@ const feed = (latest: HealthFeedEntry[]): HealthFeedInput => ({
   fetchedAt: new Date().toISOString(),
 });
 
-Deno.test("service: no open incidents reports ok", async () => {
+test("service: no open incidents reports ok", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!(
     { feed: feed([entry({ title: "gohighlevel.com recovered" })]) },
@@ -25,7 +26,7 @@ Deno.test("service: no open incidents reports ok", async () => {
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: a whole-platform outage maps to down", async () => {
+test("service: a whole-platform outage maps to down", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!(
     { feed: feed([entry({ title: "gohighlevel.com went down" })]) },
@@ -34,7 +35,7 @@ Deno.test("service: a whole-platform outage maps to down", async () => {
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: an open, feature-scoped incident maps to degraded", async () => {
+test("service: an open, feature-scoped incident maps to degraded", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!(
     {
@@ -51,7 +52,7 @@ Deno.test("service: an open, feature-scoped incident maps to degraded", async ()
   assertEquals(out.message, "Social Planner: YouTube Integration (Partial)");
 });
 
-Deno.test("service: a resolved incident (by description) does not count as open", async () => {
+test("service: a resolved incident (by description) does not count as open", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!(
     {
@@ -67,7 +68,7 @@ Deno.test("service: a resolved incident (by description) does not count as open"
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: a feed fetch error reports unknown, never down", async () => {
+test("service: a feed fetch error reports unknown, never down", async () => {
   const { ctx } = mockCtx();
   const out = await service.check!({ feed: { ...feed([]), error: "fetch failed" } }, ctx);
   assertEquals(out.state, "unknown");

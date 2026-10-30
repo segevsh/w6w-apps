@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dataSourceList from "../../actions/data-source-list.ts";
 import { mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("data-source-list: hits /spaces/{spaceId}/data_sources", async () => {
+test("data-source-list: hits /spaces/{spaceId}/data_sources", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { body: { data_sources: [{ name: "KB" }] } },
   ]);

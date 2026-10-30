@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import richMenuGet from "../../actions/rich-menu-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rich-menu-get: GETs /v2/bot/richmenu/{richMenuId}", async () => {
+test("rich-menu-get: GETs /v2/bot/richmenu/{richMenuId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { richMenuId: "r1", name: "Nice rich menu" } }]);
   const out = await richMenuGet.execute({ richMenuId: "r1" }, ctx) as { name: string };
 
@@ -10,7 +11,7 @@ Deno.test("rich-menu-get: GETs /v2/bot/richmenu/{richMenuId}", async () => {
   assertEquals(out.name, "Nice rich menu");
 });
 
-Deno.test("rich-menu-get: a non-existent rich menu surfaces LINE's 404", async () => {
+test("rich-menu-get: a non-existent rich menu surfaces LINE's 404", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Not found" } }]);
   await assertRejects(
     async () => await richMenuGet.execute({ richMenuId: "gone" }, ctx),
@@ -19,7 +20,7 @@ Deno.test("rich-menu-get: a non-existent rich menu surfaces LINE's 404", async (
   );
 });
 
-Deno.test("rich-menu-get: requires richMenuId", async () => {
+test("rich-menu-get: requires richMenuId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await richMenuGet.execute({ richMenuId: "" }, ctx),

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   compact,
   extraFields,
@@ -12,7 +13,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: every request carries X-Runway-Version and no credential", async () => {
+test("client: every request carries X-Runway-Version and no credential", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new RunwayClient(ctx).request("/v1/organization");
   assertEquals(calls[0].headers["x-runway-version"], "2024-11-06");
@@ -20,7 +21,7 @@ Deno.test("client: every request carries X-Runway-Version and no credential", as
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("client: query drops empty values; a body makes it a JSON POST", async () => {
+test("client: query drops empty values; a body makes it a JSON POST", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const c = new RunwayClient(ctx);
   await c.request("/v1/voices", { query: { limit: 5, cursor: "", x: undefined } });
@@ -30,7 +31,7 @@ Deno.test("client: query drops empty values; a body makes it a JSON POST", async
   assertEquals(calls[1].headers["content-type"], "application/json");
 });
 
-Deno.test("client: a 204 yields undefined data; an error throws RunwayError with hint", async () => {
+test("client: a 204 yields undefined data; an error throws RunwayError with hint", async () => {
   const ok = mockCtx([{ status: 204 }]);
   assertEquals(
     (await new RunwayClient(ok.ctx).request("/v1/tasks/x", { method: "DELETE" })).data,
@@ -56,7 +57,7 @@ Deno.test("client: a 204 yields undefined data; an error throws RunwayError with
   );
 });
 
-Deno.test("helpers: vendorMessage, truncate, compact, need", () => {
+test("helpers: vendorMessage, truncate, compact, need", () => {
   assertEquals(vendorMessage({ error: "x" }), "x");
   assertEquals(vendorMessage({ error: { message: "y" } }), "y");
   assertEquals(vendorMessage({}), undefined);
@@ -80,7 +81,7 @@ Deno.test("helpers: vendorMessage, truncate, compact, need", () => {
   );
 });
 
-Deno.test("helpers: jsonInput, extraFields, mediaInput", () => {
+test("helpers: jsonInput, extraFields, mediaInput", () => {
   assertEquals(jsonInput('{"a":1}', "x"), { a: 1 });
   assertEquals(jsonInput({ a: 1 }, "x"), { a: 1 });
   assertEquals(jsonInput("", "x"), undefined);

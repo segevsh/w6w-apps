@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelList from "../../actions/model-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * step's output has to be an object, so the array is wrapped here, and that
  * wrapping is the thing worth pinning.
  */
-Deno.test("model-list: wraps the bare array the endpoint returns", async () => {
+test("model-list: wraps the bare array the endpoint returns", async () => {
   const models = [
     { model_id: "eleven_multilingual_v2", name: "Multilingual v2", can_do_text_to_speech: true },
   ];
@@ -17,12 +18,12 @@ Deno.test("model-list: wraps the bare array the endpoint returns", async () => {
   assertEquals(out, { models });
 });
 
-Deno.test("model-list: an empty body still yields an array, not undefined", async () => {
+test("model-list: an empty body still yields an array, not undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "" }]);
   assertEquals(await modelList.execute({}, ctx), { models: [] });
 });
 
-Deno.test("model-list: takes no parameters, so a host can invoke it with {}", () => {
+test("model-list: takes no parameters, so a host can invoke it with {}", () => {
   assertEquals(modelList.params, []);
   assertEquals(modelList.type, "read");
 });

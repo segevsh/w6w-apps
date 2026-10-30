@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import check, { mapComponentStatus, PAGE_ID } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const summary = (api: string, extra: Array<{ name: string; status: string }> = [
   components: [{ name: "App", status: "operational" }, { name: "API", status: api }, ...extra],
 });
 
-Deno.test("service: API operational is ok and the call goes to the pinned status host", async () => {
+test("service: API operational is ok and the call goes to the pinned status host", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("operational") }]);
   const r = await check.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -16,7 +17,7 @@ Deno.test("service: API operational is ok and the call goes to the pinned status
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/summary.json");
 });
 
-Deno.test("service: the API component decides; other components are detail only", async () => {
+test("service: the API component decides; other components are detail only", async () => {
   const other = mockCtx([{
     body: summary("operational", [{ name: "Billing", status: "major_outage" }]),
   }]);
@@ -29,7 +30,7 @@ Deno.test("service: the API component decides; other components are detail only"
   assertEquals((await check.check!({} as never, deg.ctx)).state, "degraded");
 });
 
-Deno.test("service: a wrong page, missing API component, 5xx or bad JSON is unknown, never down", async () => {
+test("service: a wrong page, missing API component, 5xx or bad JSON is unknown, never down", async () => {
   const wrong = mockCtx([{
     body: { ...summary("operational"), page: { id: "x", name: "Other" } },
   }]);
@@ -47,7 +48,7 @@ Deno.test("service: a wrong page, missing API component, 5xx or bad JSON is unkn
   assertEquals((await check.check!({} as never, bad.ctx)).state, "unknown");
 });
 
-Deno.test("service: component status mapping", () => {
+test("service: component status mapping", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

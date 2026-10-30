@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/callback-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("callback-create: POSTs integer numbers", async () => {
+test("callback-create: POSTs integer numbers", async () => {
   const { ctx, calls } = mockCtx([{ body: { call_id: 11, channel_id: 22 } }]);
   const out = await action.execute!({
     toNumber: "+33 6 12 34 56 78",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-get: fetches a single user by id", async () => {
+test("user-get: fetches a single user by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "USR1", email: "kevin@example.com", role: "admin" },
   }]);
@@ -11,7 +12,7 @@ Deno.test("user-get: fetches a single user by id", async () => {
   assertEquals(out, { id: "USR1", email: "kevin@example.com", role: "admin" });
 });
 
-Deno.test("user-get: no password field is ever a param — CallRail disallows password mgmt via API", () => {
+test("user-get: no password field is ever a param — CallRail disallows password mgmt via API", () => {
   const keys = userGet.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("password"), false);
 });

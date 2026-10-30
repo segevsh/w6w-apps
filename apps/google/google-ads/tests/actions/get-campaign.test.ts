@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockAdsCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/get-campaign.ts";
 
 const OK = { status: 200, body: { results: [{ campaign: { id: "42" } }] } };
 
-Deno.test("get-campaign: reads one campaign by id predicate — there is no campaigns.get", async () => {
+test("get-campaign: reads one campaign by id predicate — there is no campaigns.get", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ campaignId: "42" }, ctx);
   const q = queryOf(calls[0]);
@@ -15,7 +16,7 @@ Deno.test("get-campaign: reads one campaign by id predicate — there is no camp
   );
 });
 
-Deno.test("get-campaign: refuses a non-numeric campaign id", () => {
+test("get-campaign: refuses a non-numeric campaign id", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(
     () => action.execute({ campaignId: "42 OR 1=1" }, ctx),
@@ -24,12 +25,12 @@ Deno.test("get-campaign: refuses a non-numeric campaign id", () => {
   );
 });
 
-Deno.test("get-campaign: zero rows is an empty result, not an error", async () => {
+test("get-campaign: zero rows is an empty result, not an error", async () => {
   const { ctx } = mockAdsCtx([{ status: 200, body: { results: [] } }]);
   assertEquals(await action.execute({ campaignId: "42" }, ctx), { results: [] });
 });
 
-Deno.test("get-campaign: selects the campaign's budget and bidding configuration", async () => {
+test("get-campaign: selects the campaign's budget and bidding configuration", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ campaignId: "42" }, ctx);
   const q = queryOf(calls[0]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/feed-get.ts";
@@ -6,7 +7,7 @@ import action from "../../actions/feed-get.ts";
 const FEED = "at://did:plc:gen/app.bsky.feed.generator/whats-hot";
 const page = ok({ feed: [{ post: { uri: "at://a/app.bsky.feed.post/1" } }], cursor: "c1" });
 
-Deno.test("feed-get: reads a generator by its AT-URI", async () => {
+test("feed-get: reads a generator by its AT-URI", async () => {
   const { ctx, calls } = mockCtx([page], { display });
   const result = await action.execute!({ feed: FEED }, ctx) as { count: number };
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("feed-get: reads a generator by its AT-URI", async () => {
 });
 
 /** A post URI in the feed slot would otherwise fail deep inside the AppView. */
-Deno.test("feed-get: a URI from the wrong collection is refused with the reason", async () => {
+test("feed-get: a URI from the wrong collection is refused with the reason", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ feed: "at://did:plc:a/app.bsky.feed.post/1" }, ctx),
@@ -26,7 +27,7 @@ Deno.test("feed-get: a URI from the wrong collection is refused with the reason"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("feed-get: the limit is clamped and the cursor passed", async () => {
+test("feed-get: the limit is clamped and the cursor passed", async () => {
   const { ctx, calls } = mockCtx([page], { display });
   await action.execute!({ feed: FEED, limit: 999, cursor: "c0" }, ctx);
   const url = new URL(calls[0].url);
@@ -35,19 +36,19 @@ Deno.test("feed-get: the limit is clamped and the cursor passed", async () => {
 });
 
 /** An empty page can mean the generator is unwell, not that the feed ended. */
-Deno.test("feed-get: an empty page is returned as-is, and the docs say why", async () => {
+test("feed-get: an empty page is returned as-is, and the docs say why", async () => {
   const { ctx } = mockCtx([ok({ feed: [] })], { display });
   const result = await action.execute!({ feed: FEED }, ctx) as { count: number };
   assertEquals(result.count, 0);
   assert(/having trouble/.test(action.description!), action.description);
 });
 
-Deno.test("feed-get: needs a feed", async () => {
+test("feed-get: needs a feed", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`feed` is required");
 });
 
-Deno.test("feed-get: logs a count", async () => {
+test("feed-get: logs a count", async () => {
   const { ctx, logs } = mockCtx([page], { display });
   await action.execute!({ feed: FEED }, ctx);
   assertEquals(logs[0].data, { count: 1 });

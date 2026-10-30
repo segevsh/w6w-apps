@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionList from "../../actions/collection-list.ts";
 import { items, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("collection-list: reads the plural root path", async () => {
+test("collection-list: reads the plural root path", async () => {
   const { ctx, calls } = mockCtx([{ body: items([{ _id: 8492393, title: "Development" }]) }]);
   const out = await collectionList.execute({}, ctx) as { items: unknown[] };
 
@@ -17,12 +18,12 @@ Deno.test("collection-list: reads the plural root path", async () => {
  * empty list is not "this account has no bookmarks". The action must hand back
  * exactly what came, without inventing entries.
  */
-Deno.test("collection-list: an empty account returns an empty array, not an error", async () => {
+test("collection-list: an empty account returns an empty array, not an error", async () => {
   const { ctx } = mockCtx([{ body: items([]) }]);
   assertEquals(await collectionList.execute({}, ctx), { items: [] });
 });
 
-Deno.test("collection-list: takes no parameters", () => {
+test("collection-list: takes no parameters", () => {
   assertEquals(collectionList.params, []);
   assertEquals(collectionList.type, "read");
 });

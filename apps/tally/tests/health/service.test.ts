@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -14,20 +15,20 @@ const page = (aggregate: string, resources: Array<[string, string, string?]> = [
   ],
 });
 
-Deno.test("service: is unsigned and widens egress only to the status host", () => {
+test("service: is unsigned and widens egress only to the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.tally.so"]);
   // `credential` defaults to "none" for kind "service" — never declared signed.
   assertEquals(service.credential, undefined);
 });
 
-Deno.test("service: probes the status page's own JSON", async () => {
+test("service: probes the status page's own JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational") }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.tally.so/index.json");
 });
 
-Deno.test("service: an all-clear page reports ok with per-component detail", async () => {
+test("service: an all-clear page reports ok with per-component detail", async () => {
   const { ctx } = mockCtx([
     {
       body: page("operational", [
@@ -47,7 +48,7 @@ Deno.test("service: an all-clear page reports ok with per-component detail", asy
   assertEquals(Object.keys(report.components ?? {}).length, 3);
 });
 
-Deno.test("service: a degraded aggregate reports degraded", async () => {
+test("service: a degraded aggregate reports degraded", async () => {
   const { ctx } = mockCtx([
     { body: page("degraded", [["Tally API", "degraded"], ["Custom domains", "operational"]]) },
   ]);
@@ -56,19 +57,19 @@ Deno.test("service: a degraded aggregate reports degraded", async () => {
   assertEquals(report.components?.["tally-api"].state, "degraded");
 });
 
-Deno.test("service: downtime maps to down", async () => {
+test("service: downtime maps to down", async () => {
   const { ctx } = mockCtx([{ body: page("downtime", [["Tally API", "downtime"]]) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
   assertEquals(report.components?.["tally-api"].state, "down");
 });
 
-Deno.test("service: planned maintenance degrades rather than downs", async () => {
+test("service: planned maintenance degrades rather than downs", async () => {
   const { ctx } = mockCtx([{ body: page("maintenance", [["Tally API", "maintenance"]]) }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: an operator's explicit_status overrides the measured one", async () => {
+test("service: an operator's explicit_status overrides the measured one", async () => {
   const { ctx } = mockCtx([
     { body: page("operational", [["Tally API", "operational", "downtime"]]) },
   ]);
@@ -76,17 +77,17 @@ Deno.test("service: an operator's explicit_status overrides the measured one", a
   assertEquals(report.components?.["tally-api"].state, "down");
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "oops" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unrecognised aggregate reports unknown", async () => {
+test("service: an unrecognised aggregate reports unknown", async () => {
   const { ctx } = mockCtx([{ body: page("wat") }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unrecognised component state reports unknown for that component", async () => {
+test("service: an unrecognised component state reports unknown for that component", async () => {
   const { ctx } = mockCtx([{ body: page("operational", [["Tally API", "wat"]]) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");

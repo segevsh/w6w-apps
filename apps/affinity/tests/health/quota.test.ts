@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota, { readBucket } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const NOW = Date.parse("2026-09-05T00:00:00Z");
 
-Deno.test("readBucket: ok well under the limit", () => {
+test("readBucket: ok well under the limit", () => {
   const r = readBucket(
     "api-key-per-minute",
     { limit: 900, remaining: 850, reset: 30 },
@@ -16,7 +17,7 @@ Deno.test("readBucket: ok well under the limit", () => {
   assertEquals(r?.quota.remaining, 850);
 });
 
-Deno.test("readBucket: degraded (never down) when a non-monthly bucket is exhausted", () => {
+test("readBucket: degraded (never down) when a non-monthly bucket is exhausted", () => {
   const r = readBucket(
     "api-key-per-minute",
     { limit: 900, remaining: 0, reset: 5 },
@@ -27,7 +28,7 @@ Deno.test("readBucket: degraded (never down) when a non-monthly bucket is exhaus
   assertEquals(r?.state, "degraded");
 });
 
-Deno.test("readBucket: down when the monthly bucket is exhausted", () => {
+test("readBucket: down when the monthly bucket is exhausted", () => {
   const r = readBucket(
     "org-monthly",
     { limit: 40000, remaining: 0, reset: 100 },
@@ -38,7 +39,7 @@ Deno.test("readBucket: down when the monthly bucket is exhausted", () => {
   assertEquals(r?.state, "down");
 });
 
-Deno.test("readBucket: degraded above the warn threshold", () => {
+test("readBucket: degraded above the warn threshold", () => {
   const r = readBucket(
     "org-monthly",
     { limit: 40000, remaining: 3000, reset: 100 },
@@ -49,12 +50,12 @@ Deno.test("readBucket: degraded above the warn threshold", () => {
   assertEquals(r?.state, "degraded");
 });
 
-Deno.test("readBucket: a non-positive limit is unmetered (ok), not exhausted", () => {
+test("readBucket: a non-positive limit is unmetered (ok), not exhausted", () => {
   const r = readBucket("org-monthly", { limit: 0, remaining: 0 }, "requests", true, NOW);
   assertEquals(r?.state, "ok");
 });
 
-Deno.test("readBucket: computes resetAt only for monthly buckets", () => {
+test("readBucket: computes resetAt only for monthly buckets", () => {
   const monthly = readBucket(
     "org-monthly",
     { limit: 100, remaining: 50, reset: 60 },
@@ -73,12 +74,12 @@ Deno.test("readBucket: computes resetAt only for monthly buckets", () => {
   assertEquals(perMinute?.quota.resetAt, undefined);
 });
 
-Deno.test("readBucket: undefined when the bucket is missing required fields", () => {
+test("readBucket: undefined when the bucket is missing required fields", () => {
   assertEquals(readBucket("x", undefined, "requests", false, NOW), undefined);
   assertEquals(readBucket("x", {}, "requests", false, NOW), undefined);
 });
 
-Deno.test("check: reports both buckets from one /rate-limit call", async () => {
+test("check: reports both buckets from one /rate-limit call", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -95,7 +96,7 @@ Deno.test("check: reports both buckets from one /rate-limit call", async () => {
   assertEquals(calls[0].url, "https://api.affinity.co/rate-limit");
 });
 
-Deno.test("check: unknown when /rate-limit itself errors", async () => {
+test("check: unknown when /rate-limit itself errors", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized API Key." }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

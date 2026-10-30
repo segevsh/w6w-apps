@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-folder.ts";
 
-Deno.test("delete-folder: DELETEs /folders/{id} with recursive=false by default", async () => {
+test("delete-folder: DELETEs /folders/{id} with recursive=false by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ folderId: "42" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("delete-folder: DELETEs /folders/{id} with recursive=false by default"
   assertEquals(result, { success: true, folderId: "42" });
 });
 
-Deno.test("delete-folder: forwards recursive=true", async () => {
+test("delete-folder: forwards recursive=true", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ folderId: "42", recursive: true }, ctx);
   const url = new URL(calls[0].url);

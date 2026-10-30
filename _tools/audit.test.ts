@@ -64,6 +64,13 @@ function issuesFor(report: Record<string, Issue[]>, key: string): Issue[] {
   return issues;
 }
 
+Deno.test("action/spec: live resolveFields hooks are projected to metadata capabilities", async () => {
+  const { code, report } = await runAudit("eventbrite");
+  const issues = issuesFor(report, "eventbrite");
+  assertEquals(issues.filter((i) => i.check === "action/spec"), []);
+  assertEquals(code, 0, JSON.stringify(issues));
+});
+
 Deno.test("entry/import: still errors on an entry module with a broken relative import", async () => {
   const { code, report } = await runAudit(FIXTURE);
   const issues = issuesFor(report, FIXTURE);

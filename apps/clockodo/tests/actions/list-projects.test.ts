@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-projects.ts";
 import { API_ROOT, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("list-projects: GETs /v4/projects with deepObject filters and paging", async () => {
+test("list-projects: GETs /v4/projects with deepObject filters and paging", async () => {
   const resp = { paging: { current_page: 1, count_items: 1 }, data: [{ id: 1, name: "A" }] };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const out = await exec(action, {
@@ -24,7 +25,7 @@ Deno.test("list-projects: GETs /v4/projects with deepObject filters and paging",
   assertEquals(out, resp);
 });
 
-Deno.test("list-projects: no filters means no query string; a non-array data becomes []", async () => {
+test("list-projects: no filters means no query string; a non-array data becomes []", async () => {
   const { ctx, calls } = mockCtx([{ body: { paging: null } }]);
   const out = await exec(action, {}, ctx);
   assertEquals(calls[0].url, `${API_ROOT}/v4/projects`);

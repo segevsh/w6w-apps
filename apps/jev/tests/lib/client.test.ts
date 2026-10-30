@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { JevClient } from "../../lib/client.ts";
 
-Deno.test("client: sends JSON body with content-type and throws on non-2xx", async () => {
+test("client: sends JSON body with content-type and throws on non-2xx", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }, { status: 500, body: "boom" }]);
   const c = new JevClient(ctx);
   assertEquals(await c.request("/x", { method: "POST", body: { a: 1 } }), { ok: 1 });

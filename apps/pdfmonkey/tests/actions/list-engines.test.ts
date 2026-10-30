@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-engines.ts";
 
-Deno.test("list-engines: GETs /engines and returns the parsed body unchanged", async () => {
+test("list-engines: GETs /engines and returns the parsed body unchanged", async () => {
   const body = {
     pdf_engines: [
       { id: "5c709522-90db-4aea-b49f-15aeaa7180c7", name: "v4", deprecated_on: null },

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productCreate from "../../actions/product-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("product-create: sends every input as body", async () => {
+test("product-create: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await productCreate.execute(
     { "name": "x-name", "description": "x-description" } as never,
@@ -17,7 +18,7 @@ Deno.test("product-create: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("product-create: omits every unset optional", async () => {
+test("product-create: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await productCreate.execute({ "name": "x-name" } as never, ctx);
 
@@ -26,7 +27,7 @@ Deno.test("product-create: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("product-create: declares a perform action's idempotency", () => {
+test("product-create: declares a perform action's idempotency", () => {
   assertEquals(productCreate.type, "perform");
   assertEquals(productCreate.idempotent, false);
   assertEquals(productCreate.params!.filter((p) => p.required).map((p) => p.key), ["name"]);

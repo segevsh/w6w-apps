@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import calendarSubscriberDelete from "../../actions/calendar-subscriber-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("calendar-subscriber-delete: DELETEs and reports the 204 with no body to parse", async () => {
+test("calendar-subscriber-delete: DELETEs and reports the 204 with no body to parse", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await calendarSubscriberDelete.execute({ subscriberId: "sub-1" }, ctx) as {
     subscriberId: string;
@@ -13,7 +14,7 @@ Deno.test("calendar-subscriber-delete: DELETEs and reports the 204 with no body 
   assertEquals(out, { subscriberId: "sub-1", status: 204 });
 });
 
-Deno.test("calendar-subscriber-delete: a repeat delete on an unknown id surfaces as an error", async () => {
+test("calendar-subscriber-delete: a repeat delete on an unknown id surfaces as an error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: undefined }]);
   await assertRejects(
     () => Promise.resolve(calendarSubscriberDelete.execute({ subscriberId: "sub-1" }, ctx)),
@@ -21,6 +22,6 @@ Deno.test("calendar-subscriber-delete: a repeat delete on an unknown id surfaces
   );
 });
 
-Deno.test("calendar-subscriber-delete: is declared idempotent", () => {
+test("calendar-subscriber-delete: is declared idempotent", () => {
   assertEquals(calendarSubscriberDelete.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reads X-RateLimit-* headers and reports ok headroom", async () => {
+test("quota: reads X-RateLimit-* headers and reports ok headroom", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     headers: {
@@ -26,7 +27,7 @@ Deno.test("quota: reads X-RateLimit-* headers and reports ok headroom", async ()
   assertEquals(url.pathname, "/v2/getAccountDetails");
 });
 
-Deno.test("quota: zero headroom is degraded, not down (still working, just tight)", async () => {
+test("quota: zero headroom is degraded, not down (still working, just tight)", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: { "x-ratelimit-limit": "10", "x-ratelimit-remaining": "0" },
@@ -36,7 +37,7 @@ Deno.test("quota: zero headroom is degraded, not down (still working, just tight
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: a 429 reports down and echoes Retry-After", async () => {
+test("quota: a 429 reports down and echoes Retry-After", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     statusText: "Too Many Requests",
@@ -49,7 +50,7 @@ Deno.test("quota: a 429 reports down and echoes Retry-After", async () => {
   assertEquals(report.quota?.[0]?.remaining, 0);
 });
 
-Deno.test("quota: missing rate-limit headers reports unknown, not a fabricated reading", async () => {
+test("quota: missing rate-limit headers reports unknown, not a fabricated reading", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: { "content-type": "application/json" },
@@ -59,7 +60,7 @@ Deno.test("quota: missing rate-limit headers reports unknown, not a fabricated r
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: a non-429 HTTP failure reports unknown, never down", async () => {
+test("quota: a non-429 HTTP failure reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

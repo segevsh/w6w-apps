@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pageGet from "../../actions/page-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("page-get: calls GET /pages/{id} and returns test stats", async () => {
+test("page-get: calls GET /pages/{id} and returns test stats", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "p1", name: "Landing", tests: { current: { visits: 3 } } } },
   ]);

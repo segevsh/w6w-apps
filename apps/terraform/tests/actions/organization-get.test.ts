@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-get.ts";
 
@@ -19,7 +20,7 @@ const organization = {
   },
 };
 
-Deno.test("organization-get: reads one organization by name", async () => {
+test("organization-get: reads one organization by name", async () => {
   const { ctx, calls } = mockCtx([organization]);
   const result = await action.execute({ organization: "acme" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/organizations/acme");
@@ -27,7 +28,7 @@ Deno.test("organization-get: reads one organization by name", async () => {
 });
 
 /** Cost estimation adds a run phase a waiting workflow did not expect. */
-Deno.test("organization-get: surfaces cost estimation and the auth policy", async () => {
+test("organization-get: surfaces cost estimation and the auth policy", async () => {
   const { ctx } = mockCtx([organization]);
   const result = await action.execute({ organization: "acme" }, ctx) as Record<string, unknown>;
   assertEquals(result.costEstimation, true);
@@ -35,7 +36,7 @@ Deno.test("organization-get: surfaces cost estimation and the auth policy", asyn
   assert(/adds a phase to every run/.test(action.description!), action.description);
 });
 
-Deno.test("organization-get: a name is required and nothing is requested without one", async () => {
+test("organization-get: a name is required and nothing is requested without one", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -47,14 +48,14 @@ Deno.test("organization-get: a name is required and nothing is requested without
   assertEquals(calls.length, 0);
 });
 
-Deno.test("organization-get: a name with characters needing escaping is encoded", async () => {
+test("organization-get: a name with characters needing escaping is encoded", async () => {
   const { ctx, calls } = mockCtx([organization]);
   await action.execute({ organization: "acme corp" }, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/organizations/acme%20corp");
 });
 
 /** 404 and "no access" are the same answer here. */
-Deno.test("organization-get: an unknown organization explains the ambiguity", async () => {
+test("organization-get: an unknown organization explains the ambiguity", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { errors: [{ title: "not found" }] } }]);
   let message = "";
   try {

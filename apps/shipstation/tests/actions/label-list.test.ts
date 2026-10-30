@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/label-list.ts";
 
-Deno.test("label-list: sends filters as query params", async () => {
+test("label-list: sends filters as query params", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { labels: [], total: 0, page: 1, pages: 0 } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("label-list: sends filters as query params", async () => {
   assertEquals(url.searchParams.get("tracking_number"), "1Z999");
 });
 
-Deno.test("label-list: returns pagination fields", async () => {
+test("label-list: returns pagination fields", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { labels: [{ label_id: "se-1" }], total: 1, page: 1, pages: 1 } },
   ]);

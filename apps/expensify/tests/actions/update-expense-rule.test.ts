@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-expense-rule.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
 
-Deno.test("update-expense-rule: posts update/expenseRules including a ruleID of 0", async () => {
+test("update-expense-rule: posts update/expenseRules including a ruleID of 0", async () => {
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200 } }]);
   const out = await action.execute!({
     policyID: "P",
@@ -25,7 +26,7 @@ Deno.test("update-expense-rule: posts update/expenseRules including a ruleID of 
   assertEquals(out, { response: { responseCode: 200 } });
 });
 
-Deno.test("update-expense-rule: validates the rule id and the actions locally", async () => {
+test("update-expense-rule: validates the rule id and the actions locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -50,7 +51,7 @@ Deno.test("update-expense-rule: validates the rule id and the actions locally", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-expense-rule: a defaultBillable of false is sent, not dropped", async () => {
+test("update-expense-rule: a defaultBillable of false is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200 } }]);
   await action.execute!({
     policyID: "P",
@@ -61,7 +62,7 @@ Deno.test("update-expense-rule: a defaultBillable of false is sent, not dropped"
   assertEquals(sent(calls[0]).job.inputSettings.actions, { defaultBillable: false });
 });
 
-Deno.test("update-expense-rule: surfaces vendor errors", async () => {
+test("update-expense-rule: surfaces vendor errors", async () => {
   const { ctx } = mockCtx([{ body: { responseMessage: "Rule not found", responseCode: 404 } }]);
   await assertRejects(
     async () =>
@@ -71,6 +72,6 @@ Deno.test("update-expense-rule: surfaces vendor errors", async () => {
   );
 });
 
-Deno.test("update-expense-rule: declares an idempotent perform", () => {
+test("update-expense-rule: declares an idempotent perform", () => {
   assertEquals([action.type, action.idempotent], ["perform", true]);
 });

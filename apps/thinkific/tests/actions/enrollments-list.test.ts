@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import enrollmentsList from "../../actions/enrollments-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("enrollments-list: namespaces filters, including booleans, as query[key]", async () => {
+test("enrollments-list: namespaces filters, including booleans, as query[key]", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([]) }]);
   await enrollmentsList.execute({ courseId: 10, completed: true, expired: false }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/public/v1/enrollments");

@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/activity-list.ts";
 
 const conn = { display: { projectId: "123", region: "us" } };
 
 /** distinct_ids is a JSON array inside a query parameter. */
-Deno.test("activity-list: encodes the ids as a JSON array", async () => {
+test("activity-list: encodes the ids as a JSON array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: { events: [] } } }], conn);
   await action.execute!(
     { distinctIds: "u1, u2", fromDate: "2026-08-01", toDate: "2026-08-18" },
@@ -16,7 +17,7 @@ Deno.test("activity-list: encodes the ids as a JSON array", async () => {
   assertEquals(url.searchParams.get("distinct_ids"), '["u1","u2"]');
 });
 
-Deno.test("activity-list: ids and dates are required", async () => {
+test("activity-list: ids and dates are required", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ fromDate: "2026-08-01", toDate: "2026-08-18" }, ctx),

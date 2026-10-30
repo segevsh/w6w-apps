@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileUpload from "../../actions/file-upload.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-upload: sends the required fields and returns the queued process, not keys", async () => {
+test("file-upload: sends the required fields and returns the queued process, not keys", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 202,
@@ -23,7 +24,7 @@ Deno.test("file-upload: sends the required fields and returns the queued process
   assertEquals(out.process.status, "queued");
 });
 
-Deno.test("file-upload: required fields cannot be overridden by extraOptions", async () => {
+test("file-upload: required fields cannot be overridden by extraOptions", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await fileUpload.execute(
     {
@@ -40,7 +41,7 @@ Deno.test("file-upload: required fields cannot be overridden by extraOptions", a
   assertEquals(body.tags, ["a"]);
 });
 
-Deno.test("file-upload: forwards named import options", async () => {
+test("file-upload: forwards named import options", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await fileUpload.execute(
     {
@@ -58,6 +59,6 @@ Deno.test("file-upload: forwards named import options", async () => {
   assertEquals(body.distinguish_by_file, true);
 });
 
-Deno.test("file-upload: is not idempotent — every call queues a new import", () => {
+test("file-upload: is not idempotent — every call queues a new import", () => {
   assertEquals(fileUpload.idempotent, false);
 });

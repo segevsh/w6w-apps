@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import creativeList from "../../actions/creative-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("creative-list: FINDER with q=criteria, each filter its own top-level List(...) param", async () => {
+test("creative-list: FINDER with q=criteria, each filter its own top-level List(...) param", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await creativeList.execute(
     { accountId: "520866471", creativeIds: "119962155", campaignIds: "360035215" },
@@ -17,7 +18,7 @@ Deno.test("creative-list: FINDER with q=criteria, each filter its own top-level 
   assertEquals(q.campaigns, "List(urn:li:sponsoredCampaign:360035215)");
 });
 
-Deno.test("creative-list: intendedStatuses and isTestAccount pass straight through", async () => {
+test("creative-list: intendedStatuses and isTestAccount pass straight through", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await creativeList.execute(
     { accountId: "1", intendedStatuses: ["ARCHIVED", "CANCELED"], isTestAccount: "true" },
@@ -28,7 +29,7 @@ Deno.test("creative-list: intendedStatuses and isTestAccount pass straight throu
   assertEquals(q.isTestAccount, "true");
 });
 
-Deno.test("creative-list: with no filters, still omits the List() params entirely", async () => {
+test("creative-list: with no filters, still omits the List() params entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await creativeList.execute({ accountId: "1" }, ctx);
   const q = queryOf(calls[0].url);

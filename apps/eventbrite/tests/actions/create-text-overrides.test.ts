@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-text-overrides.ts";
 
-Deno.test("create-text-overrides: POSTs strings mapped to snake_case", async () => {
+test("create-text-overrides: POSTs strings mapped to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     organizationId: "5",

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/category-update.ts";
 
@@ -15,7 +16,7 @@ const input = {
   "additionalFields": { "extra_field": "x" },
 } as never;
 
-Deno.test("category-update: PUT /categories/{category_id}", async () => {
+test("category-update: PUT /categories/{category_id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": 200, "success": true, "data": { "id": 1 } },
@@ -42,13 +43,13 @@ Deno.test("category-update: PUT /categories/{category_id}", async () => {
   assertEquals(result, { "status": 200, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("category-update: sends only the fields that were set", async () => {
+test("category-update: sends only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!({ "category_id": 123, "name": "v-name" } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { "name": "v-name" });
 });
 
-Deno.test("category-update: a Salla error envelope throws with its message", async () => {
+test("category-update: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

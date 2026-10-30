@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/channel-list.ts";
 
-Deno.test("channel-list: sends the documented no-argument query", async () => {
+test("channel-list: sends the documented no-argument query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { channels: [{ id: "c1" }] } } }]);
   await action.execute({}, ctx);
   const { query, variables } = sent(calls[0]);
@@ -11,6 +12,6 @@ Deno.test("channel-list: sends the documented no-argument query", async () => {
   assertEquals(variables, {});
 });
 
-Deno.test("channel-list: declares no params", () => {
+test("channel-list: declares no params", () => {
   assertEquals(action.params, []);
 });

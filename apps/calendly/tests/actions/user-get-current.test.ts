@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get-current.ts";
 
-Deno.test("user-get-current: GETs /users/me and returns the response verbatim", async () => {
+test("user-get-current: GETs /users/me and returns the response verbatim", async () => {
   const body = { resource: { uri: "https://api.calendly.com/users/AAAA", name: "Ada" } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute({}, ctx);

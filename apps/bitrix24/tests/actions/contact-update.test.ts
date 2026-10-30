@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-update.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("contact-update: sends only the provided fields with the id", async () => {
+test("contact-update: sends only the provided fields with the id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: true, time: {} } },
   ], { display });
@@ -17,7 +18,7 @@ Deno.test("contact-update: sends only the provided fields with the id", async ()
   assertEquals(out, { id: 4, updated: true });
 });
 
-Deno.test("contact-update: rejects when no field to change is given", async () => {
+test("contact-update: rejects when no field to change is given", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ id: 4 }, ctx);

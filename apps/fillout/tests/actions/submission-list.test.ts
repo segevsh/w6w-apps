@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import submissionList from "../../actions/submission-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const page = {
   pageCount: 1,
 };
 
-Deno.test("submission-list: calls GET /v1/api/forms/{id}/submissions and returns the page", async () => {
+test("submission-list: calls GET /v1/api/forms/{id}/submissions and returns the page", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await submissionList.execute({ formId: "aB1" }, ctx) as typeof page;
 
@@ -17,7 +18,7 @@ Deno.test("submission-list: calls GET /v1/api/forms/{id}/submissions and returns
   assertEquals(out.pageCount, 1);
 });
 
-Deno.test("submission-list: every documented filter reaches the query string", async () => {
+test("submission-list: every documented filter reaches the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await submissionList.execute({
     formId: "aB1",
@@ -51,7 +52,7 @@ Deno.test("submission-list: every documented filter reaches the query string", a
  * behaviour, so a false is expressed as absence — which is already the vendor's
  * default.
  */
-Deno.test("submission-list: a false flag is omitted rather than sent as the string false", async () => {
+test("submission-list: a false flag is omitted rather than sent as the string false", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await submissionList.execute(
     { formId: "aB1", includeEditLink: false, includePreview: false },
@@ -64,13 +65,13 @@ Deno.test("submission-list: a false flag is omitted rather than sent as the stri
  * `offset: 0` is a meaningful value, not an unset field — `compact` must not
  * drop it, or "start from the beginning" becomes unexpressible.
  */
-Deno.test("submission-list: offset 0 survives compaction", async () => {
+test("submission-list: offset 0 survives compaction", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await submissionList.execute({ formId: "aB1", offset: 0 }, ctx);
   assertEquals(queryOf(calls[0].url), { offset: "0" });
 });
 
-Deno.test("submission-list: nothing is sent when only the form is given", async () => {
+test("submission-list: nothing is sent when only the form is given", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await submissionList.execute({ formId: "aB1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});
@@ -82,7 +83,7 @@ Deno.test("submission-list: nothing is sent when only the form is given", async 
  * A hand-typed wrong bound here is the sort of thing that only shows up as a
  * 400 in production.
  */
-Deno.test("submission-list: params carry Fillout's documented bounds and enums", () => {
+test("submission-list: params carry Fillout's documented bounds and enums", () => {
   const params = Object.fromEntries((submissionList.params ?? []).map((p) => [p.key, p]));
   assertEquals(params.limit.default, 50);
   assertEquals(params.limit.validation, { integer: true, min: 1, max: 150 });

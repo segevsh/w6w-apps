@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reportRun from "../../actions/report-run.ts";
 import { bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("report-run: POSTs /v2/report and returns the untyped body under a name", async () => {
+test("report-run: POSTs /v2/report and returns the untyped body under a name", async () => {
   const { ctx, calls } = mockCtx([{ body: { totals: { count: 42 } } }]);
   const result = await reportRun.execute({
     statistics: [{ mode: "count" }],
@@ -14,7 +15,7 @@ Deno.test("report-run: POSTs /v2/report and returns the untyped body under a nam
   assertEquals(result.report, { totals: { count: 42 } });
 });
 
-Deno.test("report-run: the view and the time breakdown are query parameters", async () => {
+test("report-run: the view and the time breakdown are query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await reportRun.execute({
     statistics: [{ mode: "sum", column: "job_total_planned_time_ex_tax" }],
@@ -28,14 +29,14 @@ Deno.test("report-run: the view and the time breakdown are query parameters", as
   });
 });
 
-Deno.test("report-run: time_breakdown is opt-in and never sent as false", async () => {
+test("report-run: time_breakdown is opt-in and never sent as false", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await reportRun.execute({ statistics: [{ mode: "count" }] }, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
 /** The schema's own rule: statistics is required. */
-Deno.test("report-run: a report with no statistics is refused locally", async () => {
+test("report-run: a report with no statistics is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -48,7 +49,7 @@ Deno.test("report-run: a report with no statistics is refused locally", async ()
 });
 
 /** The schema's other rule: a date range needs a dateField. */
-Deno.test("report-run: a date range without a date field is refused locally", async () => {
+test("report-run: a date range without a date field is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -64,7 +65,7 @@ Deno.test("report-run: a date range without a date field is refused locally", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("report-run: with a date field the range is sent", async () => {
+test("report-run: with a date field the range is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await reportRun.execute({
     statistics: [{ mode: "average", column: "invoice_currency_total_amount_inc_tax" }],

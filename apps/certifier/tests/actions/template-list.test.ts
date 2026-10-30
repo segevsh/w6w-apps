@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/template-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("template-list: GET /v1/groups (the API's name for credential templates)", async () => {
+test("template-list: GET /v1/groups (the API's name for credential templates)", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "g1", name: "T" }], "N") }]);
   const out = await action.execute({ limit: 100, cursor: "C" }, ctx) as {
     pagination: { next: string };

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import candidateMoveToStage from "../../actions/candidate-move-to-stage.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("candidate-move-to-stage: POST /candidate/move-to-stage with the mapped wire fields", async () => {
+test("candidate-move-to-stage: POST /candidate/move-to-stage with the mapped wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { RESULT: "success", data: { id: 1 } } }]);
   const out = await candidateMoveToStage.execute(
     { "id": 42, "stageName": "Interview", "jobId": 7, "userId": 3 } as never,
@@ -21,7 +22,7 @@ Deno.test("candidate-move-to-stage: POST /candidate/move-to-stage with the mappe
   assertEquals((out.data as { id: number }).id, 1);
 });
 
-Deno.test("candidate-move-to-stage: a vendor error is thrown with its message", async () => {
+test("candidate-move-to-stage: a vendor error is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Invalid API key" } }]);
   let msg = "";
   try {

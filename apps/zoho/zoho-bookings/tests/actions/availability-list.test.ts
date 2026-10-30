@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/availability-list.ts";
 
-Deno.test("availability-list: GETs /availableslots and maps time_zone to timeZone", async () => {
+test("availability-list: GETs /availableslots and maps time_zone to timeZone", async () => {
   const { ctx, calls } = mockBookingsCtx([
     {
       body: {
@@ -25,7 +26,7 @@ Deno.test("availability-list: GETs /availableslots and maps time_zone to timeZon
   assertEquals(out, { data: ["10:00", "10:15"], timeZone: "Asia/Calcutta" });
 });
 
-Deno.test("availability-list: throws before making a request when none of staffId/groupId/resourceId is set", async () => {
+test("availability-list: throws before making a request when none of staffId/groupId/resourceId is set", async () => {
   const { ctx, calls } = mockBookingsCtx([]);
   await assertRejects(
     () =>
@@ -38,7 +39,7 @@ Deno.test("availability-list: throws before making a request when none of staffI
   assertEquals(calls.length, 0);
 });
 
-Deno.test("availability-list: accepts groupId or resourceId in place of staffId", async () => {
+test("availability-list: accepts groupId or resourceId in place of staffId", async () => {
   const { ctx, calls } = mockBookingsCtx([
     { body: { response: { status: "success", returnvalue: { data: [] } } } },
   ]);

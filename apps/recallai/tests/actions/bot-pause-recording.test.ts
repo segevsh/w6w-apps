@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bot-pause-recording.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("bot-pause-recording: POSTs /pause_recording/ with no body and returns the bot", async () => {
+test("bot-pause-recording: POSTs /pause_recording/ with no body and returns the bot", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1", status_changes: [] } }]);
   const out = await action.execute!({ id: "b1" }, ctx);
   assertEquals(calls[0].url, "https://us-west-2.recall.ai/api/v1/bot/b1/pause_recording/");
@@ -12,7 +13,7 @@ Deno.test("bot-pause-recording: POSTs /pause_recording/ with no body and returns
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("bot-pause-recording: a refusal is reported by Recall's code", async () => {
+test("bot-pause-recording: a refusal is reported by Recall's code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { code: "cannot_command_completed_bot", detail: "Cannot send a command" },

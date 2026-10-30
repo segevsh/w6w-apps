@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-analytics-query.ts";
 
-Deno.test("search-analytics-query: POSTs the required date range and drops AUTO/FINAL defaults", async () => {
+test("search-analytics-query: POSTs the required date range and drops AUTO/FINAL defaults", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { rows: [] } }], {
     display: { siteUrl: "https://www.example.com/" },
   });
@@ -26,7 +27,7 @@ Deno.test("search-analytics-query: POSTs the required date range and drops AUTO/
   assertEquals("dataState" in body, false);
 });
 
-Deno.test("search-analytics-query: expands comma-separated dimensions into an array", async () => {
+test("search-analytics-query: expands comma-separated dimensions into an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { rows: [] } }], {
     display: { siteUrl: "https://www.example.com/" },
   });
@@ -38,7 +39,7 @@ Deno.test("search-analytics-query: expands comma-separated dimensions into an ar
   assertEquals(body.dimensions, ["date", "query"]);
 });
 
-Deno.test("search-analytics-query: parses dimensionFilterGroups JSON and rejects invalid JSON", async () => {
+test("search-analytics-query: parses dimensionFilterGroups JSON and rejects invalid JSON", async () => {
   const ok = mockCtx([{ status: 200, body: { rows: [] } }], {
     display: { siteUrl: "https://www.example.com/" },
   });
@@ -73,7 +74,7 @@ Deno.test("search-analytics-query: parses dimensionFilterGroups JSON and rejects
   );
 });
 
-Deno.test("search-analytics-query: startDate and endDate are required", async () => {
+test("search-analytics-query: startDate and endDate are required", async () => {
   const { ctx, calls } = mockCtx([], { display: { siteUrl: "https://www.example.com/" } });
   await assertRejects(
     async () => await action.execute!({ endDate: "2026-08-31" }, ctx),

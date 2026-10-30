@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import queryRun from "../../actions/query-run.ts";
 import queryExport from "../../actions/query-export.ts";
 import { mockMetabaseCtx, queryOk, SITE_URL } from "../_helpers.ts";
@@ -7,7 +8,7 @@ import { mockMetabaseCtx, queryOk, SITE_URL } from "../_helpers.ts";
  * Metabase keys the query body by its own language name — `native` for SQL,
  * `query` for MBQL. Sending the wrong key is a 400, not a silent empty result.
  */
-Deno.test("query-run: a native query goes under `native`", async () => {
+test("query-run: a native query goes under `native`", async () => {
   const { ctx, calls } = mockMetabaseCtx([queryOk([[42]])]);
   await queryRun.execute({
     database: 1,
@@ -22,7 +23,7 @@ Deno.test("query-run: a native query goes under `native`", async () => {
   });
 });
 
-Deno.test("query-run: an MBQL query goes under `query`", async () => {
+test("query-run: an MBQL query goes under `query`", async () => {
   const { ctx, calls } = mockMetabaseCtx([queryOk()]);
   await queryRun.execute({
     database: 1,
@@ -36,7 +37,7 @@ Deno.test("query-run: an MBQL query goes under `query`", async () => {
   });
 });
 
-Deno.test("query-run: defaults to native", async () => {
+test("query-run: defaults to native", async () => {
   const { ctx, calls } = mockMetabaseCtx([queryOk()]);
   await queryRun.execute({ database: 1, query: '{"query":"SELECT 1"}' }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -44,7 +45,7 @@ Deno.test("query-run: defaults to native", async () => {
   assertEquals(body.native, { query: "SELECT 1" });
 });
 
-Deno.test("query-run: a failed query throws rather than returning zero rows", async () => {
+test("query-run: a failed query throws rather than returning zero rows", async () => {
   const { ctx } = mockMetabaseCtx([{
     status: 400,
     body: {
@@ -61,7 +62,7 @@ Deno.test("query-run: a failed query throws rather than returning zero rows", as
   );
 });
 
-Deno.test("query-run: a required query is required", async () => {
+test("query-run: a required query is required", async () => {
   const { ctx } = mockMetabaseCtx([]);
   await assertRejects(
     async () => await queryRun.execute({ database: 1, query: "" }, ctx),
@@ -77,7 +78,7 @@ Deno.test("query-run: a required query is required", async () => {
  * `{"specific-errors":{"query":["missing required key, received: nil"]}}`,
  * verified on the wire.
  */
-Deno.test("query-export: nests the whole query under `query`, unlike /api/dataset", async () => {
+test("query-export: nests the whole query under `query`, unlike /api/dataset", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ status: 200, body: "a\n1\n" }]);
   const out = await queryExport.execute({
     database: 1,
@@ -100,7 +101,7 @@ Deno.test("query-export: nests the whole query under `query`, unlike /api/datase
   assertEquals("native" in body, false);
 });
 
-Deno.test("query-export: MBQL nests the same way", async () => {
+test("query-export: MBQL nests the same way", async () => {
   const { ctx, calls } = mockMetabaseCtx([{ status: 200, body: "[]" }]);
   await queryExport.execute({
     database: 3,

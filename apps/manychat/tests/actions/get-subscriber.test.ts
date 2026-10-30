@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getSubscriber from "../../actions/get-subscriber.ts";
 
-Deno.test("get-subscriber: puts subscriber_id on the query string", async () => {
+test("get-subscriber: puts subscriber_id on the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: { id: "1" } } }]);
   await getSubscriber.execute!({ subscriberId: "1234567890123456" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,13 +11,13 @@ Deno.test("get-subscriber: puts subscriber_id on the query string", async () => 
   assertEquals(url.searchParams.get("subscriber_id"), "1234567890123456");
 });
 
-Deno.test("get-subscriber: an id beyond 2^53 survives unmangled", async () => {
+test("get-subscriber: an id beyond 2^53 survives unmangled", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: {} } }]);
   await getSubscriber.execute!({ subscriberId: "9007199254740993" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("subscriber_id"), "9007199254740993");
 });
 
-Deno.test("get-subscriber: surfaces last_interaction, the 24-hour-window clock", async () => {
+test("get-subscriber: surfaces last_interaction, the 24-hour-window clock", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -32,7 +33,7 @@ Deno.test("get-subscriber: surfaces last_interaction, the 24-hour-window clock",
   assertEquals(out.data.ig_username, "acme");
 });
 
-Deno.test("get-subscriber: null last_interaction is passed through, not coerced", async () => {
+test("get-subscriber: null last_interaction is passed through, not coerced", async () => {
   const { ctx } = mockCtx([
     { body: { status: "success", data: { id: "1", last_interaction: null } } },
   ]);

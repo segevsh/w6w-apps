@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reservationMessageSend from "../../actions/reservation-message-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("reservation-message-send: POST body, images split from text, 202 reference returned", async () => {
+test("reservation-message-send: POST body, images split from text, 202 reference returned", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: { sent_reference_id: "ref1" } } }]);
   const out = await reservationMessageSend.execute({
     uuid: "r1",

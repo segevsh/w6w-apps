@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/link-bulk-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("link-bulk-delete: DELETEs /links/delete_bulk with link_ids in the body", async () => {
+test("link-bulk-delete: DELETEs /links/delete_bulk with link_ids in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await action.execute({ linkIds: ["lnk_a_b", "lnk_c_d"] }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("link-bulk-delete: DELETEs /links/delete_bulk with link_ids in the bod
   assertEquals(out, { success: true });
 });
 
-Deno.test("link-bulk-delete: success:false is an error", async () => {
+test("link-bulk-delete: success:false is an error", async () => {
   const { ctx } = mockCtx([{ body: { success: false, error: "denied" } }]);
   await assertRejects(async () => await action.execute({ linkIds: ["x"] }, ctx), Error, "denied");
 });

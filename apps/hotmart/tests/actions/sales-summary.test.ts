@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import salesSummary from "../../actions/sales-summary.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sales-summary - maps every filter to its wire name", async () => {
+test("sales-summary - maps every filter to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ total_items: 2 }]) }]);
   await salesSummary.execute({
     productId: 1,
@@ -32,7 +33,7 @@ Deno.test("sales-summary - maps every filter to its wire name", async () => {
   });
 });
 
-Deno.test("sales-summary - propagates a 500 as an internal_server_error", async () => {
+test("sales-summary - propagates a 500 as an internal_server_error", async () => {
   const { ctx } = mockCtx([{ status: 500, body: errorBody("internal_server_error", "oops") }]);
   await assertRejects(
     () => Promise.resolve(salesSummary.execute({}, ctx)),

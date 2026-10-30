@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockShopifyCtx } from "../_helpers.ts";
 import {
   baseUrl,
@@ -9,7 +10,7 @@ import {
   unset,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL from the connection's store handle", async () => {
+test("client: builds the URL from the connection's store handle", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { shop: {} } }], "acme");
   await new ShopifyClient(ctx).request("/shop.json");
   assertEquals(calls[0].url, "https://acme.myshopify.com/admin/api/2024-07/shop.json");
@@ -17,12 +18,12 @@ Deno.test("client: builds the URL from the connection's store handle", async () 
   assertEquals("x-shopify-access-token" in calls[0].headers, false);
 });
 
-Deno.test("client: fails loudly when the connection carries no store handle", () => {
+test("client: fails loudly when the connection carries no store handle", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new ShopifyClient(ctx), Error, "no store handle");
 });
 
-Deno.test("client: surfaces Shopify's error body", async () => {
+test("client: surfaces Shopify's error body", async () => {
   const { ctx } = mockShopifyCtx([{
     status: 422,
     statusText: "Unprocessable Entity",
@@ -35,19 +36,19 @@ Deno.test("client: surfaces Shopify's error body", async () => {
   );
 });
 
-Deno.test("nextPageInfo: extracts the cursor from the rel=next Link header", () => {
+test("nextPageInfo: extracts the cursor from the rel=next Link header", () => {
   const link =
     '<https://acme.myshopify.com/admin/api/2024-07/orders.json?page_info=PREV&limit=50>; rel="previous", ' +
     '<https://acme.myshopify.com/admin/api/2024-07/orders.json?page_info=NEXT&limit=50>; rel="next"';
   assertEquals(nextPageInfo(link), "NEXT");
 });
 
-Deno.test("nextPageInfo: is undefined on the last page and with no header", () => {
+test("nextPageInfo: is undefined on the last page and with no header", () => {
   assertEquals(nextPageInfo(null), undefined);
   assertEquals(nextPageInfo('<https://x/orders.json?page_info=P>; rel="previous"'), undefined);
 });
 
-Deno.test("client.list: pairs the collection with the Link cursor", async () => {
+test("client.list: pairs the collection with the Link cursor", async () => {
   const { ctx } = mockShopifyCtx([{
     body: { orders: [{ id: 1 }] },
     headers: {
@@ -61,11 +62,11 @@ Deno.test("client.list: pairs the collection with the Link cursor", async () => 
   });
 });
 
-Deno.test("baseUrl: pins the Admin API version", () => {
+test("baseUrl: pins the Admin API version", () => {
   assertEquals(baseUrl("acme"), "https://acme.myshopify.com/admin/api/2024-07");
 });
 
-Deno.test("shopFromConnection/compact/unset behave as expected", () => {
+test("shopFromConnection/compact/unset behave as expected", () => {
   assertEquals(shopFromConnection({ display: { shop: "acme" } } as never), "acme");
   assertThrows(() => shopFromConnection(undefined), Error, "no store handle");
   assertEquals(compact({ a: 0, b: undefined, c: null }), { a: 0 });

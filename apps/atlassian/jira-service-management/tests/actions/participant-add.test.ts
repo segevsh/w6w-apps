@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/participant-add.ts";
 
-Deno.test("participant-add: POSTs a trimmed accountIds array", async () => {
+test("participant-add: POSTs a trimmed accountIds array", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [] } }]);
   await action.execute({ issueIdOrKey: "HD-1", accountIds: "acc-1, acc-2 ,acc-3" }, ctx);
   assertEquals(

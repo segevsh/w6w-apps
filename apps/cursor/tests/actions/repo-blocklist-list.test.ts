@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import repoBlocklistList from "../../actions/repo-blocklist-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("repo-blocklist-list: calls GET /settings/repo-blocklists/repos", async () => {
+test("repo-blocklist-list: calls GET /settings/repo-blocklists/repos", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { repos: [{ id: "repo_123", url: "https://github.com/co/repo", patterns: ["*.env"] }] },

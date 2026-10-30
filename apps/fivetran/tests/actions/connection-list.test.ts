@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { page } from "./_shared.ts";
 import action from "../../actions/connection-list.ts";
 
 /** Broken, warning and paused are three different things. */
-Deno.test("connection-list: separates broken, warning and paused", async () => {
+test("connection-list: separates broken, warning and paused", async () => {
   const { ctx, calls } = mockCtx([page([
     { id: "c1", schema: "shop", status: { setup_state: "broken" } },
     { id: "c2", schema: "crm", status: { setup_state: "connected", warnings: [{ code: "x" }] } },
@@ -25,7 +26,7 @@ Deno.test("connection-list: separates broken, warning and paused", async () => {
 });
 
 /** A broken connection is not also counted as a warning. */
-Deno.test("connection-list: a broken connection appears once, as broken", async () => {
+test("connection-list: a broken connection appears once, as broken", async () => {
   const { ctx } = mockCtx([page([
     { id: "c1", schema: "shop", status: { setup_state: "broken", warnings: [{ code: "x" }] } },
   ])]);
@@ -34,7 +35,7 @@ Deno.test("connection-list: a broken connection appears once, as broken", async 
   assertEquals(result.warning, []);
 });
 
-Deno.test("connection-list: the group and schema filters reach the wire", async () => {
+test("connection-list: the group and schema filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([page([])]);
   await action.execute!({ groupId: "g1", schema: "shop" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -42,13 +43,13 @@ Deno.test("connection-list: the group and schema filters reach the wire", async 
   assertEquals(q.get("schema"), "shop");
 });
 
-Deno.test("connection-list: logs counts only", async () => {
+test("connection-list: logs counts only", async () => {
   const { ctx, logs } = mockCtx([page([{ id: "c1", status: { setup_state: "connected" } }])]);
   await action.execute!({}, ctx);
   assertEquals(logs[0].data, { count: 1, broken: 0 });
 });
 
 /** Treating a paused connection as an incident trains people to ignore this. */
-Deno.test("connection-list: says paused is a decision, not a fault", () => {
+test("connection-list: says paused is a decision, not a fault", () => {
   assert(/somebody's decision/.test(action.description!), action.description);
 });

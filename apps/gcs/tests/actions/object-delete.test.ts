@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-delete.ts";
 
@@ -14,7 +15,7 @@ const bucketConfig = (options: { versioning?: boolean; softDeleteSeconds?: numbe
 
 const object = (storageClass = "STANDARD") => ({ status: 200, body: { storageClass } });
 
-Deno.test("object-delete: reads the bucket and the object, then deletes", async () => {
+test("object-delete: reads the bucket and the object, then deletes", async () => {
   const { ctx, calls } = mockCtx([bucketConfig({}), object(), { status: 204 }]);
   const result = await action.execute(
     { bucket: "uploads", object: "logs/a.log" },
@@ -32,7 +33,7 @@ Deno.test("object-delete: reads the bucket and the object, then deletes", async 
  * "I deleted it and it still costs money" and "I deleted it and there is no
  * way back" are both normal; which one is a bucket setting nobody looked at.
  */
-Deno.test("object-delete: reports which of the three deletes this was", async () => {
+test("object-delete: reports which of the three deletes this was", async () => {
   const versioned = mockCtx([bucketConfig({ versioning: true }), object(), { status: 204 }]);
   const kept = await action.execute(
     { bucket: "uploads", object: "a.log" },
@@ -61,7 +62,7 @@ Deno.test("object-delete: reports which of the three deletes this was", async ()
 });
 
 /** An irreversible delete is a warning; a recoverable one is not. */
-Deno.test("object-delete: only the irreversible case warns", async () => {
+test("object-delete: only the irreversible case warns", async () => {
   const { ctx, logs } = mockCtx([
     bucketConfig({ versioning: true }),
     object(),
@@ -72,7 +73,7 @@ Deno.test("object-delete: only the irreversible case warns", async () => {
 });
 
 /** The minimum billed duration survives the object. */
-Deno.test("object-delete: says deleting an archived object saves nothing", async () => {
+test("object-delete: says deleting an archived object saves nothing", async () => {
   const { ctx } = mockCtx([bucketConfig({}), object("ARCHIVE"), { status: 204 }]);
   const result = await action.execute(
     { bucket: "uploads", object: "a.log" },
@@ -82,7 +83,7 @@ Deno.test("object-delete: says deleting an archived object saves nothing", async
   assert(/does not stop that charge/.test(String(result.earlyDeletionNote)));
 });
 
-Deno.test("object-delete: a STANDARD object has no early-deletion note", async () => {
+test("object-delete: a STANDARD object has no early-deletion note", async () => {
   const { ctx } = mockCtx([bucketConfig({}), object(), { status: 204 }]);
   const result = await action.execute(
     { bucket: "uploads", object: "a.log" },
@@ -92,7 +93,7 @@ Deno.test("object-delete: a STANDARD object has no early-deletion note", async (
 });
 
 /** Without it, a delete racing an overwrite removes the other writer's version. */
-Deno.test("object-delete: a generation precondition is passed through", async () => {
+test("object-delete: a generation precondition is passed through", async () => {
   const { ctx, calls } = mockCtx([bucketConfig({}), object(), { status: 204 }]);
   await action.execute(
     { bucket: "uploads", object: "a.log", ifGenerationMatch: "1700000000000001" },
@@ -105,7 +106,7 @@ Deno.test("object-delete: a generation precondition is passed through", async ()
 });
 
 /** A missing object should not stop the delete being attempted. */
-Deno.test("object-delete: an unreadable object still deletes", async () => {
+test("object-delete: an unreadable object still deletes", async () => {
   const { ctx } = mockCtx([bucketConfig({}), { status: 404, body: {} }, { status: 204 }]);
   const result = await action.execute(
     { bucket: "uploads", object: "a.log" },

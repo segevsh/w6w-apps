@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-statistics-timeline.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-statistics-timeline: returns the daily array", async () => {
+test("get-statistics-timeline: returns the daily array", async () => {
   const days = [{
     date: "2026-06-28",
     summary: { aggregate: { delivered: 50 }, country_data: {} },
@@ -13,7 +14,7 @@ Deno.test("get-statistics-timeline: returns the daily array", async () => {
   assertEquals(out.days, days);
 });
 
-Deno.test("get-statistics-timeline: a non-array payload becomes an empty list; errors throw", async () => {
+test("get-statistics-timeline: a non-array payload becomes an empty list; errors throw", async () => {
   assertEquals((await run(action, {}, mockCtx([{ body: { data: null } }]).ctx)).days, []);
   await assertRejects(
     () => run(action, {}, mockCtx([{ status: 401, body: { error: { message: "bad key" } } }]).ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import channelUpdate from "../../actions/channel-update.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("channel-update: POST /api/v3/channels/update with every documented parameter", async () => {
+test("channel-update: POST /api/v3/channels/update with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await channelUpdate.execute({
     "channelId": 100,
@@ -34,7 +35,7 @@ Deno.test("channel-update: POST /api/v3/channels/update with every documented pa
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("channel-update: sends a form body, never a query string", async () => {
+test("channel-update: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUpdate.execute({
     "channelId": 100,
@@ -52,18 +53,18 @@ Deno.test("channel-update: sends a form body, never a query string", async () =>
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("channel-update: omits optional parameters that are not set", async () => {
+test("channel-update: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUpdate.execute({ "channelId": 100, "name": "sample name" }, ctx);
 
   assertEquals(formOf(calls[0].body), { "id": "100", "name": "sample name" });
 });
 
-Deno.test("channel-update: is declared idempotent", () => {
+test("channel-update: is declared idempotent", () => {
   assertEquals(channelUpdate.idempotent, true);
 });
 
-Deno.test("channel-update: sends no credential of its own", async () => {
+test("channel-update: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUpdate.execute({
     "channelId": 100,
@@ -80,7 +81,7 @@ Deno.test("channel-update: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("channel-update: surfaces Twist's error body", async () => {
+test("channel-update: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

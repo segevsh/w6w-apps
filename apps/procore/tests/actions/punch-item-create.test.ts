@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/punch-item-create.ts";
 
-Deno.test("punch-item-create: POSTs project_id beside punch_item, assignees as login_information_ids", async () => {
+test("punch-item-create: POSTs project_id beside punch_item, assignees as login_information_ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 12, name: "Touch up" } }]);
   const out = await action.execute!({
     companyId: 5,
@@ -31,12 +32,12 @@ Deno.test("punch-item-create: POSTs project_id beside punch_item, assignees as l
   assertEquals(out, { id: 12, name: "Touch up" });
 });
 
-Deno.test("punch-item-create: minimal body is just the name", async () => {
+test("punch-item-create: minimal body is just the name", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ projectId: 8, name: "N" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { project_id: 8, punch_item: { name: "N" } });
 });
 
-Deno.test("punch-item-create: is declared non-idempotent", () => {
+test("punch-item-create: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

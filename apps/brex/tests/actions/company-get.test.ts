@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyGet from "../../actions/company-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const COMPANY = {
   accountType: "BREX_EMPOWER",
 };
 
-Deno.test("company-get: GETs the company with no params and no query", async () => {
+test("company-get: GETs the company with no params and no query", async () => {
   const { ctx, calls } = mockCtx([{ body: COMPANY }]);
   const result = await companyGet.execute({}, ctx) as typeof COMPANY;
 
@@ -20,7 +21,7 @@ Deno.test("company-get: GETs the company with no params and no query", async () 
 });
 
 /** Brex's own mixed naming: `legal_name` snake_case, `accountType` camelCase. */
-Deno.test("company-get: the mixed field names are passed through verbatim", async () => {
+test("company-get: the mixed field names are passed through verbatim", async () => {
   const { ctx } = mockCtx([{ body: COMPANY }]);
   const result = await companyGet.execute({}, ctx) as typeof COMPANY;
 
@@ -33,7 +34,7 @@ Deno.test("company-get: the mixed field names are passed through verbatim", asyn
  * entitlement gates, so the action exists partly to read it before something
  * gated is attempted.
  */
-Deno.test("company-get: it declares a read with no parameters", () => {
+test("company-get: it declares a read with no parameters", () => {
   assertEquals(companyGet.type, "read");
   assertEquals(companyGet.params, []);
   const output = companyGet.output as Array<{ key: string }>;

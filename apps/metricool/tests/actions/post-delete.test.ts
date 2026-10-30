@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postDelete from "../../actions/post-delete.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("post-delete: DELETE /v2/scheduler/posts/{id}; data false is not success", async () => {
+test("post-delete: DELETE /v2/scheduler/posts/{id}; data false is not success", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(true) }, { body: envelope(false) }]);
   assertEquals(await postDelete.execute({ blogId: "9", id: "5" }, ctx), { success: true });
   assertEquals(calls[0].method, "DELETE");

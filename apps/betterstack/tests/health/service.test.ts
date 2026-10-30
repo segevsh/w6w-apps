@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapResourceStatus, PAGE_ID, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -40,13 +41,13 @@ const base = [
   { id: "13", section: "3", name: "Telemetry", status: "operational" },
 ];
 
-Deno.test("service: reads the .json index on status.betterstack.com", () => {
+test("service: reads the .json index on status.betterstack.com", () => {
   assertEquals(STATUS_URL, "https://status.betterstack.com/index.json");
   assertEquals(service.network?.allow, ["status.betterstack.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: all covered components operational -> ok, not_monitored skipped", async () => {
+test("service: all covered components operational -> ok, not_monitored skipped", async () => {
   const { ctx, calls } = mockCtx([{ body: page(base) }]);
   const out = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -54,7 +55,7 @@ Deno.test("service: all covered components operational -> ok, not_monitored skip
   assertEquals(Object.keys(out.components ?? {}).sort(), ["10", "11"]);
 });
 
-Deno.test("service: a Telemetry outage does not report the Uptime API down", async () => {
+test("service: a Telemetry outage does not report the Uptime API down", async () => {
   const resources = base.map((r) => r.id === "13" ? { ...r, status: "downtime" } : r);
   const { ctx } = mockCtx([{ body: page(resources, { aggregate_state: "downtime" }) }]);
   const out = await service.check!({}, ctx);
@@ -62,7 +63,7 @@ Deno.test("service: a Telemetry outage does not report the Uptime API down", asy
   assertEquals("13" in (out.components ?? {}), false);
 });
 
-Deno.test("service: an Uptime downtime is down, and names the component", async () => {
+test("service: an Uptime downtime is down, and names the component", async () => {
   const resources = base.map((r) => r.id === "11" ? { ...r, status: "downtime" } : r);
   const { ctx } = mockCtx([{ body: page(resources) }]);
   const out = await service.check!({}, ctx);
@@ -71,7 +72,7 @@ Deno.test("service: an Uptime downtime is down, and names the component", async 
   assertEquals(out.message, "affected: Uptime (downtime)");
 });
 
-Deno.test("service: degraded and maintenance are degraded", async () => {
+test("service: degraded and maintenance are degraded", async () => {
   for (const status of ["degraded", "maintenance"]) {
     const resources = base.map((r) => r.id === "10" ? { ...r, status } : r);
     const { ctx } = mockCtx([{ body: page(resources) }]);
@@ -79,13 +80,13 @@ Deno.test("service: degraded and maintenance are degraded", async () => {
   }
 });
 
-Deno.test("service: an unknown resource status is unknown, never ok", () => {
+test("service: an unknown resource status is unknown, never ok", () => {
   assertEquals(mapResourceStatus("mystery"), "unknown");
   assertEquals(mapResourceStatus(undefined), "unknown");
   assertEquals(mapResourceStatus("not_monitored"), null);
 });
 
-Deno.test("service: a page that is not Better Stack's is unknown", async () => {
+test("service: a page that is not Better Stack's is unknown", async () => {
   const { ctx } = mockCtx([{ body: page(base, { custom_domain: "status.other.example" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
@@ -96,14 +97,14 @@ Deno.test("service: a page that is not Better Stack's is unknown", async () => {
   assertEquals((await service.check!({}, second.ctx)).state, "unknown");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   for (const r of [{ status: 500, body: "x" }, { status: 200, body: "<html>" }]) {
     const { ctx } = mockCtx([{ ...r, headers: {} }]);
     assertEquals((await service.check!({}, ctx)).state, "unknown");
   }
 });
 
-Deno.test("service: no covered components is unknown", async () => {
+test("service: no covered components is unknown", async () => {
   const { ctx } = mockCtx([{
     body: page([{ id: "13", section: "3", name: "Telemetry", status: "operational" }]),
   }]);

@@ -17,7 +17,7 @@
     "apiDocs": [
       "https://docs.synthflow.ai/api/fern-docs/favicon.ico"
     ],
-    "longDescription": "Synthflow builds voice AI agents that answer and place phone calls. The unit this app moves around is the call: start an outbound call or a whole batch against an existing agent, watch a batch's progress (pause, resume, cancel), and pull a finished call's transcript and metadata. Around that sit the catalogs a workflow picks from \u2014 agents, phone numbers, voices, knowledge bases \u2014 plus contacts (create, update, delete) and text chat sessions.\n\nAgent, action, knowledge-base, simulation and subaccount authoring is deliberately not covered: those are deeply nested configuration objects meant to be built once in the Synthflow dashboard and then referenced by id. A workspace lives in exactly one cluster (Global, US or EU) and a key only works there, so the connection asks for the region and the app reaches only that cluster's host.\n\nHealth checks track the Synthflow API and End to End calling components of status.synthflow.ai alongside the derived credential check; Synthflow publishes no usage or rate-limit surface, so quota is declared unavailable.",
+    "longDescription": "Synthflow builds voice AI agents that answer and place phone calls. The unit this app moves around is the call: start an outbound call or a whole batch against an existing agent, watch a batch's progress (pause, resume, cancel), and pull a finished call's transcript and metadata. Around that sit the catalogs a workflow picks from — agents, phone numbers, voices, knowledge bases — plus contacts (create, update, delete) and text chat sessions.\n\nAgent, action, knowledge-base, simulation and subaccount authoring is deliberately not covered: those are deeply nested configuration objects meant to be built once in the Synthflow dashboard and then referenced by id. A workspace lives in exactly one cluster (Global, US or EU) and a key only works there, so the connection asks for the region and the app reaches only that cluster's host.\n\nHealth checks track the Synthflow API and End to End calling components of status.synthflow.ai alongside the derived credential check; Synthflow publishes no usage or rate-limit surface, so quota is declared unavailable.",
     "categories": [
       "ai",
       "communication"
@@ -36,5 +36,11 @@
       ]
     },
     "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings --import ./tests/_register.mjs \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --alias:@w6w/types=../../../core/packages/types/mod.ts --outfile=dist/app.js"
   }
 }

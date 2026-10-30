@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import orderUpdate from "../../actions/order-update.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("order-update: PUTs /orders/{id} with the mapped body", async () => {
+test("order-update: PUTs /orders/{id} with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await orderUpdate.execute({
     "id": 7,
@@ -37,7 +38,7 @@ Deno.test("order-update: PUTs /orders/{id} with the mapped body", async () => {
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("order-update: the free-form fields object is merged and typed params win", async () => {
+test("order-update: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await orderUpdate.execute(
     {
@@ -52,7 +53,7 @@ Deno.test("order-update: the free-form fields object is merged and typed params 
   assertEquals(sent["description"], "10 licenses");
 });
 
-Deno.test("order-update: fields may be a JSON string", async () => {
+test("order-update: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await orderUpdate.execute(
     { "id": 7, "description": "10 licenses", "fields": '{"extraKey":1}' } as never,
@@ -61,7 +62,7 @@ Deno.test("order-update: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("order-update: invalid fields JSON is refused before any request", async () => {
+test("order-update: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await orderUpdate.execute({ "id": 7, "fields": "{nope" } as never, ctx),
@@ -71,7 +72,7 @@ Deno.test("order-update: invalid fields JSON is refused before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("order-update: an update with nothing to change is refused", async () => {
+test("order-update: an update with nothing to change is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await orderUpdate.execute({ id: 7 }, ctx),
@@ -81,7 +82,7 @@ Deno.test("order-update: an update with nothing to change is refused", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("order-update: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("order-update: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -107,7 +108,7 @@ Deno.test("order-update: a rejected key surfaces Upsales' plain-text Unauthorize
   );
 });
 
-Deno.test("order-update: a JSON error envelope surfaces the vendor key", async () => {
+test("order-update: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

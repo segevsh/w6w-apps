@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/user-suspend.ts";
 
-Deno.test("user-suspend: PUTs the id-keyed admin route", async () => {
+test("user-suspend: PUTs the id-keyed admin route", async () => {
   const { ctx, calls } = mockDiscourseCtx([{
     body: { suspension: { suspended_till: "2121-02-22" } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("user-suspend: PUTs the id-keyed admin route", async () => {
   assertEquals(JSON.parse(calls[0].body!), { suspend_until: "2121-02-22", reason: "spam" });
 });
 
-Deno.test("user-suspend: omitting `message` means no email is sent", async () => {
+test("user-suspend: omitting `message` means no email is sent", async () => {
   // Discourse's reference: `message` "Will send an email with this message when
   // present". Sending mail to a community member by accident is not recoverable,
   // so a blank field must never become an empty-string message.
@@ -23,7 +24,7 @@ Deno.test("user-suspend: omitting `message` means no email is sent", async () =>
   assertEquals("message" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("user-suspend: a supplied message is forwarded, and the form says it emails", async () => {
+test("user-suspend: a supplied message is forwarded, and the form says it emails", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute(
     { userId: 1, suspendUntil: "2030-01-01", reason: "r", message: "See the FAQ." },
@@ -34,14 +35,14 @@ Deno.test("user-suspend: a supplied message is forwarded, and the form says it e
   assert(/send/i.test(param.hint!));
 });
 
-Deno.test("user-suspend: both of the endpoint's required fields are required here", () => {
+test("user-suspend: both of the endpoint's required fields are required here", () => {
   assertEquals(
     action.params!.filter((p) => p.required).map((p) => p.key),
     ["userId", "suspendUntil", "reason"],
   );
 });
 
-Deno.test("user-suspend: post_action passes through under its API name", async () => {
+test("user-suspend: post_action passes through under its API name", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await action.execute(
     { userId: 1, suspendUntil: "2030-01-01", reason: "r", postAction: "delete" },

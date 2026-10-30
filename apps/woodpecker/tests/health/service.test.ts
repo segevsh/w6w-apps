@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, PAGE_ID, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ function summary(api: string, other = "operational", pageId = PAGE_ID) {
   };
 }
 
-Deno.test("service: reads the Statuspage summary and is unsigned", async () => {
+test("service: reads the Statuspage summary and is unsigned", async () => {
   const m = mockCtx([{ body: summary("operational") }]);
   const r = await run(m);
   assertEquals(r.state, "ok");
@@ -25,7 +26,7 @@ Deno.test("service: reads the Statuspage summary and is unsigned", async () => {
   assertEquals(service.network?.allow, ["status.woodpecker.co"]);
 });
 
-Deno.test("service: the API component decides, other components are detail", async () => {
+test("service: the API component decides, other components are detail", async () => {
   const web = await run(mockCtx([{ body: summary("operational", "major_outage") }]));
   assertEquals(web.state, "ok");
   assert((web.message ?? "").includes("Woodpecker Web App"));
@@ -35,12 +36,12 @@ Deno.test("service: the API component decides, other components are detail", asy
   assertEquals(partial.state, "degraded");
 });
 
-Deno.test("service: a page that is not Woodpecker's is unknown", async () => {
+test("service: a page that is not Woodpecker's is unknown", async () => {
   const r = await run(mockCtx([{ body: summary("operational", "operational", "other") }]));
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("service: a missing API component, bad status and bad body are unknown", async () => {
+test("service: a missing API component, bad status and bad body are unknown", async () => {
   const noApi = summary("operational");
   noApi.components = noApi.components.filter((c) => c.id !== "q9nwdd1b0y34");
   assertEquals((await run(mockCtx([{ body: noApi }]))).state, "unknown");
@@ -50,7 +51,7 @@ Deno.test("service: a missing API component, bad status and bad body are unknown
   assertEquals((await run(mockCtx([{ body: empty }]))).state, "unknown");
 });
 
-Deno.test("service: mapComponentStatus covers the documented vocabulary", () => {
+test("service: mapComponentStatus covers the documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");

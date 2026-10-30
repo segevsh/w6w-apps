@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Todoist's authorize/token endpoints and comma-separated scopes", () => {
+test("oauth2: declares Todoist's authorize/token endpoints and comma-separated scopes", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://todoist.com/oauth/authorize");
@@ -11,7 +12,7 @@ Deno.test("oauth2: declares Todoist's authorize/token endpoints and comma-separa
   assertEquals(auth.oauth2?.scopes, ["data:read_write", "data:delete"]);
 });
 
-Deno.test("oauth2: sign appends Bearer using credential.accessToken", async () => {
+test("oauth2: sign appends Bearer using credential.accessToken", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("oauth2: sign appends Bearer using credential.accessToken", async () =
   assertEquals(out.headers["authorization"], "Bearer at-xyz");
 });
 
-Deno.test("oauth2: test hits /projects with the access token and reports ok", async () => {
+test("oauth2: test hits /projects with the access token and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   const result = await auth.test({ credential: { accessToken: "at-xyz" } }, ctx);
   assertEquals(result.ok, true);
@@ -31,7 +32,7 @@ Deno.test("oauth2: test hits /projects with the access token and reports ok", as
   assertEquals(calls[0].headers["authorization"], "Bearer at-xyz");
 });
 
-Deno.test("oauth2: test fails fast when accessToken is missing", async () => {
+test("oauth2: test fails fast when accessToken is missing", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

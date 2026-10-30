@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webinarGet from "../../actions/webinar-get.ts";
 import { failure, formOf, mockWebinarJamCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("webinar-get: sends webinar_id and returns the webinar object", async () => {
+test("webinar-get: sends webinar_id and returns the webinar object", async () => {
   const webinar = {
     webinar_id: 5,
     webinar_hash: "pqrs7890",
@@ -22,13 +23,13 @@ Deno.test("webinar-get: sends webinar_id and returns the webinar object", async 
   assertEquals(out.webinar, webinar);
 });
 
-Deno.test("webinar-get: the everwebinar product hits the everwebinar prefix", async () => {
+test("webinar-get: the everwebinar product hits the everwebinar prefix", async () => {
   const { ctx, calls } = mockWebinarJamCtx([{ body: ok({ webinar: {} }) }]);
   await webinarGet.execute({ product: "everwebinar", webinarId: 6 }, ctx);
   assertEquals(pathOf(calls[0].url), "/everwebinar/webinar");
 });
 
-Deno.test("webinar-get: an unknown webinar id surfaces the vendor's own error text", async () => {
+test("webinar-get: an unknown webinar id surfaces the vendor's own error text", async () => {
   const { ctx } = mockWebinarJamCtx([{
     status: 401,
     body: failure({ webinar_id: "webinar not found" }),
@@ -42,7 +43,7 @@ Deno.test("webinar-get: an unknown webinar id surfaces the vendor's own error te
   );
 });
 
-Deno.test("webinar-get: a missing webinar field returns null, not undefined", async () => {
+test("webinar-get: a missing webinar field returns null, not undefined", async () => {
   const { ctx } = mockWebinarJamCtx([{ body: ok() }]);
   const out = await webinarGet.execute({ product: "webinarjam", webinarId: 1 }, ctx) as {
     webinar: unknown;

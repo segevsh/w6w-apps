@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import distributionList from "../../actions/distribution-list.ts";
 import { API_ROOT, listEnvelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("distribution-list: passes the required surveyId query parameter", async () => {
+test("distribution-list: passes the required surveyId query parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "EMD_1" }]) }]);
   const out = await distributionList.execute({ surveyId: "SV_1" }, ctx) as {
     elements: unknown[];
@@ -14,7 +15,7 @@ Deno.test("distribution-list: passes the required surveyId query parameter", asy
   assertEquals(out.elements, [{ id: "EMD_1" }]);
 });
 
-Deno.test("distribution-list: follows nextPage while keeping within maxPages", async () => {
+test("distribution-list: follows nextPage while keeping within maxPages", async () => {
   const page2 = "https://iad1.qualtrics.com/API/v3/distributions?surveyId=SV_1&offset=10";
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "EMD_1" }], page2) },

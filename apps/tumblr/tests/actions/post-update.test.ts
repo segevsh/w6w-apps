@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postUpdate from "../../actions/post-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("post-update: PUTs NPF content to /v2/blog/{id}/posts/{post-id}", async () => {
+test("post-update: PUTs NPF content to /v2/blog/{id}/posts/{post-id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "123" }) }]);
   const out = await postUpdate.execute(
     {

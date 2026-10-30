@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-connections.ts";
 
-Deno.test("list-connections: GETs people/me/connections with the default personFields", async () => {
+test("list-connections: GETs people/me/connections with the default personFields", async () => {
   const { ctx, calls } = mockCtx([{ body: { connections: [], totalPeople: 0 } }]);
   const result = await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("list-connections: GETs people/me/connections with the default personF
   assertEquals(result, { connections: [], totalPeople: 0 });
 });
 
-Deno.test("list-connections: joins a multiselect personFields array into one mask", async () => {
+test("list-connections: joins a multiselect personFields array into one mask", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ personFields: ["names", "organizations", "birthdays"] }, ctx);
   const url = new URL(calls[0].url);
@@ -21,7 +22,7 @@ Deno.test("list-connections: joins a multiselect personFields array into one mas
   assertEquals(url.searchParams.getAll("personFields").length, 1);
 });
 
-Deno.test("list-connections: an empty personFields still sends the required default", async () => {
+test("list-connections: an empty personFields still sends the required default", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ personFields: [] }, ctx);
   assertEquals(
@@ -30,7 +31,7 @@ Deno.test("list-connections: an empty personFields still sends the required defa
   );
 });
 
-Deno.test("list-connections: forwards paging, sorting and sync params", async () => {
+test("list-connections: forwards paging, sorting and sync params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     pageSize: 250,
@@ -47,7 +48,7 @@ Deno.test("list-connections: forwards paging, sorting and sync params", async ()
   assertEquals(url.searchParams.get("syncToken"), "sync-1");
 });
 
-Deno.test("list-connections: sources are repeated params, and omitted when unset", async () => {
+test("list-connections: sources are repeated params, and omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute({ sources: ["READ_SOURCE_TYPE_CONTACT", "READ_SOURCE_TYPE_PROFILE"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("sources"), [
@@ -59,7 +60,7 @@ Deno.test("list-connections: sources are repeated params, and omitted when unset
   assertEquals(new URL(calls[1].url).searchParams.has("sources"), false);
 });
 
-Deno.test("list-connections: accepts a bare id and prefixes it", async () => {
+test("list-connections: accepts a bare id and prefixes it", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ resourceName: "me" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/people/me/connections");

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const created = {
   },
 };
 
-Deno.test("webhook-create: POSTs a webhook with resource, action, url and secret", async () => {
+test("webhook-create: POSTs a webhook with resource, action, url and secret", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: created }]);
   await webhookCreate.execute({
     url: "https://foo.bar/webhooks",
@@ -42,7 +43,7 @@ Deno.test("webhook-create: POSTs a webhook with resource, action, url and secret
   });
 });
 
-Deno.test("webhook-create: the response never carries the secret or the cleanup token", async () => {
+test("webhook-create: the response never carries the secret or the cleanup token", async () => {
   const { ctx } = mockCtx([{ status: 201, body: structuredClone(created) }]);
   const out = await webhookCreate.execute({ url: "https://foo.bar/webhooks" }, ctx);
   const text = JSON.stringify(out);
@@ -54,7 +55,7 @@ Deno.test("webhook-create: the response never carries the secret or the cleanup 
   );
 });
 
-Deno.test("webhook-create: resource and action default to the wildcard", () => {
+test("webhook-create: resource and action default to the wildcard", () => {
   const defaults = webhookCreate.params!.filter((p) => ["resource", "action"].includes(p.key))
     .map((p) => p.default);
   assertEquals(defaults, ["*", "*"]);

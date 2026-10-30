@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   apiRoot,
@@ -9,12 +10,12 @@ import {
   safeErrorMessage,
 } from "../../lib/client.ts";
 
-Deno.test("normalizeBaseUrl: adds https, strips trailing slash", () => {
+test("normalizeBaseUrl: adds https, strips trailing slash", () => {
   assertEquals(normalizeBaseUrl("acme.cybozu.com"), "https://acme.cybozu.com");
   assertEquals(normalizeBaseUrl("https://acme.cybozu.com/"), "https://acme.cybozu.com");
 });
 
-Deno.test("normalizeBaseUrl: strips a pasted /k/v1/... suffix back to the tenant root", () => {
+test("normalizeBaseUrl: strips a pasted /k/v1/... suffix back to the tenant root", () => {
   assertEquals(
     normalizeBaseUrl("https://acme.cybozu.com/k/v1/record.json?app=1"),
     "https://acme.cybozu.com",
@@ -22,12 +23,12 @@ Deno.test("normalizeBaseUrl: strips a pasted /k/v1/... suffix back to the tenant
   assertEquals(normalizeBaseUrl("https://acme.kintone.com/k"), "https://acme.kintone.com");
 });
 
-Deno.test("normalizeBaseUrl: rejects empty and invalid input", () => {
+test("normalizeBaseUrl: rejects empty and invalid input", () => {
   assertThrows(() => normalizeBaseUrl(""), Error, "empty");
   assertThrows(() => normalizeBaseUrl("http://"), Error);
 });
 
-Deno.test("apiRoot: appends /k/guest/{id} only when a Guest Space ID is set", () => {
+test("apiRoot: appends /k/guest/{id} only when a Guest Space ID is set", () => {
   assertEquals(apiRoot({ baseUrl: "https://acme.cybozu.com" }), "https://acme.cybozu.com/k");
   assertEquals(
     apiRoot({ baseUrl: "https://acme.cybozu.com", guestSpaceId: "5" }),
@@ -35,11 +36,11 @@ Deno.test("apiRoot: appends /k/guest/{id} only when a Guest Space ID is set", ()
   );
 });
 
-Deno.test("apiRoot: throws when the connection records no tenant URL", () => {
+test("apiRoot: throws when the connection records no tenant URL", () => {
   assertThrows(() => apiRoot({}), Error, "no tenant URL");
 });
 
-Deno.test("compact: drops undefined, null and empty-string values", () => {
+test("compact: drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: 0, f: false }), {
     a: 1,
     e: 0,
@@ -47,7 +48,7 @@ Deno.test("compact: drops undefined, null and empty-string values", () => {
   });
 });
 
-Deno.test("parseJson: passes through a live value, parses a JSON string, rejects garbage", () => {
+test("parseJson: passes through a live value, parses a JSON string, rejects garbage", () => {
   assertEquals(parseJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(parseJson('{"a":1}', "x"), { a: 1 });
   assertEquals(parseJson(undefined, "x"), undefined);
@@ -55,7 +56,7 @@ Deno.test("parseJson: passes through a live value, parses a JSON string, rejects
   assertThrows(() => parseJson("{not json", "record"), Error, "record");
 });
 
-Deno.test("safeErrorMessage: prefixes the vendor code when present", () => {
+test("safeErrorMessage: prefixes the vendor code when present", () => {
   assertEquals(
     safeErrorMessage({ code: "CB_IJ01", message: "Invalid JSON string." }),
     "CB_IJ01: Invalid JSON string.",
@@ -65,7 +66,7 @@ Deno.test("safeErrorMessage: prefixes the vendor code when present", () => {
   assertEquals(safeErrorMessage({}), undefined);
 });
 
-Deno.test("KintoneClient: builds {root}/v1/{path}.json and appends query params", async () => {
+test("KintoneClient: builds {root}/v1/{path}.json and appends query params", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { record: { $id: { value: "1" } } } }],
     { display: { baseUrl: "https://acme.cybozu.com" } },
@@ -75,7 +76,7 @@ Deno.test("KintoneClient: builds {root}/v1/{path}.json and appends query params"
   assertEquals(calls[0].url, "https://acme.cybozu.com/k/v1/record.json?app=1&id=1");
 });
 
-Deno.test("KintoneClient: routes through the Guest Space path when configured", async () => {
+test("KintoneClient: routes through the Guest Space path when configured", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {} }],
     { display: { baseUrl: "https://acme.cybozu.com", guestSpaceId: "9" } },
@@ -84,7 +85,7 @@ Deno.test("KintoneClient: routes through the Guest Space path when configured", 
   assertEquals(calls[0].url, "https://acme.cybozu.com/k/guest/9/v1/app.json?id=1");
 });
 
-Deno.test("KintoneClient: array query params expand as fields[0]=...&fields[1]=...", async () => {
+test("KintoneClient: array query params expand as fields[0]=...&fields[1]=...", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { records: [], totalCount: null } }],
     { display: { baseUrl: "https://acme.cybozu.com" } },
@@ -98,7 +99,7 @@ Deno.test("KintoneClient: array query params expand as fields[0]=...&fields[1]=.
   );
 });
 
-Deno.test("KintoneClient: a non-ok response surfaces Kintone's {code, message} shape", async () => {
+test("KintoneClient: a non-ok response surfaces Kintone's {code, message} shape", async () => {
   const { ctx } = mockCtx(
     [{ status: 400, body: { code: "GAIA_IL19", id: "abc", message: "Illegal request." } }],
     { display: { baseUrl: "https://acme.cybozu.com" } },
@@ -111,7 +112,7 @@ Deno.test("KintoneClient: a non-ok response surfaces Kintone's {code, message} s
   assert(err.message.includes("Illegal request."), err.message);
 });
 
-Deno.test("KintoneClient: a non-JSON error body (Cybozu's edge HTML) is excerpted, not thrown raw", async () => {
+test("KintoneClient: a non-JSON error body (Cybozu's edge HTML) is excerpted, not thrown raw", async () => {
   const { ctx } = mockCtx(
     [{
       status: 404,

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import bulkUpload from "../../actions/bulk-upload.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const FILE = {
   error: "",
 };
 
-Deno.test("bulk-upload: POSTs a multipart file_contents part to the bulk host", async () => {
+test("bulk-upload: POSTs a multipart file_contents part to the bulk host", async () => {
   const { ctx, calls } = mockCtx([{ body: FILE }]);
   const out = await run(bulkUpload, { emails: "a@b.com, c@d.com\ne@f.com" }, ctx);
   const c = calls[0];
@@ -26,7 +27,7 @@ Deno.test("bulk-upload: POSTs a multipart file_contents part to the bulk host", 
   assertEquals(out.error, undefined);
 });
 
-Deno.test("bulk-upload: the body is a well-formed multipart with the addresses one per line", async () => {
+test("bulk-upload: the body is a well-formed multipart with the addresses one per line", async () => {
   let sent: Uint8Array | undefined;
   let ct = "";
   const { ctx } = mockCtx();
@@ -47,7 +48,7 @@ Deno.test("bulk-upload: the body is a well-formed multipart with the addresses o
   assert(text.endsWith(`--${boundary}--\r\n`));
 });
 
-Deno.test("bulk-upload: a base64 file is sent with its own name and type", async () => {
+test("bulk-upload: a base64 file is sent with its own name and type", async () => {
   let sent = "";
   const { ctx } = mockCtx();
   ctx.fetch = ((_u: string, init: RequestInit) => {
@@ -64,7 +65,7 @@ Deno.test("bulk-upload: a base64 file is sent with its own name and type", async
   assert(sent.includes("x@y.com"));
 });
 
-Deno.test("bulk-upload: insufficient_credits on a HTTP 200 throws with the figures", async () => {
+test("bulk-upload: insufficient_credits on a HTTP 200 throws with the figures", async () => {
   const { ctx } = mockCtx([{
     body: { error: "insufficient_credits", unique_emails: 250000, credits: 500 },
   }]);
@@ -73,7 +74,7 @@ Deno.test("bulk-upload: insufficient_credits on a HTTP 200 throws with the figur
   assert((err as Error).message.includes("500 credits available"));
 });
 
-Deno.test("bulk-upload: needs emails or a file", async () => {
+test("bulk-upload: needs emails or a file", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(() => run(bulkUpload, {}, ctx), Error, "provide emails");
   assertEquals(calls.length, 0);

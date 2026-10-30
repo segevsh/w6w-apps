@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-queue-item.ts";
 
 const display = { endpoint: "https://ci.example.com" };
 
-Deno.test("get-queue-item: GETs /queue/item/<id>/api/json", async () => {
+test("get-queue-item: GETs /queue/item/<id>/api/json", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 1543, blocked: false, buildable: true, cancelled: false, why: null } },
   ], { display });
@@ -14,7 +15,7 @@ Deno.test("get-queue-item: GETs /queue/item/<id>/api/json", async () => {
   assertEquals(result, { id: 1543, blocked: false, buildable: true, cancelled: false, why: null });
 });
 
-Deno.test("get-queue-item: reports the resolved build once Jenkins schedules an executor", async () => {
+test("get-queue-item: reports the resolved build once Jenkins schedules an executor", async () => {
   const { ctx } = mockCtx([
     {
       body: {

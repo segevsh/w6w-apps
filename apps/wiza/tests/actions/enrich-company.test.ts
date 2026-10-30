@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-company.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-company: posts only the supplied identifiers and returns data", async () => {
+test("enrich-company: posts only the supplied identifiers and returns data", async () => {
   const data = {
     company_name: "Wiza",
     company_domain: "wiza.co",
@@ -18,7 +19,7 @@ Deno.test("enrich-company: posts only the supplied identifiers and returns data"
   assertEquals(out, data);
 });
 
-Deno.test("enrich-company: maps name and LinkedIn id; requires at least one identifier", async () => {
+test("enrich-company: maps name and LinkedIn id; requires at least one identifier", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await exec(action, { companyName: "Wiza", companyLinkedinId: "18663757" }, ctx);
   assertEquals(bodyOf(calls[0]), { company_name: "Wiza", company_linkedin_id: "18663757" });
@@ -27,7 +28,7 @@ Deno.test("enrich-company: maps name and LinkedIn id; requires at least one iden
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("enrich-company: a 404 company-not-found fails the action", async () => {
+test("enrich-company: a 404 company-not-found fails the action", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: { code: 404, message: "Company not found" } },

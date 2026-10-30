@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accountCreate from "../../actions/account-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const BASE = {
   smtp_port: 465,
 };
 
-Deno.test("account-create: POSTs /accounts with the IMAP/SMTP fields", async () => {
+test("account-create: POSTs /accounts with the IMAP/SMTP fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com", status: 1 } }]);
   const out = await accountCreate.execute(BASE, ctx) as { email: string };
 
@@ -29,19 +30,19 @@ Deno.test("account-create: POSTs /accounts with the IMAP/SMTP fields", async () 
   assertEquals(out.email, "a@b.com");
 });
 
-Deno.test("account-create: warmup config accepts a JSON string", async () => {
+test("account-create: warmup config accepts a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await accountCreate.execute({ ...BASE, warmup: '{"limit":100}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).warmup, { limit: 100 });
 });
 
-Deno.test("account-create: never touches this app's OWN Instantly credential", async () => {
+test("account-create: never touches this app's OWN Instantly credential", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await accountCreate.execute(BASE, ctx);
   assert(!calls[0].headers.authorization?.includes("imap-secret"));
   assert(!calls[0].headers.authorization?.includes("smtp-secret"));
 });
 
-Deno.test("account-create: is declared non-idempotent", () => {
+test("account-create: is declared non-idempotent", () => {
   assertEquals(accountCreate.idempotent, false);
 });

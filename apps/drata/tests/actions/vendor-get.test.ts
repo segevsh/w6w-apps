@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import vendorGet from "../../actions/vendor-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "vendorId": 5 };
 
-Deno.test("vendor-get: GET /vendors/5 returns the bare object", async () => {
+test("vendor-get: GET /vendors/5 returns the bare object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "x" } }]);
   const out = await vendorGet.execute({ ...INPUT }, ctx) as { id: number };
 
@@ -14,7 +15,7 @@ Deno.test("vendor-get: GET /vendors/5 returns the bare object", async () => {
   assertEquals(out.id, 1);
 });
 
-Deno.test("vendor-get: expand goes out as repeated expand[] parameters", async () => {
+test("vendor-get: expand goes out as repeated expand[] parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await vendorGet.execute({ ...INPUT, ...{ "expand": ["documents"] } }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("vendor-get: expand goes out as repeated expand[] parameters", async (
   assertEquals(queryOf(calls[0].url).getAll("expand[]"), wire.map(([, v]) => v));
 });
 
-Deno.test("vendor-get: a 404 surfaces Drata's own message", async () => {
+test("vendor-get: a 404 surfaces Drata's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found", 3) }]);
   const err = await assertRejects(
     () => Promise.resolve(vendorGet.execute({ ...INPUT }, ctx)),

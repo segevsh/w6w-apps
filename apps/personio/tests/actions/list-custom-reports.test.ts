@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-custom-reports.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-custom-reports: maps report metadata fields", async () => {
+test("list-custom-reports: maps report metadata fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -31,7 +32,7 @@ Deno.test("list-custom-reports: maps report metadata fields", async () => {
   assertEquals(out.reports[0].status, "up_to_date");
 });
 
-Deno.test("list-custom-reports: forwards status filter", async () => {
+test("list-custom-reports: forwards status filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, data: [] } }]);
   await action.execute({ status: "up_to_date" }, ctx);
   assertEquals(queryOf(calls[0].url).status, "up_to_date");

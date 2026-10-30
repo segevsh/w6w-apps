@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/change-get.ts";
 
@@ -19,7 +20,7 @@ const detail = (extra: Record<string, unknown> = {}) => ({
   }),
 });
 
-Deno.test("change-get: reads the detail endpoint and summarises each label", async () => {
+test("change-get: reads the detail endpoint and summarises each label", async () => {
   const { ctx, calls } = mockCtx([detail()], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/a/changes/620421/detail");
@@ -29,7 +30,7 @@ Deno.test("change-get: reads the detail endpoint and summarises each label", asy
 });
 
 /** A -2 is a veto no number of +2s overrides. */
-Deno.test("change-get: names a blocking vote and explains the scale", async () => {
+test("change-get: names a blocking vote and explains the scale", async () => {
   const { ctx, logs } = mockCtx([detail({
     labels: { "Code-Review": { rejected: { name: "Grace" }, approved: { name: "Ada" } } },
   })], D);
@@ -42,7 +43,7 @@ Deno.test("change-get: names a blocking vote and explains the scale", async () =
 });
 
 /** Unresolved comments are themselves a submit requirement on many projects. */
-Deno.test("change-get: explains an unsubmittable change with no blocking vote", async () => {
+test("change-get: explains an unsubmittable change with no blocking vote", async () => {
   const { ctx, logs } = mockCtx([detail({ unresolved_comment_count: 3 })], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assertEquals(result.unresolvedComments, 3);
@@ -52,7 +53,7 @@ Deno.test("change-get: explains an unsubmittable change with no blocking vote", 
   );
 });
 
-Deno.test("change-get: a submittable change says so and warns about nothing", async () => {
+test("change-get: a submittable change says so and warns about nothing", async () => {
   const { ctx, logs } = mockCtx([detail({ submittable: true })], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assertEquals(result.isSubmittable, true);
@@ -60,13 +61,13 @@ Deno.test("change-get: a submittable change says so and warns about nothing", as
 });
 
 /** The age must not depend on the runtime's timezone. */
-Deno.test("change-get: reports an age from the UTC-read timestamp", async () => {
+test("change-get: reports an age from the UTC-read timestamp", async () => {
   const { ctx } = mockCtx([detail()], D);
   const result = await action.execute({ changeId: "620421" }, ctx) as Record<string, unknown>;
   assert(typeof result.ageDays === "number", String(result.ageDays));
 });
 
-Deno.test("change-get: refuses a bare Change-Id", async () => {
+test("change-get: refuses a bare Change-Id", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () =>

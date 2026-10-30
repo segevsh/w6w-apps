@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/expand-bitlink.ts";
 
-Deno.test("expand-bitlink: POSTs /expand with bitlink_id", async () => {
+test("expand-bitlink: POSTs /expand with bitlink_id", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { id: "bit.ly/abc123", link: "https://bit.ly/abc123", long_url: "https://example.com" },

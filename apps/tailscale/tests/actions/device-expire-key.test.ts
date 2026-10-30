@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-expire-key.ts";
 
@@ -9,7 +10,7 @@ const tagged = {
 };
 const ok = { status: 200, body: {} };
 
-Deno.test("device-expire-key: expires the key after the confirmation", async () => {
+test("device-expire-key: expires the key after the confirmation", async () => {
   const { ctx, calls } = mockCtx([device, ok]);
   const result = await action.execute({ deviceId: "n2", confirm: true }, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("device-expire-key: expires the key after the confirmation", async () 
 });
 
 /** There is no un-expire, and an unattended machine may have nobody to log in. */
-Deno.test("device-expire-key: refuses without confirmation and names the alternative", async () => {
+test("device-expire-key: refuses without confirmation and names the alternative", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute({ deviceId: "n2" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("device-expire-key: refuses without confirmation and names the alterna
 });
 
 /** A tagged device needs an auth key to come back. */
-Deno.test("device-expire-key: says so when the device was tagged", async () => {
+test("device-expire-key: says so when the device was tagged", async () => {
   const { ctx, logs } = mockCtx([tagged, ok]);
   const result = await action.execute({ deviceId: "n1", confirm: true }, ctx) as Record<
     string,
@@ -45,7 +46,7 @@ Deno.test("device-expire-key: says so when the device was tagged", async () => {
   assert(logs.some((l) => /needs an auth key/.test(l.message)), JSON.stringify(logs));
 });
 
-Deno.test("device-expire-key: always warns that the machine is logged out", async () => {
+test("device-expire-key: always warns that the machine is logged out", async () => {
   const { ctx, logs } = mockCtx([device, ok]);
   await action.execute({ deviceId: "n2", confirm: true }, ctx);
   assert(
@@ -54,7 +55,7 @@ Deno.test("device-expire-key: always warns that the machine is logged out", asyn
   );
 });
 
-Deno.test("device-expire-key: requires an id", async () => {
+test("device-expire-key: requires an id", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({ confirm: true }, ctx), Error, "deviceId");
 });

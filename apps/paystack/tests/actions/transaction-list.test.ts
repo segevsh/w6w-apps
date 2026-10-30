@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/transaction-list.ts";
 import { LIST_META, mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("transaction-list: maps filters to Paystack's query keys and returns {items, meta}", async () => {
+test("transaction-list: maps filters to Paystack's query keys and returns {items, meta}", async () => {
   const rows = [{ id: 1 }];
   const { ctx, calls } = mockCtx([{ body: ok(rows, LIST_META) }]);
   const out = await action.execute({
@@ -32,7 +33,7 @@ Deno.test("transaction-list: maps filters to Paystack's query keys and returns {
   });
 });
 
-Deno.test("transaction-list: no filters sends no query, and a missing data array is empty", async () => {
+test("transaction-list: no filters sends no query, and a missing data array is empty", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: true, message: "ok" } }]);
   assertEquals(await action.execute({}, ctx), { items: [], meta: undefined });
   assertEquals(new URL(calls[0].url).search, "");

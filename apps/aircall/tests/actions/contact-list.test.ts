@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: reads GET /v1/contacts", async () => {
+test("contact-list: reads GET /v1/contacts", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("contacts", [{ id: 710 }]) }]);
   const out = await contactList.execute({}, ctx) as { items: unknown[] };
 
@@ -15,7 +16,7 @@ Deno.test("contact-list: reads GET /v1/contacts", async () => {
  * incremental "changed since" sync possible — sorting by `created_at` never
  * surfaces an edit.
  */
-Deno.test("contact-list: orderBy reaches the wire as order_by", async () => {
+test("contact-list: orderBy reaches the wire as order_by", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody("contacts", []) }]);
   await contactList.execute({ orderBy: "updated_at", order: "desc" }, ctx);
   const q = queryOf(calls[0].url);
@@ -23,7 +24,7 @@ Deno.test("contact-list: orderBy reaches the wire as order_by", async () => {
   assertEquals(q.order, "desc");
 });
 
-Deno.test("contact-list: next_page_link drives hasMore", async () => {
+test("contact-list: next_page_link drives hasMore", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody("contacts", [{ id: 710 }], {

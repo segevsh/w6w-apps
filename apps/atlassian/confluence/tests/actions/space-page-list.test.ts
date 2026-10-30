@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/space-page-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("space-page-list: depth=root is what page-list cannot express", async () => {
+test("space-page-list: depth=root is what page-list cannot express", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [{ id: "1" }], _links: {} } }], {
     display,
   });
@@ -15,7 +16,7 @@ Deno.test("space-page-list: depth=root is what page-list cannot express", async 
   assertEquals(result, [{ id: "1" }]);
 });
 
-Deno.test("space-page-list: a blank space fails before any request", async () => {
+test("space-page-list: a blank space fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`spaceId` is required");
   assertEquals(calls.length, 0);

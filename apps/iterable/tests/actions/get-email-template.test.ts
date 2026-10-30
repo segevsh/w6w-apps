@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-email-template.ts";
 
-Deno.test("get-email-template: metadata", () => {
+test("get-email-template: metadata", () => {
   assertEquals(action.key, "get-email-template");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["templateId", "locale"]);
 });
 
-Deno.test("get-email-template: calls GET /templates/email/get on the US host", async () => {
+test("get-email-template: calls GET /templates/email/get on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "templateId": 3, "name": "T" } }]);
   const out = await action.execute({ "templateId": 7, "locale": "abc" }, ctx);
   assertEquals(calls.length, 1);
@@ -22,7 +23,7 @@ Deno.test("get-email-template: calls GET /templates/email/get on the US host", a
   assertEquals(out, { "templateId": 3, "name": "T" });
 });
 
-Deno.test("get-email-template: uses the EU host when the connection region is eu", async () => {
+test("get-email-template: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "templateId": 3, "name": "T" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -33,7 +34,7 @@ Deno.test("get-email-template: uses the EU host when the connection region is eu
   );
 });
 
-Deno.test("get-email-template: rejects a missing `templateId` without calling Iterable", async () => {
+test("get-email-template: rejects a missing `templateId` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -45,7 +46,7 @@ Deno.test("get-email-template: rejects a missing `templateId` without calling It
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-email-template: surfaces an HTTP error with Iterable's own code", async () => {
+test("get-email-template: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -56,7 +57,7 @@ Deno.test("get-email-template: surfaces an HTTP error with Iterable's own code",
   );
 });
 
-Deno.test("get-email-template: treats a 200 carrying a non-Success code as a failure", async () => {
+test("get-email-template: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

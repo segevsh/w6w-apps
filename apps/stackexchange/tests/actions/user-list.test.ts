@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-list: GETs /users and returns the wrapper", async () => {
+test("user-list: GETs /users and returns the wrapper", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -32,7 +33,7 @@ Deno.test("user-list: GETs /users and returns the wrapper", async () => {
   });
 });
 
-Deno.test("user-list: optional paging, filter and a different site", async () => {
+test("user-list: optional paging, filter and a different site", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const out = await action.execute({
     ...{ "inname": "x" },
@@ -66,7 +67,7 @@ Deno.test("user-list: optional paging, filter and a different site", async () =>
   assertEquals(u2.searchParams.get("min"), "5");
 });
 
-Deno.test("user-list: surfaces the API error body", async () => {
+test("user-list: surfaces the API error body", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error_id: 400, error_name: "bad_parameter", error_message: "site" } },
   ]);

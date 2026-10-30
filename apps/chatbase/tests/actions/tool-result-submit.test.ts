@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolResultSubmit from "../../actions/tool-result-submit.ts";
 import { mockCtx, pathOf, wrapped } from "../_helpers.ts";
 
-Deno.test("tool-result-submit: POST .../tool-result with parsed JSON output", async () => {
+test("tool-result-submit: POST .../tool-result with parsed JSON output", async () => {
   const { ctx, calls } = mockCtx([{ body: wrapped({ success: true }) }]);
   const out = await toolResultSubmit.execute(
     { agentId: "a1", conversationId: "c1", toolCallId: "call_1", output: '{"status":"ok"}' },
@@ -14,7 +15,7 @@ Deno.test("tool-result-submit: POST .../tool-result with parsed JSON output", as
   assertEquals(out.success, true);
 });
 
-Deno.test("tool-result-submit: omitted output is not sent as {} — the field is dropped entirely", async () => {
+test("tool-result-submit: omitted output is not sent as {} — the field is dropped entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: wrapped({ success: true }) }]);
   await toolResultSubmit.execute(
     { agentId: "a1", conversationId: "c1", toolCallId: "call_1" },
@@ -23,7 +24,7 @@ Deno.test("tool-result-submit: omitted output is not sent as {} — the field is
   assertEquals(JSON.parse(calls[0].body!), { toolCallId: "call_1" });
 });
 
-Deno.test("tool-result-submit: accepts an already-parsed object, not just a JSON string", async () => {
+test("tool-result-submit: accepts an already-parsed object, not just a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: wrapped({ success: true }) }]);
   await toolResultSubmit.execute(
     { agentId: "a1", conversationId: "c1", toolCallId: "call_1", output: { done: true } },

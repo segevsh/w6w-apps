@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, bodyOf, mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-attendee-add.ts";
 
-Deno.test("event-attendee-add: POSTs /event_attendees with member_email, not email", async () => {
+test("event-attendee-add: POSTs /event_attendees with member_email, not email", async () => {
   // This route names the field `member_email`; the space-membership routes call
   // theirs plain `email`. Neither is guessable from the other.
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
@@ -18,13 +19,13 @@ Deno.test("event-attendee-add: POSTs /event_attendees with member_email, not ema
  * required here, deliberately diverging in the safe direction: a call that
  * cannot succeed still spends a metered request.
  */
-Deno.test("event-attendee-add: both fields are required despite the schema saying otherwise", () => {
+test("event-attendee-add: both fields are required despite the schema saying otherwise", () => {
   assertEquals(action.params!.filter((p) => p.required).map((p) => p.key), [
     "eventId",
     "memberEmail",
   ]);
 });
 
-Deno.test("event-attendee-add: is idempotent", () => {
+test("event-attendee-add: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-list.ts";
 
@@ -26,7 +27,7 @@ const devices = [
   },
 ];
 
-Deno.test("device-list: reads the account's devices as a bare array", async () => {
+test("device-list: reads the account's devices as a bare array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: devices }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://api.particle.io/v1/devices");
@@ -35,7 +36,7 @@ Deno.test("device-list: reads the account's devices as a bare array", async () =
 });
 
 /** A product's devices come back wrapped, and from a different path. */
-Deno.test("device-list: a product fleet is a different path and a wrapped body", async () => {
+test("device-list: a product fleet is a different path and a wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { devices } }]);
   const result = await action.execute({ product: "my-product" }, ctx) as Record<string, unknown>;
   const url = new URL(calls[0].url);
@@ -45,7 +46,7 @@ Deno.test("device-list: a product fleet is a different path and a wrapped body",
 });
 
 /** A sleeping sensor is offline and fine; the action reports, not judges. */
-Deno.test("device-list: counts online and offline without calling either unhealthy", async () => {
+test("device-list: counts online and offline without calling either unhealthy", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: devices }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.onlineCount, 1);
@@ -55,27 +56,27 @@ Deno.test("device-list: counts online and offline without calling either unhealt
 });
 
 /** The comparison the API does not make. */
-Deno.test("device-list: names the device heard from longest ago", async () => {
+test("device-list: names the device heard from longest ago", async () => {
   const { ctx } = mockCtx([{ status: 200, body: devices }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals((result.quietest as Record<string, unknown>).name, "sensor-b");
 });
 
 /** The function argument limit alone varies with Device OS. */
-Deno.test("device-list: reports the distinct Device OS versions in the fleet", async () => {
+test("device-list: reports the distinct Device OS versions in the fleet", async () => {
   const { ctx } = mockCtx([{ status: 200, body: devices }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.firmwareVersions, ["4.2.0", "5.9.0"]);
 });
 
-Deno.test("device-list: filters by name locally", async () => {
+test("device-list: filters by name locally", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: devices }]);
   const result = await action.execute({ name: "SENSOR" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 2);
   assertEquals(new URL(calls[0].url).searchParams.get("name"), null);
 });
 
-Deno.test("device-list: an account with no devices is not an error", async () => {
+test("device-list: an account with no devices is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [] }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

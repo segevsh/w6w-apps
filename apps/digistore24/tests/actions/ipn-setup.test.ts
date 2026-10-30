@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import ipnSetup from "../../actions/ipn-setup.ts";
 import { envelope, errorEnvelope, fieldsOf, fnOf, mockCtx } from "../_helpers.ts";
 
 const FN = "ipnSetup";
 const DATA = { "ok": "Y" };
 
-Deno.test("ipn-setup: calls ipnSetup with POST and returns the data payload", async () => {
+test("ipn-setup: calls ipnSetup with POST and returns the data payload", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   const out = await ipnSetup.execute({
     "ipn_url": "https://x.test/ipn",
@@ -22,7 +23,7 @@ Deno.test("ipn-setup: calls ipnSetup with POST and returns the data payload", as
   assertEquals(out, DATA);
 });
 
-Deno.test("ipn-setup: sends every optional field under the vendor's wire name", async () => {
+test("ipn-setup: sends every optional field under the vendor's wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await ipnSetup.execute({
     "ipn_url": "https://x.test/ipn",
@@ -48,7 +49,7 @@ Deno.test("ipn-setup: sends every optional field under the vendor's wire name", 
   });
 });
 
-Deno.test("ipn-setup: form-encodes the body and never puts arguments in the URL", async () => {
+test("ipn-setup: form-encodes the body and never puts arguments in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await ipnSetup.execute({
     "ipn_url": "https://x.test/ipn",
@@ -66,7 +67,7 @@ Deno.test("ipn-setup: form-encodes the body and never puts arguments in the URL"
   assert(!("x-ds-api-key" in calls[0].headers), "credential must come from sign, not the action");
 });
 
-Deno.test("ipn-setup: surfaces the vendor error envelope even on HTTP 200", async () => {
+test("ipn-setup: surfaces the vendor error envelope even on HTTP 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorEnvelope("The API key is invalid.", 2) }]);
   await assertRejects(
     async () =>
@@ -80,6 +81,6 @@ Deno.test("ipn-setup: surfaces the vendor error envelope even on HTTP 200", asyn
   );
 });
 
-Deno.test("ipn-setup: declares idempotency as true", () => {
+test("ipn-setup: declares idempotency as true", () => {
   assertEquals(ipnSetup.idempotent, true);
 });

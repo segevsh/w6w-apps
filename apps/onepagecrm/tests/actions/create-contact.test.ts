@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createContact from "../../actions/create-contact.ts";
 import { bodyOf, envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-contact: POST /contacts with snake_case body; unset fields omitted", async () => {
+test("create-contact: POST /contacts with snake_case body; unset fields omitted", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ contact: { id: "c1" } }) }]);
   const out = await createContact.execute({
     firstName: "Ada",
@@ -31,7 +32,7 @@ Deno.test("create-contact: POST /contacts with snake_case body; unset fields omi
   assertEquals(out.contact, { id: "c1" });
 });
 
-Deno.test("create-contact: needs a last name or company name before any request", async () => {
+test("create-contact: needs a last name or company name before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(createContact.execute({ firstName: "Ada" }, ctx)),
@@ -40,7 +41,7 @@ Deno.test("create-contact: needs a last name or company name before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-contact: malformed JSON input is refused with its field name", async () => {
+test("create-contact: malformed JSON input is refused with its field name", async () => {
   const { ctx } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(createContact.execute({ lastName: "L", emails: "{nope" }, ctx)),
@@ -49,11 +50,11 @@ Deno.test("create-contact: malformed JSON input is refused with its field name",
   assert(err.message.includes("emails"));
 });
 
-Deno.test("create-contact: is not idempotent (no idempotency key exists)", () => {
+test("create-contact: is not idempotent (no idempotency key exists)", () => {
   assertEquals(createContact.idempotent, false);
 });
 
-Deno.test("create-contact: validation error carries the vendor's error_name", async () => {
+test("create-contact: validation error carries the vendor's error_name", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("invalid_request_data", "invalid") }]);
   const err = await assertRejects(
     () => Promise.resolve(createContact.execute({ lastName: "L" }, ctx)),

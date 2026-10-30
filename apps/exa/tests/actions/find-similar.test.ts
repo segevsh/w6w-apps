@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/find-similar.ts";
 
-Deno.test("find-similar: POSTs /findSimilar with the seed url", async () => {
+test("find-similar: POSTs /findSimilar with the seed url", async () => {
   const body = { requestId: "r1", results: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ url: "https://arxiv.org/abs/2307.06435" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("find-similar: POSTs /findSimilar with the seed url", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("find-similar: forwards excludeSourceDomain and result filters", async () => {
+test("find-similar: forwards excludeSourceDomain and result filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { requestId: "r1", results: [] } }]);
   await action.execute!(
     { url: "https://x", excludeSourceDomain: true, numResults: 5, category: "company" },

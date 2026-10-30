@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/view-records-list.ts";
 
-Deno.test("view-records-list: GETs /forms/<view>/records and returns the bare array", async () => {
+test("view-records-list: GETs /forms/<view>/records and returns the bare array", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: [{ recordId: "759", "First Name": "John" }] }]);
   const out = await action.execute({
     viewName: "P_EmployeeView",
@@ -19,7 +20,7 @@ Deno.test("view-records-list: GETs /forms/<view>/records and returns the bare ar
   assertEquals(out.records, [{ recordId: "759", "First Name": "John" }]);
 });
 
-Deno.test("view-records-list: invalid view surfaces 7012; bad names never reach the network", async () => {
+test("view-records-list: invalid view surfaces 7012; bad names never reach the network", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     status: 400,
     body: { response: { errors: { code: 7012, message: "Invalid View Name" }, status: 1 } },

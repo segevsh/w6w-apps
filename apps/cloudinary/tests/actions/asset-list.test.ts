@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-list.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("asset-list: resource and delivery type are path segments", async () => {
+test("asset-list: resource and delivery type are path segments", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { resources: [] } }], conn);
   await action.execute!({ resourceType: "video", type: "private", prefix: "clips/" }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("asset-list: resource and delivery type are path segments", async () =
 });
 
 /** Cloudinary omits tags and context unless asked; most workflows want them. */
-Deno.test("asset-list: tags and context are requested by default", async () => {
+test("asset-list: tags and context are requested by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { resources: [] } }], conn);
   await action.execute!({}, ctx);
   const q = new URL(calls[0].url).searchParams;

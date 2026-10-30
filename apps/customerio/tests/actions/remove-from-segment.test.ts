@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/remove-from-segment.ts";
 
-Deno.test("remove-from-segment: posts ids to /segments/:id/remove_customers", async () => {
+test("remove-from-segment: posts ids to /segments/:id/remove_customers", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({ segmentId: "42", personIds: ["u1", "u2"] }, ctx);
   assertEquals(calls[0].url, "https://track.customer.io/api/v1/segments/42/remove_customers");
@@ -11,7 +12,7 @@ Deno.test("remove-from-segment: posts ids to /segments/:id/remove_customers", as
   assertEquals(result, { success: true });
 });
 
-Deno.test("remove-from-segment: appends ?id_type= for a non-default id type", async () => {
+test("remove-from-segment: appends ?id_type= for a non-default id type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ segmentId: "42", personIds: ["cio_x"], idType: "cio_id" }, ctx);
   assertEquals(
@@ -20,7 +21,7 @@ Deno.test("remove-from-segment: appends ?id_type= for a non-default id type", as
   );
 });
 
-Deno.test("remove-from-segment: rejects a blank segmentId or empty personIds", async () => {
+test("remove-from-segment: rejects a blank segmentId or empty personIds", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ segmentId: "42", personIds: [] }, ctx),
@@ -30,7 +31,7 @@ Deno.test("remove-from-segment: rejects a blank segmentId or empty personIds", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("remove-from-segment: rejects more than 1,000 ids", async () => {
+test("remove-from-segment: rejects more than 1,000 ids", async () => {
   const { ctx, calls } = mockCtx();
   const ids = Array.from({ length: 1001 }, (_, i) => `u${i}`);
   const err = await assertRejects(

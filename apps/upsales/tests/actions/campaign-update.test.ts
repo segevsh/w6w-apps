@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignUpdate from "../../actions/campaign-update.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-update: PUTs /projects/{id} with the mapped body", async () => {
+test("campaign-update: PUTs /projects/{id} with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await campaignUpdate.execute({
     "id": 7,
@@ -29,7 +30,7 @@ Deno.test("campaign-update: PUTs /projects/{id} with the mapped body", async () 
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("campaign-update: the free-form fields object is merged and typed params win", async () => {
+test("campaign-update: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await campaignUpdate.execute(
     {
@@ -44,7 +45,7 @@ Deno.test("campaign-update: the free-form fields object is merged and typed para
   assertEquals(sent["name"], "Sales campaign April");
 });
 
-Deno.test("campaign-update: fields may be a JSON string", async () => {
+test("campaign-update: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await campaignUpdate.execute(
     { "id": 7, "name": "Sales campaign April", "fields": '{"extraKey":1}' } as never,
@@ -53,7 +54,7 @@ Deno.test("campaign-update: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("campaign-update: invalid fields JSON is refused before any request", async () => {
+test("campaign-update: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignUpdate.execute({ "id": 7, "fields": "{nope" } as never, ctx),
@@ -63,7 +64,7 @@ Deno.test("campaign-update: invalid fields JSON is refused before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-update: an update with nothing to change is refused", async () => {
+test("campaign-update: an update with nothing to change is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignUpdate.execute({ id: 7 }, ctx),
@@ -73,7 +74,7 @@ Deno.test("campaign-update: an update with nothing to change is refused", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-update: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("campaign-update: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -95,7 +96,7 @@ Deno.test("campaign-update: a rejected key surfaces Upsales' plain-text Unauthor
   );
 });
 
-Deno.test("campaign-update: a JSON error envelope surfaces the vendor key", async () => {
+test("campaign-update: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

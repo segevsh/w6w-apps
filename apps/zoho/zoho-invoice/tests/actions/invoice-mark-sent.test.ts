@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-mark-sent.ts";
 
-Deno.test("invoice-mark-sent: POSTs /invoices/{id}/status/sent with no body", async () => {
+test("invoice-mark-sent: POSTs /invoices/{id}/status/sent with no body", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "Invoice status has been changed to Sent." } },
   ]);

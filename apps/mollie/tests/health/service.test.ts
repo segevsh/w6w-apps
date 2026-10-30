@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   COVERED_COMPONENTS,
   mapComponentStatus,
@@ -6,7 +7,7 @@ import service, {
 } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("mapComponentStatus: maps every documented Instatus status", () => {
+test("mapComponentStatus: maps every documented Instatus status", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("DEGRADEDPERFORMANCE"), "degraded");
   assertEquals(mapComponentStatus("PARTIALOUTAGE"), "degraded");
@@ -16,7 +17,7 @@ Deno.test("mapComponentStatus: maps every documented Instatus status", () => {
   assertEquals(mapComponentStatus("SOME_FUTURE_STATUS"), "unknown");
 });
 
-Deno.test("COVERED_COMPONENTS: names the components this app's actions actually depend on", () => {
+test("COVERED_COMPONENTS: names the components this app's actions actually depend on", () => {
   assertEquals(COVERED_COMPONENTS.has("Mollie API"), true);
   assertEquals(COVERED_COMPONENTS.has("Mollie Connect"), true);
   // A specific local payment method (e.g. iDEAL) must never drive the roll-up —
@@ -24,7 +25,7 @@ Deno.test("COVERED_COMPONENTS: names the components this app's actions actually 
   assertEquals(COVERED_COMPONENTS.has("iDEAL"), false);
 });
 
-Deno.test("check: all-operational components report ok", async () => {
+test("check: all-operational components report ok", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       components: [
@@ -48,7 +49,7 @@ Deno.test("check: all-operational components report ok", async () => {
   assertEquals(report.components?.["c1"].state, "ok");
 });
 
-Deno.test("check: a degraded covered component worsens the verdict", async () => {
+test("check: a degraded covered component worsens the verdict", async () => {
   const { ctx } = mockCtx([{
     body: {
       components: [
@@ -70,7 +71,7 @@ Deno.test("check: a degraded covered component worsens the verdict", async () =>
   assertEquals(report.message?.includes("Mollie API"), true);
 });
 
-Deno.test("check: a component NOT in the covered set never worsens the verdict on its own", async () => {
+test("check: a component NOT in the covered set never worsens the verdict on its own", async () => {
   const { ctx } = mockCtx([{
     body: {
       components: [
@@ -93,7 +94,7 @@ Deno.test("check: a component NOT in the covered set never worsens the verdict o
   assertEquals(report.components?.["ideal"].state, "down");
 });
 
-Deno.test("check: a non-JSON status page reports unknown, never down", async () => {
+test("check: a non-JSON status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{
     body: "<html>oops</html>",
     headers: { "content-type": "text/html" },
@@ -102,7 +103,7 @@ Deno.test("check: a non-JSON status page reports unknown, never down", async () 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: an errored status page reports unknown, never down", async () => {
+test("check: an errored status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

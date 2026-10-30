@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   codeOf,
   compact,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: GET with a query string and no body", async () => {
+test("client: GET with a query string and no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new WizaClient(ctx).call("/api/meta/location_autocomplete", { query: { query: "Tor on" } });
   assertEquals(calls[0].method, "GET");
@@ -20,7 +21,7 @@ Deno.test("client: GET with a query string and no body", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: POST sends JSON", async () => {
+test("client: POST sends JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new WizaClient(ctx).call("/api/lists", { method: "POST", body: { a: 1 } });
   assertEquals(calls[0].method, "POST");
@@ -28,7 +29,7 @@ Deno.test("client: POST sends JSON", async () => {
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("client: both error envelopes surface the vendor's message", async () => {
+test("client: both error envelopes surface the vendor's message", async () => {
   const nested = mockCtx([{
     status: 401,
     body: { status: { code: 401, message: "Invalid API key." } },
@@ -40,13 +41,13 @@ Deno.test("client: both error envelopes surface the vendor's message", async () 
   assert(String(e2).includes("List not found"));
 });
 
-Deno.test("client: a non-JSON body fails with a truncated excerpt", async () => {
+test("client: a non-JSON body fails with a truncated excerpt", async () => {
   const { ctx } = mockCtx([{ body: "<html>challenge</html>" }]);
   const e = await assertRejects(() => new WizaClient(ctx).call("/api/meta/credits"));
   assert(String(e).includes("challenge"));
 });
 
-Deno.test("helpers: messageOf, codeOf, dataOf, compact, parseJson, requireObject, emailOptions", () => {
+test("helpers: messageOf, codeOf, dataOf, compact, parseJson, requireObject, emailOptions", () => {
   assertEquals(messageOf({ status: { message: "m" } }), "m");
   assertEquals(messageOf({ status: 404, message: "n" }), "n");
   assertEquals(messageOf(null), undefined);

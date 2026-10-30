@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import listProfiles from "../../actions/list-profiles.ts";
 import { API_ROOT, errorBody, mockCtx, pagination, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-profiles: GET /1.0/profiles — outside /commerce, on purpose", async () => {
+test("list-profiles: GET /1.0/profiles — outside /commerce, on purpose", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       pagination: pagination(),
@@ -22,7 +23,7 @@ Deno.test("list-profiles: GET /1.0/profiles — outside /commerce, on purpose", 
   assertEquals(out.profiles?.[0].transactionsSummary, { orderCount: 2 });
 });
 
-Deno.test("list-profiles: sorting, filtering and paging query keys", async () => {
+test("list-profiles: sorting, filtering and paging query keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), profiles: [] } }]);
   await listProfiles.execute!({
     sortField: "createdOn",
@@ -37,7 +38,7 @@ Deno.test("list-profiles: sorting, filtering and paging query keys", async () =>
   );
 });
 
-Deno.test("list-profiles: email with an isCustomer filter is refused before the call", () => {
+test("list-profiles: email with an isCustomer filter is refused before the call", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => listProfiles.execute!({ email: "foo@example.com", filter: "isCustomer" }, ctx),
@@ -46,7 +47,7 @@ Deno.test("list-profiles: email with an isCustomer filter is refused before the 
   );
 });
 
-Deno.test("list-profiles: a cursor cannot ride along with a filter", () => {
+test("list-profiles: a cursor cannot ride along with a filter", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => listProfiles.execute!({ cursor: "CUR", filter: "hasAccount" }, ctx),
@@ -55,14 +56,14 @@ Deno.test("list-profiles: a cursor cannot ride along with a filter", () => {
   );
 });
 
-Deno.test("list-profiles: email alone is allowed", async () => {
+test("list-profiles: email alone is allowed", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), profiles: [] } }]);
   await listProfiles.execute!({ email: "foo@example.com" }, ctx);
 
   assertEquals(queryOf(calls[0].url), { email: "foo@example.com" });
 });
 
-Deno.test("list-profiles: a vendor 400 is surfaced verbatim", async () => {
+test("list-profiles: a vendor 400 is surfaced verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

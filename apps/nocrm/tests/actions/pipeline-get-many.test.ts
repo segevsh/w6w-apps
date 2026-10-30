@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/pipeline-get-many.ts";
 
-Deno.test("pipeline-get-many: GETs /pipelines with no parameters", async () => {
+test("pipeline-get-many: GETs /pipelines with no parameters", async () => {
   const { ctx, calls } = mockNocrmCtx([{
     body: [{ id: 25, name: "Sales funnel", is_default: true }],
   }]);

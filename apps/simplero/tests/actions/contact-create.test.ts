@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-create.ts";
 import { mockCtx, pathOf, recordBody } from "../_helpers.ts";
 
-Deno.test("contact-create: is a non-idempotent perform action requiring only email", () => {
+test("contact-create: is a non-idempotent perform action requiring only email", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   const required = action.params!.filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["email"]);
 });
 
-Deno.test("contact-create: POSTs /customers with snake_case fields and returns the record", async () => {
+test("contact-create: POSTs /customers with snake_case fields and returns the record", async () => {
   const { ctx, calls } = mockCtx([{ body: recordBody({ id: 77, email: "a@b.co" }) }]);
   const out = await action.execute({
     email: "a@b.co",
@@ -37,13 +38,13 @@ Deno.test("contact-create: POSTs /customers with snake_case fields and returns t
   assertEquals(out.record.id, 77);
 });
 
-Deno.test("contact-create: omits fields that were not set", async () => {
+test("contact-create: omits fields that were not set", async () => {
   const { ctx, calls } = mockCtx([{ body: recordBody({ id: 1 }) }]);
   await action.execute({ email: "x@y.zz", firstNames: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "x@y.zz" });
 });
 
-Deno.test("contact-create: a 422 surfaces Simplero's validation errors", async () => {
+test("contact-create: a 422 surfaces Simplero's validation errors", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: ["Email is invalid"] } }]);
   await assertRejects(
     async () => await action.execute({ email: "nope" }, ctx),

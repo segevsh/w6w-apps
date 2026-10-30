@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/forward-message.ts";
 
-Deno.test("forward-message: POSTs toRecipients at the top level, not under `message`", async () => {
+test("forward-message: POSTs toRecipients at the top level, not under `message`", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   const out = await action.execute({
     messageId: "m1",
@@ -23,13 +24,13 @@ Deno.test("forward-message: POSTs toRecipients at the top level, not under `mess
   assertEquals(out, { status: 202 });
 });
 
-Deno.test("forward-message: omits an absent comment", async () => {
+test("forward-message: omits an absent comment", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({ messageId: "m1", to: ["a@b.com"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).comment, undefined);
 });
 
-Deno.test("forward-message: refuses an empty recipient list before calling out", () => {
+test("forward-message: refuses an empty recipient list before calling out", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => action.execute({ messageId: "m1", to: ["  "] }, ctx),

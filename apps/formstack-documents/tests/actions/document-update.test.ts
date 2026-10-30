@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/document-update.ts";
 
-Deno.test("document-update: PUTs only the supplied fields", async () => {
+test("document-update: PUTs only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "234543" } }]);
   const out = await action.execute(
     { id: "234543", name: "1040 EZier", outputName: "1040 for {$FirstName}" } as never,
@@ -22,11 +23,11 @@ Deno.test("document-update: PUTs only the supplied fields", async () => {
   assert(out !== null);
 });
 
-Deno.test("document-update: idempotent flag is true", () => {
+test("document-update: idempotent flag is true", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("document-update: declares key, type and a description", () => {
+test("document-update: declares key, type and a description", () => {
   assertEquals(action.key, "document-update");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

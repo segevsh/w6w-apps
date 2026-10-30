@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateUpdate from "../../actions/template-update.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-update: PATCH with title/tags/custom_data; empty update rejected", async () => {
+test("template-update: PATCH with title/tags/custom_data; empty update rejected", async () => {
   const { ctx, calls } = mockCtx([{ body: { uuid: "t" } }]);
   await templateUpdate.execute({ template_uuid: "t", title: "New", tags: ["x"] }, ctx);
   assertEquals(calls[0].method, "PATCH");

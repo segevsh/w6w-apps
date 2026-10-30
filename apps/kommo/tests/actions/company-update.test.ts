@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/company-update.ts";
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("company-update: PATCHes /companies/{id}, not the bulk /companies route", async () => {
+test("company-update: PATCHes /companies/{id}, not the bulk /companies route", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -21,6 +22,6 @@ Deno.test("company-update: PATCHes /companies/{id}, not the bulk /companies rout
   assertEquals(out, { id: 1247556, updatedAt: 1687335927 });
 });
 
-Deno.test("company-update: idempotent is true", () => {
+test("company-update: idempotent is true", () => {
   assertEquals(action.idempotent, true);
 });

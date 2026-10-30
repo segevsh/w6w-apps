@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockMocoCtx } from "../_helpers.ts";
 import {
   accountFromConnection,
@@ -8,19 +9,19 @@ import {
   MocoClient,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL from the connection's account subdomain, not a param", async () => {
+test("client: builds the URL from the connection's account subdomain, not a param", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 1 } }], "acme");
   await new MocoClient(ctx).request("/projects/1");
   assertEquals(calls[0].url, "https://acme.mocoapp.com/api/v1/projects/1");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: fails loudly when the connection carries no account", () => {
+test("client: fails loudly when the connection carries no account", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new MocoClient(ctx), Error, "no account subdomain");
 });
 
-Deno.test("client: surfaces MOCO's `message` error body", async () => {
+test("client: surfaces MOCO's `message` error body", async () => {
   const { ctx } = mockMocoCtx([{
     status: 401,
     statusText: "Unauthorized",
@@ -33,7 +34,7 @@ Deno.test("client: surfaces MOCO's `message` error body", async () => {
   );
 });
 
-Deno.test("client: surfaces MOCO's `errors` array body", async () => {
+test("client: surfaces MOCO's `errors` array body", async () => {
   const { ctx } = mockMocoCtx([{
     status: 422,
     statusText: "Unprocessable Entity",
@@ -46,7 +47,7 @@ Deno.test("client: surfaces MOCO's `errors` array body", async () => {
   );
 });
 
-Deno.test("client: returns undefined for a 204", async () => {
+test("client: returns undefined for a 204", async () => {
   const { ctx } = mockMocoCtx([{ status: 204 }]);
   assertEquals(
     await new MocoClient(ctx).request("/invoices/1/update_status", { method: "PUT" }),
@@ -54,7 +55,7 @@ Deno.test("client: returns undefined for a 204", async () => {
   );
 });
 
-Deno.test("client: list() reads X-Page/X-Per-Page/X-Total headers", async () => {
+test("client: list() reads X-Page/X-Per-Page/X-Total headers", async () => {
   const { ctx } = mockMocoCtx([{
     body: [{ id: 1 }, { id: 2 }],
     headers: {
@@ -69,20 +70,20 @@ Deno.test("client: list() reads X-Page/X-Per-Page/X-Total headers", async () => 
   assertEquals(page, { page: 1, perPage: 100, total: 2 });
 });
 
-Deno.test("accountFromConnection: reads the display data afterConnect records", () => {
+test("accountFromConnection: reads the display data afterConnect records", () => {
   assertEquals(accountFromConnection({ display: { account: "acme" } } as never), "acme");
   assertThrows(() => accountFromConnection(undefined), Error, "no account subdomain");
 });
 
-Deno.test("baseUrl: builds the per-account host", () => {
+test("baseUrl: builds the per-account host", () => {
   assertEquals(baseUrl("acme"), "https://acme.mocoapp.com/api/v1");
 });
 
-Deno.test("compact: drops undefined, null and empty-string values", () => {
+test("compact: drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false }), { a: 1, e: false });
 });
 
-Deno.test("errorDetail: prefers `message`, falls back to `errors`, then raw text", () => {
+test("errorDetail: prefers `message`, falls back to `errors`, then raw text", () => {
   assertEquals(errorDetail(JSON.stringify({ message: "Unauthorized" })), "Unauthorized");
   assertEquals(errorDetail(JSON.stringify({ errors: ["a", "b"] })), "a; b");
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/customer-archive.ts";
 
-Deno.test("customer-archive: DELETEs /customers/{id} (a soft archive, not a hard delete)", async () => {
+test("customer-archive: DELETEs /customers/{id} (a soft archive, not a hard delete)", async () => {
   const { ctx, calls } = mockBooqableCtx([{
     body: { data: { id: "1", attributes: { archived: true } } },
   }]);

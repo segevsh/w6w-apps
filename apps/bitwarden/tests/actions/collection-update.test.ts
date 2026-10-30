@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collection-update.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("collection-update: PUTs externalId and groups, defaulting readOnly", async () => {
+test("collection-update: PUTs externalId and groups, defaulting readOnly", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "collection",
@@ -25,7 +26,7 @@ Deno.test("collection-update: PUTs externalId and groups, defaulting readOnly", 
   });
 });
 
-Deno.test("collection-update: rejects an id that is not a UUID before any request", async () => {
+test("collection-update: rejects an id that is not a UUID before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({

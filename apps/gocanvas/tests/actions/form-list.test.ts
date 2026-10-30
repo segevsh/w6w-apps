@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/form-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-list: GET /api/v3/forms with the documented shape", async () => {
+test("form-list: GET /api/v3/forms with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 3 }] }]);
   const out = await action.execute({ "assigned": true } as never, ctx);
   assertEquals(calls.length, 1);

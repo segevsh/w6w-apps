@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-member-ids-get.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("group-member-ids-get: returns the bare array as memberIds", async () => {
+test("group-member-ids-get: returns the bare array as memberIds", async () => {
   const { ctx, calls } = mockCtx([{
     body: ["3f2b8c1e-5a4d-4e6f-9a1b-7c8d9e0f1a2b", "a1b2c3d4-e5f6-4789-8abc-def012345678"],
   }], D);
@@ -19,7 +20,7 @@ Deno.test("group-member-ids-get: returns the bare array as memberIds", async () 
   assertEquals(result.count, 2);
 });
 
-Deno.test("group-member-ids-get: rejects an id that is not a UUID before any request", async () => {
+test("group-member-ids-get: rejects an id that is not a UUID before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({

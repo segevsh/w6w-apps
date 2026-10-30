@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import paymentMethodList from "../../actions/payment-method-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("payment-method-list: hits GET /payment_methods with the customer filter", async () => {
+test("payment-method-list: hits GET /payment_methods with the customer filter", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: listEnvelope("payment_methods", [
@@ -18,7 +19,7 @@ Deno.test("payment-method-list: hits GET /payment_methods with the customer filt
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("payment-method-list: never invents card-number redaction beyond what Recharge already returns", async () => {
+test("payment-method-list: never invents card-number redaction beyond what Recharge already returns", async () => {
   const details = { brand: "visa", exp_month: 12, exp_year: 2030, last4: 1234 };
   const { ctx } = mockCtx([{
     body: listEnvelope("payment_methods", [{ payment_details: details }]),

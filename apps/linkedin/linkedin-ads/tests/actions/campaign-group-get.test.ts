@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignGroupGet from "../../actions/campaign-group-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-group-get: fetches by account + bare campaign group id", async () => {
+test("campaign-group-get: fetches by account + bare campaign group id", async () => {
   const body = { id: 512358882, name: "New Campaign Group", status: "ACTIVE" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await campaignGroupGet.execute(
@@ -14,7 +15,7 @@ Deno.test("campaign-group-get: fetches by account + bare campaign group id", asy
   assertEquals(result, body);
 });
 
-Deno.test("campaign-group-get: strips URN forms on both ids", async () => {
+test("campaign-group-get: strips URN forms on both ids", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await campaignGroupGet.execute(
     {

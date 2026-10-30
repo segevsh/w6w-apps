@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-create.ts";
 
-Deno.test("webhook-create: POSTs the subscription, defaulting eventTypes", async () => {
+test("webhook-create: POSTs the subscription, defaulting eventTypes", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "wh1", url: "https://x.test", isEnabled: true } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("webhook-create: POSTs the subscription, defaulting eventTypes", async
   assertEquals(result.isEnabled, true);
 });
 
-Deno.test("webhook-create: forwards the signing secret and custom headers", async () => {
+test("webhook-create: forwards the signing secret and custom headers", async () => {
   const headers = [{ name: "X-Token", value: "abc" }];
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
@@ -40,11 +41,11 @@ Deno.test("webhook-create: forwards the signing secret and custom headers", asyn
   });
 });
 
-Deno.test("webhook-create: the signing secret is a secret param", () => {
+test("webhook-create: the signing secret is a secret param", () => {
   assertEquals(action.params?.find((p) => p.key === "signingSecret")?.type, "secret");
 });
 
-Deno.test("webhook-create: offers only the event type Tally publishes", () => {
+test("webhook-create: offers only the event type Tally publishes", () => {
   const eventTypes = action.params?.find((p) => p.key === "eventTypes");
   assertEquals(
     (eventTypes?.options as Array<{ value: string }>).map((o) => o.value),
@@ -52,6 +53,6 @@ Deno.test("webhook-create: offers only the event type Tally publishes", () => {
   );
 });
 
-Deno.test("webhook-create: is not idempotent", () => {
+test("webhook-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

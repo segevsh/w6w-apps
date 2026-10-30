@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth, { PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api-key: is an apiKey method using the Api-Token header, no prefix", () => {
+test("api-key: is an apiKey method using the Api-Token header, no prefix", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "Api-Token" });
@@ -12,7 +13,7 @@ Deno.test("api-key: is an apiKey method using the Api-Token header, no prefix", 
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign sets api-token verbatim, no prefix", () => {
+test("api-key: sign sets api-token verbatim, no prefix", () => {
   const request = {
     url: "https://x",
     method: "GET" as const,
@@ -22,7 +23,7 @@ Deno.test("api-key: sign sets api-token verbatim, no prefix", () => {
   assertEquals((out as { headers: Record<string, string> }).headers["api-token"], "key-abc");
 });
 
-Deno.test("api-key: test hits GET /account and reports ok on a real account body", async () => {
+test("api-key: test hits GET /account and reports ok on a real account body", async () => {
   const { ctx, calls } = mockCtx([{ body: { company: "Acme", email: "a@acme.com" } }]);
   const result = await auth.test({ credential: { apiKey: "key-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -31,7 +32,7 @@ Deno.test("api-key: test hits GET /account and reports ok on a real account body
   assertEquals(calls[0].headers["api-token"], "key-abc");
 });
 
-Deno.test("api-key: test classifies a rejected credential by the vendor's `code` field, not just status", async () => {
+test("api-key: test classifies a rejected credential by the vendor's `code` field, not just status", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -43,7 +44,7 @@ Deno.test("api-key: test classifies a rejected credential by the vendor's `code`
   assert(result.message?.includes("unauthorized"));
 });
 
-Deno.test("api-key: test never echoes the credential back in its message", async () => {
+test("api-key: test never echoes the credential back in its message", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -54,7 +55,7 @@ Deno.test("api-key: test never echoes the credential back in its message", async
   assertEquals(result.message?.includes("super-secret-key"), false);
 });
 
-Deno.test("api-key: test rejects a 200 body that is not a WebinarGeek account", async () => {
+test("api-key: test rejects a 200 body that is not a WebinarGeek account", async () => {
   const { ctx } = mockCtx([{ body: { unrelated: true } }]);
   const result = await auth.test({ credential: { apiKey: "key-abc" } }, ctx);
   assertEquals(result.ok, false);

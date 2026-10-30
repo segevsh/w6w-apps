@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-task-list.ts";
 
-Deno.test("delete-task-list: DELETEs the list and returns a success sentinel", async () => {
+test("delete-task-list: DELETEs the list and returns a success sentinel", async () => {
   // Google documents an empty body here — 204 with nothing to parse.
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ taskList: "L1" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("delete-task-list: DELETEs the list and returns a success sentinel", a
   assertEquals(out, { success: true });
 });
 
-Deno.test("delete-task-list: tolerates an empty 200 as well as a 204", async () => {
+test("delete-task-list: tolerates an empty 200 as well as a 204", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   assertEquals(await action.execute!({ taskList: "L1" }, ctx), { success: true });
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/template-delete.ts";
 
-Deno.test("template-delete: PUT /templates/{id}/delete with no body", async () => {
+test("template-delete: PUT /templates/{id}/delete with no body", async () => {
   const { ctx, calls } = mockSignCtx([
     { body: { code: 0, status: "success", message: "Template deleted successfully" } },
   ]);

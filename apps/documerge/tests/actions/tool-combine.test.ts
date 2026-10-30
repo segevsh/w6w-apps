@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import toolCombine from "../../actions/tool-combine.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-combine: POSTs /api/tools/combine and returns the file base64-encoded", async () => {
+test("tool-combine: POSTs /api/tools/combine and returns the file base64-encoded", async () => {
   const { ctx, calls } = mockCtx([{
     body: "PDFBYTES",
     headers: { "content-type": "application/pdf" },
@@ -28,7 +29,7 @@ Deno.test("tool-combine: POSTs /api/tools/combine and returns the file base64-en
   assertEquals(out.size, 8);
 });
 
-Deno.test("tool-combine: sends output and the files array", async () => {
+test("tool-combine: sends output and the files array", async () => {
   const { ctx, calls } = mockCtx([{ body: "x" }]);
   await toolCombine.execute(
     {
@@ -46,7 +47,7 @@ Deno.test("tool-combine: sends output and the files array", async () => {
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("tool-combine: files given as a JSON string are parsed", async () => {
+test("tool-combine: files given as a JSON string are parsed", async () => {
   const { ctx, calls } = mockCtx([{ body: "x" }]);
   await toolCombine.execute(
     { output: "pdf", files: '[{"name":"a.pdf","url":"https://e.com/a.pdf"}]' } as never,
@@ -55,7 +56,7 @@ Deno.test("tool-combine: files given as a JSON string are parsed", async () => {
   assertEquals(JSON.parse(calls[0].body!).files, [{ name: "a.pdf", url: "https://e.com/a.pdf" }]);
 });
 
-Deno.test("tool-combine: non-array files are refused before any request", async () => {
+test("tool-combine: non-array files are refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(toolCombine.execute({ output: "pdf", files: '{"a":1}' } as never, ctx)),
@@ -65,7 +66,7 @@ Deno.test("tool-combine: non-array files are refused before any request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("tool-combine: a vendor error surfaces its own message", async () => {
+test("tool-combine: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

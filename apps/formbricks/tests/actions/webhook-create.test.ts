@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/webhook-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("webhook-create: full input maps to the documented request", async () => {
+test("webhook-create: full input maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   const out = await action.execute!({
     "url": "sample-url",
@@ -23,7 +24,7 @@ Deno.test("webhook-create: full input maps to the documented request", async () 
   assertEquals(out, { "data": { "id": "x1" } });
 });
 
-Deno.test("webhook-create: required input only maps to the documented request", async () => {
+test("webhook-create: required input only maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   const out = await action.execute!({ "url": "sample-url", "triggers": ["a1", "b2"] }, ctx);
   const url = new URL(calls[0].url);
@@ -34,14 +35,14 @@ Deno.test("webhook-create: required input only maps to the documented request", 
   assertEquals(out, { "data": { "id": "x1" } });
 });
 
-Deno.test("webhook-create: sends x-api-key never itself and no authorization header", async () => {
+test("webhook-create: sends x-api-key never itself and no authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": { "id": "x1" } } }]);
   await action.execute!({ "url": "sample-url", "triggers": ["a1", "b2"] }, ctx);
   assert(!("x-api-key" in calls[0].headers), "the sign hook injects credentials, not actions");
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("webhook-create: surfaces a Formbricks error body as a thrown error", async () => {
+test("webhook-create: surfaces a Formbricks error body as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: Google's identity endpoints, with offline access for a refresh token", () => {
+test("oauth2: Google's identity endpoints, with offline access for a refresh token", () => {
   assertEquals(auth.oauth2!.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
   assertEquals(auth.oauth2!.tokenUrl, "https://oauth2.googleapis.com/token");
   assertEquals(auth.oauth2!.refreshUrl, "https://oauth2.googleapis.com/token");
@@ -14,14 +15,14 @@ Deno.test("oauth2: Google's identity endpoints, with offline access for a refres
 });
 
 /** One narrow scope — `cloud-platform` would grant every Google Cloud API. */
-Deno.test("oauth2: asks for the datastore scope only", () => {
+test("oauth2: asks for the datastore scope only", () => {
   assertEquals(auth.oauth2!.scopes, ["https://www.googleapis.com/auth/datastore"]);
   for (const scope of auth.oauth2!.scopes ?? []) {
     assert(!scope.includes("cloud-platform"), `unexpectedly broad scope: ${scope}`);
   }
 });
 
-Deno.test("oauth2: the project is a required connection field, the database optional", () => {
+test("oauth2: the project is a required connection field, the database optional", () => {
   const fields = auth.fields ?? [];
   assertEquals(fields.map((f) => f.key), ["projectId", "databaseId"]);
   assertEquals(fields[0].required, true);
@@ -31,7 +32,7 @@ Deno.test("oauth2: the project is a required connection field, the database opti
   assertEquals(fields[1].default, "(default)");
 });
 
-Deno.test("oauth2: signs with the bearer token", async () => {
+test("oauth2: signs with the bearer token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://firestore.googleapis.com/v1/projects/p1/databases/(default)",
@@ -42,7 +43,7 @@ Deno.test("oauth2: signs with the bearer token", async () => {
   assertEquals(out.headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: the probe reads the database resource, never a document", async () => {
+test("oauth2: the probe reads the database resource, never a document", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { name: "projects/p1/databases/(default)", type: "FIRESTORE_NATIVE" },
@@ -55,7 +56,7 @@ Deno.test("oauth2: the probe reads the database resource, never a document", asy
   assertEquals(calls[0].headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: the named database on the connection is the one probed", async () => {
+test("oauth2: the named database on the connection is the one probed", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "n" } }]);
   await auth.test!(
     { credential: { accessToken: "at", projectId: "p1", databaseId: "named" } } as never,
@@ -68,7 +69,7 @@ Deno.test("oauth2: the named database on the connection is the one probed", asyn
  * The verdict comes from `error.status` in the body: 403 in particular means
  * two different things and the message has to say both.
  */
-Deno.test("oauth2: a failed probe is classified from the body's error.status", async () => {
+test("oauth2: a failed probe is classified from the body's error.status", async () => {
   const cases: Array<[number, string, string, string]> = [
     [
       401,
@@ -95,7 +96,7 @@ Deno.test("oauth2: a failed probe is classified from the body's error.status", a
   }
 });
 
-Deno.test("oauth2: an unfamiliar error body still fails, without inventing a reason", async () => {
+test("oauth2: an unfamiliar error body still fails, without inventing a reason", async () => {
   const { ctx } = mockCtx([{ status: 500, body: { error: { code: 500, message: "boom" } } }]);
   const result = await auth.test!(
     { credential: { accessToken: "at", projectId: "p1" } } as never,
@@ -106,7 +107,7 @@ Deno.test("oauth2: an unfamiliar error body still fails, without inventing a rea
 });
 
 /** A 200 that is not the documented `Database` resource is not a valid probe. */
-Deno.test("oauth2: a 200 without a Database body is not accepted", async () => {
+test("oauth2: a 200 without a Database body is not accepted", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { nope: true } }]);
   const result = await auth.test!(
     { credential: { accessToken: "at", projectId: "p1" } } as never,
@@ -115,7 +116,7 @@ Deno.test("oauth2: a 200 without a Database body is not accepted", async () => {
   assertEquals(result.ok, false);
 });
 
-Deno.test("oauth2: a missing token or project fails before any network call", async () => {
+test("oauth2: a missing token or project fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -128,7 +129,7 @@ Deno.test("oauth2: a missing token or project fails before any network call", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect records the project, database and database metadata", async () => {
+test("oauth2: afterConnect records the project, database and database metadata", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -154,7 +155,7 @@ Deno.test("oauth2: afterConnect records the project, database and database metad
   );
 });
 
-Deno.test("oauth2: afterConnect is best-effort — a failed metadata read still connects", async () => {
+test("oauth2: afterConnect is best-effort — a failed metadata read still connects", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { code: 403, status: "PERMISSION_DENIED" } },

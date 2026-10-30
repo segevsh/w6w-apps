@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/customer-create.ts";
 
-Deno.test("customer-create: POSTs /customer with DisplayName", async () => {
+test("customer-create: POSTs /customer with DisplayName", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { Customer: { Id: "1" } } }]);
   await action.execute({ displayName: "Acme Co" }, ctx);
   assertEquals(
@@ -13,7 +14,7 @@ Deno.test("customer-create: POSTs /customer with DisplayName", async () => {
   assertEquals(JSON.parse(calls[0].body!), { DisplayName: "Acme Co" });
 });
 
-Deno.test("customer-create: merges additionalFields", async () => {
+test("customer-create: merges additionalFields", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: {} }]);
   await action.execute({
     displayName: "Acme Co",

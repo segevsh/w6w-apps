@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-hashtag-recent-media.ts";
 
-Deno.test("list-hashtag-recent-media: GET /h1/recent_media with the documented query params", async () => {
+test("list-hashtag-recent-media: GET /h1/recent_media with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ hashtagId: "h1", igUserId: "17", limit: 99 }, ctx);
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("list-hashtag-recent-media: GET /h1/recent_media with the documented q
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("list-hashtag-recent-media: surfaces a Graph error body", async () => {
+test("list-hashtag-recent-media: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

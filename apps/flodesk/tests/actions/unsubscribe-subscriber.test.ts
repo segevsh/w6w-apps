@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import unsubscribeSubscriber from "../../actions/unsubscribe-subscriber.ts";
 
-Deno.test("unsubscribe-subscriber: POSTs the unsubscribe path with no body", async () => {
+test("unsubscribe-subscriber: POSTs the unsubscribe path with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "61b2", status: "unsubscribed" } }]);
   await unsubscribeSubscriber.execute({ idOrEmail: "ada@example.com" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("unsubscribe-subscriber: POSTs the unsubscribe path with no body", asy
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("unsubscribe-subscriber: propagates a 404 for an unknown subscriber", async () => {
+test("unsubscribe-subscriber: propagates a 404 for an unknown subscriber", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { code: "not_found" } }]);
   const err = await assertRejects(
     () => unsubscribeSubscriber.execute({ idOrEmail: "nope" }, ctx) as Promise<unknown>,

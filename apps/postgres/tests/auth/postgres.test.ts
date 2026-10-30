@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { ConnectionTarget, HandshakeStep, HookContext } from "@w6w/types";
 import postgres from "../../auth/postgres.ts";
 import { computeClientFinal, type ScramClientState } from "../../lib/scram.ts";
@@ -48,7 +49,7 @@ function continuing(step: HandshakeStep): { send: Uint8Array; state: unknown } {
   return { send: step.send, state: step.state };
 }
 
-Deno.test("auth/postgres: declares a custom auth with the expected fields", () => {
+test("auth/postgres: declares a custom auth with the expected fields", () => {
   assertEquals(postgres.type, "custom");
   const keys = postgres.fields!.map((f) => f.key);
   assertEquals(keys, [
@@ -66,7 +67,7 @@ Deno.test("auth/postgres: declares a custom auth with the expected fields", () =
   assert(postgres.sign === undefined, "SCRAM is a handshake auth, never a sign-based one");
 });
 
-Deno.test("auth/postgres: exchange returns ONLY user/password, dropping the rest of the form", async () => {
+test("auth/postgres: exchange returns ONLY user/password, dropping the rest of the form", async () => {
   const credential = await postgres.exchange!(
     {
       fields: {
@@ -83,7 +84,7 @@ Deno.test("auth/postgres: exchange returns ONLY user/password, dropping the rest
   assertEquals(credential, { user: "alice", password: "s3cr3t" });
 });
 
-Deno.test("auth/postgres: test validates field presence but never claims a live check", async () => {
+test("auth/postgres: test validates field presence but never claims a live check", async () => {
   assertEquals((await postgres.test({ credential: {} }, noopCtx)).ok, false);
   assertEquals((await postgres.test({ credential: { user: "a" } }, noopCtx)).ok, false);
   const ok = await postgres.test({ credential: cred }, noopCtx);
@@ -91,7 +92,7 @@ Deno.test("auth/postgres: test validates field presence but never claims a live 
   assert(/no live check is possible/.test(ok.message!), ok.message);
 });
 
-Deno.test("auth/postgres: round 1 sends a well-formed StartupMessage carrying user + database", async () => {
+test("auth/postgres: round 1 sends a well-formed StartupMessage carrying user + database", async () => {
   const step = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   const view = new DataView(step.send.buffer);
   assertEquals(view.getInt32(0), step.send.length);
@@ -101,7 +102,7 @@ Deno.test("auth/postgres: round 1 sends a well-formed StartupMessage carrying us
   assert(body.includes("database\0acme\0"), body);
 });
 
-Deno.test("auth/postgres: AuthenticationOk right after startup finishes immediately (trust auth)", async () => {
+test("auth/postgres: AuthenticationOk right after startup finishes immediately (trust auth)", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   const step = await postgres.handshake!(
     { credential: cred, target, received: authOk(), state: first.state },
@@ -111,7 +112,7 @@ Deno.test("auth/postgres: AuthenticationOk right after startup finishes immediat
 });
 
 /** (h) at the hook level — each unsupported method is refused with its OWN clear message, no fallthrough. */
-Deno.test("auth/postgres: AuthenticationCleartextPassword and AuthenticationMD5Password are each refused distinctly", async () => {
+test("auth/postgres: AuthenticationCleartextPassword and AuthenticationMD5Password are each refused distinctly", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   await assertRejects(
     () =>
@@ -143,7 +144,7 @@ Deno.test("auth/postgres: AuthenticationCleartextPassword and AuthenticationMD5P
 });
 
 /** (i) at the hook level — an ErrorResponse mid-handshake surfaces its M field, not a generic failure. */
-Deno.test("auth/postgres: an ErrorResponse mid-handshake surfaces its M field", async () => {
+test("auth/postgres: an ErrorResponse mid-handshake surfaces its M field", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   await assertRejects(
     () =>
@@ -167,7 +168,7 @@ Deno.test("auth/postgres: an ErrorResponse mid-handshake surfaces its M field", 
   );
 });
 
-Deno.test("auth/postgres: a partial read is buffered in state, not treated as a full frame", async () => {
+test("auth/postgres: a partial read is buffered in state, not treated as a full frame", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   const saslFrame = authSasl(["SCRAM-SHA-256"]);
   const half = Math.floor(saslFrame.length / 2);
@@ -198,7 +199,7 @@ Deno.test("auth/postgres: a partial read is buffered in state, not treated as a 
  * every handshake this app ever drives sends the same client nonce. Read the nonce back off the
  * `r=` attribute of the SASLInitialResponse the hook itself produced, never off an internal call.
  */
-Deno.test("auth/postgres: two independently-driven handshake first-steps produce different client nonces", async () => {
+test("auth/postgres: two independently-driven handshake first-steps produce different client nonces", async () => {
   async function clientNonceFromFreshHandshake(): Promise<string> {
     const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
     const step2 = continuing(
@@ -220,7 +221,7 @@ Deno.test("auth/postgres: two independently-driven handshake first-steps produce
 });
 
 /** Full SCRAM round trip through the hook, glue-tested against `lib/scram.ts` as the oracle for what it SHOULD send. */
-Deno.test("auth/postgres: completes a full SCRAM-SHA-256 round trip and verifies the server signature", async () => {
+test("auth/postgres: completes a full SCRAM-SHA-256 round trip and verifies the server signature", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   const step2 = continuing(
     await postgres.handshake!(
@@ -264,7 +265,7 @@ Deno.test("auth/postgres: completes a full SCRAM-SHA-256 round trip and verifies
 });
 
 /** Pinned mechanism 2, exercised through the full hook rather than `lib/scram.ts` directly. */
-Deno.test("auth/postgres: rejects a corrupted ServerSignature at the final step", async () => {
+test("auth/postgres: rejects a corrupted ServerSignature at the final step", async () => {
   const first = continuing(await postgres.handshake!({ credential: cred, target }, noopCtx));
   const step2 = continuing(
     await postgres.handshake!(

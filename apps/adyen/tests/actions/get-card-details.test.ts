@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getCardDetails from "../../actions/get-card-details.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "encryptedCardNumber": "adyenjs_0_1", "supportedBrands": '["visa
   typeof getCardDetails.execute
 >[0];
 
-Deno.test("get-card-details: sends POST to the documented path and returns the response", async () => {
+test("get-card-details: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "brands": [{ "type": "visa" }] } }]);
   const out = await getCardDetails.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("get-card-details: sends POST to the documented path and returns the r
   assertEquals(out, { "brands": [{ "type": "visa" }] });
 });
 
-Deno.test("get-card-details: targets the connection's base URL and carries no credential", async () => {
+test("get-card-details: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx(
     [{ status: 200, body: { "brands": [{ "type": "visa" }] } }],
     "live",
@@ -35,7 +36,7 @@ Deno.test("get-card-details: targets the connection's base URL and carries no cr
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-card-details: surfaces Adyen's error code, type and message", async () => {
+test("get-card-details: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -53,18 +54,18 @@ Deno.test("get-card-details: surfaces Adyen's error code, type and message", asy
   );
 });
 
-Deno.test("get-card-details: sends the invocation id as Idempotency-Key", async () => {
+test("get-card-details: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "brands": [{ "type": "visa" }] } }]);
   ctx.invocation = { invocationId: "inv-123" } as typeof ctx.invocation;
   await getCardDetails.execute(INPUT, ctx);
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("get-card-details: is a read-only action", () => {
+test("get-card-details: is a read-only action", () => {
   assertEquals(getCardDetails.type, "read");
 });
 
-Deno.test("get-card-details: an explicit merchantAccount beats the connection's", async () => {
+test("get-card-details: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "brands": [{ "type": "visa" }] } }]);
   await getCardDetails.execute({ ...INPUT, merchantAccount: "OtherMerchant" }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "null").merchantAccount, "OtherMerchant");

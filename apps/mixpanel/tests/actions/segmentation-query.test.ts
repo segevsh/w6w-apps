@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/segmentation-query.ts";
 
 const conn = { display: { projectId: "123", region: "eu" } };
 
-Deno.test("segmentation-query: sends the event, the window and the count type", async () => {
+test("segmentation-query: sends the event, the window and the count type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], conn);
   await action.execute!({
     event: "Signed Up",
@@ -22,7 +23,7 @@ Deno.test("segmentation-query: sends the event, the window and the count type", 
   assertEquals(url.searchParams.get("on"), 'properties["plan"]');
 });
 
-Deno.test("segmentation-query: an ISO timestamp is truncated to a date", async () => {
+test("segmentation-query: an ISO timestamp is truncated to a date", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({
     event: "x",
@@ -32,14 +33,14 @@ Deno.test("segmentation-query: an ISO timestamp is truncated to a date", async (
   assertEquals(new URL(calls[0].url).searchParams.get("from_date"), "2026-08-01");
 });
 
-Deno.test("segmentation-query: the dates are required", async () => {
+test("segmentation-query: the dates are required", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({ event: "x" }, ctx), Error, "fromDate");
   assertEquals(calls.length, 0);
 });
 
 /** Counting events and counting people are different questions. */
-Deno.test("segmentation-query: the count hint warns about the tenfold mistake", () => {
+test("segmentation-query: the count hint warns about the tenfold mistake", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) => p.key === "type")!;
   assert(/tenfold/.test(p.hint!), p.hint);
 });

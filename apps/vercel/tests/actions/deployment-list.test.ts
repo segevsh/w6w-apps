@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deployment-list.ts";
 
@@ -8,7 +9,7 @@ const page = (items: unknown[], next: number | null) => ({
   pagination: { count: items.length, next, prev: null },
 });
 
-Deno.test("deployment-list: hits /v7/deployments with the connection's team", async () => {
+test("deployment-list: hits /v7/deployments with the connection's team", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ uid: "dpl_1" }], null) }], {
     display,
   });
@@ -19,7 +20,7 @@ Deno.test("deployment-list: hits /v7/deployments with the connection's team", as
   assertEquals(result, [{ uid: "dpl_1" }]);
 });
 
-Deno.test("deployment-list: states go as one comma-separated value, not repeated params", async () => {
+test("deployment-list: states go as one comma-separated value, not repeated params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([], null) }], { display });
   await action.execute!({ state: ["BUILDING", "ERROR"], target: "production" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -28,7 +29,7 @@ Deno.test("deployment-list: states go as one comma-separated value, not repeated
   assertEquals(q.get("target"), "production");
 });
 
-Deno.test("deployment-list: branch, sha and rollbackCandidate filters reach the wire", async () => {
+test("deployment-list: branch, sha and rollbackCandidate filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([], null) }], { display });
   await action.execute!({
     projectId: "my-app",
@@ -45,7 +46,7 @@ Deno.test("deployment-list: branch, sha and rollbackCandidate filters reach the 
   assertEquals(q.get("since"), "1700000000000");
 });
 
-Deno.test("deployment-list: returnAll follows the pagination cursor", async () => {
+test("deployment-list: returnAll follows the pagination cursor", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page([{ uid: "1" }], 1700000000000) },
     { status: 200, body: page([{ uid: "2" }], null) },

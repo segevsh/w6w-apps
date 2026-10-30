@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teammateList from "../../actions/teammate-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("teammate-list: GET /v2/teammates with service and property filters", async () => {
+test("teammate-list: GET /v2/teammates with service and property filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await teammateList.execute({
     service_id: 1,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-reservations.ts";
 
-Deno.test("list-reservations: GETs /v1/reservations with the documented filters", async () => {
+test("list-reservations: GETs /v1/reservations with the documented filters", async () => {
   const { ctx, calls } = mockCtx([envelope([{ id: 13 }], { count: 1, page: 1, totalPages: 1 })]);
   await action.execute(
     { limit: 100, offset: 0, listingId: 40160, dateType: "arrival", startDate: "2026-01-01" },
@@ -19,7 +20,7 @@ Deno.test("list-reservations: GETs /v1/reservations with the documented filters"
   assertEquals(url.searchParams.has("match"), false);
 });
 
-Deno.test("list-reservations: the boolean filters use Hostaway's documented 0/1 posture", async () => {
+test("list-reservations: the boolean filters use Hostaway's documented 0/1 posture", async () => {
   const { ctx, calls } = mockCtx([envelope([])]);
   await action.execute({ hasUnreadConversationMessages: true, includeResources: 1 }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import customObjectRecordCreate from "../../actions/custom-object-record-create.ts";
 
-Deno.test("custom-object-record-create: POSTs the fields as the body and unwraps the data envelope", async () => {
+test("custom-object-record-create: POSTs the fields as the body and unwraps the data envelope", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { data: { id: "r1", name: "Laptop", external_id: "a-17" } } },
   ]);
@@ -17,7 +18,7 @@ Deno.test("custom-object-record-create: POSTs the fields as the body and unwraps
   assertEquals(out, { id: "r1", name: "Laptop", external_id: "a-17" });
 });
 
-Deno.test("custom-object-record-create: accepts fields as a JSON string, rejects non-objects, is not idempotent", async () => {
+test("custom-object-record-create: accepts fields as a JSON string, rejects non-objects, is not idempotent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "r2" } } }]);
   await customObjectRecordCreate.execute(
     { customObjectApiName: "asset", fields: '{"name":"Phone"}' },

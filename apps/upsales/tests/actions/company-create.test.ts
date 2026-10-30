@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import companyCreate from "../../actions/company-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("company-create: POSTs /accounts with the mapped body", async () => {
+test("company-create: POSTs /accounts with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await companyCreate.execute({
     "name": "Salesboard",
@@ -28,7 +29,7 @@ Deno.test("company-create: POSTs /accounts with the mapped body", async () => {
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("company-create: the free-form fields object is merged and typed params win", async () => {
+test("company-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await companyCreate.execute(
     { "name": "Salesboard", "fields": { "extraKey": { "a": 1 }, "name": "SHOULD-LOSE" } } as never,
@@ -39,13 +40,13 @@ Deno.test("company-create: the free-form fields object is merged and typed param
   assertEquals(sent["name"], "Salesboard");
 });
 
-Deno.test("company-create: fields may be a JSON string", async () => {
+test("company-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await companyCreate.execute({ "name": "Salesboard", "fields": '{"extraKey":1}' } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("company-create: invalid fields JSON is refused before any request", async () => {
+test("company-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await companyCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -55,12 +56,12 @@ Deno.test("company-create: invalid fields JSON is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("company-create: required params are declared", () => {
+test("company-create: required params are declared", () => {
   const required = (companyCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["name"]);
 });
 
-Deno.test("company-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("company-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -81,7 +82,7 @@ Deno.test("company-create: a rejected key surfaces Upsales' plain-text Unauthori
   );
 });
 
-Deno.test("company-create: a JSON error envelope surfaces the vendor key", async () => {
+test("company-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

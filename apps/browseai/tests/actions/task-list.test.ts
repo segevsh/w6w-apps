@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskList from "../../actions/task-list.ts";
 import { mockCtx, pathOf, queryOf, resultEnvelope } from "../_helpers.ts";
 
 const PAGE = { totalCount: 1, pageNumber: 1, hasMore: false, items: [{ id: "t1" }] };
 
-Deno.test("task-list: GETs the robot's tasks and unwraps result.robotTasks", async () => {
+test("task-list: GETs the robot's tasks and unwraps result.robotTasks", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: resultEnvelope({ robotTasks: PAGE }) }]);
   const out = await taskList.execute({ robotId: "r1" }, ctx) as typeof PAGE;
 
@@ -13,7 +14,7 @@ Deno.test("task-list: GETs the robot's tasks and unwraps result.robotTasks", asy
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("task-list: forwards every filter as a query param", async () => {
+test("task-list: forwards every filter as a query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: resultEnvelope({ robotTasks: PAGE }) }]);
   await taskList.execute({
     robotId: "r1",
@@ -39,12 +40,12 @@ Deno.test("task-list: forwards every filter as a query param", async () => {
   });
 });
 
-Deno.test("task-list: pageSize is capped at Browse AI's documented ceiling of 10", () => {
+test("task-list: pageSize is capped at Browse AI's documented ceiling of 10", () => {
   const p = taskList.params?.find((p) => p.key === "pageSize");
   assertEquals(p?.validation?.max, 10);
 });
 
-Deno.test("task-list: an omitted includeRetried is left off the query entirely", async () => {
+test("task-list: an omitted includeRetried is left off the query entirely", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: resultEnvelope({ robotTasks: PAGE }) }]);
   await taskList.execute({ robotId: "r1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});

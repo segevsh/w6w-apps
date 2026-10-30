@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/card-add-label.ts";
 
-Deno.test("card-add-label: POSTs the label id as `value` on idLabels", async () => {
+test("card-add-label: POSTs the label id as `value` on idLabels", async () => {
   const { ctx, calls } = mockCtx([{ body: ["lb1"] }]);
   assertEquals(await action.execute({ cardId: "c1", labelId: "lb1" }, ctx), ["lb1"]);
   assertEquals(calls[0].method, "POST");
@@ -10,6 +11,6 @@ Deno.test("card-add-label: POSTs the label id as `value` on idLabels", async () 
   assertEquals(new URL(calls[0].url).searchParams.get("value"), "lb1");
 });
 
-Deno.test("card-add-label: is idempotent — re-adding leaves one label", () => {
+test("card-add-label: is idempotent — re-adding leaves one label", () => {
   assertEquals(action.idempotent, true);
 });

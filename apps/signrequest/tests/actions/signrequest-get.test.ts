@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import signrequestGet from "../../actions/signrequest-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("signrequest-get: GETs /signrequests/{id}/", async () => {
+test("signrequest-get: GETs /signrequests/{id}/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { uuid: "sr-1" } }]);
   const out = await signrequestGet.execute({ signrequestId: "sr-1" }, ctx) as Record<
     string,

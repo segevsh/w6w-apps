@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-create.ts";
 
-Deno.test("time-entry-create: POSTs /team/{id}/time_entries with ms start + duration", async () => {
+test("time-entry-create: POSTs /team/{id}/time_entries with ms start + duration", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "te1" } } }]);
   await action.execute!({
     teamId: "42",

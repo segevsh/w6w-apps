@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-tag-remove.ts";
 import { actionBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-remove: is a non-idempotent perform action on the contact id", () => {
+test("contact-tag-remove: is a non-idempotent perform action on the contact id", () => {
   assertEquals(action.key, "contact-tag-remove");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -10,7 +11,7 @@ Deno.test("contact-tag-remove: is a non-idempotent perform action on the contact
   assertEquals(action.params![0].required, true);
 });
 
-Deno.test("contact-tag-remove: POSTs /customers/11/actions/remove_tag with the mapped body", async () => {
+test("contact-tag-remove: POSTs /customers/11/actions/remove_tag with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: actionBody(true, "done") }]);
   const out = await action.execute({ id: 11, tagId: 3 }, ctx);
   assertEquals(calls.length, 1);
@@ -21,7 +22,7 @@ Deno.test("contact-tag-remove: POSTs /customers/11/actions/remove_tag with the m
   assertEquals(out, { success: true, message: "done" });
 });
 
-Deno.test("contact-tag-remove: HTTP 200 with success:false is a failure, not a result", async () => {
+test("contact-tag-remove: HTTP 200 with success:false is a failure, not a result", async () => {
   const { ctx } = mockCtx([{ body: actionBody(false, "Contact not found") }]);
   await assertRejects(
     async () => await action.execute({ id: 11, tagId: 3 }, ctx),
@@ -30,7 +31,7 @@ Deno.test("contact-tag-remove: HTTP 200 with success:false is a failure, not a r
   );
 });
 
-Deno.test("contact-tag-remove: a 422 surfaces the errors array", async () => {
+test("contact-tag-remove: a 422 surfaces the errors array", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: ["bad one", "bad two"] } }]);
   await assertRejects(
     async () => await action.execute({ id: 11, tagId: 3 }, ctx),
@@ -39,7 +40,7 @@ Deno.test("contact-tag-remove: a 422 surfaces the errors array", async () => {
   );
 });
 
-Deno.test("contact-tag-remove: a 200 without a success flag is an error", async () => {
+test("contact-tag-remove: a 200 without a success flag is an error", async () => {
   const { ctx } = mockCtx([{ body: { data: {} } }]);
   await assertRejects(
     async () => await action.execute({ id: 11, tagId: 3 }, ctx),

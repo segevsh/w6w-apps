@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, rejection } from "../_helpers.ts";
 import action from "../../actions/get-customer.ts";
 
-Deno.test("get-customer: GETs /customers/{id} and returns the customer", async () => {
+test("get-customer: GETs /customers/{id} and returns the customer", async () => {
   const customer = { id: 42, name: "Acme", customer_type: "company" };
   const { ctx, calls } = mockCtx([{ body: customer }]);
   const res = await action.execute({ id: "42" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("get-customer: GETs /customers/{id} and returns the customer", async (
   assertEquals(res, customer);
 });
 
-Deno.test("get-customer: a 404 names the path and the vendor's message", async () => {
+test("get-customer: a 404 names the path and the vendor's message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: "not_found", message: "Customer not found" },

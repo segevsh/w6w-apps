@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import incidentResolve from "../../actions/incident-resolve.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("incident-resolve: POST /api/v3/incidents/{incident_id}/resolve", async () => {
+test("incident-resolve: POST /api/v3/incidents/{incident_id}/resolve", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "25", "type": "incident", "attributes": { "status": "Resolved" } } },
@@ -21,7 +22,7 @@ Deno.test("incident-resolve: POST /api/v3/incidents/{incident_id}/resolve", asyn
   assertEquals(out.status, "Resolved");
 });
 
-Deno.test("incident-resolve: puts no credential on the request (sign owns that)", async () => {
+test("incident-resolve: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "25", "type": "incident", "attributes": { "status": "Resolved" } } },
@@ -30,7 +31,7 @@ Deno.test("incident-resolve: puts no credential on the request (sign owns that)"
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("incident-resolve: a vendor error surfaces its own message", async () => {
+test("incident-resolve: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await incidentResolve.execute({ "incident_id": "25", "resolved_by": "elon@spacex.com" }, ctx)

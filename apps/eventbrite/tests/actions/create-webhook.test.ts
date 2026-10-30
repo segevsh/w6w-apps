@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-webhook.ts";
 
-Deno.test("create-webhook: POSTs wrapped-free body to org webhooks", async () => {
+test("create-webhook: POSTs wrapped-free body to org webhooks", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await action.execute!({
     organizationId: "o 1",
@@ -21,7 +22,7 @@ Deno.test("create-webhook: POSTs wrapped-free body to org webhooks", async () =>
   });
 });
 
-Deno.test("create-webhook: minimal body", async () => {
+test("create-webhook: minimal body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ organizationId: "1", endpointUrl: "https://x.example" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { endpoint_url: "https://x.example" });

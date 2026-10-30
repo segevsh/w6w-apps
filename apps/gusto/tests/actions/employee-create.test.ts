@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/employee-create.ts";
 
 const conn = { display: { environment: "production", companyId: "co-1" } };
 
-Deno.test("employee-create: posts to the company's employees collection", async () => {
+test("employee-create: posts to the company's employees collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "e1" } }], conn);
   await action.execute!({ firstName: "Ada", lastName: "Lovelace", email: "ada@example.com" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/companies/co-1/employees");
@@ -14,7 +15,7 @@ Deno.test("employee-create: posts to the company's employees collection", async 
   assertEquals(sent.self_onboarding, true);
 });
 
-Deno.test("employee-create: both names are required", async () => {
+test("employee-create: both names are required", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ firstName: "Ada" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("employee-create: both names are required", async () => {
 });
 
 /** The record exists but cannot be paid — saying so is the point. */
-Deno.test("employee-create: says the person is not yet payable", () => {
+test("employee-create: says the person is not yet payable", () => {
   assert(/ONBOARDING|cannot yet be paid/i.test(action.description!), action.description);
   assertEquals(action.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/logbook-get.ts";
@@ -10,7 +11,7 @@ const entries = ok([
 ]);
 
 /** The causal link is the thing the history API does not have. */
-Deno.test("logbook-get: counts the entries an automation caused", async () => {
+test("logbook-get: counts the entries an automation caused", async () => {
   const { ctx, calls } = mockCtx([entries], { display });
   const result = await action.execute!({}, ctx) as {
     count: number;
@@ -21,13 +22,13 @@ Deno.test("logbook-get: counts the entries an automation caused", async () => {
   assertEquals(result.triggeredByAutomation, 2);
 });
 
-Deno.test("logbook-get: narrowing to one entity uses the entity parameter", async () => {
+test("logbook-get: narrowing to one entity uses the entity parameter", async () => {
   const { ctx, calls } = mockCtx([entries], { display });
   await action.execute!({ entityId: "light.kitchen" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("entity"), "light.kitchen");
 });
 
-Deno.test("logbook-get: the start time goes in the path", async () => {
+test("logbook-get: the start time goes in the path", async () => {
   const { ctx, calls } = mockCtx([entries], { display });
   await action.execute!({
     startTime: "2026-08-17T00:00:00+00:00",
@@ -38,7 +39,7 @@ Deno.test("logbook-get: the start time goes in the path", async () => {
   assertEquals(url.searchParams.get("end_time"), "2026-08-18T00:00:00+00:00");
 });
 
-Deno.test("logbook-get: a friendly name is refused", async () => {
+test("logbook-get: a friendly name is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "Kitchen Light" }, ctx),
@@ -47,13 +48,13 @@ Deno.test("logbook-get: a friendly name is refused", async () => {
   );
 });
 
-Deno.test("logbook-get: an empty period is a count of zero", async () => {
+test("logbook-get: an empty period is a count of zero", async () => {
   const { ctx } = mockCtx([ok([])], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(result.count, 0);
 });
 
-Deno.test("logbook-get: logs a count, never the entries", async () => {
+test("logbook-get: logs a count, never the entries", async () => {
   const { ctx, logs } = mockCtx([entries], { display });
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("Alice"), JSON.stringify(logs));
@@ -61,7 +62,7 @@ Deno.test("logbook-get: logs a count, never the entries", async () => {
 });
 
 /** History says what changed; the logbook says why. */
-Deno.test("logbook-get: says what separates it from history", () => {
+test("logbook-get: says what separates it from history", () => {
   assert(
     /History says what changed; the logbook says why/.test(action.description!),
     action.description,

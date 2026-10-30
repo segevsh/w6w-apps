@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import del from "../../actions/async-job-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("async-job-delete: deletes by id", async () => {
+test("async-job-delete: deletes by id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await del.execute({ jobId: "job-1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("async-job-delete: deletes by id", async () => {
   assertEquals(out, { jobId: "job-1", deleted: true });
 });
 
-Deno.test("async-job-delete: someone else's or a missing job is an error", async () => {
+test("async-job-delete: someone else's or a missing job is an error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { detail: "Job not found" } }]);
   await assertRejects(
     async () => await del.execute({ jobId: "nope" }, ctx),

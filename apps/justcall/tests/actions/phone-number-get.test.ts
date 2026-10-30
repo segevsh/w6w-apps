@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import phoneNumberGet from "../../actions/phone-number-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("phone-number-get: hits GET /v2.1/phone-numbers/{id}", async () => {
+test("phone-number-get: hits GET /v2.1/phone-numbers/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 1234, current_status: "Available" }) }]);
   const out = await phoneNumberGet.execute({ id: 1234 }, ctx) as Record<string, unknown>;
 

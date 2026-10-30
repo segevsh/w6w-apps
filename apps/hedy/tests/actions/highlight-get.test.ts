@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import highlightGet from "../../actions/highlight-get.ts";
 import { envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("highlight-get: calls GET /highlights/{id} and returns the detail payload", async () => {
+test("highlight-get: calls GET /highlights/{id} and returns the detail payload", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -29,13 +30,13 @@ Deno.test("highlight-get: calls GET /highlights/{id} and returns the detail payl
   assertEquals(out.aiInsight, "Key strategic decision regarding product development priorities");
 });
 
-Deno.test("highlight-get: a highlight id is path-escaped", async () => {
+test("highlight-get: a highlight id is path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "a/b" }) }]);
   await highlightGet.execute({ highlightId: "a/b" }, ctx);
   assertEquals(pathOf(calls[0].url), "/highlights/a%2Fb");
 });
 
-Deno.test("highlight-get: a 404 for an unknown highlight throws with the vendor's error code", async () => {
+test("highlight-get: a 404 for an unknown highlight throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("not_found", "Highlight not found") }]);
   try {
     await highlightGet.execute({ highlightId: "does-not-exist" }, ctx);
@@ -45,7 +46,7 @@ Deno.test("highlight-get: a 404 for an unknown highlight throws with the vendor'
   }
 });
 
-Deno.test("highlight-get: requires a highlightId param", () => {
+test("highlight-get: requires a highlightId param", () => {
   const param = highlightGet.params?.find((p) => p.key === "highlightId");
   assertEquals(param?.required, true);
 });

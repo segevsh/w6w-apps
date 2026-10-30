@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import messageTemplateList from "../../actions/message-template-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-template-list: calls GET /api/v2/message-templates/ and shapes the output", async () => {
+test("message-template-list: calls GET /api/v2/message-templates/ and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   const out = await messageTemplateList.execute({ "subAccountId": 3 } as never, ctx) as Record<
     string,
@@ -19,7 +20,7 @@ Deno.test("message-template-list: calls GET /api/v2/message-templates/ and shape
   assert((out.messageTemplates as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("message-template-list: a vendor error surfaces the HTTP status and message", async () => {
+test("message-template-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { "message": "Unauthorized" } }]);
   const err = await assertRejects(
     () => Promise.resolve(messageTemplateList.execute({ "subAccountId": 3 } as never, ctx)),

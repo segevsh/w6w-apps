@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/delete-time-off.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-time-off: sends DELETE to the id path", async () => {
+test("delete-time-off: sends DELETE to the id path", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { success: true, data: { message: "The absence period was deleted." } } },
   ]);

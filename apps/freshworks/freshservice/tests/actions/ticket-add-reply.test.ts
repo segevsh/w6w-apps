@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshserviceCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-add-reply.ts";
 
-Deno.test("ticket-add-reply: POSTs /tickets/{id}/reply and unwraps `conversation`", async () => {
+test("ticket-add-reply: POSTs /tickets/{id}/reply and unwraps `conversation`", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { conversation: { id: 11 } } }]);
   const out = await action.execute({ ticketId: 141, body: "<p>on it</p>" }, ctx);
   assertEquals(calls[0].url, "https://acme.freshservice.com/api/v2/tickets/141/reply");
@@ -11,7 +12,7 @@ Deno.test("ticket-add-reply: POSTs /tickets/{id}/reply and unwraps `conversation
   assertEquals(out, { id: 11 });
 });
 
-Deno.test("ticket-add-reply: maps fromEmail and the copy lists", async () => {
+test("ticket-add-reply: maps fromEmail and the copy lists", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: {} }]);
   await action.execute(
     { ticketId: 1, body: "b", fromEmail: "help@acme.test", ccEmails: "a@b.c", bccEmails: "d@e.f" },

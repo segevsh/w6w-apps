@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param, run } from "../_helpers.ts";
 import listPipelines from "../../actions/list-pipelines.ts";
 
-Deno.test("list-pipelines: GETs /pipelines with an exact-match name", async () => {
+test("list-pipelines: GETs /pipelines with an exact-match name", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -20,7 +21,7 @@ Deno.test("list-pipelines: GETs /pipelines with an exact-match name", async () =
   assertEquals(result.records[0].stages.length, 2);
 });
 
-Deno.test("list-pipelines: disambiguates itself from contact stages", () => {
+test("list-pipelines: disambiguates itself from contact stages", () => {
   assert(/List Stages/.test(listPipelines.description!), listPipelines.description);
   assert(param(listPipelines, "name").hint?.includes("Exact match"));
 });

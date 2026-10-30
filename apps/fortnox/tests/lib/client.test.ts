@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   compact,
   FortnoxApiError,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("readErrorInformation: reads both the documented and the lower-case spelling", () => {
+test("readErrorInformation: reads both the documented and the lower-case spelling", () => {
   assertEquals(
     readErrorInformation({
       ErrorInformation: { Error: 1, Message: "Ogiltig inloggning", Code: 2000310 },
@@ -25,7 +26,7 @@ Deno.test("readErrorInformation: reads both the documented and the lower-case sp
   assertEquals(readErrorInformation({ Customer: {} }), undefined);
 });
 
-Deno.test("compact: drops undefined, null and empty strings but keeps false and 0", () => {
+test("compact: drops undefined, null and empty strings but keeps false and 0", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -33,7 +34,7 @@ Deno.test("compact: drops undefined, null and empty strings but keeps false and 
   });
 });
 
-Deno.test("jsonObject / jsonArray: accept objects and JSON strings, reject the wrong shape", () => {
+test("jsonObject / jsonArray: accept objects and JSON strings, reject the wrong shape", () => {
   assertEquals(jsonObject(undefined, "x"), {});
   assertEquals(jsonObject('{"a":1}', "x"), { a: 1 });
   assertEquals(jsonArray(undefined, "x"), undefined);
@@ -60,12 +61,12 @@ Deno.test("jsonObject / jsonArray: accept objects and JSON strings, reject the w
   }
 });
 
-Deno.test("seg: URL-encodes a path segment", () => {
+test("seg: URL-encodes a path segment", () => {
   assertEquals(seg("A/B 1"), "A%2FB%201");
   assertEquals(seg(12), "12");
 });
 
-Deno.test("client: sends accept and content-type JSON, skips empty query values", async () => {
+test("client: sends accept and content-type JSON, skips empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new FortnoxClient(ctx).get("/3/customers", {
     page: 2,
@@ -78,7 +79,7 @@ Deno.test("client: sends accept and content-type JSON, skips empty query values"
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("client: a non-2xx answer throws FortnoxApiError carrying the vendor code", async () => {
+test("client: a non-2xx answer throws FortnoxApiError carrying the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { ErrorInformation: { Error: 1, Message: "Kunde inte hitta kund", Code: 2000204 } },
@@ -92,7 +93,7 @@ Deno.test("client: a non-2xx answer throws FortnoxApiError carrying the vendor c
   assertEquals(err.info?.code, 2000204);
 });
 
-Deno.test("client: an error with a non-JSON body still throws a status-only error", async () => {
+test("client: an error with a non-JSON body still throws a status-only error", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>", headers: {} }]);
   await assertRejects(
     () => new FortnoxClient(ctx).get("/3/me"),
@@ -101,12 +102,12 @@ Deno.test("client: an error with a non-JSON body still throws a status-only erro
   );
 });
 
-Deno.test("client: a 2xx with a non-JSON body is an error, not a silent undefined", async () => {
+test("client: a 2xx with a non-JSON body is an error, not a silent undefined", async () => {
   const { ctx } = mockCtx([{ body: "<html></html>", headers: {} }]);
   await assertRejects(() => new FortnoxClient(ctx).get("/3/me"), Error, "non-JSON body");
 });
 
-Deno.test("client: delete returns { deleted: true } on 204", async () => {
+test("client: delete returns { deleted: true } on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   assertEquals(await new FortnoxClient(ctx).delete("/3/customers/1"), { deleted: true });
   assertEquals(calls[0].method, "DELETE");

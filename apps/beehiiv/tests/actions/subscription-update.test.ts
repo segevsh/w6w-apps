@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import subscriptionUpdate from "../../actions/subscription-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-update: PATCHes only the given fields", async () => {
+test("subscription-update: PATCHes only the given fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "sub_1", email: "a@b.com", status: "active" } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("subscription-update: PATCHes only the given fields", async () => {
   assertEquals(out.id, "sub_1");
 });
 
-Deno.test("subscription-update: unsubscribe is sent as a plain boolean, including false", async () => {
+test("subscription-update: unsubscribe is sent as a plain boolean, including false", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "sub_1" } } }]);
   await subscriptionUpdate.execute(
     { publicationId: "pub_1", subscriptionId: "sub_1", unsubscribe: false },
@@ -34,7 +35,7 @@ Deno.test("subscription-update: unsubscribe is sent as a plain boolean, includin
   assertEquals(sent.unsubscribe, false);
 });
 
-Deno.test("subscription-update: is an idempotent perform action", () => {
+test("subscription-update: is an idempotent perform action", () => {
   assert(!!subscriptionUpdate.idempotent);
   assertEquals(subscriptionUpdate.type, "perform");
 });

@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import predictEndpoint from "../../actions/predict-endpoint.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 const BASE = "https://us-central1-aiplatform.googleapis.com/v1/projects/p1/locations/us-central1";
 
-Deno.test("predict-endpoint: POSTs instances to endpoints/{id}:predict", async () => {
+test("predict-endpoint: POSTs instances to endpoints/{id}:predict", async () => {
   const { ctx, calls } = mockCtx([{ body: { predictions: [0.9], deployedModelId: "d1" } }], {
     display,
   });

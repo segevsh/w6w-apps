@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/search-records.ts";
 
-Deno.test("search-records: GETs /search with searchStr and module", async () => {
+test("search-records: GETs /search with searchStr and module", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { data: [{ id: "1" }] } }]);
   const out = await action.execute({ searchStr: "zylker", module: "tickets" }, ctx);
   const url = new URL(calls[0].url);
@@ -13,6 +14,6 @@ Deno.test("search-records: GETs /search with searchStr and module", async () => 
   assertEquals(out.data, [{ id: "1" }]);
 });
 
-Deno.test("search-records: type is search, not read", () => {
+test("search-records: type is search, not read", () => {
   assertEquals(action.type, "search");
 });

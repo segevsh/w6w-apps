@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-find-email-status.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-find-email-status: GETs queue_status?qid= and maps the result", async () => {
+test("get-find-email-status: GETs queue_status?qid= and maps the result", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -22,7 +23,7 @@ Deno.test("get-find-email-status: GETs queue_status?qid= and maps the result", a
   assertEquals(out.confidenceScore, 80);
 });
 
-Deno.test("get-find-email-status: blank queue ID throws; vendor failure throws", async () => {
+test("get-find-email-status: blank queue ID throws; vendor failure throws", async () => {
   await assertRejects(() => run(action, {}, mockCtx().ctx), Error, "queueId is required");
   const bad = mockCtx([{ status: 400, body: { status: "failed", error: { message: "bad qid" } } }]);
   await assertRejects(() => run(action, { queueId: "x" }, bad.ctx), Error, "bad qid");

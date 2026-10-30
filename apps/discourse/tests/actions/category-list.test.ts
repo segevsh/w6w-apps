@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/category-list.ts";
 
-Deno.test("category-list: GETs /categories.json and keeps the envelope", async () => {
+test("category-list: GETs /categories.json and keeps the envelope", async () => {
   const body = { category_list: { can_create_category: true, categories: [{ id: 1, name: "A" }] } };
   const { ctx, calls } = mockDiscourseCtx([{ body }]);
   const out = await action.execute({}, ctx);
@@ -12,7 +13,7 @@ Deno.test("category-list: GETs /categories.json and keeps the envelope", async (
   assertEquals(out, body);
 });
 
-Deno.test("category-list: include_subcategories is sent by presence, never as false", async () => {
+test("category-list: include_subcategories is sent by presence, never as false", async () => {
   // The endpoint's enum for this flag is `[true]` — only its presence means
   // anything, and `false` might well be read as truthy.
   const on = mockDiscourseCtx([{ body: {} }]);

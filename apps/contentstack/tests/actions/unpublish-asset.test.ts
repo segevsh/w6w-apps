@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unpublish-asset.ts";
 
-Deno.test("unpublish-asset: metadata", () => {
+test("unpublish-asset: metadata", () => {
   assertEquals(action.key, "unpublish-asset");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -15,7 +16,7 @@ Deno.test("unpublish-asset: metadata", () => {
   ]);
 });
 
-Deno.test("unpublish-asset: calls POST /assets/blta/unpublish on the NA host", async () => {
+test("unpublish-asset: calls POST /assets/blta/unpublish on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "ok" } }]);
   const out = await action.execute({ "assetUid": "blta", "environments": "production" }, ctx);
   assertEquals(calls.length, 1);
@@ -27,7 +28,7 @@ Deno.test("unpublish-asset: calls POST /assets/blta/unpublish on the NA host", a
   assertEquals(out, { "notice": "ok" });
 });
 
-Deno.test("unpublish-asset: uses the connection's regional host", async () => {
+test("unpublish-asset: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "ok" } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -35,7 +36,7 @@ Deno.test("unpublish-asset: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/assets/blta/unpublish");
 });
 
-Deno.test("unpublish-asset: sends the branch header only when a branch is given", async () => {
+test("unpublish-asset: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "ok" } }, { body: { "notice": "ok" } }]);
   await action.execute({ "assetUid": "blta", "environments": "production" }, ctx);
   await action.execute({ "assetUid": "blta", "environments": "production", "branch": "dev" }, ctx);
@@ -43,7 +44,7 @@ Deno.test("unpublish-asset: sends the branch header only when a branch is given"
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("unpublish-asset: rejects without `assetUid` and makes no request", async () => {
+test("unpublish-asset: rejects without `assetUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -55,7 +56,7 @@ Deno.test("unpublish-asset: rejects without `assetUid` and makes no request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("unpublish-asset: surfaces Contentstack's own error body", async () => {
+test("unpublish-asset: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

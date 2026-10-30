@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import createEvent from "../../actions/create-event.ts";
 import { ACTION_PLAN_EVENT_TYPES, EVENT_TYPES } from "../../lib/client.ts";
 
-Deno.test("create-event: POSTs /events with the documented body", async () => {
+test("create-event: POSTs /events with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 132, personId: 12264 } }]);
   await createEvent.execute({
     type: "Property Inquiry",
@@ -34,7 +35,7 @@ Deno.test("create-event: POSTs /events with the documented body", async () => {
   });
 });
 
-Deno.test("create-event: sends only what was supplied", async () => {
+test("create-event: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await createEvent.execute({ type: "Registration" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { type: "Registration" });
@@ -49,12 +50,12 @@ Deno.test("create-event: sends only what was supplied", async () => {
  * A 204 here means "the lead flow for this source is archived and the lead was
  * ignored" — a documented, non-error outcome. It must not throw.
  */
-Deno.test("create-event: a 204 resolves rather than throwing", async () => {
+test("create-event: a 204 resolves rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await createEvent.execute({ type: "Registration" }, ctx), undefined);
 });
 
-Deno.test("create-event: offers exactly the fourteen documented event types", () => {
+test("create-event: offers exactly the fourteen documented event types", () => {
   const values = optionValues(createEvent, "type");
   assertEquals(values.length, 14);
   assertEquals(values, [...EVENT_TYPES]);
@@ -72,7 +73,7 @@ Deno.test("create-event: offers exactly the fourteen documented event types", ()
  * run nothing" — the call still succeeds. The option labels are how a workflow
  * author sees that before they hit it.
  */
-Deno.test("create-event: labels which types actually trigger action plans", () => {
+test("create-event: labels which types actually trigger action plans", () => {
   const options = param(createEvent, "type").options as Array<{ value: string; label: string }>;
   for (const o of options) {
     const triggers = (ACTION_PLAN_EVENT_TYPES as readonly string[]).includes(o.value);
@@ -85,7 +86,7 @@ Deno.test("create-event: labels which types actually trigger action plans", () =
   assertEquals(ACTION_PLAN_EVENT_TYPES.length, 5);
 });
 
-Deno.test("create-event: is the described lead pipe and is not idempotent", () => {
+test("create-event: is the described lead pipe and is not idempotent", () => {
   assertEquals(createEvent.type, "perform");
   assertEquals(createEvent.idempotent, false);
   assert(/de-duplicates/i.test(createEvent.description!), createEvent.description);

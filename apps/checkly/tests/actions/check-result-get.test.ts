@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-result-get.ts";
 
-Deno.test("check-result-get: reads one run by check and result id", async () => {
+test("check-result-get: reads one run by check and result id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1" } }]);
   await action.execute!({ checkId: "c1", checkResultId: "r1" }, ctx);
   assertEquals(calls[0].url, "https://api.checklyhq.com/v1/check-results/c1/r1");
 });
 
-Deno.test("check-result-get: both ids are required, before any request", async () => {
+test("check-result-get: both ids are required, before any request", async () => {
   const noCheck = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ checkResultId: "r1" }, noCheck.ctx),

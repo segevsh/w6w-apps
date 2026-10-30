@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-member.ts";
 import { subscriberHash } from "../../lib/subscriber-hash.ts";
 
-Deno.test("update-member: PUTs to /lists/{id}/members/{hash}", async () => {
+test("update-member: PUTs to /lists/{id}/members/{hash}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await action.execute!(
     { listId: "abc", email: "u@example.com" },
@@ -19,7 +20,7 @@ Deno.test("update-member: PUTs to /lists/{id}/members/{hash}", async () => {
   assert(!("status" in body));
 });
 
-Deno.test("update-member: forwards optionals and skip_merge_validation as a query flag", async () => {
+test("update-member: forwards optionals and skip_merge_validation as a query flag", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

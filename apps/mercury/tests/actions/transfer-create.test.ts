@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transferCreate from "../../actions/transfer-create.ts";
 import { mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
-Deno.test("transfer-create: POSTs /transfer with source/destination/amount/idempotencyKey", async () => {
+test("transfer-create: POSTs /transfer with source/destination/amount/idempotencyKey", async () => {
   const { ctx, calls } = mockCtxWithInvocation(
     [{ body: { creditTransaction: { id: "tx_credit" }, debitTransaction: { id: "tx_debit" } } }],
     "inv_transfer_1",
@@ -24,6 +25,6 @@ Deno.test("transfer-create: POSTs /transfer with source/destination/amount/idemp
   assertEquals((out.debitTransaction as { id: string }).id, "tx_debit");
 });
 
-Deno.test("transfer-create: declares idempotent true, backed by the vendor's required idempotencyKey", () => {
+test("transfer-create: declares idempotent true, backed by the vendor's required idempotencyKey", () => {
   assertEquals(transferCreate.idempotent, true);
 });

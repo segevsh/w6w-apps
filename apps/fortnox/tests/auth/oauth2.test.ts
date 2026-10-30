@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const err = (code: number, message = "m") => ({
   ErrorInformation: { Error: 1, Message: message, Code: code },
 });
 
-Deno.test("sign: stamps the bearer token and JSON accept header", () => {
+test("sign: stamps the bearer token and JSON accept header", () => {
   const request = {
     url: "https://api.fortnox.se/3/me",
     method: "GET",
@@ -18,7 +19,7 @@ Deno.test("sign: stamps the bearer token and JSON accept header", () => {
   assertEquals(out.headers["accept"], "application/json");
 });
 
-Deno.test("config: scopes cover the resource families the actions use", () => {
+test("config: scopes cover the resource families the actions use", () => {
   const scopes = oauth2.oauth2!.scopes!;
   for (
     const s of [
@@ -41,21 +42,21 @@ Deno.test("config: scopes cover the resource families the actions use", () => {
   assertEquals(oauth2.oauth2!.pkce, true);
 });
 
-Deno.test("test: a company-information body is ok, and the probe hits /3/companyinformation", async () => {
+test("test: a company-information body is ok, and the probe hits /3/companyinformation", async () => {
   const { ctx, calls } = mockCtx([{ body: { CompanyInformation: { CompanyName: "Acme AB" } } }]);
   assertEquals(await oauth2.test({ credential } as never, ctx), { ok: true });
   assertEquals(new URL(calls[0].url).pathname, "/3/companyinformation");
   assertEquals(calls[0].headers["authorization"], "Bearer tok-1");
 });
 
-Deno.test("test: missing accessToken fails without a request", async () => {
+test("test: missing accessToken fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const r = await oauth2.test({ credential: {} } as never, ctx);
   assertEquals(r.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test: documented invalid-token codes fail, whatever status carries them", async () => {
+test("test: documented invalid-token codes fail, whatever status carries them", async () => {
   for (const [status, code] of [[401, 2000310], [400, 2000311], [403, 2003275], [200, 2000310]]) {
     const { ctx } = mockCtx([{ status, body: err(code, "Ogiltig inloggning") }]);
     const r = await oauth2.test({ credential } as never, ctx);
@@ -64,7 +65,7 @@ Deno.test("test: documented invalid-token codes fail, whatever status carries th
   }
 });
 
-Deno.test("test: a scope or licence error proves the token is valid", async () => {
+test("test: a scope or licence error proves the token is valid", async () => {
   for (const code of [2000663, 2001101]) {
     const { ctx } = mockCtx([{ status: 403, body: err(code, "Saknar scope") }]);
     const r = await oauth2.test({ credential } as never, ctx);
@@ -73,7 +74,7 @@ Deno.test("test: a scope or licence error proves the token is valid", async () =
   }
 });
 
-Deno.test("test: an unrecognised failure and a body without company data both fail", async () => {
+test("test: an unrecognised failure and a body without company data both fail", async () => {
   const a = mockCtx([{ status: 500, body: err(1000003, "System exception") }]);
   assertEquals((await oauth2.test({ credential } as never, a.ctx)).ok, false);
   const b = mockCtx([{ status: 500, body: "oops", headers: {} }]);
@@ -82,7 +83,7 @@ Deno.test("test: an unrecognised failure and a body without company data both fa
   assertEquals((await oauth2.test({ credential } as never, c.ctx)).ok, false);
 });
 
-Deno.test("afterConnect: labels the connection with the company name", async () => {
+test("afterConnect: labels the connection with the company name", async () => {
   const { ctx } = mockCtx([{
     body: { CompanyInformation: { CompanyName: "Acme AB", OrganizationNumber: "556000-0000" } },
   }]);

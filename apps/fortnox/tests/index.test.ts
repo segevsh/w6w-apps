@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 54;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,14 +32,14 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
 /** Creating a record, booking it, crediting it and emailing it each have a side effect per call. */
-Deno.test("index: every create/bookkeep/cancel/credit/convert/email action is marked idempotent: false", () => {
+test("index: every create/bookkeep/cancel/credit/convert/email action is marked idempotent: false", () => {
   for (
     const key of [
       "customer-create",
@@ -65,7 +67,7 @@ Deno.test("index: every create/bookkeep/cancel/credit/convert/email action is ma
 });
 
 /** Fortnox updates are partial PUTs and deletes end in the same state, so retrying is safe. */
-Deno.test("index: update and delete are marked idempotent: true", () => {
+test("index: update and delete are marked idempotent: true", () => {
   for (
     const key of [
       "customer-update",
@@ -83,7 +85,7 @@ Deno.test("index: update and delete are marked idempotent: true", () => {
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -98,9 +100,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -109,7 +111,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -118,7 +120,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
 });
 
 /** The API origin lives in `lib/client.ts` and nowhere else. */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/fortnox\.se/.test(src), `${a.key}: contains a Fortnox host literal`);
@@ -126,7 +128,7 @@ Deno.test("index: no action hard-codes a host", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned =
     /^(host|origin|domain|base_?url|api_?key|api_?token|token|client_?secret|access_?token)$/i;
   for (const a of app.actions) {
@@ -137,16 +139,16 @@ Deno.test("index: connection identity is never reachable as an action param", ()
 });
 
 /** Every action's endpoint is an exact, documented `/3/…` path (the reference's `servers` host is the only host). */
-Deno.test("index: every action calls a /3/ path, and none uses the retired XML or query-token forms", async () => {
+test("index: every action calls a /3/ path, and none uses the retired XML or query-token forms", async () => {
   for (const a of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
     assert(/["`]\/3\//.test(src), `${a.key}: no /3/ path`);
     assert(!/access_token=/i.test(src), `${a.key}: puts a token in the query`);
   }
 });
 
 /** Row arrays are raw JSON by design: Fortnox row schemas differ per document and carry ~20 fields. */
-Deno.test("index: documents with rows expose them as json params", () => {
+test("index: documents with rows expose them as json params", () => {
   for (
     const [key, param] of [
       ["invoice-create", "invoiceRows"],
@@ -162,7 +164,7 @@ Deno.test("index: documents with rows expose them as json params", () => {
   }
 });
 
-Deno.test("index: every create/update action offers the additionalFields escape hatch", () => {
+test("index: every create/update action offers the additionalFields escape hatch", () => {
   for (const a of app.actions.filter((a) => /-(create|update)$/.test(a.key))) {
     assertEquals(
       a.params?.find((p) => p.key === "additionalFields")?.type,
@@ -174,7 +176,7 @@ Deno.test("index: every create/update action offers the additionalFields escape 
 
 // --- auth --------------------------------------------------------------
 
-Deno.test("index: the OAuth method is wired with the documented endpoints and offline access", () => {
+test("index: the OAuth method is wired with the documented endpoints and offline access", () => {
   const [method] = app.auth;
   assertEquals(app.auth.length, 1);
   assertEquals(method.key, "oauth2");
@@ -190,14 +192,14 @@ Deno.test("index: the OAuth method is wired with the documented endpoints and of
   assertEquals(typeof method.sign, "function");
 });
 
-Deno.test("index: the auth probe is /3/companyinformation", async () => {
-  const src = code(await Deno.readTextFile(new URL("../auth/oauth2.ts", import.meta.url)));
+test("index: the auth probe is /3/companyinformation", async () => {
+  const src = code(await denoReadTextFile(new URL("../auth/oauth2.ts", import.meta.url)));
   assert(src.includes("/3/companyinformation"), "auth probe no longer hits /3/companyinformation");
 });
 
 // --- health --------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   assertEquals(app.healthChecks.length, 2);
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
@@ -211,7 +213,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the token. */
-Deno.test("index: any health check declaring extra egress is unsigned", () => {
+test("index: any health check declaring extra egress is unsigned", () => {
   const widening = app.healthChecks.filter((h) => h.network?.allow?.length);
   assert(widening.length > 0, "no check widens egress — this test would pass vacuously");
   for (const h of widening) {

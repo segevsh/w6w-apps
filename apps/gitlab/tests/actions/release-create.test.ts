@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/release-create.ts";
 
-Deno.test("release-create: POSTs /projects/{id}/releases", async () => {
+test("release-create: POSTs /projects/{id}/releases", async () => {
   const { ctx, calls } = mockCtx([{ body: { tag_name: "v1.0.0" } }]);
   await action.execute(
     { projectId: "1", tagName: "v1.0.0", name: "1.0", ref: "main" },
@@ -13,6 +14,6 @@ Deno.test("release-create: POSTs /projects/{id}/releases", async () => {
   assertEquals(JSON.parse(calls[0].body!), { tag_name: "v1.0.0", name: "1.0", ref: "main" });
 });
 
-Deno.test("release-create: is not idempotent", () => {
+test("release-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

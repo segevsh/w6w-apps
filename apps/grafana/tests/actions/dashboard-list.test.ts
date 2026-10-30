@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dashboard-list.ts";
 
 const display = { endpoint: "https://example.grafana.net" };
 
-Deno.test("dashboard-list: GETs /search with type=dash-db and forwards filters", async () => {
+test("dashboard-list: GETs /search with type=dash-db and forwards filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "abc", title: "Prod" }] }], { display });
   const result = await action.execute(
     { query: "prod", tag: "team-a,critical", starred: true, limit: 10, page: 2 },
@@ -22,7 +23,7 @@ Deno.test("dashboard-list: GETs /search with type=dash-db and forwards filters",
   assertEquals(result, [{ uid: "abc", title: "Prod" }]);
 });
 
-Deno.test("dashboard-list: omits unset filters from the query string", async () => {
+test("dashboard-list: omits unset filters from the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

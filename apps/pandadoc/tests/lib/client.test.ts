@@ -1,13 +1,14 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_BASE, API_HOST, compact, PandaDocClient } from "../../lib/client.ts";
 
-Deno.test("client: targets api.pandadoc.com/public/v1", () => {
+test("client: targets api.pandadoc.com/public/v1", () => {
   assertEquals(API_HOST, "api.pandadoc.com");
   assertEquals(API_BASE, "https://api.pandadoc.com/public/v1");
 });
 
-Deno.test("client: builds the URL, sets accept, and parses JSON", async () => {
+test("client: builds the URL, sets accept, and parses JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ id: "a" }] } }]);
   const out = await new PandaDocClient(ctx).request("/documents", { query: { count: 10 } });
 
@@ -17,13 +18,13 @@ Deno.test("client: builds the URL, sets accept, and parses JSON", async () => {
   assertEquals(out, { results: [{ id: "a" }] });
 });
 
-Deno.test("client: never sets an Authorization header — that is the sign hook's job", async () => {
+test("client: never sets an Authorization header — that is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new PandaDocClient(ctx).request("/members/current");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: drops undefined, null and empty query values", async () => {
+test("client: drops undefined, null and empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new PandaDocClient(ctx).request("/documents", {
     query: { q: "", status: undefined, tag: null, page: 2, deleted: false },
@@ -37,7 +38,7 @@ Deno.test("client: drops undefined, null and empty query values", async () => {
   assertEquals(q.get("deleted"), "false");
 });
 
-Deno.test("client: JSON-encodes a body and sets content-type", async () => {
+test("client: JSON-encodes a body and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "d1" } }]);
   await new PandaDocClient(ctx).request("/documents", { method: "POST", body: { name: "x" } });
   assertEquals(calls[0].method, "POST");
@@ -45,7 +46,7 @@ Deno.test("client: JSON-encodes a body and sets content-type", async () => {
   assertEquals(calls[0].body, '{"name":"x"}');
 });
 
-Deno.test("client: 204 No Content resolves to undefined", async () => {
+test("client: 204 No Content resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new PandaDocClient(ctx).request("/documents/d1", { method: "DELETE" }),
@@ -53,7 +54,7 @@ Deno.test("client: 204 No Content resolves to undefined", async () => {
   );
 });
 
-Deno.test("client: surfaces PandaDoc's type + detail error envelope", async () => {
+test("client: surfaces PandaDoc's type + detail error envelope", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { type: "authentication_error", detail: "Invalid key." } },
   ]);
@@ -67,7 +68,7 @@ Deno.test("client: surfaces PandaDoc's type + detail error envelope", async () =
   );
 });
 
-Deno.test("client: flattens a nested validation detail instead of [object Object]", async () => {
+test("client: flattens a nested validation detail instead of [object Object]", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -82,7 +83,7 @@ Deno.test("client: flattens a nested validation detail instead of [object Object
   );
 });
 
-Deno.test("client: falls back to the raw text on a non-JSON error body", async () => {
+test("client: falls back to the raw text on a non-JSON error body", async () => {
   const { ctx } = mockCtx([
     { status: 502, body: "<html>bad gateway</html>", headers: { "content-type": "text/html" } },
   ]);
@@ -90,7 +91,7 @@ Deno.test("client: falls back to the raw text on a non-JSON error body", async (
   assertEquals(err.message.includes("bad gateway"), true, err.message);
 });
 
-Deno.test("client: raw returns the Response untouched", async () => {
+test("client: raw returns the Response untouched", async () => {
   const { ctx } = mockCtx([
     { body: "%PDF-1.4", headers: { "content-type": "application/pdf" } },
   ]);
@@ -101,7 +102,7 @@ Deno.test("client: raw returns the Response untouched", async () => {
   assertEquals(await res.text(), "%PDF-1.4");
 });
 
-Deno.test("compact: drops undefined, null and empty string but keeps false and 0", () => {
+test("compact: drops undefined, null and empty string but keeps false and 0", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, g: "x" }),
     { a: 1, e: false, f: 0, g: "x" },

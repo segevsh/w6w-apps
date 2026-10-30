@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dashboard-list.ts";
 
@@ -11,7 +12,7 @@ const dashboards = [
 ];
 
 /** Two kinds of dashboard share one list and only one is editable. */
-Deno.test("dashboard-list: separates LookML dashboards from user-defined ones", async () => {
+test("dashboard-list: separates LookML dashboards from user-defined ones", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: dashboards }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/4.0/dashboards");
@@ -19,7 +20,7 @@ Deno.test("dashboard-list: separates LookML dashboards from user-defined ones", 
   assertEquals(result.userDefinedCount, 1);
 });
 
-Deno.test("dashboard-list: excludes soft-deleted dashboards and counts them", async () => {
+test("dashboard-list: excludes soft-deleted dashboards and counts them", async () => {
   const { ctx } = mockCtx([{ status: 200, body: dashboards }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 2);
@@ -33,13 +34,13 @@ Deno.test("dashboard-list: excludes soft-deleted dashboards and counts them", as
   assertEquals(withDeleted.count, 3);
 });
 
-Deno.test("dashboard-list: filters on the title case-insensitively", async () => {
+test("dashboard-list: filters on the title case-insensitively", async () => {
   const { ctx } = mockCtx([{ status: 200, body: dashboards }], D);
   const result = await action.execute({ title: "orders" }, ctx) as Record<string, unknown>;
   assertEquals(result.ids, ["ecommerce::orders_overview"]);
 });
 
 /** Each tile is its own warehouse query. */
-Deno.test("dashboard-list: says a dashboard refresh is many queries", () => {
+test("dashboard-list: says a dashboard refresh is many queries", () => {
   assert(/each TILE is its own warehouse query/i.test(action.description!), action.description);
 });

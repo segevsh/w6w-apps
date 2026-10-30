@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import jobCreate from "../../actions/job-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-create: sends POST /v2/projects/project%201%2Fx/jobs", async () => {
+test("job-create: sends POST /v2/projects/project%201%2Fx/jobs", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {
     "projectId": "project 1/x",
@@ -37,7 +38,7 @@ Deno.test("job-create: sends POST /v2/projects/project%201%2Fx/jobs", async () =
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("job-create: surfaces Phrase's validation message on a 422", async () => {
+test("job-create: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await jobCreate.execute({
@@ -57,7 +58,7 @@ Deno.test("job-create: surfaces Phrase's validation message on a 422", async () 
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("job-create: declares key, type and every param it reads", () => {
+test("job-create: declares key, type and every param it reads", () => {
   assertEquals(jobCreate.key, "job-create");
   assertEquals(jobCreate.type, "perform");
   const declared = new Set((jobCreate.params ?? []).map((p) => p.key));

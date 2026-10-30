@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/pull-request-thread-create.ts";
@@ -6,7 +7,7 @@ import action from "../../actions/pull-request-thread-create.ts";
 const thread = one({ id: 7, status: "active" });
 
 /** Azure DevOps has no bare comments — a comment is a thread's first entry. */
-Deno.test("pull-request-thread-create: posts a thread containing the comment", async () => {
+test("pull-request-thread-create: posts a thread containing the comment", async () => {
   const { ctx, calls } = mockCtx([thread], { display });
   const result = await action.execute!({
     project: "P",
@@ -28,7 +29,7 @@ Deno.test("pull-request-thread-create: posts a thread containing the comment", a
 });
 
 /** A line comment belongs on the diff, not in the overview. */
-Deno.test("pull-request-thread-create: a file path anchors the thread to the diff", async () => {
+test("pull-request-thread-create: a file path anchors the thread to the diff", async () => {
   const { ctx, calls } = mockCtx([thread], { display });
   const result = await action.execute!({
     project: "P",
@@ -45,7 +46,7 @@ Deno.test("pull-request-thread-create: a file path anchors the thread to the dif
 });
 
 /** An active thread blocks the merge where policy requires comments resolved. */
-Deno.test("pull-request-thread-create: an informational note can be created closed", async () => {
+test("pull-request-thread-create: an informational note can be created closed", async () => {
   const { ctx, calls } = mockCtx([thread], { display });
   await action.execute!({
     project: "P",
@@ -58,7 +59,7 @@ Deno.test("pull-request-thread-create: an informational note can be created clos
 });
 
 /** The comment is the caller's content. */
-Deno.test("pull-request-thread-create: logs the ids, never the comment", async () => {
+test("pull-request-thread-create: logs the ids, never the comment", async () => {
   const { ctx, logs } = mockCtx([thread], { display });
   await action.execute!({
     project: "P",
@@ -70,7 +71,7 @@ Deno.test("pull-request-thread-create: logs the ids, never the comment", async (
   assertEquals(logs[0].data, { pullRequestId: "42", threadId: 7, onDiff: false });
 });
 
-Deno.test("pull-request-thread-create: every required field is checked", async () => {
+test("pull-request-thread-create: every required field is checked", async () => {
   const base = { project: "P", repository: "api", pullRequestId: "42", comment: "x" };
   for (const missing of ["project", "repository", "pullRequestId", "comment"]) {
     const { ctx, calls } = mockCtx([], { display });

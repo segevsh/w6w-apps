@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import markAll from "../../actions/mark-all-as-read.ts";
 import { mockCtx, pathOf, queryOf, text } from "../_helpers.ts";
 
-Deno.test("mark-all-as-read: POSTs s and ts", async () => {
+test("mark-all-as-read: POSTs s and ts", async () => {
   const { ctx, calls } = mockCtx([text("OK")]);
   const out = await markAll.execute(
     { streamId: "user/-/label/Tech", timestamp: 1700000000.9 },
@@ -14,7 +15,7 @@ Deno.test("mark-all-as-read: POSTs s and ts", async () => {
   assertEquals(out, { ok: true });
 });
 
-Deno.test("mark-all-as-read: requires a stream and a positive timestamp", async () => {
+test("mark-all-as-read: requires a stream and a positive timestamp", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await markAll.execute({ streamId: "", timestamp: 1 }, ctx),

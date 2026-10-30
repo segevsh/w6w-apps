@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/records-batch-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("records-batch-create: sends POST /api/v3/record/{n}/batch/create wrapping records in data", async () => {
+test("records-batch-create: sends POST /api/v3/record/{n}/batch/create wrapping records in data", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await action.execute!(
     { objectNumber: 1, records: [{ accountname: "A" }, { accountname: "B" }] },
@@ -14,13 +15,13 @@ Deno.test("records-batch-create: sends POST /api/v3/record/{n}/batch/create wrap
   assertEquals(out, { result: { success: true } });
 });
 
-Deno.test("records-batch-create: accepts JSON text", async () => {
+test("records-batch-create: accepts JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ objectNumber: 2, records: '[{"lastname":"Doe"}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { data: [{ lastname: "Doe" }] });
 });
 
-Deno.test("records-batch-create: refuses an empty list and more than 20 records, with no request", async () => {
+test("records-batch-create: refuses an empty list and more than 20 records, with no request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ objectNumber: 1, records: [] }, ctx),
@@ -36,7 +37,7 @@ Deno.test("records-batch-create: refuses an empty list and more than 20 records,
   assertEquals(calls.length, 0);
 });
 
-Deno.test("records-batch-create: sends no tokenid header and surfaces vendor errors", async () => {
+test("records-batch-create: sends no tokenid header and surfaces vendor errors", async () => {
   const ok = mockCtx([{ body: {} }]);
   await action.execute!({ objectNumber: 1, records: [{ a: 1 }] }, ok.ctx);
   assert(!("tokenid" in ok.calls[0].headers));
@@ -48,7 +49,7 @@ Deno.test("records-batch-create: sends no tokenid header and surfaces vendor err
   );
 });
 
-Deno.test("records-batch-create: is not idempotent", () => {
+test("records-batch-create: is not idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

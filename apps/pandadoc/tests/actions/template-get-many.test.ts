@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/template-get-many.ts";
 
-Deno.test("template-get-many: GETs /templates mapping every filter", async () => {
+test("template-get-many: GETs /templates mapping every filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ id: "t1", name: "MSA" }] } }]);
   const out = await action.execute({
     q: "MSA",
@@ -30,13 +31,13 @@ Deno.test("template-get-many: GETs /templates mapping every filter", async () =>
   assertEquals(out, { results: [{ id: "t1", name: "MSA" }] });
 });
 
-Deno.test("template-get-many: never sends an empty parameter (PandaDoc 400s on those)", async () => {
+test("template-get-many: never sends an empty parameter (PandaDoc 400s on those)", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
   await action.execute({ q: "", tag: "", folderUuid: "" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("template-get-many: is a search action on the template resource", () => {
+test("template-get-many: is a search action on the template resource", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "template");
 });

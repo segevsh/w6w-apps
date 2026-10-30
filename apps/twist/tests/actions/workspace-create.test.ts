@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import workspaceCreate from "../../actions/workspace-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workspace-create: POST /api/v3/workspaces/add with every documented parameter", async () => {
+test("workspace-create: POST /api/v3/workspaces/add with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await workspaceCreate.execute(
     { "name": "sample name", "tempId": 101 },
@@ -17,7 +18,7 @@ Deno.test("workspace-create: POST /api/v3/workspaces/add with every documented p
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("workspace-create: sends a form body, never a query string", async () => {
+test("workspace-create: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceCreate.execute({ "name": "sample name", "tempId": 101 }, ctx);
 
@@ -25,25 +26,25 @@ Deno.test("workspace-create: sends a form body, never a query string", async () 
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("workspace-create: omits optional parameters that are not set", async () => {
+test("workspace-create: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceCreate.execute({ "name": "sample name" }, ctx);
 
   assertEquals(formOf(calls[0].body), { "name": "sample name" });
 });
 
-Deno.test("workspace-create: is declared non-idempotent", () => {
+test("workspace-create: is declared non-idempotent", () => {
   assertEquals(workspaceCreate.idempotent, false);
 });
 
-Deno.test("workspace-create: sends no credential of its own", async () => {
+test("workspace-create: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceCreate.execute({ "name": "sample name", "tempId": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("workspace-create: surfaces Twist's error body", async () => {
+test("workspace-create: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

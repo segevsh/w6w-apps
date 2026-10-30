@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/invoice-draft-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const base = {
   recipientVatZoneNumber: 1,
 };
 
-Deno.test("invoice-draft-create: builds the documented draft body, lines as JSON text", async () => {
+test("invoice-draft-create: builds the documented draft body, lines as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { draftInvoiceNumber: 9 } }]);
   const lines = [{ lineNumber: 1, description: "Work", quantity: 2, unitNetPrice: 100 }];
   const out = await action.execute!({
@@ -37,7 +38,7 @@ Deno.test("invoice-draft-create: builds the documented draft body, lines as JSON
   assertEquals(out, { draftInvoiceNumber: 9, invoice: { draftInvoiceNumber: 9 } });
 });
 
-Deno.test("invoice-draft-create: minimal input sends no notes, references or lines", async () => {
+test("invoice-draft-create: minimal input sends no notes, references or lines", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { draftInvoiceNumber: 1 } }]);
   await action.execute!(base, ctx);
   const body = JSON.parse(calls[0].body!);

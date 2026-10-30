@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clipProjectUpdateVisibility from "../../actions/clip-project-update-visibility.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("clip-project-update-visibility: POSTs the visibility body to the right path", async () => {
+test("clip-project-update-visibility: POSTs the visibility body to the right path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "P1", visibility: "PUBLIC" } }]);
   const out = await clipProjectUpdateVisibility.execute(
     { projectId: "P1", visibility: "PUBLIC" },
@@ -15,6 +16,6 @@ Deno.test("clip-project-update-visibility: POSTs the visibility body to the righ
   assertEquals(out.visibility, "PUBLIC");
 });
 
-Deno.test("clip-project-update-visibility: is declared idempotent", () => {
+test("clip-project-update-visibility: is declared idempotent", () => {
   assertEquals(clipProjectUpdateVisibility.idempotent, true);
 });

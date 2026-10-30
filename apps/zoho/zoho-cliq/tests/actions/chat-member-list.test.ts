@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/chat-member-list.ts";
 
-Deno.test("chat-member-list: lists members", async () => {
+test("chat-member-list: lists members", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "members": [{ "user_id": "1" }] },
@@ -19,6 +20,6 @@ Deno.test("chat-member-list: lists members", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "members": [{ "user_id": "1" }] });
 });
 
-Deno.test("chat-member-list: is a read action", () => {
+test("chat-member-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

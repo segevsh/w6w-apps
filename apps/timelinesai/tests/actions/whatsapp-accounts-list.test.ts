@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import whatsappAccountsList from "../../actions/whatsapp-accounts-list.ts";
 
-Deno.test("whatsapp-accounts-list: lists accounts", async () => {
+test("whatsapp-accounts-list: lists accounts", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "status": "ok", "data": { "whatsapp_accounts": [] } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("whatsapp-accounts-list: lists accounts", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("whatsapp-accounts-list: surfaces a vendor error envelope", async () => {
+test("whatsapp-accounts-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

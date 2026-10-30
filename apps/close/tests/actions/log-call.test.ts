@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { description, mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/log-call.ts";
 
-Deno.test("log-call: POSTs /activity/call/ and pins source to External", async () => {
+test("log-call: POSTs /activity/call/ and pins source to External", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "acti_1" } }]);
   await action.execute({ leadId: "lead_1", direction: "outbound", status: "completed" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/activity/call/");
@@ -15,11 +16,11 @@ Deno.test("log-call: POSTs /activity/call/ and pins source to External", async (
   assertEquals(sent.source, "External");
 });
 
-Deno.test("log-call: does not expose source as a caller-settable param", () => {
+test("log-call: does not expose source as a caller-settable param", () => {
   assertEquals((action.params ?? []).some((p) => p.key === "source"), false);
 });
 
-Deno.test("log-call: maps duration, phone, recording and outcome", async () => {
+test("log-call: maps duration, phone, recording and outcome", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({
     leadId: "lead_1",
@@ -37,7 +38,7 @@ Deno.test("log-call: maps duration, phone, recording and outcome", async () => {
   assertEquals(sent.activity_at, "2026-01-05T10:00:00+00:00");
 });
 
-Deno.test("log-call: offers Close's documented status and direction vocabularies", () => {
+test("log-call: offers Close's documented status and direction vocabularies", () => {
   const values = optionValues(action, "status").sort();
   assertEquals(values, [
     "busy",
@@ -52,7 +53,7 @@ Deno.test("log-call: offers Close's documented status and direction vocabularies
   assertEquals(optionValues(action, "direction").sort(), ["inbound", "outbound"]);
 });
 
-Deno.test("log-call: states that it records history rather than dialling", () => {
+test("log-call: states that it records history rather than dialling", () => {
   assert(/does not dial/i.test(description(action)));
   assertEquals(action.idempotent, false);
 });

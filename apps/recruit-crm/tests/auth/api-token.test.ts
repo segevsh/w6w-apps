@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, { authHeaders, PROBE_PATH } from "../../auth/api-token.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const TOKEN = "rcrm_unitTestFixtureNotARealToken0000";
 
-Deno.test("api-token: sign stamps the bearer header and leaves the URL alone", () => {
+test("api-token: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://api.recruitcrm.io/v1/candidates",
@@ -19,26 +20,26 @@ Deno.test("api-token: sign stamps the bearer header and leaves the URL alone", (
   assertEquals(authHeaders({ apiToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("api-token: the probe is /users and the method is a bearer token", () => {
+test("api-token: the probe is /users and the method is a bearer token", () => {
   assertEquals(PROBE_PATH, "/users");
   assertEquals(apiToken.type, "bearer");
   assertEquals(apiToken.key, "api-token");
 });
 
-Deno.test("api-token: test passes when /users answers its JSON", async () => {
+test("api-token: test passes when /users answers its JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, first_name: "A" }] }]);
   assertEquals(await apiToken.test({ credential: { apiToken: TOKEN } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/v1/users");
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("api-token: test fails with no token, without a request", async () => {
+test("api-token: test fails with no token, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await apiToken.test({ credential: {} }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: classifies from the body's error text, whatever the status", async () => {
+test("api-token: classifies from the body's error text, whatever the status", async () => {
   const cases: Array<[number, unknown, string]> = [
     [401, { message: "credential could not be resolved" }, "rejected the token"],
     [403, { error: "Unauthorized" }, "rejected the token"],
@@ -53,12 +54,12 @@ Deno.test("api-token: classifies from the body's error text, whatever the status
   }
 });
 
-Deno.test("api-token: a 200 carrying an error string is still a failure", async () => {
+test("api-token: a 200 carrying an error string is still a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { error: "Unauthorized" } }]);
   assertEquals((await apiToken.test({ credential: { apiToken: TOKEN } }, ctx)).ok, false);
 });
 
-Deno.test("api-token: a 200 HTML shell is not a pass", async () => {
+test("api-token: a 200 HTML shell is not a pass", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "<html></html>",
@@ -69,7 +70,7 @@ Deno.test("api-token: a 200 HTML shell is not a pass", async () => {
   assert(result.message!.includes("without its JSON envelope"));
 });
 
-Deno.test("api-token: the failure message never echoes the token", async () => {
+test("api-token: the failure message never echoes the token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "bad" } }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
   assert(!result.message!.includes(TOKEN));

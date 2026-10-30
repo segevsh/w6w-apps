@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/analytics-get-submissions.ts";
 
-Deno.test("analytics-get-submissions: GETs the completed/partial series", async () => {
+test("analytics-get-submissions: GETs the completed/partial series", async () => {
   const { ctx, calls } = mockCtx([
     { body: { data: { "2026-08-01": { completed: 4, partial: 1 } }, interval: 86400 } },
   ]);

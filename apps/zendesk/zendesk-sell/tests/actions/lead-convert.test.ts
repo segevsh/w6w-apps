@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadConvert from "../../actions/lead-convert.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-convert: posts to /v2/lead_conversions and maps the result fields", async () => {
+test("lead-convert: posts to /v2/lead_conversions and maps the result fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: dataEnvelope({

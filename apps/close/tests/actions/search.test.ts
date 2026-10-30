@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
@@ -7,7 +8,7 @@ const query = {
   queries: [{ type: "object_type", object_type: "contact" }],
 };
 
-Deno.test("search: POSTs the query tree to /data/search/", async () => {
+test("search: POSTs the query tree to /data/search/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], cursor: null } }]);
   await action.execute({ query }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -15,7 +16,7 @@ Deno.test("search: POSTs the query tree to /data/search/", async () => {
   assertEquals(JSON.parse(calls[0].body!), { query });
 });
 
-Deno.test("search: passes the query tree through verbatim, without reshaping it", async () => {
+test("search: passes the query tree through verbatim, without reshaping it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], cursor: null } }]);
   const deep = {
     type: "and",
@@ -32,7 +33,7 @@ Deno.test("search: passes the query tree through verbatim, without reshaping it"
   assertEquals(JSON.parse(calls[0].body!).query, deep);
 });
 
-Deno.test("search: maps the documented body params to their underscore names", async () => {
+test("search: maps the documented body params to their underscore names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], cursor: null } }]);
   await action.execute({
     query,
@@ -54,14 +55,14 @@ Deno.test("search: maps the documented body params to their underscore names", a
   });
 });
 
-Deno.test("search: keeps a resultsLimit of 0, which is the count-only idiom", async () => {
+test("search: keeps a resultsLimit of 0, which is the count-only idiom", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], cursor: null } }]);
   await action.execute({ query, includeCounts: true, resultsLimit: 0 }, ctx);
   // 0 must survive compaction — with include_counts it means "how many, without fetching any".
   assertEquals(JSON.parse(calls[0].body!).results_limit, 0);
 });
 
-Deno.test("search: returns the cursor envelope, not the has_more one", async () => {
+test("search: returns the cursor envelope, not the has_more one", async () => {
   const body = { data: [{ id: "cont_1", __object_type: "contact" }], cursor: "next" };
   const { ctx } = mockCtx([{ status: 200, body }]);
   const out = await action.execute({ query }, ctx) as Record<string, unknown>;
@@ -69,7 +70,7 @@ Deno.test("search: returns the cursor envelope, not the has_more one", async () 
   assertEquals(out.has_more, undefined);
 });
 
-Deno.test("search: requires the query and documents the DSL at the form", () => {
+test("search: requires the query and documents the DSL at the form", () => {
   const p = param(action, "query");
   assertEquals(p.required, true);
   assertEquals(p.type, "json");

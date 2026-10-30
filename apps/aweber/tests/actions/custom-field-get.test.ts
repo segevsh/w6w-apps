@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldGet from "../../actions/custom-field-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custom-field-get: fetches one custom field by id", async () => {
+test("custom-field-get: fetches one custom field by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "3", name: "Favorite color" } }]);
   const out = await customFieldGet.execute(
     { accountId: "1", listId: "2", customFieldId: "3" },

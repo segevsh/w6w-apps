@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import phaseList from "../../actions/phase-list.ts";
 
-Deno.test("phase-list: lists a pipe's phases in order", async () => {
+test("phase-list: lists a pipe's phases in order", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { pipe: { phases: [{ id: "1", name: "New" }, { id: "2", name: "Done" }] } } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("phase-list: lists a pipe's phases in order", async () => {
   assert(q.includes("cards_count"));
 });
 
-Deno.test("phase-list: throws when the pipe does not resolve", async () => {
+test("phase-list: throws when the pipe does not resolve", async () => {
   const { ctx } = mockCtx([{ body: { data: { pipe: null } } }]);
   let threw = false;
   try {
@@ -24,7 +25,7 @@ Deno.test("phase-list: throws when the pipe does not resolve", async () => {
   assert(threw);
 });
 
-Deno.test("phase-list: type/resource metadata", () => {
+test("phase-list: type/resource metadata", () => {
   assertEquals(phaseList.type, "read");
   assertEquals(phaseList.resource, "phase");
 });

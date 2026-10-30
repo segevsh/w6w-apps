@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import sendMagnacard from "../../actions/send-magnacard.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("send-magnacard: calls POST /api/v2/send/magnacard and shapes the output", async () => {
+test("send-magnacard: calls POST /api/v2/send/magnacard and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "message": "Preview", "data": { "images": [] } } }]);
   const out = await sendMagnacard.execute(
     { "mailingListIds": 7, "imageTemplateId": 3, "preview": true } as never,
@@ -25,7 +26,7 @@ Deno.test("send-magnacard: calls POST /api/v2/send/magnacard and shapes the outp
   );
 });
 
-Deno.test("send-magnacard: a vendor error surfaces the HTTP status and message", async () => {
+test("send-magnacard: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { "message": "API access has been temporarily disabled" },
@@ -46,7 +47,7 @@ Deno.test("send-magnacard: a vendor error surfaces the HTTP status and message",
   );
 });
 
-Deno.test("send-magnacard: refuses an order with no audience before any network call", async () => {
+test("send-magnacard: refuses an order with no audience before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const bad = { "imageTemplateId": 3, "preview": true };
   await assertRejects(
@@ -57,7 +58,7 @@ Deno.test("send-magnacard: refuses an order with no audience before any network 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-magnacard: is a non-idempotent perform whose description warns about spend", () => {
+test("send-magnacard: is a non-idempotent perform whose description warns about spend", () => {
   assertEquals(sendMagnacard.idempotent, false);
   assert(/real money/i.test(sendMagnacard.description ?? ""));
 });

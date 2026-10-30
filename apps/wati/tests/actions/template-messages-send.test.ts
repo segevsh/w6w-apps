@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-messages-send.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("template-messages-send: POSTs /messageTemplates/send", async () => {
+test("template-messages-send: POSTs /messageTemplates/send", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { success: true, broadcast_id: "b1", recipients: [] } }],
     conn,
@@ -31,7 +32,7 @@ Deno.test("template-messages-send: POSTs /messageTemplates/send", async () => {
   assertEquals(out, { success: true, broadcast_id: "b1", recipients: [] });
 });
 
-Deno.test("template-messages-send: accepts `recipients` as a JSON string, and includes channel when set", async () => {
+test("template-messages-send: accepts `recipients` as a JSON string, and includes channel when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true } }], conn);
   await action.execute(
     {
@@ -50,6 +51,6 @@ Deno.test("template-messages-send: accepts `recipients` as a JSON string, and in
   });
 });
 
-Deno.test("template-messages-send: is not idempotent", () => {
+test("template-messages-send: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

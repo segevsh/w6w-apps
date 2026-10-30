@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionPersonRegister from "../../actions/session-person-register.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("session-person-register: POSTs registration data as a fields array, not top-level keys", async () => {
+test("session-person-register: POSTs registration data as a fields array, not top-level keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("people", "p1") }]);
   await sessionPersonRegister.execute({
     id: "s1",

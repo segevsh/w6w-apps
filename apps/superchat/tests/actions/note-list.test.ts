@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("note-list: GETs the notes with paging", async () => {
+test("note-list: GETs the notes with paging", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "results": [], "pagination": { "next_cursor": null } },
   }]);
@@ -40,7 +41,7 @@ Deno.test("note-list: GETs the notes with paging", async () => {
   });
 });
 
-Deno.test("note-list: rejects after + before together", async () => {
+test("note-list: rejects after + before together", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () =>

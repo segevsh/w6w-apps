@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberFindAcrossLists from "../../actions/subscriber-find-across-lists.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-find-across-lists: searches at the account level with ws.op=findSubscribers", async () => {
+test("subscriber-find-across-lists: searches at the account level with ws.op=findSubscribers", async () => {
   const { ctx, calls } = mockCtx([
     { body: entries([{ id: 1, list_link: "https://api.aweber.com/1.0/accounts/1/lists/2" }]) },
   ]);

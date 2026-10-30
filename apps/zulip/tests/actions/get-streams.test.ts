@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-streams.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BASE = "https://acme.zulipchat.com/api/v1";
 
-Deno.test("get-streams: no filters sends no query", async () => {
+test("get-streams: no filters sends no query", async () => {
   const { ctx, calls } = mockCtx([{
     body: { result: "success", msg: "", streams: [{ stream_id: 1, name: "general" }] },
   }]);
@@ -17,7 +18,7 @@ Deno.test("get-streams: no filters sends no query", async () => {
   assertEquals(out, { streams: [{ stream_id: 1, name: "general" }] });
 });
 
-Deno.test("get-streams: filters are sent as query booleans", async () => {
+test("get-streams: filters are sent as query booleans", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "", streams: [] } }]);
   const out = await action.execute!({
     include_public: false,
@@ -36,7 +37,7 @@ Deno.test("get-streams: filters are sent as query booleans", async () => {
   assertEquals(out, { streams: [] });
 });
 
-Deno.test("get-streams: sends no authorization header of its own", async () => {
+test("get-streams: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{
     body: { result: "success", msg: "", streams: [{ stream_id: 1, name: "general" }] },
   }]);
@@ -44,7 +45,7 @@ Deno.test("get-streams: sends no authorization header of its own", async () => {
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("get-streams: surfaces Zulip's error msg and code", async () => {
+test("get-streams: surfaces Zulip's error msg and code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { result: "error", msg: "Invalid parameter", code: "BAD_REQUEST" },
@@ -56,7 +57,7 @@ Deno.test("get-streams: surfaces Zulip's error msg and code", async () => {
   );
 });
 
-Deno.test("get-streams: a 401 names the credential problem", async () => {
+test("get-streams: a 401 names the credential problem", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "", headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({}, ctx),
@@ -65,7 +66,7 @@ Deno.test("get-streams: a 401 names the credential problem", async () => {
   );
 });
 
-Deno.test("get-streams: a connection without a subdomain is refused before any request", async () => {
+test("get-streams: a connection without a subdomain is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = undefined;
   await assertRejects(

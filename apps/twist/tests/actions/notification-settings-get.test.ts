@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import notificationSettingsGet from "../../actions/notification-settings-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("notification-settings-get: GET /api/v3/notifications_settings/get with every documented parameter", async () => {
+test("notification-settings-get: GET /api/v3/notifications_settings/get with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await notificationSettingsGet.execute({ "workspaceId": 100 }, ctx) as Record<
     string,
@@ -17,14 +18,14 @@ Deno.test("notification-settings-get: GET /api/v3/notifications_settings/get wit
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("notification-settings-get: sends no credential of its own", async () => {
+test("notification-settings-get: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await notificationSettingsGet.execute({ "workspaceId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("notification-settings-get: surfaces Twist's error body", async () => {
+test("notification-settings-get: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

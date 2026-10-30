@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-key-info.ts";
 
-Deno.test("get-key-info: GETs /key with no params and returns the vendor's body", async () => {
+test("get-key-info: GETs /key with no params and returns the vendor's body", async () => {
   const body = { data: { label: "sk-or-v1-a...b", limit: 100, limit_remaining: 74.5 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);

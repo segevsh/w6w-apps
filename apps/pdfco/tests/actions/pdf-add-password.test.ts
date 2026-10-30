@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pdfAddPassword from "../../actions/pdf-add-password.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pdf-add-password: posts to /v1/pdf/security/add with camelCase fields", async () => {
+test("pdf-add-password: posts to /v1/pdf/security/add with camelCase fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "https://x/out.pdf" } }]);
   const out = await pdfAddPassword.execute(
     {

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import statsByDateGet from "../../actions/stats-by-date-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("stats-by-date-get: POST /api/1/getStatsByDate/ with the documented form fields", async () => {
+test("stats-by-date-get: POST /api/1/getStatsByDate/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await statsByDateGet.execute(
     { "list_id": 7, "date_from": "2026-01-01", "date_to": "2026-01-31" } as never,
@@ -23,7 +24,7 @@ Deno.test("stats-by-date-get: POST /api/1/getStatsByDate/ with the documented fo
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("stats-by-date-get: a vendor error surfaces its status and body", async () => {
+test("stats-by-date-get: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await statsByDateGet.execute(
@@ -35,7 +36,7 @@ Deno.test("stats-by-date-get: a vendor error surfaces its status and body", asyn
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("stats-by-date-get: an empty list_id fails before any request", async () => {
+test("stats-by-date-get: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

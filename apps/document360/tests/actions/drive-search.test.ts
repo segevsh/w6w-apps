@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import driveSearch from "../../actions/drive-search.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("drive-search: repeats array filters as repeated query keys", async () => {
+test("drive-search: repeats array filters as repeated query keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ id: "x1" }]) }]);
   const out = await driveSearch.execute({
     searchKeyword: "logo",
@@ -30,7 +31,7 @@ Deno.test("drive-search: repeats array filters as repeated query keys", async ()
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("drive-search: a vendor error surfaces its code and message", async () => {
+test("drive-search: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

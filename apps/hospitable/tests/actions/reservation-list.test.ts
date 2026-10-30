@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reservationList from "../../actions/reservation-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("reservation-list: bracketed array params, include joined, sort[desc] key", async () => {
+test("reservation-list: bracketed array params, include joined, sort[desc] key", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], meta: {} } }]);
   await reservationList.execute({
     property_ids: "p1, p2\np3",
@@ -41,7 +42,7 @@ Deno.test("reservation-list: bracketed array params, include joined, sort[desc] 
   assertEquals(requiredOf(reservationList), ["property_ids"]);
 });
 
-Deno.test("reservation-list: ascending is the default direction; unset filters stay out", async () => {
+test("reservation-list: ascending is the default direction; unset filters stay out", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await reservationList.execute({ property_ids: "p1", sort_by: "start_date" }, ctx);
   const q = new URL(calls[0].url).searchParams;

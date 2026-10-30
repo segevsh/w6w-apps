@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listAll from "../../actions/list-all-meetings.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const page = (ids: string[], more: boolean) => ({
   body: { object: "list", has_more: more, data: ids.map((id) => ({ id })) },
 });
 
-Deno.test("list-all-meetings: follows the last id as cursor until has_more is false", async () => {
+test("list-all-meetings: follows the last id as cursor until has_more is false", async () => {
   const { ctx, calls } = mockCtx([page(["A", "B"], true), page(["C"], false)]);
   const out = await listAll.execute({ maxMeetings: 50, startTimeMsLt: 9 }, ctx) as {
     data: Array<{ id: string }>;
@@ -21,7 +22,7 @@ Deno.test("list-all-meetings: follows the last id as cursor until has_more is fa
   assertEquals(calls[1].url.split("?")[1], "limit=10&cursor=B&start_time_ms.lt=9");
 });
 
-Deno.test("list-all-meetings: stops at the maximum and shrinks the final page limit", async () => {
+test("list-all-meetings: stops at the maximum and shrinks the final page limit", async () => {
   const { ctx, calls } = mockCtx([page(["A", "B", "C"], true)]);
   const out = await listAll.execute({ maxMeetings: 3 }, ctx) as {
     count: number;
@@ -33,7 +34,7 @@ Deno.test("list-all-meetings: stops at the maximum and shrinks the final page li
   assertEquals(calls[0].url.split("?")[1], "limit=3");
 });
 
-Deno.test("list-all-meetings: an empty page with has_more cannot loop forever", async () => {
+test("list-all-meetings: an empty page with has_more cannot loop forever", async () => {
   const { ctx, calls } = mockCtx([page([], true)]);
   const out = await listAll.execute({}, ctx) as { count: number };
   assertEquals(out.count, 0);

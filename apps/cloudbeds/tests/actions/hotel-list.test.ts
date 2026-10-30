@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import hotelList from "../../actions/hotel-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("hotel-list: GET /getHotels with the given filters", async () => {
+test("hotel-list: GET /getHotels with the given filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ propertyID: "1", propertyName: "Acme Inn" }], { count: 1, total: 1 }),
   }]);
@@ -17,7 +18,7 @@ Deno.test("hotel-list: GET /getHotels with the given filters", async () => {
   assertEquals(result.count, 1);
 });
 
-Deno.test("hotel-list: omitted filters are not sent", async () => {
+test("hotel-list: omitted filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await hotelList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

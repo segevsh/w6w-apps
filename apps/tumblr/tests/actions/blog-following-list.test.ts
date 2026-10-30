@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import blogFollowingList from "../../actions/blog-following-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("blog-following-list: calls GET /v2/blog/{id}/following", async () => {
+test("blog-following-list: calls GET /v2/blog/{id}/following", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ blogs: [{ name: "a" }], total_blogs: 1 }) },
   ]);

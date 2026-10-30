@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const headers = (remaining: string, limit = "100") => ({
   "x-ratelimit-remaining": remaining,
 });
 
-Deno.test("quota: reads the headers off a signed GET /user", async () => {
+test("quota: reads the headers off a signed GET /user", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "u" }, headers: headers("90") }]);
   const r = await run(ctx);
   assertEquals(calls[0].url, "https://api.breezy.hr/v3/user");
@@ -18,12 +19,12 @@ Deno.test("quota: reads the headers off a signed GET /user", async () => {
   assertEquals(r.quota, [{ id: "requests", limit: 100, remaining: 90, unit: "requests" }]);
 });
 
-Deno.test("quota: under 10% is degraded, zero is down", async () => {
+test("quota: under 10% is degraded, zero is down", async () => {
   assertEquals((await run(mockCtx([{ body: {}, headers: headers("5") }]).ctx)).state, "degraded");
   assertEquals((await run(mockCtx([{ body: {}, headers: headers("0") }]).ctx)).state, "down");
 });
 
-Deno.test("quota: no headers or a failing probe is unknown, never guessed", async () => {
+test("quota: no headers or a failing probe is unknown, never guessed", async () => {
   assertEquals((await run(mockCtx([{ body: {} }]).ctx)).state, "unknown");
   assertEquals((await run(mockCtx([{ status: 400, body: {} }]).ctx)).state, "unknown");
 });

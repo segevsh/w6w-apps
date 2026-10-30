@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import dashboardList from "../../actions/dashboard-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("dashboard-list: calls GET /api/v1/dashboard", async () => {
+test("dashboard-list: calls GET /api/v1/dashboard", async () => {
   const { ctx, calls } = mockCtx([{ body: { dashboards: [{ id: "abc-def-ghi" }] } }]);
   const out = await dashboardList.execute({ count: 100 }, ctx) as { dashboards: unknown[] };
 
@@ -15,7 +16,7 @@ Deno.test("dashboard-list: calls GET /api/v1/dashboard", async () => {
  * Datadog documents `filter[shared]` and `filter[deleted]` as incompatible, so
  * they are one select here — a user cannot set both.
  */
-Deno.test("dashboard-list: the two incompatible filters are mutually exclusive by construction", async () => {
+test("dashboard-list: the two incompatible filters are mutually exclusive by construction", async () => {
   const shared = mockCtx([{ body: {} }]);
   await dashboardList.execute({ filter: "shared" }, shared.ctx);
   assertEquals(queryOf(shared.calls[0].url), { "filter[shared]": "true" });
@@ -33,6 +34,6 @@ Deno.test("dashboard-list: the two incompatible filters are mutually exclusive b
 });
 
 /** It returns custom and cloned dashboards only — never Datadog's presets. */
-Deno.test("dashboard-list: the description states that presets are excluded", () => {
+test("dashboard-list: the description states that presets are excluded", () => {
   assert(dashboardList.description?.includes("Preset dashboards are not returned"));
 });

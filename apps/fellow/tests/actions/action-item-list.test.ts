@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import actionItemList from "../../actions/action-item-list.ts";
 import { bodyOf, mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("action-item-list: POST /api/v1/action_items on the workspace host", async () => {
+test("action-item-list: POST /api/v1/action_items on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { action_items: page([{ id: "a1" }], "nx") },
@@ -26,7 +27,7 @@ Deno.test("action-item-list: POST /api/v1/action_items on the workspace host", a
   assertEquals((out as { hasMore: boolean }).hasMore, true);
 });
 
-Deno.test("action-item-list: a Fellow error surfaces its detail and status", async () => {
+test("action-item-list: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () =>

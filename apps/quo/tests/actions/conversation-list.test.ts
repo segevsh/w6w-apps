@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationList from "../../actions/conversation-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-list: GETs /v1/conversations with its filters", async () => {
+test("conversation-list: GETs /v1/conversations with its filters", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [], totalItems: 0, nextPageToken: null },
@@ -18,6 +19,6 @@ Deno.test("conversation-list: GETs /v1/conversations with its filters", async ()
   assertEquals(q.maxResults, "20");
 });
 
-Deno.test("conversation-list: is a search action", () => {
+test("conversation-list: is a search action", () => {
   assertEquals(conversationList.type, "search");
 });

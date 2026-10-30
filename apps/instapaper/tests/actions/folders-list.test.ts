@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import foldersList from "../../actions/folders-list.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("folders-list: returns the account's folders", async () => {
+test("folders-list: returns the account's folders", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ type: "folder", folder_id: 1, title: "Reading" }]),
   }]);

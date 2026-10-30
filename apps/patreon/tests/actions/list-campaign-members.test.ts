@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-campaign-members.ts";
 
-Deno.test("list-campaign-members: GETs /campaigns/{id}/members and defaults include to currently_entitled_tiers", async () => {
+test("list-campaign-members: GETs /campaigns/{id}/members and defaults include to currently_entitled_tiers", async () => {
   const body = { data: [{ id: "m1", type: "member" }], meta: { pagination: { total: 1 } } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({ campaignId: "999" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("list-campaign-members: GETs /campaigns/{id}/members and defaults incl
   assertEquals(out, body);
 });
 
-Deno.test("list-campaign-members: an explicit include overrides the default and carries pagination", async () => {
+test("list-campaign-members: an explicit include overrides the default and carries pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({
     campaignId: "999",

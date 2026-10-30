@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-tag-add.ts";
 
-Deno.test("conversation-tag-add: POSTs the ids, adding rather than replacing", async () => {
+test("conversation-tag-add: POSTs the ids, adding rather than replacing", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   assertEquals(
     await action.execute!({ conversationId: "cnv_1", tagIds: "tag_1, tag_2" }, ctx),
@@ -14,11 +15,11 @@ Deno.test("conversation-tag-add: POSTs the ids, adding rather than replacing", a
 });
 
 /** Adding an existing tag is a no-op at Front, so retries are safe. */
-Deno.test("conversation-tag-add: declares itself idempotent", () => {
+test("conversation-tag-add: declares itself idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("conversation-tag-add: an empty tag list is refused", async () => {
+test("conversation-tag-add: an empty tag list is refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ conversationId: "cnv_1", tagIds: "" }, ctx),

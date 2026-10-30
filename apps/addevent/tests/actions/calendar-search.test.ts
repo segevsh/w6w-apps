@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarSearch from "../../actions/calendar-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("calendar-search: maps camelCase params onto the documented snake_case query", async () => {
+test("calendar-search: maps camelCase params onto the documented snake_case query", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { calendars: [], pagination: {}, links: {} },
@@ -22,7 +23,7 @@ Deno.test("calendar-search: maps camelCase params onto the documented snake_case
   assertEquals(q.sort_order, "asc");
 });
 
-Deno.test("calendar-search: a zero-match result is a plain empty array, not an error", async () => {
+test("calendar-search: a zero-match result is a plain empty array, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { calendars: [] } }]);
   const out = await calendarSearch.execute({}, ctx) as { calendars: unknown[] };
   assertEquals(out.calendars.length, 0);

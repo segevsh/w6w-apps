@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listReports from "../../actions/list-reports.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-reports: searches /custom-reports", async () => {
+test("list-reports: searches /custom-reports", async () => {
   assertEquals(listReports.type, "search");
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listReports.execute({}, ctx);
@@ -11,7 +12,7 @@ Deno.test("list-reports: searches /custom-reports", async () => {
   assertEquals(url.search, "");
 });
 
-Deno.test("list-reports: paging uses the snake_case wire name page_size", async () => {
+test("list-reports: paging uses the snake_case wire name page_size", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listReports.execute({ page: 2, pageSize: 100 }, ctx);
   const q = new URL(calls[0].url).searchParams;

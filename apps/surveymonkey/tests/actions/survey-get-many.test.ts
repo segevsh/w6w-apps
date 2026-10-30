@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/survey-get-many.ts";
 
-Deno.test("survey-get-many: GETs /surveys mapping filters to snake_case query", async () => {
+test("survey-get-many: GETs /surveys mapping filters to snake_case query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], total: 0 } }]);
   await action.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("survey-get-many: GETs /surveys mapping filters to snake_case query", 
   assertEquals(url.searchParams.get("sort_order"), "DESC");
 });
 
-Deno.test("survey-get-many: omits unset filters", async () => {
+test("survey-get-many: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

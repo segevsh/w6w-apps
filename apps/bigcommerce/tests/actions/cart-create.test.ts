@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import cartCreate from "../../actions/cart-create.ts";
 import { bodyOf, mockCtx, pathOf, queryOf, v3Envelope } from "../_helpers.ts";
 
-Deno.test("cart-create: POSTs line items and asks for the redirect URLs by default", async () => {
+test("cart-create: POSTs line items and asks for the redirect URLs by default", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: v3Envelope({ id: "cart-1", redirect_urls: { checkout_url: "https://…" } }),
@@ -20,14 +21,14 @@ Deno.test("cart-create: POSTs line items and asks for the redirect URLs by defau
   assertEquals(include?.default, ["redirect_urls"]);
 });
 
-Deno.test("cart-create: include goes on the QUERY string, not in the body", async () => {
+test("cart-create: include goes on the QUERY string, not in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: v3Envelope({}) }]);
   await cartCreate.execute({ lineItems: [], include: ["redirect_urls"] }, ctx);
   assertEquals(queryOf(calls[0].url), { include: "redirect_urls" });
   assertEquals(bodyOf(calls[0]), { line_items: [] });
 });
 
-Deno.test("cart-create: currency is an object, not a bare code", async () => {
+test("cart-create: currency is an object, not a bare code", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: v3Envelope({}) }]);
   await cartCreate.execute({ lineItems: [], currency: '{"code":"USD"}', customerId: 12 }, ctx);
   const body = bodyOf(calls[0]) as Record<string, unknown>;
@@ -35,7 +36,7 @@ Deno.test("cart-create: currency is an object, not a bare code", async () => {
   assertEquals(body.customer_id, 12);
 });
 
-Deno.test("cart-create: is the vendor's own route to an order that emails the customer", () => {
+test("cart-create: is the vendor's own route to an order that emails the customer", () => {
   assert(cartCreate.description?.includes("checkout link"), cartCreate.description);
   assertEquals(cartCreate.idempotent, false);
 });

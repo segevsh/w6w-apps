@@ -1,17 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
 const CRED = { apiKey: "pub-key", secretKey: "priv-secret" };
 const EXPECTED = `Basic ${btoa("pub-key:priv-secret")}`;
 
-Deno.test("auth: declares HTTP Basic with both key halves", () => {
+test("auth: declares HTTP Basic with both key halves", () => {
   assertEquals(auth.type, "basic");
   assertEquals(auth.fields?.map((f) => f.key), ["apiKey", "secretKey"]);
   assertEquals(auth.fields?.find((f) => f.key === "secretKey")?.type, "secret");
 });
 
-Deno.test("auth: sign builds base64(apiKey:secretKey) as the Basic credential", () => {
+test("auth: sign builds base64(apiKey:secretKey) as the Basic credential", () => {
   const request = { headers: {} as Record<string, string> };
   const { ctx } = mockCtx([]);
   const signed = auth.sign!({ request, credential: CRED } as never, ctx) as typeof request;
@@ -19,7 +20,7 @@ Deno.test("auth: sign builds base64(apiKey:secretKey) as the Basic credential", 
   assertEquals(atob(signed.headers["authorization"].slice(6)), "pub-key:priv-secret");
 });
 
-Deno.test("auth: test probes contactslist with Limit=1", async () => {
+test("auth: test probes contactslist with Limit=1", async () => {
   const { ctx, calls } = mockCtx([{ body: { Count: 0, Data: [] } }]);
   const result = await auth.test({ credential: CRED } as never, ctx);
   assertEquals(result.ok, true);
@@ -29,7 +30,7 @@ Deno.test("auth: test probes contactslist with Limit=1", async () => {
   assertEquals(url.searchParams.get("Limit"), "1");
 });
 
-Deno.test("auth: test never calls /apikey — that endpoint returns SecretKey in plaintext", async () => {
+test("auth: test never calls /apikey — that endpoint returns SecretKey in plaintext", async () => {
   const { ctx, calls } = mockCtx([{ body: { Count: 0, Data: [] } }]);
   await auth.test({ credential: CRED } as never, ctx);
   for (const call of calls) {
@@ -37,13 +38,13 @@ Deno.test("auth: test never calls /apikey — that endpoint returns SecretKey in
   }
 });
 
-Deno.test("auth: test signs its own probe (it runs before sign is wired up)", async () => {
+test("auth: test signs its own probe (it runs before sign is wired up)", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [] } }]);
   await auth.test({ credential: CRED } as never, ctx);
   assertEquals(calls[0].headers["authorization"], EXPECTED);
 });
 
-Deno.test("auth: test fails closed when either half is missing", async () => {
+test("auth: test fails closed when either half is missing", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test({ credential: { apiKey: "k" } } as never, ctx), {
     ok: false,
@@ -57,7 +58,7 @@ Deno.test("auth: test fails closed when either half is missing", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth: test reports a 401 without echoing the credential", async () => {
+test("auth: test reports a 401 without echoing the credential", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: "<html>Unauthorized</html>",
@@ -70,7 +71,7 @@ Deno.test("auth: test reports a 401 without echoing the credential", async () =>
   assert(!result.message?.includes("pub-key"), "message leaked the API key");
 });
 
-Deno.test("auth: declares no afterConnect — no verified identity read exists without leaking keys", () => {
+test("auth: declares no afterConnect — no verified identity read exists without leaking keys", () => {
   assertEquals(auth.afterConnect, undefined);
   assertEquals(auth.connectionLabel, undefined);
 });

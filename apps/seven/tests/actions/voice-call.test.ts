@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import voiceCall from "../../actions/voice-call.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const INPUT = {
   "foreign_id": "v1",
 } as Parameters<typeof voiceCall.execute>[0];
 
-Deno.test("voice-call: POST /api/voice with the documented fields", async () => {
+test("voice-call: POST /api/voice with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": "100", "messages": [{ "id": 1384013, "success": true }] },
   }]);
@@ -30,14 +31,14 @@ Deno.test("voice-call: POST /api/voice with the documented fields", async () => 
   assertEquals(out.success, "100");
 });
 
-Deno.test("voice-call: declares type perform and every required param", () => {
+test("voice-call: declares type perform and every required param", () => {
   const required = (voiceCall.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["text", "to"]);
   assert(["read", "search", "perform"].includes(voiceCall.type));
   assertEquals(voiceCall.type, "perform");
 });
 
-Deno.test("voice-call: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("voice-call: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

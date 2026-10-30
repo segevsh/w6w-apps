@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
 /** The token IS the header value — no scheme word at all. */
-Deno.test("api-key: signs with the bare token, not Bearer", async () => {
+test("api-key: signs with the bare token, not Bearer", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://app.launchdarkly.com/api/v2/projects",
@@ -16,13 +17,13 @@ Deno.test("api-key: signs with the bare token, not Bearer", async () => {
   assertEquals(auth.apiKey, { in: "header", name: "Authorization" });
 });
 
-Deno.test("api-key: the token and instance are required, the defaults are not", () => {
+test("api-key: the token and instance are required, the defaults are not", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["apiKey", "instance"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiKey"]);
 });
 
-Deno.test("api-key: both instances are offered, commercial by default", () => {
+test("api-key: both instances are offered, commercial by default", () => {
   const instance = auth.fields!.find((f) => f.key === "instance")!;
   assertEquals(instance.default, "commercial");
   assertEquals(
@@ -31,7 +32,7 @@ Deno.test("api-key: both instances are offered, commercial by default", () => {
   );
 });
 
-Deno.test("api-key: test probes the chosen instance", async () => {
+test("api-key: test probes the chosen instance", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [] } }]);
   assertEquals(
     await auth.test!({ credential: { apiKey: "k", instance: "federal" } } as never, ctx),
@@ -42,7 +43,7 @@ Deno.test("api-key: test probes the chosen instance", async () => {
 });
 
 /** A 401 could be a wrong token, a wrong instance, or a Bearer prefix. */
-Deno.test("api-key: the 401 message names all three causes", async () => {
+test("api-key: the 401 message names all three causes", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { code: "unauthorized" } }]);
   const result = await auth.test!(
     { credential: { apiKey: "k", instance: "commercial" } } as never,
@@ -53,7 +54,7 @@ Deno.test("api-key: the 401 message names all three causes", async () => {
   assert(result.message.includes("Bearer"), result.message);
 });
 
-Deno.test("api-key: a 403 is a role problem, not a bad token", async () => {
+test("api-key: a 403 is a role problem, not a bad token", async () => {
   const { ctx } = mockCtx([{ status: 403, body: {} }]);
   const result = await auth.test!({ credential: { apiKey: "k" } } as never, ctx) as {
     message: string;
@@ -61,7 +62,7 @@ Deno.test("api-key: a 403 is a role problem, not a bad token", async () => {
   assert(result.message.includes("role"), result.message);
 });
 
-Deno.test("api-key: a missing token fails before any network call", async () => {
+test("api-key: a missing token fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -70,7 +71,7 @@ Deno.test("api-key: a missing token fails before any network call", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect publishes the instance and defaults, never the token", async () => {
+test("api-key: afterConnect publishes the instance and defaults, never the token", async () => {
   const display = await auth.afterConnect!(
     {
       credential: {

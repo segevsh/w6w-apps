@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-list.ts";
 
@@ -17,14 +18,14 @@ const opportunities = {
 };
 
 /** Lever's own default omits confidential records; this one does not. */
-Deno.test("opportunity-list: defaults confidentiality to all", async () => {
+test("opportunity-list: defaults confidentiality to all", async () => {
   const { ctx, calls } = mockCtx([opportunities], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).searchParams.get("confidentiality"), "all");
   assertEquals(result.confidentialityUsed, "all");
 });
 
-Deno.test("opportunity-list: choosing Lever's default is called out", async () => {
+test("opportunity-list: choosing Lever's default is called out", async () => {
   const { ctx, calls, logs } = mockCtx([opportunities], D);
   await action.execute({ confidentiality: "non-confidential" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("confidentiality"), "non-confidential");
@@ -35,7 +36,7 @@ Deno.test("opportunity-list: choosing Lever's default is called out", async () =
 });
 
 /** One person, several applications. */
-Deno.test("opportunity-list: deduplicates people by contact, not opportunity", async () => {
+test("opportunity-list: deduplicates people by contact, not opportunity", async () => {
   const { ctx } = mockCtx([opportunities], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 3);
@@ -44,13 +45,13 @@ Deno.test("opportunity-list: deduplicates people by contact, not opportunity", a
 });
 
 /** The contact may be an id or an expanded object. */
-Deno.test("opportunity-list: reads the contact whether it is expanded or not", async () => {
+test("opportunity-list: reads the contact whether it is expanded or not", async () => {
   const { ctx } = mockCtx([opportunities], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assert((result.contactIds as string[]).includes("c2"), "the string form was missed");
 });
 
-Deno.test("opportunity-list: filters and the cursor reach the query", async () => {
+test("opportunity-list: filters and the cursor reach the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], D);
   await action.execute({
     postingId: "p1",
@@ -71,7 +72,7 @@ Deno.test("opportunity-list: filters and the cursor reach the query", async () =
   assertEquals(q.get("offset"), "0.14148.abc", "Lever's cursor is passed as `offset`");
 });
 
-Deno.test("opportunity-list: returns the cursor for the next page", async () => {
+test("opportunity-list: returns the cursor for the next page", async () => {
   const { ctx } = mockCtx([opportunities], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.nextCursor, "0.14148.abc");
@@ -79,7 +80,7 @@ Deno.test("opportunity-list: returns the cursor for the next page", async () => 
 });
 
 /** Candidate names and emails are personal data. */
-Deno.test("opportunity-list: logs counts, never candidates", async () => {
+test("opportunity-list: logs counts, never candidates", async () => {
   const { ctx, logs } = mockCtx([opportunities], D);
   await action.execute({}, ctx);
   const data = JSON.stringify(logs);

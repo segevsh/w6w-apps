@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createExpenseByShares from "../../actions/create-expense-by-shares.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -20,7 +21,7 @@ const BRUNCH = {
   ],
 };
 
-Deno.test("create-expense-by-shares: flattens shares into the documented wire form", async () => {
+test("create-expense-by-shares: flattens shares into the documented wire form", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   const out = await createExpenseByShares.execute(BRUNCH, ctx) as { id: number };
 
@@ -43,7 +44,7 @@ Deno.test("create-expense-by-shares: flattens shares into the documented wire fo
 });
 
 /** `group_id: 0` is legal here and only here, and must not be dropped as falsy. */
-Deno.test("create-expense-by-shares: group_id 0 reaches the body", async () => {
+test("create-expense-by-shares: group_id 0 reaches the body", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await createExpenseByShares.execute(BRUNCH, ctx);
   assertEquals(bodyOf(calls[0]).group_id, 0);
@@ -51,7 +52,7 @@ Deno.test("create-expense-by-shares: group_id 0 reaches the body", async () => {
 });
 
 /** Both columns must total the cost, and the check runs before a request is spent. */
-Deno.test("create-expense-by-shares: unbalanced shares are refused, naming both totals", async () => {
+test("create-expense-by-shares: unbalanced shares are refused, naming both totals", async () => {
   const { ctx, calls } = mockCtx([]);
   const error = await assertRejects(
     async () =>
@@ -71,7 +72,7 @@ Deno.test("create-expense-by-shares: unbalanced shares are refused, naming both 
  * a rejected write comes back as a 200 with `errors`. So the guard is
  * overridable, and the override sends the request untouched.
  */
-Deno.test("create-expense-by-shares: allowUnbalancedShares sends it anyway", async () => {
+test("create-expense-by-shares: allowUnbalancedShares sends it anyway", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await createExpenseByShares.execute({
     ...BRUNCH,
@@ -82,7 +83,7 @@ Deno.test("create-expense-by-shares: allowUnbalancedShares sends it anyway", asy
   assertEquals(bodyOf(calls[0]).users__0__paid_share, "10.00");
 });
 
-Deno.test("create-expense-by-shares: an unidentifiable share is refused even with the override", async () => {
+test("create-expense-by-shares: an unidentifiable share is refused even with the override", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -97,7 +98,7 @@ Deno.test("create-expense-by-shares: an unidentifiable share is refused even wit
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-expense-by-shares: a 200 with errors throws instead of returning", async () => {
+test("create-expense-by-shares: a 200 with errors throws instead of returning", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { expenses: [], errors: { base: ["Shares must add up to the cost"] } },
@@ -109,6 +110,6 @@ Deno.test("create-expense-by-shares: a 200 with errors throws instead of returni
   );
 });
 
-Deno.test("create-expense-by-shares: is declared non-idempotent", () => {
+test("create-expense-by-shares: is declared non-idempotent", () => {
   assertEquals(createExpenseByShares.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   compact,
@@ -12,13 +13,13 @@ import {
 
 const display = {};
 
-Deno.test("resolveBase: production by default, sandbox when the connection says so", () => {
+test("resolveBase: production by default, sandbox when the connection says so", () => {
   assertEquals(resolveBase(undefined), PRODUCTION);
   assertEquals(resolveBase({ display: {} } as never), PRODUCTION);
   assertEquals(resolveBase({ display: { environment: "sandbox" } } as never), SANDBOX);
 });
 
-Deno.test("client: builds URLs against the connection's environment", async () => {
+test("client: builds URLs against the connection's environment", async () => {
   const prod = mockCtx([{ status: 200, body: {} }], { display: {} });
   await new DeelClient(prod.ctx).request("/contracts");
   assertEquals(prod.calls[0].url, `${PRODUCTION}/contracts`);
@@ -28,7 +29,7 @@ Deno.test("client: builds URLs against the connection's environment", async () =
   assertEquals(sandbox.calls[0].url, `${SANDBOX}/contracts`);
 });
 
-Deno.test("compact / csv / json behave as the actions expect", () => {
+test("compact / csv / json behave as the actions expect", () => {
   assertEquals(compact({ a: 1, b: undefined, c: "", d: false, e: [] }), { a: 1, d: false });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv([]), undefined);
@@ -37,7 +38,7 @@ Deno.test("compact / csv / json behave as the actions expect", () => {
   assert(bad.message.includes("dates"), bad.message);
 });
 
-Deno.test("client: never sends an Authorization header — signing is the host's job", async () => {
+test("client: never sends an Authorization header — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await new DeelClient(ctx).request("/contracts");
   // Several Deel operations declare Authorization as a parameter; copying that
@@ -46,7 +47,7 @@ Deno.test("client: never sends an Authorization header — signing is the host's
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: array query values repeat the key, and blanks are dropped", async () => {
+test("client: array query values repeat the key, and blanks are dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await new DeelClient(ctx).request("/contracts", {
     query: { statuses: ["new", "in_progress"], team_id: "" },
@@ -56,7 +57,7 @@ Deno.test("client: array query values repeat the key, and blanks are dropped", a
   assertEquals(q.get("team_id"), null);
 });
 
-Deno.test("client: a failure surfaces the status and Deel's own error body", async () => {
+test("client: a failure surfaces the status and Deel's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { request: { status: 401 }, errors: [{ message: "Unauthorized call" }] },
@@ -73,7 +74,7 @@ Deno.test("client: a failure surfaces the status and Deel's own error body", asy
  * Deel has two pagination contracts and they are not interchangeable — sending
  * a cursor to an offset endpoint returns page one forever.
  */
-Deno.test("client: the cursor pager follows page.cursor as after_cursor", async () => {
+test("client: the cursor pager follows page.cursor as after_cursor", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: 1 }], page: { cursor: "c2" } } },
     { status: 200, body: { data: [{ id: 2 }], page: {} } },
@@ -84,7 +85,7 @@ Deno.test("client: the cursor pager follows page.cursor as after_cursor", async 
   assertEquals(new URL(calls[1].url).searchParams.get("after_cursor"), "c2");
 });
 
-Deno.test("client: the offset pager advances offset and stops at total_rows", async () => {
+test("client: the offset pager advances offset and stops at total_rows", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: 1 }, { id: 2 }], page: { total_rows: 3 } } },
     { status: 200, body: { data: [{ id: 3 }], page: { total_rows: 3 } } },
@@ -99,7 +100,7 @@ Deno.test("client: the offset pager advances offset and stops at total_rows", as
   assertEquals(new URL(calls[0].url).searchParams.get("after_cursor"), null);
 });
 
-Deno.test("client: an empty page ends either pager rather than spinning", async () => {
+test("client: an empty page ends either pager rather than spinning", async () => {
   const cur = mockCtx([{ status: 200, body: { data: [], page: { cursor: "c" } } }], { display });
   assertEquals(await new DeelClient(cur.ctx).requestAllCursor("/contracts"), []);
   assertEquals(cur.calls.length, 1);
@@ -109,7 +110,7 @@ Deno.test("client: an empty page ends either pager rather than spinning", async 
   assertEquals(off.calls.length, 1);
 });
 
-Deno.test("client: both pagers stop at wantTotal", async () => {
+test("client: both pagers stop at wantTotal", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: 1 }, { id: 2 }, { id: 3 }], page: { cursor: "c" } } },
   ], { display });

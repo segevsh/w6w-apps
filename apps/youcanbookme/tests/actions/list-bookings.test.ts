@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-bookings.ts";
 
-Deno.test("list-bookings: GETs /{accountId}/bookings with mapped filters", async () => {
+test("list-bookings: GETs /{accountId}/bookings with mapped filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute(
     {
@@ -28,7 +29,7 @@ Deno.test("list-bookings: GETs /{accountId}/bookings with mapped filters", async
   assertEquals(url.searchParams.get("displayTimeZone"), "Europe/London");
 });
 
-Deno.test("list-bookings: defaults fields and omits unset filters", async () => {
+test("list-bookings: defaults fields and omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({ accountId: "acc-1" }, ctx);
   const url = new URL(calls[0].url);

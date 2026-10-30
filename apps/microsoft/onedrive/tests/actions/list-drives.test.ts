@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-drives.ts";
 
-Deno.test("list-drives: reads the signed-in user's drives collection", async () => {
+test("list-drives: reads the signed-in user's drives collection", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/drives");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("list-drives: maps $select, $orderby and $top", async () => {
+test("list-drives: maps $select, $orderby and $top", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ select: ["id", "driveType"], orderby: "name asc", top: 5 }, ctx);
   const url = new URL(calls[0].url);
@@ -18,7 +19,7 @@ Deno.test("list-drives: maps $select, $orderby and $top", async () => {
   assertEquals(url.searchParams.get("$top"), "5");
 });
 
-Deno.test("list-drives: returns the drives and the cursor", async () => {
+test("list-drives: returns the drives and the cursor", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/drives?$skiptoken=x";
   const { ctx } = mockCtx([{
     body: {
@@ -31,14 +32,14 @@ Deno.test("list-drives: returns the drives and the cursor", async () => {
   assertEquals(out.nextLink, next);
 });
 
-Deno.test("list-drives: replays a nextLink verbatim instead of rebuilding the query", async () => {
+test("list-drives: replays a nextLink verbatim instead of rebuilding the query", async () => {
   const link = "https://graph.microsoft.com/v1.0/me/drives?$skiptoken=abc";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ nextLink: link, top: 999 }, ctx);
   assertEquals(calls[0].url, link);
 });
 
-Deno.test("list-drives: follows every page when `all` is set", async () => {
+test("list-drives: follows every page when `all` is set", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/drives?$skiptoken=1";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": next } },

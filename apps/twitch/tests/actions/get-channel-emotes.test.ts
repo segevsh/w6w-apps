@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getChannelEmotes from "../../actions/get-channel-emotes.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-channel-emotes: calls GET /helix/chat/emotes", async () => {
+test("get-channel-emotes: calls GET /helix/chat/emotes", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{
@@ -25,7 +26,7 @@ Deno.test("get-channel-emotes: calls GET /helix/chat/emotes", async () => {
 });
 
 /** A broadcaster with no custom emotes is the common case, not an error. */
-Deno.test("get-channel-emotes: an empty list is passed through", async () => {
+test("get-channel-emotes: an empty list is passed through", async () => {
   const { ctx } = mockCtx([{ body: { data: [], template: "x" } }]);
   const out = await getChannelEmotes.execute({ broadcasterId: "1" }, ctx) as { data: unknown[] };
   assertEquals(out.data, []);

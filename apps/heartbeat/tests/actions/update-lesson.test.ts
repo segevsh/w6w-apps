@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateLesson from "../../actions/update-lesson.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-lesson: only provided fields sent — no hero/communityEmbedCards forced", async () => {
+test("update-lesson: only provided fields sent — no hero/communityEmbedCards forced", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "l1", title: "New title" } }]);
   await updateLesson.execute({ lessonID: "l1", title: "New title" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("update-lesson: only provided fields sent — no hero/communityEmbedCa
   assertEquals(JSON.parse(calls[0].body!), { title: "New title" });
 });
 
-Deno.test("update-lesson: SCHEDULE_PUBLISH carries the date", async () => {
+test("update-lesson: SCHEDULE_PUBLISH carries the date", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "l1" } }]);
   await updateLesson.execute(
     {
@@ -24,6 +25,6 @@ Deno.test("update-lesson: SCHEDULE_PUBLISH carries the date", async () => {
   assertEquals(body.publishStatus, { type: "SCHEDULE_PUBLISH", date: "2026-12-01T00:00:00Z" });
 });
 
-Deno.test("update-lesson: is idempotent", () => {
+test("update-lesson: is idempotent", () => {
   assertEquals(updateLesson.idempotent, true);
 });

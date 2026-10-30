@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import eventTrack from "../../actions/event-track.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const run = (ctx: Parameters<typeof eventTrack.execute>[1], input: Record<string, unknown>) =>
   eventTrack.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("event-track: declares a non-idempotent perform action", () => {
+test("event-track: declares a non-idempotent perform action", () => {
   assertEquals(eventTrack.key, "event-track");
   assertEquals(eventTrack.type, "perform");
   assertEquals(eventTrack.idempotent, false);
@@ -13,7 +14,7 @@ Deno.test("event-track: declares a non-idempotent perform action", () => {
   assert(Array.isArray(eventTrack.output) && eventTrack.output.length > 0);
 });
 
-Deno.test("event-track: POSTs to the ingest host with name, user and properties", async () => {
+test("event-track: POSTs to the ingest host with name, user and properties", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   await run(ctx, {
     name: "Registered user",
@@ -37,7 +38,7 @@ Deno.test("event-track: POSTs to the ingest host with name, user and properties"
   assertEquals(calls[0].headers["x-encharge-token"], undefined);
 });
 
-Deno.test("event-track: an empty ingest response is ok; needs a name and an identifier", async () => {
+test("event-track: an empty ingest response is ok; needs a name and an identifier", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "", headers: {} }]);
   assertEquals(await run(ctx, { name: "identify", userId: "9" }), { ok: true });
   assertEquals(JSON.parse(calls[0].body!), { name: "identify", user: { userId: "9" } });
@@ -52,7 +53,7 @@ Deno.test("event-track: an empty ingest response is ok; needs a name and an iden
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("event-track: the Ingest API's plain-string error is thrown", async () => {
+test("event-track: the Ingest API's plain-string error is thrown", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "Can't find this account." } }]);
   await assertRejects(
     () => run(ctx, { name: "x", email: "a@x.com" }),

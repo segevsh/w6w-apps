@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/list-subscribers.ts";
 
-Deno.test("list-subscribers: GETs /subscribers with no query params by default", async () => {
+test("list-subscribers: GETs /subscribers with no query params by default", async () => {
   const { ctx, calls } = mockDripCtx([{ body: { subscribers: [], meta: { total_count: 0 } } }]);
   const out = await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-subscribers: GETs /subscribers with no query params by default",
   assertEquals(out, { subscribers: [], totalCount: 0 });
 });
 
-Deno.test("list-subscribers: forwards status, tags, date filters, and pagination", async () => {
+test("list-subscribers: forwards status, tags, date filters, and pagination", async () => {
   const { ctx, calls } = mockDripCtx([{ body: { subscribers: [] } }]);
   await action.execute(
     {

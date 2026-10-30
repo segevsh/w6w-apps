@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/destination-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "destinationId": 5 } as Record<string, unknown>;
 const RESPONSE: unknown = { "id": 5, "type": "donate", "name": "Charity" };
 const run = (ctx: Parameters<typeof action.execute>[1]) => action.execute(INPUT as never, ctx);
 
-Deno.test("destination-get: GET /destinations/5", async () => {
+test("destination-get: GET /destinations/5", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await run(ctx);
   assertEquals(calls.length, 1);
@@ -18,14 +19,14 @@ Deno.test("destination-get: GET /destinations/5", async () => {
   assertEquals(out, { "id": 5, "type": "donate", "name": "Charity" });
 });
 
-Deno.test("destination-get: puts no credential on the request (sign owns that)", async () => {
+test("destination-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await run(ctx);
   assertEquals(calls[0].headers["x-authorization"], undefined);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("destination-get: an HTTP error surfaces Loop's own message", async () => {
+test("destination-get: an HTTP error surfaces Loop's own message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { code: "401", http_code: "GEN-UNAUTHORIZED", message: "Unauthorized." } },

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/property-create.ts";
 
-Deno.test("property-create: builds the parent resource name from the account id", async () => {
+test("property-create: builds the parent resource name from the account id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "properties/9" } }], {
     display: {},
   });
@@ -22,7 +23,7 @@ Deno.test("property-create: builds the parent resource name from the account id"
   });
 });
 
-Deno.test("property-create: account, name and time zone are all required", async () => {
+test("property-create: account, name and time zone are all required", async () => {
   for (
     const [patch, needle] of [
       [{ displayName: "A", timeZone: "UTC" }, "accountId"],

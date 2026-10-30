@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/image-generate.ts";
 
-Deno.test("image-generate: applies defaults (dall-e-3, n=1, 1024x1024, url)", async () => {
+test("image-generate: applies defaults (dall-e-3, n=1, 1024x1024, url)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ prompt: "a cat" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("image-generate: applies defaults (dall-e-3, n=1, 1024x1024, url)", as
   assertEquals(body.response_format, "url");
 });
 
-Deno.test("image-generate: forwards optional dall-e-3 fields", async () => {
+test("image-generate: forwards optional dall-e-3 fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

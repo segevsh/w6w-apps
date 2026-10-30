@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteOwnerUpdate from "../../actions/note-owner-update.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-owner-update: PUT /v1/notes/n1/owner with the documented parameters", async () => {
+test("note-owner-update: PUT /v1/notes/n1/owner with the documented parameters", async () => {
   const response = { id: "n1", owner: { groupId: "g1" } };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteOwnerUpdate.execute({ noteId: "n1", groupId: "g1" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("note-owner-update: PUT /v1/notes/n1/owner with the documented paramet
   assertEquals(out, response);
 });
 
-Deno.test("note-owner-update: a vendor error surfaces its own message and id", async () => {
+test("note-owner-update: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -27,7 +28,7 @@ Deno.test("note-owner-update: a vendor error surfaces its own message and id", a
   );
 });
 
-Deno.test("note-owner-update: exactly one of userId / groupId is required", async () => {
+test("note-owner-update: exactly one of userId / groupId is required", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1" } }]);
   await noteOwnerUpdate.execute({ noteId: "n1", userId: "u1" }, ctx);
   assertEquals(calls[0].body, '{"userId":"u1"}');

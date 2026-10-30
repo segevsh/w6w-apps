@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/calendar-delete.ts";
 
-Deno.test("calendar-delete: DELETEs /calendars/<uid>", async () => {
+test("calendar-delete: DELETEs /calendars/<uid>", async () => {
   const { ctx, calls } = mockCalendarCtx([
     { body: { calendars: [{ uid: "abc", calstatus: "deleted" }] } },
   ]);

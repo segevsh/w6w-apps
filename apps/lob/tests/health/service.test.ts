@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   mapIndicator,
@@ -21,7 +22,7 @@ const summary = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-Deno.test("service: fetches the lob.statuspage.io summary, unsigned, and reports ok", async () => {
+test("service: fetches the lob.statuspage.io summary, unsigned, and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const out = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -31,7 +32,7 @@ Deno.test("service: fetches the lob.statuspage.io summary, unsigned, and reports
   assertEquals(Object.keys(out.components ?? {}).length, 3);
 });
 
-Deno.test("service: the page indicator is the verdict, components are the detail", async () => {
+test("service: the page indicator is the verdict, components are the detail", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -48,7 +49,7 @@ Deno.test("service: the page indicator is the verdict, components are the detail
   assert(out.message?.includes("1 open incident"));
 });
 
-Deno.test("service: a critical indicator is down; a missing indicator falls back to components", async () => {
+test("service: a critical indicator is down; a missing indicator falls back to components", async () => {
   const down = mockCtx([{ body: summary({ status: { indicator: "critical" } }) }]);
   assertEquals((await service.check!({} as never, down.ctx)).state, "down");
   const noIndicator = mockCtx([{
@@ -60,7 +61,7 @@ Deno.test("service: a critical indicator is down; a missing indicator falls back
   assertEquals((await service.check!({} as never, noIndicator.ctx)).state, "down");
 });
 
-Deno.test("service: a different page id or name is unknown, not ok", async () => {
+test("service: a different page id or name is unknown, not ok", async () => {
   const wrongId = mockCtx([{ body: summary({ page: { id: "other", name: "Lob" } }) }]);
   assertEquals((await service.check!({} as never, wrongId.ctx)).state, "unknown");
   const wrongName = mockCtx([{
@@ -69,7 +70,7 @@ Deno.test("service: a different page id or name is unknown, not ok", async () =>
   assertEquals((await service.check!({} as never, wrongName.ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreachable, unreadable or empty status page is unknown, never down", async () => {
+test("service: an unreachable, unreadable or empty status page is unknown, never down", async () => {
   assertEquals(
     (await service.check!({} as never, mockCtx([{ status: 503, body: "x" }]).ctx)).state,
     "unknown",
@@ -84,12 +85,12 @@ Deno.test("service: an unreachable, unreadable or empty status page is unknown, 
   );
 });
 
-Deno.test("service: declares no credential and an unsigned status host", () => {
+test("service: declares no credential and an unsigned status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["lob.statuspage.io"]);
 });
 
-Deno.test("mapComponentStatus / mapIndicator cover Statuspage's vocabulary", () => {
+test("mapComponentStatus / mapIndicator cover Statuspage's vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -100,7 +101,7 @@ Deno.test("mapComponentStatus / mapIndicator cover Statuspage's vocabulary", () 
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("rate-limit: is an informational quota check declared unavailable with a reason", () => {
+test("rate-limit: is an informational quota check declared unavailable with a reason", () => {
   assertEquals(rateLimit.kind, "quota");
   assertEquals(rateLimit.severity, "informational");
   assert(rateLimit.unavailable?.reason.includes("150 requests per 5 seconds"));

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-delete.ts";
 
-Deno.test("post-delete: DELETEs /posts/{id} with no body", async () => {
+test("post-delete: DELETEs /posts/{id} with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute({ postId: 6 }, ctx);
   assertEquals(calls[0].url, `${API}/posts/6`);
@@ -10,7 +11,7 @@ Deno.test("post-delete: DELETEs /posts/{id} with no body", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("post-delete: says plainly that there is no restore", () => {
+test("post-delete: says plainly that there is no restore", () => {
   assert(/no restore/i.test(action.description!));
   assertEquals(action.idempotent, true);
 });

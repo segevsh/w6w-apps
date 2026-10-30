@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callRecordingGet from "../../actions/call-recording-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-recording-get: hits the recording endpoint and returns the url verbatim", async () => {
+test("call-recording-get: hits the recording endpoint and returns the url verbatim", async () => {
   const { ctx, calls } = mockCtx([{
     body: { url: "http://app.callrail.com/calls/CAL1/recording/redirect?access_key=xyz" },
   }]);
@@ -13,7 +14,7 @@ Deno.test("call-recording-get: hits the recording endpoint and returns the url v
   });
 });
 
-Deno.test("call-recording-get: also passes through the HIPAA temporary-URL shape unmodified", async () => {
+test("call-recording-get: also passes through the HIPAA temporary-URL shape unmodified", async () => {
   const { ctx } = mockCtx([{
     body: { url: "https://calltrk-production.s3.amazonaws.com/calls/recordings/test.mp3" },
   }]);

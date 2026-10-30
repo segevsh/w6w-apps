@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/slide-move.ts";
 
-Deno.test("slide-move: builds updateSlidesPosition with the IDs and index", async () => {
+test("slide-move: builds updateSlidesPosition with the IDs and index", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   await action.execute(
     { presentationId: "p1", slideObjectIds: ["a", "b"], insertionIndex: 0 },
@@ -15,7 +16,7 @@ Deno.test("slide-move: builds updateSlidesPosition with the IDs and index", asyn
   });
 });
 
-Deno.test("slide-move: rejects an empty ID list without calling the API", () => {
+test("slide-move: rejects an empty ID list without calling the API", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ presentationId: "p1", slideObjectIds: [], insertionIndex: 0 }, ctx),
@@ -25,7 +26,7 @@ Deno.test("slide-move: rejects an empty ID list without calling the API", () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("slide-move: rejects duplicate IDs, which the API forbids", () => {
+test("slide-move: rejects duplicate IDs, which the API forbids", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () =>
@@ -36,6 +37,6 @@ Deno.test("slide-move: rejects duplicate IDs, which the API forbids", () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("slide-move: is non-idempotent — the index is pre-move relative", () => {
+test("slide-move: is non-idempotent — the index is pre-move relative", () => {
   assertEquals(action.idempotent, false);
 });

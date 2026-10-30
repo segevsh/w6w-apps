@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/tag-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: GETs /tags/{domainId} with paging", async () => {
+test("tag-list: GETs /tags/{domainId} with paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { tags: ["a"], nextPageToken: null } }]);
   const out = await action.execute({ domainId: 7, prefix: "a", pageToken: "p" }, ctx);
   assertEquals(pathOf(calls[0].url), "/tags/7");

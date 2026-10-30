@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: declares the metastatus.com WABA feed and no `check` beyond it", () => {
+test("service: declares the metastatus.com WABA feed and no `check` beyond it", () => {
   assertEquals(service.kind, "service");
   assertEquals(
     service.feed?.url,
@@ -10,7 +11,7 @@ Deno.test("service: declares the metastatus.com WABA feed and no `check` beyond 
   );
 });
 
-Deno.test("service: an empty feed (no open outage events) reports ok", async () => {
+test("service: an empty feed (no open outage events) reports ok", async () => {
   const { ctx } = mockCtx();
   const report = await service.check!({
     feed: { entries: [], latest: [], fetchedAt: "2026-07-31T00:00:00Z" },
@@ -18,7 +19,7 @@ Deno.test("service: an empty feed (no open outage events) reports ok", async () 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an open outage event reports degraded with its title", async () => {
+test("service: an open outage event reports degraded with its title", async () => {
   const { ctx } = mockCtx();
   const entry = {
     id: "1",
@@ -35,7 +36,7 @@ Deno.test("service: an open outage event reports degraded with its title", async
   assertEquals(report.message, "Elevated error rates on the Cloud API");
 });
 
-Deno.test("service: a feed fetch/parse failure reports unknown, never down", async () => {
+test("service: a feed fetch/parse failure reports unknown, never down", async () => {
   const { ctx } = mockCtx();
   const report = await service.check!(
     { feed: { entries: [], latest: [], fetchedAt: "2026-07-31T00:00:00Z", error: "fetch failed" } },

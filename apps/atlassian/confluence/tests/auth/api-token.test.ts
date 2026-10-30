@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: signs with Atlassian Basic — email as the user, token as the password", async () => {
+test("api-token: signs with Atlassian Basic — email as the user, token as the password", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.atlassian.net/wiki/api/v2/pages",
@@ -16,7 +17,7 @@ Deno.test("api-token: signs with Atlassian Basic — email as the user, token as
   assertEquals(out.headers["authorization"], `Basic ${btoa("a@b.com:tok")}`);
 });
 
-Deno.test("api-token: the token is the only secret field, and the site is validated", () => {
+test("api-token: the token is the only secret field, and the site is validated", () => {
   const secret = auth.fields!.filter((f) => f.type === "secret").map((f) => f.key);
   assertEquals(secret, ["apiToken"]);
   const site = auth.fields!.find((f) => f.key === "site")!;
@@ -24,7 +25,7 @@ Deno.test("api-token: the token is the only secret field, and the site is valida
   assertEquals(site.validation?.pattern, "^[a-zA-Z0-9-]+$");
 });
 
-Deno.test("api-token: test probes v1's whoami, which v2 has no equivalent for", async () => {
+test("api-token: test probes v1's whoami, which v2 has no equivalent for", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { accountId: "acc1" } }]);
   const result = await auth.test!(
     { credential: { site: "acme", email: "a@b.com", apiToken: "tok" } } as never,
@@ -35,7 +36,7 @@ Deno.test("api-token: test probes v1's whoami, which v2 has no equivalent for", 
   assertEquals(calls[0].headers["authorization"], `Basic ${btoa("a@b.com:tok")}`);
 });
 
-Deno.test("api-token: 401 and 403 are different problems and say so", async () => {
+test("api-token: 401 and 403 are different problems and say so", async () => {
   const bad = mockCtx([{ status: 401, body: "" }]);
   const a = await auth.test!(
     { credential: { site: "acme", email: "a@b.com", apiToken: "t" } } as never,
@@ -53,7 +54,7 @@ Deno.test("api-token: 401 and 403 are different problems and say so", async () =
   assert(b.message.includes("Confluence"), b.message);
 });
 
-Deno.test("api-token: an incomplete credential fails before any network call", async () => {
+test("api-token: an incomplete credential fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: { site: "acme" } } as never, ctx), {
     ok: false,
@@ -62,7 +63,7 @@ Deno.test("api-token: an incomplete credential fails before any network call", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect records the site and user, never the token", async () => {
+test("api-token: afterConnect records the site and user, never the token", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { accountId: "acc1", displayName: "Ann", email: "a@b.com" },
@@ -76,7 +77,7 @@ Deno.test("api-token: afterConnect records the site and user, never the token", 
   assert(!JSON.stringify(display).includes("sup3rsecret"), "the credential leaked into display");
 });
 
-Deno.test("api-token: a failed whoami still records the site, so the client can build URLs", async () => {
+test("api-token: a failed whoami still records the site, so the client can build URLs", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(
     await auth.afterConnect!({ credential: { site: "acme" } } as never, ctx),

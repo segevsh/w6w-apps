@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-member.ts";
 import { subscriberHash } from "../../lib/subscriber-hash.ts";
 
-Deno.test("get-member: GETs /lists/{id}/members/{hash}", async () => {
+test("get-member: GETs /lists/{id}/members/{hash}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   const result = await action.execute!(
     { listId: "abc", email: "u@example.com" },
@@ -17,7 +18,7 @@ Deno.test("get-member: GETs /lists/{id}/members/{hash}", async () => {
   assertEquals(result, { id: "m1" });
 });
 
-Deno.test("get-member: forwards fields / exclude_fields as query params", async () => {
+test("get-member: forwards fields / exclude_fields as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {

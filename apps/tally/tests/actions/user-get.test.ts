@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get.ts";
 
@@ -10,7 +11,7 @@ const USER = {
   subscriptionPlan: "PRO",
 };
 
-Deno.test("user-get: GETs /users/me and surfaces the identity fields", async () => {
+test("user-get: GETs /users/me and surfaces the identity fields", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   const result = await action.execute({}, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("user-get: GETs /users/me and surfaces the identity fields", async () 
   assertEquals(result.user, USER);
 });
 
-Deno.test("user-get: forwards the optional timezone", async () => {
+test("user-get: forwards the optional timezone", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   await action.execute({ timezone: "Europe/Brussels" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("timezone"), "Europe/Brussels");

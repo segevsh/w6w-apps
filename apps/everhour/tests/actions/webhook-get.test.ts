@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookGet from "../../actions/webhook-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-get: GET /hooks/{hookId} with the documented query and body", async () => {
+test("webhook-get: GET /hooks/{hookId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await webhookGet.execute({ "hookId": 280382 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("webhook-get: GET /hooks/{hookId} with the documented query and body",
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("webhook-get: an Everhour error surfaces its message and status", async () => {
+test("webhook-get: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(webhookGet.execute({ "hookId": 280382 }, ctx)),
@@ -30,6 +31,6 @@ Deno.test("webhook-get: an Everhour error surfaces its message and status", asyn
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("webhook-get: declares read", () => {
+test("webhook-get: declares read", () => {
   assertEquals(webhookGet.type, "read");
 });

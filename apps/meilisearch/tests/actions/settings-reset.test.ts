@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/settings-reset.ts";
 
 const conn = { display: { baseUrl: "https://search.example.com", indexUid: "movies" } };
 
-Deno.test("settings-reset: refuses to run without an explicit confirmation", async () => {
+test("settings-reset: refuses to run without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ indexUid: "movies" }, ctx),
@@ -14,7 +15,7 @@ Deno.test("settings-reset: refuses to run without an explicit confirmation", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("settings-reset: with confirmation it DELETEs the settings, at warn", async () => {
+test("settings-reset: with confirmation it DELETEs the settings, at warn", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 202, body: { taskUid: 6 } }], conn);
   await action.execute!({ indexUid: "movies", confirm: true }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -22,7 +23,7 @@ Deno.test("settings-reset: with confirmation it DELETEs the settings, at warn", 
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("settings-reset: never falls back to the connection's default index", async () => {
+test("settings-reset: never falls back to the connection's default index", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ confirm: true }, ctx),

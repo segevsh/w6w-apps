@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ function headers(overrides: Record<string, string> = {}) {
   return { "content-type": "application/json", ...overrides };
 }
 
-Deno.test("quota: calls the cheap /sessions?limit=1 read, same as the auth probe", async () => {
+test("quota: calls the cheap /sessions?limit=1 read, same as the auth probe", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { success: true, data: [], pagination: { total: 0 } },
@@ -22,7 +23,7 @@ Deno.test("quota: calls the cheap /sessions?limit=1 read, same as the auth probe
   assertEquals(queryOf(calls[0].url).limit, "1");
 });
 
-Deno.test("quota: comfortable headroom reports ok", async () => {
+test("quota: comfortable headroom reports ok", async () => {
   const { ctx } = mockCtx([
     {
       body: { success: true, data: [] },
@@ -40,7 +41,7 @@ Deno.test("quota: comfortable headroom reports ok", async () => {
   assertEquals(report.quota?.[0].resetAt, new Date(1788606817 * 1000).toISOString());
 });
 
-Deno.test("quota: 90%+ consumed reports degraded, not down — the window recovers on its own", async () => {
+test("quota: 90%+ consumed reports degraded, not down — the window recovers on its own", async () => {
   const { ctx } = mockCtx([
     {
       body: { success: true, data: [] },
@@ -55,7 +56,7 @@ Deno.test("quota: 90%+ consumed reports degraded, not down — the window recove
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: a fully exhausted window is degraded, never down", async () => {
+test("quota: a fully exhausted window is degraded, never down", async () => {
   const { ctx } = mockCtx([
     {
       body: { success: true, data: [] },
@@ -71,13 +72,13 @@ Deno.test("quota: a fully exhausted window is degraded, never down", async () =>
   assert(report.message?.includes("exhausted"));
 });
 
-Deno.test("quota: missing rate-limit headers report unknown, not a fabricated reading", async () => {
+test("quota: missing rate-limit headers report unknown, not a fabricated reading", async () => {
   const { ctx } = mockCtx([{ body: { success: true, data: [] }, headers: headers() }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: reads even a failure response's headers — the limiter runs before auth", async () => {
+test("quota: reads even a failure response's headers — the limiter runs before auth", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -94,7 +95,7 @@ Deno.test("quota: reads even a failure response's headers — the limiter runs b
   assertEquals(report.quota?.[0].remaining, 199);
 });
 
-Deno.test("quota: is a signed, connection-scoped check", () => {
+test("quota: is a signed, connection-scoped check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");

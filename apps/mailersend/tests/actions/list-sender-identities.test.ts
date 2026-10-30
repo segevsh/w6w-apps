@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-sender-identities.ts";
 import { exec, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-sender-identities: GETs /v1/identities with filters and ordering", async () => {
+test("list-sender-identities: GETs /v1/identities with filters and ordering", async () => {
   const body = page([{ id: "i1", email: "a@x.com" }]);
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await exec(action, {

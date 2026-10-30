@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import guestGet from "../../actions/guest-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("guest-get: looks up by event_id + guest identifier", async () => {
+test("guest-get: looks up by event_id + guest identifier", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "gst-1", user_email: "a@b.com" } }]);
   const out = await guestGet.execute({ eventId: "evt-1", guestId: "a@b.com" }, ctx) as {
     user_email: string;

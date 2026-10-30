@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { DEFAULT_DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: unwraps a single user and targets the right path", async () => {
+test("user-list: unwraps a single user and targets the right path", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { users: { user: { id: "u1", name: "Ada", siteRole: "Explorer" } } } }],
     { display: DEFAULT_DISPLAY },

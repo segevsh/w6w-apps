@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2Methods from "../../auth/oauth2.ts";
 import { REGIONS } from "../../lib/regions.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -9,7 +10,7 @@ function findRegion(key: string) {
   return oauth2Methods.find((m) => m.key === key)!;
 }
 
-Deno.test("oauth2: one AuthDefinition per region, each keyed and hosted correctly", () => {
+test("oauth2: one AuthDefinition per region, each keyed and hosted correctly", () => {
   assertEquals(oauth2Methods.length, REGIONS.length);
   const keys = oauth2Methods.map((m) => m.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate auth key");
@@ -23,19 +24,19 @@ Deno.test("oauth2: one AuthDefinition per region, each keyed and hosted correctl
 });
 
 /** Zoho Sheet has no Canadian API host at all — see lib/regions.ts. */
-Deno.test("regions: Canada is excluded", () => {
+test("regions: Canada is excluded", () => {
   assertEquals(REGIONS.find((r) => r.key === "ca"), undefined);
   assertEquals(REGIONS.length, 7);
 });
 
-Deno.test("oauth2: every method requests the offline+consent params and both scopes", () => {
+test("oauth2: every method requests the offline+consent params and both scopes", () => {
   for (const method of oauth2Methods) {
     assertEquals(method.oauth2?.extraAuthParams, { access_type: "offline", prompt: "consent" });
     assertEquals(method.oauth2?.scopes, ["ZohoSheet.dataAPI.READ", "ZohoSheet.dataAPI.UPDATE"]);
   }
 });
 
-Deno.test("oauth2-us: sign stamps the Zoho-oauthtoken header and nothing else", () => {
+test("oauth2-us: sign stamps the Zoho-oauthtoken header and nothing else", () => {
   const us = findRegion("oauth2-us");
   const request = {
     method: "GET",
@@ -51,7 +52,7 @@ Deno.test("oauth2-us: sign stamps the Zoho-oauthtoken header and nothing else", 
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("oauth2-us: test passes when workbook.list answers success", async () => {
+test("oauth2-us: test passes when workbook.list answers success", async () => {
   const us = findRegion("oauth2-us");
   const { ctx, calls } = mockCtx([{
     body: { status: "success", method: "workbook.list", workbooks: [] },
@@ -65,14 +66,14 @@ Deno.test("oauth2-us: test passes when workbook.list answers success", async () 
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("oauth2-eu: test addresses the EU API host", async () => {
+test("oauth2-eu: test addresses the EU API host", async () => {
   const eu = findRegion("oauth2-eu");
   const { ctx, calls } = mockCtx([{ body: { status: "success", workbooks: [] } }]);
   await eu.test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(new URL(calls[0].url).host, "sheet.zoho.eu");
 });
 
-Deno.test("oauth2-us: test fails with no token, without making a request", async () => {
+test("oauth2-us: test fails with no token, without making a request", async () => {
   const us = findRegion("oauth2-us");
   const { ctx, calls } = mockCtx([]);
   const result = await us.test!({ credential: {} }, ctx);
@@ -85,7 +86,7 @@ Deno.test("oauth2-us: test fails with no token, without making a request", async
  * and "dead token" — unlike Zoho Books' split 14/57 — so this only asserts
  * the code is surfaced, not which flavor of failure it was.
  */
-Deno.test("oauth2-us: a rejected token is reported with error_code 2401", async () => {
+test("oauth2-us: a rejected token is reported with error_code 2401", async () => {
   const us = findRegion("oauth2-us");
   const { ctx } = mockCtx([{
     status: 401,
@@ -99,7 +100,7 @@ Deno.test("oauth2-us: a rejected token is reported with error_code 2401", async 
   assert(/2401/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: a 500 is reported as an HTTP failure", async () => {
+test("oauth2-us: a 500 is reported as an HTTP failure", async () => {
   const us = findRegion("oauth2-us");
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await us.test!({ credential: { accessToken: TOKEN } }, ctx);
@@ -107,19 +108,19 @@ Deno.test("oauth2-us: a 500 is reported as an HTTP failure", async () => {
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: afterConnect records this region's fixed apiHost", () => {
+test("oauth2-us: afterConnect records this region's fixed apiHost", () => {
   const us = findRegion("oauth2-us");
   const display = us.afterConnect!({ credential: {} }, {} as never);
   assertEquals(display, { apiHost: "sheet.zoho.com", region: "United States" });
 });
 
-Deno.test("oauth2-jp: afterConnect records the Japan apiHost", () => {
+test("oauth2-jp: afterConnect records the Japan apiHost", () => {
   const jp = findRegion("oauth2-jp");
   const display = jp.afterConnect!({ credential: {} }, {} as never);
   assertEquals(display, { apiHost: "sheet.zoho.jp", region: "Japan" });
 });
 
-Deno.test("oauth2: every method declares both required hooks", () => {
+test("oauth2: every method declares both required hooks", () => {
   for (const method of oauth2Methods) {
     assertEquals(typeof method.test, "function");
     assertEquals(typeof method.sign, "function");

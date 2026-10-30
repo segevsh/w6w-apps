@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/domain-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("domain-create: sends POST /domains with the mapped input", async () => {
+test("domain-create: sends POST /domains with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "d1", "slug": "go.example.com" } }]);
   const out = await action.execute!({
     "slug": "go.example.com",
@@ -20,7 +21,7 @@ Deno.test("domain-create: sends POST /domains with the mapped input", async () =
   assertEquals(out, { "id": "d1", "slug": "go.example.com" });
 });
 
-Deno.test("domain-create: sends no authorization header of its own", async () => {
+test("domain-create: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "d1", "slug": "go.example.com" } }]);
   await action.execute!(
     { "slug": "go.example.com", "notFoundUrl": "https://example.com/404" },
@@ -29,7 +30,7 @@ Deno.test("domain-create: sends no authorization header of its own", async () =>
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("domain-create: surfaces Dub's error envelope as a thrown error", async () => {
+test("domain-create: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -45,7 +46,7 @@ Deno.test("domain-create: surfaces Dub's error envelope as a thrown error", asyn
   );
 });
 
-Deno.test("domain-create: declares type, idempotency and output", () => {
+test("domain-create: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

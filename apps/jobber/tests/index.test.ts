@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 28);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description, an output and an execute hook", () => {
+test("index: every action declares a valid type, a description, an output and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,13 +30,13 @@ Deno.test("index: every action declares a valid type, a description, an output a
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: every action is grouped under a resource", () => {
+test("index: every action is grouped under a resource", () => {
   for (const a of app.actions) {
     assert(typeof a.resource === "string" && a.resource.length > 0, `${a.key}: no resource`);
   }
@@ -54,7 +56,7 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
 /**
  * `credential` is matched only where it is NOT preceded by a quote.
@@ -65,7 +67,7 @@ const actionSource = async (key: string) =>
  * `const { credential }`) has no quote in front of it, and that is the thing
  * being banned.
  */
-Deno.test("index: no action reads a credential or sets Authorization itself", async () => {
+test("index: no action reads a credential or sets Authorization itself", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^"'\w])credential/i.test(src), `${a.key}: references a credential`);
@@ -74,14 +76,14 @@ Deno.test("index: no action reads a credential or sets Authorization itself", as
   }
 });
 
-Deno.test("index: the credential guard still catches a real read", () => {
+test("index: the credential guard still catches a real read", () => {
   // Guards the guard: the quote exemption above must not blunt it.
   assert(/(^|[^"'\w])credential/i.test("const c = input.credential;"));
   assert(/(^|[^"'\w])credential/i.test("const { credential } = input;"));
   assert(!/(^|[^"'\w])credential/i.test('healthCheck: { kind: "credential" }'));
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -94,14 +96,14 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * one endpoint and the version header. An action that built its own URL would
  * be reaching past the allowlist declaration in `package.json`.
  */
-Deno.test("index: no action hard-codes a URL — the endpoint belongs to the client", async () => {
+test("index: no action hard-codes a URL — the endpoint belongs to the client", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/https?:\/\//.test(src), `${a.key}: hard-codes a URL`);
   }
 });
 
-Deno.test("index: no action builds the API version header itself", async () => {
+test("index: no action builds the API version header itself", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/x-jobber-graphql-version/i.test(src), `${a.key}: sets the version header itself`);
@@ -113,7 +115,7 @@ Deno.test("index: no action builds the API version header itself", async () => {
  * that does not select `userErrors` cannot check them, and a rejected write
  * would return a hollow success at HTTP 200.
  */
-Deno.test("index: every mutation selects userErrors AND routes through unwrap", async () => {
+test("index: every mutation selects userErrors AND routes through unwrap", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     if (!/^const MUTATION = /m.test(src)) continue;
@@ -122,7 +124,7 @@ Deno.test("index: every mutation selects userErrors AND routes through unwrap", 
   }
 });
 
-Deno.test("index: every mutation-bearing action is a perform, and every perform mutates", async () => {
+test("index: every mutation-bearing action is a perform, and every perform mutates", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     const hasMutation = /^const MUTATION = /m.test(src);
@@ -135,7 +137,7 @@ Deno.test("index: every mutation-bearing action is a perform, and every perform 
  * no bound is given. An unbounded connection anywhere in this app would be a
  * silent several-hundred-point query.
  */
-Deno.test("index: no static document selects an unbounded connection", async () => {
+test("index: no static document selects an unbounded connection", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(
@@ -145,12 +147,12 @@ Deno.test("index: no static document selects an unbounded connection", async () 
   }
 });
 
-Deno.test("index: the only auth method is OAuth 2.0 — Jobber offers nothing else", () => {
+test("index: the only auth method is OAuth 2.0 — Jobber offers nothing else", () => {
   assertEquals(app.auth[0].key, "oauth2");
   assertEquals(app.auth[0].type, "oauth2");
 });
 
-Deno.test("index: health checks cover both questions, and neither is a stub", () => {
+test("index: health checks cover both questions, and neither is a stub", () => {
   const keys = app.healthChecks.map((h) => h.key).sort();
   assertEquals(keys, ["quota", "service"]);
   for (const h of app.healthChecks) {
@@ -165,7 +167,7 @@ Deno.test("index: health checks cover both questions, and neither is a stub", ()
  * the App at `unknown` forever. This app declares none — the assertion exists so
  * that adding one later cannot skip the severity.
  */
-Deno.test("index: any unavailable check must be informational", () => {
+test("index: any unavailable check must be informational", () => {
   for (const h of app.healthChecks) {
     if (h.unavailable) {
       assertEquals(h.severity, "informational", `${h.key}: unavailable without informational`);
@@ -173,7 +175,7 @@ Deno.test("index: any unavailable check must be informational", () => {
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// credential\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

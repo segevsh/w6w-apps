@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
-Deno.test("contact-list: GETs /2.0/contact with mapped query", async () => {
+test("contact-list: GETs /2.0/contact with mapped query", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name_1: "Acme" }] }]);
   const result = await action.execute!({
     orderBy: "name_1",
@@ -23,7 +24,7 @@ Deno.test("contact-list: GETs /2.0/contact with mapped query", async () => {
   assertEquals(result, [{ id: 1, name_1: "Acme" }]);
 });
 
-Deno.test("contact-list: omits query params that are unset", async () => {
+test("contact-list: omits query params that are unset", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

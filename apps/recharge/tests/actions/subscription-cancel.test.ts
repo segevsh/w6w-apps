@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionCancel from "../../actions/subscription-cancel.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-cancel: POSTs to /subscriptions/{id}/cancel with the reason", async () => {
+test("subscription-cancel: POSTs to /subscriptions/{id}/cancel with the reason", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("subscription", { id: 1, status: "cancelled" }) },
   ]);
@@ -17,6 +18,6 @@ Deno.test("subscription-cancel: POSTs to /subscriptions/{id}/cancel with the rea
   );
 });
 
-Deno.test("subscription-cancel: not marked idempotent", () => {
+test("subscription-cancel: not marked idempotent", () => {
   assertEquals(subscriptionCancel.idempotent, false);
 });

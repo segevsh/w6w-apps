@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/zone-analytics-get.ts";
 
-Deno.test("zone-analytics-get: POSTs a GraphQL query to /graphql", async () => {
+test("zone-analytics-get: POSTs a GraphQL query to /graphql", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -49,7 +50,7 @@ Deno.test("zone-analytics-get: POSTs a GraphQL query to /graphql", async () => {
   });
 });
 
-Deno.test("zone-analytics-get: empty result set returns zeroed totals", async () => {
+test("zone-analytics-get: empty result set returns zeroed totals", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { data: { viewer: { zones: [{ httpRequests1hGroups: [] }] } } } },
   ]);
@@ -60,7 +61,7 @@ Deno.test("zone-analytics-get: empty result set returns zeroed totals", async ()
   assertEquals(result.requests, 0);
 });
 
-Deno.test("zone-analytics-get: missing zoneId rejects", async () => {
+test("zone-analytics-get: missing zoneId rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ zoneId: "" }, ctx),
@@ -69,7 +70,7 @@ Deno.test("zone-analytics-get: missing zoneId rejects", async () => {
   );
 });
 
-Deno.test("zone-analytics-get: GraphQL errors propagate", async () => {
+test("zone-analytics-get: GraphQL errors propagate", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { errors: [{ message: "invalid zoneTag" }] } },
   ]);

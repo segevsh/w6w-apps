@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/countries-list.ts";
 
-Deno.test("countries-list: opts out of requiring auth (the endpoint is genuinely public)", () => {
+test("countries-list: opts out of requiring auth (the endpoint is genuinely public)", () => {
   assertEquals(action.requiresAuth, false);
 });
 
-Deno.test("countries-list: GETs /countries and returns the raw list", async () => {
+test("countries-list: GETs /countries and returns the raw list", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

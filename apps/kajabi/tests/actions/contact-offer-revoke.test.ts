@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactOfferRevoke from "../../actions/contact-offer-revoke.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-offer-revoke: DELETEs the offers via the relationship route", async () => {
+test("contact-offer-revoke: DELETEs the offers via the relationship route", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await contactOfferRevoke.execute({ contactId: "9", offerIds: "4" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("contact-offer-revoke: DELETEs the offers via the relationship route",
   assertEquals(bodyOf(calls[0]), { data: [{ id: "4", type: "offers" }] });
 });
 
-Deno.test("contact-offer-revoke: a blank offer list fails before the network", async () => {
+test("contact-offer-revoke: a blank offer list fails before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -27,6 +28,6 @@ Deno.test("contact-offer-revoke: a blank offer list fails before the network", a
  * only this to a paying member leaves them charged for something they can no
  * longer open.
  */
-Deno.test("contact-offer-revoke: points at the subscription action in its description", () => {
+test("contact-offer-revoke: points at the subscription action in its description", () => {
   assert(contactOfferRevoke.description!.includes("purchase-cancel-subscription"));
 });

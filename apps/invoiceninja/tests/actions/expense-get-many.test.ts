@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/expense-get-many.ts";
 
-Deno.test("expense-get-many: GETs /expenses with pagination only", async () => {
+test("expense-get-many: GETs /expenses with pagination only", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { data: [] } }]);
   await action.execute({ page: 1, perPage: 2 }, ctx);
   const url = new URL(calls[0].url);

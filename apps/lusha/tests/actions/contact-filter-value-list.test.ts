@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-filter-value-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-filter-value-list: GET /v3/contacts/prospecting/filters/{filterType}", async () => {
+test("contact-filter-value-list: GET /v3/contacts/prospecting/filters/{filterType}", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await action.execute!({ "filterType": "locations", "query": "new y" } as never, ctx);
   assertEquals(calls[0].method, "GET");

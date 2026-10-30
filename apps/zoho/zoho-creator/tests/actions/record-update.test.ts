@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/record-update.ts";
 
-Deno.test("record-update: idempotent", () => {
+test("record-update: idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("record-update: PATCHes /data/<owner>/<app>/report/<report> with criteria+data", async () => {
+test("record-update: PATCHes /data/<owner>/<app>/report/<report> with criteria+data", async () => {
   const { ctx, calls } = mockCreatorCtx([
     {
       body: {
@@ -43,7 +44,7 @@ Deno.test("record-update: PATCHes /data/<owner>/<app>/report/<report> with crite
   assertEquals(out.moreRecords, undefined);
 });
 
-Deno.test("record-update: surfaces moreRecords and sends process_until_limit", async () => {
+test("record-update: surfaces moreRecords and sends process_until_limit", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { result: [], code: 3000, more_records: true } },
   ]);

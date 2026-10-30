@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tag-attach.ts";
 
 /** The tag is a query param and there is no body — Miro answers 204. */
-Deno.test("tag-attach: POSTs the item path with tag_id as a query parameter", async () => {
+test("tag-attach: POSTs the item path with tag_id as a query parameter", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }], { display: {} });
   const result = await action.execute!({ boardId: "b1", itemId: "i1", tagId: "t1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -14,7 +15,7 @@ Deno.test("tag-attach: POSTs the item path with tag_id as a query parameter", as
   assertEquals(result, { itemId: "i1", tagId: "t1", attached: true });
 });
 
-Deno.test("tag-attach: all three ids are required", async () => {
+test("tag-attach: all three ids are required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ boardId: "b1", itemId: "i1" }, ctx),

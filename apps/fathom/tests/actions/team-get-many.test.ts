@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, page } from "../_helpers.ts";
 import action from "../../actions/team-get-many.ts";
 
-Deno.test("team-get-many: GETs /teams and unwraps the envelope", async () => {
+test("team-get-many: GETs /teams and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: page([{ name: "Sales", created_at: "2023-11-10T12:00:00Z" }], "cur2", 10) },
   ]);
@@ -18,7 +19,7 @@ Deno.test("team-get-many: GETs /teams and unwraps the envelope", async () => {
   });
 });
 
-Deno.test("team-get-many: omits an unset cursor", async () => {
+test("team-get-many: omits an unset cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

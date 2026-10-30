@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: PUT /hooks/{hookId} with the documented query and body", async () => {
+test("webhook-update: PUT /hooks/{hookId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await webhookUpdate.execute({
     "hookId": 280382,
@@ -27,7 +28,7 @@ Deno.test("webhook-update: PUT /hooks/{hookId} with the documented query and bod
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("webhook-update: an Everhour error surfaces its message and status", async () => {
+test("webhook-update: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -44,7 +45,7 @@ Deno.test("webhook-update: an Everhour error surfaces its message and status", a
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("webhook-update: declares perform and idempotent=true", () => {
+test("webhook-update: declares perform and idempotent=true", () => {
   assertEquals(webhookUpdate.type, "perform");
   assertEquals(webhookUpdate.idempotent, true);
 });

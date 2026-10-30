@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import opportunityList from "../../actions/opportunity-list.ts";
 import { collection, errorsBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 type Out = { data: unknown[]; nextCursor?: string; meta: Record<string, unknown> };
 
-Deno.test("opportunity-list: GET /opportunities with JSON:API headers and cheap defaults", async () => {
+test("opportunity-list: GET /opportunities with JSON:API headers and cheap defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("opportunity", [1, 2]) }]);
   const out = await opportunityList.execute({}, ctx) as Out;
 
@@ -17,7 +18,7 @@ Deno.test("opportunity-list: GET /opportunities with JSON:API headers and cheap 
   assertEquals(out.nextCursor, undefined);
 });
 
-Deno.test("opportunity-list: filters, sort, include, sparse fields and cursor are sent in Outreach's grammar", async () => {
+test("opportunity-list: filters, sort, include, sparse fields and cursor are sent in Outreach's grammar", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("opportunity", []) }]);
   await opportunityList.execute({
     filter: { id: "1..5", owner: { id: "7" }, name: ["a", "b"] },
@@ -42,20 +43,20 @@ Deno.test("opportunity-list: filters, sort, include, sparse fields and cursor ar
   });
 });
 
-Deno.test("opportunity-list: a JSON-string filter is accepted", async () => {
+test("opportunity-list: a JSON-string filter is accepted", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("opportunity", []) }]);
   await opportunityList.execute({ filter: '{"state":"incomplete"}' }, ctx);
   assertEquals(queryOf(calls[0].url)["filter[state]"], "incomplete");
 });
 
-Deno.test("opportunity-list: extracts the next page cursor from links.next", async () => {
+test("opportunity-list: extracts the next page cursor from links.next", async () => {
   const next = "https://api.outreach.io/api/v2/opportunities?page[size]=2&page[after]=eyJ4Ijox";
   const { ctx } = mockCtx([{ body: collection("opportunity", [1, 2], next) }]);
   const out = await opportunityList.execute({ pageSize: 2 }, ctx) as Out;
   assertEquals(out.nextCursor, "eyJ4Ijox");
 });
 
-Deno.test("opportunity-list: surfaces the vendor's error id and detail", async () => {
+test("opportunity-list: surfaces the vendor's error id and detail", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorsBody("unauthorizedOauthScope", "Unauthorized OAuth Scope", "Missing scope"),

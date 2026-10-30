@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getGammaViewerDetailAnalytics from "../../actions/get-gamma-viewer-detail-analytics.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-gamma-viewer-detail-analytics: calls GET /gammas/{id}/analytics/viewers/{userId}", async () => {
+test("get-gamma-viewer-detail-analytics: calls GET /gammas/{id}/analytics/viewers/{userId}", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

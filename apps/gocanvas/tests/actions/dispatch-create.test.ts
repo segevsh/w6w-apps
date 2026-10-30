@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/dispatch-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("dispatch-create: POST /api/v3/dispatches with the documented shape", async () => {
+test("dispatch-create: POST /api/v3/dispatches with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 9 } }]);
   const out = await action.execute(
     {

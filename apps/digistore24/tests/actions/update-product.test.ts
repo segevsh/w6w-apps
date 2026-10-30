@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateProduct from "../../actions/update-product.ts";
 import { envelope, errorEnvelope, fieldsOf, fnOf, mockCtx } from "../_helpers.ts";
 
 const FN = "updateProduct";
 const DATA = { "ok": "Y" };
 
-Deno.test("update-product: calls updateProduct with POST and returns the data payload", async () => {
+test("update-product: calls updateProduct with POST and returns the data payload", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   const out = await updateProduct.execute({
     "product_id": 123,
@@ -17,7 +18,7 @@ Deno.test("update-product: calls updateProduct with POST and returns the data pa
   assertEquals(out, DATA);
 });
 
-Deno.test("update-product: form-encodes the body and never puts arguments in the URL", async () => {
+test("update-product: form-encodes the body and never puts arguments in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await updateProduct.execute({
     "product_id": 123,
@@ -28,7 +29,7 @@ Deno.test("update-product: form-encodes the body and never puts arguments in the
   assert(!("x-ds-api-key" in calls[0].headers), "credential must come from sign, not the action");
 });
 
-Deno.test("update-product: surfaces the vendor error envelope even on HTTP 200", async () => {
+test("update-product: surfaces the vendor error envelope even on HTTP 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorEnvelope("The API key is invalid.", 2) }]);
   await assertRejects(
     async () =>
@@ -41,6 +42,6 @@ Deno.test("update-product: surfaces the vendor error envelope even on HTTP 200",
   );
 });
 
-Deno.test("update-product: declares idempotency as true", () => {
+test("update-product: declares idempotency as true", () => {
   assertEquals(updateProduct.idempotent, true);
 });

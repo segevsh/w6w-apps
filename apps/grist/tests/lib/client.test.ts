@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { actionCtx, mockCtx, SITE } from "../_helpers.ts";
 import { DEFAULT_SITE_URL, encodeFilter, GristClient, resolveBaseUrl } from "../../lib/client.ts";
 
-Deno.test("resolveBaseUrl: appends /api to the connection's site", () => {
+test("resolveBaseUrl: appends /api to the connection's site", () => {
   assertEquals(resolveBaseUrl({ siteUrl: "https://docs.getgrist.com" }), `${SITE}/api`);
   assertEquals(
     resolveBaseUrl({ siteUrl: "https://acme.getgrist.com" }),
@@ -14,7 +15,7 @@ Deno.test("resolveBaseUrl: appends /api to the connection's site", () => {
   );
 });
 
-Deno.test("resolveBaseUrl: trims trailing slashes and an accidentally pasted /api", () => {
+test("resolveBaseUrl: trims trailing slashes and an accidentally pasted /api", () => {
   assertEquals(resolveBaseUrl({ siteUrl: "https://docs.getgrist.com/" }), `${SITE}/api`);
   assertEquals(resolveBaseUrl({ siteUrl: "https://docs.getgrist.com///" }), `${SITE}/api`);
   // Pasting the API root itself must not produce /api/api.
@@ -23,7 +24,7 @@ Deno.test("resolveBaseUrl: trims trailing slashes and an accidentally pasted /ap
   assertEquals(resolveBaseUrl({ siteUrl: "  https://docs.getgrist.com  " }), `${SITE}/api`);
 });
 
-Deno.test("resolveBaseUrl: throws when the connection carries no site", () => {
+test("resolveBaseUrl: throws when the connection carries no site", () => {
   let threw = false;
   try {
     resolveBaseUrl(undefined);
@@ -34,7 +35,7 @@ Deno.test("resolveBaseUrl: throws when the connection carries no site", () => {
   assertEquals(DEFAULT_SITE_URL, SITE);
 });
 
-Deno.test("client: sends accept, and content-type only when there is a body", async () => {
+test("client: sends accept, and content-type only when there is a body", async () => {
   const { ctx, calls } = actionCtx([{ body: {} }, { body: {} }]);
   const client = GristClient.fromConnection(ctx);
   await client.request("/orgs");
@@ -46,13 +47,13 @@ Deno.test("client: sends accept, and content-type only when there is a body", as
   assertEquals(calls[1].body, '{"name":"x"}');
 });
 
-Deno.test("client: never sets an authorization header — that is the sign hook's job", async () => {
+test("client: never sets an authorization header — that is the sign hook's job", async () => {
   const { ctx, calls } = actionCtx([{ body: {} }]);
   await GristClient.fromConnection(ctx).request("/orgs");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: skips undefined/null/empty query params but keeps false and 0", async () => {
+test("client: skips undefined/null/empty query params but keeps false and 0", async () => {
   const { ctx, calls } = actionCtx([{ body: {} }]);
   await GristClient.fromConnection(ctx).request("/x", {
     query: { a: undefined, b: null, c: "", hidden: false, limit: 0, sort: "pet" },
@@ -67,14 +68,14 @@ Deno.test("client: skips undefined/null/empty query params but keeps false and 0
   assertEquals(url.searchParams.get("sort"), "pet");
 });
 
-Deno.test("client: 204 and an empty body both resolve to undefined, not a JSON error", async () => {
+test("client: 204 and an empty body both resolve to undefined, not a JSON error", async () => {
   const { ctx } = actionCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = GristClient.fromConnection(ctx);
   assertEquals(await client.request("/x"), undefined);
   assertEquals(await client.request("/y"), undefined);
 });
 
-Deno.test("client: requestText returns the body verbatim for CSV-style responses", async () => {
+test("client: requestText returns the body verbatim for CSV-style responses", async () => {
   const { ctx } = actionCtx([
     { body: "pet,popularity\ncat,67\n", headers: { "content-type": "text/csv" } },
   ]);
@@ -82,7 +83,7 @@ Deno.test("client: requestText returns the body verbatim for CSV-style responses
   assertEquals(text, "pet,popularity\ncat,67\n");
 });
 
-Deno.test("client: a non-2xx throws with the status and path, and no credential", async () => {
+test("client: a non-2xx throws with the status and path, and no credential", async () => {
   const { ctx } = actionCtx([{ status: 403, statusText: "Forbidden", body: { error: "nope" } }]);
   const err = await assertRejects(
     () => GristClient.fromConnection(ctx).request("/docs/abc/tables"),
@@ -93,7 +94,7 @@ Deno.test("client: a non-2xx throws with the status and path, and no credential"
   assert(!/authorization|bearer/i.test(err.message), "error text must not echo a credential");
 });
 
-Deno.test("client: fromConnection throws when the ctx has no connection at all", () => {
+test("client: fromConnection throws when the ctx has no connection at all", () => {
   const { ctx } = mockCtx([{ body: {} }]);
   let threw = false;
   try {
@@ -104,7 +105,7 @@ Deno.test("client: fromConnection throws when the ctx has no connection at all",
   assert(threw);
 });
 
-Deno.test("encodeFilter: passes a string through and stringifies an object", () => {
+test("encodeFilter: passes a string through and stringifies an object", () => {
   assertEquals(encodeFilter('{"pet":["cat"]}'), '{"pet":["cat"]}');
   assertEquals(encodeFilter({ pet: ["cat", "dog"] }), '{"pet":["cat","dog"]}');
   assertEquals(encodeFilter(undefined), undefined);

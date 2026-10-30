@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import listLists from "../../actions/list-lists.ts";
 
-Deno.test("list-lists: GETs /v2/lists with no parameters at all", async () => {
+test("list-lists: GETs /v2/lists with no parameters at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ api_slug: "sales" }] } }]);
   const out = await run<{ records: unknown[] }>(listLists, {}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,6 +12,6 @@ Deno.test("list-lists: GETs /v2/lists with no parameters at all", async () => {
   assertEquals(listLists.params, []);
 });
 
-Deno.test("list-lists: says a short result is usually a scope problem", () => {
+test("list-lists: says a short result is usually a scope problem", () => {
   assert(/scope/i.test(listLists.description!));
 });

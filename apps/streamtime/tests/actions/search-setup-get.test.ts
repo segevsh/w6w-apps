@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import searchSetupGet from "../../actions/search-setup-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search-setup-get: reads GET /v2/search/setup for one view", async () => {
+test("search-setup-get: reads GET /v2/search/setup for one view", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -24,6 +25,6 @@ Deno.test("search-setup-get: reads GET /v2/search/setup for one view", async () 
 });
 
 /** This is the endpoint the vendor tells callers to fetch first. */
-Deno.test("search-setup-get: the description carries the vendor's own advice", () => {
+test("search-setup-get: the description carries the vendor's own advice", () => {
   assert(/reusing it/.test(searchSetupGet.description ?? ""));
 });

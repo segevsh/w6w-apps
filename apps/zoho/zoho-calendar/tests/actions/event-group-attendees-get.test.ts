@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/event-group-attendees-get.ts";
 
-Deno.test("event-group-attendees-get: GETs .../groupattendeestatus?groupId=", async () => {
+test("event-group-attendees-get: GETs .../groupattendeestatus?groupId=", async () => {
   const { ctx, calls } = mockCalendarCtx([
     { body: { GRP_MEM_OBJ: { "53703592": { eid: "user@zohocorp.com", rsvp: "yes" } } } },
   ]);

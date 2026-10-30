@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerGet from "../../actions/customer-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-get: calls GET /customers/{id}", async () => {
+test("customer-get: calls GET /customers/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 177737165, email: "buyer@example.com" } }]);
   const out = await customerGet.execute({ customerId: "177737165" }, ctx) as { email: string };
 
@@ -12,12 +13,12 @@ Deno.test("customer-get: calls GET /customers/{id}", async () => {
   assertEquals(out.email, "buyer@example.com");
 });
 
-Deno.test("customer-get: responseFields narrows the read when asked", async () => {
+test("customer-get: responseFields narrows the read when asked", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customerGet.execute({ customerId: "1", responseFields: "id,email" }, ctx);
   assertEquals(queryOf(calls[0].url), { responseFields: "id,email" });
 });
 
-Deno.test("customer-get: the id is required", () => {
+test("customer-get: the id is required", () => {
   assertEquals(customerGet.params?.find((p) => p.key === "customerId")?.required, true);
 });

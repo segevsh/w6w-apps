@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -9,7 +10,7 @@ const withHeaders = (headers: Record<string, string>, status = 200) => ({
 });
 
 /** Fivetran sends real rate-limit headers, so this is a genuine reading. */
-Deno.test("quota: reports the remaining hourly allowance", async () => {
+test("quota: reports the remaining hourly allowance", async () => {
   const { ctx, calls } = mockCtx([
     withHeaders({ "x-rate-limit": "20000", "x-rate-limit-remaining": "19500" }),
   ]);
@@ -21,7 +22,7 @@ Deno.test("quota: reports the remaining hourly allowance", async () => {
 });
 
 /** 500/hour is a trial, and saying so turns a number into a fact. */
-Deno.test("quota: a trial-tier allowance is named as such", async () => {
+test("quota: a trial-tier allowance is named as such", async () => {
   const { ctx } = mockCtx([
     withHeaders({ "x-rate-limit": "500", "x-rate-limit-remaining": "400" }),
   ]);
@@ -29,7 +30,7 @@ Deno.test("quota: a trial-tier allowance is named as such", async () => {
   assert(/trial-tier allowance/.test(result.message!), result.message);
 });
 
-Deno.test("quota: running low is degraded, and exhausted is down", async () => {
+test("quota: running low is degraded, and exhausted is down", async () => {
   const low = mockCtx([withHeaders({ "x-rate-limit": "20000", "x-rate-limit-remaining": "100" })]);
   assertEquals((await quota.check!({}, low.ctx)).state, "degraded");
 
@@ -37,7 +38,7 @@ Deno.test("quota: running low is degraded, and exhausted is down", async () => {
   assertEquals((await quota.check!({}, gone.ctx)).state, "down");
 });
 
-Deno.test("quota: a 429 is down and reports the retry", async () => {
+test("quota: a 429 is down and reports the retry", async () => {
   const { ctx } = mockCtx([withHeaders({ "retry-after": "120" }, 429)]);
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "down");
@@ -45,20 +46,20 @@ Deno.test("quota: a 429 is down and reports the retry", async () => {
 });
 
 /** Assuming a limit would be a confident wrong answer. */
-Deno.test("quota: no rate-limit header is unknown rather than guessed", async () => {
+test("quota: no rate-limit header is unknown rather than guessed", async () => {
   const { ctx } = mockCtx([withHeaders({})]);
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no rate-limit header/.test(result.message!), result.message);
 });
 
-Deno.test("quota: a rejected credential is unknown", async () => {
+test("quota: a rejected credential is unknown", async () => {
   const { ctx } = mockCtx([withHeaders({}, 401)]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
 /** Headroom is a capacity fact rather than an outage. */
-Deno.test("quota: is informational and is a live probe, not a declared absence", () => {
+test("quota: is informational and is a live probe, not a declared absence", () => {
   assertEquals(quota.severity, "informational");
   assert(quota.check, "quota should be a live probe");
   assertEquals(quota.unavailable, undefined);

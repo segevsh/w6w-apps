@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import legalHoldCreate from "../../actions/legal-hold-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("legal-hold-create: posts name, coverage and custodians", async () => {
+test("legal-hold-create: posts name, coverage and custodians", async () => {
   const hold = { id: "lgh_x", object: "legal_hold", custodian_count: 2 };
   const { ctx, calls } = mockCtx([{ status: 201, body: hold }]);
   const out = await legalHoldCreate.execute({
@@ -23,13 +24,13 @@ Deno.test("legal-hold-create: posts name, coverage and custodians", async () => 
   });
 });
 
-Deno.test("legal-hold-create: coverage is always sent, custodians and description omitted when empty", async () => {
+test("legal-hold-create: coverage is always sent, custodians and description omitted when empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await legalHoldCreate.execute({ name: "All", coversEntireWorkspace: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "All", covers_entire_workspace: true });
 });
 
-Deno.test("legal-hold-create: 409 surfaces", async () => {
+test("legal-hold-create: 409 surfaces", async () => {
   const { ctx } = mockCtx([{ status: 409, body: { code: "CONFLICT", message: "dup" } }]);
   await assertRejects(
     async () => await legalHoldCreate.execute({ name: "x", coversEntireWorkspace: false }, ctx),

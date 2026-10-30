@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import legalEntityGet from "../../actions/legal-entity-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const ENTITY = {
   isDefault: true,
 };
 
-Deno.test("legal-entity-get: GETs one legal entity by id", async () => {
+test("legal-entity-get: GETs one legal entity by id", async () => {
   const { ctx, calls } = mockCtx([{ body: ENTITY }]);
   const result = await legalEntityGet.execute({ id: "le_1" }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("legal-entity-get: GETs one legal entity by id", async () => {
   assertEquals(result, ENTITY);
 });
 
-Deno.test("legal-entity-get: the path uses the underscore Brex documents", async () => {
+test("legal-entity-get: the path uses the underscore Brex documents", async () => {
   const { ctx, calls } = mockCtx([{ body: ENTITY }]);
   await legalEntityGet.execute({ id: "le_1" }, ctx);
 
@@ -28,7 +29,7 @@ Deno.test("legal-entity-get: the path uses the underscore Brex documents", async
   assertEquals(pathOf(calls[0].url).startsWith("/v2/legal_entities/"), true);
 });
 
-Deno.test("legal-entity-get: an unknown id surfaces Brex's error", async () => {
+test("legal-entity-get: an unknown id surfaces Brex's error", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("NOT_FOUND", "Not Found", "LEGAL_ENTITY_NOT_FOUND") },
   ]);

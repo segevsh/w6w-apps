@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import {
   formatSemrushError,
   isSemrushErrorEnvelope,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { envelope, errorEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client: recognises the documented error envelope and only that", () => {
+test("client: recognises the documented error envelope and only that", () => {
   assert(isSemrushErrorEnvelope(errorEnvelope(401, "Unauthorized")));
   // `meta.success` must be exactly false, and a numeric code must be present.
   assertEquals(isSemrushErrorEnvelope({ meta: { success: true }, error: { code: 401 } }), false);
@@ -19,13 +20,13 @@ Deno.test("client: recognises the documented error envelope and only that", () =
   assertEquals(isSemrushErrorEnvelope("<html/>"), false);
 });
 
-Deno.test("client: parseSemrushError returns undefined for non-JSON bodies", () => {
+test("client: parseSemrushError returns undefined for non-JSON bodies", () => {
   assertEquals(parseSemrushError("<html>maintenance</html>"), undefined);
   assertEquals(parseSemrushError(""), undefined);
   assertEquals(parseSemrushError(JSON.stringify(errorEnvelope(401)))?.error.code, 401);
 });
 
-Deno.test("client: a documented envelope becomes one readable line with its code", () => {
+test("client: a documented envelope becomes one readable line with its code", () => {
   const message = formatSemrushError(
     401,
     "GET",
@@ -35,7 +36,7 @@ Deno.test("client: a documented envelope becomes one readable line with its code
   assertEquals(message, "SEMrush 401 401 for GET /apis/v4/backlinks/v1/overview: Unauthorized");
 });
 
-Deno.test("client: a retryable envelope says so", () => {
+test("client: a retryable envelope says so", () => {
   const message = formatSemrushError(
     429,
     "GET",
@@ -46,12 +47,12 @@ Deno.test("client: a retryable envelope says so", () => {
   assert(message.includes("retryable"));
 });
 
-Deno.test("client: a non-envelope body keeps the status and a bounded excerpt", () => {
+test("client: a non-envelope body keeps the status and a bounded excerpt", () => {
   const message = formatSemrushError(502, "GET", "/apis/v4/keywords/v1/metrics", "<html/>");
   assertEquals(message, "SEMrush returned HTTP 502 for GET /apis/v4/keywords/v1/metrics: <html/>");
 });
 
-Deno.test("client: truncate bounds a long body", () => {
+test("client: truncate bounds a long body", () => {
   const long = "x".repeat(2000);
   const cut = truncate(long);
   assert(cut.length < long.length);
@@ -59,7 +60,7 @@ Deno.test("client: truncate bounds a long body", () => {
   assertEquals(truncate("short"), "short");
 });
 
-Deno.test("client: parseApiUnits strips thousands separators and rejects non-numbers", () => {
+test("client: parseApiUnits strips thousands separators and rejects non-numbers", () => {
   assertEquals(parseApiUnits("1,000"), 1000);
   assertEquals(parseApiUnits(" 42\n"), 42);
   assertEquals(parseApiUnits("0"), 0);
@@ -68,7 +69,7 @@ Deno.test("client: parseApiUnits strips thousands separators and rejects non-num
   assertEquals(parseApiUnits('{"units":5}'), undefined);
 });
 
-Deno.test("client: data() GETs the v4 path, joins arrays, and unwraps `data`", async () => {
+test("client: data() GETs the v4 path, joins arrays, and unwraps `data`", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ anchor: "a" }]) }]);
 
   const out = await new SemrushClient(ctx).data<Array<Record<string, string>>>(

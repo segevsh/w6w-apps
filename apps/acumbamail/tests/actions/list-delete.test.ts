@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listDelete from "../../actions/list-delete.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-delete: POST /api/1/deleteList/ with the documented form fields", async () => {
+test("list-delete: POST /api/1/deleteList/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const out = await listDelete.execute({ "list_id": 7 } as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("list-delete: POST /api/1/deleteList/ with the documented form fields"
   assertEquals(out, { ok: true });
 });
 
-Deno.test("list-delete: a vendor error surfaces its status and body", async () => {
+test("list-delete: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await listDelete.execute({ "list_id": 7 } as never, ctx)
@@ -25,7 +26,7 @@ Deno.test("list-delete: a vendor error surfaces its status and body", async () =
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("list-delete: an empty list_id fails before any request", async () => {
+test("list-delete: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await listDelete.execute({ "list_id": "  " } as never, ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: signs as a Bearer token — Front's scheme word matters", async () => {
+test("api-token: signs as a Bearer token — Front's scheme word matters", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api2.frontapp.com/conversations",
@@ -14,7 +15,7 @@ Deno.test("api-token: signs as a Bearer token — Front's scheme word matters", 
   assertEquals(Object.keys(out.headers), ["authorization"]);
 });
 
-Deno.test("api-token: test reports the company on success", async () => {
+test("api-token: test reports the company on success", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "cmp_1", name: "Acme" } }]);
   const out = await auth.test!({ credential: { apiToken: "eyJabc" } }, ctx);
   assertEquals(out.ok, true);
@@ -26,7 +27,7 @@ Deno.test("api-token: test reports the company on success", async () => {
  * The two 401s Front distinguishes, measured 2026-08-18. "Your token is wrong"
  * and "your token never arrived" have different fixes.
  */
-Deno.test("api-token: a malformed or absent JWT is named as such", async () => {
+test("api-token: a malformed or absent JWT is named as such", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { _error: { status: 401, title: "Unauthenticated", message: "JSON Web Token error" } },
@@ -36,7 +37,7 @@ Deno.test("api-token: a malformed or absent JWT is named as such", async () => {
   assert(/never arrived|malformed/.test(out.message!), out.message);
 });
 
-Deno.test("api-token: an unknown or revoked token is named differently", async () => {
+test("api-token: an unknown or revoked token is named differently", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { _error: { status: 401, title: "Unauthenticated", message: "Invalid token" } },
@@ -46,21 +47,21 @@ Deno.test("api-token: an unknown or revoked token is named differently", async (
   assert(/revoked|unknown/.test(out.message!), out.message);
 });
 
-Deno.test("api-token: a missing credential never reaches the network", async () => {
+test("api-token: a missing credential never reaches the network", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.test!({ credential: {} }, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect records the company, never the token", async () => {
+test("api-token: afterConnect records the company, never the token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "cmp_1", name: "Acme" } }]);
   const display = await auth.afterConnect!({ credential: { apiToken: "eyJabc" } }, ctx);
   assertEquals(display, { company: "Acme", companyId: "cmp_1" });
   assert(!JSON.stringify(display).includes("eyJabc"));
 });
 
-Deno.test("api-token: the token field is declared secret", () => {
+test("api-token: the token field is declared secret", () => {
   const f = auth.fields!.find((f) => f.key === "apiToken")!;
   assertEquals(f.type, "secret");
   assertEquals(f.required, true);

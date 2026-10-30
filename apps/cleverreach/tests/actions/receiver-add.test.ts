@@ -1,8 +1,9 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import action from "../../actions/receiver-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("receiver-add: POSTs the receiver object itself, not wrapped in postdata", async () => {
+test("receiver-add: POSTs the receiver object itself, not wrapped in postdata", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 11, email: "bruce@gotham.com" } }]);
   await action.execute({
     groupId: "5",
@@ -25,7 +26,7 @@ Deno.test("receiver-add: POSTs the receiver object itself, not wrapped in postda
   });
 });
 
-Deno.test("receiver-add: requires an email and valid JSON before any request", async () => {
+test("receiver-add: requires an email and valid JSON before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "5" }, ctx),
@@ -46,7 +47,7 @@ Deno.test("receiver-add: requires an email and valid JSON before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("receiver-add: surfaces a vendor error", async () => {
+test("receiver-add: surfaces a vendor error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { code: 400, message: "duplicate: receiver exists" } },

@@ -1,16 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 15;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) {
@@ -18,7 +19,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action has a title, type and execute function", () => {
+test("index: every action has a title, type and execute function", () => {
   for (const action of app.actions) {
     assert(action.title.length > 0, `action "${action.key}" has no title`);
     assert(["read", "search", "perform"].includes(action.type), `action "${action.key}" bad type`);
@@ -26,14 +27,14 @@ Deno.test("index: every action has a title, type and execute function", () => {
   }
 });
 
-Deno.test("index: the auth method is a bearer token with sign and test hooks", () => {
+test("index: the auth method is a bearer token with sign and test hooks", () => {
   const [auth] = app.auth;
   assertEquals(auth.type, "bearer");
   assert(typeof auth.sign === "function");
   assert(typeof auth.test === "function");
 });
 
-Deno.test("index: health checks declare a kind and either a check hook or an unavailable reason", () => {
+test("index: health checks declare a kind and either a check hook or an unavailable reason", () => {
   for (const check of app.healthChecks ?? []) {
     assert(["service", "credential", "quota", "dependency"].includes(check.kind));
     assert(typeof check.check === "function" || check.unavailable, `check "${check.key}" is bare`);

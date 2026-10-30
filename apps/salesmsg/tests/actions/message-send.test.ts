@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import { API_ROOT, mockCtx, queryOf, unauthorized } from "../_helpers.ts";
 
-Deno.test("message-send: sends the documented request and returns the answer", async () => {
+test("message-send: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await messageSend.execute({
     "number": "+15551234567",
@@ -26,7 +27,7 @@ Deno.test("message-send: sends the documented request and returns the answer", a
   assertEquals(result.id, 1);
 });
 
-Deno.test("message-send: repeats media_url[][url] once per URL", async () => {
+test("message-send: repeats media_url[][url] once per URL", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await messageSend.execute({
     "number": "+15551234567",
@@ -39,11 +40,11 @@ Deno.test("message-send: repeats media_url[][url] once per URL", async () => {
   assertEquals(urls, ["https://x.test/a.png", "https://x.test/b.png"]);
 });
 
-Deno.test("message-send: is not idempotent — a retry would text a person twice", () => {
+test("message-send: is not idempotent — a retry would text a person twice", () => {
   assertEquals(messageSend.idempotent, false);
 });
 
-Deno.test("message-send: omits media when none is given", async () => {
+test("message-send: omits media when none is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await messageSend.execute({
     "number": "+15551234567",
@@ -54,7 +55,7 @@ Deno.test("message-send: omits media when none is given", async () => {
   assertEquals(new URL(calls[0].url).searchParams.has("media_url[][url]"), false);
 });
 
-Deno.test("message-send: a refused token surfaces the vendor message", async () => {
+test("message-send: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactTagsRemove from "../../actions/contact-tags-remove.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tags-remove: POSTs tags to /contacts/{id}/tags/remove", async () => {
+test("contact-tags-remove: POSTs tags to /contacts/{id}/tags/remove", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1" }) }]);
   await contactTagsRemove.execute({ id: "1", tags: "vip" }, ctx);
 

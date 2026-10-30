@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupUpdate from "../../actions/group-update.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("group-update: calls PUT /contact-groups/3 and returns the documented shape", async () => {
+test("group-update: calls PUT /contact-groups/3 and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const result = await groupUpdate.execute(
     { "id": "3", "name": "VIPs", "note": "top" } as never,
@@ -15,7 +16,7 @@ Deno.test("group-update: calls PUT /contact-groups/3 and returns the documented 
   assertEquals(result, { "id": "3", "status": 200 });
 });
 
-Deno.test("group-update: carries no credential — auth is the sign hook's job", async () => {
+test("group-update: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   await groupUpdate.execute({ "id": "3", "name": "VIPs", "note": "top" } as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

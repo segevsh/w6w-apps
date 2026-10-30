@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import groupGet from "../../actions/group-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-get: GET /api/v3/groups/getone with every documented parameter", async () => {
+test("group-get: GET /api/v3/groups/getone with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await groupGet.execute({ "groupId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,14 +15,14 @@ Deno.test("group-get: GET /api/v3/groups/getone with every documented parameter"
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("group-get: sends no credential of its own", async () => {
+test("group-get: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await groupGet.execute({ "groupId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("group-get: surfaces Twist's error body", async () => {
+test("group-get: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

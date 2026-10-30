@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageRetry from "../../actions/message-retry.ts";
 import { mockCtx, pathOf, wrapped } from "../_helpers.ts";
 
-Deno.test("message-retry: POST .../retry with messageId and stream:false, unwraps data", async () => {
+test("message-retry: POST .../retry with messageId and stream:false, unwraps data", async () => {
   const { ctx, calls } = mockCtx([{ body: wrapped({ id: "msg_new" }) }]);
   const out = await messageRetry.execute(
     { agentId: "a1", conversationId: "c1", messageId: "msg_old" },

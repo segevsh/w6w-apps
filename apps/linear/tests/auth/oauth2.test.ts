@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Linear's endpoints and its comma scope separator", () => {
+test("oauth2: declares Linear's endpoints and its comma scope separator", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://linear.app/oauth/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://api.linear.app/oauth/token");
   // Linear separates scopes with commas, not the OAuth-default space.
@@ -10,7 +11,7 @@ Deno.test("oauth2: declares Linear's endpoints and its comma scope separator", (
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: sign DOES use the Bearer scheme, unlike the personal API key", async () => {
+test("oauth2: sign DOES use the Bearer scheme, unlike the personal API key", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.linear.app/graphql",

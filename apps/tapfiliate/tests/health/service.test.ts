@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_NAME, componentKey, mapState } from "../../health/service.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("service: mapState — operational is ok, unrecognised is unknown (never ok)", () => {
+test("service: mapState — operational is ok, unrecognised is unknown (never ok)", () => {
   assertEquals(mapState("operational"), "ok");
   assertEquals(mapState("partial_outage"), "degraded");
   assertEquals(mapState("major_outage"), "down");
@@ -11,7 +12,7 @@ Deno.test("service: mapState — operational is ok, unrecognised is unknown (nev
   assertEquals(mapState(undefined), "unknown");
 });
 
-Deno.test("componentKey: slugs a component name", () => {
+test("componentKey: slugs a component name", () => {
   assertEquals(componentKey({ name: "Tapfiliate API" }, 0), "tapfiliate-api");
   assertEquals(componentKey({}, 3), "component-3");
 });
@@ -24,7 +25,7 @@ const FIVE_COMPONENTS = [
   { id: 4722, name: "Tapfiliate Assets", state: "operational" },
 ];
 
-Deno.test("service: all-operational reports ok and hits only the components endpoint", async () => {
+test("service: all-operational reports ok and hits only the components endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { components: FIVE_COMPONENTS } }]);
   const report = await service.check!({}, ctx);
 
@@ -35,7 +36,7 @@ Deno.test("service: all-operational reports ok and hits only the components endp
   assertEquals(report.components?.["tapfiliate-api"].state, "ok");
 });
 
-Deno.test("service: the verdict tracks ONLY the Tapfiliate API component", async () => {
+test("service: the verdict tracks ONLY the Tapfiliate API component", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -53,7 +54,7 @@ Deno.test("service: the verdict tracks ONLY the Tapfiliate API component", async
   assert(report.message?.includes("Tapfiliate Webapp"), report.message);
 });
 
-Deno.test("service: a degraded API component IS reflected in the verdict", async () => {
+test("service: a degraded API component IS reflected in the verdict", async () => {
   const { ctx } = mockCtx([
     { body: { components: [{ id: 4718, name: API_COMPONENT_NAME, state: "partial_outage" }] } },
   ]);
@@ -62,19 +63,19 @@ Deno.test("service: a degraded API component IS reflected in the verdict", async
   assert(report.message?.includes("partial_outage"));
 });
 
-Deno.test("service: a broken status endpoint is unknown, never down", async () => {
+test("service: a broken status endpoint is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: an empty component list is unknown", async () => {
+test("service: an empty component list is unknown", async () => {
   const { ctx } = mockCtx([{ body: { components: [] } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: the API component going missing entirely is unknown, not silently ok", async () => {
+test("service: the API component going missing entirely is unknown, not silently ok", async () => {
   const { ctx } = mockCtx([
     { body: { components: [{ id: 4719, name: "Tapfiliate Webapp", state: "operational" }] } },
   ]);
@@ -83,7 +84,7 @@ Deno.test("service: the API component going missing entirely is unknown, not sil
   assert(report.message?.includes(API_COMPONENT_NAME));
 });
 
-Deno.test("service: declares the correct allowlist, kind, and credential posture", () => {
+test("service: declares the correct allowlist, kind, and credential posture", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.tapfiliate.com"]);

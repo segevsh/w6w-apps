@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bucket-create.ts";
 
 const created = { status: 200, body: { name: "uploads", location: "EU" } };
 const base = { project: "p1", name: "uploads", location: "EU" };
 
-Deno.test("bucket-create: posts to the project's buckets", async () => {
+test("bucket-create: posts to the project's buckets", async () => {
   const { ctx, calls } = mockCtx([created]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   const url = new URL(calls[0].url);
@@ -17,7 +18,7 @@ Deno.test("bucket-create: posts to the project's buckets", async () => {
 });
 
 /** Google defaults these the other way. */
-Deno.test("bucket-create: defaults uniform access and public-access prevention on", async () => {
+test("bucket-create: defaults uniform access and public-access prevention on", async () => {
   const { ctx, calls } = mockCtx([created]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   const iam = JSON.parse(calls[0].body!).iamConfiguration;
@@ -28,7 +29,7 @@ Deno.test("bucket-create: defaults uniform access and public-access prevention o
   assertEquals(action.params!.find((p) => p.key === "publicAccessPrevention")!.default, true);
 });
 
-Deno.test("bucket-create: both can be turned off deliberately", async () => {
+test("bucket-create: both can be turned off deliberately", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute(
     { ...base, uniformAccess: false, publicAccessPrevention: false },
@@ -40,7 +41,7 @@ Deno.test("bucket-create: both can be turned off deliberately", async () => {
 });
 
 /** The location cannot be changed afterwards. */
-Deno.test("bucket-create: a location is required, and the hint says it is permanent", async () => {
+test("bucket-create: a location is required, and the hint says it is permanent", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -54,7 +55,7 @@ Deno.test("bucket-create: a location is required, and the hint says it is perman
 });
 
 /** A cold class can cost more than STANDARD for short-lived objects. */
-Deno.test("bucket-create: warns when the class carries a minimum billed duration", async () => {
+test("bucket-create: warns when the class carries a minimum billed duration", async () => {
   const cold = mockCtx([created]);
   await action.execute({ ...base, storageClass: "ARCHIVE" }, cold.ctx);
   assertEquals(cold.logs[0].level, "warn");
@@ -65,7 +66,7 @@ Deno.test("bucket-create: warns when the class carries a minimum billed duration
   assertEquals(standard.logs[0].level, "info");
 });
 
-Deno.test("bucket-create: lifecycle rules are wrapped in the shape the API wants", async () => {
+test("bucket-create: lifecycle rules are wrapped in the shape the API wants", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute({
     ...base,
@@ -76,7 +77,7 @@ Deno.test("bucket-create: lifecycle rules are wrapped in the shape the API wants
   assertEquals(lifecycle.rule[0].action.type, "Delete");
 });
 
-Deno.test("bucket-create: lifecycle must be an array", async () => {
+test("bucket-create: lifecycle must be an array", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -89,7 +90,7 @@ Deno.test("bucket-create: lifecycle must be an array", async () => {
 });
 
 /** Names are unique across every Google Cloud project on Earth. */
-Deno.test("bucket-create: a taken name surfaces the global-uniqueness explanation", async () => {
+test("bucket-create: a taken name surfaces the global-uniqueness explanation", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: { error: { message: "Your previous request to create the named bucket succeeded" } },
@@ -103,6 +104,6 @@ Deno.test("bucket-create: a taken name surfaces the global-uniqueness explanatio
   assert(/globally unique/.test(message), message);
 });
 
-Deno.test("bucket-create: is not idempotent", () => {
+test("bucket-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

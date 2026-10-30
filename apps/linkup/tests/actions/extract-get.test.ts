@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import extractGet from "../../actions/extract-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("extract-get: GET /v1/extract/:id", async () => {
+test("extract-get: GET /v1/extract/:id", async () => {
   const task = {
     id: "ex 1",
     status: "completed",

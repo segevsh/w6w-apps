@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
@@ -13,7 +14,7 @@ const page = {
   },
 };
 
-Deno.test("organization-list: lists organizations with page parameters", async () => {
+test("organization-list: lists organizations with page parameters", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ pageSize: 50, page: 2 }, ctx);
   const url = new URL(calls[0].url);
@@ -23,7 +24,7 @@ Deno.test("organization-list: lists organizations with page parameters", async (
 });
 
 /** The name IS the identifier — every other path starts with it. */
-Deno.test("organization-list: returns the names, which are the ids", async () => {
+test("organization-list: returns the names, which are the ids", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.names, ["acme", "labs"]);
@@ -33,7 +34,7 @@ Deno.test("organization-list: returns the names, which are the ids", async () =>
   assert(/NAME is the identifier/.test(action.description!), action.description);
 });
 
-Deno.test("organization-list: the page size is clamped to what the API allows", async () => {
+test("organization-list: the page size is clamped to what the API allows", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ pageSize: 5000, page: 0 }, ctx);
   const url = new URL(calls[0].url);
@@ -41,7 +42,7 @@ Deno.test("organization-list: the page size is clamped to what the API allows", 
   assertEquals(url.searchParams.get("page[number]"), "1");
 });
 
-Deno.test("organization-list: the last page reports no next page", async () => {
+test("organization-list: the last page reports no next page", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: [], meta: { pagination: { "current-page": 3, "next-page": null } } },
@@ -51,7 +52,7 @@ Deno.test("organization-list: the last page reports no next page", async () => {
   assertEquals(result.count, 0);
 });
 
-Deno.test("organization-list: attributes come back under the API's own kebab-case names", async () => {
+test("organization-list: attributes come back under the API's own kebab-case names", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

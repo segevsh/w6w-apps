@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import { mockCtx, text } from "../_helpers.ts";
 
 const cred = { accessToken: "tok123" };
 
-Deno.test("oauth2: endpoints, scopes and pkce are as documented", () => {
+test("oauth2: endpoints, scopes and pkce are as documented", () => {
   assertEquals(oauth2.oauth2?.authorizationUrl, "https://www.inoreader.com/oauth2/auth");
   assertEquals(oauth2.oauth2?.tokenUrl, "https://www.inoreader.com/oauth2/token");
   assertEquals(oauth2.oauth2?.scopes, ["read", "write"]);
@@ -13,12 +14,12 @@ Deno.test("oauth2: endpoints, scopes and pkce are as documented", () => {
   assertEquals(oauth2.refresh, undefined);
 });
 
-Deno.test("oauth2: no client id/secret or AppId/AppKey is declared in the package", () => {
+test("oauth2: no client id/secret or AppId/AppKey is declared in the package", () => {
   const s = JSON.stringify(oauth2.oauth2 ?? {}) + JSON.stringify(oauth2.fields ?? []);
   assert(!/client_?(id|secret)|appkey|appid/i.test(s), s);
 });
 
-Deno.test("oauth2: sign stamps a bearer header and nothing else", () => {
+test("oauth2: sign stamps a bearer header and nothing else", () => {
   const { ctx } = mockCtx();
   const req = {
     url: "https://www.inoreader.com/reader/api/0/user-info",
@@ -33,21 +34,21 @@ Deno.test("oauth2: sign stamps a bearer header and nothing else", () => {
   assertEquals(out.headers, { authorization: "Bearer tok123" });
 });
 
-Deno.test("oauth2: test passes on a user object and calls /user-info", async () => {
+test("oauth2: test passes on a user object and calls /user-info", async () => {
   const { ctx, calls } = mockCtx([{ body: { userId: "1001921515", userName: "Bender" } }]);
   assertEquals(await oauth2.test!({ credential: cred }, ctx), { ok: true });
   assertEquals(calls[0].url, "https://www.inoreader.com/reader/api/0/user-info");
   assertEquals(calls[0].headers["authorization"], "Bearer tok123");
 });
 
-Deno.test("oauth2: test refuses a 200 that is not a user object", async () => {
+test("oauth2: test refuses a 200 that is not a user object", async () => {
   const { ctx } = mockCtx([text("<html>shell</html>")]);
   const r = await oauth2.test!({ credential: cred }, ctx);
   assertEquals(r.ok, false);
   assert(r.message?.includes("not the documented"));
 });
 
-Deno.test("oauth2: test classifies 401 / 403 / 429 / other from the body and says what to do", async () => {
+test("oauth2: test classifies 401 / 403 / 429 / other from the body and says what to do", async () => {
   const run = async (status: number, body: string) => {
     const { ctx } = mockCtx([text(body, status)]);
     return await oauth2.test!({ credential: cred }, ctx);
@@ -66,7 +67,7 @@ Deno.test("oauth2: test classifies 401 / 403 / 429 / other from the body and say
   assertEquals(r500.message, "Inoreader returned HTTP 500 for /user-info");
 });
 
-Deno.test("oauth2: afterConnect labels the connection from userName; never throws", async () => {
+test("oauth2: afterConnect labels the connection from userName; never throws", async () => {
   const ok = mockCtx([{ body: { userId: 42, userName: "Bender" } }]);
   assertEquals(await oauth2.afterConnect!({ credential: cred }, ok.ctx), {
     user: { id: "42", name: "Bender" },

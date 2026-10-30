@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import requestRate from "../../health/request-rate.ts";
 
-Deno.test("request-rate: is a declared absence with informational severity and no hook", () => {
+test("request-rate: is a declared absence with informational severity and no hook", () => {
   assertEquals(requestRate.kind, "quota");
   assertEquals(requestRate.severity, "informational");
   assertEquals(requestRate.check, undefined);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fulfillOrder from "../../actions/fulfill-order.ts";
 import { API_ROOT, bodyOf, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("fulfill-order: POST /1.0/commerce/orders/{id}/fulfillments answers 204", async () => {
+test("fulfill-order: POST /1.0/commerce/orders/{id}/fulfillments answers 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await fulfillOrder.execute!({
     id: "O1",
@@ -19,7 +20,7 @@ Deno.test("fulfill-order: POST /1.0/commerce/orders/{id}/fulfillments answers 20
   assertEquals(out, { ok: true });
 });
 
-Deno.test("fulfill-order: no shipments and no notification sends an empty object", async () => {
+test("fulfill-order: no shipments and no notification sends an empty object", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await fulfillOrder.execute!({ id: "O1" }, ctx);
 
@@ -29,7 +30,7 @@ Deno.test("fulfill-order: no shipments and no notification sends an empty object
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("fulfill-order: a 409 conflict is surfaced with its subtype", async () => {
+test("fulfill-order: a 409 conflict is surfaced with its subtype", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: errorBody("CONFLICT", {

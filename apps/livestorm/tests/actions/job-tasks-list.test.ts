@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobTasksList from "../../actions/job-tasks-list.ts";
 import type { JsonApiListResponse } from "../../lib/client.ts";
 import { list, mockCtx, pathOf, resource } from "../_helpers.ts";
 
-Deno.test("job-tasks-list: GETs /jobs/{id}/tasks", async () => {
+test("job-tasks-list: GETs /jobs/{id}/tasks", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("tasks", "t1")]) }]);
   const result = await jobTasksList.execute({ id: "j1" }, ctx) as JsonApiListResponse;
 

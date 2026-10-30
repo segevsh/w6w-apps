@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import shiftList from "../../actions/shift-list.ts";
 import { mockCtx, pagedEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("shift-list: uses the v2 shifts path with the required time window", async () => {
+test("shift-list: uses the v2 shifts path with the required time window", async () => {
   const { ctx, calls } = mockCtx([
     { body: pagedEnvelope({ shifts: [{ id: "sh_1" }] }, { offset: 0 }) },
   ]);
@@ -18,7 +19,7 @@ Deno.test("shift-list: uses the v2 shifts path with the required time window", a
   assertEquals(out, { shifts: [{ id: "sh_1" }], offset: 0 });
 });
 
-Deno.test("shift-list: assignedUserIds and jobId are repeated-key array filters", async () => {
+test("shift-list: assignedUserIds and jobId are repeated-key array filters", async () => {
   const { ctx, calls } = mockCtx([{ body: pagedEnvelope({ shifts: [] }) }]);
   await shiftList.execute(
     {

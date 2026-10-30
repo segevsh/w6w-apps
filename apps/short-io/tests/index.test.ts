@@ -1,7 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exposes exactly the expected action keys, each unique and kebab-case", () => {
+test("index: exposes exactly the expected action keys, each unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   assertEquals(
@@ -30,7 +32,7 @@ Deno.test("index: exposes exactly the expected action keys, each unique and keba
   for (const k of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(k), k);
 });
 
-Deno.test("index: every action has a description, output and execute; performs state idempotency", () => {
+test("index: every action has a description, output and execute; performs state idempotency", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), a.key);
     assert(a.description && a.description.length > 0, a.key);
@@ -40,18 +42,18 @@ Deno.test("index: every action has a description, output and execute; performs s
   }
 });
 
-Deno.test("index: declares the api-key auth and the service + quota checks", () => {
+test("index: declares the api-key auth and the service + quota checks", () => {
   assertEquals(app.auth.map((a) => a.key), ["api-key"]);
   assertEquals(app.healthChecks.map((h) => h.key).sort(), ["quota", "service"]);
 });
 
-Deno.test("index: the quota check is a declared absence with informational severity", () => {
+test("index: the quota check is a declared absence with informational severity", () => {
   const q = app.healthChecks.find((h) => h.key === "quota")!;
   assertEquals(q.severity, "informational");
   assert(q.unavailable?.reason);
 });
 
-Deno.test("index: no action carries a credential header of its own", async () => {
-  const src = await Deno.readTextFile(new URL("../lib/client.ts", import.meta.url));
+test("index: no action carries a credential header of its own", async () => {
+  const src = await denoReadTextFile(new URL("../lib/client.ts", import.meta.url));
   assert(!/authorization/i.test(src.replace(/\/\*[\s\S]*?\*\//g, "")), "client sets Authorization");
 });

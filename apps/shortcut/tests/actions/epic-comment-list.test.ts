@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import epicCommentList from "../../actions/epic-comment-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("epic-comment-list: calls GET /epics/{id}/comments", async () => {
+test("epic-comment-list: calls GET /epics/{id}/comments", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, text: "hi" }] }]);
   await epicCommentList.execute({ epicId: 9 }, ctx);
 

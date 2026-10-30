@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userSync from "../../actions/user-sync.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-sync: with emails given, POSTs a bare JSON array — not an object", async () => {
+test("user-sync: with emails given, POSTs a bare JSON array — not an object", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await userSync.execute({ domain: "yourdomain.com", emails: "a@x.com, b@x.com" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("user-sync: with emails given, POSTs a bare JSON array — not an obje
  * Sending no body at all means "sync everybody" — sending `[]` or `{}` would
  * be a different, narrower request that the vendor's docs do not describe.
  */
-Deno.test("user-sync: with no emails, sends no body at all — sync everybody", async () => {
+test("user-sync: with no emails, sends no body at all — sync everybody", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await userSync.execute({ domain: "yourdomain.com" }, ctx);
 
@@ -23,6 +24,6 @@ Deno.test("user-sync: with no emails, sends no body at all — sync everybody", 
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("user-sync: is marked idempotent", () => {
+test("user-sync: is marked idempotent", () => {
   assertEquals(userSync.idempotent, true);
 });

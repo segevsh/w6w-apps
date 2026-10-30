@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/list-appointments.ts";
 
-Deno.test("list-appointments: GETs /calendars/events with the time window", async () => {
+test("list-appointments: GETs /calendars/events with the time window", async () => {
   const { ctx, calls } = mockHighLevelCtx([{ body: { events: [] } }], "loc-1");
   await action.execute!({ startTime: 1000, endTime: 2000, calendarId: "cal-1" }, ctx);
   const url = new URL(calls[0].url);

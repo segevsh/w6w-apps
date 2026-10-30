@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, errorBody, pathOf, queryOf, WS } from "../_helpers.ts";
 import action from "../../actions/schema-changes-list.ts";
 
-Deno.test("schema-changes-list: sends since/asOf/limit/offset and returns meta", async () => {
+test("schema-changes-list: sends since/asOf/limit/offset and returns meta", async () => {
   const { ctx, calls } = connCtx([{
     body: {
       data: [{ action: "created", changedAt: "t", id: "x", kind: "Table" }],
@@ -27,7 +28,7 @@ Deno.test("schema-changes-list: sends since/asOf/limit/offset and returns meta",
   assertEquals(out.retentionCutoff, null);
 });
 
-Deno.test("schema-changes-list: a 400 for a missing since carries the vendor message", async () => {
+test("schema-changes-list: a 400 for a missing since carries the vendor message", async () => {
   const { ctx } = connCtx([{ status: 400, body: errorBody("since is required") }]);
   await assertRejects(
     async () => await action.execute({ since: "" }, ctx),

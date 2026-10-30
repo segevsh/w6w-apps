@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: maps the Statuspage indicator and per-component status", async () => {
+test("service: maps the Statuspage indicator and per-component status", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -26,13 +27,13 @@ Deno.test("service: maps the Statuspage indicator and per-component status", asy
   assertEquals(Object.keys(report.components ?? {}).length, 2);
 });
 
-Deno.test("service: a failing status API reports unknown, never down", async () => {
+test("service: a failing status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "oops" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: an unrecognized indicator/status also reports unknown", async () => {
+test("service: an unrecognized indicator/status also reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { status: {}, components: [] } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

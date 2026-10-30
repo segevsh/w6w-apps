@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs the given fields", async () => {
+test("task-create: POSTs the given fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { jnid: "t1" } }]);
   await taskCreate.execute({
     title: "Meet with Bob to discuss proposal",
@@ -19,7 +20,7 @@ Deno.test("task-create: POSTs the given fields", async () => {
   });
 });
 
-Deno.test("task-create: related_jnid becomes the related: [{id}] array JobNimbus expects", async () => {
+test("task-create: related_jnid becomes the related: [{id}] array JobNimbus expects", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await taskCreate.execute({ title: "Follow up", related_jnid: "imqpqhqpaz5l5l92" }, ctx);
 
@@ -28,6 +29,6 @@ Deno.test("task-create: related_jnid becomes the related: [{id}] array JobNimbus
   assertEquals("related_jnid" in body, false);
 });
 
-Deno.test("task-create: is not marked idempotent", () => {
+test("task-create: is not marked idempotent", () => {
   assertEquals(taskCreate.idempotent, false);
 });

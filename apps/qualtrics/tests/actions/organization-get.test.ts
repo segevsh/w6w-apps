@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import organizationGet from "../../actions/organization-get.ts";
 import { API_ROOT, envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("organization-get: calls the literal /organizations/current", async () => {
+test("organization-get: calls the literal /organizations/current", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ organizationId: "org-1", name: "Acme" }) },
   ]);
@@ -13,6 +14,6 @@ Deno.test("organization-get: calls the literal /organizations/current", async ()
   assertEquals(out.organizationId, "org-1");
 });
 
-Deno.test("organization-get: takes no params", () => {
+test("organization-get: takes no params", () => {
   assertEquals(organizationGet.params, undefined);
 });

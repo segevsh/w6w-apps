@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import clientGet from "../../actions/client-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const VENDOR_EXAMPLE = {
   BillingDetails: { CanPurchaseCredits: true, Credits: 500, Currency: "USD" },
 };
 
-Deno.test("client-get: GETs the client-level /clients/{clientid}.json", async () => {
+test("client-get: GETs the client-level /clients/{clientid}.json", async () => {
   const { ctx, calls } = mockCtx([{ body: VENDOR_EXAMPLE }]);
   await clientGet.execute({ clientId: "4a397ccaaa55eb4e6aa1221e1e2d7122" }, ctx);
   assertEquals(
@@ -34,7 +35,7 @@ Deno.test("client-get: GETs the client-level /clients/{clientid}.json", async ()
  * client object one level deeper would keep `out.ApiKey === undefined` true
  * while still shipping the secret.
  */
-Deno.test("client-get: the client's own key never appears anywhere in the result", async () => {
+test("client-get: the client's own key never appears anywhere in the result", async () => {
   const { ctx } = mockCtx([{ body: VENDOR_EXAMPLE }]);
   const out = await clientGet.execute({ clientId: "4a397ccaaa55eb4e6aa1221e1e2d7122" }, ctx);
 
@@ -50,7 +51,7 @@ Deno.test("client-get: the client's own key never appears anywhere in the result
   );
 });
 
-Deno.test("client-get: everything that is not the secret is passed through untouched", async () => {
+test("client-get: everything that is not the secret is passed through untouched", async () => {
   const { ctx } = mockCtx([{ body: VENDOR_EXAMPLE }]);
   const out = await clientGet.execute({ clientId: "4a397ccaaa55eb4e6aa1221e1e2d7122" }, ctx);
   assertEquals(
@@ -63,7 +64,7 @@ Deno.test("client-get: everything that is not the secret is passed through untou
   );
 });
 
-Deno.test("client-get: a slash pasted into the client id cannot rewrite the path", async () => {
+test("client-get: a slash pasted into the client id cannot rewrite the path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await clientGet.execute({ clientId: "abc/../../admins" }, ctx);
   assertEquals(pathOf(calls[0].url), `${API_PATH}/clients/abc%2F..%2F..%2Fadmins.json`);

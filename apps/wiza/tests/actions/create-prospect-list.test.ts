@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-prospect-list.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const listBody = {
 };
 const filters = { job_title: [{ v: "cto", s: "i" }] };
 
-Deno.test("create-prospect-list: posts list settings and filters side by side", async () => {
+test("create-prospect-list: posts list settings and filters side by side", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody }]);
   const out = await exec(action, { name: "P", maxProfiles: 10, filters }, ctx);
   assertEquals(calls[0].url, "https://wiza.co/api/prospects/create_prospect_list");
@@ -20,7 +21,7 @@ Deno.test("create-prospect-list: posts list settings and filters side by side", 
   assertEquals(out, listBody.data);
 });
 
-Deno.test("create-prospect-list: email options, duplicates and callback map to snake_case", async () => {
+test("create-prospect-list: email options, duplicates and callback map to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody }]);
   await exec(action, {
     name: "P",
@@ -43,7 +44,7 @@ Deno.test("create-prospect-list: email options, duplicates and callback map to s
   });
 });
 
-Deno.test("create-prospect-list: bad maxProfiles, non-object filters and no email type are refused locally", async () => {
+test("create-prospect-list: bad maxProfiles, non-object filters and no email type are refused locally", async () => {
   const none = mockCtx();
   await assertRejects(
     () => exec(action, { name: "P", maxProfiles: 0, filters }, none.ctx),
@@ -68,7 +69,7 @@ Deno.test("create-prospect-list: bad maxProfiles, non-object filters and no emai
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("create-prospect-list: a 400 invalid-request surfaces the vendor message", async () => {
+test("create-prospect-list: a 400 invalid-request surfaces the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

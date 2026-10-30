@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/start-automation.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("start-automation: POSTs { contact_id } to the automation queue", async () => {
+test("start-automation: POSTs { contact_id } to the automation queue", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ automationId: "a1", contactId: "c1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/automations/a1/queue");
@@ -11,18 +12,18 @@ Deno.test("start-automation: POSTs { contact_id } to the automation queue", asyn
   assertEquals(out, { queued: true });
 });
 
-Deno.test("start-automation: logs through ctx.log rather than console", async () => {
+test("start-automation: logs through ctx.log rather than console", async () => {
   const { ctx, logs } = mockCtx([{ status: 204 }]);
   await action.execute!({ automationId: "a1", contactId: "c1" }, ctx);
   assertEquals(logs.length, 1);
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("start-automation: is not idempotent — repeat behaviour is a vendor-side setting", () => {
+test("start-automation: is not idempotent — repeat behaviour is a vendor-side setting", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("start-automation: surfaces the 409 raised when a contact was already queued", async () => {
+test("start-automation: surfaces the 409 raised when a contact was already queued", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: {

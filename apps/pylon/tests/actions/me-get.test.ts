@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/me-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("me-get: GETs /me and unwraps data", async () => {
+test("me-get: GETs /me and unwraps data", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "org_1", name: "Acme", user: { id: "u1" } }, request_id: "r" },
   }]);
@@ -13,7 +14,7 @@ Deno.test("me-get: GETs /me and unwraps data", async () => {
   assertEquals(out, { id: "org_1", name: "Acme", user: { id: "u1" } });
 });
 
-Deno.test("me-get: surfaces Pylon's error with its stable code", async () => {
+test("me-get: surfaces Pylon's error with its stable code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { errors: ["Invalid API token!"], request_id: "r", code: "invalid_api_token" },

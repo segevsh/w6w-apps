@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callSlotFreeSet from "../../actions/call-slot-free-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("call-slot-free-set: sends every input as body", async () => {
+test("call-slot-free-set: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await callSlotFreeSet.execute({ "id": 7, "isSlotFree": true } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("call-slot-free-set: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("call-slot-free-set: omits every unset optional", async () => {
+test("call-slot-free-set: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await callSlotFreeSet.execute({ "id": 7, "isSlotFree": true } as never, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("call-slot-free-set: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("call-slot-free-set: declares a perform action's idempotency", () => {
+test("call-slot-free-set: declares a perform action's idempotency", () => {
   assertEquals(callSlotFreeSet.type, "perform");
   assertEquals(callSlotFreeSet.idempotent, true);
   assertEquals(callSlotFreeSet.params!.filter((p) => p.required).map((p) => p.key), [

@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import a from "../../actions/send-message.ts";
 import { BASE, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("send-message: wraps the message in the { message: { rid, msg } } envelope", async () => {
+test("send-message: wraps the message in the { message: { rid, msg } } envelope", async () => {
   const { call, json } = await run(a, {
     roomId: "R1",
     text: "hello",
@@ -14,7 +15,7 @@ Deno.test("send-message: wraps the message in the { message: { rid, msg } } enve
   assertEquals(json, { message: { rid: "R1", msg: "hello", tmid: "m", tshow: true } });
 });
 
-Deno.test("send-message: blocks and attachments pass through; empty is refused", async () => {
+test("send-message: blocks and attachments pass through; empty is refused", async () => {
   const blocks = [{ type: "section" }];
   const { json } = await run(a, { roomId: "R1", blocks });
   assertEquals(json, { message: { rid: "R1", blocks } });

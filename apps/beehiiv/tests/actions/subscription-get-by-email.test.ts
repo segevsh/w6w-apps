@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionGetByEmail from "../../actions/subscription-get-by-email.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-get-by-email: fetches GET /publications/:id/subscriptions/by_email/:email", async () => {
+test("subscription-get-by-email: fetches GET /publications/:id/subscriptions/by_email/:email", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: "sub_1", email: "a@b.com", status: "active" } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("subscription-get-by-email: fetches GET /publications/:id/subscription
   assertEquals(out.email, "a@b.com");
 });
 
-Deno.test("subscription-get-by-email: is a read action requiring email", () => {
+test("subscription-get-by-email: is a read action requiring email", () => {
   assertEquals(subscriptionGetByEmail.type, "read");
   const email = subscriptionGetByEmail.params?.find((p) => p.key === "email");
   assertEquals(email?.required, true);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/client-create.ts";
 
-Deno.test("client-create: POSTs /clients with a one-element contacts array", async () => {
+test("client-create: POSTs /clients with a one-element contacts array", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "abc" } }]);
   await action.execute(
     { name: "Bob & Co", contactEmail: "bob@acme.test", contactFirstName: "Bob" },
@@ -15,7 +16,7 @@ Deno.test("client-create: POSTs /clients with a one-element contacts array", asy
   assertEquals(body.contacts, [{ first_name: "Bob", email: "bob@acme.test" }]);
 });
 
-Deno.test("client-create: sends an empty contact object when no contact fields are given", async () => {
+test("client-create: sends an empty contact object when no contact fields are given", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "abc" } }]);
   await action.execute({ name: "Bob & Co" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).contacts, [{}]);

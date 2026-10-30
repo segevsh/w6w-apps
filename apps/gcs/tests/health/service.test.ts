@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { affectsStorage, isOpen, PRODUCT_ID, STATUS_URL } from "../../health/service.ts";
 
@@ -20,7 +21,7 @@ const incident = (options: {
 
 const feed = (incidents: unknown[]) => ({ status: 200, body: incidents });
 
-Deno.test("service: reads Google Cloud's incident feed", async () => {
+test("service: reads Google Cloud's incident feed", async () => {
   const { ctx, calls } = mockCtx([feed([])]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -31,7 +32,7 @@ Deno.test("service: reads Google Cloud's incident feed", async () => {
  * Measured: the live feed held four incidents, all closed. Reading it as a
  * status board reports an outage that finished last month, forever.
  */
-Deno.test("service: a feed of closed incidents is healthy, not an outage", async () => {
+test("service: a feed of closed incidents is healthy, not an outage", async () => {
   const { ctx } = mockCtx([feed([
     incident({ products: [["Google Cloud Storage", PRODUCT_ID]] }),
     incident({ products: [["Google Cloud Storage", PRODUCT_ID]] }),
@@ -42,7 +43,7 @@ Deno.test("service: a feed of closed incidents is healthy, not an outage", async
 });
 
 /** The big outages are filed under "Multiple Products". */
-Deno.test("service: an open multi-product incident is caught by product id", async () => {
+test("service: an open multi-product incident is caught by product id", async () => {
   const { ctx } = mockCtx([feed([
     incident({
       end: null,
@@ -58,7 +59,7 @@ Deno.test("service: an open multi-product incident is caught by product id", asy
 });
 
 /** Matching on the name alone would miss exactly the large outages. */
-Deno.test("service: an incident naming other products only is ignored", async () => {
+test("service: an incident naming other products only is ignored", async () => {
   const { ctx } = mockCtx([feed([
     incident({ end: null, products: [["VMWare engine", "9H6g"], ["Media CDN", "FK8W"]] }),
   ])]);
@@ -69,7 +70,7 @@ Deno.test("service: an incident naming other products only is ignored", async ()
  * `Cloud Storage for Firebase` and `Storage Transfer Service` both contain the
  * word, and neither is this product.
  */
-Deno.test("service: a similarly named product does not count as this one", async () => {
+test("service: a similarly named product does not count as this one", async () => {
   const { ctx } = mockCtx([feed([
     incident({
       end: null,
@@ -83,7 +84,7 @@ Deno.test("service: a similarly named product does not count as this one", async
 });
 
 /** `status_impact` is the field, not `severity`. */
-Deno.test("service: an informational notice is not a disruption", async () => {
+test("service: an informational notice is not a disruption", async () => {
   const { ctx } = mockCtx([feed([
     incident({
       end: null,
@@ -96,7 +97,7 @@ Deno.test("service: an informational notice is not a disruption", async () => {
   assert(/1 open incident/.test(result.message!), result.message);
 });
 
-Deno.test("service: a broken, non-list or unreachable feed is unknown", async () => {
+test("service: a broken, non-list or unreachable feed is unknown", async () => {
   const html = mockCtx([{ status: 200, body: "<html/>" }]);
   assertEquals((await service.check!({}, html.ctx)).state, "unknown");
 
@@ -113,7 +114,7 @@ Deno.test("service: a broken, non-list or unreachable feed is unknown", async ()
   assertEquals((await service.check!({}, offline)).state, "unknown");
 });
 
-Deno.test("isOpen and affectsStorage do the two things the filter needs", () => {
+test("isOpen and affectsStorage do the two things the filter needs", () => {
   assert(isOpen({ end: null }));
   assert(isOpen({}));
   assert(!isOpen({ end: "2026-07-16T12:25:00+00:00" }));
@@ -123,7 +124,7 @@ Deno.test("isOpen and affectsStorage do the two things the filter needs", () => 
 });
 
 /** A Cloud Storage outage is regional far more often than global. */
-Deno.test("service: never claims down, and says the feed is an archive", () => {
+test("service: never claims down, and says the feed is an archive", () => {
   assert(/archive of recent incidents/.test(service.description!), service.description);
   assert(
     /matching on the name misses exactly the large ones/.test(service.description!),

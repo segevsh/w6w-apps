@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/change-reviewer-add.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { host: "https://gerrit.example.com" } };
 const PREFIX = ")]}'\n";
 const result = (body: unknown) => ({ status: 200, body: PREFIX + JSON.stringify(body) });
 
-Deno.test("change-reviewer-add: posts the reviewer and reports who was added", async () => {
+test("change-reviewer-add: posts the reviewer and reports who was added", async () => {
   const { ctx, calls } = mockCtx([result({ reviewers: [{ username: "grace" }] })], D);
   const output = await action.execute(
     { changeId: "620421", reviewer: "grace@example.com" },
@@ -22,7 +23,7 @@ Deno.test("change-reviewer-add: posts the reviewer and reports who was added", a
 });
 
 /** CC is "you should know"; reviewer is "you must look". */
-Deno.test("change-reviewer-add: a CC lands in the ccs list", async () => {
+test("change-reviewer-add: a CC lands in the ccs list", async () => {
   const { ctx, calls } = mockCtx([result({ ccs: [{ name: "Platform Team" }] })], D);
   const output = await action.execute(
     { changeId: "620421", reviewer: "platform", state: "CC" },
@@ -33,7 +34,7 @@ Deno.test("change-reviewer-add: a CC lands in the ccs list", async () => {
 });
 
 /** A group expands and everybody in it is notified. */
-Deno.test("change-reviewer-add: notes when a name expanded to several people", async () => {
+test("change-reviewer-add: notes when a name expanded to several people", async () => {
   const { ctx, logs } = mockCtx([
     result({ reviewers: [{ username: "a" }, { username: "b" }, { username: "c" }] }),
   ], D);
@@ -49,7 +50,7 @@ Deno.test("change-reviewer-add: notes when a name expanded to several people", a
 });
 
 /** Gerrit reports an unresolvable name inside a 200. */
-Deno.test("change-reviewer-add: surfaces an error returned in a successful response", async () => {
+test("change-reviewer-add: surfaces an error returned in a successful response", async () => {
   const { ctx, logs } = mockCtx([result({ error: "Account 'nobody' not found" })], D);
   const output = await action.execute({ changeId: "620421", reviewer: "nobody" }, ctx) as Record<
     string,
@@ -63,13 +64,13 @@ Deno.test("change-reviewer-add: surfaces an error returned in a successful respo
   );
 });
 
-Deno.test("change-reviewer-add: the notify setting is passed through", async () => {
+test("change-reviewer-add: the notify setting is passed through", async () => {
   const { ctx, calls } = mockCtx([result({ reviewers: [{ username: "a" }] })], D);
   await action.execute({ changeId: "620421", reviewer: "a", notify: "NONE" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).notify, "NONE");
 });
 
-Deno.test("change-reviewer-add: requires a reviewer", async () => {
+test("change-reviewer-add: requires a reviewer", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ changeId: "620421" }, ctx),

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import entityCount from "../../actions/entity-count.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("entity-count: POSTs to /query/count and returns queryCount", async () => {
+test("entity-count: POSTs to /query/count and returns queryCount", async () => {
   const { ctx, calls } = mockCtx([{ body: { queryCount: 42 } }], display);
   const out = await run(entityCount, {
     entity: "Tickets",
@@ -19,7 +20,7 @@ Deno.test("entity-count: POSTs to /query/count and returns queryCount", async ()
   await assertRejects(() => run(entityCount, { entity: "Nope" }, ctx), Error, "not a queryable");
 });
 
-Deno.test("every action reads the connection's zone: zone 14 goes to webservices14", async () => {
+test("every action reads the connection's zone: zone 14 goes to webservices14", async () => {
   const { ctx, calls } = mockCtx([{ body: { queryCount: 1 } }], { display: { zone: "14" } });
   await run(entityCount, { entity: "Tickets" }, ctx);
   assert(calls[0].url.startsWith("https://webservices14.autotask.net/"));

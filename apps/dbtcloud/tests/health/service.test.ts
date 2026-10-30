@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -17,7 +18,7 @@ const summary = (indicator: string, extra: Record<string, unknown> = {}) => ({
  * per-component reading every other Statuspage app does would find nothing.
  * The overall indicator is the whole of what the vendor says.
  */
-Deno.test("service: reads the overall indicator, since components are empty", async () => {
+test("service: reads the overall indicator, since components are empty", async () => {
   const { ctx, calls } = mockCtx([summary("none")]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.getdbt.com/api/v2/summary.json");
@@ -25,7 +26,7 @@ Deno.test("service: reads the overall indicator, since components are empty", as
   assertEquals(result.components, undefined);
 });
 
-Deno.test("service: minor is degraded, major and critical are down", async () => {
+test("service: minor is degraded, major and critical are down", async () => {
   for (
     const [indicator, state] of [["minor", "degraded"], ["major", "down"], ["critical", "down"]]
   ) {
@@ -35,7 +36,7 @@ Deno.test("service: minor is degraded, major and critical are down", async () =>
 });
 
 /** Reported if dbt ever fills them in, rather than silently dropped. */
-Deno.test("service: components are reported when the page has any", async () => {
+test("service: components are reported when the page has any", async () => {
   const { ctx } = mockCtx([summary("none", {
     components: [
       { name: "Job Scheduler", status: "operational" },
@@ -46,7 +47,7 @@ Deno.test("service: components are reported when the page has any", async () => 
   assertEquals(Object.keys(result.components!), ["job-scheduler"]);
 });
 
-Deno.test("service: an open incident is named when there is no description", async () => {
+test("service: an open incident is named when there is no description", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -59,7 +60,7 @@ Deno.test("service: an open incident is named when there is no description", asy
 });
 
 /** A status page that itself fails tells us nothing about dbt. */
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -67,6 +68,6 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, shapeless.ctx)).state, "unknown");
 });
 
-Deno.test("service: declares the status host, which is not the API host", () => {
+test("service: declares the status host, which is not the API host", () => {
   assertEquals(service.network!.allow, ["status.getdbt.com"]);
 });

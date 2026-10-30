@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import enrollmentsUpdate from "../../actions/enrollments-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("enrollments-update: PUTs to /enrollments/{id} and returns the 204 status", async () => {
+test("enrollments-update: PUTs to /enrollments/{id} and returns the 204 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await enrollmentsUpdate.execute({ id: "5", expiryDate: "2027-01-01T00:00:00Z" }, ctx);
   assertEquals(calls[0].method, "PUT");

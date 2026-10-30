@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/product-change-status.ts";
 
 const input = { "product_id": 123, "status": "sale" } as never;
 
-Deno.test("product-change-status: POST /products/{product_id}/status", async () => {
+test("product-change-status: POST /products/{product_id}/status", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "status": 201, "success": true, "data": { "id": 1 } },
@@ -21,13 +22,13 @@ Deno.test("product-change-status: POST /products/{product_id}/status", async () 
   assertEquals(result, { "status": 201, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("product-change-status: sends only the fields that were set", async () => {
+test("product-change-status: sends only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!({ "product_id": 123, "status": "sale" } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { "status": "sale" });
 });
 
-Deno.test("product-change-status: a Salla error envelope throws with its message", async () => {
+test("product-change-status: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

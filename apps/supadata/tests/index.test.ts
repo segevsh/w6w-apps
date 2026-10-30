@@ -1,7 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile, denoStat } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-const PKG = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+const PKG = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
 
 const KEYS = [
   "transcript-get",
@@ -25,19 +27,19 @@ const KEYS = [
   "account-get",
 ];
 
-Deno.test("index: one api-key auth method and three health checks", () => {
+test("index: one api-key auth method and three health checks", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: action keys are unique and match the expected surface", () => {
+test("index: action keys are unique and match the expected surface", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   assertEquals(keys, KEYS);
 });
 
-Deno.test("index: every action has a title, a valid type and an execute hook", () => {
+test("index: every action has a title, a valid type and an execute hook", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(["read", "search", "perform"].includes(action.type), true);
@@ -46,26 +48,26 @@ Deno.test("index: every action has a title, a valid type and an execute hook", (
   }
 });
 
-Deno.test("index: every action key has a test file", async () => {
+test("index: every action key has a test file", async () => {
   for (const key of KEYS) {
-    await Deno.stat(new URL(`./actions/${key}.test.ts`, import.meta.url));
+    await denoStat(new URL(`./actions/${key}.test.ts`, import.meta.url));
   }
 });
 
-Deno.test("index: no action source touches a credential, a key or global fetch", async () => {
+test("index: no action source touches a credential, a key or global fetch", async () => {
   for (const key of KEYS) {
-    const src = await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url));
     const code = src.replace(/\/\*[\s\S]*?\*\//g, "");
     assertEquals(/x-api-key|apiKey|authorization/i.test(code), false, key);
     assertEquals(/(^|[^.\w])fetch\(/.test(code), false, key);
   }
 });
 
-Deno.test("index: network.allow lists exactly the hosts the app calls", () => {
+test("index: network.allow lists exactly the hosts the app calls", () => {
   assertEquals([...PKG.w6w.network.allow].sort(), ["api.supadata.ai"]);
 });
 
-Deno.test("index: the status check declares its own host, the others do not widen egress", () => {
+test("index: the status check declares its own host, the others do not widen egress", () => {
   const byKey = Object.fromEntries(app.healthChecks!.map((h) => [h.key, h]));
   assertEquals(byKey.service.network?.allow, ["status.supadata.ai"]);
   assertEquals(byKey.api.network, undefined);

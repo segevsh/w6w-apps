@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/timesheet-create-or-update.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("timesheet-create-or-update: creates (no id) via /supervise/timesheet/update", async () => {
+test("timesheet-create-or-update: creates (no id) via /supervise/timesheet/update", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { Id: 55 } }],
     { display: { baseUrl: BASE_URL } },
@@ -23,7 +24,7 @@ Deno.test("timesheet-create-or-update: creates (no id) via /supervise/timesheet/
   assertEquals(out, { response: { Id: 55 } });
 });
 
-Deno.test("timesheet-create-or-update: updates (with id + comment) in the same call", async () => {
+test("timesheet-create-or-update: updates (with id + comment) in the same call", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Id: 1 } }], {
     display: { baseUrl: BASE_URL },
   });
@@ -40,6 +41,6 @@ Deno.test("timesheet-create-or-update: updates (with id + comment) in the same c
   assertEquals(body.strComment, "Updated via API");
 });
 
-Deno.test("timesheet-create-or-update: is not idempotent without a Timesheet ID", () => {
+test("timesheet-create-or-update: is not idempotent without a Timesheet ID", () => {
   assertEquals(action.idempotent, false);
 });

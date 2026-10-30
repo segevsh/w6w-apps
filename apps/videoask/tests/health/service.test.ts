@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("mapComponentStatus: covers the Statuspage vocabulary", () => {
+test("mapComponentStatus: covers the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -11,7 +12,7 @@ Deno.test("mapComponentStatus: covers the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: covers the page-level roll-up vocabulary", () => {
+test("mapIndicator: covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -20,13 +21,13 @@ Deno.test("mapIndicator: covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a slug", () => {
+test("componentKey: prefers the vendor id, falls back to a slug", () => {
   assertEquals(componentKey({ id: "q6t3km7g8t1f", name: "API" }, 0), "q6t3km7g8t1f");
   assertEquals(componentKey({ name: "AWS ec2-us-east-1" }, 3), "aws-ec2-us-east-1-3");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service.check: all-operational reports ok, keyed and messaged per component", async () => {
+test("service.check: all-operational reports ok, keyed and messaged per component", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -44,7 +45,7 @@ Deno.test("service.check: all-operational reports ok, keyed and messaged per com
   assertEquals(Object.keys(result.components ?? {}), ["c1"]);
 });
 
-Deno.test("service.check: a degraded component surfaces in the message and the page indicator wins", async () => {
+test("service.check: a degraded component surfaces in the message and the page indicator wins", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -59,13 +60,13 @@ Deno.test("service.check: a degraded component surfaces in the message and the p
   assertEquals(result.message?.includes("API (partial_outage)"), true);
 });
 
-Deno.test("service.check: an unreachable status host reports unknown, never down", async () => {
+test("service.check: an unreachable status host reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503 }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service.check: a page that no longer self-identifies as VideoAsk's reports unknown", async () => {
+test("service.check: a page that no longer self-identifies as VideoAsk's reports unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -78,7 +79,7 @@ Deno.test("service.check: a page that no longer self-identifies as VideoAsk's re
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: is unsigned and widens egress only to the status host", () => {
+test("service: is unsigned and widens egress only to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.videoask.com"]);
 });

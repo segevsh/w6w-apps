@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import productList from "../../actions/product-list.ts";
 
-Deno.test("product-list: returns the products connection", async () => {
+test("product-list: returns the products connection", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -23,7 +24,7 @@ Deno.test("product-list: returns the products connection", async () => {
   assertEquals(body.variables.isSold, true);
 });
 
-Deno.test("product-list: an explicit `false` filter survives compact()", async () => {
+test("product-list: an explicit `false` filter survives compact()", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { business: { products: { edges: [], pageInfo: {} } } } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("product-list: an explicit `false` filter survives compact()", async (
   assertEquals(body.variables.isArchived, false);
 });
 
-Deno.test("product-list: type/resource metadata", () => {
+test("product-list: type/resource metadata", () => {
   assertEquals(productList.type, "search");
   assertEquals(productList.resource, "product");
 });

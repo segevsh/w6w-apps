@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { PROBE_PATH } from "../../auth/api-key.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const KEY = "sk-unitTestFixtureNotARealKey0000000000000";
 const WS = "ws_test123";
 
-Deno.test("api-key: sign stamps the bearer header and nothing else", () => {
+test("api-key: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://dust.tt/api/v1/w/ws_test123/spaces",
@@ -20,11 +21,11 @@ Deno.test("api-key: sign stamps the bearer header and nothing else", () => {
   assertEquals(signed.url, "https://dust.tt/api/v1/w/ws_test123/spaces");
 });
 
-Deno.test("api-key: the probe is /spaces", () => {
+test("api-key: the probe is /spaces", () => {
   assertEquals(PROBE_PATH, "/spaces");
 });
 
-Deno.test("api-key: test passes when /spaces answers", async () => {
+test("api-key: test passes when /spaces answers", async () => {
   const { ctx, calls } = mockCtx([{ body: { spaces: [] } }]);
   const result = await apiKey.test(
     { credential: { apiKey: KEY, workspaceId: WS, region: "us" } },
@@ -37,14 +38,14 @@ Deno.test("api-key: test passes when /spaces answers", async () => {
   assertEquals(calls[0].headers.authorization, `Bearer ${KEY}`);
 });
 
-Deno.test("api-key: test resolves the EU host from the region field", async () => {
+test("api-key: test resolves the EU host from the region field", async () => {
   const { ctx, calls } = mockCtx([{ body: { spaces: [] } }]);
   await apiKey.test({ credential: { apiKey: KEY, workspaceId: WS, region: "eu" } }, ctx);
 
   assertEquals(new URL(calls[0].url).host, "eu.dust.tt");
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { workspaceId: WS } }, ctx);
 
@@ -52,7 +53,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test fails with no workspace id, without making a request", async () => {
+test("api-key: test fails with no workspace id, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -65,7 +66,7 @@ Deno.test("api-key: test fails with no workspace id, without making a request", 
  * two of them (malformed vs. invalid) are otherwise indistinguishable from
  * the outside — verified live against dust.tt on 2026-09-05.
  */
-Deno.test("api-key: a malformed-shape key is reported distinctly from a bad key", async () => {
+test("api-key: a malformed-shape key is reported distinctly from a bad key", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -81,7 +82,7 @@ Deno.test("api-key: a malformed-shape key is reported distinctly from a bad key"
   assert(/should start with `sk-`/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: an unrecognised key names the other region as the next thing to try", async () => {
+test("api-key: an unrecognised key names the other region as the next thing to try", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -98,7 +99,7 @@ Deno.test("api-key: an unrecognised key names the other region as the next thing
   assert(/EU region/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 404 is reported as no such workspace, not a bad key", async () => {
+test("api-key: a 404 is reported as no such workspace, not a bad key", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("workspace_not_found", "not found") }]);
   const result = await apiKey.test(
     { credential: { apiKey: KEY, workspaceId: WS, region: "us" } },
@@ -109,7 +110,7 @@ Deno.test("api-key: a 404 is reported as no such workspace, not a bad key", asyn
   assert(/no workspace/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: errorBody("internal_server_error", "boom") }]);
   const result = await apiKey.test(
     { credential: { apiKey: KEY, workspaceId: WS, region: "us" } },
@@ -120,7 +121,7 @@ Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential probl
   assert(/500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: afterConnect echoes workspace id, region and the space count", async () => {
+test("api-key: afterConnect echoes workspace id, region and the space count", async () => {
   const { ctx, calls } = mockCtx([{ body: { spaces: [{ sId: "sp_1" }, { sId: "sp_2" }] } }]);
   const display = await apiKey.afterConnect!(
     { credential: { apiKey: KEY, workspaceId: WS, region: "eu" } },
@@ -131,19 +132,19 @@ Deno.test("api-key: afterConnect echoes workspace id, region and the space count
   assertEquals(new URL(calls[0].url).host, "eu.dust.tt");
 });
 
-Deno.test("api-key: afterConnect defaults the region to us when unset", async () => {
+test("api-key: afterConnect defaults the region to us when unset", async () => {
   const { ctx } = mockCtx([{ body: { spaces: [] } }]);
   const display = await apiKey.afterConnect!({ credential: { apiKey: KEY, workspaceId: WS } }, ctx);
 
   assertEquals(display, { workspaceId: WS, region: "us", spaceCount: 0 });
 });
 
-Deno.test("api-key: afterConnect stays silent when there is no workspace id", async () => {
+test("api-key: afterConnect stays silent when there is no workspace id", async () => {
   const { ctx } = mockCtx([]);
   assertEquals(await apiKey.afterConnect!({ credential: { apiKey: KEY } }, ctx), {});
 });
 
-Deno.test("api-key: afterConnect degrades to a bare echo when the probe fails", async () => {
+test("api-key: afterConnect degrades to a bare echo when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("invalid_api_key_error", "no") }]);
   const display = await apiKey.afterConnect!(
     { credential: { apiKey: KEY, workspaceId: WS, region: "us" } },

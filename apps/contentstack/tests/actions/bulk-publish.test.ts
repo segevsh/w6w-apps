@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-publish.ts";
 
-Deno.test("bulk-publish: metadata", () => {
+test("bulk-publish: metadata", () => {
   assertEquals(action.key, "bulk-publish");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -17,7 +18,7 @@ Deno.test("bulk-publish: metadata", () => {
   ]);
 });
 
-Deno.test("bulk-publish: calls POST /bulk/publish on the NA host", async () => {
+test("bulk-publish: calls POST /bulk/publish on the NA host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Your publish request is in progress.", "job_id": "job1" },
   }]);
@@ -42,7 +43,7 @@ Deno.test("bulk-publish: calls POST /bulk/publish on the NA host", async () => {
   assertEquals(out, { "notice": "Your publish request is in progress.", "job_id": "job1" });
 });
 
-Deno.test("bulk-publish: uses the connection's regional host", async () => {
+test("bulk-publish: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Your publish request is in progress.", "job_id": "job1" },
   }], {
@@ -59,7 +60,7 @@ Deno.test("bulk-publish: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("bulk-publish: sends the branch header only when a branch is given", async () => {
+test("bulk-publish: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Your publish request is in progress.", "job_id": "job1" },
   }, { body: { "notice": "Your publish request is in progress.", "job_id": "job1" } }]);
@@ -78,7 +79,7 @@ Deno.test("bulk-publish: sends the branch header only when a branch is given", a
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("bulk-publish: rejects without `environments` and makes no request", async () => {
+test("bulk-publish: rejects without `environments` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -93,7 +94,7 @@ Deno.test("bulk-publish: rejects without `environments` and makes no request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bulk-publish: surfaces Contentstack's own error body", async () => {
+test("bulk-publish: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POST /hooks with the documented query and body", async () => {
+test("webhook-create: POST /hooks with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await webhookCreate.execute({
     "targetUrl": "https://example.com/hook",
@@ -28,7 +29,7 @@ Deno.test("webhook-create: POST /hooks with the documented query and body", asyn
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("webhook-create: an Everhour error surfaces its message and status", async () => {
+test("webhook-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -45,7 +46,7 @@ Deno.test("webhook-create: an Everhour error surfaces its message and status", a
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("webhook-create: declares perform and idempotent=false", () => {
+test("webhook-create: declares perform and idempotent=false", () => {
   assertEquals(webhookCreate.type, "perform");
   assertEquals(webhookCreate.idempotent, false);
 });

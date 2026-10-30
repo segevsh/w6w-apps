@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-excluded-domains.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-excluded-domains: sends the filters as a query string", async () => {
+test("list-excluded-domains: sends the filters as a query string", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -33,7 +34,7 @@ Deno.test("list-excluded-domains: sends the filters as a query string", async ()
   });
 });
 
-Deno.test("list-excluded-domains: sends no query string when no filter is set", async () => {
+test("list-excluded-domains: sends no query string when no filter is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "data": [] } }]);
   const out = await action.execute!({} as never, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/order-update.ts";
 
-Deno.test("order-update: PUTs a JSON:API document with id, including confirmShortage", async () => {
+test("order-update: PUTs a JSON:API document with id, including confirmShortage", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: { id: "o1" } } }]);
   await action.execute({
     orderId: "o1",

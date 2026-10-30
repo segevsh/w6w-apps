@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -10,26 +11,26 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined, null and empty string but keeps false and 0", () => {
+test("compact: drops undefined, null and empty string but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("toIdList: accepts a real array or a comma-separated string", () => {
+test("toIdList: accepts a real array or a comma-separated string", () => {
   assertEquals(toIdList(["a", " b ", ""]), ["a", "b"]);
   assertEquals(toIdList("a, b ,c"), ["a", "b", "c"]);
   assertEquals(toIdList(undefined), []);
   assertEquals(toIdList(""), []);
 });
 
-Deno.test("joinIds: comma-joins and URL-encodes, throws on empty", () => {
+test("joinIds: comma-joins and URL-encodes, throws on empty", () => {
   assertEquals(joinIds("id one,id two"), "id%20one,id%20two");
   assertThrows(() => joinIds(""), Error, "at least one id");
 });
 
-Deno.test("asOptionalJson: parses a JSON string, passes through a non-string, rejects invalid JSON", () => {
+test("asOptionalJson: parses a JSON string, passes through a non-string, rejects invalid JSON", () => {
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "x"), undefined);
@@ -37,13 +38,13 @@ Deno.test("asOptionalJson: parses a JSON string, passes through a non-string, re
   assertThrows(() => asOptionalJson("{not json", "x"), Error, "not valid JSON");
 });
 
-Deno.test("unwrapSingle: array returns first element, object passes through", () => {
+test("unwrapSingle: array returns first element, object passes through", () => {
   assertEquals(unwrapSingle([{ id: 1 }, { id: 2 }]), { id: 1 });
   assertEquals(unwrapSingle({ id: 1 }), { id: 1 });
   assertEquals(unwrapSingle(undefined), undefined);
 });
 
-Deno.test("formatMissiveError: surfaces the vendor's own message verbatim", () => {
+test("formatMissiveError: surfaces the vendor's own message verbatim", () => {
   const msg = formatMissiveError(
     401,
     "GET",
@@ -54,12 +55,12 @@ Deno.test("formatMissiveError: surfaces the vendor's own message verbatim", () =
   assert(msg.includes("401"));
 });
 
-Deno.test("formatMissiveError: falls back to the raw body when it isn't JSON", () => {
+test("formatMissiveError: falls back to the raw body when it isn't JSON", () => {
   const msg = formatMissiveError(500, "POST", "/v1/drafts", "internal server error");
   assert(msg.includes("internal server error"));
 });
 
-Deno.test("formatMissiveError: includes the retry delay on a 429", () => {
+test("formatMissiveError: includes the retry delay on a 429", () => {
   const msg = formatMissiveError(
     429,
     "GET",
@@ -70,7 +71,7 @@ Deno.test("formatMissiveError: includes the retry delay on a 429", () => {
   assert(msg.includes("retry after 12s"));
 });
 
-Deno.test("MissiveClient: builds the full URL with the /v1 prefix and query params", async () => {
+test("MissiveClient: builds the full URL with the /v1 prefix and query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await new MissiveClient(ctx).json("/contacts", { query: { limit: 10, offset: 0 } });
   assertEquals(calls[0].url, "https://public.missiveapp.com/v1/contacts?limit=10&offset=0");
@@ -78,7 +79,7 @@ Deno.test("MissiveClient: builds the full URL with the /v1 prefix and query para
   assertEquals(queryOf(calls[0].url), { limit: "10", offset: "0" });
 });
 
-Deno.test("MissiveClient: sends a JSON content-type only when there's a body", async () => {
+test("MissiveClient: sends a JSON content-type only when there's a body", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }, { status: 204 }]);
   await new MissiveClient(ctx).json("/contacts", { method: "POST", body: { contacts: [{}] } });
   assertEquals(calls[0].headers["content-type"], "application/json");
@@ -86,7 +87,7 @@ Deno.test("MissiveClient: sends a JSON content-type only when there's a body", a
   assertEquals(calls[1].headers["content-type"], undefined);
 });
 
-Deno.test("MissiveClient: throws a formatted error on a non-ok response", async () => {
+test("MissiveClient: throws a formatted error on a non-ok response", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("Authentication token is invalid or has been revoked") },
   ]);
@@ -96,7 +97,7 @@ Deno.test("MissiveClient: throws a formatted error on a non-ok response", async 
   );
 });
 
-Deno.test("MissiveClient: status() returns the HTTP status for a body-less delete", async () => {
+test("MissiveClient: status() returns the HTTP status for a body-less delete", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const status = await new MissiveClient(ctx).status("/drafts/abc", { method: "DELETE" });
   assertEquals(status, 204);

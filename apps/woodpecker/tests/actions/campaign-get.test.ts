@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignGet from "../../actions/campaign-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-get: GET /rest/v2/campaigns/{id}", async () => {
+test("campaign-get: GET /rest/v2/campaigns/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -29,7 +30,7 @@ Deno.test("campaign-get: GET /rest/v2/campaigns/{id}", async () => {
   assertEquals(out.email_account_ids, [112233]);
 });
 
-Deno.test("campaign-get: rejects an empty id without a request", async () => {
+test("campaign-get: rejects an empty id without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignGet.execute({ "campaign_id": "  " } as never, ctx),

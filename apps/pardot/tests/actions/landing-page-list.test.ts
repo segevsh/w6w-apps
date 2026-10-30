@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPardotCtx } from "../_helpers.ts";
 import action from "../../actions/landing-page-list.ts";
 
-Deno.test("landing-page-list: GETs /landing-pages with the default field list when none is given", async () => {
+test("landing-page-list: GETs /landing-pages with the default field list when none is given", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: { values: [{ id: 1 }] } }]);
   const out = await action.execute({}, ctx) as { values: unknown[] };
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("landing-page-list: GETs /landing-pages with the default field list wh
   assertEquals(out.values, [{ id: 1 }]);
 });
 
-Deno.test("landing-page-list: sends a filter, fields and limit as query parameters", async () => {
+test("landing-page-list: sends a filter, fields and limit as query parameters", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: { values: [] } }]);
   await action.execute({ fields: "id,name", limit: 50, name: "Home" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -23,7 +24,7 @@ Deno.test("landing-page-list: sends a filter, fields and limit as query paramete
   assertEquals(q.get("name"), "Home");
 });
 
-Deno.test("landing-page-list: with a page token sends ONLY fields and the token", async () => {
+test("landing-page-list: with a page token sends ONLY fields and the token", async () => {
   const { ctx, calls } = mockPardotCtx([
     {
       body: { nextPageToken: "tok2", nextPageUrl: "https://pi.pardot.com/x", values: [{ id: 9 }] },
@@ -39,14 +40,14 @@ Deno.test("landing-page-list: with a page token sends ONLY fields and the token"
   assertEquals(out.nextPageToken, "tok2");
 });
 
-Deno.test("landing-page-list: an exhausted query reports a null token", async () => {
+test("landing-page-list: an exhausted query reports a null token", async () => {
   const { ctx } = mockPardotCtx([{ body: { values: [] } }]);
   const out = await action.execute({}, ctx) as { nextPageToken: unknown; nextPageUrl: unknown };
   assertEquals(out.nextPageToken, null);
   assertEquals(out.nextPageUrl, null);
 });
 
-Deno.test("landing-page-list: rejects an orderBy field the docs do not list", async () => {
+test("landing-page-list: rejects an orderBy field the docs do not list", async () => {
   const { ctx, calls } = mockPardotCtx([]);
   await assertRejects(
     async () => await action.execute({ orderBy: "password DESC" }, ctx),
@@ -56,7 +57,7 @@ Deno.test("landing-page-list: rejects an orderBy field the docs do not list", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("landing-page-list: surfaces the v5 error envelope", async () => {
+test("landing-page-list: surfaces the v5 error envelope", async () => {
   const { ctx } = mockPardotCtx([
     {
       status: 403,
@@ -73,7 +74,7 @@ Deno.test("landing-page-list: surfaces the v5 error envelope", async () => {
   );
 });
 
-Deno.test("landing-page-list: forwards the recycle-bin selector", async () => {
+test("landing-page-list: forwards the recycle-bin selector", async () => {
   const { ctx, calls } = mockPardotCtx([{ body: { values: [] } }]);
   await action.execute({ deleted: "all" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("deleted"), "all");

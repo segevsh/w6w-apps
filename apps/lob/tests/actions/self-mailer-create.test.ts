@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import selfMailerCreate from "../../actions/self-mailer-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const addr = {
   address_zip: "94107",
 };
 
-Deno.test("self-mailer-create: POSTs the documented body to /self_mailers", async () => {
+test("self-mailer-create: POSTs the documented body to /self_mailers", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_1", url: "https://lob-assets.com/x.pdf" } }]);
   const out = await selfMailerCreate.execute({
     to: "adr_1",
@@ -32,7 +33,7 @@ Deno.test("self-mailer-create: POSTs the documented body to /self_mailers", asyn
   assertEquals(out.id, "x_1");
 });
 
-Deno.test("self-mailer-create: a saved address id passes through as a string, an inline address as an object", async () => {
+test("self-mailer-create: a saved address id passes through as a string, an inline address as an object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_2" } }]);
   await selfMailerCreate.execute({
     ...{
@@ -59,7 +60,7 @@ Deno.test("self-mailer-create: a saved address id passes through as a string, an
   assertEquals(bodyOf(second.calls[0]).to, addr);
 });
 
-Deno.test("self-mailer-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
+test("self-mailer-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
   const own = mockCtx([{ body: { id: "a" } }]);
   await selfMailerCreate.execute({
     ...{
@@ -95,11 +96,11 @@ Deno.test("self-mailer-create: Idempotency-Key is the caller's own, else the inv
   assertEquals("idempotency-key" in none.calls[0].headers, false);
 });
 
-Deno.test("self-mailer-create: is declared non-idempotent (it mails a physical piece)", () => {
+test("self-mailer-create: is declared non-idempotent (it mails a physical piece)", () => {
   assertEquals(selfMailerCreate.idempotent, false);
 });
 
-Deno.test("self-mailer-create: a missing use type is refused before any request", async () => {
+test("self-mailer-create: a missing use type is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -119,7 +120,7 @@ Deno.test("self-mailer-create: a missing use type is refused before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("self-mailer-create: Lob's validation error is surfaced with its code", async () => {
+test("self-mailer-create: Lob's validation error is surfaced with its code", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("invalid", "to is invalid", 422) }]);
   await assertRejects(
     async () =>

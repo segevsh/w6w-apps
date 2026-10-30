@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/mailing-list-create.ts";
 
-Deno.test("mailing-list-create: POSTs to the host root, not /crm/v1", async () => {
+test("mailing-list-create: POSTs to the host root, not /crm/v1", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }]);
   const result = await action.execute!({ bookName: "Newsletter" }, ctx);
   assertEquals(calls[0].url, "https://api.sendpulse.com/addressbooks");

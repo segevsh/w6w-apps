@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-item.ts";
 
-Deno.test("update-item: PATCHes {site}/lists/{list-id}/items/{item-id}/fields", async () => {
+test("update-item: PATCHes {site}/lists/{list-id}/items/{item-id}/fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { Color: "Purple" } }]);
   await action.execute(
     { listId: "L1", itemId: "42", fields: { Color: "Purple", Quantity: 5 } },
@@ -13,7 +14,7 @@ Deno.test("update-item: PATCHes {site}/lists/{list-id}/items/{item-id}/fields", 
   assertEquals(JSON.parse(calls[0].body!), { Color: "Purple", Quantity: 5 });
 });
 
-Deno.test("update-item: if-match rides as a header when supplied, and is absent otherwise", async () => {
+test("update-item: if-match rides as a header when supplied, and is absent otherwise", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute({ listId: "L1", itemId: "42", fields: {}, ifMatch: '"abc"' }, ctx);
   assertEquals(calls[0].headers["if-match"], '"abc"');
@@ -22,6 +23,6 @@ Deno.test("update-item: if-match rides as a header when supplied, and is absent 
   assertEquals("if-match" in calls[1].headers, false);
 });
 
-Deno.test("update-item: is idempotent — a PATCH sets an end state", () => {
+test("update-item: is idempotent — a PATCH sets an end state", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import unblock from "../../actions/unblock.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("unblock: requests content by default and passes the payload through", async () => {
+test("unblock: requests content by default and passes the payload through", async () => {
   const payload = { content: "<html/>", cookies: [], screenshot: null, browserWSEndpoint: null };
   const { ctx, calls } = mockCtx([{ body: payload }]);
   const out = await unblock.execute({
@@ -18,7 +19,7 @@ Deno.test("unblock: requests content by default and passes the payload through",
   assertEquals(JSON.parse(calls[0].body!), { url: "https://a.com", content: true });
 });
 
-Deno.test("unblock: flags, ttl and overrides map to the body", async () => {
+test("unblock: flags, ttl and overrides map to the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await unblock.execute(
     {
@@ -43,7 +44,7 @@ Deno.test("unblock: flags, ttl and overrides map to the body", async () => {
   });
 });
 
-Deno.test("unblock: needs a URL", async () => {
+test("unblock: needs a URL", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await unblock.execute({ url: " " }, ctx),

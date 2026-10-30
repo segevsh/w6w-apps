@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/organization-get.ts";
 
-Deno.test("organization-get: GETs /v2/organizations/{id}", async () => {
+test("organization-get: GETs /v2/organizations/{id}", async () => {
   const body = envelope("organization", { id: 42, name: "Acme" });
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({ organization_id: 42 }, ctx) as typeof body;
@@ -12,7 +13,7 @@ Deno.test("organization-get: GETs /v2/organizations/{id}", async () => {
   assertEquals(result.organization.id, 42);
 });
 
-Deno.test("organization-get: a 404 surfaces Hubstaff's own body, not a bare status", async () => {
+test("organization-get: a 404 surfaces Hubstaff's own body, not a bare status", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "not_found", error_code: 12000, error: "resource not found" },

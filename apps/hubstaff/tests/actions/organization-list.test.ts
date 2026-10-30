@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: GETs /v2/organizations and returns the envelope whole", async () => {
+test("organization-list: GETs /v2/organizations and returns the envelope whole", async () => {
   const body = listEnvelope("organizations", [{ id: 1, name: "Acme" }], 7);
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({}, ctx) as typeof body;
@@ -14,13 +15,13 @@ Deno.test("organization-list: GETs /v2/organizations and returns the envelope wh
   assertEquals(result.pagination, { next_page_start_id: 7 });
 });
 
-Deno.test("organization-list: the first page sends no cursor at all", async () => {
+test("organization-list: the first page sends no cursor at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope("organizations", []) }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("organization-list: prefills the vendor page size and carries a cursor", async () => {
+test("organization-list: prefills the vendor page size and carries a cursor", async () => {
   const limit = action.params!.find((p) => p.key === "page_limit")!;
   assertEquals(limit.default, 100);
   assertEquals(limit.validation?.max, 500);

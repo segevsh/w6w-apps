@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import a from "../../actions/get-channel-history.ts";
 import { BASE, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-channel-history: GET channels.history with the time range and flags", async () => {
+test("get-channel-history: GET channels.history with the time range and flags", async () => {
   const { call, query } = await run(a, {
     roomId: "R",
     latest: "2026-10-02T00:00:00.000Z",
@@ -20,7 +21,7 @@ Deno.test("get-channel-history: GET channels.history with the time range and fla
   assertEquals(query.get("count"), "50");
 });
 
-Deno.test("get-channel-history: needs a room id or name and returns messages untouched", async () => {
+test("get-channel-history: needs a room id or name and returns messages untouched", async () => {
   assertThrows(() => a.execute({}, mockCtx().ctx), Error, "Room ID or a Room name");
   const { result } = await run(a, { roomName: "general" }, { messages: [{ _id: "m" }] });
   assertEquals((result as { messages: unknown[] }).messages.length, 1);

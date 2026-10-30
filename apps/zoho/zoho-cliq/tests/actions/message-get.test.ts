@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-get.ts";
 
-Deno.test("message-get: gets one message", async () => {
+test("message-get: gets one message", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "id": "1543320941513_23291239955324", "type": "text" },
@@ -24,7 +25,7 @@ Deno.test("message-get: gets one message", async () => {
   });
 });
 
-Deno.test("message-get: encodes a message id that contains a space", async () => {
+test("message-get: encodes a message id that contains a space", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "id": "x" } }]);
   const out = await action.execute(
     { "chatId": "CT_1", "messageId": "1645632094118 223997917594" } as never,
@@ -41,6 +42,6 @@ Deno.test("message-get: encodes a message id that contains a space", async () =>
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "message": { "id": "x" } });
 });
 
-Deno.test("message-get: is a read action", () => {
+test("message-get: is a read action", () => {
   assertEquals(action.type, "read");
 });

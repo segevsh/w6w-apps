@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-row.ts";
 
-Deno.test("get-row: GETs /docs/{docId}/tables/{tableId}/rows/{rowId}", async () => {
+test("get-row: GETs /docs/{docId}/tables/{tableId}/rows/{rowId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "row-1", values: { Name: "Widget" } } }]);
   const out = await action.execute({ docId: "doc-1", tableId: "grid-1", rowId: "row-1" }, ctx);
   const url = new URL(calls[0].url);

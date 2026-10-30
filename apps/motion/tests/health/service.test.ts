@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   ALL_UNMONITORED,
   identifiesMotion,
@@ -31,7 +32,7 @@ function payload(
   };
 }
 
-Deno.test("service: reads the one path on that host that answers with JSON", async () => {
+test("service: reads the one path on that host that answers with JSON", async () => {
   const { ctx, calls } = mockCtx([
     { body: payload([{ public_name: "Webapp", status: "operational" }]) },
   ]);
@@ -49,7 +50,7 @@ Deno.test("service: reads the one path on that host that answers with JSON", asy
  * over nothing, so reporting `ok` would present the absence of evidence as
  * evidence.
  */
-Deno.test("service: an unmonitored-only page reports unknown, not ok", async () => {
+test("service: an unmonitored-only page reports unknown, not ok", async () => {
   const { ctx } = mockCtx([
     { body: payload([{ public_name: "Webapp", status: "not_monitored" }]) },
   ]);
@@ -60,7 +61,7 @@ Deno.test("service: an unmonitored-only page reports unknown, not ok", async () 
   assertEquals(report.components?.webapp.state, "unknown");
 });
 
-Deno.test("service: a monitored, operational page reports ok", async () => {
+test("service: a monitored, operational page reports ok", async () => {
   const { ctx } = mockCtx([
     { body: payload([{ public_name: "Webapp", status: "operational" }]) },
   ]);
@@ -70,7 +71,7 @@ Deno.test("service: a monitored, operational page reports ok", async () => {
   assertEquals(report.components?.webapp, { state: "ok", message: "Webapp" });
 });
 
-Deno.test("service: a component outage is reported per component and in the roll-up", async () => {
+test("service: a component outage is reported per component and in the roll-up", async () => {
   const { ctx } = mockCtx([
     {
       body: payload([
@@ -88,7 +89,7 @@ Deno.test("service: a component outage is reported per component and in the roll
 });
 
 /** An operator override wins over the measured status. */
-Deno.test("service: explicit_status takes precedence", async () => {
+test("service: explicit_status takes precedence", async () => {
   const { ctx } = mockCtx([
     {
       body: payload([
@@ -107,7 +108,7 @@ Deno.test("service: explicit_status takes precedence", async () => {
  * shape is unverified — the check counts the relationship rather than reading
  * fields it has never seen.
  */
-Deno.test("service: a published status report is counted, never parsed", async () => {
+test("service: a published status report is counted, never parsed", async () => {
   const { ctx } = mockCtx([
     {
       body: payload([{ public_name: "Webapp", status: "operational" }], {}, [
@@ -121,7 +122,7 @@ Deno.test("service: a published status report is counted, never parsed", async (
   assert((report.message ?? "").includes("1 status report(s) published"), report.message);
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const failing = mockCtx([{ status: 503, body: "nope" }]);
   assertEquals((await service.check!({}, failing.ctx)).state, "unknown");
 
@@ -131,7 +132,7 @@ Deno.test("service: a broken status page reports unknown, never down", async () 
   assert((report.message ?? "").includes("index.json may have moved"), report.message);
 });
 
-Deno.test("service: a page that no longer names Motion reports unknown", async () => {
+test("service: a page that no longer names Motion reports unknown", async () => {
   const { ctx } = mockCtx([
     {
       body: payload([{ public_name: "Webapp", status: "operational" }], {
@@ -146,12 +147,12 @@ Deno.test("service: a page that no longer names Motion reports unknown", async (
   assert((report.message ?? "").includes("self-identifies"), report.message);
 });
 
-Deno.test("service: a page with no components reports unknown", async () => {
+test("service: a page with no components reports unknown", async () => {
   const { ctx } = mockCtx([{ body: payload([]) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: Better Stack's vocabulary maps as the roll-up needs", () => {
+test("service: Better Stack's vocabulary maps as the roll-up needs", () => {
   assertEquals(STATE.operational, "ok");
   assertEquals(STATE.degraded, "degraded");
   assertEquals(STATE.downtime, "down");
@@ -171,7 +172,7 @@ Deno.test("service: Better Stack's vocabulary maps as the roll-up needs", () => 
   ]);
 });
 
-Deno.test("service: identifiesMotion accepts either self-identification and rejects neither", () => {
+test("service: identifiesMotion accepts either self-identification and rejects neither", () => {
   assert(identifiesMotion({ company_name: "Motion" }));
   assert(identifiesMotion({ custom_domain: "status.usemotion.com" }));
   assert(!identifiesMotion({ company_name: "Acme", custom_domain: "status.acme.com" }));
@@ -179,7 +180,7 @@ Deno.test("service: identifiesMotion accepts either self-identification and reje
   assert(!identifiesMotion({}));
 });
 
-Deno.test("service: slug keys a component readably", () => {
+test("service: slug keys a component readably", () => {
   assertEquals(slug("Webapp"), "webapp");
   assertEquals(slug("API (api.usemotion.com)"), "api-api-usemotion-com");
 });
@@ -189,7 +190,7 @@ Deno.test("service: slug keys a component readably", () => {
  * and nothing covering `api.usemotion.com`, so it must never move a verdict
  * about the surface this app actually calls.
  */
-Deno.test("service: is informational, unsigned, and widens egress to the status host only", () => {
+test("service: is informational, unsigned, and widens egress to the status host only", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");

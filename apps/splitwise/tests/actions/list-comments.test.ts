@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import listComments from "../../actions/list-comments.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const THREAD = {
 };
 
 /** The only endpoint here that identifies its subject by query, not by path. */
-Deno.test("list-comments: sends expense_id as a query parameter", async () => {
+test("list-comments: sends expense_id as a query parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: THREAD }]);
   await listComments.execute({ expenseId: 5123 }, ctx);
 
@@ -27,7 +28,7 @@ Deno.test("list-comments: sends expense_id as a query parameter", async () => {
  * Half the thread is Splitwise's own audit trail, rendered as prose. A workflow
  * treating every row as human-written will act on those.
  */
-Deno.test("list-comments: separates the human-written, undeleted comments", async () => {
+test("list-comments: separates the human-written, undeleted comments", async () => {
   const { ctx } = mockCtx([{ body: THREAD }]);
   const out = await listComments.execute({ expenseId: 5123 }, ctx) as {
     comments: unknown[];
@@ -39,7 +40,7 @@ Deno.test("list-comments: separates the human-written, undeleted comments", asyn
   assertEquals(out.user_comments[0].id, 2);
 });
 
-Deno.test("list-comments: a bad expense id fails before the request", async () => {
+test("list-comments: a bad expense id fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await listComments.execute({ expenseId: 0 }, ctx),

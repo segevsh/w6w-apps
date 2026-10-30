@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/data-get.ts";
 
 const display = { baseUrl: "https://myapp.bubbleapps.io" };
 
-Deno.test("data-get: fetches by unique ID and unwraps `response`", async () => {
+test("data-get: fetches by unique ID and unwraps `response`", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { response: { _id: "1x1", "Unit name": "Unit A" } } },
   ], { display });
@@ -16,7 +17,7 @@ Deno.test("data-get: fetches by unique ID and unwraps `response`", async () => {
   assertEquals(out, { _id: "1x1", "Unit name": "Unit A" });
 });
 
-Deno.test("data-get: a 404 (type not exposed, or missing record) throws with Bubble's message", async () => {
+test("data-get: a 404 (type not exposed, or missing record) throws with Bubble's message", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import {
   basicPayload,
   classifyTokenFailure,
@@ -19,7 +20,7 @@ import { AUTH_TOKEN_URL, errorBody, mockCtx, TRANSITION_TOKEN_URL } from "../_he
  * out why: "you'll need to append a `:` (colon) to your Greenhouse API token and
  * then Base64 encode the resulting string".
  */
-Deno.test("basicPayload: matches Greenhouse's published sample for an empty password", () => {
+test("basicPayload: matches Greenhouse's published sample for an empty password", () => {
   assertEquals(
     basicPayload("a7183e1b7e9ab09b8a5cfa87d1934c3c", ""),
     "YTcxODNlMWI3ZTlhYjA5YjhhNWNmYTg3ZDE5MzRjM2M6",
@@ -31,11 +32,11 @@ Deno.test("basicPayload: matches Greenhouse's published sample for an empty pass
  * password to `x`. One character apart on the wire, not interchangeable — which
  * is why this is asserted rather than assumed.
  */
-Deno.test("basicPayload: an empty password is not the same wire value as a throwaway one", () => {
+test("basicPayload: an empty password is not the same wire value as a throwaway one", () => {
   assert(basicPayload("key", "") !== basicPayload("key", "x"));
 });
 
-Deno.test("scrub: removes every held secret, wherever it appears", () => {
+test("scrub: removes every held secret, wherever it appears", () => {
   const message = "client_id=abcdef-4 does not contain a valid client ID suffix";
   assertEquals(
     scrub(message, ["abcdef-4", undefined]),
@@ -47,11 +48,11 @@ Deno.test("scrub: removes every held secret, wherever it appears", () => {
  * Short strings are skipped deliberately: a two-character "secret" would match
  * inside ordinary words and redact the whole message into noise.
  */
-Deno.test("scrub: leaves text alone when no secret is long enough to match", () => {
+test("scrub: leaves text alone when no secret is long enough to match", () => {
   assertEquals(scrub("nothing to hide", ["ab", "", undefined]), "nothing to hide");
 });
 
-Deno.test("expiresAtFrom: prefers expires_in and renews a minute early", () => {
+test("expiresAtFrom: prefers expires_in and renews a minute early", () => {
   const now = Date.parse("2026-08-11T00:00:00.000Z");
   assertEquals(
     expiresAtFrom({ expires_in: 3600 }, now),
@@ -63,7 +64,7 @@ Deno.test("expiresAtFrom: prefers expires_in and renews a minute early", () => {
  * The transition endpoint names the field `expires` and declares it only as a
  * string, so both plausible readings are handled rather than one guessed at.
  */
-Deno.test("expiresAtFrom: reads the transition endpoint's `expires` as seconds or as a date", () => {
+test("expiresAtFrom: reads the transition endpoint's `expires` as seconds or as a date", () => {
   const now = Date.parse("2026-08-11T00:00:00.000Z");
   assertEquals(
     expiresAtFrom({ expires: "1800" }, now),
@@ -75,7 +76,7 @@ Deno.test("expiresAtFrom: reads the transition endpoint's `expires` as seconds o
   );
 });
 
-Deno.test("expiresAtFrom: an unreadable TTL falls back to the documented hour", () => {
+test("expiresAtFrom: an unreadable TTL falls back to the documented hour", () => {
   const now = Date.parse("2026-08-11T00:00:00.000Z");
   assertEquals(
     expiresAtFrom({ expires: "who knows" }, now),
@@ -89,13 +90,13 @@ Deno.test("expiresAtFrom: an unreadable TTL falls back to the documented hour", 
  * secret as 401, so these cases are keyed off the body and the status is only
  * ever quoted.
  */
-Deno.test("classifyTokenFailure: an RFC 6749 invalid_client is read as a bad credential", () => {
+test("classifyTokenFailure: an RFC 6749 invalid_client is read as a bad credential", () => {
   const message = classifyTokenFailure(401, { error: "invalid_client" });
   assert(message.includes("invalid_client"), message);
   assert(message.includes("rejected the credential"), message);
 });
 
-Deno.test("classifyTokenFailure: a malformed client id is a 400 and says what to fix", () => {
+test("classifyTokenFailure: a malformed client id is a 400 and says what to fix", () => {
   const message = classifyTokenFailure(400, {
     message: "client_id=notaclient does not contain a valid client ID suffix",
   });
@@ -103,25 +104,25 @@ Deno.test("classifyTokenFailure: a malformed client id is a 400 and says what to
   assert(!message.includes("outage"), message);
 });
 
-Deno.test("classifyTokenFailure: a bare Unauthorized means no credential reached Greenhouse", () => {
+test("classifyTokenFailure: a bare Unauthorized means no credential reached Greenhouse", () => {
   const message = classifyTokenFailure(401, { message: "Unauthorized", errorId: "err-1" });
   assert(message.includes("saw no credential"), message);
 });
 
-Deno.test("classifyTokenFailure: the transition endpoint's rejection points at Dev Center", () => {
+test("classifyTokenFailure: the transition endpoint's rejection points at Dev Center", () => {
   const message = classifyTokenFailure(401, { message: "Invalid credentials" });
   assert(message.includes("Harvest API key"), message);
   assert(message.includes("API Credential Management"), message);
 });
 
-Deno.test("classifyTokenFailure: a grant-type complaint is owned as this app's bug", () => {
+test("classifyTokenFailure: a grant-type complaint is owned as this app's bug", () => {
   const message = classifyTokenFailure(400, {
     message: "grant_type=not_a_grant is invalid, please use one of: client_credentials",
   });
   assert(message.includes("this app's bug"), message);
 });
 
-Deno.test("mintClientCredentialsToken: posts the guide's form body with Basic client creds", async () => {
+test("mintClientCredentialsToken: posts the guide's form body with Basic client creds", async () => {
   const { ctx, calls } = mockCtx([{
     body: { token_type: "Bearer", access_token: "JWT", expires_in: 3600 },
   }]);
@@ -139,7 +140,7 @@ Deno.test("mintClientCredentialsToken: posts the guide's form body with Basic cl
   assertEquals(token.accessToken, "JWT");
 });
 
-Deno.test("mintClientCredentialsToken: omits sub entirely when it is blank", async () => {
+test("mintClientCredentialsToken: omits sub entirely when it is blank", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "JWT", expires_in: 60 } }]);
   await mintClientCredentialsToken(ctx, { clientId: "cid-4", clientSecret: "s", sub: "  " });
   assertEquals(calls[0].body, "grant_type=client_credentials");
@@ -149,7 +150,7 @@ Deno.test("mintClientCredentialsToken: omits sub entirely when it is blank", asy
  * The failure that matters most: the vendor's message quotes the client id back,
  * and a `test` result is stored and displayed.
  */
-Deno.test("mintClientCredentialsToken: the thrown message never contains the credential", async () => {
+test("mintClientCredentialsToken: the thrown message never contains the credential", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "client_id=supersecretid-4 does not contain a valid client ID suffix" },
@@ -165,7 +166,7 @@ Deno.test("mintClientCredentialsToken: the thrown message never contains the cre
   assert(caught!.message.includes("suffix"), caught!.message);
 });
 
-Deno.test("mintTransitionToken: Basic-authenticates the API key with an EMPTY password", async () => {
+test("mintTransitionToken: Basic-authenticates the API key with an EMPTY password", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "JWT", expires: "3600" } }]);
   await mintTransitionToken(ctx, { apiKey: "harvest-key" });
 
@@ -175,7 +176,7 @@ Deno.test("mintTransitionToken: Basic-authenticates the API key with an EMPTY pa
   assertEquals(calls[0].body, "{}");
 });
 
-Deno.test("mintTransitionToken: a 200 without an access_token is still a failure", async () => {
+test("mintTransitionToken: a 200 without an access_token is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { token_type: "Bearer" } }]);
   let caught: Error | undefined;
   try {
@@ -186,7 +187,7 @@ Deno.test("mintTransitionToken: a 200 without an access_token is still a failure
   assert(caught?.message.includes("without an access_token"), caught?.message);
 });
 
-Deno.test("probeWithToken: a 200 is a pass", async () => {
+test("probeWithToken: a 200 is a pass", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   assertEquals(await probeWithToken(ctx, "JWT"), { ok: true });
   assertEquals(calls[0].headers.authorization, "Bearer JWT");
@@ -197,14 +198,14 @@ Deno.test("probeWithToken: a 200 is a pass", async () => {
  * Site Admin subject — so a live credential legitimately answers 403 here, and
  * failing it would report a working connection as broken.
  */
-Deno.test("probeWithToken: a 403 is a PASS, with the reason explained", async () => {
+test("probeWithToken: a 403 is a PASS, with the reason explained", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("Forbidden") }]);
   const result = await probeWithToken(ctx, "JWT");
   assertEquals(result.ok, true);
   assert(result.message?.includes("Site Admin"), result.message);
 });
 
-Deno.test("probeWithToken: a 401 after a successful mint is a failure", async () => {
+test("probeWithToken: a 401 after a successful mint is a failure", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("Unauthorized", ["Token could not be decoded."]),
@@ -218,7 +219,7 @@ Deno.test("probeWithToken: a 401 after a successful mint is a failure", async ()
  * v3 routes before it authenticates, so a 404 on a documented path is a
  * statement about the endpoint, not about the credential.
  */
-Deno.test("probeWithToken: a 404 is reported as a missing endpoint, not a bad credential", async () => {
+test("probeWithToken: a 404 is reported as a missing endpoint, not a bad credential", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("Resource not found") }]);
   const result = await probeWithToken(ctx, "JWT");
   assertEquals(result.ok, false);

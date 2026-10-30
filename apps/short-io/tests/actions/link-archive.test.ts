@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/link-archive.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("link-archive: POSTs /links/archive with link_id (and domain_id only if given)", async () => {
+test("link-archive: POSTs /links/archive with link_id (and domain_id only if given)", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }, { body: { success: true } }]);
   await action.execute({ linkId: "lnk_a_b" }, ctx);
   assertEquals(pathOf(calls[0].url), "/links/archive");
@@ -11,7 +12,7 @@ Deno.test("link-archive: POSTs /links/archive with link_id (and domain_id only i
   assertEquals(JSON.parse(calls[1].body!), { link_id: "123", domain_id: "7" });
 });
 
-Deno.test("link-archive: success:false is an error", async () => {
+test("link-archive: success:false is an error", async () => {
   const { ctx } = mockCtx([{ body: { success: false, error: "bad" } }]);
   await assertRejects(async () => await action.execute({ linkId: "x" }, ctx), Error, "bad");
 });

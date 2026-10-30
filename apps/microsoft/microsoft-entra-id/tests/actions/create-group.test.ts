@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-group.ts";
 
-Deno.test("create-group: a security group is groupTypes [], mailEnabled false, securityEnabled true", async () => {
+test("create-group: a security group is groupTypes [], mailEnabled false, securityEnabled true", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "g1" } }]);
   const out = await action.execute({ displayName: "Ops", mailNickname: "ops" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -17,7 +18,7 @@ Deno.test("create-group: a security group is groupTypes [], mailEnabled false, s
   assertEquals(out.id, "g1");
 });
 
-Deno.test("create-group: a Microsoft 365 group is Unified, mail enabled, not security", async () => {
+test("create-group: a Microsoft 365 group is Unified, mail enabled, not security", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     displayName: "Library",
@@ -34,7 +35,7 @@ Deno.test("create-group: a Microsoft 365 group is Unified, mail enabled, not sec
   assertEquals(body.description, "Self help");
 });
 
-Deno.test("create-group: owners and members become @odata.bind user references", async () => {
+test("create-group: owners and members become @odata.bind user references", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     displayName: "Ops",
@@ -50,7 +51,7 @@ Deno.test("create-group: owners and members become @odata.bind user references",
   ]);
 });
 
-Deno.test("create-group: omits the bind arrays when there are none", async () => {
+test("create-group: omits the bind arrays when there are none", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ displayName: "Ops", mailNickname: "ops" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -58,7 +59,7 @@ Deno.test("create-group: omits the bind arrays when there are none", async () =>
   assert(!("members@odata.bind" in body));
 });
 
-Deno.test("create-group: refuses more than 20 owners+members before calling Graph", async () => {
+test("create-group: refuses more than 20 owners+members before calling Graph", async () => {
   const { ctx, calls } = mockCtx([]);
   const ids = Array.from({ length: 21 }, (_, i) => `u${i}`);
   await assertRejects(
@@ -70,7 +71,7 @@ Deno.test("create-group: refuses more than 20 owners+members before calling Grap
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-group: requires a display name and a mail nickname", async () => {
+test("create-group: requires a display name and a mail nickname", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ displayName: "", mailNickname: "x" }, ctx),
@@ -84,7 +85,7 @@ Deno.test("create-group: requires a display name and a mail nickname", async () 
   );
 });
 
-Deno.test("create-group: additionalProperties can add what the form does not model", async () => {
+test("create-group: additionalProperties can add what the form does not model", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     displayName: "Dyn",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/sla-get-many.ts";
 
-Deno.test("sla-get-many: GETs the request's SLA information", async () => {
+test("sla-get-many: GETs the request's SLA information", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [] } }]);
   await action.execute({ issueIdOrKey: "HD-1" }, ctx);
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/documents-commit.ts";
 
-Deno.test("documents-commit: POSTs an atomic Write array built from set/update/delete entries", async () => {
+test("documents-commit: POSTs an atomic Write array built from set/update/delete entries", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { writeResults: [{ updateTime: "t1" }, { updateTime: "t2" }], commitTime: "c" },
@@ -36,7 +37,7 @@ Deno.test("documents-commit: POSTs an atomic Write array built from set/update/d
   assertEquals(result.writeResults?.length, 2);
 });
 
-Deno.test("documents-commit: a transaction id is passed through", async () => {
+test("documents-commit: a transaction id is passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: DISPLAY });
   await action.execute({
     writes: [{ op: "delete", path: "users/bob" }],
@@ -45,7 +46,7 @@ Deno.test("documents-commit: a transaction id is passed through", async () => {
   assertEquals(JSON.parse(calls[0].body!).transaction, "dHhu");
 });
 
-Deno.test("documents-commit: an empty writes array is refused before the request", async () => {
+test("documents-commit: an empty writes array is refused before the request", async () => {
   const { ctx, calls } = mockCtx([], { display: DISPLAY });
   await assertRejects(async () => await action.execute({ writes: [] }, ctx), Error, "`writes`");
   assertEquals(calls.length, 0);

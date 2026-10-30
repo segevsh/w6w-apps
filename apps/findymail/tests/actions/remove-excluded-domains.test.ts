@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/remove-excluded-domains.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("remove-excluded-domains: DELETEs with a numeric ids array", async () => {
+test("remove-excluded-domains: DELETEs with a numeric ids array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute!({ "ids": "4, 5" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("remove-excluded-domains: DELETEs with a numeric ids array", async () 
   assertEquals(out, { "deleted": true, "ids": [4, 5] });
 });
 
-Deno.test("remove-excluded-domains: rejects a non-numeric id before any request", async () => {
+test("remove-excluded-domains: rejects a non-numeric id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await action.execute!({ "ids": "4,abc" } as never, ctx)

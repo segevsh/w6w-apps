@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import qrCodeClose from "../../actions/qr-code-close.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("qr-code-close: posts to /payments/qr_codes/{id}/close", async () => {
+test("qr-code-close: posts to /payments/qr_codes/{id}/close", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "qr_1", status: "closed" } }]);
   const out = await qrCodeClose.execute({ id: "qr_1" }, ctx);
 

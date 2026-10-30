@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 import workLocationDelete from "../../actions/work-location-delete.ts";
 
-Deno.test("work-location-delete: DELETEs /work-locations/<id>/ and reports the 204", async () => {
+test("work-location-delete: DELETEs /work-locations/<id>/ and reports the 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await workLocationDelete.execute({ id: "w1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("work-location-delete: DELETEs /work-locations/<id>/ and reports the 2
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("work-location-delete: refuses an empty id and surfaces a 404", async () => {
+test("work-location-delete: refuses an empty id and surfaces a 404", async () => {
   const { ctx, calls } = mockCtx([{ status: 404, body: errorBody("Not found.") }]);
   await assertRejects(
     () => Promise.resolve().then(() => workLocationDelete.execute({ id: "" }, ctx)),

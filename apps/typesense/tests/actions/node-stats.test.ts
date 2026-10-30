@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/node-stats.ts";
 
@@ -24,7 +25,7 @@ const metrics = (usedGb: number) => ({
   },
 });
 
-Deno.test("node-stats: reads both endpoints and computes the percentages", async () => {
+test("node-stats: reads both endpoints and computes the percentages", async () => {
   const { ctx, calls } = mockCtx([stats, metrics(4)], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls.map((call) => new URL(call.url).pathname), ["/stats.json", "/metrics.json"]);
@@ -35,7 +36,7 @@ Deno.test("node-stats: reads both endpoints and computes the percentages", async
 });
 
 /** Typesense's metrics come back as strings. */
-Deno.test("node-stats: parses the string-typed metric values", async () => {
+test("node-stats: parses the string-typed metric values", async () => {
   const { ctx } = mockCtx([stats, metrics(4)], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.typesenseMemoryBytes, 3_000_000_000);
@@ -43,7 +44,7 @@ Deno.test("node-stats: parses the string-typed metric values", async () => {
 });
 
 /** Writes stop and searches carry on, so the index quietly goes stale. */
-Deno.test("node-stats: warns near the memory ceiling", async () => {
+test("node-stats: warns near the memory ceiling", async () => {
   const { ctx, logs } = mockCtx([stats, metrics(7.2)], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.memoryUsedPercent, 90);
@@ -53,14 +54,14 @@ Deno.test("node-stats: warns near the memory ceiling", async () => {
   );
 });
 
-Deno.test("node-stats: a healthy node warns about nothing", async () => {
+test("node-stats: a healthy node warns about nothing", async () => {
   const { ctx, logs } = mockCtx([stats, metrics(2)], D);
   await action.execute({}, ctx);
   assertEquals(logs.length, 0);
 });
 
 /** A live gauge, not a counter. */
-Deno.test("node-stats: says stats.json is a ten-second window", () => {
+test("node-stats: says stats.json is a ten-second window", () => {
   assert(/10-SECOND window, not a counter/.test(action.description!), action.description);
   assertEquals(action.params, []);
 });

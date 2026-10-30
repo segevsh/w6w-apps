@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import markLeadAsReplied from "../../actions/mark-lead-as-replied.ts";
 import { mockCtx, pathOf, yelpError } from "../_helpers.ts";
 
-Deno.test("mark-lead-as-replied: POSTs the reply_type", async () => {
+test("mark-lead-as-replied: POSTs the reply_type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await markLeadAsReplied.execute({ leadId: "abc", replyType: "PHONE" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("mark-lead-as-replied: POSTs the reply_type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { reply_type: "PHONE" });
 });
 
-Deno.test("mark-lead-as-replied: a repeat call surfaces Yelp's own already-replied error", async () => {
+test("mark-lead-as-replied: a repeat call surfaces Yelp's own already-replied error", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: yelpError("NOT_AUTHORIZED", "Lead already marked as replied") },
   ]);
@@ -22,6 +23,6 @@ Deno.test("mark-lead-as-replied: a repeat call surfaces Yelp's own already-repli
   );
 });
 
-Deno.test("mark-lead-as-replied: is declared not idempotent", () => {
+test("mark-lead-as-replied: is declared not idempotent", () => {
   assertEquals(markLeadAsReplied.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
 /**
@@ -6,7 +7,7 @@ import service from "../../health/service.ts";
  * feed, so there is no probe to run. Declaring the absence is what keeps the
  * app's service health from sitting at `unknown` forever.
  */
-Deno.test("service: declared unavailable with a reason, and no check hook", () => {
+test("service: declared unavailable with a reason, and no check hook", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
@@ -18,7 +19,7 @@ Deno.test("service: declared unavailable with a reason, and no check hook", () =
  * `informational` is load-bearing: at the default `degraded` severity a check
  * that cannot run would drag the app's rolled-up health down permanently.
  */
-Deno.test("service: informational, so the absence cannot degrade the app", () => {
+test("service: informational, so the absence cannot degrade the app", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.covers, ["*"]);
 });
@@ -28,7 +29,7 @@ Deno.test("service: informational, so the absence cannot degrade the app", () =>
  * with the ~127,700-byte body of an UNCLAIMED Statuspage subdomain. Wiring it up
  * would produce a check that is always green and never about Pushover.
  */
-Deno.test("service: the reason records the unclaimed-Statuspage trap", () => {
+test("service: the reason records the unclaimed-Statuspage trap", () => {
   const reason = service.unavailable!.reason!;
   assert(reason.includes("statuspage.io"), reason);
   assert(reason.includes("UNCLAIMED") || reason.includes("unclaimed"), reason);
@@ -36,6 +37,6 @@ Deno.test("service: the reason records the unclaimed-Statuspage trap", () => {
 });
 
 /** No probe means no host to reach — a declared allowlist here would be dead weight. */
-Deno.test("service: declares no network allowance", () => {
+test("service: declares no network allowance", () => {
   assertEquals(service.network, undefined);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connector-list.ts";
 
-Deno.test("connector-list: cursor-paginated, like the items collection", async () => {
+test("connector-list: cursor-paginated, like the items collection", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "c1" }], cursor: "c2" } },
     { status: 200, body: { data: [{ id: "c2" }] } },

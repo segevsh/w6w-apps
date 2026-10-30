@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { bodyOf, mockAdsCtx, queryOf } from "../_helpers.ts";
 import action from "../../actions/list-campaigns.ts";
 
 const OK = { status: 200, body: { results: [], nextPageToken: "next" } };
 
-Deno.test("list-campaigns: builds an unfiltered FROM campaign query by default", async () => {
+test("list-campaigns: builds an unfiltered FROM campaign query by default", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -16,7 +17,7 @@ Deno.test("list-campaigns: builds an unfiltered FROM campaign query by default",
   assert(q.endsWith("ORDER BY campaign.id"));
 });
 
-Deno.test("list-campaigns: uses v25's start_date_time, not the removed start_date", async () => {
+test("list-campaigns: uses v25's start_date_time, not the removed start_date", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({}, ctx);
   const q = queryOf(calls[0]);
@@ -25,7 +26,7 @@ Deno.test("list-campaigns: uses v25's start_date_time, not the removed start_dat
   assert(!/campaign\.start_date(?![_a-z])/.test(q), "campaign.start_date does not exist in v25");
 });
 
-Deno.test("list-campaigns: filters by status and channel type as bare enums", async () => {
+test("list-campaigns: filters by status and channel type as bare enums", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ status: "enabled", advertisingChannelType: "performance_max" }, ctx);
   const q = queryOf(calls[0]);
@@ -36,7 +37,7 @@ Deno.test("list-campaigns: filters by status and channel type as bare enums", as
   );
 });
 
-Deno.test("list-campaigns: refuses a status that is not a bare enum word", () => {
+test("list-campaigns: refuses a status that is not a bare enum word", () => {
   const { ctx } = mockAdsCtx([OK]);
   assertThrows(
     () => action.execute({ status: "ENABLED OR 1=1" }, ctx),
@@ -45,7 +46,7 @@ Deno.test("list-campaigns: refuses a status that is not a bare enum word", () =>
   );
 });
 
-Deno.test("list-campaigns: honours orderBy, limit and pageToken", async () => {
+test("list-campaigns: honours orderBy, limit and pageToken", async () => {
   const { ctx, calls } = mockAdsCtx([OK]);
   await action.execute({ orderBy: "campaign.name", limit: 5, pageToken: "tok" }, ctx);
   const q = queryOf(calls[0]);
@@ -53,7 +54,7 @@ Deno.test("list-campaigns: honours orderBy, limit and pageToken", async () => {
   assertEquals(bodyOf(calls[0]).pageToken, "tok");
 });
 
-Deno.test("list-campaigns: returns Google's search envelope unchanged", async () => {
+test("list-campaigns: returns Google's search envelope unchanged", async () => {
   const { ctx } = mockAdsCtx([OK]);
   assertEquals(await action.execute({}, ctx), { results: [], nextPageToken: "next" });
 });

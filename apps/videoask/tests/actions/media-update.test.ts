@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mediaUpdate from "../../actions/media-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("media-update: PATCHes caption_data verbatim as a WebVTT document", async () => {
+test("media-update: PATCHes caption_data verbatim as a WebVTT document", async () => {
   const vtt = "WEBVTT\n\nkey-0\n00:00:00.700 --> 00:00:02.000\nHello";
   const { ctx, calls } = mockCtx([{ body: { media_id: "m1", caption_data: vtt } }]);
   await mediaUpdate.execute({ mediaId: "m1", captionData: vtt }, ctx);

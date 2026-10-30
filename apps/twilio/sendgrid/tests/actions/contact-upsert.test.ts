@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-upsert.ts";
 
-Deno.test("contact-upsert: minimal PUT /marketing/contacts with email only", async () => {
+test("contact-upsert: minimal PUT /marketing/contacts with email only", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { job_id: "j-1" } }]);
   const result = await action.execute!({ email: "a@x.com" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("contact-upsert: minimal PUT /marketing/contacts with email only", asy
   assertEquals(result, { job_id: "j-1" });
 });
 
-Deno.test("contact-upsert: maps additionalFields to snake_case contact fields", async () => {
+test("contact-upsert: maps additionalFields to snake_case contact fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: {} }]);
   await action.execute!(
     {
@@ -49,7 +50,7 @@ Deno.test("contact-upsert: maps additionalFields to snake_case contact fields", 
   assertEquals(body.contacts[0].custom_fields, { cf1: "hello" });
 });
 
-Deno.test("contact-upsert: missing email rejects", async () => {
+test("contact-upsert: missing email rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ email: "" }, ctx),
@@ -64,7 +65,7 @@ Deno.test("contact-upsert: missing email rejects", async () => {
 // reachable as form fields. The test above still covers the old shape as the
 // deprecated fallback; these cover the flat one.
 
-Deno.test("contact-upsert: maps flat params to snake_case contact fields", async () => {
+test("contact-upsert: maps flat params to snake_case contact fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: {} }]);
   await action.execute!(
     {
@@ -100,7 +101,7 @@ Deno.test("contact-upsert: maps flat params to snake_case contact fields", async
   assertEquals(body.list_ids, ["l1", "l2"]);
 });
 
-Deno.test("contact-upsert: a flat field wins over the deprecated group", async () => {
+test("contact-upsert: a flat field wins over the deprecated group", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: {} }]);
   await action.execute!(
     {
@@ -115,7 +116,7 @@ Deno.test("contact-upsert: a flat field wins over the deprecated group", async (
   assertEquals(body.contacts[0].last_name, "Kept");
 });
 
-Deno.test("contact-upsert: an empty declared default does not shadow the fallback", async () => {
+test("contact-upsert: an empty declared default does not shadow the fallback", async () => {
   // `listIds`/`customFields` default to `[]`/`{}`. A blank default must defer to
   // the deprecated group, not shadow it.
   const { ctx, calls } = mockCtx([{ status: 202, body: {} }]);
@@ -133,7 +134,7 @@ Deno.test("contact-upsert: an empty declared default does not shadow the fallbac
   assertEquals(body.contacts[0].custom_fields, { cf1: "v" });
 });
 
-Deno.test("contact-upsert: custom fields accept a map, JSON text, or the old pair row", async () => {
+test("contact-upsert: custom fields accept a map, JSON text, or the old pair row", async () => {
   for (
     const customFields of [
       { cf1: "hello" },
@@ -149,7 +150,7 @@ Deno.test("contact-upsert: custom fields accept a map, JSON text, or the old pai
   }
 });
 
-Deno.test("contact-upsert: invalid custom-field JSON rejects before the request", async () => {
+test("contact-upsert: invalid custom-field JSON rejects before the request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ email: "a@x.com", customFields: "{nope" }, ctx),
@@ -159,7 +160,7 @@ Deno.test("contact-upsert: invalid custom-field JSON rejects before the request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-upsert: no param is buried in a `group` the studio renders as JSON", () => {
+test("contact-upsert: no param is buried in a `group` the studio renders as JSON", () => {
   const walk = (list: typeof action.params): string[] =>
     (list ?? []).flatMap((p) => [
       ...(p.type === "group" ? [p.key] : []),

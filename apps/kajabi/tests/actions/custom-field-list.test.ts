@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldList from "../../actions/custom-field-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("custom-field-list: GETs the collection with every documented filter mapped", async () => {
+test("custom-field-list: GETs the collection with every documented filter mapped", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "custom_fields") }]);
   await customFieldList.execute({
     siteId: "111",
@@ -19,7 +20,7 @@ Deno.test("custom-field-list: GETs the collection with every documented filter m
   assertEquals(q["filter[required_eq]"], "true");
 });
 
-Deno.test("custom-field-list: sends no query at all when nothing is filled in", async () => {
+test("custom-field-list: sends no query at all when nothing is filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "custom_fields") }]);
   await customFieldList.execute({}, ctx);
   assertEquals(queryOf(calls[0]), {});

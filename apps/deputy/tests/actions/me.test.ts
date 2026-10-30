@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/me.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("me: GETs /api/v1/me and returns the body under response", async () => {
+test("me: GETs /api/v1/me and returns the body under response", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { DisplayName: "Carlos Sainz" } }],
     { display: { baseUrl: BASE_URL } },
@@ -13,7 +14,7 @@ Deno.test("me: GETs /api/v1/me and returns the body under response", async () =>
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("me: manifest shape — read, no params", () => {
+test("me: manifest shape — read, no params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params?.length ?? 0, 0);
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFormsiteCtx } from "../_helpers.ts";
 import resultList from "../../actions/result-list.ts";
 
@@ -9,7 +10,7 @@ const paged = {
   "pagination-page-last": "3",
 };
 
-Deno.test("result-list: maps filters to the documented snake_case query params", async () => {
+test("result-list: maps filters to the documented snake_case query params", async () => {
   const { ctx, calls } = mockFormsiteCtx([{ body: { results: [{ id: "1" }] }, headers: paged }]);
   const out = await resultList.execute({
     formDir: "f1",
@@ -39,7 +40,7 @@ Deno.test("result-list: maps filters to the documented snake_case query params",
   assertEquals(out, { results: [{ id: "1" }], page: 1, lastPage: 3 });
 });
 
-Deno.test("result-list: sends nothing but the path when no filters are set", async () => {
+test("result-list: sends nothing but the path when no filters are set", async () => {
   const { ctx, calls } = mockFormsiteCtx([{ body: {} }]);
   const out = await resultList.execute({ formDir: "f1" }, ctx);
   assertEquals(calls[0].url, B + "/forms/f1/results");

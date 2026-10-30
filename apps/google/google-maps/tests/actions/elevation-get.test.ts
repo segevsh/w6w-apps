@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { legacy } from "./_shared.ts";
 import action from "../../actions/elevation-get.ts";
@@ -11,7 +12,7 @@ const points = legacy({
   ],
 });
 
-Deno.test("elevation-get: reads points and reports the range", async () => {
+test("elevation-get: reads points and reports the range", async () => {
   const { ctx, calls } = mockCtx([points]);
   const result = await action.execute!({ locations: "39,-120|36,-118" }, ctx) as {
     count: number;
@@ -30,7 +31,7 @@ Deno.test("elevation-get: reads points and reports the range", async () => {
  * A resolution of 610 metres means "the elevation of this building" is the
  * average elevation of half a square kilometre.
  */
-Deno.test("elevation-get: reports the COARSEST resolution, which limits what the numbers mean", async () => {
+test("elevation-get: reports the COARSEST resolution, which limits what the numbers mean", async () => {
   const { ctx } = mockCtx([points]);
   const result = await action.execute!({ locations: "39,-120|36,-118" }, ctx) as {
     worstResolution: number;
@@ -38,7 +39,7 @@ Deno.test("elevation-get: reports the COARSEST resolution, which limits what the
   assertEquals(result.worstResolution, 610.8);
 });
 
-Deno.test("elevation-get: a path is sampled rather than sent point for point", async () => {
+test("elevation-get: a path is sampled rather than sent point for point", async () => {
   const { ctx, calls } = mockCtx([points]);
   await action.execute!({ path: "39,-120|36,-118", samples: 50 }, ctx);
   const url = new URL(calls[0].url);
@@ -47,7 +48,7 @@ Deno.test("elevation-get: a path is sampled rather than sent point for point", a
   assertEquals(url.searchParams.has("locations"), false);
 });
 
-Deno.test("elevation-get: the two modes are mutually exclusive", async () => {
+test("elevation-get: the two modes are mutually exclusive", async () => {
   const both = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ locations: "1,2", path: "1,2|3,4" }, both.ctx),
@@ -64,7 +65,7 @@ Deno.test("elevation-get: the two modes are mutually exclusive", async () => {
   );
 });
 
-Deno.test("elevation-get: a swapped pair is caught before the request", async () => {
+test("elevation-get: a swapped pair is caught before the request", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ locations: "-120,39" }, ctx),
@@ -73,7 +74,7 @@ Deno.test("elevation-get: a swapped pair is caught before the request", async ()
   );
 });
 
-Deno.test("elevation-get: an empty result set does not produce NaN bounds", async () => {
+test("elevation-get: an empty result set does not produce NaN bounds", async () => {
   const { ctx } = mockCtx([legacy({ status: "ZERO_RESULTS", results: [] })]);
   const result = await action.execute!({ locations: "0,0" }, ctx) as {
     count: number;
@@ -85,7 +86,7 @@ Deno.test("elevation-get: an empty result set does not produce NaN bounds", asyn
   assertEquals(result.worstResolution, undefined);
 });
 
-Deno.test("elevation-get: a missing resolution does not become the worst one", async () => {
+test("elevation-get: a missing resolution does not become the worst one", async () => {
   const { ctx } = mockCtx([
     legacy({ status: "OK", results: [{ elevation: 10 }, { elevation: 20, resolution: 9.6 }] }),
   ]);
@@ -95,7 +96,7 @@ Deno.test("elevation-get: a missing resolution does not become the worst one", a
   assertEquals(result.worstResolution, 9.6);
 });
 
-Deno.test("elevation-get: a refused key throws despite the 200", async () => {
+test("elevation-get: a refused key throws despite the 200", async () => {
   const { ctx } = mockCtx([legacy({ status: "REQUEST_DENIED", error_message: "invalid" })]);
   await assertRejects(
     async () => await action.execute!({ locations: "1,2" }, ctx),
@@ -104,6 +105,6 @@ Deno.test("elevation-get: a refused key throws despite the 200", async () => {
   );
 });
 
-Deno.test("elevation-get: says the resolution is part of the answer", () => {
+test("elevation-get: says the resolution is part of the answer", () => {
   assert(/RESOLUTION/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs /contacts with the documented body", async () => {
+test("contact-create: POSTs /contacts with the documented body", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", contact: { contact_id: "1" } } },
   ]);
@@ -28,7 +29,7 @@ Deno.test("contact-create: POSTs /contacts with the documented body", async () =
   assertEquals(out, { contact_id: "1" });
 });
 
-Deno.test("contact-create: an empty fields param is rejected before any request", async () => {
+test("contact-create: an empty fields param is rejected before any request", async () => {
   const { ctx, calls } = mockInventoryCtx([]);
   await assertRejects(
     async () => {
@@ -40,7 +41,7 @@ Deno.test("contact-create: an empty fields param is rejected before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: is a non-idempotent perform action", () => {
+test("contact-create: is a non-idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

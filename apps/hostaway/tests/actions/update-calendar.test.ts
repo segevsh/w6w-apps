@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-calendar.ts";
 
-Deno.test("update-calendar: PUTs the documented interval object to /v1/listings/{id}/calendar", async () => {
+test("update-calendar: PUTs the documented interval object to /v1/listings/{id}/calendar", async () => {
   const { ctx, calls } = mockCtx([envelope([{ id: 1, date: "2017-09-01" }])]);
   await action.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("update-calendar: PUTs the documented interval object to /v1/listings/
   });
 });
 
-Deno.test("update-calendar: the multi-unit block uses desiredUnitsToSell=0", async () => {
+test("update-calendar: the multi-unit block uses desiredUnitsToSell=0", async () => {
   const { ctx, calls } = mockCtx([envelope([])]);
   await action.execute(
     { listingId: 1, startDate: "2017-09-01", endDate: "2017-09-05", desiredUnitsToSell: 0 },
@@ -42,7 +43,7 @@ Deno.test("update-calendar: the multi-unit block uses desiredUnitsToSell=0", asy
   });
 });
 
-Deno.test("update-calendar: refuses a call without both interval bounds", async () => {
+test("update-calendar: refuses a call without both interval bounds", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ listingId: 1, startDate: "2017-09-01" }, ctx)),

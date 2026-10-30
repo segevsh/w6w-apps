@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskComplete from "../../actions/task-complete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-complete: calls POST /1/task/complete with numeric ids and optional data", async () => {
+test("task-complete: calls POST /1/task/complete with numeric ids and optional data", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 0 } }]);
   await taskComplete.execute({ taskIds: "3", data: { outcome: ":=success" } }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("task-complete: calls POST /1/task/complete with numeric ids and optio
   assertEquals(body.data, { outcome: ":=success" });
 });
 
-Deno.test("task-complete: accepts a JSON string for data, not just an object", async () => {
+test("task-complete: accepts a JSON string for data, not just an object", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 0 } }]);
   await taskComplete.execute({ taskIds: "3", data: '{"outcome": ":=success"}' }, ctx);
   const body = JSON.parse(calls[0].body!);

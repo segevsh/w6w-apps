@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemRoleCreate from "../../actions/job-item-role-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-role-create: POSTs the role assignment", async () => {
+test("job-item-role-create: POSTs the role assignment", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 5, roleId: 12 } }]);
   await jobItemRoleCreate.execute({ jobItemId: 88, roleId: 12, totalPlannedMinutes: 180 }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("job-item-role-create: POSTs the role assignment", async () => {
   assertEquals(bodyOf(calls[0]), { roleId: 12, totalPlannedMinutes: 180 });
 });
 
-Deno.test("job-item-role-create: roleId is required and integer-validated", () => {
+test("job-item-role-create: roleId is required and integer-validated", () => {
   const param = (jobItemRoleCreate.params ?? []).find((p) => p.key === "roleId");
   assertEquals(param?.required, true);
   assertEquals(param?.validation, { integer: true, min: 1 });

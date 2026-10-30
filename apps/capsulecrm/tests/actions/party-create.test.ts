@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/party-create.ts";
 
-Deno.test("party-create: POSTs /parties with a person body", async () => {
+test("party-create: POSTs /parties with a person body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { party: { id: 100 } } }]);
   const out = await action.execute(
     { type: "person", firstName: "Scott", lastName: "Spacey" },
@@ -16,13 +17,13 @@ Deno.test("party-create: POSTs /parties with a person body", async () => {
   assertEquals(out, { party: { id: 100 } });
 });
 
-Deno.test("party-create: an organisation body carries name instead of firstName/lastName", async () => {
+test("party-create: an organisation body carries name instead of firstName/lastName", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { party: { id: 101 } } }]);
   await action.execute({ type: "organisation", name: "Acme INC" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { party: { type: "organisation", name: "Acme INC" } });
 });
 
-Deno.test("party-create: links a person to an organisation by id", async () => {
+test("party-create: links a person to an organisation by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { party: {} } }]);
   await action.execute({ type: "person", firstName: "Jo", organisationId: 1234 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {

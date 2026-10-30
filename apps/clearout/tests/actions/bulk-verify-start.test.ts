@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-verify-start.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
 const ok = { body: { status: "success", data: { list_id: "L1" } } };
 
-Deno.test("bulk-verify-start: builds an `Email`-headed CSV from the emails and returns the list ID", async () => {
+test("bulk-verify-start: builds an `Email`-headed CSV from the emails and returns the list ID", async () => {
   const { ctx, calls } = mockCtx([ok]);
   const out = await run(action, {
     emails: "a@x.com, b@x.com\nc@x.com",
@@ -15,7 +16,7 @@ Deno.test("bulk-verify-start: builds an `Email`-headed CSV from the emails and r
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("bulk-verify-start: the multipart body carries file, optimize and the duplicate flag", async () => {
+test("bulk-verify-start: the multipart body carries file, optimize and the duplicate flag", async () => {
   let form: FormData | undefined;
   const { ctx } = mockCtx([ok]);
   const inner = ctx.fetch;
@@ -35,7 +36,7 @@ Deno.test("bulk-verify-start: the multipart body carries file, optimize and the 
   assertEquals(form!.get("ignore_duplicate_file"), "true");
 });
 
-Deno.test("bulk-verify-start: an uploaded file wins over emails; neither throws", async () => {
+test("bulk-verify-start: an uploaded file wins over emails; neither throws", async () => {
   let form: FormData | undefined;
   const { ctx } = mockCtx([ok]);
   const inner = ctx.fetch;
@@ -49,7 +50,7 @@ Deno.test("bulk-verify-start: an uploaded file wins over emails; neither throws"
   await assertRejects(() => run(action, {}, mockCtx().ctx), Error, "provide emails or a file");
 });
 
-Deno.test("bulk-verify-start: error 1004 (no email column) surfaces its message", async () => {
+test("bulk-verify-start: error 1004 (no email column) surfaces its message", async () => {
   const bad = mockCtx([{
     status: 400,
     body: {

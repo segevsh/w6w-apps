@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import labelCreate from "../../actions/label-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("label-create: posts name and color", async () => {
+test("label-create: posts name and color", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 4 } }]);
   await labelCreate.execute({ name: "bug", color: "#ff0000" }, ctx);
 

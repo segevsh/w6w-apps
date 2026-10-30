@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: is informational and reuses the app's own allowlist (no extra egress)", () => {
+test("quota: is informational and reuses the app's own allowlist (no extra egress)", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: reads RateLimit-* headers (no X- prefix) and converts a delta reset to an ISO timestamp", async () => {
+test("quota: reads RateLimit-* headers (no X- prefix) and converts a delta reset to an ISO timestamp", async () => {
   const { ctx } = mockCtx([
     {
       body: [{ id: 1 }],
@@ -30,13 +31,13 @@ Deno.test("quota: reads RateLimit-* headers (no X- prefix) and converts a delta 
   assertEquals(resetAt > before + 40_000 && resetAt < before + 50_000, true);
 });
 
-Deno.test("quota: reports unknown when no rate-limit headers are present", async () => {
+test("quota: reports unknown when no rate-limit headers are present", async () => {
   const { ctx } = mockCtx([{ body: [{ id: 1 }] }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: headroom below 10% is degraded, exhausted is down", async () => {
+test("quota: headroom below 10% is degraded, exhausted is down", async () => {
   const { ctx: ctxLow } = mockCtx([
     { body: [], headers: { "ratelimit-limit": "100", "ratelimit-remaining": "5" } },
   ]);

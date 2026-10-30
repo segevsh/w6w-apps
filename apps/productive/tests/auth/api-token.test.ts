@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test as nodeTest } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import apiToken, { authHeaders, PROBE_PATH, PROBE_QUERY } from "../../auth/api-token.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
@@ -9,7 +10,7 @@ const OK = { data: [{ id: "1", type: "projects", attributes: { name: "P" } }] };
 // deno-lint-ignore no-explicit-any
 const test = (c: unknown, ctx: HookContext) => (apiToken.test as any)({ credential: c }, ctx);
 
-Deno.test("auth: one apiKey method, a secret token and an organization id", () => {
+nodeTest("auth: one apiKey method, a secret token and an organization id", () => {
   assertEquals(apiToken.key, "api-token");
   assertEquals(apiToken.type, "apiKey");
   assertEquals(apiToken.apiKey, { in: "header", name: "X-Auth-Token" });
@@ -20,7 +21,7 @@ Deno.test("auth: one apiKey method, a secret token and an organization id", () =
   assertEquals(PROBE_PATH + PROBE_QUERY, "/projects?page[size]=1");
 });
 
-Deno.test("auth.sign: stamps both headers, trimmed, and nothing else", () => {
+nodeTest("auth.sign: stamps both headers, trimmed, and nothing else", () => {
   const out = apiToken.sign!({
     request: { url: "https://api.productive.io/x", method: "GET", headers: {} },
     credential: { apiToken: "  k-1  ", organizationId: 77 },
@@ -29,7 +30,7 @@ Deno.test("auth.sign: stamps both headers, trimmed, and nothing else", () => {
   assertEquals(authHeaders({}), { "x-auth-token": "", "x-organization-id": "" });
 });
 
-Deno.test("auth.test: a 2xx collection passes; the token is a header, never in the URL", async () => {
+nodeTest("auth.test: a 2xx collection passes; the token is a header, never in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   assertEquals(await test(cred, ctx), { ok: true });
   assertEquals(calls[0].url, "https://api.productive.io/api/v2/projects?page[size]=1");
@@ -38,7 +39,7 @@ Deno.test("auth.test: a 2xx collection passes; the token is a header, never in t
   assertEquals(calls[0].url.includes(cred.apiToken), false);
 });
 
-Deno.test("auth.test: a missing token or organization fails without a network call", async () => {
+nodeTest("auth.test: a missing token or organization fails without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await test({ apiToken: "  ", organizationId: "1" }, ctx)).ok, false);
   assertEquals((await test({ apiToken: "t", organizationId: "" }, ctx)).ok, false);
@@ -46,7 +47,7 @@ Deno.test("auth.test: a missing token or organization fails without a network ca
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth.test: invalid_auth_token is a rejection, and the message never echoes the token", async () => {
+nodeTest("auth.test: invalid_auth_token is a rejection, and the message never echoes the token", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("401", "invalid_auth_token", "Unauthenticated"),
@@ -57,7 +58,7 @@ Deno.test("auth.test: invalid_auth_token is a rejection, and the message never e
   assertEquals(r.message.includes(cred.apiToken), false);
 });
 
-Deno.test("auth.test: a 403 is reported with the vendor words, not guessed as a bad token", async () => {
+nodeTest("auth.test: a 403 is reported with the vendor words, not guessed as a bad token", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("403", "access_denied", "Access Denied"),
@@ -68,14 +69,14 @@ Deno.test("auth.test: a 403 is reported with the vendor words, not guessed as a 
   assert(!/does not accept this API token/.test(r.message), r.message);
 });
 
-Deno.test("auth.test: a 200 that is not a JSON:API collection is NOT a pass", async () => {
+nodeTest("auth.test: a 200 that is not a JSON:API collection is NOT a pass", async () => {
   const html = mockCtx([{ body: "<html>shell</html>", headers: { "content-type": "text/html" } }]);
   assertEquals((await test(cred, html.ctx)).ok, false);
   const other = mockCtx([{ body: { hello: "world" } }]);
   assertEquals((await test(cred, other.ctx)).ok, false);
 });
 
-Deno.test("auth.test: 429 is reported as undecided, a 5xx as a refusal", async () => {
+nodeTest("auth.test: 429 is reported as undecided, a 5xx as a refusal", async () => {
   const limited = mockCtx([{ status: 429, body: errorBody("429", "rate_limit", "Too Many") }]);
   const a = await test(cred, limited.ctx);
   assertEquals(a.ok, false);

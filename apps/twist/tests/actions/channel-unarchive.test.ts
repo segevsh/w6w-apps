@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import channelUnarchive from "../../actions/channel-unarchive.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("channel-unarchive: POST /api/v3/channels/unarchive with every documented parameter", async () => {
+test("channel-unarchive: POST /api/v3/channels/unarchive with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await channelUnarchive.execute({ "channelId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,7 +15,7 @@ Deno.test("channel-unarchive: POST /api/v3/channels/unarchive with every documen
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("channel-unarchive: sends a form body, never a query string", async () => {
+test("channel-unarchive: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUnarchive.execute({ "channelId": 100 }, ctx);
 
@@ -22,18 +23,18 @@ Deno.test("channel-unarchive: sends a form body, never a query string", async ()
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("channel-unarchive: is declared idempotent", () => {
+test("channel-unarchive: is declared idempotent", () => {
   assertEquals(channelUnarchive.idempotent, true);
 });
 
-Deno.test("channel-unarchive: sends no credential of its own", async () => {
+test("channel-unarchive: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await channelUnarchive.execute({ "channelId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("channel-unarchive: surfaces Twist's error body", async () => {
+test("channel-unarchive: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

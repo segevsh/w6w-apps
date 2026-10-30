@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskUnlinkConversation from "../../actions/task-unlink-conversation.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-unlink-conversation: POSTs /v1/tasks/{taskId}/unlink-conversation with conversationId", async () => {
+test("task-unlink-conversation: POSTs /v1/tasks/{taskId}/unlink-conversation with conversationId", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { taskId: "TK1", revision: "3" } },
@@ -13,7 +14,7 @@ Deno.test("task-unlink-conversation: POSTs /v1/tasks/{taskId}/unlink-conversatio
   assertEquals(JSON.parse(calls[0].body!), { conversationId: "CN1" });
 });
 
-Deno.test("task-unlink-conversation: is an idempotent perform action", () => {
+test("task-unlink-conversation: is an idempotent perform action", () => {
   assertEquals(taskUnlinkConversation.type, "perform");
   assertEquals(taskUnlinkConversation.idempotent, true);
 });

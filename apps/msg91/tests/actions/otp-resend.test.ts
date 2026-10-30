@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/otp-resend.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("otp-resend: GET /otp/retry, defaults to text, honours voice", async () => {
+test("otp-resend: GET /otp/retry, defaults to text, honours voice", async () => {
   const { ctx, calls } = mockCtx([
     { body: { type: "success", message: "retry send successfully" } },
     { body: { type: "success", message: "retry send successfully" } },
@@ -16,7 +17,7 @@ Deno.test("otp-resend: GET /otp/retry, defaults to text, honours voice", async (
   assertEquals(out, { message: "retry send successfully" });
 });
 
-Deno.test("otp-resend: the retry cap is surfaced as a failure", async () => {
+test("otp-resend: the retry cap is surfaced as a failure", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "OTP retry count maxed out" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ mobile: "919876543210" }, ctx)
@@ -24,7 +25,7 @@ Deno.test("otp-resend: the retry cap is surfaced as a failure", async () => {
   assert(err.message.includes("maxed out"));
 });
 
-Deno.test("otp-resend: puts no credential on the request (sign owns that)", async () => {
+test("otp-resend: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { type: "success", message: "retry send successfully" },
   }]);
@@ -34,7 +35,7 @@ Deno.test("otp-resend: puts no credential on the request (sign owns that)", asyn
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("otp-resend: a vendor error surfaces its own message", async () => {
+test("otp-resend: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ mobile: "919876543210" }, ctx)

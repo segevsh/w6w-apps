@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rewardGenerateLink from "../../actions/reward-generate-link.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("reward-generate-link: posts to generate_link and returns id + link", async () => {
+test("reward-generate-link: posts to generate_link and returns id + link", async () => {
   const reward = {
     id: "CED3MVGA0K9O",
     link: "https://testflight.tremendous.com/rewards/payout/abc",

@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares 43 actions with unique kebab-case keys", () => {
+test("index: declares 43 actions with unique kebab-case keys", () => {
   assertEquals(app.actions.length, 43);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
@@ -10,16 +11,16 @@ Deno.test("index: declares 43 actions with unique kebab-case keys", () => {
   }
 });
 
-Deno.test("index: declares exactly one auth method, api-key", () => {
+test("index: declares exactly one auth method, api-key", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
 });
 
-Deno.test("index: declares two health checks", () => {
+test("index: declares two health checks", () => {
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["quota", "service"]);
 });
 
-Deno.test("index: every perform action declares idempotent", () => {
+test("index: every perform action declares idempotent", () => {
   for (const a of app.actions) {
     if (a.type === "perform") {
       assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
@@ -27,12 +28,12 @@ Deno.test("index: every perform action declares idempotent", () => {
   }
 });
 
-Deno.test("index: every action requires auth (no public endpoints in this app)", () => {
+test("index: every action requires auth (no public endpoints in this app)", () => {
   const optedOut = app.actions.filter((a) => a.requiresAuth === false).map((a) => a.key);
   assertEquals(optedOut, []);
 });
 
-Deno.test("index: every action declares a description and output", () => {
+test("index: every action declares a description and output", () => {
   for (const a of app.actions) {
     assertEquals(typeof a.description, "string", `${a.key} has no description`);
     assertEquals(!!a.description, true, `${a.key} has an empty description`);
@@ -40,7 +41,7 @@ Deno.test("index: every action declares a description and output", () => {
   }
 });
 
-Deno.test("index: every action declares a resource grouping", () => {
+test("index: every action declares a resource grouping", () => {
   const resources = new Set(app.actions.map((a) => a.resource));
   for (const a of app.actions) {
     assertEquals(typeof a.resource, "string", `${a.key} has no resource`);
@@ -51,7 +52,7 @@ Deno.test("index: every action declares a resource grouping", () => {
   );
 });
 
-Deno.test("index: read/search actions never declare idempotent", () => {
+test("index: read/search actions never declare idempotent", () => {
   for (const a of app.actions) {
     if (a.type === "read" || a.type === "search") {
       assertEquals(a.idempotent, undefined, `${a.key} is not a perform action`);

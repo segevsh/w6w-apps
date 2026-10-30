@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/lookup-technologies.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("lookup-technologies: POSTs the domain and filter and wraps the response", async () => {
+test("lookup-technologies: POSTs the domain and filter and wraps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "technologies": [{ "name": "React" }] },

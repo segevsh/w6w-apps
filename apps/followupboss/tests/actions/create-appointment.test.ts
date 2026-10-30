@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import createAppointment from "../../actions/create-appointment.ts";
 
-Deno.test("create-appointment: POSTs /appointments, sendInvitation on the query", async () => {
+test("create-appointment: POSTs /appointments, sendInvitation on the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 13854 } }]);
   await createAppointment.execute({
     title: "Showing",
@@ -22,7 +23,7 @@ Deno.test("create-appointment: POSTs /appointments, sendInvitation on the query"
   });
 });
 
-Deno.test("create-appointment: requires title, start and end", () => {
+test("create-appointment: requires title, start and end", () => {
   assertEquals(
     (createAppointment.params ?? []).filter((p) => p.required).map((p) => p.key),
     ["title", "start", "end"],
@@ -32,7 +33,7 @@ Deno.test("create-appointment: requires title, start and end", () => {
 /** Omit the agent's own user and the appointment never reaches their calendar. */
 
 /** Omit the agent's own user and the appointment never reaches their calendar. */
-Deno.test("create-appointment: warns about the calendar-sync precondition", () => {
+test("create-appointment: warns about the calendar-sync precondition", () => {
   assert(/calendar/i.test(createAppointment.description!));
   assert(param(createAppointment, "invitees").hint?.includes("agent's own user entry"));
 });

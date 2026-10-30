@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import usAutocomplete from "../../actions/us-autocomplete.ts";
 import { bodyOf, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("us-autocomplete: POSTs the prefix and returns suggestions", async () => {
+test("us-autocomplete: POSTs the prefix and returns suggestions", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "us_auto_1",
@@ -24,7 +25,7 @@ Deno.test("us-autocomplete: POSTs the prefix and returns suggestions", async () 
   assertEquals(out.suggestions.length, 1);
 });
 
-Deno.test("us-autocomplete: valid_addresses is sent as an explicit true/false, case as proper", async () => {
+test("us-autocomplete: valid_addresses is sent as an explicit true/false, case as proper", async () => {
   const { ctx, calls } = mockCtx([{ body: { suggestions: [] } }, { body: { suggestions: [] } }]);
   await usAutocomplete.execute({
     addressPrefix: "1",
@@ -38,7 +39,7 @@ Deno.test("us-autocomplete: valid_addresses is sent as an explicit true/false, c
   assertEquals(queryOf(calls[1].url), { valid_addresses: "true" });
 });
 
-Deno.test("us-autocomplete: a rate-limited call explains the limit", async () => {
+test("us-autocomplete: a rate-limited call explains the limit", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: errorBody("rate_limit_exceeded", "Rate limit exceeded.", 429),

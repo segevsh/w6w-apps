@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberGet from "../../actions/subscriber-get.ts";
 import { API_PATH, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-get: GETs /subscribers/{listid}.json with the address in the query", async () => {
+test("subscriber-get: GETs /subscribers/{listid}.json with the address in the query", async () => {
   const body = {
     EmailAddress: "a@example.com",
     Name: "Subscriber One",
@@ -19,7 +20,7 @@ Deno.test("subscriber-get: GETs /subscribers/{listid}.json with the address in t
 });
 
 /** Off by default, matching the API — the consent value has to be asked for. */
-Deno.test("subscriber-get: the tracking-preference flag is omitted unless set", async () => {
+test("subscriber-get: the tracking-preference flag is omitted unless set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await subscriberGet.execute({ listId: "lid", email: "a@b.com" }, ctx);
   assertEquals(queryOf(calls[0].url).includetrackingpreference, undefined);
@@ -32,7 +33,7 @@ Deno.test("subscriber-get: the tracking-preference flag is omitted unless set", 
 });
 
 /** Date and ListJoinedDate are different facts, and v3.3 added the second. */
-Deno.test("subscriber-get: distinguishes state-change date from list-joined date", async () => {
+test("subscriber-get: distinguishes state-change date from list-joined date", async () => {
   const { ctx } = mockCtx([{
     body: {
       EmailAddress: "a@b.com",

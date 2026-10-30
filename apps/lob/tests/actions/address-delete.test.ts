@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import addressDelete from "../../actions/address-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("address-delete: sends DELETE to the resource and returns Lob's confirmation", async () => {
+test("address-delete: sends DELETE to the resource and returns Lob's confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "adr_abc", deleted: true } }]);
   const out = await addressDelete.execute({ addressId: "adr_abc" }, ctx) as {
     id: string;
@@ -14,11 +15,11 @@ Deno.test("address-delete: sends DELETE to the resource and returns Lob's confir
   assertEquals(out, { id: "adr_abc", deleted: true });
 });
 
-Deno.test("address-delete: is declared idempotent", () => {
+test("address-delete: is declared idempotent", () => {
   assertEquals(addressDelete.idempotent, true);
 });
 
-Deno.test("address-delete: a refused delete surfaces Lob's code", async () => {
+test("address-delete: a refused delete surfaces Lob's code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("not_deletable", "cannot be deleted", 422),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callEventSubscriptionCreate from "../../actions/call-event-subscription-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test(
+test(
   "call-event-subscription-create: POSTs /subscriptions/call and strips the embedded webhook secret",
   async () => {
     const { ctx, calls } = mockCtx([{
@@ -28,6 +29,6 @@ Deno.test(
   },
 );
 
-Deno.test("call-event-subscription-create: declared non-idempotent", () => {
+test("call-event-subscription-create: declared non-idempotent", () => {
   assertEquals(callEventSubscriptionCreate.idempotent, false);
 });

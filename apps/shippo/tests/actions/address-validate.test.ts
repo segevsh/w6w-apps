@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/address-validate.ts";
 
-Deno.test("address-validate: reads GET /addresses/{id}/validate", async () => {
+test("address-validate: reads GET /addresses/{id}/validate", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { object_id: "adr_1", validation_results: { is_valid: true, messages: [] } },
@@ -15,17 +16,17 @@ Deno.test("address-validate: reads GET /addresses/{id}/validate", async () => {
   assertEquals(result.validation_results?.is_valid, true);
 });
 
-Deno.test("address-validate: `addressId` is required", async () => {
+test("address-validate: `addressId` is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "addressId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("address-validate: is read-only", () => {
+test("address-validate: is read-only", () => {
   assertEquals(action.type, "read");
 });
 
-Deno.test("address-validate: logs the outcome, not the address itself", async () => {
+test("address-validate: logs the outcome, not the address itself", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { object_id: "adr_1", validation_results: { is_valid: false } },

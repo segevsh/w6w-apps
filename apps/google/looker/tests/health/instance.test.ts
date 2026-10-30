@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/instance.ts";
 import service from "../../health/service.ts";
@@ -6,7 +7,7 @@ import service from "../../health/service.ts";
 const D = { display: { host: "https://mycompany.cloud.looker.com" } };
 const run = (ctx: Parameters<NonNullable<typeof check.check>>[1]) => check.check!({}, ctx);
 
-Deno.test("instance: an answering Looker is ok, and names the user", async () => {
+test("instance: an answering Looker is ok, and names the user", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "42", display_name: "Workflow Bot" },
@@ -19,7 +20,7 @@ Deno.test("instance: an answering Looker is ok, and names the user", async () =>
 });
 
 /** The commonest self-hosted mistake presents as an outage. */
-Deno.test("instance: a connection failure names port 19999", async () => {
+test("instance: a connection failure names port 19999", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("connection refused")),
     log: () => {},
@@ -31,7 +32,7 @@ Deno.test("instance: a connection failure names port 19999", async () => {
 });
 
 /** A token lasts an hour, so a 401 is usually a missed refresh. */
-Deno.test("instance: a 401 says a missed refresh before it says a revocation", async () => {
+test("instance: a 401 says a missed refresh before it says a revocation", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Not authenticated" } }], D);
   const result = await run(ctx);
   assertEquals(result.state, "down");
@@ -39,7 +40,7 @@ Deno.test("instance: a 401 says a missed refresh before it says a revocation", a
 });
 
 /** A disabled user gets a token and every query is refused. */
-Deno.test("instance: a disabled Looker user is down, not ok", async () => {
+test("instance: a disabled Looker user is down, not ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "42", is_disabled: true } }], D);
   const result = await run(ctx);
   assertEquals(result.state, "down");
@@ -47,14 +48,14 @@ Deno.test("instance: a disabled Looker user is down, not ok", async () => {
 });
 
 /** A browser URL reaches the web interface, which answers HTML. */
-Deno.test("instance: a non-JSON body reads as the wrong port rather than an outage", async () => {
+test("instance: a non-JSON body reads as the wrong port rather than an outage", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>Looker</html>" }], D);
   const result = await run(ctx);
   assertEquals(result.state, "degraded");
   assert(/port 19999/.test(result.message!), result.message);
 });
 
-Deno.test("instance: a 5xx is down and a 4xx is degraded", async () => {
+test("instance: a 5xx is down and a 4xx is degraded", async () => {
   const server = mockCtx([{ status: 503, body: { message: "unavailable" } }], D);
   assertEquals((await run(server.ctx)).state, "down");
   const client = mockCtx([{ status: 404, body: { message: "no" } }], D);
@@ -62,14 +63,14 @@ Deno.test("instance: a 5xx is down and a 4xx is degraded", async () => {
 });
 
 /** Without a recorded instance there is nothing to reach. */
-Deno.test("instance: no recorded host is unknown, not down", async () => {
+test("instance: no recorded host is unknown, not down", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   const result = await run(ctx);
   assertEquals(result.state, "unknown");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("instance: is connection-scoped, signed and fatal", () => {
+test("instance: is connection-scoped, signed and fatal", () => {
   assertEquals(check.scope, "connection");
   assertEquals(check.credential, "signed");
   assertEquals(check.severity, "fatal");
@@ -81,7 +82,7 @@ Deno.test("instance: is connection-scoped, signed and fatal", () => {
  * There is no Looker service to have a status — every deployment is its own
  * instance, and the warehouse underneath is not covered by any status page.
  */
-Deno.test("service: is a declared absence with a reason, and makes no request", () => {
+test("service: is a declared absence with a reason, and makes no request", () => {
   assertEquals(service.check, undefined);
   assertEquals(service.scope, "app");
   assertEquals(service.severity, "informational");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-activities.ts";
 import { exec, mockCtx, page, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("list-activities: GETs /v1/activity/{domainId} (singular) with the window", async () => {
+test("list-activities: GETs /v1/activity/{domainId} (singular) with the window", async () => {
   const body = page([{ id: "a1", type: "delivered" }]);
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await exec(action, { domainId: "d/1", dateFrom: 100, dateTo: 200 }, ctx);
@@ -11,7 +12,7 @@ Deno.test("list-activities: GETs /v1/activity/{domainId} (singular) with the win
   assertEquals(out, body);
 });
 
-Deno.test("list-activities: event types are sent as event[]", async () => {
+test("list-activities: event types are sent as event[]", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await exec(action, {
     domainId: "d1",
@@ -25,7 +26,7 @@ Deno.test("list-activities: event types are sent as event[]", async () => {
   assertEquals(queryOf(calls[0].url).page, "2");
 });
 
-Deno.test("list-activities: the event options are exactly the documented types", () => {
+test("list-activities: the event options are exactly the documented types", () => {
   const options = action.params!.find((p) => p.key === "event")!.options as { value: string }[];
   assertEquals(options.length, 15);
   assertEquals(options.some((o) => o.value === "suppressed"), true);

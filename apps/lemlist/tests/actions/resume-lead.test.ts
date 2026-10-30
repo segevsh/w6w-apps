@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import resumeLead from "../../actions/resume-lead.ts";
 import markLeadInterested from "../../actions/mark-lead-interested.ts";
 import markLeadNotInterested from "../../actions/mark-lead-not-interested.ts";
 import pauseLead from "../../actions/pause-lead.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("resume-lead: POSTs /leads/start/{id} — `start`, not `resume` or `review`", async () => {
+test("resume-lead: POSTs /leads/start/{id} — `start`, not `resume` or `review`", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await resumeLead.execute!({ leadId: "lea_1" }, ctx);
   const path = new URL(calls[0].url).pathname;
@@ -16,14 +17,14 @@ Deno.test("resume-lead: POSTs /leads/start/{id} — `start`, not `resume` or `re
   assert(!path.includes("/resume/"));
 });
 
-Deno.test("lead state actions: all four are idempotent performs", () => {
+test("lead state actions: all four are idempotent performs", () => {
   for (const a of [markLeadInterested, markLeadNotInterested, pauseLead, resumeLead]) {
     assertEquals(a.type, "perform", a.key);
     assertEquals(a.idempotent, true, a.key);
   }
 });
 
-Deno.test("lead state actions: none send a request body", async () => {
+test("lead state actions: none send a request body", async () => {
   for (const a of [markLeadInterested, markLeadNotInterested]) {
     const { ctx, calls } = mockCtx([{ body: [] }]);
     await a.execute!({ leadIdOrEmail: "lea_1" }, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param, run } from "../_helpers.ts";
 import action from "../../actions/list-related-items.ts";
 
-Deno.test("list-related-items: GETs /{entity}/{id}/related for every relation", async () => {
+test("list-related-items: GETs /{entity}/{id}/related for every relation", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ id: 208105, type: "project" }, { id: 13358412, type: "company" }],
@@ -17,7 +18,7 @@ Deno.test("list-related-items: GETs /{entity}/{id}/related for every relation", 
   assertEquals(out.items, [{ id: 208105, type: "project" }, { id: 13358412, type: "company" }]);
 });
 
-Deno.test("list-related-items: narrows to one related type via the extra path segment", async () => {
+test("list-related-items: narrows to one related type via the extra path segment", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({ entity: "leads", entityId: 8894157, relatedEntity: "tasks" }, ctx);
   assertEquals(
@@ -26,7 +27,7 @@ Deno.test("list-related-items: narrows to one related type via the extra path se
   );
 });
 
-Deno.test("list-related-items: offers exactly the six entity types Copper relates", () => {
+test("list-related-items: offers exactly the six entity types Copper relates", () => {
   const expected = ["leads", "people", "companies", "opportunities", "projects", "tasks"];
   assertEquals(optionValues(action, "entity"), expected);
   assertEquals(optionValues(action, "relatedEntity"), expected);

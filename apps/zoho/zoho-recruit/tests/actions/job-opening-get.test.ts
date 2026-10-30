@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/job-opening-get.ts";
 
-Deno.test("job-opening-get: GETs /Job_Openings/{id} and unwraps the single record", async () => {
+test("job-opening-get: GETs /Job_Openings/{id} and unwraps the single record", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [{ id: "1", Job_Opening_Name: "Software Engineer" }] } },
   ]);

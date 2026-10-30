@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-leave.ts";
 
-Deno.test("channel-leave: leaves (204)", async () => {
+test("channel-leave: leaves (204)", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute({ "channelId": "O1" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -16,7 +17,7 @@ Deno.test("channel-leave: leaves (204)", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("channel-leave: idempotent is declared as true", () => {
+test("channel-leave: idempotent is declared as true", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

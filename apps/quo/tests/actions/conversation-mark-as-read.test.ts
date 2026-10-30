@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationMarkAsRead from "../../actions/conversation-mark-as-read.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-mark-as-read: POSTs the mark-as-read path and returns the bare object", async () => {
+test("conversation-mark-as-read: POSTs the mark-as-read path and returns the bare object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "CN1" } }]);
   const out = await conversationMarkAsRead.execute({ conversationId: "CN1" }, ctx) as {
     id: string;
@@ -12,7 +13,7 @@ Deno.test("conversation-mark-as-read: POSTs the mark-as-read path and returns th
   assertEquals(out.id, "CN1");
 });
 
-Deno.test("conversation-mark-as-read: is an idempotent perform action", () => {
+test("conversation-mark-as-read: is an idempotent perform action", () => {
   assertEquals(conversationMarkAsRead.type, "perform");
   assertEquals(conversationMarkAsRead.idempotent, true);
 });

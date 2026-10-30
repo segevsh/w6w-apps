@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("contact-list: sends filter/select/order/start and returns total + next", async () => {
+test("contact-list: sends filter/select/order/start and returns total + next", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: [{ ID: "1" }], total: 1, time: {} } },
   ], { display });
@@ -21,7 +22,7 @@ Deno.test("contact-list: sends filter/select/order/start and returns total + nex
   assertEquals(out.total, 1);
 });
 
-Deno.test("contact-list: rejects a select that is not a JSON array", async () => {
+test("contact-list: rejects a select that is not a JSON array", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ select: '{"not":"array"}' }, ctx);

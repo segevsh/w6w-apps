@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/environment-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("environment-list: full input maps to GET /v1/environments", async () => {
+test("environment-list: full input maps to GET /v1/environments", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -97,7 +98,7 @@ Deno.test("environment-list: full input maps to GET /v1/environments", async () 
   });
 });
 
-Deno.test("environment-list: required input only maps to GET /v1/environments", async () => {
+test("environment-list: required input only maps to GET /v1/environments", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -160,7 +161,7 @@ Deno.test("environment-list: required input only maps to GET /v1/environments", 
   });
 });
 
-Deno.test("environment-list: an API error rejects with the vendor's title and detail", async () => {
+test("environment-list: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

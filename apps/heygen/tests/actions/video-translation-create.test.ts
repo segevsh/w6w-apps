@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import videoTranslationCreate from "../../actions/video-translation-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("video-translation-create: builds a url-sourced request with parsed target languages", async () => {
+test("video-translation-create: builds a url-sourced request with parsed target languages", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ video_translation_ids: ["vt1", "vt2"] }) },
   ]);
@@ -18,7 +19,7 @@ Deno.test("video-translation-create: builds a url-sourced request with parsed ta
   assertEquals(out, { video_translation_ids: ["vt1", "vt2"] });
 });
 
-Deno.test("video-translation-create: an asset-id source builds an asset_id reference", async () => {
+test("video-translation-create: an asset-id source builds an asset_id reference", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ video_translation_ids: ["vt1"] }) }]);
   await videoTranslationCreate.execute(
     { videoAssetId: "asset_1", outputLanguages: "English" },
@@ -29,7 +30,7 @@ Deno.test("video-translation-create: an asset-id source builds an asset_id refer
   assertEquals(body.video, { type: "asset_id", asset_id: "asset_1" });
 });
 
-Deno.test("video-translation-create: a custom dubbing audio source is passed through the same way", async () => {
+test("video-translation-create: a custom dubbing audio source is passed through the same way", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ video_translation_ids: ["vt1"] }) }]);
   await videoTranslationCreate.execute(
     {
@@ -44,7 +45,7 @@ Deno.test("video-translation-create: a custom dubbing audio source is passed thr
   assertEquals(body.audio, { type: "url", url: "https://example.com/a.mp3" });
 });
 
-Deno.test("video-translation-create: neither videoUrl nor videoAssetId is rejected client-side", async () => {
+test("video-translation-create: neither videoUrl nor videoAssetId is rejected client-side", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await videoTranslationCreate.execute({ outputLanguages: "English" }, ctx),
@@ -54,7 +55,7 @@ Deno.test("video-translation-create: neither videoUrl nor videoAssetId is reject
   assertEquals(calls.length, 0);
 });
 
-Deno.test("video-translation-create: both videoUrl and videoAssetId is rejected client-side", async () => {
+test("video-translation-create: both videoUrl and videoAssetId is rejected client-side", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -67,7 +68,7 @@ Deno.test("video-translation-create: both videoUrl and videoAssetId is rejected 
   );
 });
 
-Deno.test("video-translation-create: an empty outputLanguages is rejected client-side", async () => {
+test("video-translation-create: an empty outputLanguages is rejected client-side", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -77,7 +78,7 @@ Deno.test("video-translation-create: an empty outputLanguages is rejected client
   );
 });
 
-Deno.test("video-translation-create: the output declares the plural, per-language id shape", () => {
+test("video-translation-create: the output declares the plural, per-language id shape", () => {
   const out = videoTranslationCreate.output;
   assert(Array.isArray(out));
   assert(out.some((o) => o.key === "video_translation_ids"));

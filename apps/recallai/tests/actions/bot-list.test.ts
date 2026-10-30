@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bot-list.ts";
 
-Deno.test("bot-list: maps filters, a metadata key/value pair, and offset paging", async () => {
+test("bot-list: maps filters, a metadata key/value pair, and offset paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       count: 42,
@@ -36,13 +37,13 @@ Deno.test("bot-list: maps filters, a metadata key/value pair, and offset paging"
   assertEquals(out, { bots: [{ id: "b1" }], count: 42, nextPage: 3 });
 });
 
-Deno.test("bot-list: last page has no nextPage; no filters sends no query", async () => {
+test("bot-list: last page has no nextPage; no filters sends no query", async () => {
   const { ctx, calls } = mockCtx([{ body: { count: 0, next: null, previous: null, results: [] } }]);
   assertEquals(await action.execute!({}, ctx), { bots: [], count: 0 });
   assertEquals(calls[0].url, "https://us-west-2.recall.ai/api/v1/bot/");
 });
 
-Deno.test("bot-list: a rate limit carries the Retry-After", async () => {
+test("bot-list: a rate limit carries the Retry-After", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "retry-after": "12" },

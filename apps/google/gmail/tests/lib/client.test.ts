@@ -1,16 +1,17 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
-import { decodeBase64Url } from "@std/encoding/base64url";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
+const decodeBase64Url = ((s: string) => new Uint8Array(Buffer.from(s, "base64url")));
 import { mockCtx } from "../_helpers.ts";
 import { buildMimeMessage, GmailClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new GmailClient(ctx);
   const result = await client.request("/users/me/messages/abc", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"error":"NOT_FOUND"}' },
   ]);
@@ -23,7 +24,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertStringIncludes(err.message, "/gmail/v1/users/me/messages/missing");
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new GmailClient(ctx);
   await client.request("/x", {
@@ -36,7 +37,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: repeats array query params (matches Gmail's expected format)", async () => {
+test("client: repeats array query params (matches Gmail's expected format)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new GmailClient(ctx);
   await client.request("/users/me/messages", {
@@ -46,7 +47,7 @@ Deno.test("client: repeats array query params (matches Gmail's expected format)"
   assertEquals(params, ["INBOX", "UNREAD"]);
 });
 
-Deno.test("buildMimeMessage: emits a plain-text message when only `text` is set", () => {
+test("buildMimeMessage: emits a plain-text message when only `text` is set", () => {
   const raw = buildMimeMessage({ to: "a@b.com", subject: "Hi", text: "hello" });
   const decoded = new TextDecoder().decode(decodeBase64Url(raw));
   assertStringIncludes(decoded, "To: a@b.com");
@@ -55,7 +56,7 @@ Deno.test("buildMimeMessage: emits a plain-text message when only `text` is set"
   assertStringIncludes(decoded, "hello");
 });
 
-Deno.test("buildMimeMessage: switches to multipart/alternative when both text and html are set", () => {
+test("buildMimeMessage: switches to multipart/alternative when both text and html are set", () => {
   const raw = buildMimeMessage({
     to: "a@b.com",
     subject: "Hi",
@@ -69,18 +70,18 @@ Deno.test("buildMimeMessage: switches to multipart/alternative when both text an
   assertStringIncludes(decoded, "<p>hello</p>");
 });
 
-Deno.test("buildMimeMessage: base64url alphabet only (no +/= padding)", () => {
+test("buildMimeMessage: base64url alphabet only (no +/= padding)", () => {
   const raw = buildMimeMessage({ to: "a@b.com", subject: "S", text: "hi" });
   assertEquals(/^[A-Za-z0-9_-]+$/.test(raw), true);
 });
 
-Deno.test("buildMimeMessage: encodes non-ASCII subject as RFC 2047", () => {
+test("buildMimeMessage: encodes non-ASCII subject as RFC 2047", () => {
   const raw = buildMimeMessage({ to: "a@b.com", subject: "héllo", text: "x" });
   const decoded = new TextDecoder().decode(decodeBase64Url(raw));
   assertStringIncludes(decoded, "=?UTF-8?B?");
 });
 
-Deno.test("buildMimeMessage: preserves reply headers when supplied", () => {
+test("buildMimeMessage: preserves reply headers when supplied", () => {
   const raw = buildMimeMessage({
     to: "a@b.com",
     subject: "Re: hi",

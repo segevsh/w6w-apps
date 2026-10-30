@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listEmployeeFiles from "../../actions/list-employee-files.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-employee-files: lists via /files/view, not /files", async () => {
+test("list-employee-files: lists via /files/view, not /files", async () => {
   // `/files` is the upload collection; listing needs the `/view` suffix.
   assertEquals(listEmployeeFiles.type, "search");
   const { ctx, calls } = mockCtx([{ body: { categories: [] } }]);
@@ -11,7 +12,7 @@ Deno.test("list-employee-files: lists via /files/view, not /files", async () => 
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("list-employee-files: sends Accept: application/json — this endpoint defaults to XML", async () => {
+test("list-employee-files: sends Accept: application/json — this endpoint defaults to XML", async () => {
   // The most explicit statement of the XML default in the whole API: this
   // endpoint's `Accept` parameter is documented with `default: application/xml`
   // and "Any other value (or omitted) returns XML."
@@ -20,7 +21,7 @@ Deno.test("list-employee-files: sends Accept: application/json — this endpoint
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("list-employee-files: the employee id is required and escaped", async () => {
+test("list-employee-files: the employee id is required and escaped", async () => {
   assertEquals((listEmployeeFiles.params ?? []).map((p) => p.key), ["id"]);
   assertEquals(listEmployeeFiles.params![0].required, true);
   const { ctx, calls } = mockCtx([{ body: {} }]);

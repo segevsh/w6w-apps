@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeUpdate from "../../actions/route-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-update: PUT /api/routes/{routeId}", async () => {
+test("route-update: PUT /api/routes/{routeId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeUpdate.execute(
     {
@@ -32,7 +33,7 @@ Deno.test("route-update: PUT /api/routes/{routeId}", async () => {
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("route-update: a vendor error surfaces its own message", async () => {
+test("route-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -57,5 +58,5 @@ Deno.test("route-update: a vendor error surfaces its own message", async () => {
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("route-update: idempotency is declared as true", () =>
+test("route-update: idempotency is declared as true", () =>
   assertEquals(routeUpdate.idempotent, true));

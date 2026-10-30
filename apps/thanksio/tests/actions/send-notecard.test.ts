@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import sendNotecard from "../../actions/send-notecard.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("send-notecard: calls POST /api/v2/send/notecard and shapes the output", async () => {
+test("send-notecard: calls POST /api/v2/send/notecard and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 42, "status": "reviewing" } }]);
   const out = await sendNotecard.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("send-notecard: calls POST /api/v2/send/notecard and shapes the output
   assert(out.orderId === 42, JSON.stringify(out));
 });
 
-Deno.test("send-notecard: a vendor error surfaces the HTTP status and message", async () => {
+test("send-notecard: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { "message": "Error Submitting Mailer" } }]);
   const err = await assertRejects(
     () =>
@@ -48,7 +49,7 @@ Deno.test("send-notecard: a vendor error surfaces the HTTP status and message", 
   );
 });
 
-Deno.test("send-notecard: refuses an order with no audience before any network call", async () => {
+test("send-notecard: refuses an order with no audience before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const bad = { "frontImageUrl": "https://x/y.png", "useCustomBackground": false };
   await assertRejects(
@@ -59,7 +60,7 @@ Deno.test("send-notecard: refuses an order with no audience before any network c
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-notecard: is a non-idempotent perform whose description warns about spend", () => {
+test("send-notecard: is a non-idempotent perform whose description warns about spend", () => {
   assertEquals(sendNotecard.idempotent, false);
   assert(/real money/i.test(sendNotecard.description ?? ""));
 });

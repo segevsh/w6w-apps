@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryAll } from "../_helpers.ts";
 import runArtifacts from "../../actions/run-artifacts.ts";
 
-Deno.test("run-artifacts: filters by repeated artifact_type and wraps the array", async () => {
+test("run-artifacts: filters by repeated artifact_type and wraps the array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ artifact_id: "a_1", artifact_type: "recording" }] }]);
   const out = await runArtifacts.execute(
     { runId: "wr_1", artifactTypes: "recording, screenshot_final" },

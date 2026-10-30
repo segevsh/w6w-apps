@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/me-get.ts";
 
 const D = { display: { host: "https://mycompany.cloud.looker.com" } };
 
-Deno.test("me-get: reports the roles and groups that decide everything else", async () => {
+test("me-get: reports the roles and groups that decide everything else", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -28,14 +29,14 @@ Deno.test("me-get: reports the roles and groups that decide everything else", as
 });
 
 /** A disabled user logs in and can do nothing. */
-Deno.test("me-get: warns when the credential's user is disabled", async () => {
+test("me-get: warns when the credential's user is disabled", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { id: "42", is_disabled: true } }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.isDisabled, true);
   assert(logs.some((l) => l.level === "warn" && /disabled/.test(l.message)), JSON.stringify(logs));
 });
 
-Deno.test("me-get: missing role and group arrays come back as empty, not undefined", async () => {
+test("me-get: missing role and group arrays come back as empty, not undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "1" } }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.roleIds, []);
@@ -44,7 +45,7 @@ Deno.test("me-get: missing role and group arrays come back as empty, not undefin
 });
 
 /** The whole point: two credentials can see different data. */
-Deno.test("me-get: says access filters make this the answer to differing numbers", () => {
+test("me-get: says access filters make this the answer to differing numbers", () => {
   assert(/row-level access filters/.test(action.description!), action.description);
   assertEquals(action.params, []);
 });

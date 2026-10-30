@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-domains.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-domains: sends filters as query params and maps the page", async () => {
+test("list-domains: sends filters as query params and maps the page", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -28,7 +29,7 @@ Deno.test("list-domains: sends filters as query params and maps the page", async
   assertEquals([out.total, out.totalPages, out.hasMore], [60, 3, true]);
 });
 
-Deno.test("list-domains: a missing domains.read scope throws", async () => {
+test("list-domains: a missing domains.read scope throws", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: { message: "required scope" } } }]);
   await assertRejects(() => run(action, {}, ctx), Error, "required scope");
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/listbuilding-key.ts";
 
@@ -9,7 +10,7 @@ const req = (body?: string) => ({
   body,
 });
 
-Deno.test("listbuilding-key: sign merges apikey into the JSON body the action built", async () => {
+test("listbuilding-key: sign merges apikey into the JSON body the action built", async () => {
   const { ctx } = mockCtx();
   const out = await auth.sign!(
     { request: req(JSON.stringify({ email: "a@example.com" })), credential: { apiKey: "K" } },
@@ -19,7 +20,7 @@ Deno.test("listbuilding-key: sign merges apikey into the JSON body the action bu
   assertEquals(out.headers["content-type"], "application/json");
 });
 
-Deno.test("listbuilding-key: sign works with no body, and overwrites a caller-supplied apikey", async () => {
+test("listbuilding-key: sign works with no body, and overwrites a caller-supplied apikey", async () => {
   const { ctx } = mockCtx();
   const a = await auth.sign!({ request: req(), credential: { apiKey: "K" } }, ctx);
   assertEquals(JSON.parse(a.body as string), { apikey: "K" });
@@ -30,7 +31,7 @@ Deno.test("listbuilding-key: sign works with no body, and overwrites a caller-su
   assertEquals(JSON.parse(b.body as string), { apikey: "K" });
 });
 
-Deno.test("listbuilding-key: test fails on error 100 (observed live with a bogus key)", async () => {
+test("listbuilding-key: test fails on error 100 (observed live with a bogus key)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 406,
     body: { error: 100, error_message: "Ungültiger API-Key." },
@@ -43,7 +44,7 @@ Deno.test("listbuilding-key: test fails on error 100 (observed live with a bogus
   assertEquals(JSON.parse(calls[0].body!), { apikey: "bogus" });
 });
 
-Deno.test("listbuilding-key: test passes when the key clears and only the missing contact is refused", async () => {
+test("listbuilding-key: test passes when the key clears and only the missing contact is refused", async () => {
   for (const error of [32, 5, 7]) {
     const { ctx } = mockCtx([{ status: 406, body: { error } }]);
     assertEquals(
@@ -54,7 +55,7 @@ Deno.test("listbuilding-key: test passes when the key clears and only the missin
   }
 });
 
-Deno.test("listbuilding-key: test does not pass on an unrecognised answer", async () => {
+test("listbuilding-key: test does not pass on an unrecognised answer", async () => {
   const a = mockCtx([{ status: 200, body: ["https://pending"] }]);
   assertEquals((await auth.test({ credential: { apiKey: "K" } }, a.ctx)).ok, false);
   const b = mockCtx([{ status: 502, body: "<html>" }]);

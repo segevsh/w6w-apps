@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadList from "../../actions/lead-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-list: POSTs /leads/list with the filter body", async () => {
+test("lead-list: POSTs /leads/list with the filter body", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [{ id: "l1" }] } }]);
   const out = await leadList.execute(
     { campaign: "c1", filter: "FILTER_VAL_CONTACTED", limit: 10 },
@@ -18,12 +19,12 @@ Deno.test("lead-list: POSTs /leads/list with the filter body", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("lead-list: contacts/ids accept a comma string", async () => {
+test("lead-list: contacts/ids accept a comma string", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await leadList.execute({ contacts: "a@b.com, c@d.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).contacts, ["a@b.com", "c@d.com"]);
 });
 
-Deno.test("lead-list: is a search action", () => {
+test("lead-list: is a search action", () => {
   assertEquals(leadList.type, "search");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/order-status-transition.ts";
 
-Deno.test("order-status-transition: POSTs /order_status_transitions with from/to and null defaults", async () => {
+test("order-status-transition: POSTs /order_status_transitions with from/to and null defaults", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: { id: "t1" } } }]);
   await action.execute({ orderId: "o1", transitionFrom: "new", transitionTo: "draft" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,7 +17,7 @@ Deno.test("order-status-transition: POSTs /order_status_transitions with from/to
   assertEquals(body.data.attributes.revert, null);
 });
 
-Deno.test("order-status-transition: passes confirmShortage through to override a shortage warning", async () => {
+test("order-status-transition: passes confirmShortage through to override a shortage warning", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: { id: "t1" } } }]);
   await action.execute(
     { orderId: "o1", transitionFrom: "draft", transitionTo: "reserved", confirmShortage: true },

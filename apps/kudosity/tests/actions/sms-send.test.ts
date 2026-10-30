@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import smsSend from "../../actions/sms-send.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sms-send: POSTs snake_case fields and returns the message", async () => {
+test("sms-send: POSTs snake_case fields and returns the message", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1", status: "pending", sms_count: "1" } }]);
   const out = await smsSend.execute({
     sender: "61481074185",
@@ -23,14 +24,14 @@ Deno.test("sms-send: POSTs snake_case fields and returns the message", async () 
   assertEquals(out.id, "m1");
 });
 
-Deno.test("sms-send: omits unset optionals and sends no credential", async () => {
+test("sms-send: omits unset optionals and sends no credential", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m1" } }]);
   await smsSend.execute({ sender: "S", recipient: "R", message: "m" }, ctx);
   assertEquals(bodyOf(calls[0]), { sender: "S", recipient: "R", message: "m" });
   assertEquals("x-api-key" in calls[0].headers, false);
 });
 
-Deno.test("sms-send: a vendor error surfaces", async () => {
+test("sms-send: a vendor error surfaces", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "invalid sender" } }]);
   await assertRejects(
     () => Promise.resolve(smsSend.execute({ sender: "S", recipient: "R", message: "m" }, ctx)),
@@ -39,4 +40,4 @@ Deno.test("sms-send: a vendor error surfaces", async () => {
   );
 });
 
-Deno.test("sms-send: is not idempotent", () => assertEquals(smsSend.idempotent, false));
+test("sms-send: is not idempotent", () => assertEquals(smsSend.idempotent, false));

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import emailSend from "../../actions/email-send.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-send: POST /api/1/sendOne/ with the documented form fields", async () => {
+test("email-send: POST /api/1/sendOne/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await emailSend.execute({
     "from_email": "me@example.com",
@@ -38,7 +39,7 @@ Deno.test("email-send: POST /api/1/sendOne/ with the documented form fields", as
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("email-send: a vendor error surfaces its status and body", async () => {
+test("email-send: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await emailSend.execute({
@@ -58,7 +59,7 @@ Deno.test("email-send: a vendor error surfaces its status and body", async () =>
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("email-send: an empty from_email fails before any request", async () => {
+test("email-send: an empty from_email fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -80,7 +81,7 @@ Deno.test("email-send: an empty from_email fails before any request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("email-send: unset optional fields are not sent", async () => {
+test("email-send: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   await emailSend.execute(
     { "from_email": "me@example.com", "to_email": "you@example.com", "subject": "Hi" } as never,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerCreate from "../../actions/customer-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-create: POSTs to /customers and returns the new id", async () => {
+test("customer-create: POSTs to /customers and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 188278629 } }]);
   const out = await customerCreate.execute(
     {
@@ -25,13 +26,13 @@ Deno.test("customer-create: POSTs to /customers and returns the new id", async (
   assertEquals(out.id, 188278629);
 });
 
-Deno.test("customer-create: the email is required — the one Required field on the page", () => {
+test("customer-create: the email is required — the one Required field on the page", () => {
   assertEquals(customerCreate.params?.find((p) => p.key === "email")?.required, true);
   const required = (customerCreate.params ?? []).filter((p) => p.required === true);
   assertEquals(required.map((p) => p.key), ["email"]);
 });
 
-Deno.test("customer-create: a customer password is not reachable from an action", () => {
+test("customer-create: a customer password is not reachable from an action", () => {
   const keys = (customerCreate.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("password"), false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-create.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("group-create: POSTs the group", async () => {
+test("group-create: POSTs the group", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "group",

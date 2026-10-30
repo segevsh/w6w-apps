@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-send-job-get.ts";
 
 /** The requests a job produced are a paged collection inside the same response. */
-Deno.test("bulk-send-job-get: returns the job and pages its requests", async () => {
+test("bulk-send-job-get: returns the job and pages its requests", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { bulk_send_job: { bulk_send_job_id: "b1" }, signature_requests: [] } },
     {
@@ -20,7 +21,7 @@ Deno.test("bulk-send-job-get: returns the job and pages its requests", async () 
   assertEquals(result.signature_requests, [{ signature_request_id: "sr1" }]);
 });
 
-Deno.test("bulk-send-job-get: a blank id fails before any request", async () => {
+test("bulk-send-job-get: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`bulkSendJobId`");
   assertEquals(calls.length, 0);

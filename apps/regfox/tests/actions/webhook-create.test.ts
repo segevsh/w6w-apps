@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/webhook-create.ts";
 import { envelope, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: builds the documented body, defaulting to all forms", async () => {
+test("webhook-create: builds the documented body, defaulting to all forms", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 5, signingSecret: "needed-once" }) }]);
   const out = await exec(action, {
     name: "CRM",
@@ -28,7 +29,7 @@ Deno.test("webhook-create: builds the documented body, defaulting to all forms",
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("webhook-create: specific form ids become formId objects", async () => {
+test("webhook-create: specific form ids become formId objects", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await exec(action, {
     name: "n",
@@ -41,7 +42,7 @@ Deno.test("webhook-create: specific form ids become formId objects", async () =>
   assertEquals("accountId" in sent, false);
 });
 
-Deno.test("webhook-create: no events or a non-integer form id never reaches the network", async () => {
+test("webhook-create: no events or a non-integer form id never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => exec(action, { name: "n", url: "u", events: "" }, ctx));
   await assertRejects(() =>

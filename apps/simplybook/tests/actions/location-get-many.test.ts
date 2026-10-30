@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/location-get-many.ts";
 
-Deno.test("location-get-many: GETs /admin/locations", async () => {
+test("location-get-many: GETs /admin/locations", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Downtown" }] }], {
     display: TEST_DISPLAY,
   });

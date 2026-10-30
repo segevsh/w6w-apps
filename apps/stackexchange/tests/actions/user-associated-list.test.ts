@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-associated-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-associated-list: GETs /users/11683/associated and returns the wrapper", async () => {
+test("user-associated-list: GETs /users/11683/associated and returns the wrapper", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -34,7 +35,7 @@ Deno.test("user-associated-list: GETs /users/11683/associated and returns the wr
   });
 });
 
-Deno.test("user-associated-list: optional paging, filter and a different site", async () => {
+test("user-associated-list: optional paging, filter and a different site", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const out = await action.execute({
     ...{ "accountIds": "11683" },
@@ -51,7 +52,7 @@ Deno.test("user-associated-list: optional paging, filter and a different site", 
   assertEquals(page.hasMore, false);
 });
 
-Deno.test("user-associated-list: surfaces the API error body", async () => {
+test("user-associated-list: surfaces the API error body", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error_id: 400, error_name: "bad_parameter", error_message: "site" } },
   ]);

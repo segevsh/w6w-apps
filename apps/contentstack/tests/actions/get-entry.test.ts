@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-entry.ts";
 
-Deno.test("get-entry: metadata", () => {
+test("get-entry: metadata", () => {
   assertEquals(action.key, "get-entry");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -16,7 +17,7 @@ Deno.test("get-entry: metadata", () => {
   ]);
 });
 
-Deno.test("get-entry: calls GET /content_types/blog/entries/blt9 on the NA host", async () => {
+test("get-entry: calls GET /content_types/blog/entries/blt9 on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "entry": { "uid": "blt9" } } }]);
   const out = await action.execute({
     "contentTypeUid": "blog",
@@ -35,7 +36,7 @@ Deno.test("get-entry: calls GET /content_types/blog/entries/blt9 on the NA host"
   assertEquals(out, { "entry": { "uid": "blt9" } });
 });
 
-Deno.test("get-entry: uses the connection's regional host", async () => {
+test("get-entry: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "entry": { "uid": "blt9" } } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -50,7 +51,7 @@ Deno.test("get-entry: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("get-entry: sends the branch header only when a branch is given", async () => {
+test("get-entry: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "entry": { "uid": "blt9" } } }, {
     body: { "entry": { "uid": "blt9" } },
   }]);
@@ -69,7 +70,7 @@ Deno.test("get-entry: sends the branch header only when a branch is given", asyn
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("get-entry: rejects without `contentTypeUid` and makes no request", async () => {
+test("get-entry: rejects without `contentTypeUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -81,7 +82,7 @@ Deno.test("get-entry: rejects without `contentTypeUid` and makes no request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-entry: surfaces Contentstack's own error body", async () => {
+test("get-entry: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

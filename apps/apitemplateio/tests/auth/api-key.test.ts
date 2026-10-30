@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is an apiKey method exposing an `apiKey` secret field", () => {
+test("api-key: is an apiKey method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "X-API-KEY" });
@@ -12,7 +13,7 @@ Deno.test("api-key: is an apiKey method exposing an `apiKey` secret field", () =
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign sets X-API-KEY using credential.apiKey, no prefix", async () => {
+test("api-key: sign sets X-API-KEY using credential.apiKey, no prefix", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -23,7 +24,7 @@ Deno.test("api-key: sign sets X-API-KEY using credential.apiKey, no prefix", asy
   assertEquals(out.headers["x-api-key"], "key-abc");
 });
 
-Deno.test("api-key: test hits /v2/list-templates?limit=1 and reports ok", async () => {
+test("api-key: test hits /v2/list-templates?limit=1 and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success", templates: [] } }]);
   const result = await auth.test({ credential: { apiKey: "key-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -34,7 +35,7 @@ Deno.test("api-key: test hits /v2/list-templates?limit=1 and reports ok", async 
   assertEquals(calls[0].headers["x-api-key"], "key-abc");
 });
 
-Deno.test("api-key: test reports failure with status code when API rejects", async () => {
+test("api-key: test reports failure with status code when API rejects", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { status: "error", message: "Unauthorized" } }]);
   const result = await auth.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, {
   LIMIT_HEADER,
   parseCount,
@@ -10,7 +11,7 @@ import quota, {
 } from "../../health/quota.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quota: is a signed, per-connection check that adds no egress host", () => {
+test("quota: is a signed, per-connection check that adds no egress host", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");
@@ -24,7 +25,7 @@ Deno.test("quota: is a signed, per-connection check that adds no egress host", (
  * it with the hyphen after `Rate`; almost every other vendor does not. Reading
  * the wrong name yields null, which is indistinguishable from "no quota data".
  */
-Deno.test("quota: uses Podio's own hyphenation, not the common X-RateLimit spelling", () => {
+test("quota: uses Podio's own hyphenation, not the common X-RateLimit spelling", () => {
   assertEquals(LIMIT_HEADER, "x-rate-limit-limit");
   assertEquals(REMAINING_HEADER, "x-rate-limit-remaining");
   assert(!LIMIT_HEADER.includes("ratelimit"));
@@ -36,7 +37,7 @@ Deno.test("quota: uses Podio's own hyphenation, not the common X-RateLimit spell
  * response carrying BOTH spellings with different values, so only a lookup on
  * Podio's own hyphenated name produces the right numbers.
  */
-Deno.test("quota: reads the hyphenated header when both spellings are present", async () => {
+test("quota: reads the hyphenated header when both spellings are present", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: {
@@ -53,11 +54,11 @@ Deno.test("quota: reads the hyphenated header when both spellings are present", 
 });
 
 /** Podio throttles with 420, from its client's status switch. Not 429. */
-Deno.test("quota: the throttled status is 420", () => {
+test("quota: the throttled status is 420", () => {
   assertEquals(THROTTLED_STATUS, 420);
 });
 
-Deno.test("quota: reads the two headers off the scope response", async () => {
+test("quota: reads the two headers off the scope response", async () => {
   const { ctx, calls } = mockCtx([{
     body: [],
     headers: {
@@ -77,7 +78,7 @@ Deno.test("quota: reads the two headers off the scope response", async () => {
  * `ok`. A quota check that reads "fine" because it found nothing is worse than
  * one that admits it found nothing.
  */
-Deno.test("quota: absent headers report unknown, never ok", async () => {
+test("quota: absent headers report unknown, never ok", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -85,7 +86,7 @@ Deno.test("quota: absent headers report unknown, never ok", async () => {
   assertEquals(report.quota, undefined);
 });
 
-Deno.test("quota: a live 420 is reported as an active throttle with zero remaining", async () => {
+test("quota: a live 420 is reported as an active throttle with zero remaining", async () => {
   const { ctx } = mockCtx([{ status: THROTTLED_STATUS, body: { error: "rate_limit" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "down");
@@ -93,7 +94,7 @@ Deno.test("quota: a live 420 is reported as an active throttle with zero remaini
   assertEquals(report.quota, [{ id: "requests", remaining: 0, unit: "requests" }]);
 });
 
-Deno.test("quota: an auth failure says nothing about headroom, so it is unknown", async () => {
+test("quota: an auth failure says nothing about headroom, so it is unknown", async () => {
   for (const status of [401, 403, 500]) {
     const { ctx } = mockCtx([{ status, body: "" }]);
     const report = await quota.check!({}, ctx);
@@ -104,26 +105,26 @@ Deno.test("quota: an auth failure says nothing about headroom, so it is unknown"
 
 // --- the arithmetic ----------------------------------------------------------
 
-Deno.test("readQuota: both headers absent is unknown with a reason", () => {
+test("readQuota: both headers absent is unknown with a reason", () => {
   const out = readQuota(undefined, undefined);
   assertEquals(out.state, "unknown");
   assert(out.message!.includes(LIMIT_HEADER));
   assert(out.message!.includes(REMAINING_HEADER));
 });
 
-Deno.test("readQuota: a limit without a remaining is unknown but still reports the ceiling", () => {
+test("readQuota: a limit without a remaining is unknown but still reports the ceiling", () => {
   const out = readQuota(1000, undefined);
   assertEquals(out.state, "unknown");
   assertEquals(out.quota, [{ id: "requests", limit: 1000, unit: "requests" }]);
 });
 
-Deno.test("readQuota: a remaining without a limit is still a usable reading", () => {
+test("readQuota: a remaining without a limit is still a usable reading", () => {
   const out = readQuota(undefined, 50);
   assertEquals(out.state, "ok");
   assertEquals(out.quota, [{ id: "requests", remaining: 50, unit: "requests" }]);
 });
 
-Deno.test("readQuota: zero remaining is down and names the 420 status", () => {
+test("readQuota: zero remaining is down and names the 420 status", () => {
   const out = readQuota(1000, 0);
   assertEquals(out.state, "down");
   assert(out.message!.includes("exhausted"));
@@ -131,7 +132,7 @@ Deno.test("readQuota: zero remaining is down and names the 420 status", () => {
   assert(out.message!.includes("not 429"));
 });
 
-Deno.test("readQuota: the warning threshold is a tenth of the ceiling, inclusive", () => {
+test("readQuota: the warning threshold is a tenth of the ceiling, inclusive", () => {
   assertEquals(WARN_FRACTION, 0.1);
   assertEquals(readQuota(1000, 100).state, "degraded", "exactly at the threshold must warn");
   assertEquals(readQuota(1000, 101).state, "ok");
@@ -139,11 +140,11 @@ Deno.test("readQuota: the warning threshold is a tenth of the ceiling, inclusive
   assert(readQuota(1000, 100).message!.includes("100 of 1000"));
 });
 
-Deno.test("readQuota: a non-positive ceiling never triggers the fraction warning", () => {
+test("readQuota: a non-positive ceiling never triggers the fraction warning", () => {
   assertEquals(readQuota(0, 5).state, "ok");
 });
 
-Deno.test("parseCount: accepts only a plain non-negative integer", () => {
+test("parseCount: accepts only a plain non-negative integer", () => {
   assertEquals(parseCount("742"), 742);
   assertEquals(parseCount(" 742 "), 742);
   assertEquals(parseCount("0"), 0);

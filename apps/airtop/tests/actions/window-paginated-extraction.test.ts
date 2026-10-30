@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowPaginatedExtraction from "../../actions/window-paginated-extraction.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-paginated-extraction: prompt is required; interaction/pagination modes nest under configuration", async () => {
+test("window-paginated-extraction: prompt is required; interaction/pagination modes nest under configuration", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: aiEnvelope('{"items":[]}') }]);
   await windowPaginatedExtraction.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("window-paginated-extraction: prompt is required; interaction/paginati
   });
 });
 
-Deno.test("window-paginated-extraction: prompt is a required param", () => {
+test("window-paginated-extraction: prompt is a required param", () => {
   const promptParam = windowPaginatedExtraction.params?.find((p) => p.key === "prompt");
   assertEquals(promptParam?.required, true);
 });

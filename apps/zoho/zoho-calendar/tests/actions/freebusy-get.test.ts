@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/freebusy-get.ts";
 
-Deno.test("freebusy-get: GETs /calendars/freebusy with uemail/sdate/edate", async () => {
+test("freebusy-get: GETs /calendars/freebusy with uemail/sdate/edate", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { "20170419": [null, ["08:00-09:00"]] } }]);
   await action.execute(
     { email: "user@zylker.com", start: "20170419T000000", end: "20170420T000000" },
@@ -16,7 +17,7 @@ Deno.test("freebusy-get: GETs /calendars/freebusy with uemail/sdate/edate", asyn
   assertEquals(url.searchParams.has("ftype"), false);
 });
 
-Deno.test("freebusy-get: passes ftype through when set", async () => {
+test("freebusy-get: passes ftype through when set", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: {} }]);
   await action.execute(
     {

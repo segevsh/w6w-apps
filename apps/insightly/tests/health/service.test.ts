@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -11,13 +12,13 @@ const SUMMARY = {
   ],
 };
 
-Deno.test("service: is an unsigned, app-scoped, unauthenticated check", () => {
+test("service: is an unsigned, app-scoped, unauthenticated check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
   assertEquals(service.network?.allow, ["status.insightly.com"]);
 });
 
-Deno.test("service: all-operational summary is ok, with per-component detail", async () => {
+test("service: all-operational summary is ok, with per-component detail", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.insightly.com/api/v2/summary.json");
@@ -27,7 +28,7 @@ Deno.test("service: all-operational summary is ok, with per-component detail", a
   assertEquals(r.components?.["insightly-web-app"]?.state, "ok");
 });
 
-Deno.test("service: an API-only outage reports the API component down", async () => {
+test("service: an API-only outage reports the API component down", async () => {
   const { ctx } = mockCtx([{
     body: {
       ...SUMMARY,
@@ -44,14 +45,14 @@ Deno.test("service: an API-only outage reports the API component down", async ()
   assertEquals(r.components?.["insightly-web-app"]?.state, "ok");
 });
 
-Deno.test("service: minor indicator maps to degraded", async () => {
+test("service: minor indicator maps to degraded", async () => {
   const { ctx } = mockCtx([{
     body: { ...SUMMARY, status: { indicator: "minor" } },
   }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a failed status API is unknown, never down", async () => {
+test("service: a failed status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

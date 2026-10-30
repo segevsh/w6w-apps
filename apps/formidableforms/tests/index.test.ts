@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const EXPECTED = [
@@ -19,21 +20,21 @@ const EXPECTED = [
   "view-get-many",
 ];
 
-Deno.test("index: exposes exactly the expected action keys, each unique", () => {
+test("index: exposes exactly the expected action keys, each unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.sort(), [...EXPECTED].sort());
   assertEquals(new Set(keys).size, keys.length);
 });
 
-Deno.test("index: declares the basic auth method only", () => {
+test("index: declares the basic auth method only", () => {
   assertEquals(app.auth?.map((a) => a.key), ["basic"]);
 });
 
-Deno.test("index: declares the service, site and quota health checks", () => {
+test("index: declares the service, site and quota health checks", () => {
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["quota", "service", "site"]);
 });
 
-Deno.test("index: every action declares a valid type and a title/description", () => {
+test("index: every action declares a valid type and a title/description", () => {
   for (const action of app.actions) {
     assert(["read", "search", "perform", "control"].includes(action.type), action.key);
     assert(action.title.length > 0, action.key);
@@ -41,7 +42,7 @@ Deno.test("index: every action declares a valid type and a title/description", (
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assertEquals(typeof action.idempotent, "boolean", action.key);
@@ -49,27 +50,27 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
   }
 });
 
-Deno.test("index: every action is grouped under a documented resource", () => {
+test("index: every action is grouped under a documented resource", () => {
   const resources = ["form", "field", "entry", "stats", "style", "view"];
   for (const action of app.actions) {
     assert(resources.includes(action.resource ?? ""), action.key);
   }
 });
 
-Deno.test("index: action keys are kebab-case", () => {
+test("index: action keys are kebab-case", () => {
   for (const action of app.actions) {
     assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(action.key), action.key);
   }
 });
 
-Deno.test("index: every param key is unique within its action", () => {
+test("index: every param key is unique within its action", () => {
   for (const action of app.actions) {
     const keys = (action.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, action.key);
   }
 });
 
-Deno.test("index: every destructive action requires explicit confirmation", () => {
+test("index: every destructive action requires explicit confirmation", () => {
   for (const action of app.actions) {
     if (action.key.endsWith("-delete")) {
       const keys = (action.params ?? []).map((p) => p.key);
@@ -78,7 +79,7 @@ Deno.test("index: every destructive action requires explicit confirmation", () =
   }
 });
 
-Deno.test("index: no action touches a credential header", () => {
+test("index: no action touches a credential header", () => {
   for (const action of app.actions) {
     assertEquals(
       /authorization|credential/i.test(action.execute.toString()),
@@ -88,7 +89,7 @@ Deno.test("index: no action touches a credential header", () => {
   }
 });
 
-Deno.test("index: no action calls the global fetch or a denied global", () => {
+test("index: no action calls the global fetch or a denied global", () => {
   for (const action of app.actions) {
     const src = action.execute.toString();
     assertEquals(/(^|[^.\w])fetch\s*\(/.test(src), false, `${action.key} calls global fetch`);

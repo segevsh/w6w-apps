@@ -1,10 +1,11 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import classificationEnqueue from "../../actions/classification-enqueue.ts";
 import { jobResponse, mockCtx, pathOf } from "../_helpers.ts";
 
 const MODEL_ID = "018f1e2a-0000-7000-8000-0000000000bb";
 
-Deno.test("classification-enqueue: posts to the classification enqueue route", async () => {
+test("classification-enqueue: posts to the classification enqueue route", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: jobResponse() }]);
   await classificationEnqueue.execute({ modelId: MODEL_ID, url: "https://example.com/a.pdf" }, ctx);
 
@@ -14,14 +15,14 @@ Deno.test("classification-enqueue: posts to the classification enqueue route", a
   assertEquals(calls[0].form?.url, ["https://example.com/a.pdf"]);
 });
 
-Deno.test("classification-enqueue: carries none of extraction's extra options", () => {
+test("classification-enqueue: carries none of extraction's extra options", () => {
   const keys = new Set(classificationEnqueue.params?.map((p) => p.key));
   for (const extra of ["rawText", "polygon", "confidence", "rag", "textContext", "dataSchema"]) {
     if (keys.has(extra)) throw new Error(`unexpected extraction-only param: ${extra}`);
   }
 });
 
-Deno.test("classification-enqueue: throws when neither file nor url is given", () => {
+test("classification-enqueue: throws when neither file nor url is given", () => {
   const { ctx } = mockCtx([]);
   assertThrows(() => classificationEnqueue.execute({ modelId: MODEL_ID }, ctx), Error);
 });

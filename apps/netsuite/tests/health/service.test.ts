@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { GROUP_ID, PAGE_ID, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -18,7 +19,7 @@ const summary = (members: Array<[string, string]>, page = PAGE_ID) => ({
   ],
 });
 
-Deno.test("service: all SuiteTalk data centers operational is ok, whatever other groups do", async () => {
+test("service: all SuiteTalk data centers operational is ok, whatever other groups do", async () => {
   const { ctx, calls } = mockCtx([{
     body: summary([["US 1", "operational"], ["EU 1", "operational"]]),
   }]);
@@ -27,7 +28,7 @@ Deno.test("service: all SuiteTalk data centers operational is ok, whatever other
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: an affected data center is degraded, never down, and is named", async () => {
+test("service: an affected data center is degraded, never down, and is named", async () => {
   const { ctx } = mockCtx([{ body: summary([["US 1", "major_outage"], ["EU 1", "operational"]]) }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "degraded");
@@ -35,7 +36,7 @@ Deno.test("service: an affected data center is degraded, never down, and is name
   assertEquals(r.message?.includes("1 of 2"), true);
 });
 
-Deno.test("service: a page that is not NetSuite's, or has no group, is unknown", async () => {
+test("service: a page that is not NetSuite's, or has no group, is unknown", async () => {
   let m = mockCtx([{ body: summary([["US 1", "operational"]], "someone-else") }]);
   assertEquals((await service.check!({} as never, m.ctx)).state, "unknown");
   m = mockCtx([{ body: { page: { id: PAGE_ID }, components: [] } }]);
@@ -44,13 +45,13 @@ Deno.test("service: a page that is not NetSuite's, or has no group, is unknown",
   assertEquals((await service.check!({} as never, m.ctx)).state, "unknown");
 });
 
-Deno.test("service: HTTP errors and unreadable bodies are unknown", async () => {
+test("service: HTTP errors and unreadable bodies are unknown", async () => {
   let m = mockCtx([{ status: 503, body: "x" }]);
   assertEquals((await service.check!({} as never, m.ctx)).state, "unknown");
   m = mockCtx([{ body: "<html>" }]);
   assertEquals((await service.check!({} as never, m.ctx)).state, "unknown");
 });
 
-Deno.test("service: declares only the status host", () => {
+test("service: declares only the status host", () => {
   assertEquals(service.network?.allow, ["status.netsuite.com"]);
 });

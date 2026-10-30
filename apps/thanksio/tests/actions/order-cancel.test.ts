@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import orderCancel from "../../actions/order-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-cancel: calls PUT /api/v2/orders/42/cancel and shapes the output", async () => {
+test("order-cancel: calls PUT /api/v2/orders/42/cancel and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "order": { "id": 42, "status": "cancelled" } } }]);
   const out = await orderCancel.execute({ "orderId": "42" } as never, ctx) as Record<
     string,
@@ -18,7 +19,7 @@ Deno.test("order-cancel: calls PUT /api/v2/orders/42/cancel and shapes the outpu
   assert((out.order as Record<string, string>).status === "cancelled", JSON.stringify(out));
 });
 
-Deno.test("order-cancel: a vendor error surfaces the HTTP status and message", async () => {
+test("order-cancel: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { "message": "Order cannot be cancelled" } }]);
   const err = await assertRejects(
     () => Promise.resolve(orderCancel.execute({ "orderId": "42" } as never, ctx)),

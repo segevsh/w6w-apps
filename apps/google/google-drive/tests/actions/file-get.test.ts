@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-get.ts";
 
-Deno.test("file-get: GETs /files/{id} with default fields=*", async () => {
+test("file-get: GETs /files/{id} with default fields=*", async () => {
   const body = { id: "f-1", name: "Report" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ fileId: "f-1" }, ctx);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaUpload from "../../actions/media-upload.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("media-upload: returns the first Placid URL and the media list", async () => {
+test("media-upload: returns the first Placid URL and the media list", async () => {
   const media = [{ file_key: "logo", file_id: "https://storage.placid.app/2020-01-01/file.png" }];
   const { ctx, calls } = mockCtx([{ body: { media } }]);
   const out = await mediaUpload.execute({

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactListCreate from "../../actions/contact-list-create.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-list-create: POSTs the name and returns the new list's id", async () => {
+test("contact-list-create: POSTs the name and returns the new list's id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "507f191e810c19729de860ea" } }]);
   const result = await contactListCreate.execute({ name: "My New List" }, ctx) as { id: string };
 
@@ -16,12 +17,12 @@ Deno.test("contact-list-create: POSTs the name and returns the new list's id", a
  * The vendor's own sentence: "A list name containing less than 42 characters".
  * Enforced as a form validation, quoted verbatim in the hint.
  */
-Deno.test("contact-list-create: the name field caps at the vendor's documented length", () => {
+test("contact-list-create: the name field caps at the vendor's documented length", () => {
   const name = contactListCreate.params!.find((p) => p.key === "name");
   assertEquals(name?.required, true);
   assertEquals(name?.validation, { maxLength: 41 });
 });
 
-Deno.test("contact-list-create: is not idempotent — each call makes a new list", () => {
+test("contact-list-create: is not idempotent — each call makes a new list", () => {
   assertEquals(contactListCreate.idempotent, false);
 });

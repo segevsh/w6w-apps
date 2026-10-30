@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_HOST,
@@ -12,12 +13,12 @@ import {
   query,
 } from "../../lib/client.ts";
 
-Deno.test("the API host", () => {
+test("the API host", () => {
   assertEquals(API_HOST, "https://api.digitalocean.com");
 });
 
 /** Droplets are numbers; volumes and databases are UUIDs. */
-Deno.test("numericId: refuses a UUID where a number belongs, and says why", () => {
+test("numericId: refuses a UUID where a number belongs, and says why", () => {
   assertEquals(numericId("3164444", "dropletId"), 3164444);
   const err = assertThrows(
     () => numericId("506f78a4-e098-11e5-ad9f-000f53306ae1", "dropletId"),
@@ -29,14 +30,14 @@ Deno.test("numericId: refuses a UUID where a number belongs, and says why", () =
 });
 
 /** The auth hook signs; the client must never carry a token. */
-Deno.test("request: never sets an authorization header", async () => {
+test("request: never sets an authorization header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { droplets: [] } }]);
   await new DigitalOceanClient(ctx).request("/v2/droplets");
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(calls[0].url, "https://api.digitalocean.com/v2/droplets");
 });
 
-Deno.test("request: a 204 returns undefined rather than throwing", async () => {
+test("request: a 204 returns undefined rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new DigitalOceanClient(ctx).request("/v2/droplets/1", { method: "DELETE" }),
@@ -45,7 +46,7 @@ Deno.test("request: a 204 returns undefined rather than throwing", async () => {
 });
 
 /** The array is one page; meta.total is how many exist. */
-Deno.test("list: separates the page from the total, and carries the next link", async () => {
+test("list: separates the page from the total, and carries the next link", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -60,7 +61,7 @@ Deno.test("list: separates the page from the total, and carries the next link", 
   assert(page.nextPage?.includes("page=2"), page.nextPage);
 });
 
-Deno.test("list: a missing key or a non-array is an empty page, not an error", async () => {
+test("list: a missing key or a non-array is an empty page, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { meta: { total: 0 } } }]);
   const page = await new DigitalOceanClient(ctx).list("/v2/droplets", "droplets");
   assertEquals(page.items, []);
@@ -68,7 +69,7 @@ Deno.test("list: a missing key or a non-array is an empty page, not an error", a
 });
 
 /** Unlike most of this pack, the reset is a Unix timestamp. */
-Deno.test("parseRateLimit: reads the reset as a timestamp, not a duration", () => {
+test("parseRateLimit: reads the reset as a timestamp, not a duration", () => {
   const headers = new Headers({
     "ratelimit-limit": "5000",
     "ratelimit-remaining": "4987",
@@ -82,7 +83,7 @@ Deno.test("parseRateLimit: reads the reset as a timestamp, not a duration", () =
 });
 
 /** Verified: an unauthenticated 401 carries no rate-limit headers. */
-Deno.test("parseRateLimit: absent headers give undefined rather than zero", () => {
+test("parseRateLimit: absent headers give undefined rather than zero", () => {
   assertEquals(parseRateLimit(new Headers()), {
     limit: undefined,
     remaining: undefined,
@@ -90,7 +91,7 @@ Deno.test("parseRateLimit: absent headers give undefined rather than zero", () =
   });
 });
 
-Deno.test("full: surfaces the rate limit alongside the body", async () => {
+test("full: surfaces the rate limit alongside the body", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { account: {} },
@@ -104,7 +105,7 @@ Deno.test("full: surfaces the rate limit alongside the body", async () => {
   assertEquals(result.rateLimit.remaining, 10);
 });
 
-Deno.test("compact, csv, json and query behave as the actions assume", () => {
+test("compact, csv, json and query behave as the actions assume", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [] }), { a: 1 });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv(""), undefined);
@@ -114,14 +115,14 @@ Deno.test("compact, csv, json and query behave as the actions assume", () => {
 });
 
 /** A read-only token looks like a working one until the first write. */
-Deno.test("describeError: 401 and 403 both name the read-only token", () => {
+test("describeError: 401 and 403 both name the read-only token", () => {
   const unauthorized = describeError(401, JSON.stringify({ id: "unauthorized", message: "no" }));
   assert(/scoped read-only/.test(unauthorized), unauthorized);
   const forbidden = describeError(403, JSON.stringify({ id: "forbidden", message: "no" }));
   assert(/READ-ONLY token looks exactly like a working one/.test(forbidden), forbidden);
 });
 
-Deno.test("describeError: keeps the id and the request id", () => {
+test("describeError: keeps the id and the request id", () => {
   const message = describeError(
     404,
     JSON.stringify({
@@ -136,14 +137,14 @@ Deno.test("describeError: keeps the id and the request id", () => {
 });
 
 /** The reset is a timestamp, and the message says so. */
-Deno.test("describeError: 422 and 429 explain themselves", () => {
+test("describeError: 422 and 429 explain themselves", () => {
   assert(/availability differs by account/.test(describeError(422, "{}")));
   const limited = describeError(429, "{}");
   assert(/5,000 requests an hour/.test(limited), limited);
   assert(/Unix TIMESTAMP/.test(limited), limited);
 });
 
-Deno.test("request: an error names the method, the path and the explanation", async () => {
+test("request: an error names the method, the path and the explanation", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { id: "forbidden", message: "no" } }]);
   let message = "";
   try {

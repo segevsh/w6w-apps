@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const CREATED = envelope({
   signing_secret: "XXXXXXXXXXXXXXX",
 });
 
-Deno.test("webhook-create: POSTs url and events, normalising events to an array", async () => {
+test("webhook-create: POSTs url and events, normalising events to an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   const out = await webhookCreate.execute(
     { url: "https://example.com/hook", events: "job.finished, job.failed" },
@@ -22,13 +23,13 @@ Deno.test("webhook-create: POSTs url and events, normalising events to an array"
   assertEquals(out.signing_secret, "XXXXXXXXXXXXXXX");
 });
 
-Deno.test("webhook-create: accepts events already as an array", async () => {
+test("webhook-create: accepts events already as an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await webhookCreate.execute({ url: "https://example.com/hook", events: ["job.finished"] }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.events, ["job.finished"]);
 });
 
-Deno.test("webhook-create: is declared non-idempotent — CloudConvert documents no idempotency key", () => {
+test("webhook-create: is declared non-idempotent — CloudConvert documents no idempotency key", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

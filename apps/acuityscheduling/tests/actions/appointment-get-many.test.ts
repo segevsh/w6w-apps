@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-get-many.ts";
 
-Deno.test("appointment-get-many: GETs /appointments with mapped filters", async () => {
+test("appointment-get-many: GETs /appointments with mapped filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("appointment-get-many: GETs /appointments with mapped filters", async 
   assertEquals(url.searchParams.get("direction"), "ASC");
 });
 
-Deno.test("appointment-get-many: omits unset filters", async () => {
+test("appointment-get-many: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

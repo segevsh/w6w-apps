@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/order-cost-estimate.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("order-cost-estimate: POST /orders/estimate-costs and unwraps the envelope", async () => {
+test("order-cost-estimate: POST /orders/estimate-costs and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "code": 200, "result": { "costs": { "total": "9.00" }, "retail_costs": {} } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("order-cost-estimate: POST /orders/estimate-costs and unwraps the enve
   });
 });
 
-Deno.test("order-cost-estimate: a Printful error is surfaced with its reason and message", async () => {
+test("order-cost-estimate: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

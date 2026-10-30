@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordCreate from "../../actions/record-create.ts";
 import { mockKnackCtx } from "../_helpers.ts";
 
-Deno.test("record-create: POSTs the field values as JSON to the object's records route", async () => {
+test("record-create: POSTs the field values as JSON to the object's records route", async () => {
   const created = { id: "58645233669adec2460888c4", field_1: "Name of new company" };
   const { ctx, calls } = mockKnackCtx([{ body: created }]);
   const result = await recordCreate.execute(
@@ -16,7 +17,7 @@ Deno.test("record-create: POSTs the field values as JSON to the object's records
   assertEquals(JSON.parse(calls[0].body!), { field_1: "Name of new company" });
 });
 
-Deno.test("record-create: accepts fields typed as a JSON string, same as an object", async () => {
+test("record-create: accepts fields typed as a JSON string, same as an object", async () => {
   const { ctx, calls } = mockKnackCtx([{ body: { id: "r1" } }]);
   await recordCreate.execute(
     { objectKey: "object_1", fields: '{"field_1":"Acme"}' },
@@ -25,7 +26,7 @@ Deno.test("record-create: accepts fields typed as a JSON string, same as an obje
   assertEquals(JSON.parse(calls[0].body!), { field_1: "Acme" });
 });
 
-Deno.test("record-create: refuses empty field values without making a request", async () => {
+test("record-create: refuses empty field values without making a request", async () => {
   const { ctx, calls } = mockKnackCtx([]);
   await assertRejects(
     async () => {

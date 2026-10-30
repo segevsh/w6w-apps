@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-posts.ts";
 
-Deno.test("list-posts: GETs /{pageId}/feed with fields", async () => {
+test("list-posts: GETs /{pageId}/feed with fields", async () => {
   const body = { data: [{ id: "post-1", message: "hi" }], paging: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ pageId: "page-1" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-posts: GETs /{pageId}/feed with fields", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("list-posts: forwards since/until/cursor/limit", async () => {
+test("list-posts: forwards since/until/cursor/limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!(
     { pageId: "page-1", since: "1000", until: "2000", cursor: "abc", limit: 5 },

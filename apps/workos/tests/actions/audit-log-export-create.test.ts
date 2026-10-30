@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audit-log-export-create.ts";
 
 /** Both ends are required — WorkOS has no unbounded export. */
-Deno.test("audit-log-export-create: requires both ends of the range", async () => {
+test("audit-log-export-create: requires both ends of the range", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () =>
@@ -14,7 +15,7 @@ Deno.test("audit-log-export-create: requires both ends of the range", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("audit-log-export-create: posts the range and returns the job id", async () => {
+test("audit-log-export-create: posts the range and returns the job id", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 201, body: { id: "audit_log_export_1" } }]);
   const result = await action.execute!({
     organizationId: "org_1",
@@ -33,7 +34,7 @@ Deno.test("audit-log-export-create: posts the range and returns the job id", asy
   assertEquals(logs[0].data, { exportId: "audit_log_export_1", organizationId: "org_1" });
 });
 
-Deno.test("audit-log-export-create: needs an organization", async () => {
+test("audit-log-export-create: needs an organization", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ rangeStart: "2026-08-01", rangeEnd: "2026-08-18" }, ctx),
@@ -44,6 +45,6 @@ Deno.test("audit-log-export-create: needs an organization", async () => {
 });
 
 /** There is no endpoint that reads events back; an export is the only route. */
-Deno.test("audit-log-export-create: says there is no read endpoint", () => {
+test("audit-log-export-create: says there is no read endpoint", () => {
   assert(/no read endpoint/.test(action.description!), action.description);
 });

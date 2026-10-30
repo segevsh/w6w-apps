@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-list.ts";
 
-Deno.test("create-list: POSTs a JSON:API envelope with the name", async () => {
+test("create-list: POSTs a JSON:API envelope with the name", async () => {
   const body = { data: { type: "list", id: "L1" } };
   const { ctx, calls } = mockCtx([{ status: 201, body }]);
   const result = await action.execute!({ name: "New List" }, ctx);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/release-create.ts";
 
 const REPO = { owner: "acme", repository: "api" };
 
-Deno.test("release-create: POSTs /releases with snake_case field names", async () => {
+test("release-create: POSTs /releases with snake_case field names", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute(
     { ...REPO, tagName: "v1.0.0", targetCommitish: "main", generateReleaseNotes: true },
@@ -18,7 +19,7 @@ Deno.test("release-create: POSTs /releases with snake_case field names", async (
   });
 });
 
-Deno.test("release-create: sends draft:false rather than dropping it", async () => {
+test("release-create: sends draft:false rather than dropping it", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...REPO, tagName: "v1", draft: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).draft, false);

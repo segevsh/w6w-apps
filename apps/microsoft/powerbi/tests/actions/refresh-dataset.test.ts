@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/refresh-dataset.ts";
 
-Deno.test("refresh-dataset: POSTs /datasets/{id}/refreshes with notifyOption", async () => {
+test("refresh-dataset: POSTs /datasets/{id}/refreshes with notifyOption", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     headers: {
@@ -18,7 +19,7 @@ Deno.test("refresh-dataset: POSTs /datasets/{id}/refreshes with notifyOption", a
   assertEquals(out.requestId, "req-1");
 });
 
-Deno.test("refresh-dataset: enhanced refresh options merge alongside notifyOption", async () => {
+test("refresh-dataset: enhanced refresh options merge alongside notifyOption", async () => {
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   await action.execute({
     datasetId: "d1",
@@ -31,12 +32,12 @@ Deno.test("refresh-dataset: enhanced refresh options merge alongside notifyOptio
   assertEquals(body.objects, [{ table: "Sales" }]);
 });
 
-Deno.test("refresh-dataset: a Workspace ID scopes the call", async () => {
+test("refresh-dataset: a Workspace ID scopes the call", async () => {
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   await action.execute({ groupId: "w1", datasetId: "d1", notifyOption: "NoNotification" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/myorg/groups/w1/datasets/d1/refreshes");
 });
 
-Deno.test("refresh-dataset: every call starts a new refresh job — not idempotent", () => {
+test("refresh-dataset: every call starts a new refresh job — not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

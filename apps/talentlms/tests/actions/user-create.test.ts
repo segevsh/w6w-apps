@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
-Deno.test("user-create: POST usersignup and returns the vendor payload", async () => {
+test("user-create: POST usersignup and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({
     "firstName": "Ann",
@@ -24,6 +25,6 @@ Deno.test("user-create: POST usersignup and returns the vendor payload", async (
   assertEquals(out, { ok: "yes" });
 });
 
-Deno.test("user-create: declares idempotent honestly", () => {
+test("user-create: declares idempotent honestly", () => {
   assertEquals(action.idempotent, false);
 });

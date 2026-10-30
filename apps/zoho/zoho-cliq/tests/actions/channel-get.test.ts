@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-get.ts";
 
-Deno.test("channel-get: gets a channel (bare record)", async () => {
+test("channel-get: gets a channel (bare record)", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "channel_id": "O1", "name": "#a" },
@@ -21,6 +22,6 @@ Deno.test("channel-get: gets a channel (bare record)", async () => {
   });
 });
 
-Deno.test("channel-get: is a read action", () => {
+test("channel-get: is a read action", () => {
   assertEquals(action.type, "read");
 });

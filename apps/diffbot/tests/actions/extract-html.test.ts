@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/extract-html.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { ARTICLE_DOC } from "../_fixtures.ts";
 
-Deno.test("extract-html: POSTs the markup as text/html to the chosen API", async () => {
+test("extract-html: POSTs the markup as text/html to the chosen API", async () => {
   const { ctx, calls } = mockCtx([{ body: ARTICLE_DOC }]);
   const out = await run(action, {
     api: "article",
@@ -19,7 +20,7 @@ Deno.test("extract-html: POSTs the markup as text/html to the chosen API", async
   assertEquals(out.count, 1);
 });
 
-Deno.test("extract-html: text/plain only for article; unknown API refused before any call", async () => {
+test("extract-html: text/plain only for article; unknown API refused before any call", async () => {
   const ok = mockCtx([{ body: ARTICLE_DOC }]);
   await run(action, {
     api: "article",

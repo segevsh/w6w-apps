@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import viewApp from "../../actions/view-app.ts";
 import { REDACTED_APP_FIELDS } from "../../lib/client.ts";
 import { APP_ID, mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("view-app: requests view=config, and strips every live credential field", async () => {
+test("view-app: requests view=config, and strips every live credential field", async () => {
   const rawResponse: Record<string, unknown> = {
     id: APP_ID,
     name: "My App",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/call-live-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("call-live-list: POSTs /calls/current and unwraps the list", async () => {
+test("call-live-list: POSTs /calls/current and unwraps the list", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       current_calls_list_count: 1,
@@ -16,7 +17,7 @@ Deno.test("call-live-list: POSTs /calls/current and unwraps the list", async () 
   assertEquals(out, { calls: [{ call_id: "c" }], count: 1, total: 1 });
 });
 
-Deno.test("call-live-list: a 204 means nothing in progress", async () => {
+test("call-live-list: a 204 means nothing in progress", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({}, ctx), { calls: [], count: 0, total: 0 });
 });

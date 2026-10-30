@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-channel.ts";
 
-Deno.test("update-channel: PATCHes /channels/{id} with only supplied fields", async () => {
+test("update-channel: PATCHes /channels/{id} with only supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await action.execute!({ channelId: "c1", name: "renamed" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -12,7 +13,7 @@ Deno.test("update-channel: PATCHes /channels/{id} with only supplied fields", as
   assert(!("topic" in body), "undefined optional fields must not be forwarded");
 });
 
-Deno.test("update-channel: maps camelCase to Discord's snake_case body keys", async () => {
+test("update-channel: maps camelCase to Discord's snake_case body keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await action.execute!(
     { channelId: "c1", userLimit: 10, parentId: "cat", rateLimitPerUser: 5, nsfw: true },

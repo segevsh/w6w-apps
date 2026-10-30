@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscriber-untag.ts";
 
-Deno.test("subscriber-untag: POSTs email and a single integer tagid", async () => {
+test("subscriber-untag: POSTs email and a single integer tagid", async () => {
   const { ctx, calls } = mockCtx([{ body: [true] }]);
   const out = await action.execute({ email: "a@example.com", tagId: 19 }, ctx);
   assertEquals(calls[0].url, "https://api.klicktipp.com/subscriber/untag");
@@ -10,7 +11,7 @@ Deno.test("subscriber-untag: POSTs email and a single integer tagid", async () =
   assertEquals(out, { success: true });
 });
 
-Deno.test("subscriber-untag: a failure body is not swallowed", async () => {
+test("subscriber-untag: a failure body is not swallowed", async () => {
   const { ctx } = mockCtx([{ status: 406, body: { error: 403 } }]);
   await assertRejects(
     async () => await action.execute({ email: "a@example.com", tagId: 1 }, ctx),

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-property-values.ts";
 
 const conn = { display: { projectId: "123", region: "us" } };
 
-Deno.test("event-property-values: sends the event, the property and the window", async () => {
+test("event-property-values: sends the event, the property and the window", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], conn);
   await action.execute!({
     event: "Signed Up",
@@ -17,7 +18,7 @@ Deno.test("event-property-values: sends the event, the property and the window",
   assertEquals(url.searchParams.get("name"), "plan");
 });
 
-Deno.test("event-property-values: the event and property are both required", async () => {
+test("event-property-values: the event and property are both required", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () =>

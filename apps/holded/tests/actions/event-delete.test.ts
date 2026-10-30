@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventDelete from "../../actions/event-delete.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("event-delete: metadata — idempotent", () => {
+test("event-delete: metadata — idempotent", () => {
   assertEquals(eventDelete.type, "perform");
   assertEquals(eventDelete.idempotent, true);
 });
 
-Deno.test("event-delete: DELETE /events/{eventId}", async () => {
+test("event-delete: DELETE /events/{eventId}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: writeResult("Successfully deleted", "e1"),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-post-chat.ts";
 
-Deno.test("message-post-chat: posts to a chat", async () => {
+test("message-post-chat: posts to a chat", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "message_id": "1599387839188_229293271789" },
@@ -26,7 +27,7 @@ Deno.test("message-post-chat: posts to a chat", async () => {
   });
 });
 
-Deno.test("message-post-chat: idempotent is declared as false", () => {
+test("message-post-chat: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

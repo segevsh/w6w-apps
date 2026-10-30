@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import fileCreate from "../../actions/file-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-create: POSTs a hand-built multipart body to /file", async () => {
+test("file-create: POSTs a hand-built multipart body to /file", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "f1", name: "notes.txt" } }]);
   const out = await fileCreate.execute({ fileName: "notes.txt", content: "hello world" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("file-create: POSTs a hand-built multipart body to /file", async () =>
   assertEquals(out, { id: "f1", name: "notes.txt" });
 });
 
-Deno.test("file-create: includes purpose and JSON-encoded metadata parts when given", async () => {
+test("file-create: includes purpose and JSON-encoded metadata parts when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "f1" } }]);
   await fileCreate.execute(
     { fileName: "a.txt", content: "x", purpose: "assistant", metadata: { source: "workflow" } },
@@ -27,12 +28,12 @@ Deno.test("file-create: includes purpose and JSON-encoded metadata parts when gi
   assert(calls[0].body!.includes('{"source":"workflow"}'));
 });
 
-Deno.test("file-create: a filename that could break the header is sanitised", async () => {
+test("file-create: a filename that could break the header is sanitised", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "f1" } }]);
   await fileCreate.execute({ fileName: 'evil".txt', content: "x" }, ctx);
   assert(!calls[0].body!.includes('evil".txt'));
 });
 
-Deno.test("file-create: is not idempotent", () => {
+test("file-create: is not idempotent", () => {
   assertEquals(fileCreate.idempotent, false);
 });

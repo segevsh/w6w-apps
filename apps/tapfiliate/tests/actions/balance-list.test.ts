@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import balanceList from "../../actions/balance-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("balance-list: lists every non-zero affiliate balance, no query parameters", async () => {
+test("balance-list: lists every non-zero affiliate balance, no query parameters", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ affiliate_id: "janejameson", balances: { USD: 5, EUR: 35 } }] },
   ]);

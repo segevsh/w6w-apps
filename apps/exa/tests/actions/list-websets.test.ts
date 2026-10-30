@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-websets.ts";
 
-Deno.test("list-websets: GETs /v0/websets with search/limit/cursor as query params", async () => {
+test("list-websets: GETs /v0/websets with search/limit/cursor as query params", async () => {
   const body = { data: [{ id: "ws_1" }], hasMore: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ search: "climate", limit: 10, cursor: "c1" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("list-websets: GETs /v0/websets with search/limit/cursor as query para
   assertEquals(result, body);
 });
 
-Deno.test("list-websets: omits unset filters", async () => {
+test("list-websets: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], hasMore: false, nextCursor: null } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

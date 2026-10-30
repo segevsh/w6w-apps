@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailAccountList from "../../actions/email-account-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("email-account-list: GETs /v3/email-accounts, my defaults to unset (= everyone visible)", async () => {
+test("email-account-list: GETs /v3/email-accounts, my defaults to unset (= everyone visible)", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, email: "a@b.com" }]) }]);
   const out = await emailAccountList.execute({}, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("email-account-list: GETs /v3/email-accounts, my defaults to unset (= 
   assertEquals(out, { items: [{ id: 1, email: "a@b.com" }], hasMore: false });
 });
 
-Deno.test("email-account-list: my=true is passed through", async () => {
+test("email-account-list: my=true is passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await emailAccountList.execute({ my: true }, ctx);
   assertEquals(queryOf(calls[0].url), { my: "true" });

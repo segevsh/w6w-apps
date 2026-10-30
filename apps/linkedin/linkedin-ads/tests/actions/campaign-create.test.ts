@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignCreate from "../../actions/campaign-create.ts";
 import { createdResponse, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const BASE = {
   }),
 };
 
-Deno.test("campaign-create: requires either a daily or a total budget, before any request", async () => {
+test("campaign-create: requires either a daily or a total budget, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const { dailyBudgetAmount: _drop, ...noBudget } = BASE;
   await assertRejects(
@@ -27,7 +28,7 @@ Deno.test("campaign-create: requires either a daily or a total budget, before an
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-create: a plain single POST, account/campaignGroup as URNs, targeting parsed from JSON", async () => {
+test("campaign-create: a plain single POST, account/campaignGroup as URNs, targeting parsed from JSON", async () => {
   const { ctx, calls } = mockCtx([createdResponse("360035215")]);
   const result = await campaignCreate.execute(BASE, ctx);
 
@@ -45,14 +46,14 @@ Deno.test("campaign-create: a plain single POST, account/campaignGroup as URNs, 
   assertEquals(result, { id: "360035215" });
 });
 
-Deno.test("campaign-create: includes runSchedule only when a date is given", async () => {
+test("campaign-create: includes runSchedule only when a date is given", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await campaignCreate.execute({ ...BASE, runScheduleStart: "2016-02-12" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.runSchedule, { start: Date.parse("2016-02-12T00:00:00Z") });
 });
 
-Deno.test("campaign-create: malformed targetingCriteria JSON fails before any request", async () => {
+test("campaign-create: malformed targetingCriteria JSON fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignCreate.execute({ ...BASE, targetingCriteria: "{not json" }, ctx),
@@ -62,6 +63,6 @@ Deno.test("campaign-create: malformed targetingCriteria JSON fails before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-create: is not idempotent", () => {
+test("campaign-create: is not idempotent", () => {
   assertEquals(campaignCreate.idempotent, false);
 });

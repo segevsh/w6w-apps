@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cluster-get.ts";
 
@@ -15,7 +16,7 @@ const cluster = (attributes: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("cluster-get: reads one cluster by name", async () => {
+test("cluster-get: reads one cluster by name", async () => {
   const { ctx, calls } = mockCtx([cluster({ terminationProtectionEnabled: true })]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod" },
@@ -30,7 +31,7 @@ Deno.test("cluster-get: reads one cluster by name", async () => {
 });
 
 /** Three separate things must line up before an application can connect. */
-Deno.test("cluster-get: surfaces the connection host, which carries no credentials", async () => {
+test("cluster-get: surfaces the connection host, which carries no credentials", async () => {
   const { ctx } = mockCtx([cluster()]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod" },
@@ -42,7 +43,7 @@ Deno.test("cluster-get: surfaces the connection host, which carries no credentia
 });
 
 /** Off is Atlas's default, and the wrong one for anything holding data. */
-Deno.test("cluster-get: notes when termination protection is off", async () => {
+test("cluster-get: notes when termination protection is off", async () => {
   const off = mockCtx([cluster({ terminationProtectionEnabled: false })]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod" },
@@ -60,7 +61,7 @@ Deno.test("cluster-get: notes when termination protection is off", async () => {
   assertEquals(on.logs.length, 0);
 });
 
-Deno.test("cluster-get: a name is required", async () => {
+test("cluster-get: a name is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -72,7 +73,7 @@ Deno.test("cluster-get: a name is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("cluster-get: a name needing escaping is encoded into the path", async () => {
+test("cluster-get: a name needing escaping is encoded into the path", async () => {
   const { ctx, calls } = mockCtx([cluster()]);
   await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "my cluster" }, ctx);
   assert(calls[0].url.endsWith("/clusters/my%20cluster"), calls[0].url);

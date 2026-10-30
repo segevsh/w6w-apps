@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import loggedTimeUpdate from "../../actions/logged-time-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("logged-time-update: PUTs the corrected fields", async () => {
+test("logged-time-update: PUTs the corrected fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 555 } }]);
   await loggedTimeUpdate.execute({ loggedTimeId: 555, minutes: 120, notes: "Corrected" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("logged-time-update: PUTs the corrected fields", async () => {
   assertEquals(bodyOf(calls[0]), { minutes: 120, notes: "Corrected" });
 });
 
-Deno.test("logged-time-update: private=false is sent, not dropped", async () => {
+test("logged-time-update: private=false is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 555 } }]);
   await loggedTimeUpdate.execute({ loggedTimeId: 555, private: false }, ctx);
   assertEquals(bodyOf(calls[0]), { private: false });

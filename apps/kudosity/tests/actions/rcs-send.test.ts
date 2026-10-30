@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import rcsSend, { buildContent } from "../../actions/rcs-send.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rcs-send: text message with SMS fallback", async () => {
+test("rcs-send: text message with SMS fallback", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "r1" }) }]);
   const out = await rcsSend.execute({
     sender: "DemoSender",
@@ -23,7 +24,7 @@ Deno.test("rcs-send: text message with SMS fallback", async () => {
   assertEquals(out.id, "r1");
 });
 
-Deno.test("rcs-send: media content and validation", () => {
+test("rcs-send: media content and validation", () => {
   assertEquals(
     buildContent({
       sender: "s",
@@ -45,4 +46,4 @@ Deno.test("rcs-send: media content and validation", () => {
   );
 });
 
-Deno.test("rcs-send: is not idempotent", () => assertEquals(rcsSend.idempotent, false));
+test("rcs-send: is not idempotent", () => assertEquals(rcsSend.idempotent, false));

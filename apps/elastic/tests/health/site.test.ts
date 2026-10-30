@@ -1,21 +1,22 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import site from "../../health/site.ts";
 
-Deno.test("site: dependency / connection / context posture", () => {
+test("site: dependency / connection / context posture", () => {
   assertEquals(site.kind, "dependency");
   assertEquals(site.scope, "connection");
   assertEquals(site.credential, "context");
 });
 
-Deno.test("site: unknown when the connection records no endpoint", async () => {
+test("site: unknown when the connection records no endpoint", async () => {
   const { ctx, calls } = mockCtx();
   const result = await site.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("site: ok on a plain 200 from GET /", async () => {
+test("site: ok on a plain 200 from GET /", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { cluster_name: "my-cluster" } }], {
     display: { endpoint: "https://example.com:9200" },
   });
@@ -25,7 +26,7 @@ Deno.test("site: ok on a plain 200 from GET /", async () => {
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("site: 401 counts as reachable (security enabled, cluster IS up)", async () => {
+test("site: 401 counts as reachable (security enabled, cluster IS up)", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }], {
     display: { endpoint: "https://example.com:9200" },
   });
@@ -33,7 +34,7 @@ Deno.test("site: 401 counts as reachable (security enabled, cluster IS up)", asy
   assertEquals(result.state, "ok");
 });
 
-Deno.test("site: 403 also counts as reachable", async () => {
+test("site: 403 also counts as reachable", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }], {
     display: { endpoint: "https://example.com:9200" },
   });
@@ -41,7 +42,7 @@ Deno.test("site: 403 also counts as reachable", async () => {
   assertEquals(result.state, "ok");
 });
 
-Deno.test("site: down on 404 (not Elasticsearch-shaped)", async () => {
+test("site: down on 404 (not Elasticsearch-shaped)", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }], {
     display: { endpoint: "https://example.com:9200" },
   });
@@ -49,7 +50,7 @@ Deno.test("site: down on 404 (not Elasticsearch-shaped)", async () => {
   assertEquals(result.state, "down");
 });
 
-Deno.test("site: down on 5xx", async () => {
+test("site: down on 5xx", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }], {
     display: { endpoint: "https://example.com:9200" },
   });
@@ -57,7 +58,7 @@ Deno.test("site: down on 5xx", async () => {
   assertEquals(result.state, "down");
 });
 
-Deno.test("site: trims a trailing slash from the endpoint before probing", async () => {
+test("site: trims a trailing slash from the endpoint before probing", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     display: { endpoint: "https://example.com:9200/" },
   });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import proposalRepublish from "../../actions/proposal-republish.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("proposal-republish: sends POST /v2/proposals/p1/republish", async () => {
+test("proposal-republish: sends POST /v2/proposals/p1/republish", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await proposalRepublish.execute({ "id": "p1" } as never, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("proposal-republish: sends POST /v2/proposals/p1/republish", async () 
   assertEquals(out.ok, true);
 });
 
-Deno.test("proposal-republish: a non-2xx answer throws with the vendor's error code", async () => {
+test("proposal-republish: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

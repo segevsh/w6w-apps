@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import knowledgeBaseList from "../../actions/knowledge-base-list.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("knowledge-base-list: the paging block is just total_records", async () => {
+test("knowledge-base-list: the paging block is just total_records", async () => {
   const { ctx, calls } = mockCtx([{
     body: ok({ total_records: 1, knowledge_bases: [{ id: "k1" }] }),
   }]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/worker-create.ts";
 
-Deno.test("worker-create: sends the required fields and parses the vehicle", async () => {
+test("worker-create: sends the required fields and parses the vehicle", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "w1", name: "A" } }]);
   await action.execute!({
     name: "A Swartz",
@@ -16,7 +17,7 @@ Deno.test("worker-create: sends the required fields and parses the vehicle", asy
   assertEquals(body.vehicle, { type: "CAR", color: "purple" });
 });
 
-Deno.test("worker-create: name, phone and teams are all required", async () => {
+test("worker-create: name, phone and teams are all required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ phone: "+1", teams: "t1" }, ctx),
@@ -36,6 +37,6 @@ Deno.test("worker-create: name, phone and teams are all required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("worker-create: is not idempotent", () => {
+test("worker-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

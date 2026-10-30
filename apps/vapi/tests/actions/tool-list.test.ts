@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolList from "../../actions/tool-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tool-list: calls GET /tool", async () => {
+test("tool-list: calls GET /tool", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "t1", type: "function" }] }]);
   const out = await toolList.execute({ createdAtLt: "2026-01-01T00:00:00Z" }, ctx);
 

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import departmentCreate from "../../actions/department-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const DEPARTMENT = { id: "dp_1", name: "Engineering", description: "Product engineering" };
 
-Deno.test("department-create: POSTs name and description", async () => {
+test("department-create: POSTs name and description", async () => {
   const { ctx, calls } = mockCtx([{ body: DEPARTMENT }]);
   await departmentCreate.execute({ name: "Engineering", description: "Product engineering" }, ctx);
 
@@ -16,14 +17,14 @@ Deno.test("department-create: POSTs name and description", async () => {
   });
 });
 
-Deno.test("department-create: an empty description is not sent", async () => {
+test("department-create: an empty description is not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: DEPARTMENT }]);
   await departmentCreate.execute({ name: "Engineering", description: "" }, ctx);
 
   assertEquals(bodyOf(calls[0]), { name: "Engineering" });
 });
 
-Deno.test("department-create: an idempotency key is forwarded verbatim", async () => {
+test("department-create: an idempotency key is forwarded verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: DEPARTMENT }]);
   await departmentCreate.execute({ name: "Engineering", idempotencyKey: "k9" }, ctx);
 

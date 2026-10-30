@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-status-change.ts";
 
-Deno.test("candidate-status-change: PUTs /Candidates/status with Candidate_Status and flattens the nested result", async () => {
+test("candidate-status-change: PUTs /Candidates/status with Candidate_Status and flattens the nested result", async () => {
   const { ctx, calls } = mockRecruitCtx([
     {
       body: {
@@ -26,7 +27,7 @@ Deno.test("candidate-status-change: PUTs /Candidates/status with Candidate_Statu
   assertEquals(out.results[0].code, "SUCCESS");
 });
 
-Deno.test("candidate-status-change: splits comma-separated ids and includes jobIds when given", async () => {
+test("candidate-status-change: splits comma-separated ids and includes jobIds when given", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [[{ code: "SUCCESS", status: "success" }]] } },
   ]);
@@ -36,6 +37,6 @@ Deno.test("candidate-status-change: splits comma-separated ids and includes jobI
   assertEquals(body.data[0].jobids, ["j1"]);
 });
 
-Deno.test("candidate-status-change: idempotent — re-applying the same status converges", () => {
+test("candidate-status-change: idempotent — re-applying the same status converges", () => {
   assertEquals(action.idempotent, true);
 });

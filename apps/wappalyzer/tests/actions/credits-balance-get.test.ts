@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import creditsBalanceGet from "../../actions/credits-balance-get.ts";
 import { mockCtx, pathOf, withCredits } from "../_helpers.ts";
 
-Deno.test("credits-balance-get: reads /v2/credits/balance/ and takes no params", async () => {
+test("credits-balance-get: reads /v2/credits/balance/ and takes no params", async () => {
   const { ctx, calls } = mockCtx([withCredits({ credits: 100000 }, 0, 100000)]);
   const out = await creditsBalanceGet.execute({}, ctx) as {
     credits: number;

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productList from "../../actions/product-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("product-list: passes country/currency/subcategory filters through", async () => {
+test("product-list: passes country/currency/subcategory filters through", async () => {
   const page = { products: [{ id: "OKMHM2X2OHYV", name: "Amazon.com" }] };
   const { ctx, calls } = mockCtx([{ status: 200, body: page }]);
   const result = await productList.execute(
@@ -19,7 +20,7 @@ Deno.test("product-list: passes country/currency/subcategory filters through", a
   assertEquals(result, page);
 });
 
-Deno.test("product-list: no filters means no query string", async () => {
+test("product-list: no filters means no query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { products: [] } }]);
   await productList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

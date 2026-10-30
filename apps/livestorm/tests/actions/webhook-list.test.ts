@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("webhook-list: GETs /webhooks with an event filter", async () => {
+test("webhook-list: GETs /webhooks with an event filter", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("webhooks", "w1")]) }]);
   await webhookList.execute({ event: "session.started" }, ctx);
 

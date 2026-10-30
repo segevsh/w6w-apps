@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceGet from "../../actions/invoice-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-get: uses the /api-prefixed path the reference spells", async () => {
+test("invoice-get: uses the /api-prefixed path the reference spells", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "in1", amount: 25000, items: [] } }]);
   const out = await invoiceGet.execute({ invoiceId: "in1" }, ctx) as { amount: number };
 

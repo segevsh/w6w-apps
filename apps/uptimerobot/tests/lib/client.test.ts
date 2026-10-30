@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, UptimeRobotClient } from "../../lib/client.ts";
 
-Deno.test("client: builds the request against API_URL as a form-urlencoded POST", async () => {
+test("client: builds the request against API_URL as a form-urlencoded POST", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok" } }]);
   const client = new UptimeRobotClient(ctx);
   await client.request("/getMonitors", { search: "example", limit: 10, offset: undefined });
@@ -16,7 +17,7 @@ Deno.test("client: builds the request against API_URL as a form-urlencoded POST"
   assertEquals(body.has("offset"), false);
 });
 
-Deno.test("client: never sets api_key or format itself — that's the auth sign hook's job", async () => {
+test("client: never sets api_key or format itself — that's the auth sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok" } }]);
   const client = new UptimeRobotClient(ctx);
   await client.request("/getAccountDetails");
@@ -25,7 +26,7 @@ Deno.test("client: never sets api_key or format itself — that's the auth sign 
   assertEquals(body.has("format"), false);
 });
 
-Deno.test('client: unwraps stat:"ok" and returns the parsed envelope', async () => {
+test('client: unwraps stat:"ok" and returns the parsed envelope', async () => {
   const { ctx } = mockCtx([{ body: { stat: "ok", account: { email: "a@b.com" } } }]);
   const client = new UptimeRobotClient(ctx);
   const result = await client.request<{ stat: "ok"; account: { email: string } }>(
@@ -34,7 +35,7 @@ Deno.test('client: unwraps stat:"ok" and returns the parsed envelope', async () 
   assertEquals(result.account.email, "a@b.com");
 });
 
-Deno.test('client: stat:"fail" throws with the vendor\'s own error message', async () => {
+test('client: stat:"fail" throws with the vendor\'s own error message', async () => {
   const { ctx } = mockCtx([{
     body: {
       stat: "fail",
@@ -49,7 +50,7 @@ Deno.test('client: stat:"fail" throws with the vendor\'s own error message', asy
   );
 });
 
-Deno.test("client: a non-ok HTTP response throws with status and body detail", async () => {
+test("client: a non-ok HTTP response throws with status and body detail", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "internal error" }]);
   const client = new UptimeRobotClient(ctx);
   await assertRejects(

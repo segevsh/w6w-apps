@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-cancel.ts";
 
@@ -8,7 +9,7 @@ const done = { status: 200, body: { status: "succeeded", connectionId: "c1", row
 const cancelled = { status: 200, body: { status: "cancelled", rowsSynced: 120 } };
 
 /** The verb is DELETE and the record survives. */
-Deno.test("job-cancel: cancels a running job with a DELETE", async () => {
+test("job-cancel: cancels a running job with a DELETE", async () => {
   const { ctx, calls } = mockCtx([running, cancelled], D);
   const result = await action.execute({ jobId: 42 }, ctx) as Record<string, unknown>;
   assertEquals(calls[1].method, "DELETE");
@@ -19,7 +20,7 @@ Deno.test("job-cancel: cancels a running job with a DELETE", async () => {
 });
 
 /** Airbyte writes as it goes, so cancelling leaves a partial write. */
-Deno.test("job-cancel: warns that the destination is partly written", async () => {
+test("job-cancel: warns that the destination is partly written", async () => {
   const { ctx, logs } = mockCtx([running, cancelled], D);
   const result = await action.execute({ jobId: 42 }, ctx) as Record<string, unknown>;
   assertEquals(result.rowsSynced, 120);
@@ -30,7 +31,7 @@ Deno.test("job-cancel: warns that the destination is partly written", async () =
 });
 
 /** Cancelling a job that already finished should change nothing. */
-Deno.test("job-cancel: a finished job is not cancelled and not deleted", async () => {
+test("job-cancel: a finished job is not cancelled and not deleted", async () => {
   const { ctx, calls, logs } = mockCtx([done], D);
   const result = await action.execute({ jobId: 42 }, ctx) as Record<string, unknown>;
   assertEquals(result.wasRunning, false);
@@ -40,12 +41,12 @@ Deno.test("job-cancel: a finished job is not cancelled and not deleted", async (
   assertEquals(logs.length, 0);
 });
 
-Deno.test("job-cancel: requires a numeric id", async () => {
+test("job-cancel: requires a numeric id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "numeric id");
 });
 
-Deno.test("job-cancel: says the record survives the DELETE", () => {
+test("job-cancel: says the record survives the DELETE", () => {
   assert(/the job record survives as `cancelled`/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

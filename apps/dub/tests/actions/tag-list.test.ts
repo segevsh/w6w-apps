@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tag-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("tag-list: sends GET /tags with the mapped input", async () => {
+test("tag-list: sends GET /tags with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": "t1", "name": "promo", "color": "red" }] }]);
   const out = await action.execute!({
     "search": "promo",
@@ -28,7 +29,7 @@ Deno.test("tag-list: sends GET /tags with the mapped input", async () => {
   assertEquals(out, { "tags": [{ "id": "t1", "name": "promo", "color": "red" }] });
 });
 
-Deno.test("tag-list: sends no authorization header of its own", async () => {
+test("tag-list: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": "t1", "name": "promo", "color": "red" }] }]);
   await action.execute!({
     "search": "promo",
@@ -41,7 +42,7 @@ Deno.test("tag-list: sends no authorization header of its own", async () => {
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("tag-list: surfaces Dub's error envelope as a thrown error", async () => {
+test("tag-list: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -61,7 +62,7 @@ Deno.test("tag-list: surfaces Dub's error envelope as a thrown error", async () 
   );
 });
 
-Deno.test("tag-list: declares type, idempotency and output", () => {
+test("tag-list: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionSaveProfile from "../../actions/session-save-profile.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("session-save-profile: PUTs to the session/profileName path", async () => {
+test("session-save-profile: PUTs to the session/profileName path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await sessionSaveProfile.execute({ sessionId: "s1", profileName: "my profile" }, ctx);
 
@@ -14,6 +15,6 @@ Deno.test("session-save-profile: PUTs to the session/profileName path", async ()
   assertEquals(out, { success: true, sessionId: "s1", profileName: "my profile" });
 });
 
-Deno.test("session-save-profile: is declared idempotent — PUT to the same target twice is safe", () => {
+test("session-save-profile: is declared idempotent — PUT to the same target twice is safe", () => {
   assertEquals(sessionSaveProfile.idempotent, true);
 });

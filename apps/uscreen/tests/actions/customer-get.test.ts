@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerGet from "../../actions/customer-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-get: sends GET /customers/${seg(input.customerId)}", async () => {
+test("customer-get: sends GET /customers/${seg(input.customerId)}", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 1, "email": "a@b.co" } }]);
   const out = await customerGet.execute({ "customerId": "a@b.co" } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("customer-get: sends GET /customers/${seg(input.customerId)}", async (
   assertEquals(out, { "id": 1, "email": "a@b.co" });
 });
 
-Deno.test("customer-get: a 422 surfaces the vendor's message", async () => {
+test("customer-get: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () => customerGet.execute({ "customerId": "a@b.co" } as never, ctx) as Promise<unknown>,

@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: { id: string; network: { allow: string[] }; categories: string[] };
 };
 
-Deno.test("index: exports 13 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 13 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 13);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -21,7 +23,7 @@ Deno.test("index: exports 13 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -31,24 +33,24 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
  * Calling a function actuates hardware and publishing an event reaches a
  * fleet — neither is safe to repeat. Everything else converges.
  */
-Deno.test("index: only the two that act on the world are non-idempotent", () => {
+test("index: only the two that act on the world are non-idempotent", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, ["event-publish", "function-call"]);
 });
 
-Deno.test("index: exports the one auth method and both health checks", () => {
+test("index: exports the one auth method and both health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["access-token"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: the manifest allows only the API and the status page", () => {
+test("index: the manifest allows only the API and the status page", () => {
   assertEquals(manifest.w6w.network.allow, ["api.particle.io", "status.particle.io"]);
   assertEquals(manifest.w6w.id, "io.w6w.particle");
   assertEquals(manifest.w6w.categories, ["iot", "devops"]);
 });
 
 /** The paths that act on hardware or on ownership. */
-Deno.test("index: every consequential path is gated or checked", () => {
+test("index: every consequential path is gated or checked", () => {
   const params = (key: string) =>
     (app.actions.find((a) => a.key === key)!.params as Array<{ key: string }>).map((p) => p.key);
 
@@ -67,7 +69,7 @@ Deno.test("index: every consequential path is gated or checked", () => {
 });
 
 /** An event is private unless somebody says otherwise — unlike the API. */
-Deno.test("index: publishing defaults to private, and checking defaults to on", () => {
+test("index: publishing defaults to private, and checking defaults to on", () => {
   const publish = app.actions.find((a) => a.key === "event-publish")!
     .params as Array<{ key: string; default?: unknown }>;
   assertEquals(publish.find((p) => p.key === "private")!.default, true);
@@ -95,17 +97,17 @@ const code = (src: string) =>
 
 const sources = async (dir: string) => {
   const out: Array<[string, string]> = [];
-  for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+  for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
     out.push([
       `${dir}/${entry.name}`,
-      code(await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
+      code(await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url))),
     ]);
   }
   return out;
 };
 
-Deno.test("index: nothing reaches the network except through ctx.fetch", async () => {
+test("index: nothing reaches the network except through ctx.fetch", async () => {
   for (const dir of ["actions", "lib", "health"]) {
     for (const [name, src] of await sources(dir)) {
       assert(
@@ -119,7 +121,7 @@ Deno.test("index: nothing reaches the network except through ctx.fetch", async (
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
   for (const [name, src] of await sources("actions")) {
     assert(!/authorization/i.test(src), `${name} sets an authorization header`);
     assert(
@@ -134,7 +136,7 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
  * event payload is what a workflow is telling a fleet. All three are the
  * caller's data; a run log records names and counts.
  */
-Deno.test("index: nothing logs a variable value, a function argument or an event payload", async () => {
+test("index: nothing logs a variable value, a function argument or an event payload", async () => {
   for (const dir of ["actions", "lib"]) {
     for (const [name, src] of await sources(dir)) {
       const logs = src.match(/ctx\.log\([^,]*,[^,]*,\s*(\{[^;]*?\})\s*\)/gs) ?? [];
@@ -155,7 +157,7 @@ Deno.test("index: nothing logs a variable value, a function argument or an event
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// authorization\nconst a = 1;").trim(), "const a = 1;");
   assertEquals(code('hint: "reads the credential",').trim(), ",");

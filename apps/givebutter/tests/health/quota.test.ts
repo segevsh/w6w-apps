@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { envelope, pathOf } from "../_helpers.ts";
 import type { HookContext } from "@w6w/types";
@@ -22,7 +23,7 @@ function ctxWithHeaders(headers: Record<string, string>, status = 200) {
   return { ctx, calls };
 }
 
-Deno.test("quota: probes the cheap bounded campaigns read", async () => {
+test("quota: probes the cheap bounded campaigns read", async () => {
   const { ctx, calls } = ctxWithHeaders({
     "x-ratelimit-limit": "200",
     "x-ratelimit-remaining": "199",
@@ -33,7 +34,7 @@ Deno.test("quota: probes the cheap bounded campaigns read", async () => {
 });
 
 /** The finding this check exists to report: the header, not the documented 500/min. */
-Deno.test("quota: reports the measured 200 limit as the quota ceiling", async () => {
+test("quota: reports the measured 200 limit as the quota ceiling", async () => {
   const { ctx } = ctxWithHeaders({ "x-ratelimit-limit": "200", "x-ratelimit-remaining": "150" });
   const report = await quota.check!({}, ctx);
 
@@ -42,27 +43,27 @@ Deno.test("quota: reports the measured 200 limit as the quota ceiling", async ()
   assertEquals(report.state, "ok");
 });
 
-Deno.test("quota: low remaining headroom is degraded, never worse than informational severity", async () => {
+test("quota: low remaining headroom is degraded, never worse than informational severity", async () => {
   const { ctx } = ctxWithHeaders({ "x-ratelimit-limit": "200", "x-ratelimit-remaining": "5" });
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "degraded");
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: zero remaining reports down", async () => {
+test("quota: zero remaining reports down", async () => {
   const { ctx } = ctxWithHeaders({ "x-ratelimit-limit": "200", "x-ratelimit-remaining": "0" });
   assertEquals((await quota.check!({}, ctx)).state, "down");
 });
 
 /** No `x-ratelimit-remaining` header (never observed live, but handled) reports unknown. */
-Deno.test("quota: a response with no rate-limit header reports unknown", async () => {
+test("quota: a response with no rate-limit header reports unknown", async () => {
   const { ctx } = ctxWithHeaders({});
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(/no x-ratelimit-remaining/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: reads the headers even off a 401 — the counter is per-credential/IP regardless", async () => {
+test("quota: reads the headers even off a 401 — the counter is per-credential/IP regardless", async () => {
   const { ctx } = ctxWithHeaders(
     { "x-ratelimit-limit": "200", "x-ratelimit-remaining": "199" },
     401,

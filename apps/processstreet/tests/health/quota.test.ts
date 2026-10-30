@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: is a signed, informational, connection-scoped check", () => {
+test("quota: is a signed, informational, connection-scoped check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: reads X-Api-Key-Rate-Limit-* headers off /testAuth", async () => {
+test("quota: reads X-Api-Key-Rate-Limit-* headers off /testAuth", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { apiKeyLabel: "My Key" },
@@ -29,7 +30,7 @@ Deno.test("quota: reads X-Api-Key-Rate-Limit-* headers off /testAuth", async () 
   });
 });
 
-Deno.test("quota: remaining below 10% of limit reports degraded", async () => {
+test("quota: remaining below 10% of limit reports degraded", async () => {
   const { ctx } = mockCtx([{
     body: { apiKeyLabel: "k" },
     headers: { "x-api-key-rate-limit-limit": "2500", "x-api-key-rate-limit-remaining": "50" },
@@ -37,7 +38,7 @@ Deno.test("quota: remaining below 10% of limit reports degraded", async () => {
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: exhausted (0 remaining) reports down", async () => {
+test("quota: exhausted (0 remaining) reports down", async () => {
   const { ctx } = mockCtx([{
     body: { apiKeyLabel: "k" },
     headers: { "x-api-key-rate-limit-limit": "2500", "x-api-key-rate-limit-remaining": "0" },
@@ -45,13 +46,13 @@ Deno.test("quota: exhausted (0 remaining) reports down", async () => {
   assertEquals((await quota.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: no X-Api-Key-Rate-Limit-* headers reports unknown, not a guess", async () => {
+test("quota: no X-Api-Key-Rate-Limit-* headers reports unknown, not a guess", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { apiKeyLabel: "k" }, headers: {} }]);
   const r = await quota.check!({}, ctx);
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("quota: still reads headers off a 401 (verified: even a bad key carries them)", async () => {
+test("quota: still reads headers off a 401 (verified: even a bad key carries them)", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unable to verify credentials." },
@@ -61,7 +62,7 @@ Deno.test("quota: still reads headers off a 401 (verified: even a bad key carrie
   assertEquals(r.state, "ok");
 });
 
-Deno.test("quota: a failed (non-401) probe reports unknown", async () => {
+test("quota: a failed (non-401) probe reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });

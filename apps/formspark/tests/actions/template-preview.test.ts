@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templatePreview from "../../actions/template-preview.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-preview: POST .../preview with data wrapped, returns html and text", async () => {
+test("template-preview: POST .../preview with data wrapped, returns html and text", async () => {
   const { ctx, calls } = mockCtx([{ body: { html: "<p>a</p>", text: "a" } }]);
   const out = await templatePreview.execute(
     { formId: "f1", kind: "notification", data: { email: "a@b.c" } },
@@ -14,7 +15,7 @@ Deno.test("template-preview: POST .../preview with data wrapped, returns html an
   assertEquals(out, { html: "<p>a</p>", text: "a" });
 });
 
-Deno.test("template-preview: no data sends {}, a JSON string is parsed, a non-object is refused", async () => {
+test("template-preview: no data sends {}, a JSON string is parsed, a non-object is refused", async () => {
   const a = mockCtx([{ body: {} }]);
   await templatePreview.execute({ formId: "f", kind: "autoresponder" }, a.ctx);
   assertEquals(JSON.parse(a.calls[0].body!), {});

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/live-meeting-state-set.ts";
 
-Deno.test("live-meeting-state-set: sends the documented input object", async () => {
+test("live-meeting-state-set: sends the documented input object", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { updateMeetingState: { success: true, action: "pause_recording" } } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("live-meeting-state-set: sends the documented input object", async () 
   assertEquals(variables.input, { meeting_id: "m1", action: "pause_recording" });
 });
 
-Deno.test("live-meeting-state-set: offers exactly the two documented actions", () => {
+test("live-meeting-state-set: offers exactly the two documented actions", () => {
   const opts = action.params!.find((p) => p.key === "action")!.options as Array<
     { value: string }
   >;

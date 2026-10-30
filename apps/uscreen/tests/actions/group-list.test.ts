@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import groupList from "../../actions/group-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-list: sends GET /groups and reads pagination from headers", async () => {
+test("group-list: sends GET /groups and reads pagination from headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ "id": 2, "name": "Acme" }],
     headers: {
@@ -28,7 +29,7 @@ Deno.test("group-list: sends GET /groups and reads pagination from headers", asy
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("group-list: last page has no next link", async () => {
+test("group-list: last page has no next link", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: { "content-type": "application/json", "total-count": "0" },

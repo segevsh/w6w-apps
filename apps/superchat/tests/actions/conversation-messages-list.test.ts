@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-messages-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("conversation-messages-list: forwards direction and the created window", async () => {
+test("conversation-messages-list: forwards direction and the created window", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "results": [{ "id": "m_1" }], "pagination": { "next_cursor": "m_1" } },
   }]);
@@ -51,7 +52,7 @@ Deno.test("conversation-messages-list: forwards direction and the created window
   });
 });
 
-Deno.test("conversation-messages-list: rejects after + before together", async () => {
+test("conversation-messages-list: rejects after + before together", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () =>

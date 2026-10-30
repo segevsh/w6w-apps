@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/order-get.ts";
 
-Deno.test("order-get: GETs /orders/{id}", async () => {
+test("order-get: GETs /orders/{id}", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: { id: "o1" } } }]);
   await action.execute({ orderId: "o1", include: "customer,lines" }, ctx);
   const url = new URL(calls[0].url);

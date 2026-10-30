@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-site-properties.ts";
 import { mockCtx } from "../_helpers.ts";
 import { SCOPE_HEADER } from "../../lib/client.ts";
 
-Deno.test("get-site-properties: GETs /site-properties/v4/properties", async () => {
+test("get-site-properties: GETs /site-properties/v4/properties", async () => {
   const body = { properties: { siteDisplayName: "My Site", locale: "en-US" } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute!({}, ctx);
@@ -12,13 +13,13 @@ Deno.test("get-site-properties: GETs /site-properties/v4/properties", async () =
   assertEquals(out, body);
 });
 
-Deno.test("get-site-properties: is site-scoped — this one needs wix-site-id, not wix-account-id", async () => {
+test("get-site-properties: is site-scoped — this one needs wix-site-id, not wix-account-id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({}, ctx);
   assertEquals(calls[0].headers[SCOPE_HEADER], "site");
 });
 
-Deno.test("get-site-properties: is a read action taking no params", () => {
+test("get-site-properties: is a read action taking no params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params, []);
 });

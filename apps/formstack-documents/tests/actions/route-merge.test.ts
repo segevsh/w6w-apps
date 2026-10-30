@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse } from "../_helpers.ts";
 import action from "../../actions/route-merge.ts";
 
-Deno.test("route-merge: POSTs data to /route/{id}/{key}", async () => {
+test("route-merge: POSTs data to /route/{id}/{key}", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: 1 } }]);
   const out = await action.execute(
     { id: "129578", key: "l3kjs", data: { State: "California" } } as never,
@@ -18,7 +19,7 @@ Deno.test("route-merge: POSTs data to /route/{id}/{key}", async () => {
   assert(out !== null);
 });
 
-Deno.test("route-merge: passes through the multi-file JSON envelope when downloading", async () => {
+test("route-merge: passes through the multi-file JSON envelope when downloading", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: 1, files: [{ name: "Invoice.pdf", file_contents: "JVBERg==" }] },
   }]);
@@ -37,11 +38,11 @@ Deno.test("route-merge: passes through the multi-file JSON envelope when downloa
   assertEquals("file" in out, false);
 });
 
-Deno.test("route-merge: idempotent flag is false", () => {
+test("route-merge: idempotent flag is false", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("route-merge: fails clearly when the lookup returns no merge key", async () => {
+test("route-merge: fails clearly when the lookup returns no merge key", async () => {
   const { ctx } = mockCtx([{ body: { id: "1" } }]);
   let message = "";
   try {
@@ -52,7 +53,7 @@ Deno.test("route-merge: fails clearly when the lookup returns no merge key", asy
   assert(message.includes("no merge key"), message);
 });
 
-Deno.test("route-merge: surfaces a rejected merge key as an error with the status", async () => {
+test("route-merge: surfaces a rejected merge key as an error with the status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   let message = "";
   try {
@@ -63,7 +64,7 @@ Deno.test("route-merge: surfaces a rejected merge key as an error with the statu
   assert(message.includes("401"), message);
 });
 
-Deno.test("route-merge: declares key, type and a description", () => {
+test("route-merge: declares key, type and a description", () => {
   assertEquals(action.key, "route-merge");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usageStatsGet from "../../actions/usage-stats-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("usage-stats-get: POSTs to /usage_stats/api_usage_stats with no body", async () => {
+test("usage-stats-get: POSTs to /usage_stats/api_usage_stats with no body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { '["api/v1/contacts", "search"]': { day: { limit: 6000 } } },
   }]);

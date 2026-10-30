@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs /tasks with mapped snake_case body", async () => {
+test("task-create: POSTs /tasks with mapped snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", content: "Buy milk" } }]);
   await action.execute!(
     {
@@ -30,7 +31,7 @@ Deno.test("task-create: POSTs /tasks with mapped snake_case body", async () => {
   });
 });
 
-Deno.test("task-create: omits empty label arrays and unset fields", async () => {
+test("task-create: omits empty label arrays and unset fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await action.execute!({ content: "x", labels: [] }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { content: "x" });

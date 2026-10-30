@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/comment-add.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("comment-add: POSTs the comment text and mentions", async () => {
+test("comment-add: POSTs the comment text and mentions", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "4" } }], conn);
   const out = await action.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("comment-add: POSTs the comment text and mentions", async () => {
   assertEquals(out, { id: "4" });
 });
 
-Deno.test("comment-add: mentions is optional and omitted when unset", async () => {
+test("comment-add: mentions is optional and omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "5" } }], conn);
   await action.execute({ appId: "1", recordId: "1", text: "hi" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).comment, { text: "hi" });

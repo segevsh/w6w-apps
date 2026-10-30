@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import estimateRecipients from "../../actions/estimate-recipients.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("estimate-recipients: posts to count-unsaved and returns the estimate, no message sent", async () => {
+test("estimate-recipients: posts to count-unsaved and returns the estimate, no message sent", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { status: 200, body: { count: 42, cap_applied: false } },
   ]);

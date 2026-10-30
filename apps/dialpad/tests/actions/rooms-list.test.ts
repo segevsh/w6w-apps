@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomsList from "../../actions/rooms-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("rooms-list: GETs /rooms with the office filter", async () => {
+test("rooms-list: GETs /rooms with the office filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ id: "1" }]) }]);
   await roomsList.execute({ officeId: "5" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v2/rooms");

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_NAME,
   componentKey,
@@ -40,7 +41,7 @@ const run = (body: unknown, status = 200) => {
   return { mock, report: service.check!({}, mock.ctx) };
 };
 
-Deno.test("service: probes the statuspage.io alias, not a guessed status.<vendor> host", () => {
+test("service: probes the statuspage.io alias, not a guessed status.<vendor> host", () => {
   assertEquals(STATUS_URL, "https://fillout.statuspage.io/api/v2/summary.json");
   // status.fillout.com answers 404 from an unrelated Next.js app (measured
   // 2026-08-11), so guessing the convention here is worse than useless.
@@ -49,7 +50,7 @@ Deno.test("service: probes the statuspage.io alias, not a guessed status.<vendor
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an all-operational page is ok and reports all seven components", async () => {
+test("service: an all-operational page is ok and reports all seven components", async () => {
   const { mock, report } = run(summary());
   const result = await report;
   assertEquals(mock.calls[0].url, STATUS_URL);
@@ -68,21 +69,21 @@ Deno.test("service: an all-operational page is ok and reports all seven componen
  * self-identify as *Fillout* — by name or by URL — would reject the correct
  * page and report `unknown` forever. Identity is pinned to the page id instead.
  */
-Deno.test("service: a page calling itself Zite is accepted, because the id matches", async () => {
+test("service: a page calling itself Zite is accepted, because the id matches", async () => {
   const { report } = run(summary());
   const result = await report;
   assertEquals(result.state, "ok");
   assert(!/not Fillout/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("service: a different page id is unknown, not a verdict about Fillout", async () => {
+test("service: a different page id is unknown, not a verdict about Fillout", async () => {
   const { report } = run(summary({ page: { ...PAGE, id: "someoneelsespage" } }));
   const result = await report;
   assertEquals(result.state, "unknown");
   assert(/someoneelsespage/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("service: the vendor's own indicator is the verdict", async () => {
+test("service: the vendor's own indicator is the verdict", async () => {
   for (
     const [indicator, expected] of [
       ["none", "ok"],
@@ -104,7 +105,7 @@ Deno.test("service: the vendor's own indicator is the verdict", async () => {
  * that component, so a page claiming "All Systems Operational" while the API is
  * in a major outage must not be reported as `ok`.
  */
-Deno.test("service: a broken Developer API worsens an otherwise-clean roll-up", async () => {
+test("service: a broken Developer API worsens an otherwise-clean roll-up", async () => {
   const components = COMPONENTS.map((c) =>
     c.name === API_COMPONENT_NAME ? { ...c, status: "major_outage" } : c
   );
@@ -118,7 +119,7 @@ Deno.test("service: a broken Developer API worsens an otherwise-clean roll-up", 
  * The converse: the override never makes things *better*. A healthy API
  * component during a page-wide critical incident is still `down`.
  */
-Deno.test("service: a healthy Developer API cannot improve a critical roll-up", async () => {
+test("service: a healthy Developer API cannot improve a critical roll-up", async () => {
   const { report } = run(summary({ status: { indicator: "critical" } }));
   assertEquals((await report).state, "down");
 });
@@ -127,7 +128,7 @@ Deno.test("service: a healthy Developer API cannot improve a critical roll-up", 
  * Another component being unwell is reported but does not become this app's
  * verdict beyond what the vendor's own indicator already says.
  */
-Deno.test("service: an unrelated component degrades only as far as the indicator says", async () => {
+test("service: an unrelated component degrades only as far as the indicator says", async () => {
   const components = COMPONENTS.map((c) =>
     c.name === "Zite App Editor" ? { ...c, status: "major_outage" } : c
   );
@@ -137,14 +138,14 @@ Deno.test("service: an unrelated component degrades only as far as the indicator
   assertEquals(result.components?.["ntkf0b1l7jld"]?.state, "down");
 });
 
-Deno.test("service: group rows are skipped so nothing is double-counted", async () => {
+test("service: group rows are skipped so nothing is double-counted", async () => {
   const { report } = run(summary({
     components: [...COMPONENTS, { id: "grp", name: "Storage", status: "operational", group: true }],
   }));
   assertEquals(Object.keys((await report).components ?? {}).length, 7);
 });
 
-Deno.test("service: open incidents and maintenance windows are counted in the message", async () => {
+test("service: open incidents and maintenance windows are counted in the message", async () => {
   const { report } = run(summary({
     incidents: [{ name: "Elevated errors", status: "investigating" }],
     scheduled_maintenances: [{}],
@@ -155,13 +156,13 @@ Deno.test("service: open incidents and maintenance windows are counted in the me
 });
 
 /** A broken status API says nothing about Fillout — never `down`. */
-Deno.test("service: a failing or unreadable status page is unknown", async () => {
+test("service: a failing or unreadable status page is unknown", async () => {
   assertEquals((await run(undefined, 503).report).state, "unknown");
   assertEquals((await run("not json at all").report).state, "unknown");
   assertEquals((await run(summary({ components: [] })).report).state, "unknown");
 });
 
-Deno.test("service: the Statuspage vocabularies are mapped, and anything new is unknown", () => {
+test("service: the Statuspage vocabularies are mapped, and anything new is unknown", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -171,7 +172,7 @@ Deno.test("service: the Statuspage vocabularies are mapped, and anything new is 
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: a component with no id still gets a stable key", () => {
+test("service: a component with no id still gets a stable key", () => {
   assertEquals(componentKey({ id: "abc", name: "X" }, 0), "abc");
   assertEquals(componentKey({ name: "Zite App Editor" }, 3), "zite-app-editor-3");
   assertEquals(componentKey({}, 5), "component-5");

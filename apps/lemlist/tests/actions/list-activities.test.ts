@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listActivities from "../../actions/list-activities.ts";
 import { mockCtx, param, params } from "../_helpers.ts";
 
-Deno.test("list-activities: GETs /activities and always sends the mandatory version=v2", async () => {
+test("list-activities: GETs /activities and always sends the mandatory version=v2", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listActivities.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,13 +12,13 @@ Deno.test("list-activities: GETs /activities and always sends the mandatory vers
   assertEquals([...url.searchParams.keys()], ["version"]);
 });
 
-Deno.test("list-activities: clearing version still sends v2 — lemlist marks it required", async () => {
+test("list-activities: clearing version still sends v2 — lemlist marks it required", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listActivities.execute!({ version: undefined }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("version"), "v2");
 });
 
-Deno.test("list-activities: forwards every documented filter", async () => {
+test("list-activities: forwards every documented filter", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listActivities.execute!({
     type: "emailsReplied",
@@ -40,7 +41,7 @@ Deno.test("list-activities: forwards every documented filter", async () => {
   assertEquals(p.get("limit"), "100");
 });
 
-Deno.test("list-activities: exposes minDate/maxDate only, never the losing aliases", () => {
+test("list-activities: exposes minDate/maxDate only, never the losing aliases", () => {
   // lemlist accepts startDate/endDate as aliases but documents that minDate and
   // maxDate take precedence — exposing both would let a caller build a request
   // where half their input is silently ignored.
@@ -51,19 +52,19 @@ Deno.test("list-activities: exposes minDate/maxDate only, never the losing alias
   assert(!keys.includes("endDate"));
 });
 
-Deno.test("list-activities: accepts a Unix timestamp for the date filters too", async () => {
+test("list-activities: accepts a Unix timestamp for the date filters too", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listActivities.execute!({ minDate: "1715385600" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("minDate"), "1715385600");
 });
 
-Deno.test("list-activities: leaves `type` an open string — lemlist publishes no closed enum", () => {
+test("list-activities: leaves `type` an open string — lemlist publishes no closed enum", () => {
   const type = param(listActivities, "type");
   assertEquals(type.type, "string");
   assertEquals(type.options, undefined);
 });
 
-Deno.test("list-activities: is a search action returning lemlist's bare array", async () => {
+test("list-activities: is a search action returning lemlist's bare array", async () => {
   assertEquals(listActivities.type, "search");
   const body = [{ _id: "act_1", type: "manualDone", leadId: "lea_1" }];
   const { ctx } = mockCtx([{ body }]);

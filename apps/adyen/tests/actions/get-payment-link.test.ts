@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getPaymentLink from "../../actions/get-payment-link.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
 const INPUT = { "linkId": "PL 1" } as Parameters<typeof getPaymentLink.execute>[0];
 
-Deno.test("get-payment-link: sends GET to the documented path and returns the response", async () => {
+test("get-payment-link: sends GET to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "id": "PL 1", "status": "paid" } }]);
   const out = await getPaymentLink.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -15,7 +16,7 @@ Deno.test("get-payment-link: sends GET to the documented path and returns the re
   assertEquals(out, { "id": "PL 1", "status": "paid" });
 });
 
-Deno.test("get-payment-link: targets the connection's base URL and carries no credential", async () => {
+test("get-payment-link: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx(
     [{ status: 200, body: { "id": "PL 1", "status": "paid" } }],
     "live",
@@ -30,7 +31,7 @@ Deno.test("get-payment-link: targets the connection's base URL and carries no cr
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-payment-link: surfaces Adyen's error code, type and message", async () => {
+test("get-payment-link: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -48,6 +49,6 @@ Deno.test("get-payment-link: surfaces Adyen's error code, type and message", asy
   );
 });
 
-Deno.test("get-payment-link: is a read-only action", () => {
+test("get-payment-link: is a read-only action", () => {
   assertEquals(getPaymentLink.type, "read");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/training-get.ts";
 
-Deno.test("training-get: reads a training and adds the two booleans", async () => {
+test("training-get: reads a training and adds the two booleans", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "t1", status: "succeeded", output: { version: "v2" } },
@@ -13,12 +14,12 @@ Deno.test("training-get: reads a training and adds the two booleans", async () =
 });
 
 /** output.version is where the trained model's new version id appears. */
-Deno.test("training-get: the output says where the trained version lands", () => {
+test("training-get: the output says where the trained version lands", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "output")!.label.includes("new version id"));
 });
 
-Deno.test("training-get: a blank id fails before any request", async () => {
+test("training-get: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`trainingId`");
   assertEquals(calls.length, 0);

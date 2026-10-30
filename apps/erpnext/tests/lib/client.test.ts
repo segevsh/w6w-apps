@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   baseUrlFromConnection,
   compact,
@@ -15,13 +16,13 @@ import { mockCtx } from "../_helpers.ts";
 
 const conn = { display: { baseUrl: "https://erpnext.example.com" } };
 
-Deno.test("the resource and method paths are what the docs state", () => {
+test("the resource and method paths are what the docs state", () => {
   assertEquals(RESOURCE_PATH, "/api/resource");
   assertEquals(METHOD_PATH, "/api/method");
 });
 
 /** A missing scheme must not downgrade an API Secret in flight to plaintext. */
-Deno.test("normalizeBaseUrl assumes https and strips everything past the origin", () => {
+test("normalizeBaseUrl assumes https and strips everything past the origin", () => {
   assertEquals(normalizeBaseUrl("erpnext.example.com"), "https://erpnext.example.com");
   assertEquals(normalizeBaseUrl("https://erpnext.example.com/"), "https://erpnext.example.com");
   assertEquals(
@@ -31,12 +32,12 @@ Deno.test("normalizeBaseUrl assumes https and strips everything past the origin"
   assertEquals(normalizeBaseUrl("http://localhost:8000"), "http://localhost:8000");
 });
 
-Deno.test("normalizeBaseUrl refuses something that is not a URL", () => {
+test("normalizeBaseUrl refuses something that is not a URL", () => {
   assertThrows(() => normalizeBaseUrl(""), Error, "ERPNext site URL is empty");
   assertThrows(() => normalizeBaseUrl("http://"), Error, "not a valid URL");
 });
 
-Deno.test("baseUrlFromConnection explains itself when the URL was never stored", () => {
+test("baseUrlFromConnection explains itself when the URL was never stored", () => {
   assertEquals(baseUrlFromConnection(conn as never), "https://erpnext.example.com");
   assertThrows(
     () => baseUrlFromConnection({ display: {} } as never),
@@ -45,7 +46,7 @@ Deno.test("baseUrlFromConnection explains itself when the URL was never stored",
   );
 });
 
-Deno.test("compact / csv / json behave as the actions expect", () => {
+test("compact / csv / json behave as the actions expect", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: [], f: false }), {
     a: 1,
     f: false,
@@ -56,7 +57,7 @@ Deno.test("compact / csv / json behave as the actions expect", () => {
   assertEquals(json({ a: 1 }, "x"), { a: 1 });
 });
 
-Deno.test("toFilters accepts the documented array shape and an equality object", () => {
+test("toFilters accepts the documented array shape and an equality object", () => {
   assertEquals(toFilters('[["status","=","Open"]]', "Filters"), [["status", "=", "Open"]]);
   assertEquals(toFilters({ status: "Open" }, "Filters"), { status: "Open" });
   assertEquals(toFilters(undefined, "Filters"), undefined);
@@ -64,7 +65,7 @@ Deno.test("toFilters accepts the documented array shape and an equality object",
 });
 
 /** _server_messages is the primary, human-authored shape frappe/utils/response.py emits. */
-Deno.test("unwrapError prefers _server_messages, then exception, then message", () => {
+test("unwrapError prefers _server_messages, then exception, then message", () => {
   const serverMessages = JSON.stringify([
     JSON.stringify({ message: "Customer is mandatory", title: "Missing" }),
   ]);
@@ -85,19 +86,19 @@ Deno.test("unwrapError prefers _server_messages, then exception, then message", 
   assertEquals(unwrapError(500, ""), "HTTP 500");
 });
 
-Deno.test("client: resource() builds paths on the connection's site, under /api/resource", async () => {
+test("client: resource() builds paths on the connection's site, under /api/resource", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ name: "CUST-0001" }] } }], conn);
   await new ErpNextClient(ctx).resource("/Customer");
   assertEquals(calls[0].url, "https://erpnext.example.com/api/resource/Customer");
 });
 
-Deno.test("client: never sends Authorization — signing is the host's job", async () => {
+test("client: never sends Authorization — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], conn);
   await new ErpNextClient(ctx).resource("/Customer/CUST-0001");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: a failure surfaces the status and the unwrapped body", async () => {
+test("client: a failure surfaces the status and the unwrapped body", async () => {
   const serverMessages = JSON.stringify([JSON.stringify({ message: "No permission" })]);
   const { ctx } = mockCtx([{
     status: 403,
@@ -115,12 +116,12 @@ Deno.test("client: a failure surfaces the status and the unwrapped body", async 
   assert(threw!.message.includes("No permission"), threw!.message);
 });
 
-Deno.test("client: a connection with no URL fails before any request", () => {
+test("client: a connection with no URL fails before any request", () => {
   const { ctx } = mockCtx([], { display: {} });
   assertThrows(() => new ErpNextClient(ctx), Error, "records no site URL");
 });
 
-Deno.test("client: method() calls /api/method and unwraps {message: ...}", async () => {
+test("client: method() calls /api/method and unwraps {message: ...}", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { message: "administrator@example.com" } }],
     conn,
@@ -130,7 +131,7 @@ Deno.test("client: method() calls /api/method and unwraps {message: ...}", async
   assertEquals(result, "administrator@example.com");
 });
 
-Deno.test("client: query values are JSON-encoded except plain strings", async () => {
+test("client: query values are JSON-encoded except plain strings", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], conn);
   await new ErpNextClient(ctx).resource("/Customer", {
     query: { fields: ["name", "customer_name"], limit_page_length: 5, order_by: "modified desc" },

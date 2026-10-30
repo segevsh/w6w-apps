@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-environment.ts";
 
-Deno.test("get-environment: metadata", () => {
+test("get-environment: metadata", () => {
   assertEquals(action.key, "get-environment");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["environmentName"]);
 });
 
-Deno.test("get-environment: calls GET /environments/production on the NA host", async () => {
+test("get-environment: calls GET /environments/production on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "environment": { "name": "production" } } }]);
   const out = await action.execute({ "environmentName": "production" }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("get-environment: calls GET /environments/production on the NA host", 
   assertEquals(out, { "environment": { "name": "production" } });
 });
 
-Deno.test("get-environment: uses the connection's regional host", async () => {
+test("get-environment: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "environment": { "name": "production" } } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -28,7 +29,7 @@ Deno.test("get-environment: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/environments/production");
 });
 
-Deno.test("get-environment: rejects without `environmentName` and makes no request", async () => {
+test("get-environment: rejects without `environmentName` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -40,7 +41,7 @@ Deno.test("get-environment: rejects without `environmentName` and makes no reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-environment: surfaces Contentstack's own error body", async () => {
+test("get-environment: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

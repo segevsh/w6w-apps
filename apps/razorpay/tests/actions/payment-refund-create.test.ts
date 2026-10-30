@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentRefundCreate from "../../actions/payment-refund-create.ts";
 import { mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
  * must not create a second real refund. `ctx.invocation.invocationId`
  * becomes `X-Refund-Idempotency`.
  */
-Deno.test("payment-refund-create: sends the invocation id as X-Refund-Idempotency", async () => {
+test("payment-refund-create: sends the invocation id as X-Refund-Idempotency", async () => {
   const { ctx, calls } = mockCtxWithInvocation(
     [{ body: { id: "rfnd_1", status: "processed" } }],
     "inv-abcdef0123",
@@ -19,7 +20,7 @@ Deno.test("payment-refund-create: sends the invocation id as X-Refund-Idempotenc
   assertEquals(JSON.parse(calls[0].body!), { amount: 20000 });
 });
 
-Deno.test("payment-refund-create: omitting amount refunds the full payment — no amount key sent", async () => {
+test("payment-refund-create: omitting amount refunds the full payment — no amount key sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rfnd_1" } }]);
   await paymentRefundCreate.execute({ id: "pay_1" }, ctx);
 
@@ -27,6 +28,6 @@ Deno.test("payment-refund-create: omitting amount refunds the full payment — n
   assertEquals("x-refund-idempotency" in calls[0].headers, false);
 });
 
-Deno.test("payment-refund-create: is not idempotent at the action level — the header carries that instead", () => {
+test("payment-refund-create: is not idempotent at the action level — the header carries that instead", () => {
   assertEquals(paymentRefundCreate.idempotent, false);
 });

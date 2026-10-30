@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import knowledgeDelete from "../../actions/knowledge-delete.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => knowledgeDelete.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("knowledge-delete: declares a perform action with a description, params and output", () => {
+test("knowledge-delete: declares a perform action with a description, params and output", () => {
   assertEquals(knowledgeDelete.key, "knowledge-delete");
   assertEquals(knowledgeDelete.type, "perform");
   assert((knowledgeDelete.description ?? "").length > 0);
@@ -16,7 +17,7 @@ Deno.test("knowledge-delete: declares a perform action with a description, param
   assertEquals(knowledgeDelete.idempotent, true);
 });
 
-Deno.test("knowledge-delete: sends the documented request and returns the documented shape", async () => {
+test("knowledge-delete: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -34,7 +35,7 @@ Deno.test("knowledge-delete: sends the documented request and returns the docume
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("knowledge-delete: an Aidbase failure body is thrown with its message", async () => {
+test("knowledge-delete: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

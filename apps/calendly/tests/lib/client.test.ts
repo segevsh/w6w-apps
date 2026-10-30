@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { CalendlyClient, uuidOf } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new CalendlyClient(ctx);
   const result = await client.request("/webhook_subscriptions/abc", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"message":"Resource Not Found"}' },
   ]);
@@ -22,7 +23,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/scheduled_events/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new CalendlyClient(ctx);
   await client.request("/event_types", {
@@ -35,7 +36,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("count"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { resource: {} } }]);
   const client = new CalendlyClient(ctx);
   await client.request("/scheduling_links", {
@@ -49,7 +50,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new CalendlyClient(ctx);
   await client.request("https://api.calendly.com/users/AAAA");
@@ -58,13 +59,13 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/users/AAAA");
 });
 
-Deno.test("client: never sets Authorization (sign does)", async () => {
+test("client: never sets Authorization (sign does)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new CalendlyClient(ctx).request("/users/me");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("uuidOf: extracts the last path segment of a URI", () => {
+test("uuidOf: extracts the last path segment of a URI", () => {
   assertEquals(uuidOf("https://api.calendly.com/users/AAAA"), "AAAA");
   assertEquals(uuidOf("https://api.calendly.com/scheduled_events/DDDD/"), "DDDD");
   assertEquals(uuidOf("EEEE"), "EEEE");

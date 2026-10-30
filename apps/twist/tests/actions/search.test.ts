@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import search from "../../actions/search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search: GET /api/v3/search with every documented parameter", async () => {
+test("search: GET /api/v3/search with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await search.execute({
     "workspaceId": 100,
@@ -42,14 +43,14 @@ Deno.test("search: GET /api/v3/search with every documented parameter", async ()
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("search: omits optional parameters that are not set", async () => {
+test("search: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await search.execute({ "workspaceId": 100, "query": "sample query" }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "workspace_id": "100", "query": "sample query" });
 });
 
-Deno.test("search: sends no credential of its own", async () => {
+test("search: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await search.execute({
     "workspaceId": 100,
@@ -70,7 +71,7 @@ Deno.test("search: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("search: surfaces Twist's error body", async () => {
+test("search: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

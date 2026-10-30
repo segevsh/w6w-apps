@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: uses Google's identity endpoints with offline access", () => {
+test("oauth2: uses Google's identity endpoints with offline access", () => {
   assertEquals(auth.oauth2!.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
   assertEquals(auth.oauth2!.tokenUrl, "https://oauth2.googleapis.com/token");
   // Without both of these Google does not reliably return a refresh token.
@@ -11,7 +12,7 @@ Deno.test("oauth2: uses Google's identity endpoints with offline access", () => 
 });
 
 /** One scope, not seven — cloud-platform would grant every Google Cloud API. */
-Deno.test("oauth2: asks for the narrow bigquery scope only", () => {
+test("oauth2: asks for the narrow bigquery scope only", () => {
   assertEquals(auth.oauth2!.scopes, ["https://www.googleapis.com/auth/bigquery"]);
   for (const s of auth.oauth2!.scopes!) {
     assert(!s.includes("cloud-platform"), `unexpectedly broad scope: ${s}`);
@@ -19,7 +20,7 @@ Deno.test("oauth2: asks for the narrow bigquery scope only", () => {
   }
 });
 
-Deno.test("oauth2: signs with the bearer", async () => {
+test("oauth2: signs with the bearer", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://bigquery.googleapis.com/bigquery/v2/projects/p1/queries",
@@ -34,7 +35,7 @@ Deno.test("oauth2: signs with the bearer", async () => {
  * The probe proves the token AND that it can see the named project — the
  * failure most worth catching at connect time.
  */
-Deno.test("oauth2: test lists the project's datasets", async () => {
+test("oauth2: test lists the project's datasets", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { datasets: [] } }]);
   assertEquals(
     await auth.test!({ credential: { accessToken: "at", projectId: "p1" } } as never, ctx),
@@ -46,7 +47,7 @@ Deno.test("oauth2: test lists the project's datasets", async () => {
   );
 });
 
-Deno.test("oauth2: 401, 403 and 404 are three different fixes", async () => {
+test("oauth2: 401, 403 and 404 are three different fixes", async () => {
   const cases: Array<[number, string]> = [
     [401, "401"],
     [403, "not enabled"],
@@ -63,7 +64,7 @@ Deno.test("oauth2: 401, 403 and 404 are three different fixes", async () => {
   }
 });
 
-Deno.test("oauth2: a missing token or project fails before any network call", async () => {
+test("oauth2: a missing token or project fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -76,7 +77,7 @@ Deno.test("oauth2: a missing token or project fails before any network call", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect records the project and default dataset", async () => {
+test("oauth2: afterConnect records the project and default dataset", async () => {
   assertEquals(
     await auth.afterConnect!(
       { credential: { projectId: " p1 ", datasetId: "d1" } } as never,

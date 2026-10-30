@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/leaderboard-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("leaderboard-get: GETs the documented path", async () => {
+test("leaderboard-get: GETs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], page: 1 } }]);
   const out = await action.execute!({ boardId: "b1", boardType: "ai" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -13,7 +14,7 @@ Deno.test("leaderboard-get: GETs the documented path", async () => {
   assertEquals(out, { data: [], page: 1 });
 });
 
-Deno.test("leaderboard-get: a vendor error reports status and message", async () => {
+test("leaderboard-get: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () => await action.execute!({ boardId: "b1", boardType: "ai" }, ctx),

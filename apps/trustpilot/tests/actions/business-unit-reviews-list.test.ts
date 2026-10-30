@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/business-unit-reviews-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("business-unit-reviews-list: forwards every documented filter", async () => {
+test("business-unit-reviews-list: forwards every documented filter", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -43,7 +44,7 @@ Deno.test("business-unit-reviews-list: forwards every documented filter", async 
   assertEquals(out.items[0].id, "r1");
 });
 
-Deno.test("business-unit-reviews-list: a missing reviews array becomes an empty items array", async () => {
+test("business-unit-reviews-list: a missing reviews array becomes an empty items array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute({ businessUnitId: "bu1" }, ctx);
   assertEquals(out.items, []);

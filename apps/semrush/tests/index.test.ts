@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 /** The thirteen Actions this app publishes — no more, no fewer. */
@@ -18,7 +20,7 @@ const EXPECTED_ACTION_KEYS = [
   "api-units-balance-get",
 ];
 
-Deno.test("index: exports the thirteen actions, one auth method and one health check", () => {
+test("index: exports the thirteen actions, one auth method and one health check", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 13);
   assertEquals(app.actions.map((a) => a.key).sort(), [...EXPECTED_ACTION_KEYS].sort());
@@ -27,7 +29,7 @@ Deno.test("index: exports the thirteen actions, one auth method and one health c
   assertEquals(app.healthChecks[0].key, "service");
 });
 
-Deno.test("index: every action is a read, with a description, an execute hook and output", () => {
+test("index: every action is a read, with a description, an execute hook and output", () => {
   for (const a of app.actions) {
     assertEquals(a.type, "read", `${a.key}: not a read`);
     assert(typeof a.description === "string" && a.description.length > 0, `${a.key}: no desc`);
@@ -36,7 +38,7 @@ Deno.test("index: every action is a read, with a description, an execute hook an
   }
 });
 
-Deno.test("index: each Standard-API action surfaces the vendor's `data` field", () => {
+test("index: each Standard-API action surfaces the vendor's `data` field", () => {
   for (const a of app.actions) {
     const fields = Array.isArray(a.output) ? a.output : [];
     const keys = fields.map((o) => o.key);
@@ -49,7 +51,7 @@ Deno.test("index: each Standard-API action surfaces the vendor's `data` field", 
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -71,9 +73,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -83,7 +85,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -96,7 +98,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * host — or accepted one as a param — could be pointed somewhere the manifest
  * never allowlisted.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/semrush\.com/.test(src), `${a.key}: contains a SEMrush host literal`);
@@ -104,7 +106,7 @@ Deno.test("index: no action hard-codes a host", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|base_?url|api_?key|api_?token|token)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -113,7 +115,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
   }
 });
 
-Deno.test("index: no action exposes a `format` param — `json` is the only projection used", () => {
+test("index: no action exposes a `format` param — `json` is the only projection used", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(p.key !== "format", `${a.key}: exposes the vendor's CSV/JSON switch`);
@@ -123,7 +125,7 @@ Deno.test("index: no action exposes a `format` param — `json` is the only proj
 
 // --- auth ------------------------------------------------------------------
 
-Deno.test("index: the single auth method declares the `Apikey` header scheme", () => {
+test("index: the single auth method declares the `Apikey` header scheme", () => {
   const auth = app.auth[0];
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
@@ -139,8 +141,8 @@ Deno.test("index: the single auth method declares the `Apikey` header scheme", (
  * is asserted at the source level as well as behaviourally (see
  * `tests/auth/api-key.test.ts` and `tests/actions/api-units-balance-get.test.ts`).
  */
-Deno.test("index: the balance-path code never reads the vendor's error message", async () => {
-  const auth = code(await Deno.readTextFile(new URL("../auth/api-key.ts", import.meta.url)));
+test("index: the balance-path code never reads the vendor's error message", async () => {
+  const auth = code(await denoReadTextFile(new URL("../auth/api-key.ts", import.meta.url)));
   // `errorField` reads the sibling `field` name (safe) and never `message`.
   assert(auth.includes("errors?.[0]?.field"), "errorField no longer reads the `field` name");
   assert(!/\.message\b/.test(auth), "auth/api-key.ts reads a vendor `message` field");
@@ -152,7 +154,7 @@ Deno.test("index: the balance-path code never reads the vendor's error message",
 
 // --- health ----------------------------------------------------------------
 
-Deno.test("index: the health check declares the absence-of-status-page posture", () => {
+test("index: the health check declares the absence-of-status-page posture", () => {
   const service = app.healthChecks[0];
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
@@ -162,7 +164,7 @@ Deno.test("index: the health check declares the absence-of-status-page posture",
   assertEquals(typeof service.check, "function");
 });
 
-Deno.test("index: no health check declares extra egress while signed", () => {
+test("index: no health check declares extra egress while signed", () => {
   for (const check of app.healthChecks) {
     if (!check.network?.allow?.length) continue;
     assert(
@@ -174,9 +176,9 @@ Deno.test("index: no health check declares extra egress while signed", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows exactly the two hosts the app calls", async () => {
+test("index: the manifest allows exactly the two hosts the app calls", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as {
     w6w: { id: string; network: { allow: string[] }; appearance: { icon: { svg: string } } };
   };
@@ -185,8 +187,8 @@ Deno.test("index: the manifest allows exactly the two hosts the app calls", asyn
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: the icon is simple-icons' SEMrush mark, byte-for-byte", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is simple-icons' SEMrush mark, byte-for-byte", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Downloaded verbatim from
   // https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/semrush.svg on
   // 2026-09-22: 929 bytes, `image/svg+xml`, `<title>Semrush</title>`.
@@ -196,15 +198,15 @@ Deno.test("index: the icon is simple-icons' SEMrush mark, byte-for-byte", async 
   assert(svg.includes("M20.698 11.911c0 .444-.226.516-.79.516"), "the mark was redrawn");
 });
 
-Deno.test("index: the dark-mode variant re-inks the mark, it does not redraw it", async () => {
-  const light = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
-  const dark = await Deno.readTextFile(new URL("../assets/icon.dark.svg", import.meta.url));
+test("index: the dark-mode variant re-inks the mark, it does not redraw it", async () => {
+  const light = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
+  const dark = await denoReadTextFile(new URL("../assets/icon.dark.svg", import.meta.url));
   // A one-colour black mark is invisible on the dark tile; the pack's sanctioned
   // fix paints the SAME geometry white. Only the root `fill` differs.
   assertEquals(dark, light.replace("<svg ", '<svg fill="#ffffff" '));
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

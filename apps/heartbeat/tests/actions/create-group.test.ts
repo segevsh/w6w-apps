@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createGroup from "../../actions/create-group.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-group: PUT /groups with only provided fields", async () => {
+test("create-group: PUT /groups with only provided fields", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await createGroup.execute({ name: "Cohort 1" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,6 +11,6 @@ Deno.test("create-group: PUT /groups with only provided fields", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Cohort 1" });
 });
 
-Deno.test("create-group: is not idempotent", () => {
+test("create-group: is not idempotent", () => {
   assertEquals(createGroup.idempotent, false);
 });

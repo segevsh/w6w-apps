@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/delete-topic.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BASE = "https://acme.zulipchat.com/api/v1";
 const form = (body: string | null) => Object.fromEntries(new URLSearchParams(body ?? ""));
 
-Deno.test("delete-topic: posts the topic name and returns `complete`", async () => {
+test("delete-topic: posts the topic name and returns `complete`", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "", complete: false } }]);
   const out = await action.execute!({ stream_id: 4, topic_name: "old" }, ctx);
   const url = new URL(calls[0].url);
@@ -17,13 +18,13 @@ Deno.test("delete-topic: posts the topic name and returns `complete`", async () 
   assertEquals(out, { complete: false });
 });
 
-Deno.test("delete-topic: sends no authorization header of its own", async () => {
+test("delete-topic: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "", complete: false } }]);
   await action.execute!({ stream_id: 4, topic_name: "old" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("delete-topic: surfaces Zulip's error msg and code", async () => {
+test("delete-topic: surfaces Zulip's error msg and code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { result: "error", msg: "Invalid parameter", code: "BAD_REQUEST" },
@@ -35,7 +36,7 @@ Deno.test("delete-topic: surfaces Zulip's error msg and code", async () => {
   );
 });
 
-Deno.test("delete-topic: a 401 names the credential problem", async () => {
+test("delete-topic: a 401 names the credential problem", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "", headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({ stream_id: 4, topic_name: "old" }, ctx),
@@ -44,7 +45,7 @@ Deno.test("delete-topic: a 401 names the credential problem", async () => {
   );
 });
 
-Deno.test("delete-topic: a connection without a subdomain is refused before any request", async () => {
+test("delete-topic: a connection without a subdomain is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = undefined;
   await assertRejects(

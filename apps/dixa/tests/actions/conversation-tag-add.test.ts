@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationTagAdd from "../../actions/conversation-tag-add.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-tag-add: calls PUT /v1/conversations/4711/tags/11111111-2222-3333-4444-555555555555", async () => {
+test("conversation-tag-add: calls PUT /v1/conversations/4711/tags/11111111-2222-3333-4444-555555555555", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await conversationTagAdd.execute(
     { "conversationId": 4711, "tagId": "11111111-2222-3333-4444-555555555555" } as never,
@@ -27,7 +28,7 @@ Deno.test("conversation-tag-add: calls PUT /v1/conversations/4711/tags/11111111-
   });
 });
 
-Deno.test("conversation-tag-add: surfaces a Dixa error message with the status", async () => {
+test("conversation-tag-add: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -42,7 +43,7 @@ Deno.test("conversation-tag-add: surfaces a Dixa error message with the status",
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("conversation-tag-add: rejects bad input before any request", async () => {
+test("conversation-tag-add: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

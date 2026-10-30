@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/payment-list.ts";
 
-Deno.test("payment-list: SELECTs from Payment", async () => {
+test("payment-list: SELECTs from Payment", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { QueryResponse: {} } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

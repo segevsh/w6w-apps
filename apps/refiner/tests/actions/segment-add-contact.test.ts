@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import segmentAddContact from "../../actions/segment-add-contact.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("segment-add-contact: POSTs /v1/sync-segment with id and segment", async () => {
+test("segment-add-contact: POSTs /v1/sync-segment with id and segment", async () => {
   const { ctx, calls } = mockCtx([{
     body: { message: "ok", contact_uuid: "c1", segment_uuid: "s1" },
   }]);
@@ -12,13 +13,13 @@ Deno.test("segment-add-contact: POSTs /v1/sync-segment with id and segment", asy
   assertEquals(JSON.parse(calls[0].body!), { id: "u1", segment_uuid: "s1" });
 });
 
-Deno.test("segment-add-contact: accepts an email instead of an id", async () => {
+test("segment-add-contact: accepts an email instead of an id", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await segmentAddContact.execute({ email: "a@b.co", segmentUuid: "s1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.co", segment_uuid: "s1" });
 });
 
-Deno.test("segment-add-contact: refuses a call with no user identifier, before any fetch", async () => {
+test("segment-add-contact: refuses a call with no user identifier, before any fetch", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(segmentAddContact.execute({ segmentUuid: "s1" }, ctx)),
@@ -28,7 +29,7 @@ Deno.test("segment-add-contact: refuses a call with no user identifier, before a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("segment-add-contact: a vendor error surfaces its own message", async () => {
+test("segment-add-contact: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(segmentAddContact.execute({ id: "u1", segmentUuid: "s1" }, ctx)),

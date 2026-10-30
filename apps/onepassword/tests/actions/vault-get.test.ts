@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, eventsDisplay, ok } from "./_shared.ts";
 import action from "../../actions/vault-get.ts";
 
-Deno.test("vault-get: reads one vault's metadata", async () => {
+test("vault-get: reads one vault's metadata", async () => {
   const { ctx, calls } = mockCtx([
     ok({ id: "v1", name: "Prod", items: 12, contentVersion: 42 }),
   ], { display });
@@ -16,13 +17,13 @@ Deno.test("vault-get: reads one vault's metadata", async () => {
   assertEquals(result.contentVersion, 42);
 });
 
-Deno.test("vault-get: needs a vault", async () => {
+test("vault-get: needs a vault", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`vaultId` is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("vault-get: an Events connection is refused", async () => {
+test("vault-get: an Events connection is refused", async () => {
   const { ctx } = mockCtx([], { display: eventsDisplay });
   await assertRejects(
     async () => await action.execute!({ vaultId: "v1" }, ctx),
@@ -32,6 +33,6 @@ Deno.test("vault-get: an Events connection is refused", async () => {
 });
 
 /** contentVersion is a cheap change poll. */
-Deno.test("vault-get: says what contentVersion is good for", () => {
+test("vault-get: says what contentVersion is good for", () => {
   assert(/poll for changes/.test(action.description!), action.description);
 });

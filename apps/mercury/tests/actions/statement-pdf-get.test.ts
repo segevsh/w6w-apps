@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import statementPdfGet, { fileNameFrom } from "../../actions/statement-pdf-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("statement-pdf-get: GETs /statements/{id}/pdf with accept: */*", async () => {
+test("statement-pdf-get: GETs /statements/{id}/pdf with accept: */*", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: "PDF-BYTES",
@@ -20,13 +21,13 @@ Deno.test("statement-pdf-get: GETs /statements/{id}/pdf with accept: */*", async
   assertEquals(out.fileName, "statement.pdf");
 });
 
-Deno.test("statement-pdf-get: base64-decodes back to the original bytes", async () => {
+test("statement-pdf-get: base64-decodes back to the original bytes", async () => {
   const { ctx } = mockCtx([{ body: "hello pdf" }]);
   const out = await statementPdfGet.execute({ statementId: "st_1" }, ctx);
   assertEquals(atob(out.content), "hello pdf");
 });
 
-Deno.test("fileNameFrom: parses a quoted filename, returns undefined for no header", () => {
+test("fileNameFrom: parses a quoted filename, returns undefined for no header", () => {
   assertEquals(fileNameFrom('attachment; filename="a.pdf"'), "a.pdf");
   assertEquals(fileNameFrom(null), undefined);
 });

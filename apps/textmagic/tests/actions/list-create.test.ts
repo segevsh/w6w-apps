@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCreate from "../../actions/list-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-create: POSTs to /lists", async () => {
+test("list-create: POSTs to /lists", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 715, href: "/api/v2/lists/715" } }]);
   const out = await listCreate.execute({ name: "Private list" }, ctx);
 

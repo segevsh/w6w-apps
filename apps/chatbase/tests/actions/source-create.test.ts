@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sourceCreate from "../../actions/source-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("source-create: text source body shape", async () => {
+test("source-create: text source body shape", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "s1", type: "text", status: "untrained" } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("source-create: text source body shape", async () => {
   });
 });
 
-Deno.test("source-create: qna source parses a JSON string of questions", async () => {
+test("source-create: qna source parses a JSON string of questions", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "s2", type: "qna" } }]);
   await sourceCreate.execute(
     {
@@ -36,7 +37,7 @@ Deno.test("source-create: qna source parses a JSON string of questions", async (
   assertEquals(body.questions, ["How do I get a refund?", "What is the refund window?"]);
 });
 
-Deno.test("source-create: link source with excludePaths/includeOnlyPaths as JSON arrays", async () => {
+test("source-create: link source with excludePaths/includeOnlyPaths as JSON arrays", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "s3", type: "link" } }]);
   await sourceCreate.execute(
     {

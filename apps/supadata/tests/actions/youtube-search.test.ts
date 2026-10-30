@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import search from "../../actions/youtube-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("youtube-search: GETs /youtube/search and repeats `features` per value", async () => {
+test("youtube-search: GETs /youtube/search and repeats `features` per value", async () => {
   const body = {
     query: "cats",
     results: [{ type: "video", id: "v", title: "t" }],
@@ -23,7 +24,7 @@ Deno.test("youtube-search: GETs /youtube/search and repeats `features` per value
   assertEquals(url.searchParams.has("uploadDate"), false);
 });
 
-Deno.test("youtube-search: features accepts a comma string; a blank query makes no call", async () => {
+test("youtube-search: features accepts a comma string; a blank query makes no call", async () => {
   const { ctx, calls } = mockCtx([{ body: { query: "q", results: [] } }]);
   await search.execute({ query: "q", features: "hd, live", nextPageToken: "tok" }, ctx);
   const url = new URL(calls[0].url);

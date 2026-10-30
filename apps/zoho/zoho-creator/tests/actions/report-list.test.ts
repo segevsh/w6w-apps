@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/report-list.ts";
 
-Deno.test("report-list: GETs /meta/<owner>/<app>/reports", async () => {
+test("report-list: GETs /meta/<owner>/<app>/reports", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { code: 3000, reports: [{ link_name: "All_Orders", display_name: "List Report" }] } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("report-list: GETs /meta/<owner>/<app>/reports", async () => {
   assertEquals(out, { reports: [{ link_name: "All_Orders", display_name: "List Report" }] });
 });
 
-Deno.test("report-list: defaults to an empty array when the body carries none", async () => {
+test("report-list: defaults to an empty array when the body carries none", async () => {
   const { ctx } = mockCreatorCtx([{ body: { code: 3000 } }]);
   const out = await action.execute(
     { accountOwnerName: "jason18", appLinkName: "zylker-store" },
@@ -24,7 +25,7 @@ Deno.test("report-list: defaults to an empty array when the body carries none", 
   assertEquals(out, { reports: [] });
 });
 
-Deno.test("report-list: sends the environment header when set", async () => {
+test("report-list: sends the environment header when set", async () => {
   const { ctx, calls } = mockCreatorCtx([{ body: { code: 3000, reports: [] } }]);
   await action.execute(
     { accountOwnerName: "jason18", appLinkName: "zylker-store", environment: "development" },

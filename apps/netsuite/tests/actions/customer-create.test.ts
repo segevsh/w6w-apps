@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerCreate from "../../actions/customer-create.ts";
 import { BASE, created, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("customer-create: builds the documented body, subsidiary as a reference", async () => {
+test("customer-create: builds the documented body, subsidiary as a reference", async () => {
   const { ctx, calls } = mockCtx([created("customer", "647")]);
   const out = await run(customerCreate, {
     companyName: "My Company",
@@ -21,7 +22,7 @@ Deno.test("customer-create: builds the documented body, subsidiary as a referenc
   assertEquals(out.id, "647");
 });
 
-Deno.test("customer-create: an individual sets isPerson; additionalFields win", async () => {
+test("customer-create: an individual sets isPerson; additionalFields win", async () => {
   const { ctx, calls } = mockCtx([created("customer", "1")]);
   await run(customerCreate, {
     isPerson: true,
@@ -39,7 +40,7 @@ Deno.test("customer-create: an individual sets isPerson; additionalFields win", 
   });
 });
 
-Deno.test("customer-create: an empty customer is refused locally", async () => {
+test("customer-create: an empty customer is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await run(customerCreate, { isPerson: false }, ctx),

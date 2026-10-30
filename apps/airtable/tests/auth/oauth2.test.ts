@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares the Airtable authorize/token endpoints and PKCE", () => {
+test("oauth2: declares the Airtable authorize/token endpoints and PKCE", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://airtable.com/oauth2/v1/authorize");
@@ -14,7 +15,7 @@ Deno.test("oauth2: declares the Airtable authorize/token endpoints and PKCE", ()
   assert(auth.oauth2?.scopes?.includes("schema.bases:read"));
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -25,7 +26,7 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure", async () => {
+test("oauth2: test with missing accessToken reports the failure", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -33,7 +34,7 @@ Deno.test("oauth2: test with missing accessToken reports the failure", async () 
   assertEquals(calls.length, 0, "must not make a network call when credential is malformed");
 });
 
-Deno.test("oauth2: test issues GET /meta/whoami with Bearer token", async () => {
+test("oauth2: test issues GET /meta/whoami with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "usr1", email: "a@b" } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -42,7 +43,7 @@ Deno.test("oauth2: test issues GET /meta/whoami with Bearer token", async () => 
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test returns the upstream status on non-2xx", async () => {
+test("oauth2: test returns the upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);

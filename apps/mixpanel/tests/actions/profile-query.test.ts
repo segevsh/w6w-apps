@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/profile-query.ts";
 
 const conn = { display: { projectId: "123", region: "us" } };
 
-Deno.test("profile-query: a filter expression goes out as `where`", async () => {
+test("profile-query: a filter expression goes out as `where`", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [], total: 0 } }], conn);
   await action.execute!({ where: 'properties["plan"] == "pro"' }, ctx);
   const url = new URL(calls[0].url);
@@ -12,13 +13,13 @@ Deno.test("profile-query: a filter expression goes out as `where`", async () => 
   assertEquals(url.searchParams.get("where"), 'properties["plan"] == "pro"');
 });
 
-Deno.test("profile-query: a cohort id becomes Mixpanel's filter_by_cohort JSON", async () => {
+test("profile-query: a cohort id becomes Mixpanel's filter_by_cohort JSON", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], conn);
   await action.execute!({ cohortId: "555" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("filter_by_cohort"), '{"id":555}');
 });
 
-Deno.test("profile-query: a filter AND a cohort is refused", async () => {
+test("profile-query: a filter AND a cohort is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ where: "x", cohortId: "1" }, ctx),
@@ -29,7 +30,7 @@ Deno.test("profile-query: a filter AND a cohort is refused", async () => {
 });
 
 /** The session id is what pins the result set between pages. */
-Deno.test("profile-query: paging reuses Mixpanel's session id", async () => {
+test("profile-query: paging reuses Mixpanel's session id", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -49,7 +50,7 @@ Deno.test("profile-query: paging reuses Mixpanel's session id", async () => {
 });
 
 /** Each page is a request, and there are only sixty an hour. */
-Deno.test("profile-query: paging stops at the page ceiling", async () => {
+test("profile-query: paging stops at the page ceiling", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { results: [{ a: 1 }], total: 99, session_id: "s", page: 0 } },
     { status: 200, body: { results: [{ a: 2 }] } },

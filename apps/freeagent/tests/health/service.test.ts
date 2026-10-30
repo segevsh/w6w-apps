@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: ok when Statuspage reports indicator none", async () => {
+test("service: ok when Statuspage reports indicator none", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: { indicator: "none", description: "All Systems Operational" }, components: [] },
   }]);
@@ -11,7 +12,7 @@ Deno.test("service: ok when Statuspage reports indicator none", async () => {
   assertEquals(calls[0].url, "https://status.freeagent.com/api/v2/summary.json");
 });
 
-Deno.test("service: degraded on a minor indicator, down on major/critical", async () => {
+test("service: degraded on a minor indicator, down on major/critical", async () => {
   const { ctx: c1 } = mockCtx([{ body: { status: { indicator: "minor" } } }]);
   assertEquals((await service.check!({}, c1)).state, "degraded");
 
@@ -22,7 +23,7 @@ Deno.test("service: degraded on a minor indicator, down on major/critical", asyn
   assertEquals((await service.check!({}, c3)).state, "down");
 });
 
-Deno.test("service: reports the per-component breakdown, skipping group headers", async () => {
+test("service: reports the per-component breakdown, skipping group headers", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "minor" },
@@ -37,7 +38,7 @@ Deno.test("service: reports the per-component breakdown, skipping group headers"
   assertEquals("group" in (report.components ?? {}), false);
 });
 
-Deno.test("service: unknown (never down) when the status API itself fails", async () => {
+test("service: unknown (never down) when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

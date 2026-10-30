@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-get-people.ts";
 
-Deno.test("batch-get-people: resourceNames is a REPEATED param, not comma-joined", async () => {
+test("batch-get-people: resourceNames is a REPEATED param, not comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ body: { responses: [] } }]);
   await action.execute({ resourceNames: "people/c1, people/c2" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("batch-get-people: resourceNames is a REPEATED param, not comma-joined
   assertEquals(url.searchParams.get("personFields"), "names,emailAddresses,phoneNumbers");
 });
 
-Deno.test("batch-get-people: prefixes bare ids and accepts newline separation", async () => {
+test("batch-get-people: prefixes bare ids and accepts newline separation", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ resourceNames: "c1\nc2\npeople/c3" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("resourceNames"), [
@@ -21,7 +22,7 @@ Deno.test("batch-get-people: prefixes bare ids and accepts newline separation", 
   ]);
 });
 
-Deno.test("batch-get-people: rejects an empty list before making a request", () => {
+test("batch-get-people: rejects an empty list before making a request", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ resourceNames: "" }, ctx),
@@ -31,7 +32,7 @@ Deno.test("batch-get-people: rejects an empty list before making a request", () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("batch-get-people: enforces Google's 200-name ceiling locally", () => {
+test("batch-get-people: enforces Google's 200-name ceiling locally", () => {
   const { ctx, calls } = mockCtx([]);
   const tooMany = Array.from({ length: 201 }, (_, i) => `c${i}`);
   assertThrows(
@@ -42,7 +43,7 @@ Deno.test("batch-get-people: enforces Google's 200-name ceiling locally", () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("batch-get-people: exactly 200 names is allowed", async () => {
+test("batch-get-people: exactly 200 names is allowed", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const names = Array.from({ length: 200 }, (_, i) => `c${i}`);
   await action.execute({ resourceNames: names }, ctx);

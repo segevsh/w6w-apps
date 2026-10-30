@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import kmPublicNoteList from "../../actions/km-public-note-list.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("km-public-note-list: GET /v1/knowledge-management/notes/public with the documented parameters", async () => {
+test("km-public-note-list: GET /v1/knowledge-management/notes/public with the documented parameters", async () => {
   const response = { notes: [], total: 0, hasNextPage: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await kmPublicNoteList.execute({ reviewStateList: "Verified", first: 5 }, ctx);
@@ -15,7 +16,7 @@ Deno.test("km-public-note-list: GET /v1/knowledge-management/notes/public with t
   assertEquals(out, response);
 });
 
-Deno.test("km-public-note-list: a vendor error surfaces its own message and id", async () => {
+test("km-public-note-list: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),

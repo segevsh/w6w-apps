@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamList from "../../actions/team-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("team-list: fetches /teams with no params", async () => {
+test("team-list: fetches /teams with no params", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 2, name: "Test Team" }]) }]);
   const out = await teamList.execute({}, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("team-list: fetches /teams with no params", async () => {
   assertEquals((out as { total: number }).total, 1);
 });
 
-Deno.test("team-list: declares no params — the vendor documents none for this operation", () => {
+test("team-list: declares no params — the vendor documents none for this operation", () => {
   assertEquals(teamList.params, []);
 });

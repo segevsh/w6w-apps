@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT,
   mapComponentStatus,
@@ -31,14 +32,14 @@ function summary(overrides: Record<string, string> = {}, extra: Record<string, u
   };
 }
 
-Deno.test("service: probes the status host, unauthenticated, with its own allowlist", () => {
+test("service: probes the status host, unauthenticated, with its own allowlist", () => {
   assertEquals(STATUS_URL, "https://status.livechat.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.livechat.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: maps Statuspage's vocabularies", () => {
+test("service: maps Statuspage's vocabularies", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -49,7 +50,7 @@ Deno.test("service: maps Statuspage's vocabularies", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: all operational is ok and reports every component", async () => {
+test("service: all operational is ok and reports every component", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const out = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -57,14 +58,14 @@ Deno.test("service: all operational is ok and reports every component", async ()
   assertEquals(Object.keys(out.components!).length, NAMES.length);
 });
 
-Deno.test("service: the API component decides the verdict", async () => {
+test("service: the API component decides the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary({ [API_COMPONENT]: "major_outage" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "down");
   assert(out.message!.includes("API (major_outage)"));
 });
 
-Deno.test("service: an unrelated component never moves the verdict", async () => {
+test("service: an unrelated component never moves the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary({ "Chat widget": "major_outage" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -72,19 +73,19 @@ Deno.test("service: an unrelated component never moves the verdict", async () =>
   assert(out.message!.includes("Chat widget (major_outage)"));
 });
 
-Deno.test("service: without an API component the page indicator decides", async () => {
+test("service: without an API component the page indicator decides", async () => {
   const body = summary({}, { status: { indicator: "major" } });
   body.components = body.components.filter((c) => c.name !== API_COMPONENT);
   const { ctx } = mockCtx([{ body }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: open incidents are mentioned", async () => {
+test("service: open incidents are mentioned", async () => {
   const { ctx } = mockCtx([{ body: summary({}, { incidents: [{ id: "i" }] }) }]);
   assert((await service.check!({}, ctx)).message!.includes("1 open incident"));
 });
 
-Deno.test("service: unknown when the page is not LiveChat's, empty, unreadable or erroring", async () => {
+test("service: unknown when the page is not LiveChat's, empty, unreadable or erroring", async () => {
   const other = mockCtx([{ body: { ...summary(), page: { name: "Someone Else" } } }]);
   assertEquals((await service.check!({}, other.ctx)).state, "unknown");
   const empty = mockCtx([{ body: summary({}, { components: [] }) }]);

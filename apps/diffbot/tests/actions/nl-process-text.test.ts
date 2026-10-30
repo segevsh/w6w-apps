@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/nl-process-text.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const NL_DOC = {
   summary: "A startup.",
 };
 
-Deno.test("nl-process-text: POSTs the document in an array to nl.diffbot.com and unwraps the first", async () => {
+test("nl-process-text: POSTs the document in an array to nl.diffbot.com and unwraps the first", async () => {
   const { ctx, calls } = mockCtx([{ body: [NL_DOC] }]);
   const out = await run(action, {
     content: "Diffbot is a startup based in Menlo Park.",
@@ -33,7 +34,7 @@ Deno.test("nl-process-text: POSTs the document in an array to nl.diffbot.com and
   assertEquals((out.entities as unknown[]).length, 1);
 });
 
-Deno.test("nl-process-text: accepts a bare-object response; missing sections become empty", async () => {
+test("nl-process-text: accepts a bare-object response; missing sections become empty", async () => {
   const { ctx } = mockCtx([{ body: { language: "fr" } }]);
   const out = await run(action, { content: "Bonjour" }, ctx);
   assertEquals(out.language, "fr");
@@ -41,7 +42,7 @@ Deno.test("nl-process-text: accepts a bare-object response; missing sections bec
   assertEquals(out.categories, null);
 });
 
-Deno.test("nl-process-text: omits fields when blank; a 400 messages array is surfaced", async () => {
+test("nl-process-text: omits fields when blank; a 400 messages array is surfaced", async () => {
   const bad = mockCtx([{ status: 400, body: { messages: ["content must not be empty"] } }]);
   await assertRejects(
     () => run(action, { content: "", fields: " " }, bad.ctx),

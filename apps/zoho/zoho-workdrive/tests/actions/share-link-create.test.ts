@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import shareLinkCreate from "../../actions/share-link-create.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("share-link-create: POST /workdrive/api/v1/links", async () => {
+test("share-link-create: POST /workdrive/api/v1/links", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{
     body: {
       "data": {

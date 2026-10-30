@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/invitation-list-templates.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invitation-list-templates: calls the invitations-api host, not api.trustpilot.com", async () => {
+test("invitation-list-templates: calls the invitations-api host, not api.trustpilot.com", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -28,7 +29,7 @@ Deno.test("invitation-list-templates: calls the invitations-api host, not api.tr
   assertEquals(out.items[0].id, "t1");
 });
 
-Deno.test("invitation-list-templates: a missing templates array becomes an empty items array", async () => {
+test("invitation-list-templates: a missing templates array becomes an empty items array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute({ businessUnitId: "bu1" }, ctx);
   assertEquals(out.items, []);

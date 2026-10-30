@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/usage-breakdown-get.ts";
 
 const display = { projectId: "proj_1" };
 const ok = { status: 200, body: { results: [] } };
 
-Deno.test("usage-breakdown-get: groups by model by default", async () => {
+test("usage-breakdown-get: groups by model by default", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({}, ctx);
   assertEquals(
@@ -16,7 +17,7 @@ Deno.test("usage-breakdown-get: groups by model by default", async () => {
 });
 
 /** Grouping by API key finds the integration nobody remembers deploying. */
-Deno.test("usage-breakdown-get: every grouping reaches the wire", async () => {
+test("usage-breakdown-get: every grouping reaches the wire", async () => {
   for (const grouping of ["tag", "endpoint", "accessor"]) {
     const { ctx, calls } = mockCtx([ok], { display });
     await action.execute!({ grouping }, ctx);
@@ -24,12 +25,12 @@ Deno.test("usage-breakdown-get: every grouping reaches the wire", async () => {
   }
 });
 
-Deno.test("usage-breakdown-get: dates are narrowed to what Deepgram accepts", async () => {
+test("usage-breakdown-get: dates are narrowed to what Deepgram accepts", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({ start: "2026-08-01T00:00:00Z" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("start"), "2026-08-01");
 });
 
-Deno.test("usage-breakdown-get: says what it adds over the plain total", () => {
+test("usage-breakdown-get: says what it adds over the plain total", () => {
   assert(/act on/.test(action.description!), action.description);
 });

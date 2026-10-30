@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rename from "../../actions/tag-rename.ts";
 import { mockCtx, pathOf, queryOf, text } from "../_helpers.ts";
 
-Deno.test("tag-rename: POSTs s and dest", async () => {
+test("tag-rename: POSTs s and dest", async () => {
   const { ctx, calls } = mockCtx([text("OK")]);
   const out = await rename.execute({ tag: "user/-/label/Tech", newName: "Technology" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("tag-rename: POSTs s and dest", async () => {
   assertEquals(out, { ok: true });
 });
 
-Deno.test("tag-rename: refuses a slash in the new name and empty fields before any request", async () => {
+test("tag-rename: refuses a slash in the new name and empty fields before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await rename.execute({ tag: "t", newName: "a/b" }, ctx),

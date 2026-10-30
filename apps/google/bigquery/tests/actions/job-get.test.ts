@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-get.ts";
 
 const display = { projectId: "p1" };
 
-Deno.test("job-get: fetches a job with its optional location", async () => {
+test("job-get: fetches a job with its optional location", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: { state: "DONE" } } }], {
     display,
   });
@@ -14,7 +15,7 @@ Deno.test("job-get: fetches a job with its optional location", async () => {
 });
 
 /** DONE does not mean success — the reason lives in status.errorResult. */
-Deno.test("job-get: a failed job is still DONE, and the output says where to look", async () => {
+test("job-get: a failed job is still DONE, and the output says where to look", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { status: { state: "DONE", errorResult: { reason: "invalidQuery" } } },
@@ -29,7 +30,7 @@ Deno.test("job-get: a failed job is still DONE, and the output says where to loo
   assertEquals(statusOutput.label.includes("errorResult"), true);
 });
 
-Deno.test("job-get: a blank job id fails before any request", async () => {
+test("job-get: a blank job id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`jobId`");
   assertEquals(calls.length, 0);

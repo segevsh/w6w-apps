@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerList from "../../actions/customer-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-list: maps the surfaced filters to their bracketed names", async () => {
+test("customer-list: maps the surfaced filters to their bracketed names", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "customers") }]);
   await customerList.execute({
     siteId: "111",
@@ -39,7 +40,7 @@ Deno.test("customer-list: maps the surfaced filters to their bracketed names", a
  * makes the ones this app does not surface reachable at all — see
  * `extraFilters` in `lib/client.ts`.
  */
-Deno.test("customer-list: forwards additional documented filters through the escape hatch", async () => {
+test("customer-list: forwards additional documented filters through the escape hatch", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "customers") }]);
   await customerList.execute(
     { filters: '{"never_subscribed": true, "net_revenue_greater_than": 100}' },
@@ -51,7 +52,7 @@ Deno.test("customer-list: forwards additional documented filters through the esc
 });
 
 /** A surfaced param must win over the same key supplied through the hatch. */
-Deno.test("customer-list: a real param overrides the same filter from the escape hatch", async () => {
+test("customer-list: a real param overrides the same filter from the escape hatch", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "customers") }]);
   await customerList.execute(
     { siteId: "111", filters: '{"site_id": "999"}' },
@@ -60,7 +61,7 @@ Deno.test("customer-list: a real param overrides the same filter from the escape
   assertEquals(queryOf(calls[0])["filter[site_id]"], "111");
 });
 
-Deno.test("customer-list: an injection-shaped filter key is rejected before the network", async () => {
+test("customer-list: an injection-shaped filter key is rejected before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -72,7 +73,7 @@ Deno.test("customer-list: an injection-shaped filter key is rejected before the 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("customer-list: sends no query at all when nothing is filled in", async () => {
+test("customer-list: sends no query at all when nothing is filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "customers") }]);
   await customerList.execute({}, ctx);
   assertEquals(queryOf(calls[0]), {});
@@ -89,7 +90,7 @@ Deno.test("customer-list: sends no query at all when nothing is filled in", asyn
  * unfiltered result set rather than an error. `definedQuery` in `lib/client.ts`
  * is what prevents it.
  */
-Deno.test("customer-list: an unset named param does not shadow the same hatch filter", async () => {
+test("customer-list: an unset named param does not shadow the same hatch filter", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "customers") }]);
   await customerList.execute({ filters: '{"net_revenue_greater_than": "42"}' }, ctx);
   assertEquals(queryOf(calls[0])["filter[net_revenue_greater_than]"], "42");

@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-members.ts";
 
-Deno.test("list-members: GETs spaces/{space}/members", async () => {
+test("list-members: GETs spaces/{space}/members", async () => {
   const { ctx, calls } = mockCtx([{ body: { memberships: [] } }]);
   await action.execute!({ space: "A1" }, ctx);
   assertEquals(calls[0].method, "GET");
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/A1/members");
 });
 
-Deno.test("list-members: passes filter, showGroups, showInvited and paging through", async () => {
+test("list-members: passes filter, showGroups, showInvited and paging through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     space: "spaces/A1",
@@ -27,7 +28,7 @@ Deno.test("list-members: passes filter, showGroups, showInvited and paging throu
   assertEquals(p.get("pageToken"), "tok");
 });
 
-Deno.test("list-members: never sends useAdminAccess — this app holds no admin scope", async () => {
+test("list-members: never sends useAdminAccess — this app holds no admin scope", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", showInvited: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("useAdminAccess"), false);

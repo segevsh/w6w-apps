@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-mark-no-show.ts";
 
-Deno.test("booking-mark-no-show: POSTs /bookings/{id}/no-show with no body", async () => {
+test("booking-mark-no-show: POSTs /bookings/{id}/no-show with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "BKNG-1", status: "no_show" } }]);
   await action.execute({ id: "BKNG-1" }, ctx);
   const url = new URL(calls[0].url);

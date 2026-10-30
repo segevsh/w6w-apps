@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-get.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("webhook-get: GETs the subscription and redacts the secret", async () => {
+test("webhook-get: GETs the subscription and redacts the secret", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "id": "w_1", "secret": "s3cret", "target_url": "https://x.test" },
   }]);

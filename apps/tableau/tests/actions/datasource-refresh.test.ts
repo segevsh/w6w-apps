@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { DEFAULT_DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/datasource-refresh.ts";
 
-Deno.test("datasource-refresh: starts a job and returns its id, sending no body by default", async () => {
+test("datasource-refresh: starts a job and returns its id, sending no body by default", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 202, body: { job: { id: "j1", mode: "Asynchronous" } } }],
     { display: DEFAULT_DISPLAY },
@@ -14,7 +15,7 @@ Deno.test("datasource-refresh: starts a job and returns its id, sending no body 
   assertEquals(calls[0].body, "{}");
 });
 
-Deno.test("datasource-refresh: incremental sets the extractRefresh body", async () => {
+test("datasource-refresh: incremental sets the extractRefresh body", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 202, body: { job: { id: "j1" } } }],
     { display: DEFAULT_DISPLAY },
@@ -24,6 +25,6 @@ Deno.test("datasource-refresh: incremental sets the extractRefresh body", async 
   assertEquals(body.extractRefresh.incremental, "true");
 });
 
-Deno.test("datasource-refresh: is honestly not idempotent — each call starts a new job", () => {
+test("datasource-refresh: is honestly not idempotent — each call starts a new job", () => {
   assert(action.idempotent === false);
 });

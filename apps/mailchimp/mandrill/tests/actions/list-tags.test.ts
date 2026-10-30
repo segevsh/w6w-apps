@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tags.ts";
 
-Deno.test("list-tags: POSTs /tags/list.json with an empty body", async () => {
+test("list-tags: POSTs /tags/list.json with an empty body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ tag: "welcome", sent: 12 }] }]);
   const out = await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

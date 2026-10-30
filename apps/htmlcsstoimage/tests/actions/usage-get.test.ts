@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usageGet from "../../actions/usage-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const usage = {
   per_billing_period: [{ total_images: 12, start: "2026-10-01T00:00:00Z", end: null }],
 };
 
-Deno.test("usage-get: GETs /usage and returns the counts", async () => {
+test("usage-get: GETs /usage and returns the counts", async () => {
   const { ctx, calls } = mockCtx([{ body: usage }]);
   const out = await usageGet.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/usage");
@@ -15,7 +16,7 @@ Deno.test("usage-get: GETs /usage and returns the counts", async () => {
   assertEquals(out, usage);
 });
 
-Deno.test("usage-get: skipCache is sent only when true", async () => {
+test("usage-get: skipCache is sent only when true", async () => {
   const on = mockCtx([{ body: usage }]);
   await usageGet.execute({ skipCache: true }, on.ctx);
   assertEquals(queryOf(on.calls[0].url), { skipCache: "true" });

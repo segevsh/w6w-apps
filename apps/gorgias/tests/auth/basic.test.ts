@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
-Deno.test("basic: collects the domain and email alongside the credential", () => {
+test("basic: collects the domain and email alongside the credential", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const keys = auth.fields?.map((f) => f.key);
@@ -14,7 +15,7 @@ Deno.test("basic: collects the domain and email alongside the credential", () =>
   assertEquals(auth.fields?.find((f) => f.key === "email")?.type, "string");
 });
 
-Deno.test("basic: sign uses Gorgias's email:apiKey Basic scheme", async () => {
+test("basic: sign uses Gorgias's email:apiKey Basic scheme", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.gorgias.com/api/tickets",
@@ -28,7 +29,7 @@ Deno.test("basic: sign uses Gorgias's email:apiKey Basic scheme", async () => {
   assertEquals(out.headers["authorization"], `Basic ${btoa("jo@acme.test:tok")}`);
 });
 
-Deno.test("basic: test refuses a half-filled credential without a request", async () => {
+test("basic: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.test({ credential: { domain: "acme", email: "jo@acme.test" } }, ctx),
@@ -37,7 +38,7 @@ Deno.test("basic: test refuses a half-filled credential without a request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: test probes the account's own host, signed itself", async () => {
+test("basic: test probes the account's own host, signed itself", async () => {
   const ok = mockCtx([{ body: { domain: "acme", status: { status: "active" } } }]);
   assertEquals(
     await auth.test(
@@ -50,7 +51,7 @@ Deno.test("basic: test probes the account's own host, signed itself", async () =
   assertEquals(ok.calls[0].headers["authorization"], `Basic ${btoa("jo@acme.test:tok")}`);
 });
 
-Deno.test("basic: test reads Gorgias's own error message rather than guessing from the status code", async () => {
+test("basic: test reads Gorgias's own error message rather than guessing from the status code", async () => {
   const bad = mockCtx([{ status: 401, body: { error: { msg: "Unauthorized." } } }]);
   assertEquals(
     await auth.test(
@@ -61,7 +62,7 @@ Deno.test("basic: test reads Gorgias's own error message rather than guessing fr
   );
 });
 
-Deno.test("basic: afterConnect records the domain and the account for the client to use", async () => {
+test("basic: afterConnect records the domain and the account for the client to use", async () => {
   const { ctx, calls } = mockCtx([{ body: { domain: "acme", status: { status: "active" } } }]);
   const out = await auth.afterConnect!(
     { credential: { domain: "acme", email: "jo@acme.test", apiKey: "tok" } },
@@ -73,7 +74,7 @@ Deno.test("basic: afterConnect records the domain and the account for the client
   assertEquals(calls[0].headers["authorization"], `Basic ${btoa("jo@acme.test:tok")}`);
 });
 
-Deno.test("basic: afterConnect still records the domain if the probe fails", async () => {
+test("basic: afterConnect still records the domain if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { domain: "acme", email: "jo@acme.test", apiKey: "tok" } },

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
-Deno.test("client-credentials: sign stamps both Authorization and Lw-Client, network-less", async () => {
+test("client-credentials: sign stamps both Authorization and Lw-Client, network-less", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://yourschool.learnworlds.com/admin/api/v2/courses",
@@ -17,7 +18,7 @@ Deno.test("client-credentials: sign stamps both Authorization and Lw-Client, net
   assertEquals(out.headers["lw-client"], "cid1");
 });
 
-Deno.test("client-credentials: fields require the domain, id and secret; only the secrets are masked", () => {
+test("client-credentials: fields require the domain, id and secret; only the secrets are masked", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["clientId", "clientSecret", "schoolDomain"]);
   assertEquals(
@@ -26,7 +27,7 @@ Deno.test("client-credentials: fields require the domain, id and secret; only th
   );
 });
 
-Deno.test("client-credentials: exchange mints a token via the client_credentials grant, with Lw-Client set", async () => {
+test("client-credentials: exchange mints a token via the client_credentials grant, with Lw-Client set", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -58,7 +59,7 @@ Deno.test("client-credentials: exchange mints a token via the client_credentials
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("client-credentials: exchange requires both the client id and secret", async () => {
+test("client-credentials: exchange requires both the client id and secret", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -70,7 +71,7 @@ Deno.test("client-credentials: exchange requires both the client id and secret",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: exchange throws on the documented error envelope", async () => {
+test("client-credentials: exchange throws on the documented error envelope", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -98,7 +99,7 @@ Deno.test("client-credentials: exchange throws on the documented error envelope"
 });
 
 /** No refresh_token in LearnWorlds' client-credentials response — refresh just re-mints. */
-Deno.test("client-credentials: refresh re-runs the client_credentials grant", async () => {
+test("client-credentials: refresh re-runs the client_credentials grant", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { tokenData: { access_token: "tok2", expires_in: 8000 }, success: true } },
   ]);
@@ -118,7 +119,7 @@ Deno.test("client-credentials: refresh re-runs the client_credentials grant", as
   assertEquals(cred.accessToken, "tok2");
 });
 
-Deno.test("client-credentials: test probes /v2/users?items_per_page=1 with both headers set", async () => {
+test("client-credentials: test probes /v2/users?items_per_page=1 with both headers set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: {} } }]);
   const result = await auth.test(
     {
@@ -139,7 +140,7 @@ Deno.test("client-credentials: test probes /v2/users?items_per_page=1 with both 
   assertEquals(calls[0].headers["lw-client"], "cid");
 });
 
-Deno.test("client-credentials: test distinguishes 401 from 403", async () => {
+test("client-credentials: test distinguishes 401 from 403", async () => {
   const unauthorized = mockCtx([{
     status: 401,
     body: { errors: [{ code: 401, message: "Invalid object ID" }], success: false },
@@ -166,7 +167,7 @@ Deno.test("client-credentials: test distinguishes 401 from 403", async () => {
   assert(b.message.includes("plan"), b.message);
 });
 
-Deno.test("client-credentials: test fails locally when the credential is incomplete", async () => {
+test("client-credentials: test fails locally when the credential is incomplete", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(
     await auth.test({ credential: { schoolDomain: "https://x.com", clientId: "cid" } }, ctx),
@@ -175,7 +176,7 @@ Deno.test("client-credentials: test fails locally when the credential is incompl
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: afterConnect records the school domain, never the token", async () => {
+test("client-credentials: afterConnect records the school domain, never the token", async () => {
   const display = await auth.afterConnect!(
     {
       credential: {
@@ -192,6 +193,6 @@ Deno.test("client-credentials: afterConnect records the school domain, never the
   assert(!JSON.stringify(display).includes("topsecret"), "the client secret leaked into display");
 });
 
-Deno.test("client-credentials: declares no revoke — no documented endpoint to call", () => {
+test("client-credentials: declares no revoke — no documented endpoint to call", () => {
   assertEquals(auth.revoke, undefined);
 });

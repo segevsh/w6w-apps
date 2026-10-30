@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoList from "../../actions/video-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("video-list: returns items plus pagination cursor", async () => {
+test("video-list: returns items plus pagination cursor", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "v1" }], { has_more: true, next_token: "cursor1" }) },
   ]);
@@ -13,7 +14,7 @@ Deno.test("video-list: returns items plus pagination cursor", async () => {
   assertEquals(out, { items: [{ id: "v1" }], hasMore: true, nextToken: "cursor1" });
 });
 
-Deno.test("video-list: an empty page reports no more results", async () => {
+test("video-list: an empty page reports no more results", async () => {
   const { ctx } = mockCtx([{ body: listEnvelope([]) }]);
   const out = await videoList.execute({}, ctx);
   assertEquals(out, { items: [], hasMore: false, nextToken: null });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import channelCreate from "../../actions/channel-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("channel-create: POSTs mapped fields to /v2/channels", async () => {
+test("channel-create: POSTs mapped fields to /v2/channels", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "ch1", tag: "elonmusknews" } }]);
   const out = await channelCreate.execute(
     { tag: "elonmusknews", name: "Elon Musk News", subscribe: true },
@@ -19,7 +20,7 @@ Deno.test("channel-create: POSTs mapped fields to /v2/channels", async () => {
   assertEquals(out.tag, "elonmusknews");
 });
 
-Deno.test("channel-create: parses feedFilters from a JSON string", async () => {
+test("channel-create: parses feedFilters from a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "ch2" } }]);
   await channelCreate.execute(
     { tag: "x", feedFilters: '[{"field":"title","operator":"contains","value":"cats"}]' },
@@ -29,6 +30,6 @@ Deno.test("channel-create: parses feedFilters from a JSON string", async () => {
   assertEquals(body.feed_filters, [{ field: "title", operator: "contains", value: "cats" }]);
 });
 
-Deno.test("channel-create: is declared non-idempotent — reusing an existing tag is undocumented", () => {
+test("channel-create: is declared non-idempotent — reusing an existing tag is undocumented", () => {
   assertEquals(channelCreate.idempotent, false);
 });

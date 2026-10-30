@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockServiceNowCtx } from "../_helpers.ts";
 import action from "../../actions/table-record-update.ts";
 
-Deno.test("table-record-update: PATCHes /table/{table}/{sysId} with the given fields", async () => {
+test("table-record-update: PATCHes /table/{table}/{sysId} with the given fields", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute({ table: "problem", sysId: "abc", fields: { state: "3" } }, ctx);
   assertEquals(calls[0].method, "PATCH");

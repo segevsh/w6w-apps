@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bot-start-recording.ts";
 
-Deno.test("bot-start-recording: no config means no body", async () => {
+test("bot-start-recording: no config means no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1" } }]);
   await action.execute!({ id: "b1" }, ctx);
   assertEquals(calls[0].url, "https://us-west-2.recall.ai/api/v1/bot/b1/start_recording/");
@@ -10,7 +11,7 @@ Deno.test("bot-start-recording: no config means no body", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("bot-start-recording: the body is the recording config itself", async () => {
+test("bot-start-recording: the body is the recording config itself", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1" } }]);
   await action.execute!({
     id: "b1",

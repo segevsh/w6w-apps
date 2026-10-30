@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import summary from "../../actions/brand-summary-posts-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const M = {
   to: "2026-01-31T23:59:59+01:00",
   subject: "account",
 };
-Deno.test("brand-summary-posts-list: GET /v2/analytics/brand-summary/posts", async () => {
+test("brand-summary-posts-list: GET /v2/analytics/brand-summary/posts", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: "a", network: "facebook" }]) }]);
   const out = await summary.execute({ blogId: "9", from: M.from, to: M.to, timezone: "UTC" }, ctx);
   assertEquals((out as { count: number }).count, 1);

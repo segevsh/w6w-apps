@@ -1,19 +1,20 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares two auth methods and the expected action/health-check counts", () => {
+test("index: declares two auth methods and the expected action/health-check counts", () => {
   assertEquals(app.auth?.length, 2);
   assertEquals(app.auth?.map((a) => a.key), ["access-token", "oauth2"]);
   assertEquals(app.actions.length, 47);
   assertEquals(app.healthChecks?.length, 3);
 });
 
-Deno.test("index: every action key is unique", () => {
+test("index: every action key is unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
 });
 
-Deno.test("index: every action has a title, type and execute hook", () => {
+test("index: every action has a title, type and execute hook", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(typeof action.type, "string");
@@ -21,7 +22,7 @@ Deno.test("index: every action has a title, type and execute hook", () => {
   }
 });
 
-Deno.test("index: health checks are keyed service, incidents and quota", () => {
+test("index: health checks are keyed service, incidents and quota", () => {
   const keys = app.healthChecks?.map((h) => h.key);
   assertEquals(keys, ["service", "incidents", "quota"]);
 });
@@ -34,7 +35,7 @@ Deno.test("index: health checks are keyed service, incidents and quota", () => {
  * JSON editor. slack's own `customFields` group on `user-update-profile` is a
  * legitimate group and must pass this guard, not fail it.
  */
-Deno.test('index: no `type: "group"` param is missing or has empty `children`', () => {
+test('index: no `type: "group"` param is missing or has empty `children`', () => {
   const childless: string[] = [];
   const walk = (actionKey: string, list: unknown) => {
     for (const entry of (list ?? []) as Array<Record<string, unknown>>) {
@@ -50,7 +51,7 @@ Deno.test('index: no `type: "group"` param is missing or has empty `children`', 
   assertEquals(childless, []);
 });
 
-Deno.test("index: the childless-group guard actually flags a childless group", () => {
+test("index: the childless-group guard actually flags a childless group", () => {
   const childless: string[] = [];
   const walk = (actionKey: string, list: unknown) => {
     for (const entry of (list ?? []) as Array<Record<string, unknown>>) {

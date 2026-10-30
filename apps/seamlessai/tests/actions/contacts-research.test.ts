@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-research.ts";
 
 const RESPONSE = { "success": true, "requestIds": ["r1"] };
 
-Deno.test("contacts-research: calls POST /api/client/v2/contacts/research and returns the vendor body", async () => {
+test("contacts-research: calls POST /api/client/v2/contacts/research and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "searchResultIds": ["sr_1", "sr_2"],
@@ -30,7 +31,7 @@ Deno.test("contacts-research: calls POST /api/client/v2/contacts/research and re
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("contacts-research: sends nothing for fields left unset", async () => {
+test("contacts-research: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -38,7 +39,7 @@ Deno.test("contacts-research: sends nothing for fields left unset", async () => 
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("contacts-research: surfaces the vendor's error body", async () => {
+test("contacts-research: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

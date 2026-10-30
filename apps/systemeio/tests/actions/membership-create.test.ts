@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import membershipCreate from "../../actions/membership-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * endpoint — this action must report the status rather than assume a
  * Membership object comes back synchronously.
  */
-Deno.test("membership-create: POSTs {contactId}, reports the 202 status", async () => {
+test("membership-create: POSTs {contactId}, reports the 202 status", async () => {
   const { ctx, calls } = mockCtx([{ status: 202 }]);
   const out = await membershipCreate.execute({ communityId: 9, contactId: 42 }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recipientDelete from "../../actions/recipient-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipient-delete: DELETEs /recipient/{recipientId}", async () => {
+test("recipient-delete: DELETEs /recipient/{recipientId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await recipientDelete.execute({ recipientId: "rec_1" }, ctx) as Record<
     string,
@@ -13,6 +14,6 @@ Deno.test("recipient-delete: DELETEs /recipient/{recipientId}", async () => {
   assertEquals(out.deleted, true);
 });
 
-Deno.test("recipient-delete: declares idempotent true", () => {
+test("recipient-delete: declares idempotent true", () => {
   assertEquals(recipientDelete.idempotent, true);
 });

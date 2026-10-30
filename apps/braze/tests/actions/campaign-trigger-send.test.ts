@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-trigger-send.ts";
 
-Deno.test("campaign-trigger-send: posts campaign_id, audience and recipients", async () => {
+test("campaign-trigger-send: posts campaign_id, audience and recipients", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { dispatch_id: "d1" } }], {
     display: { instance: "iad-01" },
   });
@@ -17,7 +18,7 @@ Deno.test("campaign-trigger-send: posts campaign_id, audience and recipients", a
   assertEquals(body.recipients, [{ external_user_id: "u1" }]);
 });
 
-Deno.test("campaign-trigger-send: defaults send_id to the invocation id", async () => {
+test("campaign-trigger-send: defaults send_id to the invocation id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], {
     display: { instance: "iad-01" },
     invocationId: "inv-123",
@@ -27,7 +28,7 @@ Deno.test("campaign-trigger-send: defaults send_id to the invocation id", async 
   assertEquals(body.send_id, "inv-123");
 });
 
-Deno.test("campaign-trigger-send: an explicit send_id wins over the invocation id", async () => {
+test("campaign-trigger-send: an explicit send_id wins over the invocation id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], {
     display: { instance: "iad-01" },
     invocationId: "inv-123",

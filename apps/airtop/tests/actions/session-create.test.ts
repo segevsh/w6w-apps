@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionCreate from "../../actions/session-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("session-create: POSTs configuration and returns the session", async () => {
+test("session-create: POSTs configuration and returns the session", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: envelope({ id: "s1", status: "initializing" }),
@@ -20,13 +21,13 @@ Deno.test("session-create: POSTs configuration and returns the session", async (
   assertEquals(out.id, "s1");
 });
 
-Deno.test("session-create: extensionIds is split from a comma-separated string", async () => {
+test("session-create: extensionIds is split from a comma-separated string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "s1" }) }]);
   await sessionCreate.execute({ extensionIds: "ext1, ext2" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.configuration.extensionIds, ["ext1", "ext2"]);
 });
 
-Deno.test("session-create: is declared non-idempotent — every call starts a new billed session", () => {
+test("session-create: is declared non-idempotent — every call starts a new billed session", () => {
   assertEquals(sessionCreate.idempotent, false);
 });

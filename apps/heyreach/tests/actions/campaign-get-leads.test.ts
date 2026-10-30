@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-get-leads.ts";
 
 const URL_UNDER_TEST = "https://api.heyreach.io/api/public/campaign/GetLeadsFromCampaign";
 
-Deno.test("campaign-get-leads: campaignId and paging travel in the POST body", async () => {
+test("campaign-get-leads: campaignId and paging travel in the POST body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { totalCount: 0, items: [] } }]);
   await action.execute!({ campaignId: 5, limit: 100, offset: 0 }, ctx);
   assertEquals(calls[0].url, URL_UNDER_TEST);
@@ -13,7 +14,7 @@ Deno.test("campaign-get-leads: campaignId and paging travel in the POST body", a
 });
 
 /** The window is meaningless without the filter it applies to. */
-Deno.test("campaign-get-leads: timeFilter is sent with its window", async () => {
+test("campaign-get-leads: timeFilter is sent with its window", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { totalCount: 0, items: [] } }]);
   await action.execute!({
     campaignId: 5,

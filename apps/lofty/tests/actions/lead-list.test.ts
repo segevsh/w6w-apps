@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-list.ts";
 
@@ -7,7 +8,7 @@ const envelope = {
   leads: [{ leadId: 1, firstName: "Bob" }, { leadId: 2, firstName: "Ann" }],
 };
 
-Deno.test("lead-list: serializes the filters and keeps a false boolean", async () => {
+test("lead-list: serializes the filters and keeps a false boolean", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope }]);
   const result = await action.execute!({
     stage: "Pending",
@@ -30,14 +31,14 @@ Deno.test("lead-list: serializes the filters and keeps a false boolean", async (
   assertEquals(result.get_metadata.total, 2);
 });
 
-Deno.test("lead-list: unset filters are not sent", async () => {
+test("lead-list: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
 /** `roleAssigneeFilters` is a query parameter carrying a JSON document. */
-Deno.test("lead-list: a json role filter is serialized into the query", async () => {
+test("lead-list: a json role filter is serialized into the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope }]);
   await action.execute!({
     roleAssigneeFilters: [{ roleName: "Agent", assigneeToIds: [111, 222] }],
@@ -46,7 +47,7 @@ Deno.test("lead-list: a json role filter is serialized into the query", async ()
   assertEquals(JSON.parse(raw!), [{ roleName: "Agent", assigneeToIds: [111, 222] }]);
 });
 
-Deno.test("lead-list: prefills the API's documented page maximum", () => {
+test("lead-list: prefills the API's documented page maximum", () => {
   const limit = action.params!.find((p) => p.key === "limit")!;
   assertEquals(limit.default, 100);
   assert(/maximum is 100/.test(limit.hint!), limit.hint);

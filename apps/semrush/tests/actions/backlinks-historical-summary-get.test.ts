@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksHistoricalSummaryGet from "../../actions/backlinks-historical-summary-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-historical-summary-get: GETs the monthly series and unwraps data", async () => {
+test("backlinks-historical-summary-get: GETs the monthly series and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([
@@ -27,7 +28,7 @@ Deno.test("backlinks-historical-summary-get: GETs the monthly series and unwraps
   assertEquals(out.data[0].month_date, "2026-08");
 });
 
-Deno.test("backlinks-historical-summary-get: passes the date window through verbatim", async () => {
+test("backlinks-historical-summary-get: passes the date window through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await backlinksHistoricalSummaryGet.execute(
@@ -45,13 +46,13 @@ Deno.test("backlinks-historical-summary-get: passes the date window through verb
   assertEquals(query.date_to, "2025-12");
 });
 
-Deno.test("backlinks-historical-summary-get: no SUBFOLDER, because a monthly series has none", () => {
+test("backlinks-historical-summary-get: no SUBFOLDER, because a monthly series has none", () => {
   const scope = backlinksHistoricalSummaryGet.params?.find((p) => p.key === "scope");
   const values = Array.isArray(scope?.options) ? scope.options.map((o) => o.value) : [];
   assertEquals(values, ["ROOT_DOMAIN", "SUBDOMAIN", "PAGE"]);
 });
 
-Deno.test("backlinks-historical-summary-get: limit defaults to 12 months", () => {
+test("backlinks-historical-summary-get: limit defaults to 12 months", () => {
   const limit = backlinksHistoricalSummaryGet.params?.find((p) => p.key === "limit");
   assertEquals(limit?.default, 12);
 });

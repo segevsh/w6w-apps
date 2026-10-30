@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quoteTrackedLineItemsList from "../../actions/quote-tracked-line-items-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quote-tracked-line-items-list: returns the body under a name, unwrapped", async () => {
+test("quote-tracked-line-items-list: returns the body under a name, unwrapped", async () => {
   const { ctx, calls } = mockCtx([{ body: { JobItem: [{ id: 88 }] } }]);
   const result = await quoteTrackedLineItemsList.execute({ quoteId: 201 }, ctx) as Record<
     string,
@@ -14,7 +15,7 @@ Deno.test("quote-tracked-line-items-list: returns the body under a name, unwrapp
 });
 
 /** The document types the 200 as a bare object, so no field names are claimed. */
-Deno.test("quote-tracked-line-items-list: the output claims no fields", () => {
+test("quote-tracked-line-items-list: the output claims no fields", () => {
   assertEquals(quoteTrackedLineItemsList.output, [
     {
       key: "trackedLineItems",

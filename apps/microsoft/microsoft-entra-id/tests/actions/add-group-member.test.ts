@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-group-member.ts";
 
-Deno.test("add-group-member: POSTs the directoryObjects reference to /members/$ref", async () => {
+test("add-group-member: POSTs the directoryObjects reference to /members/$ref", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ groupId: "g1", memberId: "u1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("add-group-member: POSTs the directoryObjects reference to /members/$r
   assertEquals(out, { added: true, groupId: "g1", memberId: "u1" });
 });
 
-Deno.test("add-group-member: an existing member is Graph's 400, surfaced", async () => {
+test("add-group-member: an existing member is Graph's 400, surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { code: "Request_BadRequest", message: "already exist" } },
@@ -25,7 +26,7 @@ Deno.test("add-group-member: an existing member is Graph's 400, surfaced", async
   );
 });
 
-Deno.test("add-group-member: requires a member and is not idempotent", async () => {
+test("add-group-member: requires a member and is not idempotent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "g1", memberId: " " }, ctx),

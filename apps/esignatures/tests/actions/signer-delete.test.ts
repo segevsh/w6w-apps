@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import signerDelete from "../../actions/signer-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("signer-delete: calls POST /api/contracts/c1/signers/s1/delete with the documented body", async () => {
+test("signer-delete: calls POST /api/contracts/c1/signers/s1/delete with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "queued" } }]);
   const out = await signerDelete.execute(
     { contractId: "c1", signerId: "s1" } as never,
@@ -18,7 +19,7 @@ Deno.test("signer-delete: calls POST /api/contracts/c1/signers/s1/delete with th
   assert(out.status === "queued", JSON.stringify(out));
 });
 
-Deno.test("signer-delete: a vendor error surfaces its error_code and message", async () => {
+test("signer-delete: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),
@@ -33,7 +34,7 @@ Deno.test("signer-delete: a vendor error surfaces its error_code and message", a
   );
 });
 
-Deno.test("signer-delete: a slash pasted into an id cannot escape the path segment", async () => {
+test("signer-delete: a slash pasted into an id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "queued" } }]);
   await signerDelete.execute(
     { ...({ contractId: "c1", signerId: "s1" }), contractId: "a/../b" } as never,

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/translate-document.ts";
 import { bytesToBase64 } from "../../lib/client.ts";
 
-Deno.test("translate-document: POSTs multipart/form-data to /v2/document", async () => {
+test("translate-document: POSTs multipart/form-data to /v2/document", async () => {
   const body = { document_id: "doc-1", document_key: "key-1" };
   const { ctx, calls } = mockCtx([{ body }], { display: { plan: "pro" } });
   const fileBase64 = bytesToBase64(new Uint8Array([1, 2, 3]));
@@ -25,7 +26,7 @@ Deno.test("translate-document: POSTs multipart/form-data to /v2/document", async
   assertEquals(result, { documentId: "doc-1", documentKey: "key-1" });
 });
 
-Deno.test("translate-document: decodes a data: URL's MIME type over an explicit mimeType param", async () => {
+test("translate-document: decodes a data: URL's MIME type over an explicit mimeType param", async () => {
   const body = { document_id: "doc-1", document_key: "key-1" };
   const { ctx } = mockCtx([{ body }]);
   const fileBase64 = bytesToBase64(new Uint8Array([9]));

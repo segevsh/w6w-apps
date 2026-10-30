@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-list.ts";
 
@@ -8,7 +9,7 @@ const list = (events: unknown[], has_more = false) => ({
 });
 
 /** Nothing queues webhook deliveries on your side — this is the recovery path. */
-Deno.test("event-list: tallies the event types", async () => {
+test("event-list: tallies the event types", async () => {
   const { ctx, calls } = mockCtx([list([
     { description: "tracker.updated" },
     { description: "tracker.updated" },
@@ -23,7 +24,7 @@ Deno.test("event-list: tallies the event types", async () => {
   assertEquals(result.typeCounts, { "tracker.updated": 2, "shipment.purchased": 1 });
 });
 
-Deno.test("event-list: the date window reaches the wire", async () => {
+test("event-list: the date window reaches the wire", async () => {
   const { ctx, calls } = mockCtx([list([])]);
   await action.execute!({ startDatetime: "2026-08-18T00:00:00Z" }, ctx);
   assertEquals(
@@ -32,12 +33,12 @@ Deno.test("event-list: the date window reaches the wire", async () => {
   );
 });
 
-Deno.test("event-list: logs a count", async () => {
+test("event-list: logs a count", async () => {
   const { ctx, logs } = mockCtx([list([{ description: "tracker.updated" }])]);
   await action.execute!({}, ctx);
   assertEquals(logs[0].data, { count: 1 });
 });
 
-Deno.test("event-list: says what it recovers", () => {
+test("event-list: says what it recovers", () => {
   assert(/while an endpoint was down/.test(action.description!), action.description);
 });

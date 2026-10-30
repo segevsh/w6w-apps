@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolConcatVideos from "../../actions/tool-concat-videos.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-concat-videos: POST /tools/concat_videos, preserves play order", async () => {
+test("tool-concat-videos: POST /tools/concat_videos, preserves play order", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "j1", tool: "concat_videos" } }]);
   await toolConcatVideos.execute(
     { videoUrls: "https://x/1.mp4, https://x/2.mp4", transition: "fade" },
@@ -15,7 +16,7 @@ Deno.test("tool-concat-videos: POST /tools/concat_videos, preserves play order",
   assertEquals(body.transition, "fade");
 });
 
-Deno.test("tool-concat-videos: requires at least 2 URLs", async () => {
+test("tool-concat-videos: requires at least 2 URLs", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => toolConcatVideos.execute({ videoUrls: "https://x/1.mp4" }, ctx));
 });

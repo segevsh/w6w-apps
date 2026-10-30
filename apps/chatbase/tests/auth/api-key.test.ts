@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
 const KEY = "cb_unitTestFixtureNotARealKey00000";
 
-Deno.test("api-key: sign stamps the bearer header and nothing else", () => {
+test("api-key: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://www.chatbase.co/api/v2/agents",
@@ -20,16 +21,16 @@ Deno.test("api-key: sign stamps the bearer header and nothing else", () => {
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { authorization: `Bearer ${KEY}` });
 });
 
 /** Pinned here (as well as in health/quota) — this is what the quota check shares the call with. */
-Deno.test("api-key: the probe is /agents, not the unauthenticated /health", () => {
+test("api-key: the probe is /agents, not the unauthenticated /health", () => {
   assertEquals(PROBE_PATH, "/agents");
 });
 
-Deno.test("api-key: test passes and requests limit=1", async () => {
+test("api-key: test passes and requests limit=1", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "a1" }]) }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -39,13 +40,13 @@ Deno.test("api-key: test passes and requests limit=1", async () => {
   assertEquals(calls[0].headers.authorization, `Bearer ${KEY}`);
 });
 
-Deno.test("api-key: an empty workspace (data: []) still passes", async () => {
+test("api-key: an empty workspace (data: []) still passes", async () => {
   const { ctx } = mockCtx([{ body: page([]) }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
   assertEquals(result, { ok: true });
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
 
@@ -53,7 +54,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: a missing Authorization header is reported as never having arrived", async () => {
+test("api-key: a missing Authorization header is reported as never having arrived", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("AUTH_MISSING_API_KEY", "No Authorization header present.") },
   ]);
@@ -63,7 +64,7 @@ Deno.test("api-key: a missing Authorization header is reported as never having a
   assert(/received no Authorization header/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: an invalid key is reported as rejected, distinct from a missing one", async () => {
+test("api-key: an invalid key is reported as rejected, distinct from a missing one", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("AUTH_INVALID_API_KEY", "The API key is not valid.") },
   ]);
@@ -73,7 +74,7 @@ Deno.test("api-key: an invalid key is reported as rejected, distinct from a miss
   assert(/rejected the API key/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a plan restriction is reported as an upgrade issue, not a bad key", async () => {
+test("api-key: a plan restriction is reported as an upgrade issue, not a bad key", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,
@@ -86,7 +87,7 @@ Deno.test("api-key: a plan restriction is reported as an upgrade issue, not a ba
   assert(/does not include API v2 access/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   buildFacets,
   byteLength,
@@ -12,7 +13,7 @@ import {
 const utf8 = (text: string, start: number, end: number) =>
   new TextDecoder().decode(new TextEncoder().encode(text).slice(start, end));
 
-Deno.test("byteLength counts UTF-8 bytes, not string units", () => {
+test("byteLength counts UTF-8 bytes, not string units", () => {
   assertEquals(byteLength("abc"), 3);
   assertEquals(byteLength("é"), 2);
   assertEquals(byteLength("👋"), 4);
@@ -23,7 +24,7 @@ Deno.test("byteLength counts UTF-8 bytes, not string units", () => {
  * UTF-16 code units, facet indices are UTF-8 bytes, and they agree only for
  * ASCII — so it works right up until somebody uses an emoji.
  */
-Deno.test("findSpans: an emoji before a link shifts the offsets into byte space", () => {
+test("findSpans: an emoji before a link shifts the offsets into byte space", () => {
   const text = "👋 https://example.com";
   assertEquals(text.indexOf("https"), 3, "UTF-16 index, which is what a naive implementation uses");
   const [span] = findSpans(text);
@@ -31,20 +32,20 @@ Deno.test("findSpans: an emoji before a link shifts the offsets into byte space"
   assertEquals(utf8(text, span.byteStart, span.byteEnd), "https://example.com");
 });
 
-Deno.test("findSpans: an accent shifts them too, by one byte", () => {
+test("findSpans: an accent shifts them too, by one byte", () => {
   const text = "héllo https://example.com";
   const [span] = findSpans(text);
   assertEquals(span.byteStart, 7);
   assertEquals(utf8(text, span.byteStart, span.byteEnd), "https://example.com");
 });
 
-Deno.test("findSpans: pure ASCII agrees with string indices, which is why the bug ships", () => {
+test("findSpans: pure ASCII agrees with string indices, which is why the bug ships", () => {
   const text = "check https://example.com";
   const [span] = findSpans(text);
   assertEquals(span.byteStart, text.indexOf("https"));
 });
 
-Deno.test("findSpans: every span slices back to exactly the text it marks", () => {
+test("findSpans: every span slices back to exactly the text it marks", () => {
   const text = "héllo https://example.com and @alice.bsky.social #deno 👋";
   for (const span of findSpans(text)) {
     const sliced = utf8(text, span.byteStart, span.byteEnd);
@@ -55,7 +56,7 @@ Deno.test("findSpans: every span slices back to exactly the text it marks", () =
 });
 
 /** "see https://example.com." should not put the full stop inside the URL. */
-Deno.test("findSpans: trailing punctuation is trimmed off a link", () => {
+test("findSpans: trailing punctuation is trimmed off a link", () => {
   const [span] = findSpans("see https://example.com.");
   assertEquals(span.text, "https://example.com");
   assertEquals(
@@ -69,28 +70,28 @@ Deno.test("findSpans: trailing punctuation is trimmed off a link", () => {
  * complete URL — so a bare domain gets a scheme while the highlight covers only
  * what was typed.
  */
-Deno.test("findSpans: a bare domain becomes a complete URL, marking only the typed text", () => {
+test("findSpans: a bare domain becomes a complete URL, marking only the typed text", () => {
   const text = "visit example.com today";
   const [span] = findSpans(text);
   assertEquals(span.text, "https://example.com");
   assertEquals(utf8(text, span.byteStart, span.byteEnd), "example.com");
 });
 
-Deno.test("findSpans: things that look like domains and are not stay plain", () => {
+test("findSpans: things that look like domains and are not stay plain", () => {
   assertEquals(findSpans("e.g. this is not a link").length, 0);
   assertEquals(findSpans("read file.txt and main.ts").length, 0);
   assertEquals(findSpans("email me at a.b"), []);
 });
 
 /** A handle is a domain name, so a bare word after @ is not a mention. */
-Deno.test("findSpans: a mention must look like a handle", () => {
+test("findSpans: a mention must look like a handle", () => {
   assertEquals(findSpans("hi @alice").length, 0);
   const [span] = findSpans("hi @alice.bsky.social");
   assertEquals(span.kind, "mention");
   assertEquals(span.text, "alice.bsky.social", "the facet value drops the @");
 });
 
-Deno.test("findSpans: a tag drops the hash and cannot start with a digit", () => {
+test("findSpans: a tag drops the hash and cannot start with a digit", () => {
   const spans = findSpans("#1notatag but #real is");
   assertEquals(spans.length, 1);
   assertEquals(spans[0].kind, "tag");
@@ -98,14 +99,14 @@ Deno.test("findSpans: a tag drops the hash and cannot start with a digit", () =>
 });
 
 /** Overlapping facets are rejected by the PDS, so only one span may claim a range. */
-Deno.test("findSpans: spans never overlap, and come back in text order", () => {
+test("findSpans: spans never overlap, and come back in text order", () => {
   const spans = findSpans("@alice.bsky.social https://example.com #tag");
   for (let i = 1; i < spans.length; i++) {
     assert(spans[i].byteStart >= spans[i - 1].byteEnd, "spans overlap");
   }
 });
 
-Deno.test("buildFacets: links and tags need no lookup; mentions resolve to a DID", async () => {
+test("buildFacets: links and tags need no lookup; mentions resolve to a DID", async () => {
   const { facets, unresolved } = await buildFacets(
     "hi @alice.bsky.social see https://example.com #deno",
     () => Promise.resolve("did:plc:alice"),
@@ -124,7 +125,7 @@ Deno.test("buildFacets: links and tags need no lookup; mentions resolve to a DID
  * Somebody deleting their account should not break a scheduled post that
  * happened to mention them.
  */
-Deno.test("buildFacets: a handle that no longer resolves becomes plain text, not a failure", async () => {
+test("buildFacets: a handle that no longer resolves becomes plain text, not a failure", async () => {
   const { facets, unresolved } = await buildFacets(
     "bye @gone.bsky.social and https://example.com",
     () => Promise.resolve(undefined),
@@ -133,14 +134,14 @@ Deno.test("buildFacets: a handle that no longer resolves becomes plain text, not
   assertEquals(facets.length, 1, "the link still becomes a facet");
 });
 
-Deno.test("graphemeCount treats a composed emoji as one", () => {
+test("graphemeCount treats a composed emoji as one", () => {
   assertEquals(graphemeCount("👨‍👩‍👧‍👦"), 1);
   assertEquals(byteLength("👨‍👩‍👧‍👦"), 25, "and 25 bytes, which is the other limit");
   assertEquals(graphemeCount("abc"), 3);
 });
 
 /** Both limits apply, in different units, and either can be the one that bites. */
-Deno.test("checkLength: 300 graphemes and 3000 bytes are separate limits", () => {
+test("checkLength: 300 graphemes and 3000 bytes are separate limits", () => {
   checkLength("a".repeat(MAX_GRAPHEMES));
   const tooMany = assertThrows(() => checkLength("a".repeat(MAX_GRAPHEMES + 1)), Error);
   assert(/GRAPHEMES, not characters or bytes/.test(tooMany.message), tooMany.message);
@@ -152,6 +153,6 @@ Deno.test("checkLength: 300 graphemes and 3000 bytes are separate limits", () =>
   checkLength(wide);
 });
 
-Deno.test("checkLength: an empty string is fine — a post may be embeds only", () => {
+test("checkLength: an empty string is fine — a post may be embeds only", () => {
   checkLength("");
 });

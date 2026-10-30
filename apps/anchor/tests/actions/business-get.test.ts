@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import businessGet from "../../actions/business-get.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("business-get: sends GET /me", async () => {
+test("business-get: sends GET /me", async () => {
   const { ctx, calls } = mockCtx([{ body: { "businessId": "b1", "businessName": "Acme" } }]);
   const out = await businessGet.execute({} as never, ctx) as Record<string, unknown>;
 
@@ -19,7 +20,7 @@ Deno.test("business-get: sends GET /me", async () => {
   assertEquals(out.businessId, "b1");
 });
 
-Deno.test("business-get: a non-2xx answer throws with the vendor's error code", async () => {
+test("business-get: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

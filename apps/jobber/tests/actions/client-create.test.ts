@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-create.ts";
 
-Deno.test("client-create: sends only what was filled in", async () => {
+test("client-create: sends only what was filled in", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientCreate: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("client-create: sends only what was filled in", async () => {
   });
 });
 
-Deno.test("client-create: an email or phone becomes a primary entry in its list", async () => {
+test("client-create: an email or phone becomes a primary entry in its list", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientCreate: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("client-create: an email or phone becomes a primary entry in its list"
   ]);
 });
 
-Deno.test("client-create: any address field creates the client's first property", async () => {
+test("client-create: any address field creates the client's first property", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientCreate: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -42,7 +43,7 @@ Deno.test("client-create: any address field creates the client's first property"
   ]);
 });
 
-Deno.test("client-create: no address means no properties key at all", async () => {
+test("client-create: no address means no properties key at all", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientCreate: { client: { id: "c1" }, userErrors: [] } } },
   }]);
@@ -50,7 +51,7 @@ Deno.test("client-create: no address means no properties key at all", async () =
   assertEquals(JSON.parse(calls[0].body!).variables.input.properties, undefined);
 });
 
-Deno.test("client-create: a userErrors rejection at HTTP 200 throws", async () => {
+test("client-create: a userErrors rejection at HTTP 200 throws", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -66,7 +67,7 @@ Deno.test("client-create: a userErrors rejection at HTTP 200 throws", async () =
   assert(err.message.includes("First name can't be blank"));
 });
 
-Deno.test("client-create: the mutation selects userErrors so the check is possible", async () => {
+test("client-create: the mutation selects userErrors so the check is possible", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { clientCreate: { client: { id: "c1" }, userErrors: [] } } },
   }]);

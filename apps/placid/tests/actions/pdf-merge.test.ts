@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pdfMerge from "../../actions/pdf-merge.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const queued = (url: string) => ({
   body: { id: 7, status: "queued", [url]: null, polling_url: "https://api.placid.app/x" },
 });
 
-Deno.test("pdf-merge: 2 to 10 urls, POST /pdfs/merge", async () => {
+test("pdf-merge: 2 to 10 urls, POST /pdfs/merge", async () => {
   const { ctx, calls } = mockCtx([queued("pdf_url")]);
   await pdfMerge.execute({ urls: "https://a/1.pdf, https://a/2.pdf", passthrough: "k" }, ctx);
   assertEquals(pathOf(calls[0].url), "/pdfs/merge");

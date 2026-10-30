@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/property-create.ts";
 
-Deno.test("property-create: client is an argument, the address is wrapped in a properties list", async () => {
+test("property-create: client is an argument, the address is wrapped in a properties list", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { propertyCreate: { properties: [{ id: "p1" }], userErrors: [] } } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("property-create: client is an argument, the address is wrapped in a p
   });
 });
 
-Deno.test("property-create: userErrors throws", async () => {
+test("property-create: userErrors throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {

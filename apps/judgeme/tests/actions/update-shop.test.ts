@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import updateShop from "../../actions/update-shop.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-shop: PUTs only the fields provided", async () => {
+test("update-shop: PUTs only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { domain: "example.myshopify.com" } }]);
   const out = await updateShop.execute({ domain: "example.myshopify.com", plan: "basic" }, ctx);
 

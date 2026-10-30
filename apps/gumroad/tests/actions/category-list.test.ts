@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import categoryList from "../../actions/category-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = {};
 
-Deno.test("category-list: sends GET /v2/categories with the mapped parameters", async () => {
+test("category-list: sends GET /v2/categories with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true, "categories": [{ "id": "a" }] } }]);
   await categoryList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -14,12 +15,12 @@ Deno.test("category-list: sends GET /v2/categories with the mapped parameters", 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("category-list: returns the documented result shape", async () => {
+test("category-list: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: { "success": true, "categories": [{ "id": "a" }] } }]);
   assertEquals(await categoryList.execute(INPUT, ctx), { "categories": [{ "id": "a" }] });
 });
 
-Deno.test("category-list: a 404 surfaces Gumroad's own message", async () => {
+test("category-list: a 404 surfaces Gumroad's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { success: false, message: "The thing could not be found." },
@@ -28,7 +29,7 @@ Deno.test("category-list: a 404 surfaces Gumroad's own message", async () => {
   assertEquals(err.message.includes("The thing could not be found."), true, err.message);
 });
 
-Deno.test("category-list: a 200 carrying success:false is still a failure", async () => {
+test("category-list: a 200 carrying success:false is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { success: false, message: "refused" } }]);
   await assertRejects(() => Promise.resolve(categoryList.execute(INPUT, ctx)), Error, "refused");
 });

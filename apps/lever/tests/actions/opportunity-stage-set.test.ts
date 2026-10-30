@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-stage-set.ts";
 
@@ -12,7 +13,7 @@ const at = (stage: string, extra: Record<string, unknown> = {}) => ({
 });
 const ok = { status: 200, body: {} };
 
-Deno.test("opportunity-stage-set: puts the stage with perform_as", async () => {
+test("opportunity-stage-set: puts the stage with perform_as", async () => {
   const { ctx, calls } = mockCtx([at("s0"), ok], D);
   const result = await action.execute(
     { opportunityId: OPP, stageId: STAGE, performAs: USER },
@@ -28,7 +29,7 @@ Deno.test("opportunity-stage-set: puts the stage with perform_as", async () => {
 });
 
 /** Moving to the stage a candidate is already in should not notify anybody. */
-Deno.test("opportunity-stage-set: a no-op writes nothing", async () => {
+test("opportunity-stage-set: a no-op writes nothing", async () => {
   const { ctx, calls } = mockCtx([at(STAGE)], D);
   const result = await action.execute(
     { opportunityId: OPP, stageId: STAGE, performAs: USER },
@@ -38,7 +39,7 @@ Deno.test("opportunity-stage-set: a no-op writes nothing", async () => {
   assertEquals(calls.length, 1);
 });
 
-Deno.test("opportunity-stage-set: moving an archived candidate is called out", async () => {
+test("opportunity-stage-set: moving an archived candidate is called out", async () => {
   const { ctx, logs } = mockCtx([at("s0", { archived: { reason: "r1" } }), ok], D);
   const result = await action.execute(
     { opportunityId: OPP, stageId: STAGE, performAs: USER },
@@ -51,7 +52,7 @@ Deno.test("opportunity-stage-set: moving an archived candidate is called out", a
   );
 });
 
-Deno.test("opportunity-stage-set: every id must be a UUID", async () => {
+test("opportunity-stage-set: every id must be a UUID", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () =>
@@ -68,6 +69,6 @@ Deno.test("opportunity-stage-set: every id must be a UUID", async () => {
 });
 
 /** Stage ids differ between accounts. */
-Deno.test("opportunity-stage-set: says to resolve stage ids at run time", () => {
+test("opportunity-stage-set: says to resolve stage ids at run time", () => {
   assert(/`stage-list` at run time/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-absence.ts";
 import { API_ROOT, bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-absence: POSTs /v4/absences with numeric type and status", async () => {
+test("create-absence: POSTs /v4/absences with numeric type and status", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 21 } } }]);
   const out = await exec(action, {
     dateSince: "2026-10-12",
@@ -27,7 +28,7 @@ Deno.test("create-absence: POSTs /v4/absences with numeric type and status", asy
   assertEquals(out, { data: { id: 21 } });
 });
 
-Deno.test("create-absence: missing type or date is refused; a collision error surfaces", async () => {
+test("create-absence: missing type or date is refused; a collision error surfaces", async () => {
   const none = mockCtx();
   await assertRejects(
     () => exec(action, { dateSince: "2026-10-12" }, none.ctx),

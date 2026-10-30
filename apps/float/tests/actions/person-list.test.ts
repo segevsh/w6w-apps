@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import personList from "../../actions/person-list.ts";
 import { asListResult, mockCtx, paginationHeaders, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("person-list - GETs /people with filters and reads pagination headers", async () => {
+test("person-list - GETs /people with filters and reads pagination headers", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -17,7 +18,7 @@ Deno.test("person-list - GETs /people with filters and reads pagination headers"
   assertEquals(out.pagination.totalCount, 3);
 });
 
-Deno.test("person-list - expand is comma-joined from an array", async () => {
+test("person-list - expand is comma-joined from an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [], headers: paginationHeaders() }]);
   await personList.execute({ expand: ["account", "managers"] }, ctx);
   assertEquals(queryOf(calls[0].url).expand, "account,managers");

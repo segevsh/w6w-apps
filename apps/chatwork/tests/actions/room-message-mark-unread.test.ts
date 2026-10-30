@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomMessageMarkUnread from "../../actions/room-message-mark-unread.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-message-mark-unread: PUTs the message_id and returns the unread counters", async () => {
+test("room-message-mark-unread: PUTs the message_id and returns the unread counters", async () => {
   const { ctx, calls } = mockCtx([{ body: { unread_num: 5, mention_num: 1 } }]);
   const out = await roomMessageMarkUnread.execute({ roomId: "5", messageId: "101" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/rooms/5/messages/unread");

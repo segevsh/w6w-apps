@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/training-create.ts";
 
 const BASE = { model: "ostris/flux-dev-lora-trainer", versionId: "v1", input: '{"steps":1000}' };
 
-Deno.test("training-create: POSTs to the trainer version's trainings path", async () => {
+test("training-create: POSTs to the trainer version's trainings path", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "t1", status: "starting" } }]);
   await action.execute!({ ...BASE, destination: "acme/my-model" }, ctx);
   assertEquals(
@@ -17,7 +18,7 @@ Deno.test("training-create: POSTs to the trainer version's trainings path", asyn
 });
 
 /** The most expensive call in the app. */
-Deno.test("training-create: logs at warn and is not idempotent", async () => {
+test("training-create: logs at warn and is not idempotent", async () => {
   const { ctx, logs } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ ...BASE, destination: "acme/my-model" }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -25,7 +26,7 @@ Deno.test("training-create: logs at warn and is not idempotent", async () => {
 });
 
 /** The destination must be owner/name, and must already exist. */
-Deno.test("training-create: a malformed destination is caught locally", async () => {
+test("training-create: a malformed destination is caught locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ ...BASE, destination: "my-model" }, ctx),
@@ -38,7 +39,7 @@ Deno.test("training-create: a malformed destination is caught locally", async ()
   assert(param.hint!.includes("must EXIST already"), param.hint);
 });
 
-Deno.test("training-create: the version and input are required", async () => {
+test("training-create: the version and input are required", async () => {
   const noVersion = mockCtx([]);
   await assertRejects(
     async () =>

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   encodeQuery,
   encodeSASLInitialResponse,
@@ -37,7 +38,7 @@ import {
 
 // -------------------------------------------------------------- encoding --
 
-Deno.test("wire: StartupMessage — no type byte, Int32 length, Int32 protocol version, NUL pairs, terminating NUL", () => {
+test("wire: StartupMessage — no type byte, Int32 length, Int32 protocol version, NUL pairs, terminating NUL", () => {
   const msg = encodeStartupMessage({ user: "alice", database: "db1" });
   const view = new DataView(msg.buffer);
   assertEquals(view.getInt32(0), msg.length, "declared length covers the whole message");
@@ -49,7 +50,7 @@ Deno.test("wire: StartupMessage — no type byte, Int32 length, Int32 protocol v
   assertEquals(msg[msg.length - 1], 0, "message ends on the terminating NUL");
 });
 
-Deno.test("wire: encodeQuery — tag 'Q', length counts itself but not the tag byte, NUL-terminated SQL", () => {
+test("wire: encodeQuery — tag 'Q', length counts itself but not the tag byte, NUL-terminated SQL", () => {
   const msg = encodeQuery("SELECT 1");
   assertEquals(String.fromCharCode(msg[0]), "Q");
   const declared = new DataView(msg.buffer).getInt32(1);
@@ -58,7 +59,7 @@ Deno.test("wire: encodeQuery — tag 'Q', length counts itself but not the tag b
   assertEquals(new TextDecoder().decode(msg.slice(5, msg.length - 1)), "SELECT 1");
 });
 
-Deno.test("wire: encodeSASLInitialResponse carries the mechanism name and the data length prefix", () => {
+test("wire: encodeSASLInitialResponse carries the mechanism name and the data length prefix", () => {
   const data = new TextEncoder().encode("n,,n=user,r=abc");
   const msg = encodeSASLInitialResponse("SCRAM-SHA-256", data);
   assertEquals(String.fromCharCode(msg[0]), "p");
@@ -68,7 +69,7 @@ Deno.test("wire: encodeSASLInitialResponse carries the mechanism name and the da
   assertEquals(dataLen, data.length);
 });
 
-Deno.test("wire: encodeSASLResponse carries the raw data with no mechanism name", () => {
+test("wire: encodeSASLResponse carries the raw data with no mechanism name", () => {
   const data = new TextEncoder().encode("c=biws,r=abc,p=xyz");
   const msg = encodeSASLResponse(data);
   assertEquals(String.fromCharCode(msg[0]), "p");
@@ -82,7 +83,7 @@ Deno.test("wire: encodeSASLResponse carries the raw data with no mechanism name"
  * must produce IDENTICAL parsed output. (i) alone is what a parser that
  * assumes one read = one message passes by luck.
  */
-Deno.test("wire: frame reassembly is identical whether delivered as one buffer, byte-at-a-time, or batched", () => {
+test("wire: frame reassembly is identical whether delivered as one buffer, byte-at-a-time, or batched", () => {
   const stream = concatBytes(
     rowDescription(["id", "name"]),
     dataRow(["1", "alice"]),
@@ -118,7 +119,7 @@ Deno.test("wire: frame reassembly is identical whether delivered as one buffer, 
   );
 });
 
-Deno.test("wire: next() returns null (not a truncated frame) when the buffer is incomplete", () => {
+test("wire: next() returns null (not a truncated frame) when the buffer is incomplete", () => {
   const full = commandComplete("SELECT 1");
   const reader = new FrameReader();
   reader.push(full.slice(0, full.length - 2));
@@ -129,7 +130,7 @@ Deno.test("wire: next() returns null (not a truncated frame) when the buffer is 
 });
 
 /** (j) — the DoS arm: refused before any allocation, from the header alone. */
-Deno.test("wire: a frame declaring an absurd length is refused without allocating it", () => {
+test("wire: a frame declaring an absurd length is refused without allocating it", () => {
   const header = new Uint8Array(5);
   header[0] = "D".charCodeAt(0);
   new DataView(header.buffer).setInt32(1, 0x7fffffff); // ~2GB declared, no payload ever sent
@@ -138,7 +139,7 @@ Deno.test("wire: a frame declaring an absurd length is refused without allocatin
   assertThrows(() => reader.next(), Error, `over the ${MAX_FRAME_LENGTH}-byte guard`);
 });
 
-Deno.test("wire: a declared length under the 4-byte minimum is refused as malformed", () => {
+test("wire: a declared length under the 4-byte minimum is refused as malformed", () => {
   const header = new Uint8Array(5);
   header[0] = "D".charCodeAt(0);
   new DataView(header.buffer).setInt32(1, 2);
@@ -148,7 +149,7 @@ Deno.test("wire: a declared length under the 4-byte minimum is refused as malfor
 });
 
 /** NoticeResponse / ParameterStatus / BackendKeyData are correctly SIZED and skipped, never mis-parsed as data. */
-Deno.test("wire: NoticeResponse, ParameterStatus and BackendKeyData are framed by their declared length, not misread as the frame after them", () => {
+test("wire: NoticeResponse, ParameterStatus and BackendKeyData are framed by their declared length, not misread as the frame after them", () => {
   const stream = concatBytes(
     noticeResponse({ S: "NOTICE", M: "a notice" }),
     parameterStatus("server_version", "16.1"),
@@ -170,24 +171,24 @@ Deno.test("wire: NoticeResponse, ParameterStatus and BackendKeyData are framed b
 // `parse*` expects, via the same `FrameReader` exercised above — so these
 // tests are pinning the PARSING logic, not re-testing frame reassembly.
 
-Deno.test("wire: parseAuthentication — AuthenticationOk", () => {
+test("wire: parseAuthentication — AuthenticationOk", () => {
   assertEquals(parseAuthentication(readFrame(authOk())), { kind: "ok" });
 });
 
 /** (h) — R/3 and R/5 are each their own distinct kind, not folded together or into "unsupported". */
-Deno.test("wire: parseAuthentication distinguishes CleartextPassword (R/3) from MD5Password (R/5)", () => {
+test("wire: parseAuthentication distinguishes CleartextPassword (R/3) from MD5Password (R/5)", () => {
   assertEquals(parseAuthentication(readFrame(authCleartext())), { kind: "cleartext-password" });
   const md5 = parseAuthentication(readFrame(authMd5()));
   assertEquals(md5.kind, "md5-password");
   assert(md5.kind !== "cleartext-password");
 });
 
-Deno.test("wire: parseAuthentication reads the SASL mechanism list", () => {
+test("wire: parseAuthentication reads the SASL mechanism list", () => {
   const auth = parseAuthentication(readFrame(authSasl(["SCRAM-SHA-256", "SCRAM-SHA-256-PLUS"])));
   assertEquals(auth, { kind: "sasl", mechanisms: ["SCRAM-SHA-256", "SCRAM-SHA-256-PLUS"] });
 });
 
-Deno.test("wire: parseAuthentication reads SASLContinue/SASLFinal payload bytes", () => {
+test("wire: parseAuthentication reads SASLContinue/SASLFinal payload bytes", () => {
   const cont = parseAuthentication(readFrame(authSaslContinue("r=abc,s=xyz,i=4096")));
   assert(cont.kind === "sasl-continue");
   assertEquals(new TextDecoder().decode(cont.data), "r=abc,s=xyz,i=4096");
@@ -197,13 +198,13 @@ Deno.test("wire: parseAuthentication reads SASLContinue/SASLFinal payload bytes"
   assertEquals(new TextDecoder().decode(fin.data), "v=abc123");
 });
 
-Deno.test("wire: parseAuthentication reports an unrecognized subtype rather than guessing", () => {
+test("wire: parseAuthentication reports an unrecognized subtype rather than guessing", () => {
   const weird = readFrame(frame("R", new Uint8Array([0, 0, 0, 99])));
   assertEquals(parseAuthentication(weird), { kind: "unsupported", subtype: 99 });
 });
 
 /** (i)'s wire-level half — ErrorResponse's M field parses correctly at any point in the stream. */
-Deno.test("wire: parseErrorResponse surfaces the M field", () => {
+test("wire: parseErrorResponse surfaces the M field", () => {
   const err = parseErrorResponse(
     readFrame(
       errorResponse({ S: "FATAL", C: "28P01", M: 'password authentication failed for user "x"' }),
@@ -213,13 +214,13 @@ Deno.test("wire: parseErrorResponse surfaces the M field", () => {
   assertEquals(err.fields["C"], "28P01");
 });
 
-Deno.test("wire: parseRowDescription reads field names in order", () => {
+test("wire: parseRowDescription reads field names in order", () => {
   const fields = parseRowDescription(readFrame(rowDescription(["id", "email", "created_at"])));
   assertEquals(fields.map((f) => f.name), ["id", "email", "created_at"]);
 });
 
 /** (g) — the NULL-vs-empty-string bug, asserted as two distinct values in the SAME test. */
-Deno.test("wire: parseDataRow distinguishes a -1-length NULL from a 0-length empty string", () => {
+test("wire: parseDataRow distinguishes a -1-length NULL from a 0-length empty string", () => {
   const values = parseDataRow(readFrame(dataRow([null, "", "x"])));
   assertEquals(values[0], null);
   assertEquals(values[1], "");
@@ -227,11 +228,11 @@ Deno.test("wire: parseDataRow distinguishes a -1-length NULL from a 0-length emp
   assert(values[0] !== values[1], "NULL and empty string must not collapse to the same value");
 });
 
-Deno.test("wire: parseCommandComplete reads the tag", () => {
+test("wire: parseCommandComplete reads the tag", () => {
   assertEquals(parseCommandComplete(readFrame(commandComplete("INSERT 0 1"))), "INSERT 0 1");
 });
 
-Deno.test("wire: parseReadyForQuery maps the transaction-status byte", () => {
+test("wire: parseReadyForQuery maps the transaction-status byte", () => {
   assertEquals(parseReadyForQuery(readFrame(readyForQuery("I"))), "idle");
   assertEquals(parseReadyForQuery(readFrame(readyForQuery("T"))), "transaction");
   assertEquals(parseReadyForQuery(readFrame(readyForQuery("E"))), "error");

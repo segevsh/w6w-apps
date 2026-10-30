@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import businessList from "../../actions/business-list.ts";
 
-Deno.test("business-list: returns the businesses connection", async () => {
+test("business-list: returns the businesses connection", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -27,7 +28,7 @@ Deno.test("business-list: returns the businesses connection", async () => {
   assertEquals(body.variables.pageSize, 10);
 });
 
-Deno.test("business-list: type/resource metadata", () => {
+test("business-list: type/resource metadata", () => {
   assertEquals(businessList.type, "search");
   assertEquals(businessList.resource, "business");
 });

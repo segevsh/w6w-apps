@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   compact,
@@ -11,12 +12,12 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: query building skips empties and repeats arrays", () => {
+test("client: query building skips empties and repeats arrays", () => {
   assertEquals(buildQuery({ a: 1, b: "", c: undefined, d: ["x", "y"] }), "?a=1&d=x&d=y");
   assertEquals(buildQuery({}), "");
 });
 
-Deno.test("client: list and recipient helpers", () => {
+test("client: list and recipient helpers", () => {
   assertEquals(strList(" a, b ,,"), ["a", "b"]);
   assertEquals(recipients("a@x.com"), [{ email: "a@x.com" }]);
   assertEquals(compact({ a: undefined }), undefined);
@@ -34,7 +35,7 @@ Deno.test("client: list and recipient helpers", () => {
   assertEquals(scheduledAt(""), undefined);
 });
 
-Deno.test("client: errors carry status and Mixmax's message; 204 is {}", async () => {
+test("client: errors carry status and Mixmax's message; 204 is {}", async () => {
   const bad = mockCtx([{ status: 400, body: { message: "Missing parameter" } }]);
   await assertRejects(
     () => new MixmaxClient(bad.ctx).request("GET", "/x"),

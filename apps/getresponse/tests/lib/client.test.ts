@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asOptionalJson,
   AUTH_PREFIX,
@@ -15,7 +16,7 @@ import {
 import { errorBody, MAX_US_BASE, mockGetResponseCtx, RETAIL_BASE } from "../_helpers.ts";
 
 /** The three platforms are separate products on separate hosts. */
-Deno.test("PLATFORM_HOSTS: the three hosts the vendor's spec declares", () => {
+test("PLATFORM_HOSTS: the three hosts the vendor's spec declares", () => {
   assertEquals(PLATFORM_HOSTS, {
     "retail": "api.getresponse.com",
     "max-us": "api3.getresponse360.com",
@@ -26,11 +27,11 @@ Deno.test("PLATFORM_HOSTS: the three hosts the vendor's spec declares", () => {
   assertEquals(baseUrlFor(undefined), RETAIL_BASE, "retail is the default");
 });
 
-Deno.test("AUTH_PREFIX: the literal prefix the security scheme requires", () => {
+test("AUTH_PREFIX: the literal prefix the security scheme requires", () => {
   assertEquals(AUTH_PREFIX, "api-key ");
 });
 
-Deno.test("platformFromConnection: reads display, ignoring anything unrecognised", () => {
+test("platformFromConnection: reads display, ignoring anything unrecognised", () => {
   const { ctx } = mockGetResponseCtx([], "max-us");
   assertEquals(platformFromConnection(ctx.connection), "max-us");
   assertEquals(platformFromConnection(undefined), "retail");
@@ -41,21 +42,21 @@ Deno.test("platformFromConnection: reads display, ignoring anything unrecognised
   );
 });
 
-Deno.test("compact: drops unset keys but keeps false and 0", () => {
+test("compact: drops unset keys but keeps false and 0", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }),
     { a: 1, e: false, f: 0 },
   );
 });
 
-Deno.test("toList: accepts an array, a bare string, or a comma-separated string", () => {
+test("toList: accepts an array, a bare string, or a comma-separated string", () => {
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList("a, b ,c"), ["a", "b", "c"]);
   assertEquals(toList(""), undefined);
   assertEquals(toList(","), undefined);
 });
 
-Deno.test("asOptionalJson: passes objects through, parses strings, names bad JSON", () => {
+test("asOptionalJson: passes objects through, parses strings, names bad JSON", () => {
   assertEquals(asOptionalJson({ a: 1 }, "X"), { a: 1 });
   assertEquals(asOptionalJson('[{"a":1}]', "X"), [{ a: 1 }]);
   assertEquals(asOptionalJson("", "X"), undefined);
@@ -67,7 +68,7 @@ Deno.test("asOptionalJson: passes objects through, parses strings, names bad JSO
  * `query[createdOn][from]`, `sort[email]`. Getting them wrong silently returns
  * an unfiltered list.
  */
-Deno.test("buildQuery: flattens structured filters into bracketed parameter names", () => {
+test("buildQuery: flattens structured filters into bracketed parameter names", () => {
   assertEquals(
     buildQuery({
       query: { email: "ada@example.com", createdOn: { from: "2026-01-01", to: "2026-02-01" } },
@@ -89,7 +90,7 @@ Deno.test("buildQuery: flattens structured filters into bracketed parameter name
  * `query[email]=` as matching nothing, which is indistinguishable from a genuine
  * empty result.
  */
-Deno.test("buildQuery: skips unset values rather than sending empty filters", () => {
+test("buildQuery: skips unset values rather than sending empty filters", () => {
   assertEquals(
     buildQuery({ query: { email: undefined, name: "", campaignId: null }, page: 1 }),
     { page: 1 },
@@ -97,11 +98,11 @@ Deno.test("buildQuery: skips unset values rather than sending empty filters", ()
   assertEquals(buildQuery({ query: { createdOn: { from: undefined } } }), {});
 });
 
-Deno.test("buildQuery: joins array values with commas", () => {
+test("buildQuery: joins array values with commas", () => {
   assertEquals(buildQuery({ fields: ["contactId", "email"] }), { fields: "contactId,email" });
 });
 
-Deno.test("truncate: leaves short text alone and reports what it cut", () => {
+test("truncate: leaves short text alone and reports what it cut", () => {
   assertEquals(truncate("short", 10), "short");
   assert(truncate("x".repeat(50), 10).includes("50 bytes truncated"));
 });
@@ -110,7 +111,7 @@ Deno.test("truncate: leaves short text alone and reports what it cut", () => {
  * The numeric `code` is the stable, documented half — 1014 authentication,
  * 1015 throttling — and is what distinguishes the two problems.
  */
-Deno.test("formatGetResponseError: surfaces the numeric code and the message", () => {
+test("formatGetResponseError: surfaces the numeric code and the message", () => {
   const msg = formatGetResponseError(
     401,
     "GET",
@@ -122,7 +123,7 @@ Deno.test("formatGetResponseError: surfaces the numeric code and the message", (
   assert(msg.includes("Unsupported authentication method"), msg);
 });
 
-Deno.test("formatGetResponseError: includes the validation context when present", () => {
+test("formatGetResponseError: includes the validation context when present", () => {
   const msg = formatGetResponseError(
     400,
     "POST",
@@ -133,13 +134,13 @@ Deno.test("formatGetResponseError: includes the validation context when present"
   assert(msg.includes("email"), msg);
 });
 
-Deno.test("formatGetResponseError: falls back to the raw body when it is not JSON", () => {
+test("formatGetResponseError: falls back to the raw body when it is not JSON", () => {
   const msg = formatGetResponseError(502, "GET", "/v3/contacts", "<html>bad gateway</html>");
   assert(msg.includes("502"), msg);
   assert(msg.includes("bad gateway"), msg);
 });
 
-Deno.test("client: builds against the connection's platform host", async () => {
+test("client: builds against the connection's platform host", async () => {
   const retail = mockGetResponseCtx([{ body: [] }], "retail");
   await new GetResponseClient(retail.ctx).request("/contacts");
   assertEquals(retail.calls[0].url, `${RETAIL_BASE}/contacts`);
@@ -149,7 +150,7 @@ Deno.test("client: builds against the connection's platform host", async () => {
   assertEquals(max.calls[0].url, `${MAX_US_BASE}/contacts`);
 });
 
-Deno.test("client: drops empty query values instead of sending blanks", async () => {
+test("client: drops empty query values instead of sending blanks", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await new GetResponseClient(ctx).request("/contacts", {
     query: { a: undefined, b: null, c: "", d: 0, e: false },
@@ -161,7 +162,7 @@ Deno.test("client: drops empty query values instead of sending blanks", async ()
   assertEquals(url.searchParams.get("e"), "false");
 });
 
-Deno.test("client: a 204 resolves to undefined rather than throwing on an empty body", async () => {
+test("client: a 204 resolves to undefined rather than throwing on an empty body", async () => {
   const { ctx } = mockGetResponseCtx([{ status: 204 }]);
   assertEquals(
     await new GetResponseClient(ctx).request("/contacts/c1", { method: "DELETE" }),
@@ -169,7 +170,7 @@ Deno.test("client: a 204 resolves to undefined rather than throwing on an empty 
   );
 });
 
-Deno.test("client: a JSON body is sent with a content-type, a GET is not", async () => {
+test("client: a JSON body is sent with a content-type, a GET is not", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: {} }, { body: [] }]);
   const client = new GetResponseClient(ctx);
   await client.request("/contacts", { method: "POST", body: { email: "a@b.com" } });
@@ -179,7 +180,7 @@ Deno.test("client: a JSON body is sent with a content-type, a GET is not", async
   assertEquals(calls[1].headers["content-type"], undefined);
 });
 
-Deno.test("client: a non-2xx throws with GetResponse's own code", async () => {
+test("client: a non-2xx throws with GetResponse's own code", async () => {
   const { ctx } = mockGetResponseCtx([
     { status: 429, body: errorBody(1015, "You have reached your requests limit") },
   ]);
@@ -193,7 +194,7 @@ Deno.test("client: a non-2xx throws with GetResponse's own code", async () => {
 });
 
 /** The action worker must never see or build the auth header. */
-Deno.test("client: never sets X-Auth-Token — that is sign's job", async () => {
+test("client: never sets X-Auth-Token — that is sign's job", async () => {
   const { ctx, calls } = mockGetResponseCtx([{ body: [] }]);
   await new GetResponseClient(ctx).request("/contacts");
   assertEquals(calls[0].headers["x-auth-token"], undefined);

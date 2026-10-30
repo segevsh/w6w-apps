@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import meGet from "../../actions/me-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("me-get: calls GET /me and returns the body verbatim", async () => {
+test("me-get: calls GET /me and returns the body verbatim", async () => {
   const profile = {
     account_id: 1,
     room_id: 322,
@@ -16,6 +17,6 @@ Deno.test("me-get: calls GET /me and returns the body verbatim", async () => {
   assertEquals(out, profile);
 });
 
-Deno.test("me-get: takes no parameters", () => {
+test("me-get: takes no parameters", () => {
   assertEquals(meGet.params?.length, 0);
 });

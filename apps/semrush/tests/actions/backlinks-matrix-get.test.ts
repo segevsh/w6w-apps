@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksMatrixGet from "../../actions/backlinks-matrix-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-matrix-get: joins `urls` and unwraps the per-target counts", async () => {
+test("backlinks-matrix-get: joins `urls` and unwraps the per-target counts", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([
@@ -32,13 +33,13 @@ Deno.test("backlinks-matrix-get: joins `urls` and unwraps the per-target counts"
  * The v4 reference documents no `format` parameter for this endpoint — it is
  * JSON only — so the app must not invent one.
  */
-Deno.test("backlinks-matrix-get: exposes no `format` param and no `fields` param", () => {
+test("backlinks-matrix-get: exposes no `format` param and no `fields` param", () => {
   const keys = backlinksMatrixGet.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("format"), false);
   assertEquals(keys.includes("fields"), false);
 });
 
-Deno.test("backlinks-matrix-get: forwards sort, filter and paging", async () => {
+test("backlinks-matrix-get: forwards sort, filter and paging", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await backlinksMatrixGet.execute(

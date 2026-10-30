@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs /contact/{identifier} with only the supplied fields", async () => {
+test("contact-update: PUTs /contact/{identifier} with only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { contactId: 1 } }]);
   const out = await contactUpdate.execute(
     { identifier: "id:1", firstName: "Ada Marie" },
@@ -15,6 +16,6 @@ Deno.test("contact-update: PUTs /contact/{identifier} with only the supplied fie
   assertEquals(out.contactId, 1);
 });
 
-Deno.test("contact-update: is declared idempotent — PUT semantics make a retry safe", () => {
+test("contact-update: is declared idempotent — PUT semantics make a retry safe", () => {
   assertEquals(contactUpdate.idempotent, true);
 });

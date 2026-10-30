@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import shareLinkRevoke from "../../actions/share-link-revoke.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("share-link-revoke: DELETE /links/{id}, empty 200/204 body is fine", async () => {
+test("share-link-revoke: DELETE /links/{id}, empty 200/204 body is fine", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{ status: 204 }]);
   const res = await shareLinkRevoke.execute({ linkId: "L1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

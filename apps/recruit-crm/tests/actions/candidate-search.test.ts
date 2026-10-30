@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-search.ts";
 import { mockCtx, paginator, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("candidate-search: maps camelCase filters onto the vendor's query names", async () => {
+test("candidate-search: maps camelCase filters onto the vendor's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([{ slug: "7" }]) }]);
   const out = await action.execute(
     { firstName: "Ada", lastName: "Lovelace", email: "a@b.co" },
@@ -18,7 +19,7 @@ Deno.test("candidate-search: maps camelCase filters onto the vendor's query name
   assertEquals((out as { count: number }).count, 1);
 });
 
-Deno.test("candidate-search: linkedin filter and an empty result", async () => {
+test("candidate-search: linkedin filter and an empty result", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([]) }]);
   const out = await action.execute({ linkedin: "https://linkedin.com/in/ada" }, ctx);
   assertEquals(queryOf(calls[0].url), { linkedin: "https://linkedin.com/in/ada" });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/list-custom-field-identifiers.ts";
 
-Deno.test("list-custom-field-identifiers: GETs /custom_field_identifiers", async () => {
+test("list-custom-field-identifiers: GETs /custom_field_identifiers", async () => {
   const { ctx, calls } = mockDripCtx([{
     body: { custom_field_identifiers: ["first_name", "last_name"] },
   }]);
@@ -11,7 +12,7 @@ Deno.test("list-custom-field-identifiers: GETs /custom_field_identifiers", async
   assertEquals(out, { customFieldIdentifiers: ["first_name", "last_name"] });
 });
 
-Deno.test("list-custom-field-identifiers: defaults to an empty array", async () => {
+test("list-custom-field-identifiers: defaults to an empty array", async () => {
   const { ctx } = mockDripCtx([{ body: {} }]);
   assertEquals(await action.execute({}, ctx), { customFieldIdentifiers: [] });
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import videoCreate from "../../actions/video-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("video-create: builds an avatar-type body from a script", async () => {
+test("video-create: builds an avatar-type body from a script", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ video_id: "v1", status: "waiting", output_format: "mp4" }) },
   ]);
@@ -23,7 +24,7 @@ Deno.test("video-create: builds an avatar-type body from a script", async () => 
   assertEquals(out, { video_id: "v1", status: "waiting", output_format: "mp4" });
 });
 
-Deno.test("video-create: an audio source is accepted in place of a script", async () => {
+test("video-create: an audio source is accepted in place of a script", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ video_id: "v1", status: "waiting" }) }]);
   await videoCreate.execute({ avatarId: "lk_1", audioUrl: "https://example.com/a.mp3" }, ctx);
 
@@ -32,7 +33,7 @@ Deno.test("video-create: an audio source is accepted in place of a script", asyn
   assertEquals(body.script, undefined);
 });
 
-Deno.test("video-create: neither a script nor an audio source is rejected client-side", async () => {
+test("video-create: neither a script nor an audio source is rejected client-side", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await videoCreate.execute({ avatarId: "lk_1" }, ctx),
@@ -42,7 +43,7 @@ Deno.test("video-create: neither a script nor an audio source is rejected client
   assertEquals(calls.length, 0, "no request should be made when validation fails");
 });
 
-Deno.test("video-create: both a script and an audio source is rejected client-side", async () => {
+test("video-create: both a script and an audio source is rejected client-side", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -53,7 +54,7 @@ Deno.test("video-create: both a script and an audio source is rejected client-si
   assertEquals(calls.length, 0);
 });
 
-Deno.test("video-create: both audioUrl and audioAssetId together is rejected", async () => {
+test("video-create: both audioUrl and audioAssetId together is rejected", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -66,7 +67,7 @@ Deno.test("video-create: both audioUrl and audioAssetId together is rejected", a
   );
 });
 
-Deno.test("video-create: optional fields are omitted from the wire body when unset", async () => {
+test("video-create: optional fields are omitted from the wire body when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ video_id: "v1", status: "waiting" }) }]);
   await videoCreate.execute({ avatarId: "lk_1", script: "hi" }, ctx);
 
@@ -76,6 +77,6 @@ Deno.test("video-create: optional fields are omitted from the wire body when uns
   assert(!("folder_id" in body));
 });
 
-Deno.test("video-create: is not marked idempotent — each call bills and starts a new render", () => {
+test("video-create: is not marked idempotent — each call bills and starts a new render", () => {
   assertEquals(videoCreate.idempotent, false);
 });

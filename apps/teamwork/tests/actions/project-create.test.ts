@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTeamworkCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
-Deno.test("project-create: POSTs the V1 /projects.json endpoint, wrapped in `project`", async () => {
+test("project-create: POSTs the V1 /projects.json endpoint, wrapped in `project`", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ status: 201, body: { id: "1", STATUS: "Created" } }]);
   await action.execute({ name: "Launch" }, ctx);
   assertEquals(calls[0].url, "https://acme.teamwork.com/projects.json");
@@ -10,7 +11,7 @@ Deno.test("project-create: POSTs the V1 /projects.json endpoint, wrapped in `pro
   assertEquals(JSON.parse(calls[0].body!), { project: { name: "Launch" } });
 });
 
-Deno.test("project-create: compacts YYYY-MM-DD dates to Teamwork's YYYYMMDD wire format", async () => {
+test("project-create: compacts YYYY-MM-DD dates to Teamwork's YYYYMMDD wire format", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ status: 201, body: {} }]);
   await action.execute({ name: "Launch", startDate: "2026-09-01", endDate: "2026-09-30" }, ctx);
   const body = JSON.parse(calls[0].body!);

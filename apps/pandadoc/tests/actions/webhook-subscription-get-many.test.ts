@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/webhook-subscription-get-many.ts";
 
-Deno.test("webhook-subscription-get-many: GETs /webhook-subscriptions", async () => {
+test("webhook-subscription-get-many: GETs /webhook-subscriptions", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       items: [{
@@ -23,11 +24,11 @@ Deno.test("webhook-subscription-get-many: GETs /webhook-subscriptions", async ()
   assertEquals(out.items[0].uuid, "w1");
 });
 
-Deno.test("webhook-subscription-get-many: declares `items` as its output key", () => {
+test("webhook-subscription-get-many: declares `items` as its output key", () => {
   assertEquals((action.output as Array<{ key: string }>)[0].key, "items");
 });
 
-Deno.test("webhook-subscription-get-many: takes no params and is read-only", () => {
+test("webhook-subscription-get-many: takes no params and is read-only", () => {
   assertEquals(action.params, []);
   assertEquals(action.type, "search");
   assertEquals(action.resource, "webhook");

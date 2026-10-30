@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/invitation-send-email.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invitation-send-email: POSTs to the invitations-api host with the documented body shape", async () => {
+test("invitation-send-email: POSTs to the invitations-api host with the documented body shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { queued: true } }]);
 
   const out = await action.execute(
@@ -36,6 +37,6 @@ Deno.test("invitation-send-email: POSTs to the invitations-api host with the doc
   assertEquals((out as { response: unknown }).response, { queued: true });
 });
 
-Deno.test("invitation-send-email: is declared unsafe to retry", () => {
+test("invitation-send-email: is declared unsafe to retry", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contributorList from "../../actions/contributor-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contributor-list: lists a project's contributors", async () => {
+test("contributor-list: lists a project's contributors", async () => {
   const { ctx, calls } = mockCtx([{ body: { contributors: [{ email: "a@example.com" }] } }]);
   const out = await contributorList.execute({ projectId: "p1", limit: 50 }, ctx) as {
     items: unknown[];

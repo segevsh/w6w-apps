@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-note-create.ts";
 
-Deno.test("incident-note-create: posts the note content with the From header", async () => {
+test("incident-note-create: posts the note content with the From header", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { note: { id: "N1", content: "checking now" } },
@@ -20,7 +21,7 @@ Deno.test("incident-note-create: posts the note content with the From header", a
   assertEquals(result, { note: { id: "N1", content: "checking now" } });
 });
 
-Deno.test("incident-note-create: missing incidentId, content, or from rejects", async () => {
+test("incident-note-create: missing incidentId, content, or from rejects", async () => {
   const base = { incidentId: "P1", content: "note", from: "user@example.com" };
   for (const patch of [{ incidentId: "" }, { content: "" }, { from: "" }]) {
     const { ctx } = mockCtx();

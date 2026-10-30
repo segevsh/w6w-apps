@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   encodeBase64,
   JenkinsClient,
@@ -15,7 +16,7 @@ const display = { endpoint: "https://ci.example.com" };
  * reach at runtime and this encoder is inlined. It has to match byte for byte —
  * standard alphabet, `=` padding, no url-safe swaps — or Basic auth breaks.
  */
-Deno.test("encodeBase64: matches the standard alphabet and padding", () => {
+test("encodeBase64: matches the standard alphabet and padding", () => {
   assertEquals(encodeBase64(""), "");
   assertEquals(encodeBase64("f"), "Zg==");
   assertEquals(encodeBase64("fo"), "Zm8=");
@@ -32,17 +33,17 @@ Deno.test("encodeBase64: matches the standard alphabet and padding", () => {
  * accent encodes as UTF-8 — what Jenkins reads — rather than as the latin1
  * bytes a bare `btoa` would produce.
  */
-Deno.test("encodeBase64: encodes non-ASCII as UTF-8, not latin1", () => {
+test("encodeBase64: encodes non-ASCII as UTF-8, not latin1", () => {
   assertEquals(encodeBase64("é"), "w6k=");
   assert(encodeBase64("é") !== btoa("é"));
 });
 
-Deno.test("resolveBaseUrl: reads the instance URL from connection metadata", () => {
+test("resolveBaseUrl: reads the instance URL from connection metadata", () => {
   assertEquals(resolveBaseUrl({ endpoint: "https://ci.example.com" }), "https://ci.example.com");
 });
 
 /** A trailing slash would produce `//api/json`, which some reverse proxies 404. */
-Deno.test("resolveBaseUrl: strips trailing slashes", () => {
+test("resolveBaseUrl: strips trailing slashes", () => {
   assertEquals(resolveBaseUrl({ endpoint: "https://ci.example.com/" }), "https://ci.example.com");
   assertEquals(resolveBaseUrl({ endpoint: "https://ci.example.com///" }), "https://ci.example.com");
 });
@@ -51,7 +52,7 @@ Deno.test("resolveBaseUrl: strips trailing slashes", () => {
  * Jenkins is self-hosted, so there is no host to fall back to — a connection
  * without an endpoint has to fail loudly rather than build a relative URL.
  */
-Deno.test("resolveBaseUrl: a connection with no endpoint throws", () => {
+test("resolveBaseUrl: a connection with no endpoint throws", () => {
   assertThrows(() => resolveBaseUrl(undefined), Error, "missing endpoint");
   assertThrows(() => resolveBaseUrl({}), Error, "missing endpoint");
 });
@@ -61,25 +62,25 @@ Deno.test("resolveBaseUrl: a connection with no endpoint throws", () => {
  * level. Expanding a `/`-delimited name here is what lets a caller pass
  * `"team/project"` without hand-building the path.
  */
-Deno.test("jobPath: expands one `job/` segment per folder level", () => {
+test("jobPath: expands one `job/` segment per folder level", () => {
   assertEquals(jobPath("my-job"), "job/my-job");
   assertEquals(jobPath("team/project"), "job/team/job/project");
   assertEquals(jobPath("a/b/c"), "job/a/job/b/job/c");
 });
 
-Deno.test("jobPath: trims blank segments and encodes each one", () => {
+test("jobPath: trims blank segments and encodes each one", () => {
   assertEquals(jobPath(" team / project "), "job/team/job/project");
   assertEquals(jobPath("/team//project/"), "job/team/job/project");
   assertEquals(jobPath("my job"), "job/my%20job");
   assertEquals(jobPath("a/b c"), "job/a/job/b%20c");
 });
 
-Deno.test("jobPath: an empty name throws rather than addressing the instance root", () => {
+test("jobPath: an empty name throws rather than addressing the instance root", () => {
   assertThrows(() => jobPath(""), Error, "must not be empty");
   assertThrows(() => jobPath("///"), Error, "must not be empty");
 });
 
-Deno.test("client: fromConnection builds against the connection's endpoint", async () => {
+test("client: fromConnection builds against the connection's endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { jobs: [] } }], { display });
   const client = JenkinsClient.fromConnection(ctx);
   await client.getJson("/api/json");
@@ -87,7 +88,7 @@ Deno.test("client: fromConnection builds against the connection's endpoint", asy
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("getJson: drops undefined, null and empty query values", async () => {
+test("getJson: drops undefined, null and empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   const client = JenkinsClient.fromConnection(ctx);
   await client.getJson("/api/json", { tree: "jobs[name]", depth: 0, a: undefined, b: null, c: "" });
@@ -101,14 +102,14 @@ Deno.test("getJson: drops undefined, null and empty query values", async () => {
 });
 
 /** Jenkins answers some endpoints with an empty body; that is not a parse error. */
-Deno.test("getJson: an empty body resolves to undefined", async () => {
+test("getJson: an empty body resolves to undefined", async () => {
   const { ctx } = mockCtx([{ body: "" }], { display });
   const client = JenkinsClient.fromConnection(ctx);
   assertEquals(await client.getJson("/api/json"), undefined);
 });
 
 /** The vendor's body is the useful half of a failure — it must reach the caller. */
-Deno.test("getJson: a non-2xx throws with status, path and body", async () => {
+test("getJson: a non-2xx throws with status, path and body", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: "No such job", headers: {} },
   ], { display });
@@ -125,7 +126,7 @@ Deno.test("getJson: a non-2xx throws with status, path and body", async () => {
  * 201 with nothing to parse — so `post` reports status + Location instead of
  * trying to read JSON that is not there.
  */
-Deno.test("post: returns status and Location, and sends no body without a form", async () => {
+test("post: returns status and Location, and sends no body without a form", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -143,7 +144,7 @@ Deno.test("post: returns status and Location, and sends no body without a form",
 });
 
 /** `buildWithParameters` expects form encoding, not JSON. */
-Deno.test("post: a form is url-encoded, with empty values dropped", async () => {
+test("post: a form is url-encoded, with empty values dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: "", headers: {} }], { display });
   const client = JenkinsClient.fromConnection(ctx);
   await client.post("/job/my-job/buildWithParameters", {
@@ -160,7 +161,7 @@ Deno.test("post: a form is url-encoded, with empty values dropped", async () => 
   assertEquals(new URL(calls[0].url).searchParams.get("delay"), "0sec");
 });
 
-Deno.test("post: a non-2xx throws with status, path and body", async () => {
+test("post: a non-2xx throws with status, path and body", async () => {
   const { ctx } = mockCtx([
     { status: 403, statusText: "Forbidden", body: "No valid crumb", headers: {} },
   ], { display });
@@ -173,19 +174,19 @@ Deno.test("post: a non-2xx throws with status, path and body", async () => {
 });
 
 /** Credentials are the `sign` hook's business; the client must never add them. */
-Deno.test("client: sends no Authorization header of its own", async () => {
+test("client: sends no Authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   const client = JenkinsClient.fromConnection(ctx);
   await client.getJson("/api/json");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("parseQueueId: reads the numeric id out of a queue Location", () => {
+test("parseQueueId: reads the numeric id out of a queue Location", () => {
   assertEquals(parseQueueId("https://ci.example.com/queue/item/1543/"), 1543);
   assertEquals(parseQueueId("https://ci.example.com/queue/item/7"), 7);
 });
 
-Deno.test("parseQueueId: anything that is not a queue item is undefined", () => {
+test("parseQueueId: anything that is not a queue item is undefined", () => {
   assertEquals(parseQueueId(null), undefined);
   assertEquals(parseQueueId(""), undefined);
   assertEquals(parseQueueId("https://ci.example.com/job/my-job/42/"), undefined);

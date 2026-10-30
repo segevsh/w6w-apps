@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: kind service, unsigned, widens egress only to status.segment.com", () => {
+test("service: kind service, unsigned, widens egress only to status.segment.com", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.segment.com"]);
 });
 
-Deno.test("service: maps a fully-operational summary to ok with per-component detail", async () => {
+test("service: maps a fully-operational summary to ok with per-component detail", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -30,7 +31,7 @@ Deno.test("service: maps a fully-operational summary to ok with per-component de
   assertEquals(report.components?.["data-ingestion"], undefined);
 });
 
-Deno.test("service: maps a major incident to down", async () => {
+test("service: maps a major incident to down", async () => {
   const { ctx } = mockCtx([
     { body: { status: { indicator: "major", description: "Partial outage" }, components: [] } },
   ]);
@@ -38,7 +39,7 @@ Deno.test("service: maps a major incident to down", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: an unreachable status API reports unknown, never down", async () => {
+test("service: an unreachable status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

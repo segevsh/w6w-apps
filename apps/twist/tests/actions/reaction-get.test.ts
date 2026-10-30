@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import reactionGet from "../../actions/reaction-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("reaction-get: POST /api/v3/reactions/get with every documented parameter", async () => {
+test("reaction-get: POST /api/v3/reactions/get with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await reactionGet.execute(
     { "threadId": 100, "commentId": 101, "messageId": 102 },
@@ -21,7 +22,7 @@ Deno.test("reaction-get: POST /api/v3/reactions/get with every documented parame
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("reaction-get: sends a form body, never a query string", async () => {
+test("reaction-get: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await reactionGet.execute({ "threadId": 100, "commentId": 101, "messageId": 102 }, ctx);
 
@@ -29,21 +30,21 @@ Deno.test("reaction-get: sends a form body, never a query string", async () => {
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("reaction-get: omits optional parameters that are not set", async () => {
+test("reaction-get: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await reactionGet.execute({}, ctx);
 
   assertEquals(formOf(calls[0].body), {});
 });
 
-Deno.test("reaction-get: sends no credential of its own", async () => {
+test("reaction-get: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await reactionGet.execute({ "threadId": 100, "commentId": 101, "messageId": 102 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("reaction-get: surfaces Twist's error body", async () => {
+test("reaction-get: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

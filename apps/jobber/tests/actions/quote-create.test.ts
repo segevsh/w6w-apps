@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/quote-create.ts";
 
@@ -6,7 +7,7 @@ const OK = {
   body: { data: { quoteCreate: { quote: { id: "q1" }, userErrors: [] } } },
 };
 
-Deno.test("quote-create: the argument is `attributes`, not `input`", async () => {
+test("quote-create: the argument is `attributes`, not `input`", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     clientId: "c1",
@@ -19,7 +20,7 @@ Deno.test("quote-create: the argument is `attributes`, not `input`", async () =>
   assertEquals(sent.variables.input, undefined);
 });
 
-Deno.test("quote-create: never saves an ad-hoc line item into the price book", async () => {
+test("quote-create: never saves an ad-hoc line item into the price book", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     clientId: "c1",
@@ -34,7 +35,7 @@ Deno.test("quote-create: never saves an ad-hoc line item into the price book", a
   }]);
 });
 
-Deno.test("quote-create: `sendForApproval` becomes Jobber's only legal create transition", async () => {
+test("quote-create: `sendForApproval` becomes Jobber's only legal create transition", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     clientId: "c1",
@@ -48,7 +49,7 @@ Deno.test("quote-create: `sendForApproval` becomes Jobber's only legal create tr
   );
 });
 
-Deno.test("quote-create: leaving it a draft sends no transition at all", async () => {
+test("quote-create: leaving it a draft sends no transition at all", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({ clientId: "c1", propertyId: "p1", lineItems: [{ name: "x" }] }, ctx);
   assertEquals(
@@ -57,7 +58,7 @@ Deno.test("quote-create: leaving it a draft sends no transition at all", async (
   );
 });
 
-Deno.test("quote-create: no usable line item fails locally, without a wasted call", async () => {
+test("quote-create: no usable line item fails locally, without a wasted call", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -68,12 +69,12 @@ Deno.test("quote-create: no usable line item fails locally, without a wasted cal
   assertEquals(calls.length, 0);
 });
 
-Deno.test("quote-create: propertyId is required, because Jobber makes it non-null", () => {
+test("quote-create: propertyId is required, because Jobber makes it non-null", () => {
   const p = action.params?.find((x) => x.key === "propertyId");
   assertEquals(p?.required, true);
 });
 
-Deno.test("quote-create: userErrors throws", async () => {
+test("quote-create: userErrors throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {

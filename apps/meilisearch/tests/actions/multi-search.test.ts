@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/multi-search.ts";
 
 const conn = { display: { baseUrl: "https://search.example.com" } };
 
-Deno.test("multi-search: POSTs the queries in one request", async () => {
+test("multi-search: POSTs the queries in one request", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], conn);
   await action.execute!({
     queries: '[{"indexUid":"movies","q":"dune"},{"indexUid":"books","q":"dune"}]',
@@ -14,7 +15,7 @@ Deno.test("multi-search: POSTs the queries in one request", async () => {
   assertEquals(JSON.parse(calls[0].body!).federation, undefined);
 });
 
-Deno.test("multi-search: federation is sent only when set", async () => {
+test("multi-search: federation is sent only when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({
     queries: '[{"indexUid":"movies","q":"x"}]',
@@ -24,7 +25,7 @@ Deno.test("multi-search: federation is sent only when set", async () => {
 });
 
 /** Each query names its own index, so a missing one is caught locally. */
-Deno.test("multi-search: a query without an indexUid is refused before any request", async () => {
+test("multi-search: a query without an indexUid is refused before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ queries: '[{"q":"dune"}]' }, ctx),
@@ -34,7 +35,7 @@ Deno.test("multi-search: a query without an indexUid is refused before any reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("multi-search: an empty or non-array queries value is refused", async () => {
+test("multi-search: an empty or non-array queries value is refused", async () => {
   for (const queries of ["[]", '{"q":"x"}']) {
     const { ctx, calls } = mockCtx([], conn);
     await assertRejects(

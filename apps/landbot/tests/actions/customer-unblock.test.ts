@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerUnblock from "../../actions/customer-unblock.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-unblock: PUT /customers/42/unblock/ with the documented query and body", async () => {
+test("customer-unblock: PUT /customers/42/unblock/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await customerUnblock.execute({ "customerId": 42 } as never, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("customer-unblock: PUT /customers/42/unblock/ with the documented quer
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("customer-unblock: a Landbot error surfaces its status and message", async () => {
+test("customer-unblock: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () => Promise.resolve(customerUnblock.execute({ "customerId": 42 } as never, ctx)),
@@ -25,7 +26,7 @@ Deno.test("customer-unblock: a Landbot error surfaces its status and message", a
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("customer-unblock: declares perform", () => {
+test("customer-unblock: declares perform", () => {
   assertEquals(customerUnblock.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

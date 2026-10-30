@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-playlist.ts";
 
-Deno.test("create-playlist: POSTs /youtube/v3/playlists with a snippet body", async () => {
+test("create-playlist: POSTs /youtube/v3/playlists with a snippet body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "PL1" } }]);
   await action.execute!({ part: "snippet", title: "My list" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("create-playlist: POSTs /youtube/v3/playlists with a snippet body", as
   assertEquals(JSON.parse(calls[0].body!), { snippet: { title: "My list" } });
 });
 
-Deno.test("create-playlist: forces snippet into part even if the caller omits it", async () => {
+test("create-playlist: forces snippet into part even if the caller omits it", async () => {
   // snippet.title is required by the API, so the snippet part is not optional.
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "contentDetails", title: "T" }, ctx);
@@ -20,14 +21,14 @@ Deno.test("create-playlist: forces snippet into part even if the caller omits it
   assertEquals(part, "contentDetails,snippet");
 });
 
-Deno.test("create-playlist: adds status to part when privacy is supplied", async () => {
+test("create-playlist: adds status to part when privacy is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "snippet", title: "T", privacyStatus: "unlisted" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("part"), "snippet,status");
   assertEquals(JSON.parse(calls[0].body!).status, { privacyStatus: "unlisted" });
 });
 
-Deno.test("create-playlist: omits status entirely when no privacy is supplied", async () => {
+test("create-playlist: omits status entirely when no privacy is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "snippet,status", title: "T" }, ctx);
   // `part` is honoured as given, but no empty status object is invented.
@@ -35,13 +36,13 @@ Deno.test("create-playlist: omits status entirely when no privacy is supplied", 
   assertEquals(JSON.parse(calls[0].body!).status, undefined);
 });
 
-Deno.test("create-playlist: does not duplicate snippet when already present", async () => {
+test("create-playlist: does not duplicate snippet when already present", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: ["snippet", "snippet"], title: "T" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("part"), "snippet");
 });
 
-Deno.test("create-playlist: carries optional snippet fields and splits tags", async () => {
+test("create-playlist: carries optional snippet fields and splits tags", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     part: "snippet",
@@ -58,7 +59,7 @@ Deno.test("create-playlist: carries optional snippet fields and splits tags", as
   });
 });
 
-Deno.test("create-playlist: is honestly non-idempotent", () => {
+test("create-playlist: is honestly non-idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

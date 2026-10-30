@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-get.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("object-get: reads one record from the DSN host", async () => {
+test("object-get: reads one record from the DSN host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { objectID: "1" } }], { display });
   await action.execute!({
     indexName: "products",
@@ -17,7 +18,7 @@ Deno.test("object-get: reads one record from the DSN host", async () => {
   assertEquals(url.searchParams.get("attributesToRetrieve"), "name,price");
 });
 
-Deno.test("object-get: both ids are required", async () => {
+test("object-get: both ids are required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "p" }, ctx),

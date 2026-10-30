@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * Every row of this response carries `token`, the HMAC key CompanyCam signs
  * deliveries with. Returning it would copy a live secret into the run record.
  */
-Deno.test("webhook-list: strips the signing token from every row", async () => {
+test("webhook-list: strips the signing token from every row", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       { id: "42", url: "https://a/hook", scopes: ["*"], token: "s3cret-a", enabled: true },

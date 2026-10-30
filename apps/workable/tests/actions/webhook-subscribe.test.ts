@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockWorkableCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-subscribe.ts";
 
-Deno.test("webhook-subscribe: an employee event omits args entirely", async () => {
+test("webhook-subscribe: an employee event omits args entirely", async () => {
   const { ctx, calls } = mockWorkableCtx([{ status: 201, body: { id: 42 } }]);
   const out = await action.execute({
     target: "https://example.com/hook",
@@ -16,13 +17,13 @@ Deno.test("webhook-subscribe: an employee event omits args entirely", async () =
   assertEquals(out, { id: 42 });
 });
 
-Deno.test("webhook-subscribe: an unfiltered candidate event also omits args", async () => {
+test("webhook-subscribe: an unfiltered candidate event also omits args", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: { id: 1 } }]);
   await action.execute({ target: "https://example.com/hook", event: "candidate_created" }, ctx);
   assertEquals("args" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test(
+test(
   "webhook-subscribe: filtering by job or stage sends ALL of args, with account_id from the connection",
   async () => {
     const { ctx, calls } = mockWorkableCtx([{ body: { id: 1 } }], "groove-tech");
@@ -39,7 +40,7 @@ Deno.test(
   },
 );
 
-Deno.test("webhook-subscribe: filtering by stage alone still sends an empty job_shortcode", async () => {
+test("webhook-subscribe: filtering by stage alone still sends an empty job_shortcode", async () => {
   const { ctx, calls } = mockWorkableCtx([{ body: { id: 1 } }]);
   await action.execute({
     target: "https://example.com/hook",

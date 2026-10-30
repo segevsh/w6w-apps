@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpsert from "../../actions/contact-upsert.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-upsert: calls POST /contacts and returns the documented shape", async () => {
+test("contact-upsert: calls POST /contacts and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c9" } }]);
   const result = await contactUpsert.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("contact-upsert: calls POST /contacts and returns the documented shape
   assertEquals(result, { "id": "c9" });
 });
 
-Deno.test("contact-upsert: carries no credential — auth is the sign hook's job", async () => {
+test("contact-upsert: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c9" } }]);
   await contactUpsert.execute(
     {

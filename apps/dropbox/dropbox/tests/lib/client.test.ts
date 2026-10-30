@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { DropboxClient } from "../../lib/client.ts";
 
-Deno.test("client: defaults to POST and prepends API_URL for relative paths", async () => {
+test("client: defaults to POST and prepends API_URL for relative paths", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new DropboxClient(ctx);
   await client.request("/files/get_metadata", { body: { path: "/a.txt" } });
@@ -12,7 +13,7 @@ Deno.test("client: defaults to POST and prepends API_URL for relative paths", as
   assertEquals(JSON.parse(calls[0].body!), { path: "/a.txt" });
 });
 
-Deno.test("client: passes absolute URLs through unchanged", async () => {
+test("client: passes absolute URLs through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new DropboxClient(ctx);
   await client.request("https://content.dropboxapi.com/2/files/upload", {
@@ -24,7 +25,7 @@ Deno.test("client: passes absolute URLs through unchanged", async () => {
   assertEquals(calls[0].headers["dropbox-api-arg"], JSON.stringify({ path: "/x" }));
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 409, statusText: "Conflict", body: '{"error":"path/conflict"}' },
   ]);

@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/entity-tag-delete.ts";
 
-Deno.test("entity-tag-delete: no values removes the whole key", async () => {
+test("entity-tag-delete: no values removes the whole key", async () => {
   const { ctx, calls, logs } = mockCtx([
     ok({ taggingDeleteTagFromEntity: { errors: [] } }),
   ], { display });
@@ -16,7 +17,7 @@ Deno.test("entity-tag-delete: no values removes the whole key", async () => {
 });
 
 /** A different mutation with a different argument shape. */
-Deno.test("entity-tag-delete: given values it removes only those", async () => {
+test("entity-tag-delete: given values it removes only those", async () => {
   const { ctx, calls } = mockCtx([
     ok({ taggingDeleteTagValuesFromEntity: { errors: [] } }),
   ], { display });
@@ -34,7 +35,7 @@ Deno.test("entity-tag-delete: given values it removes only those", async () => {
   assertEquals(result.wholeKey, false);
 });
 
-Deno.test("entity-tag-delete: a mutation-payload error throws in either mode", async () => {
+test("entity-tag-delete: a mutation-payload error throws in either mode", async () => {
   const whole = mockCtx([
     ok({ taggingDeleteTagFromEntity: { errors: [{ message: "nope" }] } }),
   ], { display });
@@ -54,7 +55,7 @@ Deno.test("entity-tag-delete: a mutation-payload error throws in either mode", a
   );
 });
 
-Deno.test("entity-tag-delete: needs a guid and a key", async () => {
+test("entity-tag-delete: needs a guid and a key", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ key: "t" }, ctx),
@@ -65,6 +66,6 @@ Deno.test("entity-tag-delete: needs a guid and a key", async () => {
 });
 
 /** Alerts and workloads select on tags. */
-Deno.test("entity-tag-delete: warns that removing a tag can drop coverage", () => {
+test("entity-tag-delete: warns that removing a tag can drop coverage", () => {
   assert(/SELECT on tags/.test(action.description!), action.description);
 });

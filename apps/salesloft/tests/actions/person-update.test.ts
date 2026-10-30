@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/person-update.ts";
 
-Deno.test("person-update: PUTs /people/:id with a JSON body", async () => {
+test("person-update: PUTs /people/:id with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 5 } } }]);
   await action.execute!({ id: 5, title: "VP Sales", doNotContact: true }, ctx);
   const url = new URL(calls[0].url);

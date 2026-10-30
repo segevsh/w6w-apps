@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardCreate from "../../actions/card-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-create: posts preferredPhrase/content and strips the response token", async () => {
+test("card-create: posts preferredPhrase/content and strips the response token", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "c1", preferredPhrase: "Hi", collection: { id: "co1", token: "t" } } },
   ]);
@@ -20,13 +21,13 @@ Deno.test("card-create: posts preferredPhrase/content and strips the response to
   assertEquals(result, { id: "c1", preferredPhrase: "Hi", collection: { id: "co1" } });
 });
 
-Deno.test("card-create: folderIds is comma-split into an array on the wire", async () => {
+test("card-create: folderIds is comma-split into an array on the wire", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await cardCreate.execute({ title: "T", content: "c", folderIds: "f1, f2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).folderIds, ["f1", "f2"]);
 });
 
-Deno.test("card-create: omits collection/folderIds/shareStatus when not given", async () => {
+test("card-create: omits collection/folderIds/shareStatus when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await cardCreate.execute({ title: "T", content: "c" }, ctx);
   const body = JSON.parse(calls[0].body!);

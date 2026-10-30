@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import customerDelete from "../../actions/customer-delete.ts";
 
-Deno.test("customer-delete: succeeds and returns didSucceed", async () => {
+test("customer-delete: succeeds and returns didSucceed", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { customerDelete: { didSucceed: true, inputErrors: [] } } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("customer-delete: succeeds and returns didSucceed", async () => {
   assertEquals(body.variables.input, { id: "c1" });
 });
 
-Deno.test("customer-delete: a customer with existing invoices is rejected via inputErrors", async () => {
+test("customer-delete: a customer with existing invoices is rejected via inputErrors", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -37,7 +38,7 @@ Deno.test("customer-delete: a customer with existing invoices is rejected via in
   if (!threw) throw new Error("expected a rejection");
 });
 
-Deno.test("customer-delete: type/resource/idempotency metadata", () => {
+test("customer-delete: type/resource/idempotency metadata", () => {
   assertEquals(customerDelete.type, "perform");
   assertEquals(customerDelete.resource, "customer");
   assertEquals(customerDelete.idempotent, true);

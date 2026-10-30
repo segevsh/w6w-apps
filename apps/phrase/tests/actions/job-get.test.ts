@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import jobGet from "../../actions/job-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-get: sends GET /v2/projects/project%201%2Fx/jobs/job%201%2Fx", async () => {
+test("job-get: sends GET /v2/projects/project%201%2Fx/jobs/job%201%2Fx", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {
     "projectId": "project 1/x",
@@ -19,7 +20,7 @@ Deno.test("job-get: sends GET /v2/projects/project%201%2Fx/jobs/job%201%2Fx", as
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("job-get: surfaces Phrase's validation message on a 422", async () => {
+test("job-get: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await jobGet.execute({
@@ -32,7 +33,7 @@ Deno.test("job-get: surfaces Phrase's validation message on a 422", async () => 
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("job-get: declares key, type and every param it reads", () => {
+test("job-get: declares key, type and every param it reads", () => {
   assertEquals(jobGet.key, "job-get");
   assertEquals(jobGet.type, "read");
   const declared = new Set((jobGet.params ?? []).map((p) => p.key));

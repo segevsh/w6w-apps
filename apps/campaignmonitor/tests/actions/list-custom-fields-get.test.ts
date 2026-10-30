@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listCustomFieldsGet from "../../actions/list-custom-fields-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-custom-fields-get: GETs /lists/{listid}/customfields.json", async () => {
+test("list-custom-fields-get: GETs /lists/{listid}/customfields.json", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await listCustomFieldsGet.execute({ listId: "lid" }, ctx);
   assertEquals(pathOf(calls[0].url), `${API_PATH}/lists/lid/customfields.json`);
@@ -14,7 +15,7 @@ Deno.test("list-custom-fields-get: GETs /lists/{listid}/customfields.json", asyn
  * vendor's own request and response examples disagree about which one a write
  * wants.
  */
-Deno.test("list-custom-fields-get: returns both the display name and the bracketed key", async () => {
+test("list-custom-fields-get: returns both the display name and the bracketed key", async () => {
   const fields = [{
     FieldName: "subscription date",
     Key: "[subscriptiondate]",

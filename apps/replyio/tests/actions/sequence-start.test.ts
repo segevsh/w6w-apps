@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceStart from "../../actions/sequence-start.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sequence-start: POSTs /v3/sequences/{id}/start", async () => {
+test("sequence-start: POSTs /v3/sequences/{id}/start", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 9, status: "active" } }]);
   const out = await sequenceStart.execute({ id: 9 }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("sequence-start: POSTs /v3/sequences/{id}/start", async () => {
 });
 
 /** Starting an already-active sequence is a 409, not a no-op — so this must not be marked idempotent. */
-Deno.test("sequence-start: is not idempotent", () => {
+test("sequence-start: is not idempotent", () => {
   assertEquals(sequenceStart.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-status-set.ts";
 
-Deno.test("email-status-set: posts email and subscription_state", async () => {
+test("email-status-set: posts email and subscription_state", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: "success" } }], {
     display: { instance: "iad-01" },
   });

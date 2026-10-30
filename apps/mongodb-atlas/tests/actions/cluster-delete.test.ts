@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cluster-delete.ts";
 
@@ -7,7 +8,7 @@ const cluster = (protectionOn: boolean) => ({
   body: { name: "prod", terminationProtectionEnabled: protectionOn },
 });
 
-Deno.test("cluster-delete: reads the cluster, then DELETEs it", async () => {
+test("cluster-delete: reads the cluster, then DELETEs it", async () => {
   const { ctx, calls } = mockCtx([cluster(false), { status: 202, body: {} }]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod", confirmName: "prod" },
@@ -22,7 +23,7 @@ Deno.test("cluster-delete: reads the cluster, then DELETEs it", async () => {
 });
 
 /** The mechanism worth relying on, so the refusal explains itself here. */
-Deno.test("cluster-delete: respects termination protection before calling", async () => {
+test("cluster-delete: respects termination protection before calling", async () => {
   const { ctx, calls } = mockCtx([cluster(true)]);
   let message = "";
   try {
@@ -38,7 +39,7 @@ Deno.test("cluster-delete: respects termination protection before calling", asyn
   assertEquals(calls.length, 1, "the DELETE was not sent");
 });
 
-Deno.test("cluster-delete: the name must be typed back exactly", async () => {
+test("cluster-delete: the name must be typed back exactly", async () => {
   for (const confirm of [undefined, "", "PROD", "prod2"]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -56,7 +57,7 @@ Deno.test("cluster-delete: the name must be typed back exactly", async () => {
 });
 
 /** Off, the snapshots go too and no copy of the data is left anywhere. */
-Deno.test("cluster-delete: keeps the backups by default", async () => {
+test("cluster-delete: keeps the backups by default", async () => {
   const kept = mockCtx([cluster(false), { status: 202, body: {} }]);
   await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod", confirmName: "prod" },
@@ -79,7 +80,7 @@ Deno.test("cluster-delete: keeps the backups by default", async () => {
   assertEquals(result.retainedBackups, false);
 });
 
-Deno.test("cluster-delete: warns that the data is gone", async () => {
+test("cluster-delete: warns that the data is gone", async () => {
   const { ctx, logs } = mockCtx([cluster(false), { status: 202, body: {} }]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -90,7 +91,7 @@ Deno.test("cluster-delete: warns that the data is gone", async () => {
   assert(/the data is gone/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("cluster-delete: says Atlas refuses this while protection is on", () => {
+test("cluster-delete: says Atlas refuses this while protection is on", () => {
   assert(
     /REFUSES this while termination protection is on/.test(action.description!),
     action.description,

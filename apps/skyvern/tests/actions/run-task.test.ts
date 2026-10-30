@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import runTask from "../../actions/run-task.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("run-task: POSTs /v1/run/tasks with snake_case body and drops unset fields", async () => {
+test("run-task: POSTs /v1/run/tasks with snake_case body and drops unset fields", async () => {
   const run = { run_id: "tsk_1", status: "created" };
   const { ctx, calls } = mockCtx([{ body: run }]);
   const out = await runTask.execute({
@@ -36,7 +37,7 @@ Deno.test("run-task: POSTs /v1/run/tasks with snake_case body and drops unset fi
   });
 });
 
-Deno.test("run-task: rejects a schema that is not JSON and surfaces the vendor error detail", async () => {
+test("run-task: rejects a schema that is not JSON and surfaces the vendor error detail", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await runTask.execute({ prompt: "x", dataExtractionSchema: "{nope" }, ctx),

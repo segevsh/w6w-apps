@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-contacts-to-lists.ts";
 
-Deno.test("add-contacts-to-lists: POSTs /v3/activities/add_list_memberships", async () => {
+test("add-contacts-to-lists: POSTs /v3/activities/add_list_memberships", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { activity_id: "a1", state: "initialized" },
@@ -16,7 +17,7 @@ Deno.test("add-contacts-to-lists: POSTs /v3/activities/add_list_memberships", as
   });
 });
 
-Deno.test("add-contacts-to-lists: maps each source option to its API key", async () => {
+test("add-contacts-to-lists: maps each source option to its API key", async () => {
   const cases: Array<[Record<string, unknown>, Record<string, unknown>]> = [
     [{ sourceListIds: ["l9"] }, { list_ids: ["l9"] }],
     [{ sourceTagIds: ["t1"] }, { tag_ids: ["t1"] }],
@@ -31,7 +32,7 @@ Deno.test("add-contacts-to-lists: maps each source option to its API key", async
   }
 });
 
-Deno.test("add-contacts-to-lists: rejects a request with no source", async () => {
+test("add-contacts-to-lists: rejects a request with no source", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => action.execute!({ listIds: ["l1"] }, ctx) as Promise<unknown>,
@@ -41,7 +42,7 @@ Deno.test("add-contacts-to-lists: rejects a request with no source", async () =>
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("add-contacts-to-lists: rejects two mutually exclusive sources", async () => {
+test("add-contacts-to-lists: rejects two mutually exclusive sources", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -58,7 +59,7 @@ Deno.test("add-contacts-to-lists: rejects two mutually exclusive sources", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-contacts-to-lists: `all active contacts: false` is not a source", async () => {
+test("add-contacts-to-lists: `all active contacts: false` is not a source", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>
@@ -68,7 +69,7 @@ Deno.test("add-contacts-to-lists: `all active contacts: false` is not a source",
   );
 });
 
-Deno.test("add-contacts-to-lists: nests excludeContactIds under `exclude`", async () => {
+test("add-contacts-to-lists: nests excludeContactIds under `exclude`", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({
     listIds: ["l1"],
@@ -78,12 +79,12 @@ Deno.test("add-contacts-to-lists: nests excludeContactIds under `exclude`", asyn
   assertEquals(JSON.parse(calls[0].body!).exclude, { contact_ids: ["c9"] });
 });
 
-Deno.test("add-contacts-to-lists: omits `exclude` when nothing is excluded", async () => {
+test("add-contacts-to-lists: omits `exclude` when nothing is excluded", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ listIds: ["l1"], sourceContactIds: ["c1"] }, ctx);
   assertEquals("exclude" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("add-contacts-to-lists: is declared idempotent", () => {
+test("add-contacts-to-lists: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

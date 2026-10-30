@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import get from "../../actions/timeoff-request-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timeoff-request-get: GETs the request, durations only on demand", async () => {
+test("timeoff-request-get: GETs the request, durations only on demand", async () => {
   const { ctx, calls } = mockCtx([{ body: { requestId: 3 } }, { body: { requestId: 3 } }]);
   await get.execute({ employeeId: "11", requestId: 3 }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/timeoff/employees/11/requests/3");

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import localeDownload from "../../actions/locale-download.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("locale-download: sends GET /v2/projects/project%201%2Fx/locales/locale%201%2Fx/download", async () => {
+test("locale-download: sends GET /v2/projects/project%201%2Fx/locales/locale%201%2Fx/download", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "text/plain" },
     body: "file-body",
@@ -43,7 +44,7 @@ Deno.test("locale-download: sends GET /v2/projects/project%201%2Fx/locales/local
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("locale-download: surfaces Phrase's validation message on a 422", async () => {
+test("locale-download: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await localeDownload.execute({
@@ -63,7 +64,7 @@ Deno.test("locale-download: surfaces Phrase's validation message on a 422", asyn
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("locale-download: declares key, type and every param it reads", () => {
+test("locale-download: declares key, type and every param it reads", () => {
   assertEquals(localeDownload.key, "locale-download");
   assertEquals(localeDownload.type, "read");
   const declared = new Set((localeDownload.params ?? []).map((p) => p.key));
@@ -84,7 +85,7 @@ Deno.test("locale-download: declares key, type and every param it reads", () => 
   ) assert(declared.has(k), `missing param ${k}`);
 });
 
-Deno.test("locale-download: returns the file text verbatim, not parsed JSON", async () => {
+test("locale-download: returns the file text verbatim, not parsed JSON", async () => {
   const { ctx } = mockCtx([{
     headers: { "content-type": "application/json", etag: 'W/"abc"' },
     body: '{"a":1}',

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-app-analytics.ts";
 import { mockConnectedCtx, mockCtx, pathOf, queryOf, WORKSPACE_ID } from "../_helpers.ts";
 
@@ -24,7 +25,7 @@ const ANALYTICS = {
   has_secrets: true,
 };
 
-Deno.test("get-app-analytics: maps the analytics record", async () => {
+test("get-app-analytics: maps the analytics record", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: ANALYTICS }]);
   const result = await action.execute!(
     { appId: "app1", from: "2026-06-01", to: "2026-06-30" },
@@ -42,7 +43,7 @@ Deno.test("get-app-analytics: maps the analytics record", async () => {
   assertEquals(result.hasAgent, true);
 });
 
-Deno.test("get-app-analytics: requires appId, from, and to without making a request", async () => {
+test("get-app-analytics: requires appId, from, and to without making a request", async () => {
   const { ctx, calls } = mockConnectedCtx([]);
   await assertRejects(
     async () => await action.execute!({ from: "2026-06-01", to: "2026-06-30" }, ctx),
@@ -62,7 +63,7 @@ Deno.test("get-app-analytics: requires appId, from, and to without making a requ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-app-analytics: rejects a malformed date", async () => {
+test("get-app-analytics: rejects a malformed date", async () => {
   const { ctx, calls } = mockConnectedCtx([]);
   await assertRejects(
     async () => await action.execute!({ appId: "app1", from: "not-a-date", to: "2026-06-30" }, ctx),
@@ -72,7 +73,7 @@ Deno.test("get-app-analytics: rejects a malformed date", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-app-analytics: fails without a connected workspace", async () => {
+test("get-app-analytics: fails without a connected workspace", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ appId: "app1", from: "2026-06-01", to: "2026-06-30" }, ctx),

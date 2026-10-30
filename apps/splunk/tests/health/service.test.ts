@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: reports ok with no components when everything is operational", async () => {
+test("service: reports ok with no components when everything is operational", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "none", description: "All Systems Operational" },
@@ -16,7 +17,7 @@ Deno.test("service: reports ok with no components when everything is operational
   assertEquals(new URL(calls[0].url).hostname, "status.splunkcloud.com");
 });
 
-Deno.test("service: maps a major incident on one component to down, without dragging others", async () => {
+test("service: maps a major incident on one component to down, without dragging others", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "major", description: "Partial System Outage" },
@@ -32,13 +33,13 @@ Deno.test("service: maps a major incident on one component to down, without drag
   assertEquals(out.components?.["login"], { state: "ok" });
 });
 
-Deno.test("service: reports unknown, not down, when the status API itself fails", async () => {
+test("service: reports unknown, not down, when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: reports unknown on a malformed body rather than guessing", async () => {
+test("service: reports unknown on a malformed body rather than guessing", async () => {
   const { ctx } = mockCtx([{ body: { nonsense: true } }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");

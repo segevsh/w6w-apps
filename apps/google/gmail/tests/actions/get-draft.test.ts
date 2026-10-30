@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-draft.ts";
 
-Deno.test("get-draft: GETs users/me/drafts/{id} with format=full by default", async () => {
+test("get-draft: GETs users/me/drafts/{id} with format=full by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "d1" } }]);
   await action.execute!({ draftId: "d1" }, ctx);
   const url = new URL(calls[0].url);

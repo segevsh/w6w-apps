@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import { SQUARE_VERSION } from "../lib/client.ts";
 import { mockCtx } from "./_helpers.ts";
@@ -28,35 +29,35 @@ const MINIMAL_INPUT: Record<string, Record<string, unknown>> = {
   "invoice-get-many": { locationId: "L1" },
 };
 
-Deno.test("index: exposes exactly the expected action keys, each unique", () => {
+test("index: exposes exactly the expected action keys, each unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.sort(), Object.keys(MINIMAL_INPUT).sort());
   assertEquals(new Set(keys).size, keys.length);
 });
 
-Deno.test("index: declares the access-token auth method", () => {
+test("index: declares the access-token auth method", () => {
   assertEquals(app.auth?.map((a) => a.key), ["access-token"]);
 });
 
-Deno.test("index: declares the service and quota health checks", () => {
+test("index: declares the service and quota health checks", () => {
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["quota", "service"]);
 });
 
-Deno.test("index: every action declares a type and a title", () => {
+test("index: every action declares a type and a title", () => {
   for (const action of app.actions) {
     assert(["read", "search", "perform", "control"].includes(action.type));
     assert(action.title.length > 0, `${action.key} has no title`);
   }
 });
 
-Deno.test("index: every action declares a description and output fields", () => {
+test("index: every action declares a description and output fields", () => {
   for (const action of app.actions) {
     assert(action.description, `${action.key} declares no description`);
     assert(action.output, `${action.key} declares no output`);
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assertEquals(typeof action.idempotent, "boolean", `${action.key}`);
@@ -64,7 +65,7 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
   }
 });
 
-Deno.test("index: no action sets an auth header itself", () => {
+test("index: no action sets an auth header itself", () => {
   for (const action of app.actions) {
     assertEquals(
       /authorization|bearer/i.test(action.execute.toString()),
@@ -80,7 +81,7 @@ Deno.test("index: no action sets an auth header itself", () => {
  * whatever version the token's Developer Console application happens to default
  * to. So assert it on EVERY action, not only the ones a per-action test covers.
  */
-Deno.test("index: every action sends Square-Version on every request", async () => {
+test("index: every action sends Square-Version on every request", async () => {
   for (const action of app.actions) {
     const { ctx, calls } = mockCtx([{ body: {} }]);
     await action.execute(MINIMAL_INPUT[action.key] as never, ctx);
@@ -98,7 +99,7 @@ Deno.test("index: every action sends Square-Version on every request", async () 
   }
 });
 
-Deno.test("index: every action honours the connection's environment host", async () => {
+test("index: every action honours the connection's environment host", async () => {
   for (const action of app.actions) {
     const { ctx, calls } = mockCtx([{ body: {} }], { display: { environment: "sandbox" } });
     await action.execute(MINIMAL_INPUT[action.key] as never, ctx);
@@ -108,7 +109,7 @@ Deno.test("index: every action honours the connection's environment host", async
   }
 });
 
-Deno.test("index: production is the default when the connection says nothing", async () => {
+test("index: production is the default when the connection says nothing", async () => {
   for (const action of app.actions) {
     const { ctx, calls } = mockCtx([{ body: {} }]);
     await action.execute(MINIMAL_INPUT[action.key] as never, ctx);

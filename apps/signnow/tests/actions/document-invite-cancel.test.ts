@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentInviteCancel from "../../actions/document-invite-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-invite-cancel: PUTs /document/{id}/fieldinvitecancel", async () => {
+test("document-invite-cancel: PUTs /document/{id}/fieldinvitecancel", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   const out = await documentInviteCancel.execute({ documentId: "doc-1" }, ctx) as Record<
     string,

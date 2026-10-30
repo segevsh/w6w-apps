@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-thread-get.ts";
 
-Deno.test("ticket-thread-get: GETs /tickets/{id}/threads/{threadId}", async () => {
+test("ticket-thread-get: GETs /tickets/{id}/threads/{threadId}", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { id: "5" } }]);
   const out = await action.execute(
     { ticketId: "42", threadId: "5", include: "plainText" },

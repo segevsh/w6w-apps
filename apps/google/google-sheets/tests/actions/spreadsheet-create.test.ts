@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/spreadsheet-create.ts";
 
-Deno.test("spreadsheet-create: POST /v4/spreadsheets with title + sheets", async () => {
+test("spreadsheet-create: POST /v4/spreadsheets with title + sheets", async () => {
   const { ctx, calls } = mockCtx([{ body: { spreadsheetId: "abc" } }]);
   const result = await action.execute({
     title: "My Sheet",

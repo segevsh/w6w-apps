@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import routeList from "../../actions/route-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("route-list: sends per_page, not page_size", async () => {
+test("route-list: sends per_page, not page_size", async () => {
   const { ctx, calls } = mockCtx([
     { body: { routes: [{ id: "r1" }], total_items: 1, total_pages: 1, page: 1, page_size: 50 } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("route-list: sends per_page, not page_size", async () => {
   assertEquals(out.items, [{ id: "r1" }]);
 });
 
-Deno.test("route-list: exposes perPage rather than the shared pageSize fragment", () => {
+test("route-list: exposes perPage rather than the shared pageSize fragment", () => {
   const keys = (routeList.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("perPage"), true);
   assertEquals(keys.includes("pageSize"), false);

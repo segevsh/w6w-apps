@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-message-list.ts";
 
-Deno.test("conversation-message-list: reads messages, and pages when asked", async () => {
+test("conversation-message-list: reads messages, and pages when asked", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -19,7 +20,7 @@ Deno.test("conversation-message-list: reads messages, and pages when asked", asy
 });
 
 /** Messages and comments are separate collections — this reads only one. */
-Deno.test("conversation-message-list: the limit bounds the result", async () => {
+test("conversation-message-list: the limit bounds the result", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { _results: [{ id: "a" }, { id: "b" }] } }]);
   assertEquals(await action.execute!({ conversationId: "cnv_1", limit: 1 }, ctx), [{ id: "a" }]);
 });

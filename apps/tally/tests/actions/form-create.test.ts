@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-create.ts";
 
 const BLOCKS = [{ uuid: "b1", type: "FORM_TITLE", payload: { title: "Signup" } }];
 
-Deno.test("form-create: POSTs blocks and status to /forms", async () => {
+test("form-create: POSTs blocks and status to /forms", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "f1", status: "PUBLISHED" } }]);
   const result = await action.execute({ blocks: BLOCKS, status: "PUBLISHED" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("form-create: POSTs blocks and status to /forms", async () => {
   assertEquals(result.id, "f1");
 });
 
-Deno.test("form-create: forwards the optional placement and settings fields", async () => {
+test("form-create: forwards the optional placement and settings fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     blocks: BLOCKS,
@@ -35,7 +36,7 @@ Deno.test("form-create: forwards the optional placement and settings fields", as
   });
 });
 
-Deno.test("form-create: offers exactly Tally's four documented statuses", () => {
+test("form-create: offers exactly Tally's four documented statuses", () => {
   const status = action.params?.find((p) => p.key === "status");
   assertEquals(
     (status?.options as Array<{ value: string }>).map((o) => o.value),
@@ -43,6 +44,6 @@ Deno.test("form-create: offers exactly Tally's four documented statuses", () => 
   );
 });
 
-Deno.test("form-create: is not idempotent", () => {
+test("form-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,9 +1,10 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 
 import createOrUpdateSubscriber from "../../actions/create-or-update-subscriber.ts";
 
-Deno.test("create-or-update-subscriber: POSTs snake_case keys, omitting what is unset", async () => {
+test("create-or-update-subscriber: POSTs snake_case keys, omitting what is unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "61b2" } }]);
   await createOrUpdateSubscriber.execute(
     {
@@ -33,13 +34,13 @@ Deno.test("create-or-update-subscriber: POSTs snake_case keys, omitting what is 
   });
 });
 
-Deno.test("create-or-update-subscriber: sends only the keys supplied", async () => {
+test("create-or-update-subscriber: sends only the keys supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await createOrUpdateSubscriber.execute({ id: "61b2" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: "61b2" });
 });
 
-Deno.test("create-or-update-subscriber: rejects a call with neither email nor id", () => {
+test("create-or-update-subscriber: rejects a call with neither email nor id", () => {
   const { ctx, calls } = mockCtx([]);
   // Synchronous throw, deliberately: validation runs before any await, so the
   // action cannot be scheduled and then fail.
@@ -47,7 +48,7 @@ Deno.test("create-or-update-subscriber: rejects a call with neither email nor id
   assertEquals(calls.length, 0, "must not spend a request on a known-bad payload");
 });
 
-Deno.test("create-or-update-subscriber: is marked idempotent — it is an upsert", () => {
+test("create-or-update-subscriber: is marked idempotent — it is an upsert", () => {
   assertEquals(createOrUpdateSubscriber.idempotent, true);
 });
 

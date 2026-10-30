@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberCreate from "../../actions/subscriber-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-create: POSTs to /v2/subscribers with a compact body", async () => {
+test("subscriber-create: POSTs to /v2/subscribers with a compact body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "o1", email: "a@b.com" } } }]);
   const out = await subscriberCreate.execute({ email: "a@b.com" }, ctx) as { id: string };
 
@@ -12,7 +13,7 @@ Deno.test("subscriber-create: POSTs to /v2/subscribers with a compact body", asy
   assertEquals(out.id, "o1");
 });
 
-Deno.test("subscriber-create: fields is parsed from a JSON string param", async () => {
+test("subscriber-create: fields is parsed from a JSON string param", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "o1" } } }]);
   await subscriberCreate.execute(
     { email: "a@b.com", fields: '{"{$test_num}": 8}', triggerAutomation: false },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callAnalyze from "../../actions/call-analyze.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-analyze: posts goal + questions and maps the answers", async () => {
+test("call-analyze: posts goal + questions and maps the answers", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -28,7 +29,7 @@ Deno.test("call-analyze: posts goal + questions and maps the answers", async () 
   assertEquals(out.answers, ["human", "Positive", true]);
 });
 
-Deno.test("call-analyze: accepts questions as a JSON string form-field value", async () => {
+test("call-analyze: accepts questions as a JSON string form-field value", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success", answers: [] } }]);
   await callAnalyze.execute({
     callId: "c-1",
@@ -39,6 +40,6 @@ Deno.test("call-analyze: accepts questions as a JSON string form-field value", a
   assertEquals(body.questions, [["q", "string"]]);
 });
 
-Deno.test("call-analyze: is declared not idempotent", () => {
+test("call-analyze: is declared not idempotent", () => {
   assertEquals(callAnalyze.idempotent, false);
 });

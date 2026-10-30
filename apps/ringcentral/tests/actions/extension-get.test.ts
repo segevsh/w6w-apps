@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import extensionGet from "../../actions/extension-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("extension-get: defaults both accountId and extensionId to ~", async () => {
+test("extension-get: defaults both accountId and extensionId to ~", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", name: "Alice", extensionNumber: "101" } }]);
   const out = await extensionGet.execute({}, ctx) as Record<string, unknown>;
 
@@ -10,7 +11,7 @@ Deno.test("extension-get: defaults both accountId and extensionId to ~", async (
   assertEquals(out.name, "Alice");
 });
 
-Deno.test("extension-get: a real extensionId reads a different extension", async () => {
+test("extension-get: a real extensionId reads a different extension", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "222" } }]);
   await extensionGet.execute({ extensionId: "222" }, ctx);
   assertEquals(pathOf(calls[0].url), "/restapi/v1.0/account/~/extension/222");

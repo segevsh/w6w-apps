@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-record.ts";
 
-Deno.test("update-record: PATCHes the partial record to records/{recordId}/", async () => {
+test("update-record: PATCHes the partial record to records/{recordId}/", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec1" } }]);
   const result = await action.execute!(
     { tableId: "tbl1", recordId: "rec1", fields: { status: "Closed" } },
@@ -14,6 +15,6 @@ Deno.test("update-record: PATCHes the partial record to records/{recordId}/", as
   assertEquals(result, { id: "rec1" });
 });
 
-Deno.test("update-record: is idempotent", () => {
+test("update-record: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

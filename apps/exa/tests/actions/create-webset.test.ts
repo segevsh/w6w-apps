@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-webset.ts";
 
-Deno.test("create-webset: POSTs /v0/websets nesting the query under search", async () => {
+test("create-webset: POSTs /v0/websets nesting the query under search", async () => {
   const body = { id: "ws_1", status: "running", dashboardUrl: "https://dashboard.exa.ai/w/ws_1" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -19,7 +20,7 @@ Deno.test("create-webset: POSTs /v0/websets nesting the query under search", asy
   assertEquals(result, body);
 });
 
-Deno.test("create-webset: forwards title, count, entity, externalId and metadata", async () => {
+test("create-webset: forwards title, count, entity, externalId and metadata", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ws_1", status: "running" } }]);
   await action.execute!(
     {

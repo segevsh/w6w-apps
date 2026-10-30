@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/refresh-token.ts";
 
-Deno.test("Refresh Token sends the refresh grant and returns both rotated tokens", async () => {
+test("Refresh Token sends the refresh grant and returns both rotated tokens", async () => {
   const result = { access_token: "new-access", refresh_token: "new-refresh" };
   const { ctx, calls } = mockCtx([{ body: result }]);
   assertEquals(await action.execute({ refreshToken: "old-refresh" }, ctx), result);

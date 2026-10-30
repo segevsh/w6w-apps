@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountPause from "../../actions/account-pause.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-pause: POSTs /accounts/{email}/pause", async () => {
+test("account-pause: POSTs /accounts/{email}/pause", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com", status: 2 } }]);
   const out = await accountPause.execute({ email: "a@b.com" }, ctx) as { status: number };
 

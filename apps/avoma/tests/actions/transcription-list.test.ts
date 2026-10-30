@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transcriptionList from "../../actions/transcription-list.ts";
 import { mockCtx, pageBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("transcription-list: by meeting needs no date window and folds the array response", async () => {
+test("transcription-list: by meeting needs no date window and folds the array response", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uuid: "t1", meeting_uuid: "m1" }] }]);
   const out = await transcriptionList.execute({ meetingUuid: "m1" }, ctx) as {
     results: unknown[];
@@ -13,7 +14,7 @@ Deno.test("transcription-list: by meeting needs no date window and folds the arr
   assertEquals(out.count, 1);
 });
 
-Deno.test("transcription-list: windowed listing sends page and page_size", async () => {
+test("transcription-list: windowed listing sends page and page_size", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([]) }]);
   await transcriptionList.execute({
     fromDate: "2026-10-01T00:00:00Z",
@@ -31,7 +32,7 @@ Deno.test("transcription-list: windowed listing sends page and page_size", async
   });
 });
 
-Deno.test("transcription-list: neither a meeting nor a window is refused", async () => {
+test("transcription-list: neither a meeting nor a window is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await transcriptionList.execute({}, ctx), Error, "fromDate");
   assertEquals(calls.length, 0);

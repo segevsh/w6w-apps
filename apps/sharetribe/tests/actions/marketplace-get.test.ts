@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import marketplaceGet from "../../actions/marketplace-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("marketplace-get: GET /marketplace/show, no params, unwraps the resource", async () => {
+test("marketplace-get: GET /marketplace/show, no params, unwraps the resource", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

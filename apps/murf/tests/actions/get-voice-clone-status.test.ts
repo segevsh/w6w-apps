@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-voice-clone-status.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("get-voice-clone-status: GETs the status path and returns the body", async () => {
+test("get-voice-clone-status: GETs the status path and returns the body", async () => {
   const body = { requestId: "r/1", status: "COMPLETED", voiceId: "cln_9" };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await exec(action, { requestId: " r/1 " }, ctx);
@@ -10,7 +11,7 @@ Deno.test("get-voice-clone-status: GETs the status path and returns the body", a
   assertEquals(out, body);
 });
 
-Deno.test("get-voice-clone-status: requires an id; a 404 fails with the vendor message", async () => {
+test("get-voice-clone-status: requires an id; a 404 fails with the vendor message", async () => {
   assertEquals(
     (await failure(action, { requestId: "" }, mockCtx().ctx)).includes("requestId"),
     true,

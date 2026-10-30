@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { ok } from "./_shared.ts";
 import action from "../../actions/transformation-get.ts";
 
-Deno.test("transformation-get: fetches one transformation", async () => {
+test("transformation-get: fetches one transformation", async () => {
   const { ctx, calls } = mockCtx([ok({
     id: "t1",
     status: "SUCCEEDED",
@@ -14,13 +15,13 @@ Deno.test("transformation-get: fetches one transformation", async () => {
   assertEquals(result.status, "SUCCEEDED");
 });
 
-Deno.test("transformation-get: needs a transformation id", async () => {
+test("transformation-get: needs a transformation id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "transformationId");
   assertEquals(calls.length, 0);
 });
 
 /** An integrated schedule fires on the sync a workflow just triggered. */
-Deno.test("transformation-get: names the double-run trap", () => {
+test("transformation-get: names the double-run trap", () => {
   assert(/run twice/.test(action.description!), action.description);
 });

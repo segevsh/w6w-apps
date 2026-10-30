@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, { authHeaders, PROBE_PATH } from "../../auth/api-token.ts";
 import { envelope, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const TOKEN = "apify_api_unitTestFixtureNotARealToken00000";
 
-Deno.test("api-token: sign stamps the bearer header and nothing else", () => {
+test("api-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.apify.com/v2/actors",
@@ -22,7 +23,7 @@ Deno.test("api-token: sign stamps the bearer header and nothing else", () => {
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("api-token: authHeaders is the single source of the wire format", () => {
+test("api-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
@@ -31,11 +32,11 @@ Deno.test("api-token: authHeaders is the single source of the wire format", () =
  * the file someone edits when they decide `/users/me` is shorter — and
  * `/users/me` returns the account's Apify Proxy password.
  */
-Deno.test("api-token: the probe is /users/me/limits, not the whoami", () => {
+test("api-token: the probe is /users/me/limits, not the whoami", () => {
   assertEquals(PROBE_PATH, "/users/me/limits");
 });
 
-Deno.test("api-token: test passes when the limits endpoint answers", async () => {
+test("api-token: test passes when the limits endpoint answers", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ limits: {}, current: {} }) }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -45,7 +46,7 @@ Deno.test("api-token: test passes when the limits endpoint answers", async () =>
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("api-token: test fails with no token, without making a request", async () => {
+test("api-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: {} }, ctx);
 
@@ -59,7 +60,7 @@ Deno.test("api-token: test fails with no token, without making a request", async
  * `type`. Collapsing them is how "the token is scoped away from this resource"
  * gets misreported as "your token expired".
  */
-Deno.test("api-token: an invalid token is reported as a rejected token", async () => {
+test("api-token: an invalid token is reported as a rejected token", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -75,7 +76,7 @@ Deno.test("api-token: an invalid token is reported as a rejected token", async (
   assert(/rejected the token/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a missing token is reported as never having arrived", async () => {
+test("api-token: a missing token is reported as never having arrived", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("token-not-provided", "Authentication token was not provided") },
   ]);
@@ -85,7 +86,7 @@ Deno.test("api-token: a missing token is reported as never having arrived", asyn
   assert(/received no token/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a 403 is reported as a refusal, not as a bad token", async () => {
+test("api-token: a 403 is reported as a refusal, not as a bad token", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,
@@ -102,7 +103,7 @@ Deno.test("api-token: a 403 is reported as a refusal, not as a bad token", async
   assert(/insufficient-permissions/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -114,7 +115,7 @@ Deno.test("api-token: a 500 is reported as an HTTP failure, not a credential pro
  * `afterConnect` is the one place this app calls the leaky whoami. It must keep
  * the username and drop everything else — most of all `proxy`.
  */
-Deno.test("api-token: afterConnect publishes only the username and user id", async () => {
+test("api-token: afterConnect publishes only the username and user id", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -134,12 +135,12 @@ Deno.test("api-token: afterConnect publishes only the username and user id", asy
   assert(!JSON.stringify(display).includes("ops@acme.example"));
 });
 
-Deno.test("api-token: afterConnect stays silent when the whoami fails", async () => {
+test("api-token: afterConnect stays silent when the whoami fails", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("insufficient-permissions", "no") }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx), {});
 });
 
-Deno.test("api-token: afterConnect stays silent when the response carries no username", async () => {
+test("api-token: afterConnect stays silent when the response carries no username", async () => {
   const { ctx } = mockCtx([{ body: envelope({ id: "u1" }) }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx), {});
 });

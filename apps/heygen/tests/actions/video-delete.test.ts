@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoDelete from "../../actions/video-delete.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("video-delete: sends DELETE to the video's own path", async () => {
+test("video-delete: sends DELETE to the video's own path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "v1", deleted: true }) }]);
   const out = await videoDelete.execute({ videoId: "v1" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("video-delete: sends DELETE to the video's own path", async () => {
   assertEquals(out, { id: "v1", deleted: true });
 });
 
-Deno.test("video-delete: is marked idempotent — retrying a delete is safe", () => {
+test("video-delete: is marked idempotent — retrying a delete is safe", () => {
   assertEquals(videoDelete.idempotent, true);
 });

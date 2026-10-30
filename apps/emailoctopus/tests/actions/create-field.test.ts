@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/create-field.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-field: POSTs the simple variant for text/number/date", async () => {
+test("create-field: POSTs the simple variant for text/number/date", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { tag: "Hometown" } }]);
   await action.execute!({
     listId: "l1",
@@ -20,7 +21,7 @@ Deno.test("create-field: POSTs the simple variant for text/number/date", async (
   });
 });
 
-Deno.test("create-field: sends `choices` only for the choice variants", async () => {
+test("create-field: sends `choices` only for the choice variants", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }, { status: 201, body: {} }]);
   await action.execute!({
     listId: "l1",
@@ -43,7 +44,7 @@ Deno.test("create-field: sends `choices` only for the choice variants", async ()
   assert(!("choices" in JSON.parse(calls[1].body!)));
 });
 
-Deno.test("create-field: omits fallback when unset", async () => {
+test("create-field: omits fallback when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ listId: "l1", label: "L", tag: "T", type: "number" }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), ["label", "tag", "type"]);

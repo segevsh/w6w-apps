@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/call-note-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("call-note-update: full input maps to PATCH /call_notes/{uuid}", async () => {
+test("call-note-update: full input maps to PATCH /call_notes/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -22,7 +23,7 @@ Deno.test("call-note-update: full input maps to PATCH /call_notes/{uuid}", async
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("call-note-update: required input only maps to PATCH /call_notes/{uuid}", async () => {
+test("call-note-update: required input only maps to PATCH /call_notes/{uuid}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -42,7 +43,7 @@ Deno.test("call-note-update: required input only maps to PATCH /call_notes/{uuid
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("call-note-update: sends no authorization header of its own", async () => {
+test("call-note-update: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({
     "uuid": "11111111-aaaa",
@@ -52,7 +53,7 @@ Deno.test("call-note-update: sends no authorization header of its own", async ()
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("call-note-update: surfaces a JSON error body as a thrown error", async () => {
+test("call-note-update: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -66,7 +67,7 @@ Deno.test("call-note-update: surfaces a JSON error body as a thrown error", asyn
   );
 });
 
-Deno.test("call-note-update: an empty 401 body still reads as an auth failure", async () => {
+test("call-note-update: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -80,7 +81,7 @@ Deno.test("call-note-update: an empty 401 body still reads as an auth failure", 
   );
 });
 
-Deno.test("call-note-update: declares type, params and output", () => {
+test("call-note-update: declares type, params and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.key, "call-note-update");
   assert(Array.isArray(action.output) && action.output.length > 0);

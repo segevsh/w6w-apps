@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-create.ts";
 
-Deno.test("candidate-create: POSTs the fields wrapped in a data array", async () => {
+test("candidate-create: POSTs the fields wrapped in a data array", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "1" } }] } },
   ]);
@@ -12,6 +13,6 @@ Deno.test("candidate-create: POSTs the fields wrapped in a data array", async ()
   assertEquals(JSON.parse(calls[0].body!), { data: [{ Last_Name: "Jones", Email: "a@acme.com" }] });
 });
 
-Deno.test("candidate-create: not idempotent — every call creates a new record", () => {
+test("candidate-create: not idempotent — every call creates a new record", () => {
   assertEquals(action.idempotent, false);
 });

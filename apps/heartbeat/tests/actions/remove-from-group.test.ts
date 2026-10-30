@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import removeFromGroup from "../../actions/remove-from-group.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("remove-from-group: DELETE /groups/{id}/memberships with the email list in the body", async () => {
+test("remove-from-group: DELETE /groups/{id}/memberships with the email list in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await removeFromGroup.execute({ groupID: "g1", emails: ["a@b.com"] }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,6 +11,6 @@ Deno.test("remove-from-group: DELETE /groups/{id}/memberships with the email lis
   assertEquals(JSON.parse(calls[0].body!), { emails: ["a@b.com"] });
 });
 
-Deno.test("remove-from-group: is idempotent", () => {
+test("remove-from-group: is idempotent", () => {
   assertEquals(removeFromGroup.idempotent, true);
 });

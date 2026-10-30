@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import setDisplayName from "../../actions/set-display-name.ts";
 import { HOMESERVER, mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("set-display-name: PUTs /profile/{connection's own userId}/displayname", async () => {
+test("set-display-name: PUTs /profile/{connection's own userId}/displayname", async () => {
   const { ctx, calls } = mockMatrixCtx([{ body: {} }]);
   const result = await setDisplayName.execute({ displayName: "Alice Wonderland" }, ctx);
   assertEquals(

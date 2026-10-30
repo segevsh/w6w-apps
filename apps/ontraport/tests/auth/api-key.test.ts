@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { authFailureResponse, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const API_KEY_VALUE = "unitTestFixtureNotARealKey00000";
 const APP_ID_VALUE = "2_AppID_unitTestFixture";
 
-Deno.test("api-key: sign stamps both headers and nothing else", () => {
+test("api-key: sign stamps both headers and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.ontraport.com/1/Contacts",
@@ -24,18 +25,18 @@ Deno.test("api-key: sign stamps both headers and nothing else", () => {
   assert(!signed.url.includes(API_KEY_VALUE));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: API_KEY_VALUE, appId: APP_ID_VALUE }), {
     "api-key": API_KEY_VALUE,
     "api-appid": APP_ID_VALUE,
   });
 });
 
-Deno.test("api-key: the probe is Contacts/getInfo, which returns no contact data", () => {
+test("api-key: the probe is Contacts/getInfo, which returns no contact data", () => {
   assertEquals(PROBE_PATH, "/Contacts/getInfo");
 });
 
-Deno.test("api-key: test passes when the probe answers the JSON envelope", async () => {
+test("api-key: test passes when the probe answers the JSON envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ count: "3" }) }]);
   const result = await apiKey.test(
     { credential: { apiKey: API_KEY_VALUE, appId: APP_ID_VALUE } },
@@ -49,7 +50,7 @@ Deno.test("api-key: test passes when the probe answers the JSON envelope", async
   assertEquals(calls[0].headers["api-appid"], APP_ID_VALUE);
 });
 
-Deno.test("api-key: test fails with no apiKey, without making a request", async () => {
+test("api-key: test fails with no apiKey, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { appId: APP_ID_VALUE } }, ctx);
   assertEquals(result.ok, false);
@@ -57,7 +58,7 @@ Deno.test("api-key: test fails with no apiKey, without making a request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test fails with no appId, without making a request", async () => {
+test("api-key: test fails with no appId, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { apiKey: API_KEY_VALUE } }, ctx);
   assertEquals(result.ok, false);
@@ -69,7 +70,7 @@ Deno.test("api-key: test fails with no appId, without making a request", async (
  * The response this pack's own hard rule requires reading correctly: a bad
  * credential pair answers PLAIN TEXT, not the documented JSON envelope.
  */
-Deno.test("api-key: a plain-text 401 auth failure is classified by body, not by status alone", async () => {
+test("api-key: a plain-text 401 auth failure is classified by body, not by status alone", async () => {
   const { ctx } = mockCtx([authFailureResponse()]);
   const result = await apiKey.test({ credential: { apiKey: "garbage", appId: "garbage" } }, ctx);
 
@@ -77,7 +78,7 @@ Deno.test("api-key: a plain-text 401 auth failure is classified by body, not by 
   assert(/rejected the app id/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a non-auth-failure non-2xx is reported as an HTTP failure", async () => {
+test("api-key: a non-auth-failure non-2xx is reported as an HTTP failure", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     body: "upstream exploded",
@@ -91,7 +92,7 @@ Deno.test("api-key: a non-auth-failure non-2xx is reported as an HTTP failure", 
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 2xx body that is not the expected envelope is not treated as success", async () => {
+test("api-key: a 2xx body that is not the expected envelope is not treated as success", async () => {
   const { ctx } = mockCtx([{ body: { code: 1, data: {} } }]);
   const result = await apiKey.test(
     { credential: { apiKey: API_KEY_VALUE, appId: APP_ID_VALUE } },
@@ -100,7 +101,7 @@ Deno.test("api-key: a 2xx body that is not the expected envelope is not treated 
   assertEquals(result.ok, false);
 });
 
-Deno.test("api-key: an unreadable 2xx body is reported, not thrown", async () => {
+test("api-key: an unreadable 2xx body is reported, not thrown", async () => {
   const { ctx } = mockCtx([{ body: "not json at all", headers: { "content-type": "text/plain" } }]);
   const result = await apiKey.test(
     { credential: { apiKey: API_KEY_VALUE, appId: APP_ID_VALUE } },

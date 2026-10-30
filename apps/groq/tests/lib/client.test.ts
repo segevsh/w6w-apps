@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { base64ToBytes, bytesToBase64, GroqClient } from "../../lib/client.ts";
 
-Deno.test("client: uses the /openai/v1 prefix, not OpenAI's bare /v1", async () => {
+test("client: uses the /openai/v1 prefix, not OpenAI's bare /v1", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new GroqClient(ctx);
   await client.request("/models");
   assertEquals(new URL(calls[0].url).pathname, "/openai/v1/models");
 });
 
-Deno.test("client: JSON body sets content-type and stringifies", async () => {
+test("client: JSON body sets content-type and stringifies", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new GroqClient(ctx);
   await client.request("/chat/completions", { method: "POST", body: { model: "x" } });
@@ -18,7 +19,7 @@ Deno.test("client: JSON body sets content-type and stringifies", async () => {
   assertEquals(calls[0].body, JSON.stringify({ model: "x" }));
 });
 
-Deno.test("client: FormData body is passed through without content-type override", async () => {
+test("client: FormData body is passed through without content-type override", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new GroqClient(ctx);
   const form = new FormData();
@@ -30,14 +31,14 @@ Deno.test("client: FormData body is passed through without content-type override
   assertEquals(calls[0].rawBody instanceof FormData, true);
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new GroqClient(ctx);
   const result = await client.request("/files/file-1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 400, statusText: "Bad Request", body: '{"error":"invalid"}' },
   ]);
@@ -50,7 +51,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/openai/v1/chat/completions"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new GroqClient(ctx);
   await client.request("/files", {
@@ -63,7 +64,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: requestBinary base64-encodes a raw audio body and reports content-type", async () => {
+test("client: requestBinary base64-encodes a raw audio body and reports content-type", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: "hello",
@@ -82,7 +83,7 @@ Deno.test("client: requestBinary base64-encodes a raw audio body and reports con
   );
 });
 
-Deno.test("client: requestBinary throws a descriptive Error on non-2xx", async () => {
+test("client: requestBinary throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: '{"error":"bad key"}' }]);
   const client = new GroqClient(ctx);
   await assertRejects(
@@ -92,24 +93,24 @@ Deno.test("client: requestBinary throws a descriptive Error on non-2xx", async (
   );
 });
 
-Deno.test("base64ToBytes: decodes plain base64", () => {
+test("base64ToBytes: decodes plain base64", () => {
   const buf = base64ToBytes("aGVsbG8=");
   assertEquals(new TextDecoder().decode(new Uint8Array(buf)), "hello");
 });
 
-Deno.test("base64ToBytes: strips a data URL prefix", () => {
+test("base64ToBytes: strips a data URL prefix", () => {
   const buf = base64ToBytes("data:image/png;base64,aGVsbG8=");
   assertEquals(new TextDecoder().decode(new Uint8Array(buf)), "hello");
 });
 
-Deno.test("bytesToBase64: round-trips through base64ToBytes", () => {
+test("bytesToBase64: round-trips through base64ToBytes", () => {
   const original = new TextEncoder().encode("round trip me");
   const b64 = bytesToBase64(original.buffer as ArrayBuffer);
   const back = new Uint8Array(base64ToBytes(b64));
   assertEquals(new TextDecoder().decode(back), "round trip me");
 });
 
-Deno.test("bytesToBase64: handles a payload larger than the chunk size", () => {
+test("bytesToBase64: handles a payload larger than the chunk size", () => {
   const original = new Uint8Array(0x8000 + 10).fill(65); // 'A'
   const b64 = bytesToBase64(original.buffer);
   const back = new Uint8Array(base64ToBytes(b64));

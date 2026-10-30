@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   apiHostFromConnection,
   errorDetail,
@@ -10,13 +11,13 @@ import {
 } from "../../lib/client.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 
-Deno.test("client: resolves the API host from the connection, defaulting to US", () => {
+test("client: resolves the API host from the connection, defaulting to US", () => {
   assertEquals(apiHostFromConnection(undefined), "people.zoho.com");
   const { ctx } = mockPeopleCtx([], "people.zoho.eu");
   assertEquals(apiHostFromConnection(ctx.connection), "people.zoho.eu");
 });
 
-Deno.test("client: requests go to the connection's regional host", async () => {
+test("client: requests go to the connection's regional host", async () => {
   const { ctx, calls } = mockPeopleCtx(
     [{ body: { response: { result: [], status: 0 } } }],
     "people.zoho.in",
@@ -26,7 +27,7 @@ Deno.test("client: requests go to the connection's regional host", async () => {
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("client: form bodies are urlencoded and empty values are dropped", async () => {
+test("client: form bodies are urlencoded and empty values are dropped", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: {} }]);
   await new ZohoPeopleClient(ctx).request("/x", {
     method: "POST",
@@ -36,7 +37,7 @@ Deno.test("client: form bodies are urlencoded and empty values are dropped", asy
   assertEquals(calls[0].headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("client: response.status 1 inside a 2xx is thrown as an error", async () => {
+test("client: response.status 1 inside a 2xx is thrown as an error", async () => {
   const { ctx } = mockPeopleCtx([{
     body: { response: { errors: { code: 7052, message: "Invalid value" }, status: 1 } },
   }]);
@@ -44,7 +45,7 @@ Deno.test("client: response.status 1 inside a 2xx is thrown as an error", async 
   assert(/7052/.test(err.message) && /Invalid value/.test(err.message), err.message);
 });
 
-Deno.test("errorDetail: understands object errors, array errors and the v2 `error` shape", () => {
+test("errorDetail: understands object errors, array errors and the v2 `error` shape", () => {
   assertEquals(errorDetail('{"response":{"errors":{"code":7011,"message":"bad form"}}}'), {
     code: "7011",
     message: "bad form",
@@ -60,7 +61,7 @@ Deno.test("errorDetail: understands object errors, array errors and the v2 `erro
   assertEquals(errorDetail("not json"), null);
 });
 
-Deno.test("unwrap: handles wrapped, bare-array and v2 shapes", () => {
+test("unwrap: handles wrapped, bare-array and v2 shapes", () => {
   assertEquals(unwrap({ response: { result: [1], message: "ok", status: 0 } }), {
     result: [1],
     message: "ok",
@@ -72,7 +73,7 @@ Deno.test("unwrap: handles wrapped, bare-array and v2 shapes", () => {
   );
 });
 
-Deno.test("flattenBulkRecords: injects the record id key as recordId", () => {
+test("flattenBulkRecords: injects the record id key as recordId", () => {
   const out = flattenBulkRecords([{ "759": [{ FirstName: "John" }] }, {
     "760": [{ FirstName: "Jane" }],
   }]);
@@ -83,7 +84,7 @@ Deno.test("flattenBulkRecords: injects the record id key as recordId", () => {
   assertEquals(flattenBulkRecords(null), []);
 });
 
-Deno.test("identifier/jsonObject: reject unsafe or malformed input", () => {
+test("identifier/jsonObject: reject unsafe or malformed input", () => {
   assertEquals(identifier("employee"), "employee");
   for (const bad of ["", "a/b", "../x", "x?y=1"]) {
     assertEquals(

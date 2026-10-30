@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/customer-create.ts";
 
-Deno.test("customer-create: POSTs /customers with the given fields", async () => {
+test("customer-create: POSTs /customers with the given fields", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { id: 1 } }]);
   await action.execute({ email: "jo@acme.test", name: "Jo Smith" }, ctx);
   assertEquals(calls[0].url, "https://acme.gorgias.com/api/customers");
@@ -13,7 +14,7 @@ Deno.test("customer-create: POSTs /customers with the given fields", async () =>
   assertEquals(body.external_id, undefined);
 });
 
-Deno.test("customer-create: passes through externalId, language and timezone", async () => {
+test("customer-create: passes through externalId, language and timezone", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: {} }]);
   await action.execute(
     { externalId: "cust-1", language: "fr", timezone: "Europe/Paris" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/append-block-children.ts";
 
-Deno.test("append-block-children: PATCHes /blocks/{id}/children with the children array", async () => {
+test("append-block-children: PATCHes /blocks/{id}/children with the children array", async () => {
   const children = [
     { object: "block", type: "paragraph", paragraph: { rich_text: [{ text: { content: "hi" } }] } },
   ];

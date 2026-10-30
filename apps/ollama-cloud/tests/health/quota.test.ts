@@ -1,17 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import check from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const run = (ctx: ReturnType<typeof mockCtx>["ctx"]) => check.check!({} as never, ctx);
 
-Deno.test("quota: informational, with no egress allowlist of its own", () => {
+test("quota: informational, with no egress allowlist of its own", () => {
   assertEquals(check.kind, "quota");
   assertEquals(check.severity, "informational");
   // `scope: "connection"` and `credential: "signed"` are this kind's defaults.
   assertEquals(check.network, undefined);
 });
 
-Deno.test("quota: headers in either spelling are read into buckets", async () => {
+test("quota: headers in either spelling are read into buckets", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { models: [] },
@@ -34,7 +35,7 @@ Deno.test("quota: headers in either spelling are read into buckets", async () =>
   assertEquals(buckets[1].limit, 40000);
 });
 
-Deno.test("quota: an exhausted window is down even though the check is informational", async () => {
+test("quota: an exhausted window is down even though the check is informational", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -43,7 +44,7 @@ Deno.test("quota: an exhausted window is down even though the check is informati
   assertEquals((await run(ctx)).state, "down");
 });
 
-Deno.test("quota: no headers is unknown, never invented; a failed probe is unknown too", async () => {
+test("quota: no headers is unknown, never invented; a failed probe is unknown too", async () => {
   const bare = await run(mockCtx([{ status: 200, body: { models: [] } }]).ctx);
   assertEquals(bare.state, "unknown");
   assert(/ratelimit/.test(bare.message!), bare.message);

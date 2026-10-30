@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs /messages/send.json with from/to/subject", async () => {
+test("send-message: POSTs /messages/send.json with from/to/subject", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ email: "bob@x.com", status: "sent" }] }]);
   await action.execute!(
     {
@@ -26,7 +27,7 @@ Deno.test("send-message: POSTs /messages/send.json with from/to/subject", async 
   assertEquals(body.async, false);
 });
 
-Deno.test("send-message: merges to/cc/bcc into one tagged `to` array", async () => {
+test("send-message: merges to/cc/bcc into one tagged `to` array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     {
@@ -47,7 +48,7 @@ Deno.test("send-message: merges to/cc/bcc into one tagged `to` array", async () 
   ]);
 });
 
-Deno.test("send-message: normalizes tags and converts global merge vars from an object map", async () => {
+test("send-message: normalizes tags and converts global merge vars from an object map", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     {
@@ -64,7 +65,7 @@ Deno.test("send-message: normalizes tags and converts global merge vars from an 
   assertEquals(body.message.global_merge_vars, [{ name: "FNAME", content: "Bob" }]);
 });
 
-Deno.test("send-message: forwards optional flags, headers, attachments, subaccount, scheduling", async () => {
+test("send-message: forwards optional flags, headers, attachments, subaccount, scheduling", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     {

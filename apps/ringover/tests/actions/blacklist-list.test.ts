@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/blacklist-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("blacklist-list: GETs /blacklists/numbers", async () => {
+test("blacklist-list: GETs /blacklists/numbers", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       blacklist_list_count: 1,
@@ -17,7 +18,7 @@ Deno.test("blacklist-list: GETs /blacklists/numbers", async () => {
   assertEquals(out, { numbers: [{ number: 33612345678 }], count: 1, total: 3 });
 });
 
-Deno.test("blacklist-list: a 204 is an empty list", async () => {
+test("blacklist-list: a 204 is an empty list", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({}, ctx), { numbers: [], count: 0, total: 0 });
 });

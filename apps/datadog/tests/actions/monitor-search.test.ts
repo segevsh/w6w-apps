@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import monitorSearch from "../../actions/monitor-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("monitor-search: calls GET /api/v1/monitor/search with the vendor's defaults", async () => {
+test("monitor-search: calls GET /api/v1/monitor/search with the vendor's defaults", async () => {
   const { ctx, calls } = mockCtx([{
     body: { monitors: [{ id: 1 }], counts: { status: [] }, metadata: { total_count: 1 } },
   }]);
@@ -20,14 +21,14 @@ Deno.test("monitor-search: calls GET /api/v1/monitor/search with the vendor's de
  * The difference from `monitor-list`: this endpoint really is paginated and
  * reports totals and facet counts, where the list returns a bare array.
  */
-Deno.test("monitor-search: it declares the counts and metadata the list cannot give", () => {
+test("monitor-search: it declares the counts and metadata the list cannot give", () => {
   const keys = (monitorSearch.output as Array<{ key: string }>).map((f) => f.key);
   assertEquals(keys.sort(), ["counts", "metadata", "monitors"]);
   assertEquals(monitorSearch.params?.find((p) => p.key === "page")?.default, 0);
   assertEquals(monitorSearch.params?.find((p) => p.key === "perPage")?.default, 30);
 });
 
-Deno.test("monitor-search: sort is passed through verbatim", async () => {
+test("monitor-search: sort is passed through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await monitorSearch.execute({ sort: "name,asc" }, ctx);
   assertEquals(queryOf(calls[0].url), { sort: "name,asc" });

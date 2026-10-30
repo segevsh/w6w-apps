@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-list.ts";
 
-Deno.test("service-list: fetches the first page by default", async () => {
+test("service-list: fetches the first page by default", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { services: [{ id: "SV1" }], more: false } },
   ]);
@@ -11,7 +12,7 @@ Deno.test("service-list: fetches the first page by default", async () => {
   assertEquals(result, [{ id: "SV1" }]);
 });
 
-Deno.test("service-list: name filter and team IDs are passed through", async () => {
+test("service-list: name filter and team IDs are passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { services: [], more: false } }]);
   await action.execute!({ query: "payments", teamIds: "T1,T2" }, ctx);
   const url = new URL(calls[0].url);

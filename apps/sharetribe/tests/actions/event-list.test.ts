@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventList from "../../actions/event-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("event-list: GET /events/query?startAfterSequenceId=", async () => {
+test("event-list: GET /events/query?startAfterSequenceId=", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -28,7 +29,7 @@ Deno.test("event-list: GET /events/query?startAfterSequenceId=", async () => {
   );
 });
 
-Deno.test("event-list: eventTypes and relatedResourceId pass through", async () => {
+test("event-list: eventTypes and relatedResourceId pass through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([]) }]);
   await eventList.execute({ eventTypes: "listing/updated", relatedResourceId: "l1" }, ctx);
   assertEquals(queryOf(calls[0].url), { eventTypes: "listing/updated", relatedResourceId: "l1" });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import groupUsersAdd from "../../actions/group-users-add.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("group-users-add: POST /api/v3/groups/add_users with every documented parameter", async () => {
+test("group-users-add: POST /api/v3/groups/add_users with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await groupUsersAdd.execute({ "groupId": 100, "userIds": "1, 2" }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("group-users-add: POST /api/v3/groups/add_users with every documented 
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("group-users-add: sends a form body, never a query string", async () => {
+test("group-users-add: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await groupUsersAdd.execute({ "groupId": 100, "userIds": "1, 2" }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("group-users-add: sends a form body, never a query string", async () =
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("group-users-add: is declared idempotent", () => {
+test("group-users-add: is declared idempotent", () => {
   assertEquals(groupUsersAdd.idempotent, true);
 });
 
-Deno.test("group-users-add: sends no credential of its own", async () => {
+test("group-users-add: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await groupUsersAdd.execute({ "groupId": 100, "userIds": "1, 2" }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("group-users-add: surfaces Twist's error body", async () => {
+test("group-users-add: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

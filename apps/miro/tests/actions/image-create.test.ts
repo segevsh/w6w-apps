@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/image-create.ts";
 
-Deno.test("image-create: places an image by URL", async () => {
+test("image-create: places an image by URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "i1" } }], { display: {} });
   await action.execute!({
     boardId: "b1",
@@ -16,7 +17,7 @@ Deno.test("image-create: places an image by URL", async () => {
   });
 });
 
-Deno.test("image-create: a URL is required — this is not the upload arm", async () => {
+test("image-create: a URL is required — this is not the upload arm", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({ boardId: "b1" }, ctx), Error, "`url`");
   assertEquals(calls.length, 0);

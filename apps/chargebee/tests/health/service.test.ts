@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -10,20 +11,20 @@ const summary = (indicator: string, components: unknown[] = []) => ({
   components,
 });
 
-Deno.test("service: is an app-scoped, unsigned service check", () => {
+test("service: is an app-scoped, unsigned service check", () => {
   assertEquals(service.kind, "service");
   // `scope` and `credential` default to `app` / `none` for this kind.
   assert(service.scope === undefined || service.scope === "app");
   assert(service.credential === undefined || service.credential === "none");
 });
 
-Deno.test("service: widens egress to the status host only, and only for itself", () => {
+test("service: widens egress to the status host only, and only for itself", () => {
   // A signed request must never reach a third-party status host, which is what
   // binds this widening to the unsigned posture asserted above.
   assertEquals(service.network?.allow, ["status.chargebee.com"]);
 });
 
-Deno.test("service: probes summary.json, which carries the components as well as the rollup", async () => {
+test("service: probes summary.json, which carries the components as well as the rollup", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary("none") }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, SUMMARY_URL);
@@ -32,7 +33,7 @@ Deno.test("service: probes summary.json, which carries the components as well as
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("service: maps every Statuspage rollup indicator", async () => {
+test("service: maps every Statuspage rollup indicator", async () => {
   const cases: Array<[string, string]> = [
     ["none", "ok"],
     ["minor", "degraded"],
@@ -45,12 +46,12 @@ Deno.test("service: maps every Statuspage rollup indicator", async () => {
   }
 });
 
-Deno.test("service: an unrecognised indicator is `unknown`, not silently ok", async () => {
+test("service: an unrecognised indicator is `unknown`, not silently ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("brand_new_value") }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: reports per-component state, slugged, skipping group headers", async () => {
+test("service: reports per-component state, slugged, skipping group headers", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary("minor", [
@@ -74,12 +75,12 @@ Deno.test("service: reports per-component state, slugged, skipping group headers
   assertEquals(Object.keys(report.components ?? {}).includes("billing"), false);
 });
 
-Deno.test("service: passes Chargebee's own description through as the message", async () => {
+test("service: passes Chargebee's own description through as the message", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("none") }]);
   assertEquals((await service.check!({}, ctx)).message, "All Systems Operational");
 });
 
-Deno.test("service: a broken status page is `unknown`, never `down`", async () => {
+test("service: a broken status page is `unknown`, never `down`", async () => {
   // A status page that itself fails tells us nothing about the vendor, and
   // reporting that as an outage would be a lie.
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
@@ -88,7 +89,7 @@ Deno.test("service: a broken status page is `unknown`, never `down`", async () =
   assert((report.message ?? "").includes("503"));
 });
 
-Deno.test("service: a non-JSON 200 degrades to `unknown` rather than throwing", async () => {
+test("service: a non-JSON 200 degrades to `unknown` rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>parked domain</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

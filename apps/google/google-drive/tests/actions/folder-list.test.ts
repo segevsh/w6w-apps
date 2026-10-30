@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-list.ts";
 
-Deno.test("folder-list: filters to folder mime; adds parent + trashed clauses", async () => {
+test("folder-list: filters to folder mime; adds parent + trashed clauses", async () => {
   const body = { files: [{ id: "fld-1" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ parentFolderId: "root-fld" }, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/campaign-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-list: GET /campaigns passes search, limit and offset", async () => {
+test("campaign-list: GET /campaigns passes search, limit and offset", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ Name: "Spring", Status: "Draft" }] }]);
   const out = await action.execute({ search: "spr", limit: 5, offset: 1 }, ctx) as {
     count: number;

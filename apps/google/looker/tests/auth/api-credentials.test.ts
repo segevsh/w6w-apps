@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-credentials.ts";
 
@@ -14,7 +15,7 @@ const user = (attributes: Record<string, unknown> = {}) => ({
 });
 
 /** Looker's spec documents both as query parameters. */
-Deno.test("api-credentials: logs in with the credentials in the query string", async () => {
+test("api-credentials: logs in with the credentials in the query string", async () => {
   const { ctx, calls } = mockCtx([token]);
   await auth.exchange!({ fields }, ctx);
   const url = new URL(calls[0].url);
@@ -25,7 +26,7 @@ Deno.test("api-credentials: logs in with the credentials in the query string", a
   assertEquals(calls[0].body, null, "no body — Looker takes them in the URL");
 });
 
-Deno.test("api-credentials: keeps the credentials so refresh can log in again", async () => {
+test("api-credentials: keeps the credentials so refresh can log in again", async () => {
   const { ctx } = mockCtx([token]);
   const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
   assertEquals(credential.clientId, "abc");
@@ -35,7 +36,7 @@ Deno.test("api-credentials: keeps the credentials so refresh can log in again", 
 });
 
 /** The host is normalised at login, so the port is settled once. */
-Deno.test("api-credentials: a self-hosted instance gets port 19999 at login", async () => {
+test("api-credentials: a self-hosted instance gets port 19999 at login", async () => {
   const { ctx, calls } = mockCtx([token]);
   const credential = await auth.exchange!(
     { fields: { ...fields, host: "looker.internal" } },
@@ -45,7 +46,7 @@ Deno.test("api-credentials: a self-hosted instance gets port 19999 at login", as
   assertEquals(credential.host, "https://looker.internal:19999");
 });
 
-Deno.test("api-credentials: signs with Looker's `token` scheme, not Bearer", () => {
+test("api-credentials: signs with Looker's `token` scheme, not Bearer", () => {
   const request = { url: "https://x/api/4.0/user", headers: {} as Record<string, string> };
   const signed = auth.sign!(
     { request, credential: { accessToken: "tok-1" } } as never,
@@ -55,7 +56,7 @@ Deno.test("api-credentials: signs with Looker's `token` scheme, not Bearer", () 
 });
 
 /** A browser URL on self-hosted Looker reaches something that is not the API. */
-Deno.test("api-credentials: a non-JSON login response names the port", async () => {
+test("api-credentials: a non-JSON login response names the port", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>Looker</html>" }]);
   let message = "";
   try {
@@ -66,7 +67,7 @@ Deno.test("api-credentials: a non-JSON login response names the port", async () 
   assert(/API is on port 19999/.test(message), message);
 });
 
-Deno.test("api-credentials: exchange refuses without all three values", async () => {
+test("api-credentials: exchange refuses without all three values", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -78,7 +79,7 @@ Deno.test("api-credentials: exchange refuses without all three values", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-credentials: the test names the user and what it implies", async () => {
+test("api-credentials: the test names the user and what it implies", async () => {
   const { ctx, calls } = mockCtx([user()], {
     display: { host: "https://mycompany.cloud.looker.com" },
   });
@@ -93,7 +94,7 @@ Deno.test("api-credentials: the test names the user and what it implies", async 
 });
 
 /** A token is issued for a disabled user and every query is refused. */
-Deno.test("api-credentials: a disabled user fails the test", async () => {
+test("api-credentials: a disabled user fails the test", async () => {
   const { ctx } = mockCtx([user({ is_disabled: true })]);
   const result = await auth.test!(
     { credential: { ...fields, accessToken: "tok-1" } } as never,
@@ -103,7 +104,7 @@ Deno.test("api-credentials: a disabled user fails the test", async () => {
   assert(/DISABLED Looker user/.test(result.message!), result.message);
 });
 
-Deno.test("api-credentials: an unreachable instance names the port", async () => {
+test("api-credentials: an unreachable instance names the port", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("connection refused")),
     log: () => {},
@@ -116,7 +117,7 @@ Deno.test("api-credentials: an unreachable instance names the port", async () =>
   assert(/port 19999/.test(result.message!), result.message);
 });
 
-Deno.test("api-credentials: afterConnect records the instance and the user", async () => {
+test("api-credentials: afterConnect records the instance and the user", async () => {
   const { ctx } = mockCtx([user()]);
   const display = await auth.afterConnect!(
     { credential: { ...fields, accessToken: "tok-1" } },
@@ -129,7 +130,7 @@ Deno.test("api-credentials: afterConnect records the instance and the user", asy
 });
 
 /** There is no scope on a Looker API key. */
-Deno.test("api-credentials: says the credential inherits the user's permissions", () => {
+test("api-credentials: says the credential inherits the user's permissions", () => {
   assert(/inherits that USER's permissions/.test(auth.description!), auth.description);
   assert(/There is no scope on the key/.test(auth.description!), auth.description);
   const secret = auth.fields!.find((f) => f.key === "clientSecret")!;

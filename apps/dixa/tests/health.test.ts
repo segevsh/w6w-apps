@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import service, { findApiComponent, mapComponentStatus } from "../health/service.ts";
 import quota from "../health/quota.ts";
 import { mockCtx } from "./_helpers.ts";
@@ -12,13 +13,13 @@ const comps = (apiStatus: string, otherStatus = "operational") => [
 const run = (responses: Parameters<typeof mockCtx>[0]) =>
   service.check!({} as never, mockCtx(responses).ctx);
 
-Deno.test("service: operational API component is ok and the group row is skipped", async () => {
+test("service: operational API component is ok and the group row is skipped", async () => {
   const r = await run([{ body: { page, components: comps("operational") } }]);
   assertEquals(r.state, "ok");
   assertEquals(Object.keys(r.components ?? {}).length, 2);
 });
 
-Deno.test("service: API outage is down; other-component trouble never drives the verdict", async () => {
+test("service: API outage is down; other-component trouble never drives the verdict", async () => {
   assertEquals((await run([{ body: { page, components: comps("major_outage") } }])).state, "down");
   assertEquals(
     (await run([{ body: { page, components: comps("partial_outage") } }])).state,
@@ -29,7 +30,7 @@ Deno.test("service: API outage is down; other-component trouble never drives the
   assertEquals(r.message?.includes("affected"), true);
 });
 
-Deno.test("service: wrong page, missing component or HTTP failure is unknown, never down", async () => {
+test("service: wrong page, missing component or HTTP failure is unknown, never down", async () => {
   assertEquals(
     (await run([{ body: { page: { id: "zzz" }, components: comps("operational") } }])).state,
     "unknown",
@@ -45,20 +46,20 @@ Deno.test("service: wrong page, missing component or HTTP failure is unknown, ne
   assertEquals((await run([{ body: { page, components: [] } }])).state, "unknown");
 });
 
-Deno.test("service: fetches only the declared status URL, declared per check", async () => {
+test("service: fetches only the declared status URL, declared per check", async () => {
   const m = mockCtx([{ body: { page, components: comps("operational") } }]);
   await service.check!({} as never, m.ctx);
   assertEquals(m.calls[0].url, "https://status.dixa.io/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.dixa.io"]);
 });
 
-Deno.test("service: status mapping and name fallback", () => {
+test("service: status mapping and name fallback", () => {
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("nonsense"), "unknown");
   assertEquals(findApiComponent([{ id: "new", name: "dixa api and exports api" }])?.id, "new");
 });
 
-Deno.test("quota: is a declared absence with informational severity", () => {
+test("quota: is a declared absence with informational severity", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.unavailable?.reason, "string");

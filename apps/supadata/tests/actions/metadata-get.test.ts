@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import metadata from "../../actions/metadata-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("metadata-get: GETs /metadata?url= and returns the unified document", async () => {
+test("metadata-get: GETs /metadata?url= and returns the unified document", async () => {
   const body = {
     platform: "tiktok",
     type: "video",
@@ -16,7 +17,7 @@ Deno.test("metadata-get: GETs /metadata?url= and returns the unified document", 
   assertEquals(url.searchParams.get("url"), "https://tiktok.com/@a/video/1");
 });
 
-Deno.test("metadata-get: 429 names the credit/rate cause; a missing url makes no call", async () => {
+test("metadata-get: 429 names the credit/rate cause; a missing url makes no call", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: "limit-exceeded", message: "m", details: "Too many" },

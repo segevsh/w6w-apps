@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/lead-log-activity.ts";
 
-Deno.test("lead-log-activity: GETs the Simplified API route with all three params", async () => {
+test("lead-log-activity: GETs the Simplified API route with all three params", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: { id: 503, content: "Demo" } }]);
   await action.execute({ leadId: "145676", activityId: "45", userId: "35", content: "Demo" }, ctx);
   assertEquals(
@@ -12,7 +13,7 @@ Deno.test("lead-log-activity: GETs the Simplified API route with all three param
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("lead-log-activity: content is optional, as the parameter table says", async () => {
+test("lead-log-activity: content is optional, as the parameter table says", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: {} }]);
   await action.execute({ leadId: "145676", activityId: "45", userId: "35" }, ctx);
   assertEquals(
@@ -21,7 +22,7 @@ Deno.test("lead-log-activity: content is optional, as the parameter table says",
   );
 });
 
-Deno.test("lead-log-activity: a missing required parameter is reported from the body", async () => {
+test("lead-log-activity: a missing required parameter is reported from the body", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 422,
     body: { error: 422, message: "activity_id is missing", type: "missing_parameter" },

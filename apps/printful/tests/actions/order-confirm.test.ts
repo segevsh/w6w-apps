@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/order-confirm.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("order-confirm: POST /orders/5/confirm and unwraps the envelope", async () => {
+test("order-confirm: POST /orders/5/confirm and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "code": 200, "result": { "id": 5, "status": "pending" } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("order-confirm: POST /orders/5/confirm and unwraps the envelope", asyn
   assertEquals(calls[0].url, "https://api.printful.com/orders/5/confirm");
 });
 
-Deno.test("order-confirm: a Printful error is surfaced with its reason and message", async () => {
+test("order-confirm: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

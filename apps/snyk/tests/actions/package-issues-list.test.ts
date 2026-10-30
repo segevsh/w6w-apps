@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/package-issues-list.ts";
 
 const display = { orgId: "org-1" };
 
-Deno.test("package-issues-list: POSTs the purls inside the JSON:API envelope", async () => {
+test("package-issues-list: POSTs the purls inside the JSON:API envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], { display });
   await action.execute!({ purls: "pkg:npm/lodash@4.17.20, pkg:npm/express@4.17.1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -19,7 +20,7 @@ Deno.test("package-issues-list: POSTs the purls inside the JSON:API envelope", a
   });
 });
 
-Deno.test("package-issues-list: every entry must be a purl, and it names the bad ones", async () => {
+test("package-issues-list: every entry must be a purl, and it names the bad ones", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ purls: "pkg:npm/a@1, lodash" }, ctx),

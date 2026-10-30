@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bookingWindowList from "../../actions/booking-window-list.ts";
 import { mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("booking-window-list: calls the nested availability path", async () => {
+test("booking-window-list: calls the nested availability path", async () => {
   const { ctx, calls } = mockCtx([
     { body: { booking_windows: [], show_for_days: 7, start_date: "2026-03-24T08:00:00" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("booking-window-list: calls the nested availability path", async () =>
   assertEquals(out.show_for_days, 7);
 });
 
-Deno.test("booking-window-list: service duration and service id are sent independently", async () => {
+test("booking-window-list: service duration and service id are sent independently", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await bookingWindowList.execute(
     { serviceId: "s1", serviceDuration: 90, employeeIds: "e1,e2" },
@@ -27,7 +28,7 @@ Deno.test("booking-window-list: service duration and service id are sent indepen
   assertEquals(queryAll(calls[0].url, "employee_ids[]"), ["e1", "e2"]);
 });
 
-Deno.test("booking-window-list: documents the duration resolution order in the duration hint", () => {
+test("booking-window-list: documents the duration resolution order in the duration hint", () => {
   const p = bookingWindowList.params?.find((x) => x.key === "serviceDuration");
   assertEquals(p?.hint?.includes("Overrides"), true);
   assertEquals(p?.hint?.includes("30 minutes"), true);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import labelStoriesList from "../../actions/label-stories-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("label-stories-list: calls GET /labels/{id}/stories", async () => {
+test("label-stories-list: calls GET /labels/{id}/stories", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   await labelStoriesList.execute({ labelId: 4, includesDescription: true }, ctx);
 

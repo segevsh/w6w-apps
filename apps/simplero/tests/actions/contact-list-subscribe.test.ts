@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-list-subscribe.ts";
 import { actionBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-list-subscribe: is a non-idempotent perform action on the contact id", () => {
+test("contact-list-subscribe: is a non-idempotent perform action on the contact id", () => {
   assertEquals(action.key, "contact-list-subscribe");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -10,7 +11,7 @@ Deno.test("contact-list-subscribe: is a non-idempotent perform action on the con
   assertEquals(action.params![0].required, true);
 });
 
-Deno.test("contact-list-subscribe: POSTs /customers/11/actions/list_subscribe with the mapped body", async () => {
+test("contact-list-subscribe: POSTs /customers/11/actions/list_subscribe with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: actionBody(true, "done") }]);
   const out = await action.execute({
     id: 11,
@@ -30,7 +31,7 @@ Deno.test("contact-list-subscribe: POSTs /customers/11/actions/list_subscribe wi
   assertEquals(out, { success: true, message: "done" });
 });
 
-Deno.test("contact-list-subscribe: HTTP 200 with success:false is a failure, not a result", async () => {
+test("contact-list-subscribe: HTTP 200 with success:false is a failure, not a result", async () => {
   const { ctx } = mockCtx([{ body: actionBody(false, "Contact not found") }]);
   await assertRejects(
     async () =>
@@ -43,7 +44,7 @@ Deno.test("contact-list-subscribe: HTTP 200 with success:false is a failure, not
   );
 });
 
-Deno.test("contact-list-subscribe: a 422 surfaces the errors array", async () => {
+test("contact-list-subscribe: a 422 surfaces the errors array", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: ["bad one", "bad two"] } }]);
   await assertRejects(
     async () =>
@@ -56,7 +57,7 @@ Deno.test("contact-list-subscribe: a 422 surfaces the errors array", async () =>
   );
 });
 
-Deno.test("contact-list-subscribe: a 200 without a success flag is an error", async () => {
+test("contact-list-subscribe: a 200 without a success flag is an error", async () => {
   const { ctx } = mockCtx([{ body: { data: {} } }]);
   await assertRejects(
     async () =>

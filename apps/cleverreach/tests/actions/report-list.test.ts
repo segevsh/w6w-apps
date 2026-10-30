@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/report-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("report-list: calls GET /v3/reports with filters", async () => {
+test("report-list: calls GET /v3/reports with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "r1" }] }]);
   const out = await action.execute({
     pageSize: 20,
@@ -26,7 +27,7 @@ Deno.test("report-list: calls GET /v3/reports with filters", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("report-list: refuses a lone start or end", async () => {
+test("report-list: refuses a lone start or end", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ start: 1700000000 }, ctx),

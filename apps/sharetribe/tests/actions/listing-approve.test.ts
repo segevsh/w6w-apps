@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listingApprove from "../../actions/listing-approve.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("listing-approve: POST /listings/approve with just the id, not idempotent", async () => {
+test("listing-approve: POST /listings/approve with just the id, not idempotent", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -15,7 +16,7 @@ Deno.test("listing-approve: POST /listings/approve with just the id, not idempot
   assertEquals(listingApprove.idempotent, false);
 });
 
-Deno.test("listing-approve: a repeat call against an already-published listing surfaces the 409 conflict", async () => {
+test("listing-approve: a repeat call against an already-published listing surfaces the 409 conflict", async () => {
   const { ctx } = mockCtx([
     { status: 409, body: errorBody([{ code: "listing-invalid-state", title: "Invalid state" }]) },
   ]);

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   compact,
@@ -10,7 +11,7 @@ import {
   ServiceTitanClient,
 } from "../../lib/client.ts";
 
-Deno.test("errorMessage: folds ProblemDetails title, detail and field errors", () => {
+test("errorMessage: folds ProblemDetails title, detail and field errors", () => {
   assertEquals(
     errorMessage(
       JSON.stringify({ title: "Bad", detail: "d", errors: { name: ["required", "x"] } }),
@@ -22,13 +23,13 @@ Deno.test("errorMessage: folds ProblemDetails title, detail and field errors", (
   assertEquals(errorMessage(""), "");
 });
 
-Deno.test("tenant id: digits only", () => {
+test("tenant id: digits only", () => {
   assertEquals(normalizeTenantId(" 123 "), "123");
   assertThrows(() => normalizeTenantId("12/../3"), Error, "numeric");
   assertThrows(() => normalizeTenantId(""), Error, "numeric");
 });
 
-Deno.test("connectionTarget: environment picks the host, defaulting to production", () => {
+test("connectionTarget: environment picks the host, defaulting to production", () => {
   const mk = (display: Record<string, unknown>) => mockCtx([], { display }).ctx.connection;
   assertEquals(connectionTarget(mk({ tenantId: "1" })).api, "https://api.servicetitan.io");
   assertEquals(
@@ -37,7 +38,7 @@ Deno.test("connectionTarget: environment picks the host, defaulting to productio
   );
 });
 
-Deno.test("compact / csv / idList", () => {
+test("compact / csv / idList", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [], e: {}, f: false }), { a: 1, f: false });
   assertEquals(csv(" a, b ,,"), ["a", "b"]);
   assertEquals(idList("1,2"), [1, 2]);
@@ -45,13 +46,13 @@ Deno.test("compact / csv / idList", () => {
   assertThrows(() => idList("1,x"), Error, "not a numeric id");
 });
 
-Deno.test("client: never sets Authorization or ST-App-Key itself — that is sign's job", async () => {
+test("client: never sets Authorization or ST-App-Key itself — that is sign's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: { tenantId: "42" } });
   await new ServiceTitanClient(ctx).request("crm", "/customers");
   assertEquals(Object.keys(calls[0].headers).sort(), ["accept"]);
 });
 
-Deno.test("client: a 500 with a non-JSON body still surfaces status and path", async () => {
+test("client: a 500 with a non-JSON body still surfaces status and path", async () => {
   const { ctx } = mockCtx([{ status: 500, statusText: "Oops", body: "boom" }], {
     display: { tenantId: "42" },
   });

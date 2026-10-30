@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-custom-audience.ts";
 
 const form = (body: string | null) => new URLSearchParams(body ?? "");
 
-Deno.test("create-custom-audience: POSTs subtype=CUSTOM with the file source", async () => {
+test("create-custom-audience: POSTs subtype=CUSTOM with the file source", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "900" } }]);
   const out = await action.execute({
     adAccountId: "12",
@@ -24,7 +25,7 @@ Deno.test("create-custom-audience: POSTs subtype=CUSTOM with the file source", a
   assertEquals(f.has("opt_out_link"), false);
 });
 
-Deno.test("create-custom-audience: refuses a blank name before any call", async () => {
+test("create-custom-audience: refuses a blank name before any call", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () =>

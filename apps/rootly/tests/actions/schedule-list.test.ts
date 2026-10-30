@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/schedule-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("schedule-list: full input maps to GET /v1/schedules", async () => {
+test("schedule-list: full input maps to GET /v1/schedules", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -100,7 +101,7 @@ Deno.test("schedule-list: full input maps to GET /v1/schedules", async () => {
   });
 });
 
-Deno.test("schedule-list: required input only maps to GET /v1/schedules", async () => {
+test("schedule-list: required input only maps to GET /v1/schedules", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [
@@ -163,7 +164,7 @@ Deno.test("schedule-list: required input only maps to GET /v1/schedules", async 
   });
 });
 
-Deno.test("schedule-list: an API error rejects with the vendor's title and detail", async () => {
+test("schedule-list: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

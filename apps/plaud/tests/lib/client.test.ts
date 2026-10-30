@@ -1,4 +1,5 @@
-import { assertEquals, assertMatch, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertThrows } from "../_assert.ts";
 import {
   describeError,
   deviceType,
@@ -6,18 +7,18 @@ import {
   regionFromConnection,
 } from "../../lib/client.ts";
 
-Deno.test("normalizeRegion: defaults to us, accepts jp, rejects the rest", () => {
+test("normalizeRegion: defaults to us, accepts jp, rejects the rest", () => {
   assertEquals(normalizeRegion(undefined), "us");
   assertEquals(normalizeRegion("JP"), "jp");
   assertThrows(() => normalizeRegion("eu"), Error, "region");
 });
 
-Deno.test("regionFromConnection: reads display.region", () => {
+test("regionFromConnection: reads display.region", () => {
   assertEquals(regionFromConnection({ display: { region: "jp" } }), "jp");
   assertEquals(regionFromConnection(undefined), "us");
 });
 
-Deno.test("deviceType: explicit wins, else derived from the serial prefix", () => {
+test("deviceType: explicit wins, else derived from the serial prefix", () => {
   assertEquals(deviceType("notepins", "8810000000000001"), "notepins");
   assertEquals(deviceType(undefined, "8810000000000001"), "notepro");
   assertEquals(deviceType("", "8820000000000001"), "notepins");
@@ -25,7 +26,7 @@ Deno.test("deviceType: explicit wins, else derived from the serial prefix", () =
   assertThrows(() => deviceType("watch", "881"), Error, "one of");
 });
 
-Deno.test("describeError: reads the body's detail and message, explains 403 and 404", () => {
+test("describeError: reads the body's detail and message, explains 403 and 404", () => {
   assertMatch(describeError(401, '{"detail":"CLIENT_NOT_FOUND"}'), /CLIENT_NOT_FOUND/);
   assertMatch(
     describeError(403, '{"code":403,"message":"device already bound"}'),

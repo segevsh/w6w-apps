@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import jobGet from "../../actions/job-get.ts";
 import { envelope, mockCtx, obj, pathOf } from "../_helpers.ts";
 
-Deno.test("job-get: GETs /jobs/{id}", async () => {
+test("job-get: GETs /jobs/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ jobId: "j1", status: "queued" }) }]);
   const out = await obj(await jobGet.execute({ jobId: "j1" }, ctx));
   assertEquals(pathOf(calls[0].url), "/v1/jobs/j1");

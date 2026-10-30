@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionDelete from "../../actions/collection-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-delete: DELETE by id", async () => {
+test("collection-delete: DELETE by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   assertEquals(await collectionDelete.execute({ collection_id: "c" }, ctx), {
     id: "c",

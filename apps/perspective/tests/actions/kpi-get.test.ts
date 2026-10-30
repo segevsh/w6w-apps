@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import kpiGet from "../../actions/kpi-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const base = {
   to: "2025-01-31T00:00:00.000Z",
 };
 
-Deno.test("kpi-get: GET /metrics/kpis/{subtype} with from/to", async () => {
+test("kpi-get: GET /metrics/kpis/{subtype} with from/to", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ type: "kpiConversionRate", value: 12.5, count: 150 }),
   }]);
@@ -19,13 +20,13 @@ Deno.test("kpi-get: GET /metrics/kpis/{subtype} with from/to", async () => {
   assertEquals(out.data.value, 12.5);
 });
 
-Deno.test("kpi-get: forwards the timezone offset", async () => {
+test("kpi-get: forwards the timezone offset", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await kpiGet.execute({ ...base, offset: "-120" }, ctx);
   assertEquals(queryOf(calls[0].url).offset, "-120");
 });
 
-Deno.test("kpi-get: from must be before to, and dates must parse, with no request made", async () => {
+test("kpi-get: from must be before to, and dates must parse, with no request made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(kpiGet.execute({ ...base, from: base.to, to: base.from }, ctx)),
@@ -40,7 +41,7 @@ Deno.test("kpi-get: from must be before to, and dates must parse, with no reques
   assertEquals(calls.length, 0);
 });
 
-Deno.test("kpi-get: every documented subtype is offered", () => {
+test("kpi-get: every documented subtype is offered", () => {
   const opts = (kpiGet.params!.find((p) => p.key === "subtype")!.options as { value: string }[])
     .map(
       (o) => o.value,
@@ -48,7 +49,7 @@ Deno.test("kpi-get: every documented subtype is offered", () => {
   assertEquals(opts.length, 9);
 });
 
-Deno.test("kpi-get: an unknown-KPI 400 surfaces", async () => {
+test("kpi-get: an unknown-KPI 400 surfaces", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "KPI not found", status: 400 } }]);
   await assertRejects(
     () => Promise.resolve(kpiGet.execute(base, ctx)),

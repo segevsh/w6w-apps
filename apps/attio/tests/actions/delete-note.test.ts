@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import deleteNote from "../../actions/delete-note.ts";
 
-Deno.test("delete-note: DELETEs and notes there is no update endpoint", async () => {
+test("delete-note: DELETEs and notes there is no update endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await run<{ deleted: boolean; note_id: string }>(deleteNote, { noteId: "n1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

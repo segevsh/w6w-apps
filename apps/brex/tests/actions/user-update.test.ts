@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userUpdate from "../../actions/user-update.ts";
 import { bodyOf, mockCtx, pathOf, USER } from "../_helpers.ts";
 
-Deno.test("user-update: PUTs only the fields that were set", async () => {
+test("user-update: PUTs only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   await userUpdate.execute({ id: "u1", status: "DISABLED" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("user-update: PUTs only the fields that were set", async () => {
   assertEquals(bodyOf(calls[0]), { status: "DISABLED" });
 });
 
-Deno.test("user-update: every documented field is sent under Brex's name", async () => {
+test("user-update: every documented field is sent under Brex's name", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   await userUpdate.execute({
     id: "u1",
@@ -42,7 +43,7 @@ Deno.test("user-update: every documented field is sent under Brex's name", async
  * the list filter accepts. Offering the wider set here would produce a request
  * Brex does not document.
  */
-Deno.test("user-update: the status select offers exactly the two updateable statuses", () => {
+test("user-update: the status select offers exactly the two updateable statuses", () => {
   const status = userUpdate.params?.find((p) => p.key === "status");
   assertEquals(status?.type, "select");
   assertEquals((status?.options as Array<{ value: string }>).map((o) => o.value), [
@@ -51,7 +52,7 @@ Deno.test("user-update: the status select offers exactly the two updateable stat
   ]);
 });
 
-Deno.test("user-update: an idempotency key is forwarded verbatim", async () => {
+test("user-update: an idempotency key is forwarded verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: USER }]);
   await userUpdate.execute({ id: "u1", status: "ACTIVE", idempotencyKey: "step-9" }, ctx);
 
@@ -59,7 +60,7 @@ Deno.test("user-update: an idempotency key is forwarded verbatim", async () => {
 });
 
 /** `PUT` with unset fields unchanged: the same input lands on the same state. */
-Deno.test("user-update: it is a perform declared idempotent", () => {
+test("user-update: it is a perform declared idempotent", () => {
   assertEquals(userUpdate.type, "perform");
   assertEquals(userUpdate.idempotent, true);
 });

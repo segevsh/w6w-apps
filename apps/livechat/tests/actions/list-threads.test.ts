@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-threads.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-threads: sends chat_id with date filters and paging", async () => {
+test("list-threads: sends chat_id with date filters and paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: { threads: [{ id: "T1" }], found_threads: 1, next_page_id: "N" },
   }]);
@@ -25,13 +26,13 @@ Deno.test("list-threads: sends chat_id with date filters and paging", async () =
   });
 });
 
-Deno.test("list-threads: a follow-up page keeps chat_id and adds page_id only", async () => {
+test("list-threads: a follow-up page keeps chat_id and adds page_id only", async () => {
   const { ctx, calls } = mockCtx([{ body: { threads: [] } }]);
   await action.execute({ chatId: "C1", pageId: "P" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { chat_id: "C1", page_id: "P" });
 });
 
-Deno.test("list-threads: requires chatId and refuses dates with page_id", async () => {
+test("list-threads: requires chatId and refuses dates with page_id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`chatId` is required");
   await assertRejects(

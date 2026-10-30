@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/bank-list.ts";
 import { LIST_META, mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("bank-list: filters by country, currency and type", async () => {
+test("bank-list: filters by country, currency and type", async () => {
   const banks = [{ name: "Access Bank", code: "044" }];
   const { ctx, calls } = mockCtx([{ body: ok(banks, LIST_META) }]);
   assertEquals(await action.execute({ country: "nigeria", currency: "NGN", type: "nuban" }, ctx), {

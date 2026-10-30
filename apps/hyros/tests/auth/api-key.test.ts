@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import apiKey from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sign: stamps the API-Key header and nothing else", async () => {
+test("sign: stamps the API-Key header and nothing else", async () => {
   const req = {
     url: "https://api.hyros.com/v1/x",
     method: "GET",
@@ -15,14 +16,14 @@ Deno.test("sign: stamps the API-Key header and nothing else", async () => {
   assertEquals((out as typeof req).headers, { "api-key": "k1" });
 });
 
-Deno.test("test: ok on 200, probing /stages with the key header", async () => {
+test("test: ok on 200, probing /stages with the key header", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: [] } }]);
   assertEquals(await apiKey.test({ credential: { apiKey: "k" } } as never, ctx), { ok: true });
   assertEquals(calls[0].url, "https://api.hyros.com/v1/api/v1.0/stages?pageSize=1");
   assertEquals(calls[0].headers["api-key"], "k");
 });
 
-Deno.test("test: wrong key (JSON body) vs missing key (text/plain) vs 400 variant", async () => {
+test("test: wrong key (JSON body) vs missing key (text/plain) vs 400 variant", async () => {
   for (
     const r of [
       { status: 401, body: { result: "ERROR", message: ["Api key not valid"] } },
@@ -40,7 +41,7 @@ Deno.test("test: wrong key (JSON body) vs missing key (text/plain) vs 400 varian
   assertEquals(/did not reach the request/.test(out.message ?? ""), true);
 });
 
-Deno.test("test: empty credential fails without a request; 429 and 500 are reported", async () => {
+test("test: empty credential fails without a request; 429 and 500 are reported", async () => {
   const none = mockCtx([]);
   assertEquals((await apiKey.test({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);

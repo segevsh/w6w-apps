@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/webhook.ts";
 
-Deno.test("webhook: sign splices user_id/webhook_code into the /rest/ path", async () => {
+test("webhook: sign splices user_id/webhook_code into the /rest/ path", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://myportal.bitrix24.com/rest/crm.lead.add",
@@ -16,7 +17,7 @@ Deno.test("webhook: sign splices user_id/webhook_code into the /rest/ path", asy
   assertEquals(out.url, "https://myportal.bitrix24.com/rest/1/abc123XYZ/crm.lead.add");
 });
 
-Deno.test("webhook: sign never touches headers or body — the secret lives only in the URL", async () => {
+test("webhook: sign never touches headers or body — the secret lives only in the URL", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://myportal.bitrix24.com/rest/crm.contact.get",
@@ -33,7 +34,7 @@ Deno.test("webhook: sign never touches headers or body — the secret lives only
   assert(!out.url.includes("undefined"));
 });
 
-Deno.test("webhook: portalUrl, userId and webhookCode are required; only webhookCode is secret", () => {
+test("webhook: portalUrl, userId and webhookCode are required; only webhookCode is secret", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["portalUrl", "userId", "webhookCode"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), [
@@ -41,7 +42,7 @@ Deno.test("webhook: portalUrl, userId and webhookCode are required; only webhook
   ]);
 });
 
-Deno.test("webhook: test succeeds on a 200 carrying {result}", async () => {
+test("webhook: test succeeds on a 200 carrying {result}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: { ID: "1", NAME: "Ada" }, time: {} } },
   ]);
@@ -59,7 +60,7 @@ Deno.test("webhook: test succeeds on a 200 carrying {result}", async () => {
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("webhook: test fails on an {error} body without ever surfacing the webhook code", async () => {
+test("webhook: test fails on an {error} body without ever surfacing the webhook code", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -84,7 +85,7 @@ Deno.test("webhook: test fails on an {error} body without ever surfacing the web
   );
 });
 
-Deno.test("webhook: test rejects a 200 with an unexpected body shape", async () => {
+test("webhook: test rejects a 200 with an unexpected body shape", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { unexpected: true } },
   ]);
@@ -95,7 +96,7 @@ Deno.test("webhook: test rejects a 200 with an unexpected body shape", async () 
   assertEquals(out.ok, false);
 });
 
-Deno.test("webhook: missing fields fail before any network call", async () => {
+test("webhook: missing fields fail before any network call", async () => {
   const noUrl = mockCtx([]);
   assertEquals(
     await auth.test({ credential: { userId: "1", webhookCode: "c" } } as never, noUrl.ctx),
@@ -120,7 +121,7 @@ Deno.test("webhook: missing fields fail before any network call", async () => {
   assertEquals(noUrl.calls.length + noUserId.calls.length + noCode.calls.length, 0);
 });
 
-Deno.test("webhook: afterConnect persists the normalised portalUrl, never userId/webhookCode", async () => {
+test("webhook: afterConnect persists the normalised portalUrl, never userId/webhookCode", async () => {
   const display = await auth.afterConnect!(
     {
       credential: {

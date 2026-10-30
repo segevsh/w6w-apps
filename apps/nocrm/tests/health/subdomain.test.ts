@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, mockNocrmCtx } from "../_helpers.ts";
 import subdomain from "../../health/subdomain.ts";
 
-Deno.test("subdomain: is an unsigned, connection-scoped dependency check", () => {
+test("subdomain: is an unsigned, connection-scoped dependency check", () => {
   assertEquals(subdomain.kind, "dependency");
   assertEquals(subdomain.scope, "connection");
   assertEquals(subdomain.credential, "context");
@@ -11,14 +12,14 @@ Deno.test("subdomain: is an unsigned, connection-scoped dependency check", () =>
   assertEquals(subdomain.network, undefined);
 });
 
-Deno.test("subdomain: unknown when the connection records no subdomain", async () => {
+test("subdomain: unknown when the connection records no subdomain", async () => {
   const { ctx, calls } = mockCtx();
   const r = await subdomain.check!({}, ctx);
   assertEquals(r.state, "unknown");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subdomain: an unsigned probe passes when the vendor asks for a credential", async () => {
+test("subdomain: an unsigned probe passes when the vendor asks for a credential", async () => {
   // Measured live 2026-09-22 against a real account: no key at all answers
   // `unauthorized_missing_token` — the account is there.
   const { ctx, calls } = mockNocrmCtx([{
@@ -38,7 +39,7 @@ Deno.test("subdomain: an unsigned probe passes when the vendor asks for a creden
   assertEquals("x-user-token" in calls[0].headers, false);
 });
 
-Deno.test("subdomain: invalid_token means no account answers for that subdomain", async () => {
+test("subdomain: invalid_token means no account answers for that subdomain", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 401,
     body: {
@@ -52,7 +53,7 @@ Deno.test("subdomain: invalid_token means no account answers for that subdomain"
   assertEquals(r.message?.includes("no noCRM account answers"), true);
 });
 
-Deno.test("subdomain: a suspended account is degraded, with the vendor's own message", async () => {
+test("subdomain: a suspended account is degraded, with the vendor's own message", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 402,
     body: {
@@ -66,18 +67,18 @@ Deno.test("subdomain: a suspended account is degraded, with the vendor's own mes
   assertEquals(r.message, "Suspended account: pay your subscription to use the API.");
 });
 
-Deno.test("subdomain: a non-API answer at the host is down", async () => {
+test("subdomain: a non-API answer at the host is down", async () => {
   // A sibling host serving a different product answers a plain HTTP 404.
   const { ctx } = mockNocrmCtx([{ status: 404, body: "<!DOCTYPE html><html>" }]);
   assertEquals((await subdomain.check!({}, ctx)).state, "down");
 });
 
-Deno.test("subdomain: a 5xx is down", async () => {
+test("subdomain: a 5xx is down", async () => {
   const { ctx } = mockNocrmCtx([{ status: 502, body: "" }]);
   assertEquals((await subdomain.check!({}, ctx)).state, "down");
 });
 
-Deno.test("subdomain: an unreachable origin is down, not unknown", async () => {
+test("subdomain: an unreachable origin is down, not unknown", async () => {
   // An empty queue makes the mock's fetch throw — DNS/TLS/transport failure.
   const { ctx } = mockNocrmCtx([]);
   const r = await subdomain.check!({}, ctx);

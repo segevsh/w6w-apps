@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-location-attributes.ts";
 
-Deno.test("update-location-attributes: PATCHes /v1/locations/{id}/attributes with attributeMask", async () => {
+test("update-location-attributes: PATCHes /v1/locations/{id}/attributes with attributeMask", async () => {
   const attributes = [{ name: "attributes/has_wifi", values: [true] }];
   const { ctx, calls } = mockCtx([{ body: { attributes } }]);
   const result = await action.execute!({
@@ -19,7 +20,7 @@ Deno.test("update-location-attributes: PATCHes /v1/locations/{id}/attributes wit
   assertEquals(result, { attributes });
 });
 
-Deno.test("update-location-attributes: an empty attributes array with a mask deletes those attributes", async () => {
+test("update-location-attributes: an empty attributes array with a mask deletes those attributes", async () => {
   const { ctx, calls } = mockCtx([{ body: { attributes: [] } }]);
   await action.execute!({
     locationId: "1",

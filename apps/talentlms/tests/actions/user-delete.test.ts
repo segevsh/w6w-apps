@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/user-delete.ts";
 
-Deno.test("user-delete: POST deleteuser and returns the vendor payload", async () => {
+test("user-delete: POST deleteuser and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({ "userId": 7, "permanent": true }, ctx);
   assertEquals(calls.length, 1);
@@ -13,6 +14,6 @@ Deno.test("user-delete: POST deleteuser and returns the vendor payload", async (
   assertEquals(out, { ok: "yes" });
 });
 
-Deno.test("user-delete: declares idempotent honestly", () => {
+test("user-delete: declares idempotent honestly", () => {
   assertEquals(action.idempotent, true);
 });

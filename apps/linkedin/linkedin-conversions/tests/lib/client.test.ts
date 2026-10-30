@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   API_VERSION,
   asJson,
@@ -24,14 +25,14 @@ import {
 
 // ---------------------------------------------------------------- URNs -----
 
-Deno.test("sponsoredAccountUrn / sponsoredCampaignUrn: build from a bare id, pass a URN through", () => {
+test("sponsoredAccountUrn / sponsoredCampaignUrn: build from a bare id, pass a URN through", () => {
   assertEquals(sponsoredAccountUrn(123), "urn:li:sponsoredAccount:123");
   assertEquals(sponsoredAccountUrn("123"), "urn:li:sponsoredAccount:123");
   assertEquals(sponsoredAccountUrn("urn:li:sponsoredAccount:123"), "urn:li:sponsoredAccount:123");
   assertEquals(sponsoredCampaignUrn(1), "urn:li:sponsoredCampaign:1");
 });
 
-Deno.test("llaPartnerConversionUrn: uses the lla namespace, not li", () => {
+test("llaPartnerConversionUrn: uses the lla namespace, not li", () => {
   assertEquals(llaPartnerConversionUrn(123), "urn:lla:llaPartnerConversion:123");
   assertEquals(llaPartnerConversionUrn("123"), "urn:lla:llaPartnerConversion:123");
   assertEquals(
@@ -43,21 +44,21 @@ Deno.test("llaPartnerConversionUrn: uses the lla namespace, not li", () => {
   assertEquals(llaPartnerConversionUrn("urn:li:sponsoredAccount:1"), "urn:li:sponsoredAccount:1");
 });
 
-Deno.test("bareId: strips any urn:*:*: prefix, passes a bare id through unchanged", () => {
+test("bareId: strips any urn:*:*: prefix, passes a bare id through unchanged", () => {
   assertEquals(bareId("urn:lla:llaPartnerConversion:104012"), "104012");
   assertEquals(bareId(104012), "104012");
   assertEquals(bareId("urn:li:sponsoredAccount:512352200"), "512352200");
 });
 
-Deno.test("encodeUrn: percent-encodes the colons a URN needs inside a List(...)", () => {
+test("encodeUrn: percent-encodes the colons a URN needs inside a List(...)", () => {
   assertEquals(encodeUrn("urn:li:sponsoredAccount:123"), "urn%3Ali%3AsponsoredAccount%3A123");
 });
 
-Deno.test("restliList: List(...) with each member percent-encoded", () => {
+test("restliList: List(...) with each member percent-encoded", () => {
   assertEquals(restliList(["OWNED", "SHARED"]), "List(OWNED,SHARED)");
 });
 
-Deno.test("campaignConversionKey: percent-encodes only the URN colons, keeps the compound key literal", () => {
+test("campaignConversionKey: percent-encodes only the URN colons, keeps the compound key literal", () => {
   const key = campaignConversionKey(
     "urn:li:sponsoredCampaign:337643194",
     "urn:lla:llaPartnerConversion:70203",
@@ -70,7 +71,7 @@ Deno.test("campaignConversionKey: percent-encodes only the URN colons, keeps the
 
 // ------------------------------------------------------------------ json --
 
-Deno.test("asJson: accepts a parsed value or a JSON string, rejects bad JSON and absence", () => {
+test("asJson: accepts a parsed value or a JSON string, rejects bad JSON and absence", () => {
   assertEquals(asJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asJson('{"a":1}', "x"), { a: 1 });
   assertThrows(() => asJson("{not json", "events"), Error, "events is not valid JSON");
@@ -78,7 +79,7 @@ Deno.test("asJson: accepts a parsed value or a JSON string, rejects bad JSON and
   assertThrows(() => asJson("", "events"), Error, "events is required");
 });
 
-Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string, keeps false and 0", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -88,7 +89,7 @@ Deno.test("compact: drops undefined/null/empty-string, keeps false and 0", () =>
 
 // ---------------------------------------------------------------- errors --
 
-Deno.test("formatLinkedInConversionsError: surfaces the vendor's code and message verbatim", () => {
+test("formatLinkedInConversionsError: surfaces the vendor's code and message verbatim", () => {
   const msg = formatLinkedInConversionsError(
     403,
     "GET",
@@ -100,7 +101,7 @@ Deno.test("formatLinkedInConversionsError: surfaces the vendor's code and messag
   assert(msg.includes("not authorized"));
 });
 
-Deno.test("formatLinkedInConversionsError: falls back to the raw body when it isn't the documented shape", () => {
+test("formatLinkedInConversionsError: falls back to the raw body when it isn't the documented shape", () => {
   const msg = formatLinkedInConversionsError(500, "GET", "/rest/conversions", "upstream exploded");
   assert(msg.includes("500"));
   assert(msg.includes("upstream exploded"));
@@ -108,7 +109,7 @@ Deno.test("formatLinkedInConversionsError: falls back to the raw body when it is
 
 // ------------------------------------------------------------- transport --
 
-Deno.test("LinkedInConversionsClient: sends the two Rest.li headers and the pinned version on every call", async () => {
+test("LinkedInConversionsClient: sends the two Rest.li headers and the pinned version on every call", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await new LinkedInConversionsClient(ctx).request("/rest/conversions");
 
@@ -117,7 +118,7 @@ Deno.test("LinkedInConversionsClient: sends the two Rest.li headers and the pinn
   assertEquals(pathOf(calls[0].url), "/rest/conversions");
 });
 
-Deno.test("LinkedInConversionsClient: appends pre-built query values verbatim, drops empty strings", async () => {
+test("LinkedInConversionsClient: appends pre-built query values verbatim, drops empty strings", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await new LinkedInConversionsClient(ctx).request("/rest/conversions", {
     query: { q: "account", account: "urn%3Ali%3AsponsoredAccount%3A1", empty: "" },
@@ -128,7 +129,7 @@ Deno.test("LinkedInConversionsClient: appends pre-built query values verbatim, d
   assert(!calls[0].url.includes("empty="), "empty-string query values must be dropped");
 });
 
-Deno.test("LinkedInConversionsClient: sets X-RestLi-Method when given one", async () => {
+test("LinkedInConversionsClient: sets X-RestLi-Method when given one", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await new LinkedInConversionsClient(ctx).request("/rest/conversions", {
     restliMethod: "BATCH_CREATE",
@@ -136,7 +137,7 @@ Deno.test("LinkedInConversionsClient: sets X-RestLi-Method when given one", asyn
   assertEquals(calls[0].headers["x-restli-method"], "BATCH_CREATE");
 });
 
-Deno.test("LinkedInConversionsClient: a 201 with an empty body and x-restli-id surfaces { id }", async () => {
+test("LinkedInConversionsClient: a 201 with an empty body and x-restli-id surfaces { id }", async () => {
   const { ctx } = mockCtx([createdResponse("104012")]);
   const result = await new LinkedInConversionsClient(ctx).request("/rest/conversions", {
     method: "POST",
@@ -144,7 +145,7 @@ Deno.test("LinkedInConversionsClient: a 201 with an empty body and x-restli-id s
   assertEquals(result, { id: "104012" });
 });
 
-Deno.test("LinkedInConversionsClient: a 204 returns undefined", async () => {
+test("LinkedInConversionsClient: a 204 returns undefined", async () => {
   const { ctx } = mockCtx([noContentResponse()]);
   const result = await new LinkedInConversionsClient(ctx).request("/rest/campaignConversions/x", {
     method: "PUT",
@@ -152,7 +153,7 @@ Deno.test("LinkedInConversionsClient: a 204 returns undefined", async () => {
   assertEquals(result, undefined);
 });
 
-Deno.test("LinkedInConversionsClient: JSON body is sent with content-type application/json", async () => {
+test("LinkedInConversionsClient: JSON body is sent with content-type application/json", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await new LinkedInConversionsClient(ctx).request("/rest/conversions", {
     method: "POST",
@@ -162,7 +163,7 @@ Deno.test("LinkedInConversionsClient: JSON body is sent with content-type applic
   assertEquals(JSON.parse(calls[0].body!), { name: "A" });
 });
 
-Deno.test("LinkedInConversionsClient: a non-ok response throws with the formatted vendor error", async () => {
+test("LinkedInConversionsClient: a non-ok response throws with the formatted vendor error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("INVALID_ACCESS_TOKEN", "Invalid access token"),

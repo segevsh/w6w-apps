@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-update.ts";
 
-Deno.test("task-update: PUTs /task/{id} and splits assignees into add/rem", async () => {
+test("task-update: PUTs /task/{id} and splits assignees into add/rem", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({
     taskId: "t1",
@@ -21,14 +22,14 @@ Deno.test("task-update: PUTs /task/{id} and splits assignees into add/rem", asyn
   assertEquals(body.assignees, { add: [5], rem: [6, 7] });
 });
 
-Deno.test("task-update: omits assignees when none supplied", async () => {
+test("task-update: omits assignees when none supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({ taskId: "t1", name: "x" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals("assignees" in body, false);
 });
 
-Deno.test("task-update: forwards custom_fields", async () => {
+test("task-update: forwards custom_fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({
     taskId: "t1",
@@ -38,7 +39,7 @@ Deno.test("task-update: forwards custom_fields", async () => {
   assertEquals(body.custom_fields, [{ id: "abc-123", value: "Gold" }]);
 });
 
-Deno.test("task-update: omits custom_fields when unset", async () => {
+test("task-update: omits custom_fields when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1" } }]);
   await action.execute!({ taskId: "t1", name: "x" }, ctx);
   const body = JSON.parse(calls[0].body!);

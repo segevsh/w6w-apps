@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionReplace from "../../actions/session-replace.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("session-replace: PUTs the session", async () => {
+test("session-replace: PUTs the session", async () => {
   const { ctx, calls } = mockCtx([{ body: single("sessions", "s1", { name: "New" }) }]);
   const result = await sessionReplace.execute({ id: "s1", name: "New" }, ctx);
 

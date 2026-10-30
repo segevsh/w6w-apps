@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-custom-audience.ts";
 
-Deno.test("delete-custom-audience: DELETE /<id>; surfaces the lookalike-exists error", async () => {
+test("delete-custom-audience: DELETE /<id>; surfaces the lookalike-exists error", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true } },
     { status: 400, body: { error: { message: "associated lookalikes exist", code: 2656 } } },

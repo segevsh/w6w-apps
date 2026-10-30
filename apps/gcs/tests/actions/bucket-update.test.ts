@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bucket-update.ts";
 
 const patched = { status: 200, body: { name: "uploads", lifecycle: { rule: [{}, {}] } } };
 
-Deno.test("bucket-update: PATCHes the bucket", async () => {
+test("bucket-update: PATCHes the bucket", async () => {
   const { ctx, calls } = mockCtx([patched]);
   const result = await action.execute(
     { bucket: "uploads", versioning: "true" },
@@ -17,14 +18,14 @@ Deno.test("bucket-update: PATCHes the bucket", async () => {
 });
 
 /** Neither is a setting; both are decided at creation. */
-Deno.test("bucket-update: offers neither name nor location", () => {
+test("bucket-update: offers neither name nor location", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assertEquals(keys.includes("name"), false);
   assertEquals(keys.includes("location"), false);
 });
 
 /** `enforced` is what stops the bucket being made public by anyone. */
-Deno.test("bucket-update: removing public-access prevention needs an acknowledgement", async () => {
+test("bucket-update: removing public-access prevention needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -36,7 +37,7 @@ Deno.test("bucket-update: removing public-access prevention needs an acknowledge
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bucket-update: enforcing it is not gated", async () => {
+test("bucket-update: enforcing it is not gated", async () => {
   const { ctx, calls } = mockCtx([patched]);
   await action.execute({ bucket: "uploads", publicAccessPrevention: "enforced" }, ctx);
   assertEquals(
@@ -46,7 +47,7 @@ Deno.test("bucket-update: enforcing it is not gated", async () => {
 });
 
 /** A PATCH meaning to add one rule deletes every other one. */
-Deno.test("bucket-update: warns that lifecycle rules replace rather than merge", async () => {
+test("bucket-update: warns that lifecycle rules replace rather than merge", async () => {
   const { ctx, logs } = mockCtx([patched]);
   const result = await action.execute({
     bucket: "uploads",
@@ -58,7 +59,7 @@ Deno.test("bucket-update: warns that lifecycle rules replace rather than merge",
   assert(/REPLACE the whole set/.test(action.description!), action.description);
 });
 
-Deno.test("bucket-update: leaving a select blank does not send it", async () => {
+test("bucket-update: leaving a select blank does not send it", async () => {
   const { ctx, calls } = mockCtx([patched]);
   await action.execute(
     { bucket: "uploads", versioning: "", storageClass: "NEARLINE" },
@@ -69,7 +70,7 @@ Deno.test("bucket-update: leaving a select blank does not send it", async () => 
   assertEquals(body.storageClass, "NEARLINE");
 });
 
-Deno.test("bucket-update: a PATCH with nothing in it is refused", async () => {
+test("bucket-update: a PATCH with nothing in it is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -82,7 +83,7 @@ Deno.test("bucket-update: a PATCH with nothing in it is refused", async () => {
 });
 
 /** Turning versioning off does not remove the versions already kept. */
-Deno.test("bucket-update: the versioning hint says what turning it off does not do", () => {
+test("bucket-update: the versioning hint says what turning it off does not do", () => {
   const versioning = action.params!.find((p) => p.key === "versioning")!;
   assert(/does not remove the versions already kept/.test(versioning.hint!), versioning.hint);
 });

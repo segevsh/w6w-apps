@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactFilter from "../../actions/contact-filter.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-filter: POSTs rules and scoping, with top/skip as query params", async () => {
+test("contact-filter: POSTs rules and scoping, with top/skip as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }]) }]);
   await contactFilter.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("contact-filter: POSTs rules and scoping, with top/skip as query param
   });
 });
 
-Deno.test("contact-filter: with no rules, still POSTs an (empty) body", async () => {
+test("contact-filter: with no rules, still POSTs an (empty) body", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await contactFilter.execute({ searchTerm: "acme" }, ctx);
 

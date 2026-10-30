@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/create-field.ts";
 
 const body = (raw: string | null) => JSON.parse(raw!);
 
-Deno.test("create-field: POSTs label and fieldType with tableId in the query", async () => {
+test("create-field: POSTs label and fieldType with tableId in the query", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { id: 14 } }]);
   const out = await action.execute({ tableId: "bck1", label: "Email", fieldType: "email" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("create-field: POSTs label and fieldType with tableId in the query", a
   assertEquals(out.id, 14);
 });
 
-Deno.test("create-field: forwards type-specific properties as JSON", async () => {
+test("create-field: forwards type-specific properties as JSON", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({
     tableId: "bck1",
@@ -29,7 +30,7 @@ Deno.test("create-field: forwards type-specific properties as JSON", async () =>
   assertEquals(body(calls[0].body).required, true);
 });
 
-Deno.test("create-field: offers exactly the field types the published spec enumerates", () => {
+test("create-field: offers exactly the field types the published spec enumerates", () => {
   const options = action.params!.find((p) => p.key === "fieldType")!.options as
     | Array<{ value: string }>
     | undefined;

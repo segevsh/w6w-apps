@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-invitation-list.ts";
 
-Deno.test("organization-invitation-list: unwraps the envelope and passes status through", async () => {
+test("organization-invitation-list: unwraps the envelope and passes status through", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ id: "orginv_1" }], total_count: 1 },

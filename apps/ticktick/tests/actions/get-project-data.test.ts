@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-project-data.ts";
 
-Deno.test("get-project-data: GETs /project/{id}/data", async () => {
+test("get-project-data: GETs /project/{id}/data", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { project: { id: "P1" }, tasks: [{ id: "T1" }], columns: [] },
@@ -13,7 +14,7 @@ Deno.test("get-project-data: GETs /project/{id}/data", async () => {
   assertEquals(out.tasks, [{ id: "T1" }]);
 });
 
-Deno.test("get-project-data: declares the three documented top-level fields", () => {
+test("get-project-data: declares the three documented top-level fields", () => {
   assertEquals((action.output as Array<{ key: string }>).map((o) => o.key), [
     "project",
     "tasks",
@@ -21,6 +22,6 @@ Deno.test("get-project-data: declares the three documented top-level fields", ()
   ]);
 });
 
-Deno.test("get-project-data: says out loud that its tasks are the undone ones", () => {
+test("get-project-data: says out loud that its tasks are the undone ones", () => {
   assertEquals(action.description!.toLowerCase().includes("completed"), true);
 });

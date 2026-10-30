@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import muralUserList from "../../actions/mural-user-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "muralId": "ws12345.1600", "limit": 10, "next": "tok1" };
 
-Deno.test("mural-user-list: GET /murals/{muralId}/users", async () => {
+test("mural-user-list: GET /murals/{muralId}/users", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "a" }, { "id": "b" }], "next": "NXT" },
@@ -21,7 +22,7 @@ Deno.test("mural-user-list: GET /murals/{muralId}/users", async () => {
   assertEquals(out.next, "NXT");
 });
 
-Deno.test("mural-user-list: puts no credential on the request (sign owns that)", async () => {
+test("mural-user-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "a" }, { "id": "b" }], "next": "NXT" },
@@ -30,7 +31,7 @@ Deno.test("mural-user-list: puts no credential on the request (sign owns that)",
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("mural-user-list: a vendor error surfaces its own code and message", async () => {
+test("mural-user-list: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -41,7 +42,7 @@ Deno.test("mural-user-list: a vendor error surfaces its own code and message", a
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("mural-user-list: an empty muralId is refused before any request", async () => {
+test("mural-user-list: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await muralUserList.execute({ ...INPUT, muralId: "  " as never }, ctx)

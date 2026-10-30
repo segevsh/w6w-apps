@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import entryCreate from "../../actions/entry-create.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("entry-create: posts to /v1/entries/create, normalising array params", async () => {
+test("entry-create: posts to /v1/entries/create, normalising array params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e1" } }]);
   const out = await entryCreate.execute(
     {
@@ -26,6 +27,6 @@ Deno.test("entry-create: posts to /v1/entries/create, normalising array params",
   assertEquals(out.id, "e1");
 });
 
-Deno.test("entry-create: is not idempotent", () => {
+test("entry-create: is not idempotent", () => {
   assertEquals(entryCreate.idempotent, false);
 });

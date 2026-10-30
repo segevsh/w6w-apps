@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Harvest's real authorize/token hosts and a required accountId field", () => {
+test("oauth2: declares Harvest's real authorize/token hosts and a required accountId field", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://id.getharvest.com/oauth2/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://id.getharvest.com/api/v2/oauth2/token");
@@ -11,7 +12,7 @@ Deno.test("oauth2: declares Harvest's real authorize/token hosts and a required 
   assertEquals(accountId.required, true);
 });
 
-Deno.test("oauth2: sign stamps Bearer + Harvest-Account-Id", async () => {
+test("oauth2: sign stamps Bearer + Harvest-Account-Id", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.harvestapp.com/v2/users/me",
@@ -26,14 +27,14 @@ Deno.test("oauth2: sign stamps Bearer + Harvest-Account-Id", async () => {
   assertEquals(out.headers["harvest-account-id"], "999");
 });
 
-Deno.test("oauth2: test needs both accountId and accessToken", async () => {
+test("oauth2: test needs both accountId and accessToken", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: { accessToken: "t" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("accountId or accessToken"));
 });
 
-Deno.test("oauth2: test hits /users/me and reports ok", async () => {
+test("oauth2: test hits /users/me and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   const result = await auth.test(
     { credential: { accountId: "999", accessToken: "oauth-tok" } },
@@ -45,7 +46,7 @@ Deno.test("oauth2: test hits /users/me and reports ok", async () => {
   assertEquals(calls[0].headers["harvest-account-id"], "999");
 });
 
-Deno.test("oauth2: afterConnect calls the accounts-discovery endpoint with only the bearer token", async () => {
+test("oauth2: afterConnect calls the accounts-discovery endpoint with only the bearer token", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       user: { first_name: "Ada", last_name: "Lovelace" },
@@ -65,7 +66,7 @@ Deno.test("oauth2: afterConnect calls the accounts-discovery endpoint with only 
   assertEquals((out as { account?: { name?: string } }).account?.name, "Analytical Engines Inc");
 });
 
-Deno.test("oauth2: afterConnect returns {} when there is no access token yet", async () => {
+test("oauth2: afterConnect returns {} when there is no access token yet", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.afterConnect!({ credential: {} }, ctx);
   assertEquals(out, {});

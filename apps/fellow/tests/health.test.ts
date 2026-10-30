@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import service, { mapComponentStatus, mapIndicator, STATUS_URL } from "../health/service.ts";
 import rateLimit from "../health/rate-limit.ts";
 import { mockCtx } from "./_helpers.ts";
@@ -15,7 +16,7 @@ const summary = (api: string, website = "operational", indicator = "none") => ({
 // deno-lint-ignore no-explicit-any
 const run = (ctx: any) => (service.check as any)({}, ctx);
 
-Deno.test("health.service: verdict is the Developer API component's, not the page roll-up", async () => {
+test("health.service: verdict is the Developer API component's, not the page roll-up", async () => {
   const web = mockCtx([{ body: summary("operational", "major_outage", "critical") }]);
   assertEquals((await run(web.ctx)).state, "ok");
   assertEquals(web.calls[0].url, STATUS_URL);
@@ -26,7 +27,7 @@ Deno.test("health.service: verdict is the Developer API component's, not the pag
   assertEquals(r.message, "affected: Developer API (major_outage)");
 });
 
-Deno.test("health.service: falls back to the indicator without an API component; unreadable pages are unknown", async () => {
+test("health.service: falls back to the indicator without an API component; unreadable pages are unknown", async () => {
   const noApi = mockCtx([{
     body: {
       page: { url: "https://status.fellow.ai/" },
@@ -51,14 +52,14 @@ Deno.test("health.service: falls back to the indicator without an API component;
   assertEquals((await run(mockCtx([{ body: { components: [] } }]).ctx)).state, "unknown");
 });
 
-Deno.test("health.service: status vocabulary maps", () => {
+test("health.service: status vocabulary maps", () => {
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("weird"), "unknown");
   assertEquals(mapIndicator("critical"), "down");
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("health.rate-limit: a declared absence with informational severity and no hook", () => {
+test("health.rate-limit: a declared absence with informational severity and no hook", () => {
   assertEquals(rateLimit.severity, "informational");
   assertEquals(typeof rateLimit.unavailable?.reason, "string");
   assertEquals((rateLimit as { check?: unknown }).check, undefined);

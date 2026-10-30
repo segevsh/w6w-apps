@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import personGet from "../../actions/person-get.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const run = (ctx: Parameters<typeof personGet.execute>[1], input: Record<string, unknown>) =>
   personGet.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("person-get: declares a read action with params and output", () => {
+test("person-get: declares a read action with params and output", () => {
   assertEquals(personGet.key, "person-get");
   assertEquals(personGet.type, "read");
   assert((personGet.description ?? "").length > 0);
@@ -13,7 +14,7 @@ Deno.test("person-get: declares a read action with params and output", () => {
   assertEquals(personGet.idempotent, undefined);
 });
 
-Deno.test("person-get: one email becomes people[0][email] and the users list is returned", async () => {
+test("person-get: one email becomes people[0][email] and the users list is returned", async () => {
   const body = { users: [{ id: "u1", email: "a@x.com" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(await run(ctx, { email: "a@x.com" }), body);
@@ -25,7 +26,7 @@ Deno.test("person-get: one email becomes people[0][email] and the users list is 
   assertEquals(calls[0].headers["x-encharge-token"], undefined);
 });
 
-Deno.test("person-get: a people array selects several people by any identifier", async () => {
+test("person-get: a people array selects several people by any identifier", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [] } }]);
   await run(ctx, { people: '[{"userId":"abc"},{"email":"b@x.com","id":"i2"}]' });
   assertEquals(queryOf(calls[0].url), {
@@ -35,14 +36,14 @@ Deno.test("person-get: a people array selects several people by any identifier",
   });
 });
 
-Deno.test("person-get: no identifier fails before any request", async () => {
+test("person-get: no identifier fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => run(ctx, {}), Error, "at least one of email");
   await assertRejects(() => run(ctx, { people: "[]" }), Error, "non-empty");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("person-get: an Encharge error envelope is thrown with its message", async () => {
+test("person-get: an Encharge error envelope is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Token without payload", 10082) }]);
   await assertRejects(() => run(ctx, { email: "a@x.com" }), Error, "Token without payload");
 });

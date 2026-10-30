@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createBatchCall from "../../actions/create-batch-call.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-batch-call: posts to /create-batch-call (no version prefix)", async () => {
+test("create-batch-call: posts to /create-batch-call (no version prefix)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {
@@ -26,7 +27,7 @@ Deno.test("create-batch-call: posts to /create-batch-call (no version prefix)", 
   assertEquals(out.batch_call_id, "batch_1");
 });
 
-Deno.test("create-batch-call: time windows use the vendor's start/end field names, not startMin/endMin", async () => {
+test("create-batch-call: time windows use the vendor's start/end field names, not startMin/endMin", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { batch_call_id: "b1" } }]);
 
   await createBatchCall.execute({
@@ -43,7 +44,7 @@ Deno.test("create-batch-call: time windows use the vendor's start/end field name
   });
 });
 
-Deno.test("create-batch-call: reserved concurrency is passed through", async () => {
+test("create-batch-call: reserved concurrency is passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { batch_call_id: "b1" } }]);
   await createBatchCall.execute({
     fromNumber: "+14157774444",
@@ -53,6 +54,6 @@ Deno.test("create-batch-call: reserved concurrency is passed through", async () 
   assertEquals(JSON.parse(calls[0].body!).reserved_concurrency, 5);
 });
 
-Deno.test("create-batch-call: is not idempotent — retrying would re-dial the whole batch", () => {
+test("create-batch-call: is not idempotent — retrying would re-dial the whole batch", () => {
   assertEquals(createBatchCall.idempotent, false);
 });

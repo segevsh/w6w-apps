@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import apiToken from "../../auth/api-token.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("auth: sign() stamps a bearer header and nothing else", async () => {
+test("auth: sign() stamps a bearer header and nothing else", async () => {
   const request = { url: "https://api.recruitee.com/c/123/candidates", method: "GET", headers: {} };
   const out = await apiToken.sign!(
     { request, credential: { apiToken: "tok_abc", companyId: "123" } },
@@ -13,21 +14,21 @@ Deno.test("auth: sign() stamps a bearer header and nothing else", async () => {
   assertEquals(Object.keys(out.headers), ["authorization"]);
 });
 
-Deno.test("auth: test() succeeds on a 200 from the company-scoped whoami", async () => {
+test("auth: test() succeeds on a 200 from the company-scoped whoami", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { admin: { id: 1, email: "a@b.com" } } }]);
   const result = await apiToken.test({ credential: { apiToken: "tok", companyId: "123" } }, ctx);
   assertEquals(result.ok, true);
   assertEquals(pathOf(calls[0].url), "/c/123/admin");
 });
 
-Deno.test("auth: test() reports a missing credential without any network call", async () => {
+test("auth: test() reports a missing credential without any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: { companyId: "123" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth: test() classifies invalid_token from the response body, not the status alone", async () => {
+test("auth: test() classifies invalid_token from the response body, not the status alone", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { error: "Token not found.", error_code: "invalid_token" } },
   ]);
@@ -36,14 +37,14 @@ Deno.test("auth: test() classifies invalid_token from the response body, not the
   assertEquals(result.message?.includes("invalid_token"), true);
 });
 
-Deno.test("auth: test() reports a bad company id distinctly (404)", async () => {
+test("auth: test() reports a bad company id distinctly (404)", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "Page not found" } }]);
   const result = await apiToken.test({ credential: { apiToken: "tok", companyId: "999" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(result.message?.includes("999"), true);
 });
 
-Deno.test("auth: afterConnect() records companyId and email, never the token", async () => {
+test("auth: afterConnect() records companyId and email, never the token", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -60,7 +61,7 @@ Deno.test("auth: afterConnect() records companyId and email, never the token", a
   assertEquals(JSON.stringify(display).includes("tok_abc"), false);
 });
 
-Deno.test("auth: afterConnect() still records companyId when the whoami call fails", async () => {
+test("auth: afterConnect() still records companyId when the whoami call fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const display = await apiToken.afterConnect!(
     { credential: { apiToken: "tok", companyId: "123" } },
@@ -70,7 +71,7 @@ Deno.test("auth: afterConnect() still records companyId when the whoami call fai
   assertEquals("email" in display, false);
 });
 
-Deno.test("auth: the credential field is declared secret, companyId is not", () => {
+test("auth: the credential field is declared secret, companyId is not", () => {
   assertEquals(apiToken.type, "bearer");
   const apiTokenField = apiToken.fields?.find((f) => f.key === "apiToken");
   const companyIdField = apiToken.fields?.find((f) => f.key === "companyId");

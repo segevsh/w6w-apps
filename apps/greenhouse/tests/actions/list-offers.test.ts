@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listOffers from "../../actions/list-offers.ts";
 import { offerStatusOptions } from "../../lib/params.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-offers: calls GET /v3/offers", async () => {
+test("list-offers: calls GET /v3/offers", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 1 }])]);
   await listOffers.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/offers");
@@ -13,7 +14,7 @@ Deno.test("list-offers: calls GET /v3/offers", async () => {
  * Offer statuses are Capitalised, unlike every other status vocabulary in this
  * API. Sending `accepted` is a 422, so the exact casing is pinned.
  */
-Deno.test("list-offers: the status vocabulary is capitalised", () => {
+test("list-offers: the status vocabulary is capitalised", () => {
   assertEquals(offerStatusOptions.map((o) => o.value), [
     "Created",
     "Accepted",
@@ -22,7 +23,7 @@ Deno.test("list-offers: the status vocabulary is capitalised", () => {
   ]);
 });
 
-Deno.test("list-offers: maps its parent filters and the current-version switch", async () => {
+test("list-offers: maps its parent filters and the current-version switch", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listOffers.execute({
     applicationIds: "1",
@@ -46,12 +47,12 @@ Deno.test("list-offers: maps its parent filters and the current-version switch",
   });
 });
 
-Deno.test("list-offers: the current-version hint warns that offers are versioned", () => {
+test("list-offers: the current-version hint warns that offers are versioned", () => {
   const param = (listOffers.params ?? []).find((p) => p.key === "currentOnly");
   assert(param?.hint?.includes("versioned"), param?.hint);
 });
 
-Deno.test("list-offers: a cursor rejects the status it already carries", () => {
+test("list-offers: a cursor rejects the status it already carries", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(
     () => listOffers.execute({ cursor: "N", status: "Created" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-url-asset-upload-job.ts";
 
-Deno.test("create-url-asset-upload-job: POSTs name and url as JSON", async () => {
+test("create-url-asset-upload-job: POSTs name and url as JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { job: { id: "job1", status: "in_progress" } } }]);
   const result = await action.execute({
     name: "My Asset",

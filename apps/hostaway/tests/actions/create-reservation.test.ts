@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-reservation.ts";
 
-Deno.test("create-reservation: POSTs the documented body and query parameters", async () => {
+test("create-reservation: POSTs the documented body and query parameters", async () => {
   const { ctx, calls } = mockCtx([envelope({ id: 117277 })]);
   await action.execute(
     {
@@ -37,7 +38,7 @@ Deno.test("create-reservation: POSTs the documented body and query parameters", 
   });
 });
 
-Deno.test("create-reservation: only the documented create channels are selectable", () => {
+test("create-reservation: only the documented create channels are selectable", () => {
   const channel = action.params?.find((p) => p.key === "channelId");
   assertEquals(
     (channel?.options as Array<{ value: number }>).map((o) => o.value),
@@ -45,7 +46,7 @@ Deno.test("create-reservation: only the documented create channels are selectabl
   );
 });
 
-Deno.test("create-reservation: requires the four documented required fields", async () => {
+test("create-reservation: requires the four documented required fields", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(() => Promise.resolve(action.execute({}, ctx)), Error, "channelId");
   await assertRejects(
@@ -69,7 +70,7 @@ Deno.test("create-reservation: requires the four documented required fields", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-reservation: rejects an over-long provider before spending a request", async () => {
+test("create-reservation: rejects an over-long provider before spending a request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () =>
@@ -86,7 +87,7 @@ Deno.test("create-reservation: rejects an over-long provider before spending a r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-reservation: couponName travels inside the reservation object, as documented", async () => {
+test("create-reservation: couponName travels inside the reservation object, as documented", async () => {
   const { ctx, calls } = mockCtx([envelope({ id: 1 })]);
   await action.execute({
     channelId: 2020,

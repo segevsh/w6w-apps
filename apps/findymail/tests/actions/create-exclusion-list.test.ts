@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-exclusion-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("create-exclusion-list: POSTs name and sharing", async () => {
+test("create-exclusion-list: POSTs name and sharing", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "id": 1, "name": "Competitors", "is_shared": true, "is_owner": true },
@@ -22,7 +23,7 @@ Deno.test("create-exclusion-list: POSTs name and sharing", async () => {
   assertEquals(out, { "id": 1, "name": "Competitors", "is_shared": true, "is_owner": true });
 });
 
-Deno.test("create-exclusion-list: surfaces a 422 duplicate-name error with the field", async () => {
+test("create-exclusion-list: surfaces a 422 duplicate-name error with the field", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

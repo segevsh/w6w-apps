@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import clientSuppress from "../../actions/client-suppress.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("client-suppress: POSTs the addresses under EmailAddresses", async () => {
+test("client-suppress: POSTs the addresses under EmailAddresses", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await clientSuppress.execute(
     { clientId: "cid", emailAddresses: ["a@example.com", "b@example.com"] },
@@ -15,13 +16,13 @@ Deno.test("client-suppress: POSTs the addresses under EmailAddresses", async () 
   assertEquals(out, { suppressed: 2 });
 });
 
-Deno.test("client-suppress: accepts the JSON param as a typed string too", async () => {
+test("client-suppress: accepts the JSON param as a typed string too", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await clientSuppress.execute({ clientId: "cid", emailAddresses: '["a@example.com"]' }, ctx);
   assertEquals(bodyOf(calls[0]), { EmailAddresses: ["a@example.com"] });
 });
 
-Deno.test("client-suppress: refuses an empty batch before spending a request", async () => {
+test("client-suppress: refuses an empty batch before spending a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await clientSuppress.execute({ clientId: "cid", emailAddresses: [] }, ctx),
@@ -31,6 +32,6 @@ Deno.test("client-suppress: refuses an empty batch before spending a request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-suppress: is declared idempotent — suppressing twice is one end state", () => {
+test("client-suppress: is declared idempotent — suppressing twice is one end state", () => {
   assertEquals(clientSuppress.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import auth from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api-key: sign() sets X-API-Key", async () => {
+test("api-key: sign() sets X-API-Key", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://public-api.process.st/api/v1.1/testAuth",
@@ -13,14 +14,14 @@ Deno.test("api-key: sign() sets X-API-Key", async () => {
   assertEquals(out.headers["x-api-key"], "key_123");
 });
 
-Deno.test("test(): missing apiKey fails without calling the network", async () => {
+test("test(): missing apiKey fails without calling the network", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test(): a live key calling /testAuth passes", async () => {
+test("test(): a live key calling /testAuth passes", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { apiKeyLabel: "My Key" } }]);
   const result = await auth.test({ credential: { apiKey: "key_123" } }, ctx);
   assertEquals(result.ok, true);
@@ -28,7 +29,7 @@ Deno.test("test(): a live key calling /testAuth passes", async () => {
   assertEquals(calls[0].headers["x-api-key"], "key_123");
 });
 
-Deno.test("test(): 401 with no errorCode still fails with a message, never the key", async () => {
+test("test(): 401 with no errorCode still fails with a message, never the key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Unable to verify credentials." } }]);
   const result = await auth.test({ credential: { apiKey: "key_123" } }, ctx);
   assertEquals(result.ok, false);
@@ -36,20 +37,20 @@ Deno.test("test(): 401 with no errorCode still fails with a message, never the k
   assertEquals(result.message?.includes("Organization Settings"), true);
 });
 
-Deno.test("test(): an unexpected status still fails with detail, not a thrown error", async () => {
+test("test(): an unexpected status still fails with detail, not a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await auth.test({ credential: { apiKey: "key_123" } }, ctx);
   assertEquals(result.ok, false);
 });
 
-Deno.test("afterConnect: records apiKeyLabel, never the key", async () => {
+test("afterConnect: records apiKeyLabel, never the key", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { apiKeyLabel: "My Key" } }]);
   const display = await auth.afterConnect!({ credential: { apiKey: "key_123" } }, ctx);
   assertEquals(display, { apiKeyLabel: "My Key" });
   assertEquals(JSON.stringify(display).includes("key_123"), false);
 });
 
-Deno.test("afterConnect: a failed lookup returns an empty display rather than throwing", async () => {
+test("afterConnect: a failed lookup returns an empty display rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const display = await auth.afterConnect!({ credential: { apiKey: "key_123" } }, ctx);
   assertEquals(display, {});

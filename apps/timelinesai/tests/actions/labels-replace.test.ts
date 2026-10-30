@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import labelsReplace from "../../actions/labels-replace.ts";
 
-Deno.test("labels-replace: POSTs the label array", async () => {
+test("labels-replace: POSTs the label array", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "labels": ["a", "b"] } } }]);
   const out = await labelsReplace.execute!({ "chatId": 4, "labels": ["a", "b"] } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("labels-replace: POSTs the label array", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("labels-replace: surfaces a vendor error envelope", async () => {
+test("labels-replace: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },
@@ -28,7 +29,7 @@ Deno.test("labels-replace: surfaces a vendor error envelope", async () => {
   assert(err.message.includes("not_found"), err.message);
 });
 
-Deno.test("labels-replace: refuses an empty label list, before the network", async () => {
+test("labels-replace: refuses an empty label list, before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await labelsReplace.execute!({ chatId: 4, labels: "" } as never, ctx);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   compact,
   csv,
@@ -15,7 +16,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("describeError: maps a 406 error code to English, not the German error_message", () => {
+test("describeError: maps a 406 error code to English, not the German error_message", () => {
   const e = describeError(406, { error: 507, error_message: "E-Mail existiert bereits" });
   assertEquals(e, {
     code: 507,
@@ -23,7 +24,7 @@ Deno.test("describeError: maps a 406 error code to English, not the German error
   });
 });
 
-Deno.test("describeError: error 10 appends its subcode, error 8 names the field", () => {
+test("describeError: error 10 appends its subcode, error 8 names the field", () => {
   assert(
     describeError(406, { error: 10, code: 30 }).message.endsWith("the email address is blocked"),
   );
@@ -38,7 +39,7 @@ Deno.test("describeError: error 10 appends its subcode, error 8 names the field"
   );
 });
 
-Deno.test("describeError: an array-of-strings body (403/401) is quoted, an unknown shape is generic", () => {
+test("describeError: an array-of-strings body (403/401) is quoted, an unknown shape is generic", () => {
   assertEquals(
     describeError(403, ["API access denied."]).message,
     "KlickTipp HTTP 403: API access denied.",
@@ -49,7 +50,7 @@ Deno.test("describeError: an array-of-strings body (403/401) is quoted, an unkno
   );
 });
 
-Deno.test("kt: an {error} body fails even on HTTP 200 — the body decides, not the status", async () => {
+test("kt: an {error} body fails even on HTTP 200 — the body decides, not the status", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { error: 5 } }]);
   const err = await assertRejects(
     async () => await kt(ctx, "GET", "/x"),
@@ -59,12 +60,12 @@ Deno.test("kt: an {error} body fails even on HTTP 200 — the body decides, not 
   assertEquals(err.code, 5);
 });
 
-Deno.test("kt: a non-JSON 200 is a failure, not a success", async () => {
+test("kt: a non-JSON 200 is a failure, not a success", async () => {
   const { ctx } = mockCtx([{ body: "<html>shell</html>" }]);
   await assertRejects(async () => await kt(ctx, "GET", "/x"), KlickTippError, "not JSON");
 });
 
-Deno.test("kt: builds the query, skips empty values, sends JSON bodies with a content type", async () => {
+test("kt: builds the query, skips empty values, sends JSON bodies with a content type", async () => {
   const { ctx, calls } = mockCtx([{ body: [true] }]);
   await kt(ctx, "POST", "/p", { query: { a: 1, b: undefined, c: "", d: 0 }, body: { x: 1 } });
   assertEquals(calls[0].url, "https://api.klicktipp.com/p?a=1&d=0");
@@ -72,7 +73,7 @@ Deno.test("kt: builds the query, skips empty values, sends JSON bodies with a co
   assertEquals(calls[0].body, '{"x":1}');
 });
 
-Deno.test("expectTrue / expectId: demand the documented success shapes", () => {
+test("expectTrue / expectId: demand the documented success shapes", () => {
   assertEquals(expectTrue([true], "x"), true);
   assertEquals(expectId([49], "x"), 49);
   for (const bad of [[false], [], {}, "ok", null]) {
@@ -93,7 +94,7 @@ Deno.test("expectTrue / expectId: demand the documented success shapes", () => {
   }
 });
 
-Deno.test("seg: only alphanumerics pass; slashes, dots and empty do not", () => {
+test("seg: only alphanumerics pass; slashes, dots and empty do not", () => {
   assertEquals(seg("01234abcdefghij56789", "id"), "01234abcdefghij56789");
   for (const bad of ["", "a/b", "..", "1?x=1", "a b"]) {
     try {
@@ -105,7 +106,7 @@ Deno.test("seg: only alphanumerics pass; slashes, dots and empty do not", () => 
   }
 });
 
-Deno.test("idList: parses, trims, and bounds numeric id lists", () => {
+test("idList: parses, trims, and bounds numeric id lists", () => {
   assertEquals(idList("1, 2,3", "ids", 3), [1, 2, 3]);
   const rejects = (v: string, max = 3) => {
     let msg = "";
@@ -123,7 +124,7 @@ Deno.test("idList: parses, trims, and bounds numeric id lists", () => {
   assert(rejects("1,2,3,4").includes("at most 3"));
 });
 
-Deno.test("csv / list / compact / fieldsObject: input normalisation", () => {
+test("csv / list / compact / fieldsObject: input normalisation", () => {
   assertEquals(csv(["a", " b "]), "a,b");
   assertEquals(csv(""), undefined);
   assertEquals(list(undefined, ["x"]), ["x"]);
@@ -143,7 +144,7 @@ Deno.test("csv / list / compact / fieldsObject: input normalisation", () => {
   }
 });
 
-Deno.test("login: success needs both sessid and session_name in the body", async () => {
+test("login: success needs both sessid and session_name in the body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { sessid: "xyz", session_name: "SSESSabc", account: { uid: 1 } },
   }]);
@@ -153,7 +154,7 @@ Deno.test("login: success needs both sessid and session_name in the body", async
   assertEquals(JSON.parse(calls[0].body!), { username: "u", password: "p" });
 });
 
-Deno.test("login: a 200 without a session is a failure; 401 body is quoted", async () => {
+test("login: a 200 without a session is a failure; 401 body is quoted", async () => {
   const a = mockCtx([{ body: { sessid: "xyz" } }]);
   await assertRejects(async () => await login(a.ctx, "u", "p"), KlickTippError, "login failed");
   const b = mockCtx([{ status: 401, body: ["Wrong username or password."] }]);

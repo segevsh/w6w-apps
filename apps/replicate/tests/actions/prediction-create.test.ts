@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/prediction-create.ts";
 
 const VERSION = "5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa";
 
-Deno.test("prediction-create: POSTs the version and input", async () => {
+test("prediction-create: POSTs the version and input", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "p1", status: "starting" } }]);
   await action.execute!({ version: VERSION, input: '{"text":"Alice"}' }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("prediction-create: POSTs the version and input", async () => {
 });
 
 /** Without the wait header the response has no output at all. */
-Deno.test("prediction-create: `starting` is neither finished nor succeeded", async () => {
+test("prediction-create: `starting` is neither finished nor succeeded", async () => {
   const { ctx } = mockCtx([{ status: 201, body: { id: "p1", status: "starting" } }]);
   const result = await action.execute!({ version: VERSION, input: "{}" }, ctx) as Record<
     string,
@@ -23,7 +24,7 @@ Deno.test("prediction-create: `starting` is neither finished nor succeeded", asy
   assertEquals(result.succeeded, false);
 });
 
-Deno.test("prediction-create: a succeeded prediction is both", async () => {
+test("prediction-create: a succeeded prediction is both", async () => {
   const { ctx } = mockCtx([{
     status: 201,
     body: { id: "p1", status: "succeeded", output: ["hello"] },
@@ -37,7 +38,7 @@ Deno.test("prediction-create: a succeeded prediction is both", async () => {
 });
 
 /** `failed` arrives with a 201 — no HTTP error anywhere. */
-Deno.test("prediction-create: a failed prediction is finished but not succeeded", async () => {
+test("prediction-create: a failed prediction is finished but not succeeded", async () => {
   const { ctx } = mockCtx([{
     status: 201,
     body: { id: "p1", status: "failed", error: "input.prompt is required" },
@@ -51,7 +52,7 @@ Deno.test("prediction-create: a failed prediction is finished but not succeeded"
   assertEquals(result.error, "input.prompt is required");
 });
 
-Deno.test("prediction-create: the wait header is sent only when asked for", async () => {
+test("prediction-create: the wait header is sent only when asked for", async () => {
   const without = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ version: VERSION, input: "{}" }, without.ctx);
   assertEquals(without.calls[0].headers["prefer"], undefined);
@@ -62,7 +63,7 @@ Deno.test("prediction-create: the wait header is sent only when asked for", asyn
 });
 
 /** A model name here is a different endpoint's job, and easy to confuse. */
-Deno.test("prediction-create: a model name in the version field is caught locally", async () => {
+test("prediction-create: a model name in the version field is caught locally", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute!({ version: "acme/thing", input: "{}" }, ctx),
@@ -72,13 +73,13 @@ Deno.test("prediction-create: a model name in the version field is caught locall
   assertEquals(calls.length, 0);
 });
 
-Deno.test("prediction-create: a pinned owner/name:version is accepted", async () => {
+test("prediction-create: a pinned owner/name:version is accepted", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ version: `acme/thing:${VERSION}`, input: "{}" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).version, `acme/thing:${VERSION}`);
 });
 
-Deno.test("prediction-create: webhook events are comma-split", async () => {
+test("prediction-create: webhook events are comma-split", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({
     version: VERSION,
@@ -91,7 +92,7 @@ Deno.test("prediction-create: webhook events are comma-split", async () => {
   assertEquals(body.webhook_events_filter, ["start", "completed"]);
 });
 
-Deno.test("prediction-create: version and a JSON-object input are both required", async () => {
+test("prediction-create: version and a JSON-object input are both required", async () => {
   const noVersion = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ input: "{}" }, noVersion.ctx),

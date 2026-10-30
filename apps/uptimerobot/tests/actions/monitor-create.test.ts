@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/monitor-create.ts";
 
-Deno.test("monitor-create: POSTs /newMonitor with required + optional fields mapped to snake_case", async () => {
+test("monitor-create: POSTs /newMonitor with required + optional fields mapped to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitor: { id: 777712827 } } }]);
   const out = await action.execute({
     friendlyName: "My Site",
@@ -22,7 +23,7 @@ Deno.test("monitor-create: POSTs /newMonitor with required + optional fields map
   assertEquals(out, { id: 777712827 });
 });
 
-Deno.test("monitor-create: false ignoreSslErrors is sent as 0, not omitted", async () => {
+test("monitor-create: false ignoreSslErrors is sent as 0, not omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitor: { id: 1 } } }]);
   await action.execute({
     friendlyName: "X",
@@ -34,7 +35,7 @@ Deno.test("monitor-create: false ignoreSslErrors is sent as 0, not omitted", asy
   assertEquals(body.get("ignore_ssl_errors"), "0");
 });
 
-Deno.test("monitor-create: port-monitor fields (subType/port) are only sent when supplied", async () => {
+test("monitor-create: port-monitor fields (subType/port) are only sent when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitor: { id: 1 } } }]);
   await action.execute({
     friendlyName: "Port Check",

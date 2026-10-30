@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/ai-question.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("ai-question: GETs /ai/question with url and question, returns the plain-text answer", async () => {
+test("ai-question: GETs /ai/question with url and question, returns the plain-text answer", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "text/plain", "wsai-request-id": "r1" },
     body: "It is a demo.",
@@ -17,7 +18,7 @@ Deno.test("ai-question: GETs /ai/question with url and question, returns the pla
   assertEquals(u.searchParams.has("api_key"), false);
 });
 
-Deno.test("ai-question: forwards fetch options; a blank question or url makes no call", async () => {
+test("ai-question: forwards fetch options; a blank question or url makes no call", async () => {
   const { ctx, calls } = mockCtx([{ body: "x" }]);
   await action.execute({
     url: "https://e.test",
@@ -46,7 +47,7 @@ Deno.test("ai-question: forwards fetch options; a blank question or url makes no
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("ai-question: a target-blocked 500 surfaces error_code, message and target status", async () => {
+test("ai-question: a target-blocked 500 surfaces error_code, message and target status", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     body: { message: "blocked", error_code: "target_blocked", status_code: 403 },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -21,28 +22,28 @@ const summary = (
   status = { indicator: "none", description: "All Systems Operational" },
 ) => ({ status, components });
 
-Deno.test("service: unsigned, app-scoped, and widens egress to the status host only", () => {
+test("service: unsigned, app-scoped, and widens egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.telnyx.com"]);
   assertEquals(service.credential, undefined);
   assertEquals(service.scope, undefined);
 });
 
-Deno.test("service: probes summary.json, unauthenticated", async () => {
+test("service: probes summary.json, unauthenticated", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.telnyx.com/api/v2/summary.json");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("service: reports the page-level indicator as state", async () => {
+test("service: reports the page-level indicator as state", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary() }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "ok");
   assertEquals(result.message, "All Systems Operational");
 });
 
-Deno.test("service: maps minor/major/critical indicators to degraded/down/down", async () => {
+test("service: maps minor/major/critical indicators to degraded/down/down", async () => {
   const cases: Array<[string, string]> = [
     ["minor", "degraded"],
     ["major", "down"],
@@ -62,7 +63,7 @@ Deno.test("service: maps minor/major/critical indicators to degraded/down/down",
  * "API V1"/"API V2" repeat with no group id to disambiguate them (see the
  * module doc), so they must never show up in `components`.
  */
-Deno.test("service: names only the unambiguous components — never the duplicated API V1/V2", async () => {
+test("service: names only the unambiguous components — never the duplicated API V1/V2", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary() }]);
   const result = await service.check!({}, ctx);
   assertEquals(Object.keys(result.components!).sort(), [
@@ -72,7 +73,7 @@ Deno.test("service: names only the unambiguous components — never the duplicat
   ]);
 });
 
-Deno.test("service: a named component reflects its own status, independent of the page rollup", async () => {
+test("service: a named component reflects its own status, independent of the page rollup", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(
@@ -91,14 +92,14 @@ Deno.test("service: a named component reflects its own status, independent of th
 });
 
 /** A status page that is itself broken says nothing about the vendor. */
-Deno.test("service: a failing status page is unknown, never down", async () => {
+test("service: a failing status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(result.message!.includes("503"), result.message);
 });
 
-Deno.test("service: an unrecognised page indicator is unknown, not assumed ok", async () => {
+test("service: an unrecognised page indicator is unknown, not assumed ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary(COMPONENTS, { indicator: "who_knows", description: "?" }),
@@ -106,7 +107,7 @@ Deno.test("service: an unrecognised page indicator is unknown, not assumed ok", 
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: keeps the default degraded severity and a 60s interval", () => {
+test("service: keeps the default degraded severity and a 60s interval", () => {
   assertEquals(service.severity, undefined);
   assertEquals(service.minIntervalSeconds, 60);
 });

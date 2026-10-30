@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileVersionList from "../../actions/file-version-list.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("file-version-list: GET /workdrive/api/v1/files/f1/versions", async () => {
+test("file-version-list: GET /workdrive/api/v1/files/f1/versions", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{
     body: { "data": [{ "id": "f1-1", "type": "versions" }] },
   }]);

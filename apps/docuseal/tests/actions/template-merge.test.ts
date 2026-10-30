@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-merge.ts";
 
-Deno.test("template-merge: sends the parsed template ids", async () => {
+test("template-merge: sends the parsed template ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 3, name: "Merged" } }]);
   await action.execute!({ templateIds: "[321,432]", name: "Merged" }, ctx);
   assertEquals(calls[0].url, "https://api.docuseal.com/templates/merge");
@@ -10,7 +11,7 @@ Deno.test("template-merge: sends the parsed template ids", async () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("template-merge: templateIds is required", async () => {
+test("template-merge: templateIds is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {

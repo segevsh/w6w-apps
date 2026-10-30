@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext, SignableRequest } from "@w6w/types";
 import apiToken, {
   AUTH_FAILURE_BODIES,
@@ -14,7 +15,7 @@ function signable(): SignableRequest {
   return { method: "GET", url: "https://api.productboard.com/v2/entities", headers: {} };
 }
 
-Deno.test("auth: sign stamps the bearer header and nothing else", () => {
+test("auth: sign stamps the bearer header and nothing else", () => {
   const req = apiToken.sign!({ request: signable(), credential: { accessToken: TOKEN } }, {
     fetch: () => {
       throw new Error("sign must not reach the network");
@@ -25,7 +26,7 @@ Deno.test("auth: sign stamps the bearer header and nothing else", () => {
   assertEquals(Object.keys(req.headers), ["authorization"]);
 });
 
-Deno.test("auth: the token never appears in a URL", () => {
+test("auth: the token never appears in a URL", () => {
   const req = apiToken.sign!({ request: signable(), credential: { accessToken: TOKEN } }, {
     fetch: () => {
       throw new Error("no");
@@ -36,13 +37,13 @@ Deno.test("auth: the token never appears in a URL", () => {
   assert(!req.url.includes("token="));
 });
 
-Deno.test("auth: authHeaders is the one place the wire format is built", () => {
+test("auth: authHeaders is the one place the wire format is built", () => {
   assertEquals(authHeaders({ accessToken: "x" }), { authorization: "Bearer x" });
 });
 
 // --- the probe ---------------------------------------------------------------
 
-Deno.test("auth: test probes /entities/configurations, which needs a token and returns no data", async () => {
+test("auth: test probes /entities/configurations, which needs a token and returns no data", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const out = await apiToken.test({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(out.ok, true);
@@ -51,7 +52,7 @@ Deno.test("auth: test probes /entities/configurations, which needs a token and r
   assertEquals(calls[0].headers["authorization"], `Bearer ${TOKEN}`);
 });
 
-Deno.test("auth: a missing credential fails without a request", async () => {
+test("auth: a missing credential fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await apiToken.test({ credential: {} }, ctx);
   assertEquals(out.ok, false);
@@ -65,7 +66,7 @@ Deno.test("auth: a missing credential fails without a request", async () => {
  * and all four are HTTP 401. If the classifier keyed off the status it would
  * give the same answer to four different problems.
  */
-Deno.test("auth: the four measured 401 bodies produce four different diagnoses", () => {
+test("auth: the four measured 401 bodies produce four different diagnoses", () => {
   const missing = classifyAuthFailure(401, gatewayError(AUTH_FAILURE_BODIES.missing));
   const notAJwt = classifyAuthFailure(401, gatewayError(AUTH_FAILURE_BODIES.notAJwt));
   const issuer = classifyAuthFailure(401, gatewayError(AUTH_FAILURE_BODIES.unknownIssuer));
@@ -80,7 +81,7 @@ Deno.test("auth: the four measured 401 bodies produce four different diagnoses",
   assertEquals(new Set(all).size, 4, "two 401 causes collapsed onto one message");
 });
 
-Deno.test("auth: a route.notFound says the app is stale, not that the token is bad", () => {
+test("auth: a route.notFound says the app is stale, not that the token is bad", () => {
   const out = classifyAuthFailure(
     404,
     errorBody("route.notFound", "Route not found", "No such path."),
@@ -89,7 +90,7 @@ Deno.test("auth: a route.notFound says the app is stale, not that the token is b
   assert(out.includes("not the problem"), out);
 });
 
-Deno.test("auth: a 403 is reported as a live token missing a scope", () => {
+test("auth: a 403 is reported as a live token missing a scope", () => {
   const out = classifyAuthFailure(
     403,
     errorBody("auth.accessDenied", "Access denied", "Missing scope."),
@@ -98,20 +99,20 @@ Deno.test("auth: a 403 is reported as a live token missing a scope", () => {
   assert(out.includes("Missing scope."), out);
 });
 
-Deno.test("auth: an unreadable body still yields a status-bearing message", () => {
+test("auth: an unreadable body still yields a status-bearing message", () => {
   const out = classifyAuthFailure(503, null);
   assert(out.includes("503"), out);
   assert(out.includes(PROBE_PATH), out);
 });
 
-Deno.test("auth: test routes a real 401 through the classifier", async () => {
+test("auth: test routes a real 401 through the classifier", async () => {
   const { ctx } = mockCtx([{ status: 401, body: gatewayError(AUTH_FAILURE_BODIES.notAJwt) }]);
   const out = await apiToken.test({ credential: { accessToken: "not-a-jwt" } }, ctx);
   assertEquals(out.ok, false);
   assert(out.message!.includes("could not parse the token"), out.message);
 });
 
-Deno.test("auth: no failure message ever echoes the credential", async () => {
+test("auth: no failure message ever echoes the credential", async () => {
   for (const body of Object.values(AUTH_FAILURE_BODIES)) {
     const { ctx } = mockCtx([{ status: 401, body: gatewayError(body) }]);
     const out = await apiToken.test({ credential: { accessToken: TOKEN } }, ctx);
@@ -119,7 +120,7 @@ Deno.test("auth: no failure message ever echoes the credential", async () => {
   }
 });
 
-Deno.test("auth: the method declares a secret field and both hooks", () => {
+test("auth: the method declares a secret field and both hooks", () => {
   assertEquals(apiToken.key, "api-token");
   assertEquals(apiToken.type, "bearer");
   assertEquals(apiToken.fields!.length, 1);

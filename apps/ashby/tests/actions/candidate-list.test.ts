@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-list.ts";
 
@@ -7,14 +8,14 @@ const page = (results: unknown[], extra: Record<string, unknown> = {}) => ({
   body: { success: true, results, moreDataAvailable: false, ...extra },
 });
 
-Deno.test("candidate-list: converts a date filter to Unix milliseconds", async () => {
+test("candidate-list: converts a date filter to Unix milliseconds", async () => {
   const { ctx, calls } = mockCtx([page([{ id: "c1" }])]);
   await action.execute!({ createdAfter: "2026-08-18T12:00:00Z" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).createdAfter, 1787054400000);
 });
 
 /** The token arrives on the last page, and only a completed walk gets one. */
-Deno.test("candidate-list: returns the sync token when the walk finished", async () => {
+test("candidate-list: returns the sync token when the walk finished", async () => {
   const { ctx } = mockCtx([page([{ id: "c1" }], { syncToken: "Rld2D" })]);
   const result = await action.execute!({ returnAll: true }, ctx) as {
     syncToken: string;
@@ -24,7 +25,7 @@ Deno.test("candidate-list: returns the sync token when the walk finished", async
   assertEquals(result.moreDataAvailable, false);
 });
 
-Deno.test("candidate-list: a truncated walk returns no token and says so", async () => {
+test("candidate-list: a truncated walk returns no token and says so", async () => {
   const { ctx } = mockCtx([
     page([{ id: "c1" }, { id: "c2" }], {
       moreDataAvailable: true,
@@ -40,14 +41,14 @@ Deno.test("candidate-list: a truncated walk returns no token and says so", async
   assertEquals(result.moreDataAvailable, true);
 });
 
-Deno.test("candidate-list: passes a previous sync token straight through", async () => {
+test("candidate-list: passes a previous sync token straight through", async () => {
   const { ctx, calls } = mockCtx([page([])]);
   await action.execute!({ syncToken: "Rld2D" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).syncToken, "Rld2D");
 });
 
 /** A count and whether a token arrived — never the candidates. */
-Deno.test("candidate-list: logs no personal data", async () => {
+test("candidate-list: logs no personal data", async () => {
   const { ctx, logs } = mockCtx([page([{ id: "c1", primaryEmailAddress: "ada@example.com" }])]);
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("ada@example.com"), JSON.stringify(logs));

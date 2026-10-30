@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectUserList from "../../actions/project-user-list.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("project-user-list: GET /api/v3/portal/1/projects/2/users", async () => {
+test("project-user-list: GET /api/v3/portal/1/projects/2/users", async () => {
   const { ctx, calls } = mockProjectsCtx([{
     body: {
       "page_info": { "page": 1, "per_page": 100, "has_next_page": false },

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/table-render.ts";
 import { exec, IMG_HEADERS, mockCtx, PNG } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const DATA = {
   dataSource: [{ name: "Ada" }, "-"],
 };
 
-Deno.test("table-render: parses JSON text params and POSTs /v1/table", async () => {
+test("table-render: parses JSON text params and POSTs /v1/table", async () => {
   const { ctx, calls, created } = mockCtx([{ headers: IMG_HEADERS, body: PNG }], { files: true });
   const out = await exec(action, { data: JSON.stringify(DATA), options: '{"cellWidth":120}' }, ctx);
   assertEquals(calls[0].url, "https://quickchart.io/v1/table");
@@ -16,7 +17,7 @@ Deno.test("table-render: parses JSON text params and POSTs /v1/table", async () 
   assertEquals(out.contentType, "image/png");
 });
 
-Deno.test("table-render: objects pass through; invalid JSON text is rejected before any request", async () => {
+test("table-render: objects pass through; invalid JSON text is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([{ headers: IMG_HEADERS, body: PNG }]);
   await exec(action, { data: DATA }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { data: DATA });

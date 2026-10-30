@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/create-company.ts";
 
-Deno.test("create-company: POSTs to /companies with the documented body", async () => {
+test("create-company: POSTs to /companies with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 9607580 } }]);
   await action.execute({
     name: "Demo Company",
@@ -24,7 +25,7 @@ Deno.test("create-company: POSTs to /companies with the documented body", async 
   });
 });
 
-Deno.test("create-company: is a non-idempotent perform — email domain is a unique key", () => {
+test("create-company: is a non-idempotent perform — email domain is a unique key", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals(param(action, "name").required, true);

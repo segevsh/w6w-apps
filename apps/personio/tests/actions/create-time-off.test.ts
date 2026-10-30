@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-time-off.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-time-off: posts application/x-www-form-urlencoded, NOT JSON", async () => {
+test("create-time-off: posts application/x-www-form-urlencoded, NOT JSON", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -29,7 +30,7 @@ Deno.test("create-time-off: posts application/x-www-form-urlencoded, NOT JSON", 
   assertEquals(calls[0].body!.startsWith("{"), false);
 });
 
-Deno.test("create-time-off: flattens the created TimeOffPeriod in the response", async () => {
+test("create-time-off: flattens the created TimeOffPeriod in the response", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/receiver-set-active.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("receiver-set-active: activates", async () => {
+test("receiver-set-active: activates", async () => {
   const { ctx, calls } = mockCtx([{ body: true }]);
   await action.execute({ groupId: "5", receiver: "11", active: true }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("receiver-set-active: activates", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("receiver-set-active: deactivates", async () => {
+test("receiver-set-active: deactivates", async () => {
   const { ctx, calls } = mockCtx([{ body: true }]);
   await action.execute({ groupId: "5", receiver: "a@b.co", active: false }, ctx);
   assertEquals(
@@ -19,7 +20,7 @@ Deno.test("receiver-set-active: deactivates", async () => {
   );
 });
 
-Deno.test("receiver-set-active: requires an explicit boolean", async () => {
+test("receiver-set-active: requires an explicit boolean", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "5", receiver: "11" }, ctx),

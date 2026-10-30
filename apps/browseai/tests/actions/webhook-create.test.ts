@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs hookUrl/eventType and unwraps webhook", async () => {
+test("webhook-create: POSTs hookUrl/eventType and unwraps webhook", async () => {
   const webhook = { id: "w1", url: "https://x", webhookEvent: "taskFinished", createdAt: 1 };
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("webhook", webhook) }]);
   const out = await webhookCreate.execute(
@@ -20,6 +21,6 @@ Deno.test("webhook-create: POSTs hookUrl/eventType and unwraps webhook", async (
  * Unlike Apify's Create Webhook, Browse AI documents no idempotency key for
  * this endpoint — calling it twice registers two webhooks that both fire.
  */
-Deno.test("webhook-create: is declared non-idempotent", () => {
+test("webhook-create: is declared non-idempotent", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
 const conn = { display: { domain: "acme.us.auth0.com" } };
 
-Deno.test("user-list: sends the Lucene query with the v3 search engine", async () => {
+test("user-list: sends the Lucene query with the v3 search engine", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { users: [{ user_id: "a" }], total: 1 } }],
     conn,
@@ -16,7 +17,7 @@ Deno.test("user-list: sends the Lucene query with the v3 search engine", async (
 });
 
 /** Auth0 caps a search at 1,000 without saying so. */
-Deno.test("user-list: reports the 1,000-result ceiling as a flag and a warning", async () => {
+test("user-list: reports the 1,000-result ceiling as a flag and a warning", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { users: [{ user_id: "a" }], total: 4321 },
@@ -30,14 +31,14 @@ Deno.test("user-list: reports the 1,000-result ceiling as a flag and a warning",
   );
 });
 
-Deno.test("user-list: an ordinary result is not flagged as capped", async () => {
+test("user-list: an ordinary result is not flagged as capped", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { users: [{ user_id: "a" }], total: 1 } }], conn);
   const out = await action.execute!({ limit: 10 }, ctx) as { capped: boolean };
   assertEquals(out.capped, false);
 });
 
 /** The consistency warning is the reason this action exists in this shape. */
-Deno.test("user-list: the description names both silent limits", () => {
+test("user-list: the description names both silent limits", () => {
   assert(/[Ee]ventually consistent/.test(action.description!), action.description);
   assert(/1,000/.test(action.description!), action.description);
 });

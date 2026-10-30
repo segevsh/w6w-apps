@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listActiveSenderNumbers from "../../actions/list-active-sender-numbers.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => listActiveSenderNumbers.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("list-active-sender-numbers: declares a read action with a description, params and output", () => {
+test("list-active-sender-numbers: declares a read action with a description, params and output", () => {
   assertEquals(listActiveSenderNumbers.key, "list-active-sender-numbers");
   assertEquals(listActiveSenderNumbers.type, "read");
   assert((listActiveSenderNumbers.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("list-active-sender-numbers: declares a read action with a description
   assertEquals(listActiveSenderNumbers.idempotent, undefined);
 });
 
-Deno.test("list-active-sender-numbers: sends the documented request and returns the documented shape", async () => {
+test("list-active-sender-numbers: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       {
@@ -48,7 +49,7 @@ Deno.test("list-active-sender-numbers: sends the documented request and returns 
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-active-sender-numbers: a SOLAPI error body is thrown with its code and message", async () => {
+test("list-active-sender-numbers: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

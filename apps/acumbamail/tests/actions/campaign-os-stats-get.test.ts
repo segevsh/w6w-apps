@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import campaignOsStatsGet from "../../actions/campaign-os-stats-get.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-os-stats-get: POST /api/1/getCampaignOpenersByOs/ with the documented form fields", async () => {
+test("campaign-os-stats-get: POST /api/1/getCampaignOpenersByOs/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sample: "ok" } }]);
   const out = await campaignOsStatsGet.execute({ "campaign_id": 55 } as never, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("campaign-os-stats-get: POST /api/1/getCampaignOpenersByOs/ with the d
   assertEquals(out, { result: { sample: "ok" } });
 });
 
-Deno.test("campaign-os-stats-get: a vendor error surfaces its status and body", async () => {
+test("campaign-os-stats-get: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await campaignOsStatsGet.execute({ "campaign_id": 55 } as never, ctx)
@@ -25,7 +26,7 @@ Deno.test("campaign-os-stats-get: a vendor error surfaces its status and body", 
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("campaign-os-stats-get: an empty campaign_id fails before any request", async () => {
+test("campaign-os-stats-get: an empty campaign_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await campaignOsStatsGet.execute({ "campaign_id": "  " } as never, ctx),

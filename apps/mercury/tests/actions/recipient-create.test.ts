@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recipientCreate from "../../actions/recipient-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipient-create: POSTs /recipients with name and emails", async () => {
+test("recipient-create: POSTs /recipients with name and emails", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec_new" } }]);
   await recipientCreate.execute({ name: "Acme Corp", emails: ["billing@acme.test"] }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v1/recipients");
@@ -12,7 +13,7 @@ Deno.test("recipient-create: POSTs /recipients with name and emails", async () =
   assertEquals(body.emails, ["billing@acme.test"]);
 });
 
-Deno.test("recipient-create: parses electronicRoutingInfo from a JSON string param", async () => {
+test("recipient-create: parses electronicRoutingInfo from a JSON string param", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await recipientCreate.execute(
     {
@@ -38,7 +39,7 @@ Deno.test("recipient-create: parses electronicRoutingInfo from a JSON string par
   assertEquals(body.electronicRoutingInfo.electronicAccountType, "businessChecking");
 });
 
-Deno.test("recipient-create: an unparseable routing-info JSON string throws before any request", async () => {
+test("recipient-create: an unparseable routing-info JSON string throws before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

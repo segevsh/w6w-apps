@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { FigmaClient } from "../../lib/client.ts";
 
-Deno.test("client: prefixes the base URL and defaults to GET", async () => {
+test("client: prefixes the base URL and defaults to GET", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "abc" } }]);
   const client = new FigmaClient(ctx);
   await client.request("/v1/me");
@@ -12,14 +13,14 @@ Deno.test("client: prefixes the base URL and defaults to GET", async () => {
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new FigmaClient(ctx);
   const result = await client.request("/v1/files/f1/comments/c1", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"status":404,"err":"Not found"}' },
   ]);
@@ -32,7 +33,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v1/files/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FigmaClient(ctx);
   await client.request("/v1/files/f1/nodes", {
@@ -45,7 +46,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("geometry"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   const client = new FigmaClient(ctx);
   await client.request("/v1/files/f1/comments", {
@@ -56,7 +57,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   assertEquals(JSON.parse(calls[0].body!), { message: "hi" });
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FigmaClient(ctx);
   await client.request("https://example.internal/foo?x=1");

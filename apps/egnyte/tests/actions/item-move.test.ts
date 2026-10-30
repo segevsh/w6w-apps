@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockEgnyteCtx } from "../_helpers.ts";
 import action from "../../actions/item-move.ts";
 
-Deno.test("item-move: POSTs the action with destination and omits unset options", async () => {
+test("item-move: POSTs the action with destination and omits unset options", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: { path: "/B/x", group_id: "g" } }]);
   const out = await action.execute({ path: "/A/x", destination: "/B/x" }, ctx);
   assertEquals(calls[0].url, "https://acme.egnyte.com/pubapi/v1/fs/A/x");
@@ -11,7 +12,7 @@ Deno.test("item-move: POSTs the action with destination and omits unset options"
   assertEquals(out, { path: "/B/x", group_id: "g" });
 });
 
-Deno.test("item-move: forwards permissions and folder options mode", async () => {
+test("item-move: forwards permissions and folder options mode", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: {} }]);
   await action.execute(
     {

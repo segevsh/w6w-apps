@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-delete.ts";
 
-Deno.test("contact-delete: deletes by comma-separated ids", async () => {
+test("contact-delete: deletes by comma-separated ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { job_id: "job-1" } }]);
   const result = await action.execute!({ ids: "abc, def" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("contact-delete: deletes by comma-separated ids", async () => {
   assertEquals(result, { job_id: "job-1" });
 });
 
-Deno.test("contact-delete: deleteAll adds delete_all_contacts=true", async () => {
+test("contact-delete: deleteAll adds delete_all_contacts=true", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { job_id: "job-2" } }]);
   await action.execute!({ deleteAll: true, ids: "" }, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("contact-delete: deleteAll adds delete_all_contacts=true", async () =>
   );
 });
 
-Deno.test("contact-delete: propagates non-2xx as Error", async () => {
+test("contact-delete: propagates non-2xx as Error", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "forbidden" }]);
   await assertRejects(
     async () => await action.execute!({ ids: "x" }, ctx),

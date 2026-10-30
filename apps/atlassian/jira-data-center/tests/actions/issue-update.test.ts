@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueUpdate from "../../actions/issue-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("issue-update: PUTs only the fields that were actually set", async () => {
+test("issue-update: PUTs only the fields that were actually set", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await issueUpdate.execute({ issueKey: "ENG-1", summary: "New summary" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("issue-update: PUTs only the fields that were actually set", async () 
   assertEquals(body.fields, { summary: "New summary" });
 });
 
-Deno.test("issue-update: declared idempotent", () => {
+test("issue-update: declared idempotent", () => {
   assertEquals(issueUpdate.idempotent, true);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listMandates from "../../actions/list-mandates.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const page = listEnvelope("mandates", [{ id: "MD1", status: "active" }], { after: "C2" });
 
-Deno.test("list-mandates: GET /mandates and the shared cursor output", async () => {
+test("list-mandates: GET /mandates and the shared cursor output", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await listMandates.execute!({}, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("list-mandates: GET /mandates and the shared cursor output", async () 
   assertEquals(out.afterCursor, "C2");
 });
 
-Deno.test("list-mandates: each filter maps to the vendor's own snake_case query key", async () => {
+test("list-mandates: each filter maps to the vendor's own snake_case query key", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await listMandates.execute!({
     customer: "CU1",

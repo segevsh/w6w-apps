@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookSubscribe from "../../actions/webhook-subscribe.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-subscribe: calls POST /subscribe with a JSON body", async () => {
+test("webhook-subscribe: calls POST /subscribe with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { subscription_id: 253485285 } }]);
   const out = await webhookSubscribe.execute(
     { event: "*", targetUrl: "https://example.com/hook", triggerFields: { mode_int: 2 } },
@@ -19,6 +20,6 @@ Deno.test("webhook-subscribe: calls POST /subscribe with a JSON body", async () 
   assertEquals(out.subscription_id, 253485285);
 });
 
-Deno.test("webhook-subscribe: is not idempotent", () => {
+test("webhook-subscribe: is not idempotent", () => {
   assertEquals(webhookSubscribe.idempotent, false);
 });

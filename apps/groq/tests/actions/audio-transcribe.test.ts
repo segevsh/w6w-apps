@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audio-transcribe.ts";
 
 const AUDIO_B64 = "aGVsbG8=";
 
-Deno.test("audio-transcribe: POSTs multipart to /audio/transcriptions with a file", async () => {
+test("audio-transcribe: POSTs multipart to /audio/transcriptions with a file", async () => {
   const { ctx, calls } = mockCtx([{ body: { text: "hi" } }]);
   await action.execute!({ file: AUDIO_B64, model: "whisper-large-v3-turbo" }, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("audio-transcribe: POSTs multipart to /audio/transcriptions with a fil
 
 // Groq accepts a plain `url` INSTEAD of a multipart file upload — OpenAI's
 // own Whisper endpoint has no such option, so this is the Groq-specific path.
-Deno.test("audio-transcribe: accepts a URL instead of a file", async () => {
+test("audio-transcribe: accepts a URL instead of a file", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { url: "https://example.com/clip.mp3", model: "whisper-large-v3-turbo" },
@@ -32,7 +33,7 @@ Deno.test("audio-transcribe: accepts a URL instead of a file", async () => {
   assertEquals(form.get("file"), null);
 });
 
-Deno.test("audio-transcribe: forwards optional language/prompt/format/temperature", async () => {
+test("audio-transcribe: forwards optional language/prompt/format/temperature", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -58,7 +59,7 @@ Deno.test("audio-transcribe: forwards optional language/prompt/format/temperatur
   assertEquals(form.getAll("timestamp_granularities[]"), ["word", "segment"]);
 });
 
-Deno.test("audio-transcribe: rejects when neither file nor url is provided", async () => {
+test("audio-transcribe: rejects when neither file nor url is provided", async () => {
   const { ctx, calls } = mockCtx();
   let threw = false;
   try {

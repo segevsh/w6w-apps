@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import allocationList from "../../actions/allocation-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("allocation-list: GET /allocations with the documented query and body", async () => {
+test("allocation-list: GET /allocations with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await allocationList.execute({}, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("allocation-list: GET /allocations with the documented query and body"
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": null });
 });
 
-Deno.test("allocation-list: an Everhour error surfaces its message and status", async () => {
+test("allocation-list: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(allocationList.execute({}, ctx)),
@@ -30,6 +31,6 @@ Deno.test("allocation-list: an Everhour error surfaces its message and status", 
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("allocation-list: declares search", () => {
+test("allocation-list: declares search", () => {
   assertEquals(allocationList.type, "search");
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import subscribe from "../../actions/subscribe-webhook.ts";
 
-Deno.test("subscribe-webhook: POSTs {target_url, event} and returns the one-time secret", async () => {
+test("subscribe-webhook: POSTs {target_url, event} and returns the one-time secret", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "w1", secret: "s3cret" } }]);
   const out = await subscribe.execute({
     event: "booking_new_any_status",
@@ -17,7 +18,7 @@ Deno.test("subscribe-webhook: POSTs {target_url, event} and returns the one-time
   assertEquals(out, { id: "w1", secret: "s3cret" });
 });
 
-Deno.test("subscribe-webhook: refuses an event Lodgify does not document", async () => {
+test("subscribe-webhook: refuses an event Lodgify does not document", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(subscribe.execute({ event: "nope", targetUrl: "https://x" }, ctx)),

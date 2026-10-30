@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobNoteCreate from "../../actions/job-note-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-note-create: POSTs the note content", async () => {
+test("job-note-create: POSTs the note content", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "n1", content: "Parts ordered" } }]);
   const out = await jobNoteCreate.execute({ jobId: "j1", content: "Parts ordered" }, ctx) as {
     id: string;
@@ -13,6 +14,6 @@ Deno.test("job-note-create: POSTs the note content", async () => {
   assertEquals(out.id, "n1");
 });
 
-Deno.test("job-note-create: is not idempotent — notes accumulate", () => {
+test("job-note-create: is not idempotent — notes accumulate", () => {
   assertEquals(jobNoteCreate.idempotent, false);
 });

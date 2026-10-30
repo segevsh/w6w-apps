@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: POSTs only the title when nothing else is given", async () => {
+test("create-task: POSTs only the title when nothing else is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "T1" } }]);
   await action.execute!({ taskList: "L1", title: "Buy milk" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/tasks/v1/lists/L1/tasks");
@@ -10,7 +11,7 @@ Deno.test("create-task: POSTs only the title when nothing else is given", async 
   assertEquals(JSON.parse(calls[0].body!), { title: "Buy milk" });
 });
 
-Deno.test("create-task: sends every writable body field", async () => {
+test("create-task: sends every writable body field", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     taskList: "L1",
@@ -29,7 +30,7 @@ Deno.test("create-task: sends every writable body field", async () => {
   });
 });
 
-Deno.test("create-task: parent/previous are query params, never body fields", async () => {
+test("create-task: parent/previous are query params, never body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ taskList: "L1", title: "Sub", parent: "T0", previous: "T5" }, ctx);
   const p = new URL(calls[0].url).searchParams;

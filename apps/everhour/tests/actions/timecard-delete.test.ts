@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timecardDelete from "../../actions/timecard-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timecard-delete: DELETE /users/{userId}/timecards/{date} with the documented query and body", async () => {
+test("timecard-delete: DELETE /users/{userId}/timecards/{date} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await timecardDelete.execute({ "userId": 89, "date": "2020-10-21" }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("timecard-delete: DELETE /users/{userId}/timecards/{date} with the doc
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("timecard-delete: an Everhour error surfaces its message and status", async () => {
+test("timecard-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(timecardDelete.execute({ "userId": 89, "date": "2020-10-21" }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("timecard-delete: an Everhour error surfaces its message and status", 
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timecard-delete: declares perform and idempotent=true", () => {
+test("timecard-delete: declares perform and idempotent=true", () => {
   assertEquals(timecardDelete.type, "perform");
   assertEquals(timecardDelete.idempotent, true);
 });

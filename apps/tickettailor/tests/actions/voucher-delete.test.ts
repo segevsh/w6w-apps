@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voucherDelete from "../../actions/voucher-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("voucher-delete: DELETEs and returns the 200 body", async () => {
+test("voucher-delete: DELETEs and returns the 200 body", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "vo_1", object: "voucher", deleted: "true" } },
   ]);

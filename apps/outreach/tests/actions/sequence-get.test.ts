@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sequenceGet from "../../actions/sequence-get.ts";
 import { errorsBody, mockCtx, pathOf, queryOf, single } from "../_helpers.ts";
 
-Deno.test("sequence-get: GET /sequences/{id} returns the resource and included", async () => {
+test("sequence-get: GET /sequences/{id} returns the resource and included", async () => {
   const { ctx, calls } = mockCtx([{
     body: { ...single("sequence", 42, { name: "x" }), included: [{ type: "user", id: 1 }] },
   }]);
@@ -18,13 +19,13 @@ Deno.test("sequence-get: GET /sequences/{id} returns the resource and included",
   assertEquals(out.included.length, 1);
 });
 
-Deno.test("sequence-get: include and sparse fields are forwarded", async () => {
+test("sequence-get: include and sparse fields are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: single("sequence", 1) }]);
   await sequenceGet.execute({ id: "1", include: "owner", fields: "name" }, ctx);
   assertEquals(queryOf(calls[0].url), { include: "owner", "fields[sequence]": "name" });
 });
 
-Deno.test("sequence-get: a non-integer id is refused before any request", async () => {
+test("sequence-get: a non-integer id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await sequenceGet.execute({ id: "../users" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("sequence-get: a non-integer id is refused before any request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sequence-get: 404 resourceNotFound is reported", async () => {
+test("sequence-get: 404 resourceNotFound is reported", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorsBody("resourceNotFound", "Resource Not Found", "Could not find it."),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueDelete from "../../actions/issue-delete.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("issue-delete: DELETE /api/v3/portal/1/projects/2/issues/60", async () => {
+test("issue-delete: DELETE /api/v3/portal/1/projects/2/issues/60", async () => {
   const { ctx, calls } = mockProjectsCtx([{ status: 204 }]);
   const res = await issueDelete.execute(
     { "portalId": "1", "projectId": "2", "issueId": "60" } as never,

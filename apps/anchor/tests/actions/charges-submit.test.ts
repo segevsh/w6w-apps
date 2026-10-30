@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import chargesSubmit from "../../actions/charges-submit.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("charges-submit: sends POST /billing/a1/submit", async () => {
+test("charges-submit: sends POST /billing/a1/submit", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "adHocChargesIds": ["x"], "serviceBillCommandsIds": [] },
   }]);
@@ -31,7 +32,7 @@ Deno.test("charges-submit: sends POST /billing/a1/submit", async () => {
   assertEquals(out.adHocChargesIds, ["x"]);
 });
 
-Deno.test("charges-submit: a non-2xx answer throws with the vendor's error code", async () => {
+test("charges-submit: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {
@@ -50,7 +51,7 @@ Deno.test("charges-submit: a non-2xx answer throws with the vendor's error code"
   assert(message.includes("FORBIDDEN_USER"), message);
 });
 
-Deno.test("charges-submit: billingDetails is required", async () => {
+test("charges-submit: billingDetails is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let failed = false;
   try {

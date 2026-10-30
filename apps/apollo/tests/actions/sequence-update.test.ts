@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceUpdate from "../../actions/sequence-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sequence-update: PUTs /sequences/{id} and returns the response as-is (no envelope key)", async () => {
+test("sequence-update: PUTs /sequences/{id} and returns the response as-is (no envelope key)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "seq1", name: "New Name", active: true } }]);
   const out = await sequenceUpdate.execute({ id: "seq1", name: "New Name" }, ctx) as {
     sequence: { name: string };
@@ -12,6 +13,6 @@ Deno.test("sequence-update: PUTs /sequences/{id} and returns the response as-is 
   assertEquals(out.sequence.name, "New Name");
 });
 
-Deno.test("sequence-update: idempotent", () => {
+test("sequence-update: idempotent", () => {
   assertEquals(sequenceUpdate.idempotent, true);
 });

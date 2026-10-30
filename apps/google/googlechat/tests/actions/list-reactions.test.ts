@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-reactions.ts";
 
-Deno.test("list-reactions: GETs the message's reactions collection", async () => {
+test("list-reactions: GETs the message's reactions collection", async () => {
   const { ctx, calls } = mockCtx([{ body: { reactions: [] } }]);
   await action.execute!({ space: "A1", message: "B1.B1" }, ctx);
   assertEquals(calls[0].method, "GET");
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/A1/messages/B1.B1/reactions");
 });
 
-Deno.test("list-reactions: passes filter and paging through", async () => {
+test("list-reactions: passes filter and paging through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     space: "spaces/A1",
@@ -24,7 +25,7 @@ Deno.test("list-reactions: passes filter and paging through", async () => {
   assertEquals(p.get("pageToken"), "tok");
 });
 
-Deno.test("list-reactions: a full message resource name overrides the space field", async () => {
+test("list-reactions: a full message resource name overrides the space field", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "IGNORED", message: "spaces/A9/messages/B9" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/A9/messages/B9/reactions");

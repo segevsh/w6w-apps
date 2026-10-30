@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import phaseCreate from "../../actions/phase-create.ts";
 
-Deno.test("phase-create: creates a phase and returns it", async () => {
+test("phase-create: creates a phase and returns it", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { createPhase: { phase: { id: "1", name: "Review" } } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("phase-create: creates a phase and returns it", async () => {
   assert(q.includes('name: "Review"'));
 });
 
-Deno.test("phase-create: passes done/description when given", async () => {
+test("phase-create: passes done/description when given", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { createPhase: { phase: { id: "1" } } } } }]);
   await phaseCreate.execute({ pipeId: "123", name: "Done", done: true, description: "final" }, ctx);
   const q = normalizeGql(JSON.parse(calls[0].body!).query);
@@ -22,7 +23,7 @@ Deno.test("phase-create: passes done/description when given", async () => {
   assert(q.includes('description: "final"'));
 });
 
-Deno.test("phase-create: type/resource/idempotency metadata", () => {
+test("phase-create: type/resource/idempotency metadata", () => {
   assertEquals(phaseCreate.type, "perform");
   assertEquals(phaseCreate.resource, "phase");
   assertEquals(phaseCreate.idempotent, false);

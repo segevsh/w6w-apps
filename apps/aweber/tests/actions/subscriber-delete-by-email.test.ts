@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberDeleteByEmail from "../../actions/subscriber-delete-by-email.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-delete-by-email: deletes via subscriber_email on the collection", async () => {
+test("subscriber-delete-by-email: deletes via subscriber_email on the collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await subscriberDeleteByEmail.execute(
     { accountId: "1", listId: "2", email: "a@b.com" },

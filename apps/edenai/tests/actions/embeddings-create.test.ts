@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import embeddingsCreate from "../../actions/embeddings-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("embeddings-create: embeds one text and returns vectors in input order", async () => {
+test("embeddings-create: embeds one text and returns vectors in input order", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [
@@ -31,13 +32,13 @@ Deno.test("embeddings-create: embeds one text and returns vectors in input order
   assertEquals(out.cost, 0.0001);
 });
 
-Deno.test("embeddings-create: a JSON array input embeds several texts", async () => {
+test("embeddings-create: a JSON array input embeds several texts", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await embeddingsCreate.execute({ model: "m", input: '["a","b"]' }, ctx);
   assertEquals(bodyOf(calls[0]).input, ["a", "b"]);
 });
 
-Deno.test("embeddings-create: empty input fails before any request", async () => {
+test("embeddings-create: empty input fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await embeddingsCreate.execute({ model: "m", input: "" }, ctx),

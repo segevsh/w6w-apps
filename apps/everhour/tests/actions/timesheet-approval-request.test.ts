@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timesheetApprovalRequest from "../../actions/timesheet-approval-request.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timesheet-approval-request: POST /timesheets/{timesheetId}/approval with the documented query and body", async () => {
+test("timesheet-approval-request: POST /timesheets/{timesheetId}/approval with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timesheetApprovalRequest.execute({
     "timesheetId": 148562535,
@@ -27,7 +28,7 @@ Deno.test("timesheet-approval-request: POST /timesheets/{timesheetId}/approval w
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("timesheet-approval-request: an Everhour error surfaces its message and status", async () => {
+test("timesheet-approval-request: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -44,7 +45,7 @@ Deno.test("timesheet-approval-request: an Everhour error surfaces its message an
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timesheet-approval-request: declares perform and idempotent=false", () => {
+test("timesheet-approval-request: declares perform and idempotent=false", () => {
   assertEquals(timesheetApprovalRequest.type, "perform");
   assertEquals(timesheetApprovalRequest.idempotent, false);
 });

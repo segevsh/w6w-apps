@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   compact,
   MailerSendClient,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: arrays in a query are bracketed PHP-style and empties dropped", async () => {
+test("client: arrays in a query are bracketed PHP-style and empties dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MailerSendClient(ctx).json("/x", {
     query: { status: ["a", "b"], q: "", z: undefined, n: 0 },
@@ -20,7 +21,7 @@ Deno.test("client: arrays in a query are bracketed PHP-style and empties dropped
   assertEquals(u.searchParams.has("q"), false);
 });
 
-Deno.test("client: an empty success body becomes {} and the error format carries fields", async () => {
+test("client: an empty success body becomes {} and the error format carries fields", async () => {
   const a = mockCtx([{ status: 202, body: undefined }]);
   assertEquals(await new MailerSendClient(a.ctx).json("/x", { method: "POST", body: {} }), {});
   const b = mockCtx([{ status: 422, body: { message: "bad", errors: { f: ["m1", "m2"] } } }]);
@@ -29,7 +30,7 @@ Deno.test("client: an empty success body becomes {} and the error format carries
   assert(String(e).includes("f: m1"));
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -46,7 +47,7 @@ Deno.test("client: helpers", () => {
   assertEquals(toUnix(12), 12);
 });
 
-Deno.test("client: redactSecrets strips keys containing secret at any depth, in arrays too", () => {
+test("client: redactSecrets strips keys containing secret at any depth, in arrays too", () => {
   assertEquals(
     redactSecrets({
       a: [{ signing_secret: "x", ok: 1 }],

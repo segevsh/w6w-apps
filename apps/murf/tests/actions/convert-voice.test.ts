@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/convert-voice.ts";
 import { exec, failure, mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const reply = {
   remaining_character_count: 5,
 };
 
-Deno.test("convert-voice: sends multipart with file_url, snake_case fields and a boundary header", async () => {
+test("convert-voice: sends multipart with file_url, snake_case fields and a boundary header", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await exec(action, {
     voiceId: "en-US-natalie",
@@ -36,7 +37,7 @@ Deno.test("convert-voice: sends multipart with file_url, snake_case fields and a
   assertEquals(out, reply);
 });
 
-Deno.test("convert-voice: requires voiceId and fileUrl", async () => {
+test("convert-voice: requires voiceId and fileUrl", async () => {
   const { ctx, calls } = mockCtx();
   assert((await failure(action, { voiceId: "", fileUrl: "u" }, ctx)).includes("voiceId"));
   assert((await failure(action, { voiceId: "v", fileUrl: "" }, ctx)).includes("fileUrl"));

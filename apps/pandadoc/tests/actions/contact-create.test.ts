@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs /contacts mapping camelCase to snake_case", async () => {
+test("contact-create: POSTs /contacts mapping camelCase to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1", email: "a@b.com" } }]);
   const out = await action.execute({
     email: "a@b.com",
@@ -36,17 +37,17 @@ Deno.test("contact-create: POSTs /contacts mapping camelCase to snake_case", asy
   assertEquals(out, { id: "c1", email: "a@b.com" });
 });
 
-Deno.test("contact-create: sends only what was supplied", async () => {
+test("contact-create: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ email: "a@b.com" }, ctx);
   assertEquals(bodyOf(calls[0]), { email: "a@b.com" });
 });
 
-Deno.test("contact-create: marks no param required — PandaDoc documents them all optional", () => {
+test("contact-create: marks no param required — PandaDoc documents them all optional", () => {
   assertEquals(action.params?.some((p) => p.required), false);
 });
 
-Deno.test("contact-create: is a non-idempotent perform — there is no upsert", () => {
+test("contact-create: is a non-idempotent perform — there is no upsert", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-send-to-segment.ts";
 
 const conn = { display: { baseUrl: "https://mautic.example.com" } };
 
-Deno.test("email-send-to-segment: POSTs /emails/{id}/send with no body when segmentIds is blank", async () => {
+test("email-send-to-segment: POSTs /emails/{id}/send with no body when segmentIds is blank", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { success: true, sentCount: 12, failedRecipients: 0 } },
   ], conn);
@@ -14,7 +15,7 @@ Deno.test("email-send-to-segment: POSTs /emails/{id}/send with no body when segm
   assertEquals(out, { success: true, sentCount: 12, failedRecipients: 0 });
 });
 
-Deno.test("email-send-to-segment: segmentIds overrides the email's own assigned segments", async () => {
+test("email-send-to-segment: segmentIds overrides the email's own assigned segments", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true } }], conn);
   await action.execute!({ emailId: 1, segmentIds: "3, 7" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).listIds, [3, 7]);

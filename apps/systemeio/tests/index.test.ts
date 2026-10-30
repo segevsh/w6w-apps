@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 41;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth!.length, 1);
   assertEquals(app.healthChecks!.length, 1);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -42,7 +44,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * enrollment) with no idempotency-key mechanism documented anywhere in the
  * OpenAPI schema. A retried create is a second resource, not a no-op.
  */
-Deno.test("index: no create action is marked idempotent", () => {
+test("index: no create action is marked idempotent", () => {
   for (
     const key of [
       "contact-create",
@@ -65,7 +67,7 @@ Deno.test("index: no create action is marked idempotent", () => {
  * to retry — a merge-patch/replace/delete/(un)assign lands at the same end
  * state no matter how many times it runs.
  */
-Deno.test("index: updates, deletes and tag toggles are marked idempotent", () => {
+test("index: updates, deletes and tag toggles are marked idempotent", () => {
   for (
     const key of [
       "contact-update",
@@ -89,7 +91,7 @@ Deno.test("index: updates, deletes and tag toggles are marked idempotent", () =>
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -108,9 +110,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -119,7 +121,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -137,7 +139,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * text legitimately says things like "on systeme.io's side" or "systeme.io
  * dashboard", and that is prose, not a hard-coded fetch target.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/api\.systeme\.io/.test(src), `${a.key}: contains the api.systeme.io host literal`);
@@ -150,7 +152,7 @@ Deno.test("index: no action hard-codes a host", async () => {
  * and not accidentally matching everything — several actions' description
  * text does say "systeme.io" without that being a network literal.
  */
-Deno.test("index: description prose may mention systeme.io without tripping the host-literal guard", async () => {
+test("index: description prose may mention systeme.io without tripping the host-literal guard", async () => {
   const mentioning = ["contact-create", "webhook-create", "funnel-create"];
   let sawMention = false;
   for (const key of mentioning) {
@@ -160,7 +162,7 @@ Deno.test("index: description prose may mention systeme.io without tripping the 
   assert(sawMention, "no action mentions systeme.io in prose — this test would pass vacuously");
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -177,12 +179,12 @@ Deno.test("index: connection identity is never reachable as an action param", ()
  * endpoint at all, but pinning it stops a future edit from swapping in
  * `/api/contacts`, which returns real contact PII on every check.
  */
-Deno.test("index: the auth probe is /api/contact_fields", async () => {
-  const src = code(await Deno.readTextFile(new URL("../auth/api-key.ts", import.meta.url)));
+test("index: the auth probe is /api/contact_fields", async () => {
+  const src = code(await denoReadTextFile(new URL("../auth/api-key.ts", import.meta.url)));
   assert(src.includes("/api/contact_fields"), "auth probe no longer hits /api/contact_fields");
 });
 
-Deno.test("index: the credential field is declared secret", () => {
+test("index: the credential field is declared secret", () => {
   const [method] = app.auth!;
   assertEquals(method.key, "api-key");
   assertEquals(method.type, "apiKey");
@@ -193,14 +195,14 @@ Deno.test("index: the credential field is declared secret", () => {
   assertEquals(typeof method.sign, "function");
 });
 
-Deno.test("index: the apiKey config matches the vendor's own header name", () => {
+test("index: the apiKey config matches the vendor's own header name", () => {
   const [method] = app.auth!;
   assertEquals(method.apiKey, { in: "header", name: "X-API-Key" });
 });
 
 // --- health --------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks!) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -214,7 +216,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * `ok` in the roll-up, so at any severity but `informational` a declared
  * absence pins the App's verdict at `unknown` forever.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   const unavailable = app.healthChecks!.filter((h) => h.unavailable);
   assert(unavailable.length > 0, "no declared absence — this test would pass vacuously");
   for (const h of unavailable) {
@@ -224,9 +226,9 @@ Deno.test("index: every unavailable health check is informational", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows the API host, and only that host", async () => {
+test("index: the manifest allows the API host, and only that host", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as {
     w6w: {
       id: string;
@@ -241,8 +243,8 @@ Deno.test("index: the manifest allows the API host, and only that host", async (
   assert(manifest.w6w.categories.length >= 1 && manifest.w6w.categories.length <= 3);
 });
 
-Deno.test("index: the icon is on the pack's normalized canvas and keeps the vendor's colours", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is on the pack's normalized canvas and keeps the vendor's colours", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Extracted from systeme.io's own header wordmark SVG (systemelogo.svg) on
   // 2026-08-24: the roundel-and-S mark, with the surrounding wordmark letters
   // dropped. `_tools/icon-normalize.ts` re-frames every mark onto one square
@@ -260,7 +262,7 @@ Deno.test("index: the icon is on the pack's normalized canvas and keeps the vend
   assert(svg.includes("#fff"), "the white background circle is missing");
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

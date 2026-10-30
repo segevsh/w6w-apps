@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import organizationGet from "../../actions/organization-get.ts";
 
-Deno.test("organization-get: sends every documented field in its documented place", async () => {
+test("organization-get: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("organization-get: sends every documented field in its documented plac
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("organization-get: declares its params and kind", () => {
+test("organization-get: declares its params and kind", () => {
   assertEquals((organizationGet.params ?? []).map((p) => p.key), ["uid"]);
   assertEquals((organizationGet.params ?? []).filter((p) => p.required).map((p) => p.key), ["uid"]);
   assertEquals(organizationGet.type, "read");

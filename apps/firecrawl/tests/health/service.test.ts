@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapResourceStatus } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -23,31 +24,31 @@ function page(
   };
 }
 
-Deno.test("mapResourceStatus: operational and resolved map to ok", () => {
+test("mapResourceStatus: operational and resolved map to ok", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("resolved"), "ok");
 });
 
-Deno.test("mapResourceStatus: degraded and maintenance map to degraded", () => {
+test("mapResourceStatus: degraded and maintenance map to degraded", () => {
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
 });
 
-Deno.test("mapResourceStatus: downtime and down map to down", () => {
+test("mapResourceStatus: downtime and down map to down", () => {
   assertEquals(mapResourceStatus("downtime"), "down");
   assertEquals(mapResourceStatus("down"), "down");
 });
 
-Deno.test("mapResourceStatus: an unrecognised value is unknown, never guessed", () => {
+test("mapResourceStatus: an unrecognised value is unknown, never guessed", () => {
   assertEquals(mapResourceStatus("something-new"), "unknown");
   assertEquals(mapResourceStatus(undefined), "unknown");
 });
 
-Deno.test("componentKey: slugifies a monitor's public name", () => {
+test("componentKey: slugifies a monitor's public name", () => {
   assertEquals(componentKey("api.firecrawl.dev"), "api-firecrawl-dev");
 });
 
-Deno.test("service: both monitors operational -> ok", async () => {
+test("service: both monitors operational -> ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page([
@@ -60,7 +61,7 @@ Deno.test("service: both monitors operational -> ok", async () => {
   assertEquals(report.components?.["api-firecrawl-dev"].state, "ok");
 });
 
-Deno.test("service: the API monitor down rolls up to down", async () => {
+test("service: the API monitor down rolls up to down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page([
@@ -73,7 +74,7 @@ Deno.test("service: the API monitor down rolls up to down", async () => {
   assertEquals(report.message?.includes("api.firecrawl.dev"), true);
 });
 
-Deno.test("service: an unrelated monitor added later is ignored", async () => {
+test("service: an unrelated monitor added later is ignored", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page([
@@ -86,13 +87,13 @@ Deno.test("service: an unrelated monitor added later is ignored", async () => {
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Firecrawl's reports unknown", async () => {
+test("service: a page that no longer self-identifies as Firecrawl's reports unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: page([{ name: "api.firecrawl.dev", status: "operational" }], {
@@ -105,7 +106,7 @@ Deno.test("service: a page that no longer self-identifies as Firecrawl's reports
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unsigned and declares its own status-host allowlist, never the app's", () => {
+test("service: unsigned and declares its own status-host allowlist, never the app's", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.firecrawl.dev"]);
 });

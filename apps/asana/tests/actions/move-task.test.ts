@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/move-task.ts";
 
-Deno.test("move-task: POSTs /sections/{section}/addTask with { data: { task: id } }", async () => {
+test("move-task: POSTs /sections/{section}/addTask with { data: { task: id } }", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ id: "t-1", section: "s-2" }, ctx);
   assertEquals(calls[0].method, "POST");

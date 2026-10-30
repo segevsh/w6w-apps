@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timecardUpdate from "../../actions/timecard-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timecard-update: PUT /users/{userId}/timecards/{date} with the documented query and body", async () => {
+test("timecard-update: PUT /users/{userId}/timecards/{date} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timecardUpdate.execute({
     "userId": 89,
@@ -30,7 +31,7 @@ Deno.test("timecard-update: PUT /users/{userId}/timecards/{date} with the docume
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("timecard-update: an Everhour error surfaces its message and status", async () => {
+test("timecard-update: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -49,7 +50,7 @@ Deno.test("timecard-update: an Everhour error surfaces its message and status", 
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timecard-update: declares perform and idempotent=true", () => {
+test("timecard-update: declares perform and idempotent=true", () => {
   assertEquals(timecardUpdate.type, "perform");
   assertEquals(timecardUpdate.idempotent, true);
 });

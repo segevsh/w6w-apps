@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/content-search.ts";
 
@@ -8,7 +9,7 @@ const display = { site: "acme" };
  * The one v1 endpoint that carries its weight: v2 publishes no search at all,
  * so CQL is only reachable there.
  */
-Deno.test("content-search: calls v1, because v2 has no search endpoint", async () => {
+test("content-search: calls v1, because v2 has no search endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [], totalSize: 0 } }], {
     display,
   });
@@ -18,7 +19,7 @@ Deno.test("content-search: calls v1, because v2 has no search endpoint", async (
   assertEquals(url.searchParams.get("cql"), 'type = page AND text ~ "onboarding"');
 });
 
-Deno.test("content-search: pages with v1's start/limit offsets, not v2's cursor", async () => {
+test("content-search: pages with v1's start/limit offsets, not v2's cursor", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], { display });
   await action.execute!({ cql: "type = page", limit: 10, start: 20, excerpt: "highlight" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -28,7 +29,7 @@ Deno.test("content-search: pages with v1's start/limit offsets, not v2's cursor"
   assertEquals(q.get("excerpt"), "highlight");
 });
 
-Deno.test("content-search: is typed as a search action and needs a query", async () => {
+test("content-search: is typed as a search action and needs a query", async () => {
   assertEquals(action.type, "search");
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({ cql: " " }, ctx), Error, "`cql`");

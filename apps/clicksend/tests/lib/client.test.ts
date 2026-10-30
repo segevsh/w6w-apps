@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   ClickSendClient,
@@ -8,23 +9,23 @@ import {
   truncate,
 } from "../../lib/client.ts";
 
-Deno.test("compact: drops undefined/null/empty-string keys, keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string keys, keeps false and 0", () => {
   const out = compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, g: "x" });
   assertEquals(out, { a: 1, e: false, f: 0, g: "x" });
 });
 
-Deno.test("truncate: passes short text through unchanged", () => {
+test("truncate: passes short text through unchanged", () => {
   assertEquals(truncate("hi"), "hi");
 });
 
-Deno.test("truncate: caps long text and reports the original length", () => {
+test("truncate: caps long text and reports the original length", () => {
   const long = "x".repeat(700);
   const out = truncate(long, 10);
   assertEquals(out.startsWith("x".repeat(10)), true);
   assertEquals(out.includes("700 bytes truncated"), true);
 });
 
-Deno.test("formatClickSendError: surfaces response_code and response_msg verbatim", () => {
+test("formatClickSendError: surfaces response_code and response_msg verbatim", () => {
   const raw = JSON.stringify({
     http_code: 401,
     response_code: "UNAUTHORIZED",
@@ -37,13 +38,13 @@ Deno.test("formatClickSendError: surfaces response_code and response_msg verbati
   assertEquals(msg.includes("GET /account"), true);
 });
 
-Deno.test("formatClickSendError: falls back to the raw body when it isn't the envelope shape", () => {
+test("formatClickSendError: falls back to the raw body when it isn't the envelope shape", () => {
   const msg = formatClickSendError(500, "POST", "/sms/send", "<html>gateway error</html>");
   assertEquals(msg.includes("500"), true);
   assertEquals(msg.includes("gateway error"), true);
 });
 
-Deno.test("partialFailures: reports only non-SUCCESS entries with their recipient", () => {
+test("partialFailures: reports only non-SUCCESS entries with their recipient", () => {
   const failures = partialFailures([
     { to: "+1", status: "SUCCESS" },
     { to: "+2", status: "INVALID_RECIPIENT" },
@@ -52,12 +53,12 @@ Deno.test("partialFailures: reports only non-SUCCESS entries with their recipien
   assertEquals(failures, ["+2: INVALID_RECIPIENT", "+3: INSUFFICIENT_CREDIT"]);
 });
 
-Deno.test("partialFailures: empty/undefined input yields no failures", () => {
+test("partialFailures: empty/undefined input yields no failures", () => {
   assertEquals(partialFailures(undefined), []);
   assertEquals(partialFailures([]), []);
 });
 
-Deno.test("ClickSendClient.data: unwraps the envelope's data field", async () => {
+test("ClickSendClient.data: unwraps the envelope's data field", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -75,7 +76,7 @@ Deno.test("ClickSendClient.data: unwraps the envelope's data field", async () =>
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("ClickSendClient: drops empty query params and sends JSON body with content-type", async () => {
+test("ClickSendClient: drops empty query params and sends JSON body with content-type", async () => {
   const { ctx, calls } = mockCtx([
     { body: { http_code: 200, response_code: "SUCCESS", response_msg: "ok", data: {} } },
     { body: { http_code: 200, response_code: "SUCCESS", response_msg: "ok", data: {} } },
@@ -92,7 +93,7 @@ Deno.test("ClickSendClient: drops empty query params and sends JSON body with co
   assertEquals(calls[1].body, JSON.stringify({ list_name: "x" }));
 });
 
-Deno.test("ClickSendClient: throws a formatted error on a non-2xx envelope", async () => {
+test("ClickSendClient: throws a formatted error on a non-2xx envelope", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -112,7 +113,7 @@ Deno.test("ClickSendClient: throws a formatted error on a non-2xx envelope", asy
   );
 });
 
-Deno.test("ClickSendClient: throws when the body isn't JSON at all", async () => {
+test("ClickSendClient: throws when the body isn't JSON at all", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const client = new ClickSendClient(ctx);
   await assertRejects(() => client.data("/account"), Error, "non-JSON body");

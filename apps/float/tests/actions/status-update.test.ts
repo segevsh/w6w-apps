@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import statusUpdate from "../../actions/status-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("status-update - PATCHes /status/{id} and returns the {status: [...]} wrapper", async () => {
+test("status-update - PATCHes /status/{id} and returns the {status: [...]} wrapper", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: [{ status_id: 1, status_name: "Renamed" }] },

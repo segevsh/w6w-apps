@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 
 import app from "../index.ts";
 
@@ -16,7 +18,7 @@ const ACTION_KEYS = [
 ];
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: {
     id: string;
@@ -31,7 +33,7 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports the ten CRM v1 actions, one auth method and one health check", () => {
+test("index: exports the ten CRM v1 actions, one auth method and one health check", () => {
   assertEquals(app.actions.map((a) => a.key).sort(), [...ACTION_KEYS].sort());
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
@@ -39,7 +41,7 @@ Deno.test("index: exports the ten CRM v1 actions, one auth method and one health
   assertEquals(app.healthChecks?.[0].key, "service");
 });
 
-Deno.test("index: every action has a unique kebab-case key, a description and an execute hook", () => {
+test("index: every action has a unique kebab-case key, a description and an execute hook", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
 
@@ -56,7 +58,7 @@ Deno.test("index: every action has a unique kebab-case key, a description and an
   }
 });
 
-Deno.test("index: every perform action declares idempotency, and only the updates are safe to retry", () => {
+test("index: every perform action declares idempotency, and only the updates are safe to retry", () => {
   for (const action of app.actions) {
     if (action.type !== "perform") continue;
     assertEquals(typeof action.idempotent, "boolean", `${action.key}: no idempotent flag`);
@@ -68,13 +70,13 @@ Deno.test("index: every perform action declares idempotency, and only the update
   assertEquals(idempotent("update-contact"), true);
 });
 
-Deno.test("index: every action requires the Connection, so nothing is invoked unauthenticated", () => {
+test("index: every action requires the Connection, so nothing is invoked unauthenticated", () => {
   for (const action of app.actions) {
     assertEquals(action.requiresAuth, undefined, `${action.key}: opts out of auth`);
   }
 });
 
-Deno.test("index: the Auth method is a query-string apiKey with a secret field and a probe", () => {
+test("index: the Auth method is a query-string apiKey with a secret field and a probe", () => {
   const method = app.auth![0];
   assertEquals(method.type, "apiKey");
   assertEquals(method.apiKey, { in: "query", name: "token" });
@@ -83,7 +85,7 @@ Deno.test("index: the Auth method is a query-string apiKey with a secret field a
   assertEquals(method.fields?.[0].type, "secret");
 });
 
-Deno.test("index: the health surface is the service feed plus the derived auth check", () => {
+test("index: the health surface is the service feed plus the derived auth check", () => {
   const check = app.healthChecks![0];
   assertEquals(check.kind, "service");
   assertEquals(check.severity, "informational");
@@ -92,7 +94,7 @@ Deno.test("index: the health surface is the service feed plus the derived auth c
   assertEquals(check.unavailable, undefined);
 });
 
-Deno.test("index: the manifest declares the CRM id, one crm category and one allowed host", () => {
+test("index: the manifest declares the CRM id, one crm category and one allowed host", () => {
   assertEquals(manifest.w6w.id, "io.w6w.rdstation");
   assertEquals(manifest.w6w.displayName, "RD Station CRM");
   assertEquals(manifest.w6w.categories, ["crm"]);
@@ -102,8 +104,8 @@ Deno.test("index: the manifest declares the CRM id, one crm category and one all
   assertEquals(typeof manifest.w6w.appearance.icon.alt, "string");
 });
 
-Deno.test("index: the declared icon is a real file next to the manifest", async () => {
-  const icon = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the declared icon is a real file next to the manifest", async () => {
+  const icon = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   assert(icon.trimStart().startsWith("<svg"), "icon is not an SVG document");
   assert(icon.includes('viewBox="0 0 370 64"'), "icon is not the vendor's developer-portal mark");
 });
@@ -116,12 +118,12 @@ Deno.test("index: the declared icon is a real file next to the manifest", async 
  * so this app ships that vendor file verbatim as `assets/icon.dark.svg` rather
  * than a locally re-inked copy; this pins that it is still declared and present.
  */
-Deno.test("index: a white-on-dark variant of the same artwork is declared and present", async () => {
+test("index: a white-on-dark variant of the same artwork is declared and present", async () => {
   const ref = manifest.w6w.appearance.darkMode?.icon?.svg;
   assertEquals(ref, "./assets/icon.dark.svg");
   assertEquals(manifest.w6w.appearance.darkMode?.icon?.alt, manifest.w6w.appearance.icon.alt);
 
-  const dark = await Deno.readTextFile(new URL("../assets/icon.dark.svg", import.meta.url));
+  const dark = await denoReadTextFile(new URL("../assets/icon.dark.svg", import.meta.url));
   assert(dark.includes('viewBox="0 0 370 64"'), "the dark variant is not the same artwork");
   // Hex casing is not semantic in SVG — this app ships the vendor's own dark
   // asset verbatim (`fill="#FFFFFF"`, uppercase), not a locally re-inked copy.
@@ -129,7 +131,7 @@ Deno.test("index: a white-on-dark variant of the same artwork is declared and pr
   assert(!/#002233/i.test(dark), "the dark variant still carries the invisible ink");
 });
 
-Deno.test("index: the status feed host is NOT in network.allow (the feed host is implicit)", () => {
+test("index: the status feed host is NOT in network.allow (the feed host is implicit)", () => {
   assert(!manifest.w6w.network.allow.includes("status.rdstation.com"));
   assertEquals(manifest.w6w.network.allow.length, 1);
 });

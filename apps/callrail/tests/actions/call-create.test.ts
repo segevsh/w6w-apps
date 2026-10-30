@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callCreate from "../../actions/call-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-create: POSTs the outbound-call body with snake_case field names", async () => {
+test("call-create: POSTs the outbound-call body with snake_case field names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "CAL1", direction: "outbound" } }]);
   const out = await callCreate.execute(
     {
@@ -27,6 +28,6 @@ Deno.test("call-create: POSTs the outbound-call body with snake_case field names
   assertEquals(out, { id: "CAL1", direction: "outbound" });
 });
 
-Deno.test("call-create: marked not idempotent — a retry must not place the call twice", () => {
+test("call-create: marked not idempotent — a retry must not place the call twice", () => {
   assertEquals(callCreate.idempotent, false);
 });

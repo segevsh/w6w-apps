@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-unlock.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("user-unlock: POSTs the unlock endpoint", async () => {
+test("user-unlock: POSTs the unlock endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }], display);
   const result = await action.execute!({ userId: "u1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,11 +14,11 @@ Deno.test("user-unlock: POSTs the unlock endpoint", async () => {
 });
 
 /** A lockout and a suspension are different states with different fixes. */
-Deno.test("user-unlock: says plainly that it does not lift a suspension", () => {
+test("user-unlock: says plainly that it does not lift a suspension", () => {
   assert(action.description!.includes("Does not lift a suspension"), action.description);
 });
 
-Deno.test("user-unlock: a blank id fails before any request", async () => {
+test("user-unlock: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`userId`");
   assertEquals(calls.length, 0);

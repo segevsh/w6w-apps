@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import keyValueStoreKeysList from "../../actions/key-value-store-keys-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * in UTF-8 binary order and answers with `isTruncated` /
  * `nextExclusiveStartKey` instead of `total` / `count` / `offset`.
  */
-Deno.test("key-value-store-keys-list: pages by key, not by offset", async () => {
+test("key-value-store-keys-list: pages by key, not by offset", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -31,11 +32,11 @@ Deno.test("key-value-store-keys-list: pages by key, not by offset", async () => 
   assertEquals(out.nextExclusiveStartKey, "page-2");
 });
 
-Deno.test("key-value-store-keys-list: does not offer an offset parameter", () => {
+test("key-value-store-keys-list: does not offer an offset parameter", () => {
   assertEquals(keyValueStoreKeysList.params?.some((p) => p.key === "offset"), false);
 });
 
-Deno.test("key-value-store-keys-list: prefix and collection filters are passed through", async () => {
+test("key-value-store-keys-list: prefix and collection filters are passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ items: [] }) }]);
   await keyValueStoreKeysList.execute(
     { storeId: "s1", prefix: "screenshot-", collection: "images" },

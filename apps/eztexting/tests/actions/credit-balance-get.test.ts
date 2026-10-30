@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import creditBalanceGet from "../../actions/credit-balance-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("credit-balance-get: calls GET /credits and returns the documented shape", async () => {
+test("credit-balance-get: calls GET /credits and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: { planCredits: 100, anytimeCredits: 5, totalCredits: 105 },
   }]);
@@ -14,7 +15,7 @@ Deno.test("credit-balance-get: calls GET /credits and returns the documented sha
   assertEquals(result, { "planCredits": 100, "anytimeCredits": 5, "totalCredits": 105 });
 });
 
-Deno.test("credit-balance-get: carries no credential — auth is the sign hook's job", async () => {
+test("credit-balance-get: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{
     body: { planCredits: 100, anytimeCredits: 5, totalCredits: 105 },
   }]);

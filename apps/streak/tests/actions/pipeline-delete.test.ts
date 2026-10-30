@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pipelineDelete from "../../actions/pipeline-delete.ts";
 import { mockCtx, pathOf, successBody } from "../_helpers.ts";
 
-Deno.test("pipeline-delete: DELETEs and returns {success}", async () => {
+test("pipeline-delete: DELETEs and returns {success}", async () => {
   const { ctx, calls } = mockCtx([{ body: successBody() }]);
   const out = await pipelineDelete.execute({ pipelineKey: "p1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

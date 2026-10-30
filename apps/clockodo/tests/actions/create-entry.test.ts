@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-entry.ts";
 import { API_ROOT, bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-entry: POSTs a time-span entry with only the given fields", async () => {
+test("create-entry: POSTs a time-span entry with only the given fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { entry: { id: 5 } } }]);
   const out = await exec(action, {
     customersId: 3,
@@ -25,7 +26,7 @@ Deno.test("create-entry: POSTs a time-span entry with only the given fields", as
   assertEquals(out, { entry: { id: 5 }, stopped: null });
 });
 
-Deno.test("create-entry: lump sum and lump-sum service forms map their own fields", async () => {
+test("create-entry: lump sum and lump-sum service forms map their own fields", async () => {
   const a = mockCtx([{ body: { entry: { id: 6 } } }]);
   await exec(action, { customersId: 3, servicesId: 4, timeSince: "t", lumpsum: 12.5 }, a.ctx);
   assertEquals(bodyOf(a.calls[0]), {
@@ -49,7 +50,7 @@ Deno.test("create-entry: lump sum and lump-sum service forms map their own field
   });
 });
 
-Deno.test("create-entry: incomplete forms are refused before any request", async () => {
+test("create-entry: incomplete forms are refused before any request", async () => {
   const none = mockCtx();
   await assertRejects(
     () => exec(action, { customersId: 3, timeSince: "t", servicesId: 1 }, none.ctx),

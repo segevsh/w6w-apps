@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("contact-create: POSTs names (null when omitted) and typed handles", async () => {
+test("contact-create: POSTs names (null when omitted) and typed handles", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "c_1" } }]);
   const result = await action.execute!(
     {
@@ -48,7 +49,7 @@ Deno.test("contact-create: POSTs names (null when omitted) and typed handles", a
   assertEquals(result, { "id": "c_1" });
 });
 
-Deno.test("contact-create: forwards custom attributes", async () => {
+test("contact-create: forwards custom attributes", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "c_1" } }]);
   const result = await action.execute!(
     { "email": "a@b.co", "customAttributes": [{ "id": "ca_1", "value": "x" }] } as never,
@@ -84,7 +85,7 @@ Deno.test("contact-create: forwards custom attributes", async () => {
   assertEquals(result, { "id": "c_1" });
 });
 
-Deno.test("contact-create: refuses a contact with no handle before calling the API", async () => {
+test("contact-create: refuses a contact with no handle before calling the API", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "firstName": "Ada" } as never, ctx),

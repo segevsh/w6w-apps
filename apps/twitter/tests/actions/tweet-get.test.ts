@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tweet-get.ts";
 
-Deno.test("tweet-get: GETs /tweets/{id}", async () => {
+test("tweet-get: GETs /tweets/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", text: "hi" } } }]);
   const out = await action.execute({ tweetId: "1" }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("tweet-get: GETs /tweets/{id}", async () => {
   assertEquals(out, { id: "1", text: "hi" });
 });
 
-Deno.test("tweet-get: joins tweetFields into the query string", async () => {
+test("tweet-get: joins tweetFields into the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", text: "hi" } } }]);
   await action.execute({ tweetId: "1", tweetFields: ["created_at", "public_metrics"] }, ctx);
   assertEquals(

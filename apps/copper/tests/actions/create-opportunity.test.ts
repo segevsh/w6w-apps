@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import action from "../../actions/create-opportunity.ts";
 
-Deno.test("create-opportunity: POSTs to /opportunities with the documented body", async () => {
+test("create-opportunity: POSTs to /opportunities with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 4417020 } }]);
   await action.execute({
     name: "New Demo Opportunity",
@@ -18,7 +19,7 @@ Deno.test("create-opportunity: POSTs to /opportunities with the documented body"
   });
 });
 
-Deno.test("create-opportunity: sends the whole field set in snake_case", async () => {
+test("create-opportunity: sends the whole field set in snake_case", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({
     name: "Deal",
@@ -54,24 +55,24 @@ Deno.test("create-opportunity: sends the whole field set in snake_case", async (
   });
 });
 
-Deno.test("create-opportunity: closeDate is TEXT, not a timestamp — Copper's documented exception", () => {
+test("create-opportunity: closeDate is TEXT, not a timestamp — Copper's documented exception", () => {
   const p = param(action, "closeDate");
   assertEquals(p.type, "string");
   assert(/MM\/DD\/YYYY/.test(p.hint ?? ""), "hint does not state the date format");
   assert(/NOT a Unix timestamp|not a Unix timestamp/i.test(p.hint ?? ""));
 });
 
-Deno.test("create-opportunity: status and priority use Copper's exact vocabularies", () => {
+test("create-opportunity: status and priority use Copper's exact vocabularies", () => {
   assertEquals(optionValues(action, "status"), ["Open", "Won", "Lost", "Abandoned"]);
   assertEquals(optionValues(action, "priority"), ["None", "Low", "Medium", "High"]);
 });
 
-Deno.test("create-opportunity: win probability is bounded 0-100", () => {
+test("create-opportunity: win probability is bounded 0-100", () => {
   assertEquals(param(action, "winProbability").validation?.min, 0);
   assertEquals(param(action, "winProbability").validation?.max, 100);
 });
 
-Deno.test("create-opportunity: only `name` is required, per Copper's create page", () => {
+test("create-opportunity: only `name` is required, per Copper's create page", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals((action.params ?? []).filter((p) => p.required).map((p) => p.key), ["name"]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/draft-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("draft-create: posts subject/body/from/to and returns the response verbatim", async () => {
+test("draft-create: posts subject/body/from/to and returns the response verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { drafts: { id: "d1" } } }]);
   const out = await action.execute(
     {
@@ -22,19 +23,19 @@ Deno.test("draft-create: posts subject/body/from/to and returns the response ver
   assertEquals(out, { drafts: { id: "d1" } });
 });
 
-Deno.test("draft-create: send:true is passed through explicitly", async () => {
+test("draft-create: send:true is passed through explicitly", async () => {
   const { ctx, calls } = mockCtx([{ body: { drafts: {} } }]);
   await action.execute({ body: "hi", send: true }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.drafts.send, true);
 });
 
-Deno.test("draft-create: rejects send combined with sendAt", async () => {
+test("draft-create: rejects send combined with sendAt", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ send: true, sendAt: 123 }, ctx));
 });
 
-Deno.test("draft-create: builds routing fields (references, shared labels)", async () => {
+test("draft-create: builds routing fields (references, shared labels)", async () => {
   const { ctx, calls } = mockCtx([{ body: { drafts: {} } }]);
   await action.execute({ references: "<a@a.com>, b@b.com", addSharedLabels: "l1,l2" }, ctx);
   const body = JSON.parse(calls[0].body!);

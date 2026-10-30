@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/story-delete.ts";
 
@@ -9,7 +10,7 @@ const story = (extra: Record<string, unknown> = {}) => ({
 });
 const ok = { status: 200, body: {} };
 
-Deno.test("story-delete: deletes after confirmation and records what it was", async () => {
+test("story-delete: deletes after confirmation and records what it was", async () => {
   const { ctx, calls } = mockCtx([story(), ok], M);
   const result = await action.execute({ storyId: "9", confirm: true }, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("story-delete: deletes after confirmation and records what it was", as
 });
 
 /** A folder deletion is a bulk deletion wearing a single-item interface. */
-Deno.test("story-delete: refuses a folder without an acknowledgement", async () => {
+test("story-delete: refuses a folder without an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([story({ is_folder: true })], M);
   const err = await assertRejects(
     async () => await action.execute({ storyId: "9", confirm: true }, ctx),
@@ -32,7 +33,7 @@ Deno.test("story-delete: refuses a folder without an acknowledgement", async () 
   assertEquals(calls.length, 1, "it must not delete");
 });
 
-Deno.test("story-delete: allowFolder lets it through", async () => {
+test("story-delete: allowFolder lets it through", async () => {
   const { ctx } = mockCtx([story({ is_folder: true }), ok], M);
   const result = await action.execute(
     { storyId: "9", confirm: true, allowFolder: true },
@@ -42,7 +43,7 @@ Deno.test("story-delete: allowFolder lets it through", async () => {
   assertEquals(result.deleted, true);
 });
 
-Deno.test("story-delete: refuses without confirmation, and names unpublishing", async () => {
+test("story-delete: refuses without confirmation, and names unpublishing", async () => {
   const { ctx, calls } = mockCtx([], M);
   const err = await assertRejects(
     async () => await action.execute({ storyId: "9" }, ctx),
@@ -53,7 +54,7 @@ Deno.test("story-delete: refuses without confirmation, and names unpublishing", 
 });
 
 /** References are uuids, so a deleted story leaves an empty block behind. */
-Deno.test("story-delete: warns about the dangling references", async () => {
+test("story-delete: warns about the dangling references", async () => {
   const { ctx, logs } = mockCtx([story(), ok], M);
   await action.execute({ storyId: "9", confirm: true }, ctx);
   assert(
@@ -62,6 +63,6 @@ Deno.test("story-delete: warns about the dangling references", async () => {
   );
 });
 
-Deno.test("story-delete: is not idempotent", () => {
+test("story-delete: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

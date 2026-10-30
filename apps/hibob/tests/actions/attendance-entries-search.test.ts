@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import search, { ENTRY_FIELDS } from "../../actions/attendance-entries-search.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const base = { employeeId: "31", fromDate: "2026-10-01", toDate: "2026-10-31" };
 
-Deno.test("attendance-entries-search: builds the employee + clockInDate range filters", async () => {
+test("attendance-entries-search: builds the employee + clockInDate range filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { items: [{ objectType: "attendanceEntry" }], response_metadata: { next_cursor: "abc" } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("attendance-entries-search: builds the employee + clockInDate range fi
   assertEquals(out, { items: [{ objectType: "attendanceEntry" }], nextCursor: "abc" });
 });
 
-Deno.test("attendance-entries-search: forwards the cursor; no nextCursor on the last page", async () => {
+test("attendance-entries-search: forwards the cursor; no nextCursor on the last page", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const out = await search.execute(
     { ...base, cursor: "abc", fields: ["/attendanceEntry/id"] },
@@ -34,7 +35,7 @@ Deno.test("attendance-entries-search: forwards the cursor; no nextCursor on the 
   assertEquals(out, { items: [] });
 });
 
-Deno.test("attendance-entries-search: enforces the 33-day cap and known fields", async () => {
+test("attendance-entries-search: enforces the 33-day cap and known fields", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(search.execute({ ...base, toDate: "2026-11-05" }, ctx)),

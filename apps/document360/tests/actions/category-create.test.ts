@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryCreate from "../../actions/category-create.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("category-create: POSTs name, workspace and parent", async () => {
+test("category-create: POSTs name, workspace and parent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "c1", name: "Guides" }) }]);
   const out = await categoryCreate.execute({
     workspaceId: "w1",
@@ -26,7 +27,7 @@ Deno.test("category-create: POSTs name, workspace and parent", async () => {
   assertEquals(out.id, "c1");
 });
 
-Deno.test("category-create: a vendor error surfaces its code and message", async () => {
+test("category-create: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

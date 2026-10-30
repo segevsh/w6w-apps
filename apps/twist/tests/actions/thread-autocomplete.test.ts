@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadAutocomplete from "../../actions/thread-autocomplete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("thread-autocomplete: GET /api/v3/autocomplete/query_threads with every documented parameter", async () => {
+test("thread-autocomplete: GET /api/v3/autocomplete/query_threads with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await threadAutocomplete.execute({
     "workspaceId": 100,
@@ -22,14 +23,14 @@ Deno.test("thread-autocomplete: GET /api/v3/autocomplete/query_threads with ever
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }] });
 });
 
-Deno.test("thread-autocomplete: omits optional parameters that are not set", async () => {
+test("thread-autocomplete: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await threadAutocomplete.execute({ "workspaceId": 100, "query": "sample query" }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "workspace_id": "100", "query": "sample query" });
 });
 
-Deno.test("thread-autocomplete: sends no credential of its own", async () => {
+test("thread-autocomplete: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await threadAutocomplete.execute(
     { "workspaceId": 100, "query": "sample query", "limit": 102 },
@@ -39,7 +40,7 @@ Deno.test("thread-autocomplete: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("thread-autocomplete: surfaces Twist's error body", async () => {
+test("thread-autocomplete: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

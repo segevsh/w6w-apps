@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { actionCtx } from "../_helpers.ts";
 import addColumns from "../../actions/add-columns.ts";
 
-Deno.test("add-columns: POSTs a {columns:[…]} envelope", async () => {
+test("add-columns: POSTs a {columns:[…]} envelope", async () => {
   const { ctx, calls } = actionCtx([{ body: { columns: [{ id: "pet" }] } }]);
   const cols = [{ id: "pet", fields: { label: "Pet", type: "Text" } }];
   const out = await addColumns.execute!({ docId: "d", tableId: "T", columns: cols }, ctx);
@@ -12,7 +13,7 @@ Deno.test("add-columns: POSTs a {columns:[…]} envelope", async () => {
   assertEquals(out.columns[0].id, "pet");
 });
 
-Deno.test("add-columns: passes widgetOptions through as the STRING Grist expects", async () => {
+test("add-columns: passes widgetOptions through as the STRING Grist expects", async () => {
   const { ctx, calls } = actionCtx([{ body: { columns: [] } }]);
   const widgetOptions = '{"choices":["New","Old"]}';
   await addColumns.execute!(
@@ -28,6 +29,6 @@ Deno.test("add-columns: passes widgetOptions through as the STRING Grist expects
   assertEquals(sent, widgetOptions);
 });
 
-Deno.test("add-columns: is non-idempotent — a repeat creates a suffixed column", () => {
+test("add-columns: is non-idempotent — a repeat creates a suffixed column", () => {
   assertEquals(addColumns.idempotent, false);
 });

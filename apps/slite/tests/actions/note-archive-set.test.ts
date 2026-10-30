@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteArchiveSet from "../../actions/note-archive-set.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-archive-set: PUT /v1/notes/n1/archived with the documented parameters", async () => {
+test("note-archive-set: PUT /v1/notes/n1/archived with the documented parameters", async () => {
   const response = { id: "n1", archivedAt: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteArchiveSet.execute({ noteId: "n1", archived: false }, ctx);
@@ -15,7 +16,7 @@ Deno.test("note-archive-set: PUT /v1/notes/n1/archived with the documented param
   assertEquals(out, response);
 });
 
-Deno.test("note-archive-set: a vendor error surfaces its own message and id", async () => {
+test("note-archive-set: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -27,7 +28,7 @@ Deno.test("note-archive-set: a vendor error surfaces its own message and id", as
   );
 });
 
-Deno.test("note-archive-set: true archives, and a non-boolean is refused", async () => {
+test("note-archive-set: true archives, and a non-boolean is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1" } }]);
   await noteArchiveSet.execute({ noteId: "n1", archived: true }, ctx);
   assertEquals(calls[0].body, '{"archived":true}');

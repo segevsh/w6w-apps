@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import loggedExpensePurchaseOrderLineItemsList from "../../actions/logged-expense-purchase-order-line-items-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("logged-expense-purchase-order-line-items-list: reads the lines", async () => {
+test("logged-expense-purchase-order-line-items-list: reads the lines", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Cement", quantity: "10" }] }]);
   const result = await loggedExpensePurchaseOrderLineItemsList.execute(
     { loggedExpenseId: 77 },
@@ -14,7 +15,7 @@ Deno.test("logged-expense-purchase-order-line-items-list: reads the lines", asyn
 });
 
 /** The sibling route answers `null`; this one answers an empty list. */
-Deno.test("logged-expense-purchase-order-line-items-list: an empty list is a real answer", async () => {
+test("logged-expense-purchase-order-line-items-list: an empty list is a real answer", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   assertEquals(
     await loggedExpensePurchaseOrderLineItemsList.execute({ loggedExpenseId: 77 }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quoteUpdate from "../../actions/quote-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quote-update: PATCHes with application/merge-patch+json, not application/json", async () => {
+test("quote-update: PATCHes with application/merge-patch+json, not application/json", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "q-1", payOut: "SWIFT_OUR" } }]);
   const out = await quoteUpdate.execute(
     { profileId: 1, quoteId: "q-1", targetAccount: 55, payOut: "SWIFT_OUR" },
@@ -16,12 +17,12 @@ Deno.test("quote-update: PATCHes with application/merge-patch+json, not applicat
   assertEquals(out.id, "q-1");
 });
 
-Deno.test("quote-update: omits payOut from the body when not given", async () => {
+test("quote-update: omits payOut from the body when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "q-1" } }]);
   await quoteUpdate.execute({ profileId: 1, quoteId: "q-1", targetAccount: 55 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { targetAccount: 55 });
 });
 
-Deno.test("quote-update: is declared idempotent (a merge-patch is a full state assignment)", () => {
+test("quote-update: is declared idempotent (a merge-patch is a full state assignment)", () => {
   assertEquals(quoteUpdate.idempotent, true);
 });

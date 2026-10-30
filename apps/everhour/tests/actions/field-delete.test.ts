@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import fieldDelete from "../../actions/field-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("field-delete: DELETE /fields/{fieldId} with the documented query and body", async () => {
+test("field-delete: DELETE /fields/{fieldId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await fieldDelete.execute({ "fieldId": 4456411 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("field-delete: DELETE /fields/{fieldId} with the documented query and 
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("field-delete: an Everhour error surfaces its message and status", async () => {
+test("field-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(fieldDelete.execute({ "fieldId": 4456411 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("field-delete: an Everhour error surfaces its message and status", asy
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("field-delete: declares perform and idempotent=true", () => {
+test("field-delete: declares perform and idempotent=true", () => {
   assertEquals(fieldDelete.type, "perform");
   assertEquals(fieldDelete.idempotent, true);
 });

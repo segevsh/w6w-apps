@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-artifact-get.ts";
 
@@ -11,7 +12,7 @@ const runResults = JSON.stringify({
   ],
 });
 
-Deno.test("run-artifact-get: downloads and parses the artifact by default", async () => {
+test("run-artifact-get: downloads and parses the artifact by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: runResults }], { display });
   const result = await action.execute!({ runId: "7", path: "run_results.json" }, ctx) as {
     artifact: { results: unknown[] };
@@ -27,7 +28,7 @@ Deno.test("run-artifact-get: downloads and parses the artifact by default", asyn
  * `run_results.json`'s useful half is the per-node outcome — "these four models
  * failed" rather than "the build failed".
  */
-Deno.test("run-artifact-get: summary mode separates the nodes that did not pass", async () => {
+test("run-artifact-get: summary mode separates the nodes that did not pass", async () => {
   const { ctx } = mockCtx([{ status: 200, body: runResults }], { display });
   const result = await action.execute!(
     { runId: "7", path: "run_results.json", mode: "summary" },
@@ -41,7 +42,7 @@ Deno.test("run-artifact-get: summary mode separates the nodes that did not pass"
   ]);
 });
 
-Deno.test("run-artifact-get: summary mode refuses an artifact with no results array", async () => {
+test("run-artifact-get: summary mode refuses an artifact with no results array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: '{"nodes":{}}' }], { display });
   await assertRejects(
     async () => await action.execute!({ runId: "7", path: "manifest.json", mode: "summary" }, ctx),
@@ -51,7 +52,7 @@ Deno.test("run-artifact-get: summary mode refuses an artifact with no results ar
 });
 
 /** manifest.json can be tens of megabytes; parsing it is sometimes the mistake. */
-Deno.test("run-artifact-get: raw mode returns the text untouched", async () => {
+test("run-artifact-get: raw mode returns the text untouched", async () => {
   const { ctx } = mockCtx([{ status: 200, body: '{"nodes":{}}' }], { display });
   const result = await action.execute!(
     { runId: "7", path: "manifest.json", mode: "raw" },
@@ -60,7 +61,7 @@ Deno.test("run-artifact-get: raw mode returns the text untouched", async () => {
   assertEquals(result.raw, '{"nodes":{}}');
 });
 
-Deno.test("run-artifact-get: a step and a nested path are both encoded correctly", async () => {
+test("run-artifact-get: a step and a nested path are both encoded correctly", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "{}" }], { display });
   await action.execute!({ runId: "7", path: "/compiled/shop/model.sql", step: 2 }, ctx);
   const url = new URL(calls[0].url);
@@ -68,7 +69,7 @@ Deno.test("run-artifact-get: a step and a nested path are both encoded correctly
   assertEquals(url.searchParams.get("step"), "2");
 });
 
-Deno.test("run-artifact-get: logs the size it fetched, which is the thing to watch", async () => {
+test("run-artifact-get: logs the size it fetched, which is the thing to watch", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: runResults }], { display });
   await action.execute!({ runId: "7", path: "run_results.json" }, ctx);
   assertEquals(logs[0].data, {
@@ -78,7 +79,7 @@ Deno.test("run-artifact-get: logs the size it fetched, which is the thing to wat
   });
 });
 
-Deno.test("run-artifact-get: needs a run id and a path", async () => {
+test("run-artifact-get: needs a run id and a path", async () => {
   const noRun = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({ path: "x" }, noRun.ctx), Error, "runId");
   const noPath = mockCtx([], { display });
@@ -90,7 +91,7 @@ Deno.test("run-artifact-get: needs a run id and a path", async () => {
 });
 
 /** The default is the LAST step, which on a test-ending job is not the build. */
-Deno.test("run-artifact-get: the step param warns what the default actually selects", () => {
+test("run-artifact-get: the step param warns what the default actually selects", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) => p.key === "step")!;
   assert(/dbt test/.test(p.hint!), p.hint);
 });

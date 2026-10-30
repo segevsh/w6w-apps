@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quota: ok with plenty of headroom", async () => {
+test("quota: ok with plenty of headroom", async () => {
   const { ctx, calls } = mockCtx([{
     body: [],
     headers: {
@@ -20,7 +21,7 @@ Deno.test("quota: ok with plenty of headroom", async () => {
   assertEquals(report.quota?.[0].resetAt, new Date(1788624960 * 1000).toISOString());
 });
 
-Deno.test("quota: degraded under 10% headroom", async () => {
+test("quota: degraded under 10% headroom", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: {
@@ -33,7 +34,7 @@ Deno.test("quota: degraded under 10% headroom", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: down when remaining hits zero", async () => {
+test("quota: down when remaining hits zero", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: {
@@ -46,13 +47,13 @@ Deno.test("quota: down when remaining hits zero", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: unknown when no rate-limit header is present", async () => {
+test("quota: unknown when no rate-limit header is present", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Authentication failed" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: is connection-scoped, signed, and informational so it never worsens a roll-up", () => {
+test("quota: is connection-scoped, signed, and informational so it never worsens a roll-up", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");

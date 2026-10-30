@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-subscription-delete.ts";
 
-Deno.test("webhook-subscription-delete: DELETEs /webhook_subscriptions/{uuid} and returns deleted", async () => {
+test("webhook-subscription-delete: DELETEs /webhook_subscriptions/{uuid} and returns deleted", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, headers: {} }]);
   const result = await action.execute(
     { webhook: "https://api.calendly.com/webhook_subscriptions/FFFF" },

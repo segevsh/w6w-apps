@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBiginCtx, recordResult } from "../_helpers.ts";
 import action from "../../actions/pipeline-update.ts";
 
-Deno.test("pipeline-update: PUTs to the record path with the id in the documented body", async () => {
+test("pipeline-update: PUTs to the record path with the id in the documented body", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: recordResult("42") }]);
   await action.execute({ recordId: "42", fields: { Stage: "Closed Won" } }, ctx);
   assertEquals(calls[0].method, "PUT");

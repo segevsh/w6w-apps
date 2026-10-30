@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callLogGet from "../../actions/call-log-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("call-log-get: builds the record path and forwards view", async () => {
+test("call-log-get: builds the record path and forwards view", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "abc", type: "Voice" } }]);
   const out = await callLogGet.execute(
     { callRecordId: "abc", view: "Detailed" },

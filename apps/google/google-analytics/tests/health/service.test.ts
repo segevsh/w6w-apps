@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: probes the ADS dashboard, which is where Google lists Analytics", () => {
+test("service: probes the ADS dashboard, which is where Google lists Analytics", () => {
   // Verified 2026-08-18: the Workspace products.json has no Analytics entry;
   // the Ads one does. Reusing the Workspace feed here would look consistent
   // with the other google-* apps and be silently wrong.
@@ -10,7 +11,7 @@ Deno.test("service: probes the ADS dashboard, which is where Google lists Analyt
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: no open incident is ok", async () => {
+test("service: no open incident is ok", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [
@@ -26,7 +27,7 @@ Deno.test("service: no open incident is ok", async () => {
   assertEquals(result.components, { "google-analytics": { state: "ok" } });
 });
 
-Deno.test("service: an open Analytics outage is down, with the description", async () => {
+test("service: an open Analytics outage is down, with the description", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{
@@ -41,7 +42,7 @@ Deno.test("service: an open Analytics outage is down, with the description", asy
   assertEquals(result.message, "Reporting is unavailable");
 });
 
-Deno.test("service: a Multiple Products incident is caught via affected_products", async () => {
+test("service: a Multiple Products incident is caught via affected_products", async () => {
   // Matching only `service_name` would miss exactly the broad outages that
   // matter most.
   const { ctx } = mockCtx([{
@@ -56,7 +57,7 @@ Deno.test("service: a Multiple Products incident is caught via affected_products
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("service: a broken dashboard is unknown, never down", async () => {
+test("service: a broken dashboard is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({} as never, ctx)).state, "unknown");
 

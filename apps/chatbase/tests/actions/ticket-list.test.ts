@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketList from "../../actions/ticket-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("ticket-list: GET .../helpdesk/tickets", async () => {
+test("ticket-list: GET .../helpdesk/tickets", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ ticketNumber: 1 }]) }]);
   const out = await ticketList.execute({ agentId: "a1" }, ctx) as { data: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("ticket-list: GET .../helpdesk/tickets", async () => {
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("ticket-list: joins status/channel arrays, forwards filters, maps includeTotal to a string", async () => {
+test("ticket-list: joins status/channel arrays, forwards filters, maps includeTotal to a string", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await ticketList.execute(
     {

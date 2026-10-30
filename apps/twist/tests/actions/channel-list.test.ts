@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import channelList from "../../actions/channel-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("channel-list: GET /api/v3/channels/get with every documented parameter", async () => {
+test("channel-list: GET /api/v3/channels/get with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await channelList.execute({ "workspaceId": 100, "archived": true }, ctx) as Record<
     string,
@@ -17,21 +18,21 @@ Deno.test("channel-list: GET /api/v3/channels/get with every documented paramete
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }] });
 });
 
-Deno.test("channel-list: omits optional parameters that are not set", async () => {
+test("channel-list: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await channelList.execute({ "workspaceId": 100 }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "workspace_id": "100" });
 });
 
-Deno.test("channel-list: sends no credential of its own", async () => {
+test("channel-list: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await channelList.execute({ "workspaceId": 100, "archived": true }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("channel-list: surfaces Twist's error body", async () => {
+test("channel-list: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

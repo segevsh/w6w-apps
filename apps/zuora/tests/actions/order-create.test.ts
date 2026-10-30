@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/order-create.ts";
@@ -17,7 +18,7 @@ const SUBSCRIPTIONS = [{
   }],
 }];
 
-Deno.test("order-create: POSTs existingAccountId (not Number) when that key type is chosen", async () => {
+test("order-create: POSTs existingAccountId (not Number) when that key type is chosen", async () => {
   const { ctx, calls } = mockCtx([one({ id: "ord1" })], { display });
   await action.execute!(
     {
@@ -35,7 +36,7 @@ Deno.test("order-create: POSTs existingAccountId (not Number) when that key type
   assertEquals(body.subscriptions, SUBSCRIPTIONS);
 });
 
-Deno.test("order-create: POSTs existingAccountNumber when that key type is chosen", async () => {
+test("order-create: POSTs existingAccountNumber when that key type is chosen", async () => {
   const { ctx, calls } = mockCtx([one({ id: "ord1" })], { display });
   await action.execute!(
     {
@@ -51,7 +52,7 @@ Deno.test("order-create: POSTs existingAccountNumber when that key type is chose
   assert(!("existingAccountId" in body));
 });
 
-Deno.test("order-create: sets Idempotency-Key from the invocation id", async () => {
+test("order-create: sets Idempotency-Key from the invocation id", async () => {
   const { ctx, calls } = mockCtx([one({ id: "ord1" })], { display, invocationId: "inv-7" });
   await action.execute!(
     {

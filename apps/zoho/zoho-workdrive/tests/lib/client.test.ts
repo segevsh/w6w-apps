@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import {
   apiHostFromConnection,
   compact,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("client: host comes from the connection, defaulting to the US host", () => {
+test("client: host comes from the connection, defaulting to the US host", () => {
   assertEquals(apiHostFromConnection(undefined), "www.zohoapis.com");
   assertEquals(
     new WorkDriveClient(mockWorkDriveCtx([], "www.zohoapis.in").ctx).host,
@@ -19,14 +20,14 @@ Deno.test("client: host comes from the connection, defaulting to the US host", (
   assertEquals(new WorkDriveClient(mockCtx([]).ctx).host, "www.zohoapis.com");
 });
 
-Deno.test("client: jsonApiBody wraps attributes and drops unset ones, keeping false/0", () => {
+test("client: jsonApiBody wraps attributes and drops unset ones, keeping false/0", () => {
   assertEquals(jsonApiBody("files", { a: "x", b: undefined, c: "", d: false, e: 0 }), {
     data: { type: "files", attributes: { a: "x", d: false, e: 0 } },
   });
   assertEquals(compact({ a: null, b: 1 }), { b: 1 });
 });
 
-Deno.test("client: listResult handles array, object, empty and cursor", () => {
+test("client: listResult handles array, object, empty and cursor", () => {
   assertEquals(listResult({ data: [1, 2] }).items, [1, 2]);
   assertEquals(listResult({ data: { id: "x" } }).items, [{ id: "x" }]);
   assertEquals(listResult({}).items, []);
@@ -35,7 +36,7 @@ Deno.test("client: listResult handles array, object, empty and cursor", () => {
   assertEquals(listResult({ data: [] }).hasNext, false);
 });
 
-Deno.test("client: errors are parsed from the body, tolerating non-JSON", () => {
+test("client: errors are parsed from the body, tolerating non-JSON", () => {
   assertEquals(parseErrors('{"errors":[{"id":"F7003","title":"t"}]}'), [{
     id: "F7003",
     title: "t",
@@ -49,7 +50,7 @@ Deno.test("client: errors are parsed from the body, tolerating non-JSON", () => 
   assertEquals(long.includes("700 bytes"), true);
 });
 
-Deno.test("client: request sends JSON:API headers, encodes brackets, and never sets authorization", async () => {
+test("client: request sends JSON:API headers, encodes brackets, and never sets authorization", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{ body: { data: [] } }]);
   await new WorkDriveClient(ctx).request("POST", "/files", {
     query: { "page[limit]": 5, skip: undefined },
@@ -61,7 +62,7 @@ Deno.test("client: request sends JSON:API headers, encodes brackets, and never s
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: a GET sends no content-type and a non-JSON 200 throws", async () => {
+test("client: a GET sends no content-type and a non-JSON 200 throws", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{ body: "<html>shell</html>" }]);
   let message = "";
   try {

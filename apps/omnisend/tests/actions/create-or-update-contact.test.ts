@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createOrUpdateContact from "../../actions/create-or-update-contact.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-or-update-contact: POSTs to /contacts with the identifiers array", async () => {
+test("create-or-update-contact: POSTs to /contacts with the identifiers array", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }]);
   const identifiers = [{
     type: "email",
@@ -22,7 +23,7 @@ Deno.test("create-or-update-contact: POSTs to /contacts with the identifiers arr
  * two documented success statuses, with the identical body shape either way —
  * the action must not special-case one of them.
  */
-Deno.test("create-or-update-contact: 200 (updated existing) and 201 (created) both resolve", async () => {
+test("create-or-update-contact: 200 (updated existing) and 201 (created) both resolve", async () => {
   const identifiers = [{ type: "email", id: "a@b.com" }];
   {
     const { ctx } = mockCtx([{ status: 201, body: { id: "c1", email: "a@b.com" } }]);
@@ -36,7 +37,7 @@ Deno.test("create-or-update-contact: 200 (updated existing) and 201 (created) bo
   }
 });
 
-Deno.test("create-or-update-contact: optional fields absent from input are omitted, not sent as null", async () => {
+test("create-or-update-contact: optional fields absent from input are omitted, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await createOrUpdateContact.execute({ identifiers: [{ type: "email", id: "a@b.com" }] }, ctx);
 
@@ -45,7 +46,7 @@ Deno.test("create-or-update-contact: optional fields absent from input are omitt
   assertEquals("customProperties" in body, false);
 });
 
-Deno.test("create-or-update-contact: is marked idempotent — upsert by email is safe to retry", () => {
+test("create-or-update-contact: is marked idempotent — upsert by email is safe to retry", () => {
   assertEquals(createOrUpdateContact.idempotent, true);
   assertEquals(createOrUpdateContact.type, "perform");
 });

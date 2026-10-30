@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import search from "../../actions/search.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const SCHEMA = { type: "object", properties: { revenue: { type: "number" } } };
 
-Deno.test("search: searchResults posts depth and outputType and returns results", async () => {
+test("search: searchResults posts depth and outputType and returns results", async () => {
   const results = [{ type: "text", name: "n", url: "https://a", content: "c", favicon: "" }];
   const { ctx, calls } = mockCtx([{ body: { results } }]);
   const out = await search.execute({
@@ -33,7 +34,7 @@ Deno.test("search: searchResults posts depth and outputType and returns results"
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("search: sourcedAnswer returns answer and sources; citations flag only applies there", async () => {
+test("search: sourcedAnswer returns answer and sources; citations flag only applies there", async () => {
   const { ctx, calls } = mockCtx([{ body: { answer: "42", sources: [{ name: "s" }] } }]);
   const out = await search.execute({
     q: "q",
@@ -48,7 +49,7 @@ Deno.test("search: sourcedAnswer returns answer and sources; citations flag only
   assertEquals("includeSources" in body, false);
 });
 
-Deno.test("search: structured sends the schema as a string; the body is the data", async () => {
+test("search: structured sends the schema as a string; the body is the data", async () => {
   const { ctx, calls } = mockCtx([{ body: { revenue: 5 } }]);
   const out = await search.execute({
     q: "q",
@@ -60,7 +61,7 @@ Deno.test("search: structured sends the schema as a string; the body is the data
   assertEquals(JSON.parse(calls[0].body!).structuredOutputSchema, JSON.stringify(SCHEMA));
 });
 
-Deno.test("search: structured with sources returns { data, sources }", async () => {
+test("search: structured with sources returns { data, sources }", async () => {
   const { ctx } = mockCtx([{ body: { data: { revenue: 5 }, sources: [{ url: "u" }] } }]);
   const out = await search.execute({
     q: "q",
@@ -72,7 +73,7 @@ Deno.test("search: structured with sources returns { data, sources }", async () 
   assertEquals(out, { outputType: "structured", data: { revenue: 5 }, sources: [{ url: "u" }] });
 });
 
-Deno.test("search: validation fails before any request", async () => {
+test("search: validation fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await search.execute({ q: " ", outputType: "searchResults" }, ctx),
@@ -102,7 +103,7 @@ Deno.test("search: validation fails before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("search: the generic action takes the output type and an optional schema", () => {
+test("search: the generic action takes the output type and an optional schema", () => {
   const byKey = (k: string) => search.params!.find((p) => p.key === k)!;
   assertEquals(byKey("outputType").required, true);
   assertEquals(byKey("depth").required, true);

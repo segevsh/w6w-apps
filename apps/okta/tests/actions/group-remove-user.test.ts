@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockOktaCtx } from "../_helpers.ts";
 import action from "../../actions/group-remove-user.ts";
 
-Deno.test("group-remove-user: DELETEs /groups/{groupId}/users/{userId}", async () => {
+test("group-remove-user: DELETEs /groups/{groupId}/users/{userId}", async () => {
   const { ctx, calls } = mockOktaCtx([{ status: 204 }]);
   await action.execute({ groupId: "00g1", userId: "00u1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

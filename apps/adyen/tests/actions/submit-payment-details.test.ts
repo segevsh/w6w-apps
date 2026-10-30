@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import submitPaymentDetails from "../../actions/submit-payment-details.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "details": '{"redirectResult":"X"}', "paymentData": "pd" } as Pa
   typeof submitPaymentDetails.execute
 >[0];
 
-Deno.test("submit-payment-details: sends POST to the documented path and returns the response", async () => {
+test("submit-payment-details: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },
@@ -22,7 +23,7 @@ Deno.test("submit-payment-details: sends POST to the documented path and returns
   assertEquals(out, { "resultCode": "Authorised", "pspReference": "851" });
 });
 
-Deno.test("submit-payment-details: targets the connection's base URL and carries no credential", async () => {
+test("submit-payment-details: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },
@@ -37,7 +38,7 @@ Deno.test("submit-payment-details: targets the connection's base URL and carries
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("submit-payment-details: surfaces Adyen's error code, type and message", async () => {
+test("submit-payment-details: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -55,7 +56,7 @@ Deno.test("submit-payment-details: surfaces Adyen's error code, type and message
   );
 });
 
-Deno.test("submit-payment-details: sends the invocation id as Idempotency-Key", async () => {
+test("submit-payment-details: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Authorised", "pspReference": "851" },
@@ -65,6 +66,6 @@ Deno.test("submit-payment-details: sends the invocation id as Idempotency-Key", 
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("submit-payment-details: declares idempotency as false", () => {
+test("submit-payment-details: declares idempotency as false", () => {
   assertEquals(submitPaymentDetails.idempotent, false);
 });

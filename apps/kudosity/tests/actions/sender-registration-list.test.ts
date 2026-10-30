@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import senderRegistrationList from "../../actions/sender-registration-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sender-registration-list: page-numbered query and unwrapped registrations", async () => {
+test("sender-registration-list: page-numbered query and unwrapped registrations", async () => {
   const pagination = { type: "page", page: 2, limit: 25, total_count: 30 };
   const { ctx, calls } = mockCtx([{
     body: envelope({ registrations: [{ registration_id: "a" }] }, { pagination }),

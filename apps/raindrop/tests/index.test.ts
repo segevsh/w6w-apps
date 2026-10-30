@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 39;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 2);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   assert(performs.length > 0, "no perform actions — this test would pass vacuously");
   for (const a of performs) {
@@ -45,7 +47,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * any of these `true` would turn one dropped connection into two bookmarks, two
  * collections, two invitation emails or two queued backups.
  */
-Deno.test("index: no create-shaped or email-sending action is marked idempotent", () => {
+test("index: no create-shaped or email-sending action is marked idempotent", () => {
   for (
     const key of [
       "collection-create",
@@ -68,7 +70,7 @@ Deno.test("index: no create-shaped or email-sending action is marked idempotent"
  * saying so is what lets the runtime recover from a dropped connection instead
  * of failing the run.
  */
-Deno.test("index: the genuinely-retryable performs are marked idempotent", () => {
+test("index: the genuinely-retryable performs are marked idempotent", () => {
   for (
     const key of [
       "collection-update",
@@ -92,7 +94,7 @@ Deno.test("index: the genuinely-retryable performs are marked idempotent", () =>
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -114,9 +116,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -127,7 +129,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -161,7 +163,7 @@ function stripProse(src: string): string {
  * any business naming `raindrop.io` even in a comment or a hint, and today none
  * of them does. Only the generic absolute-URL half is scoped to code.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/raindrop\.io/.test(src), `${a.key}: contains a Raindrop host literal`);
@@ -174,14 +176,14 @@ Deno.test("index: no action hard-codes a host", async () => {
  * hint and leaves one in a call untouched — if that ever inverts, the guard
  * above is blind and this fails first.
  */
-Deno.test("index: the prose stripper removes examples but not requests", () => {
+test("index: the prose stripper removes examples but not requests", () => {
   assertEquals(stripProse('hint: "see https://example.com for more",').includes("https://"), false);
   assertEquals(stripProse('placeholder: "https://example.com/a",').includes("https://"), false);
   assert(stripProse('ctx.fetch("https://evil.example/x")').includes("https://evil.example"));
   assert(stripProse('const API = "https://api.raindrop.io";').includes("https://api.raindrop.io"));
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -249,7 +251,7 @@ const DOCUMENTED_PATHS = new Set([
   "/backup",
 ]);
 
-Deno.test("index: every path an action builds is one the vendor documents", async () => {
+test("index: every path an action builds is one the vendor documents", async () => {
   const seen = new Set<string>();
   for (const a of app.actions) {
     for (const path of requestPaths(await actionSource(a.key))) {
@@ -268,7 +270,7 @@ Deno.test("index: every path an action builds is one the vendor documents", asyn
   assert(seen.size >= 24, `expected the actions to build ≥24 distinct paths, found ${seen.size}`);
 });
 
-Deno.test("index: the request-path derivation actually finds paths", () => {
+test("index: the request-path derivation actually finds paths", () => {
   assertEquals(requestPaths('const p = "/user/stats";'), ["/user/stats"]);
   assertEquals(requestPaths("const p = `/raindrop/${id}/suggest`;"), ["/raindrop/{}/suggest"]);
   assertEquals(
@@ -279,7 +281,7 @@ Deno.test("index: the request-path derivation actually finds paths", () => {
 
 // --- auth ------------------------------------------------------------------
 
-Deno.test("index: both auth methods declare a secret-typed credential or an OAuth config", () => {
+test("index: both auth methods declare a secret-typed credential or an OAuth config", () => {
   const keys = app.auth.map((m) => m.key);
   assertEquals(keys, ["test-token", "oauth2"]);
 
@@ -303,12 +305,12 @@ Deno.test("index: both auth methods declare a secret-typed credential or an OAut
  * which is why it is the probe. If someone swaps it, this makes them do it
  * deliberately.
  */
-Deno.test("index: the auth probe is /user and both methods share it", async () => {
-  const probe = code(await Deno.readTextFile(new URL("../auth/probe.ts", import.meta.url)));
+test("index: the auth probe is /user and both methods share it", async () => {
+  const probe = code(await denoReadTextFile(new URL("../auth/probe.ts", import.meta.url)));
   assert(/PROBE_PATH\s*=\s*"\/user"/.test(probe), "the shared probe path is no longer /user");
 
   for (const file of ["test-token", "oauth2"]) {
-    const src = code(await Deno.readTextFile(new URL(`../auth/${file}.ts`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../auth/${file}.ts`, import.meta.url)));
     assert(src.includes("PROBE_PATH"), `auth/${file}.ts no longer uses the shared probe path`);
     assert(
       src.includes("classifyProbe"),
@@ -324,9 +326,9 @@ Deno.test("index: the auth probe is /user and both methods share it", async () =
  * methods must reach a verdict through `classifyProbe`, which reads
  * `errorMessage`.
  */
-Deno.test("index: no auth method decides validity from the status code alone", async () => {
+test("index: no auth method decides validity from the status code alone", async () => {
   for (const file of ["test-token", "oauth2"]) {
-    const src = code(await Deno.readTextFile(new URL(`../auth/${file}.ts`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../auth/${file}.ts`, import.meta.url)));
     assert(
       !/res\.status\s*===\s*401/.test(src),
       `auth/${file}.ts branches on a bare 401 instead of reading the body`,
@@ -339,7 +341,7 @@ Deno.test("index: no auth method decides validity from the status code alone", a
 });
 
 /** OAuth endpoints must be the measured final URLs, not the redirecting ones. */
-Deno.test("index: the OAuth URLs are the api.raindrop.io endpoints the 307 points at", () => {
+test("index: the OAuth URLs are the api.raindrop.io endpoints the 307 points at", () => {
   const method = app.auth.find((m) => m.key === "oauth2");
   assertEquals(method?.oauth2?.authorizationUrl, "https://api.raindrop.io/v1/oauth/authorize");
   assertEquals(method?.oauth2?.tokenUrl, "https://api.raindrop.io/v1/oauth/access_token");
@@ -352,7 +354,7 @@ Deno.test("index: the OAuth URLs are the api.raindrop.io endpoints the 307 point
 
 // --- health ----------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -362,7 +364,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the token. */
-Deno.test("index: any health check declaring extra egress is unsigned", () => {
+test("index: any health check declaring extra egress is unsigned", () => {
   const widening = app.healthChecks.filter((h) => h.network?.allow?.length);
   assert(widening.length > 0, "no check widens egress — this test would pass vacuously");
   for (const h of widening) {
@@ -375,9 +377,9 @@ Deno.test("index: any health check declaring extra egress is unsigned", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows the API host and not the status host", async () => {
+test("index: the manifest allows the API host and not the status host", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] }; appearance: { icon: { svg: string } } } };
 
   assertEquals(manifest.w6w.id, "io.w6w.raindrop");
@@ -389,8 +391,8 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: the icon is the vendor's own mark, on the pack's canvas", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is the vendor's own mark, on the pack's canvas", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Downloaded verbatim from https://help.raindrop.io/favicon.svg on
   // 2026-08-11: 972 bytes, md5 e6a64a722107f2b4cc88171ef73fb96f, a 48x48
   // raindrop built from three brand colours plus a gradient overlay.
@@ -413,7 +415,7 @@ Deno.test("index: the icon is the vendor's own mark, on the pack's canvas", asyn
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

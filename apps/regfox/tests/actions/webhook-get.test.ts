@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/webhook-get.ts";
 import { envelope, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-get: returns the webhook without its signing secret", async () => {
+test("webhook-get: returns the webhook without its signing secret", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ id: 29, signingSecret: "s3cret", events: ["registration"] }),
   }]);

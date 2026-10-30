@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomDelete from "../../actions/room-delete.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-delete: DELETEs with the chosen action_type, and returns {} on the documented 204", async () => {
+test("room-delete: DELETEs with the chosen action_type, and returns {} on the documented 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await roomDelete.execute({ roomId: "123", actionType: "leave" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/rooms/123");
@@ -11,6 +12,6 @@ Deno.test("room-delete: DELETEs with the chosen action_type, and returns {} on t
   assertEquals(out, {});
 });
 
-Deno.test("room-delete: is idempotent — leaving/deleting twice has no further effect", () => {
+test("room-delete: is idempotent — leaving/deleting twice has no further effect", () => {
   assertEquals(roomDelete.idempotent, true);
 });

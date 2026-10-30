@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import callSend from "../../actions/call-send.ts";
 import { mockCtx, newErrorBody } from "../_helpers.ts";
 
-Deno.test("call-send: dispatches a call and maps the flat success response", async () => {
+test("call-send: dispatches a call and maps the flat success response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -29,7 +30,7 @@ Deno.test("call-send: dispatches a call and maps the flat success response", asy
   assertEquals(out.batchId, undefined);
 });
 
-Deno.test("call-send: serializes metadata/requestData JSON params", async () => {
+test("call-send: serializes metadata/requestData JSON params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success", call_id: "c-2" } }]);
   await callSend.execute({
     phoneNumber: "+12223334444",
@@ -42,7 +43,7 @@ Deno.test("call-send: serializes metadata/requestData JSON params", async () => 
   assertEquals(body.request_data, { a: 1 });
 });
 
-Deno.test("call-send: surfaces the vendor's validation error", async () => {
+test("call-send: surfaces the vendor's validation error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -58,7 +59,7 @@ Deno.test("call-send: surfaces the vendor's validation error", async () => {
   );
 });
 
-Deno.test("call-send: surfaces the AUTH_FAILURE envelope", async () => {
+test("call-send: surfaces the AUTH_FAILURE envelope", async () => {
   const { ctx } = mockCtx([{ status: 401, body: newErrorBody("AUTH_FAILURE", "Unauthorized") }]);
   await assertRejects(
     async () => await callSend.execute({ phoneNumber: "+1" }, ctx),
@@ -67,6 +68,6 @@ Deno.test("call-send: surfaces the AUTH_FAILURE envelope", async () => {
   );
 });
 
-Deno.test("call-send: declared not idempotent", () => {
+test("call-send: declared not idempotent", () => {
   assertEquals(callSend.idempotent, false);
 });

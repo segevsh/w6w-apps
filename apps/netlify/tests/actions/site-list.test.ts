@@ -1,8 +1,9 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/site-list.ts";
 
-Deno.test("site-list: GETs /sites with pagination params", async () => {
+test("site-list: GETs /sites with pagination params", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: [{ id: "site1", name: "example" }] },
   ]);
@@ -16,7 +17,7 @@ Deno.test("site-list: GETs /sites with pagination params", async () => {
   assertEquals(result, [{ id: "site1", name: "example" }]);
 });
 
-Deno.test("site-list: filters by name and filter", async () => {
+test("site-list: filters by name and filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!({ name: "example.com", filter: "owner" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("site-list: filters by name and filter", async () => {
   assertStringIncludes(calls[0].url, "filter=owner");
 });
 
-Deno.test("site-list: propagates a non-2xx response as an Error", async () => {
+test("site-list: propagates a non-2xx response as an Error", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { code: 1, message: "Invalid access token" } },
   ]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-signed-url.ts";
 import { TEST_CLIENT_EMAIL } from "../lib/_vector.ts";
@@ -7,7 +8,7 @@ const display = { clientEmail: TEST_CLIENT_EMAIL };
 // 0xde 0xad 0xbe 0xef, base64 — what signBlob answers with.
 const signed = { status: 200, body: { signedBlob: "3q2+7w==" } };
 
-Deno.test("object-signed-url: signs through IAM Credentials, not with a local key", async () => {
+test("object-signed-url: signs through IAM Credentials, not with a local key", async () => {
   const { ctx, calls } = mockCtx([signed], { display });
   const result = await action.execute(
     { bucket: "uploads", object: "reports/q3.pdf" },
@@ -25,7 +26,7 @@ Deno.test("object-signed-url: signs through IAM Credentials, not with a local ke
 });
 
 /** The URL is a bearer credential for its whole lifetime. */
-Deno.test("object-signed-url: reports that it cannot be revoked, and defaults to 15 minutes", async () => {
+test("object-signed-url: reports that it cannot be revoked, and defaults to 15 minutes", async () => {
   const { ctx } = mockCtx([signed], { display });
   const result = await action.execute(
     { bucket: "uploads", object: "a.pdf" },
@@ -38,7 +39,7 @@ Deno.test("object-signed-url: reports that it cannot be revoked, and defaults to
 });
 
 /** A download URL must not be usable to write. */
-Deno.test("object-signed-url: the method is signed, so a GET URL cannot upload", async () => {
+test("object-signed-url: the method is signed, so a GET URL cannot upload", async () => {
   const get = mockCtx([signed], { display });
   const download = await action.execute(
     { bucket: "uploads", object: "a.pdf" },
@@ -56,7 +57,7 @@ Deno.test("object-signed-url: the method is signed, so a GET URL cannot upload",
   assert(JSON.parse(get.calls[0].body!).payload !== JSON.parse(put.calls[0].body!).payload);
 });
 
-Deno.test("object-signed-url: an upload URL can pin the content type", async () => {
+test("object-signed-url: an upload URL can pin the content type", async () => {
   const { ctx } = mockCtx([signed], { display });
   const result = await action.execute({
     bucket: "uploads",
@@ -72,7 +73,7 @@ Deno.test("object-signed-url: an upload URL can pin the content type", async () 
 });
 
 /** A longer URL signs fine and is refused when somebody uses it. */
-Deno.test("object-signed-url: refuses more than seven days", async () => {
+test("object-signed-url: refuses more than seven days", async () => {
   const { ctx, calls } = mockCtx([], { display });
   let message = "";
   try {
@@ -85,7 +86,7 @@ Deno.test("object-signed-url: refuses more than seven days", async () => {
 });
 
 /** No Cloud Storage role grants the signing permission. */
-Deno.test("object-signed-url: a 403 from signBlob names the role that is missing", async () => {
+test("object-signed-url: a 403 from signBlob names the role that is missing", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: { message: "Permission denied" } } }], {
     display,
   });
@@ -98,7 +99,7 @@ Deno.test("object-signed-url: a 403 from signBlob names the role that is missing
   assert(/Service Account Token Creator/.test(message), message);
 });
 
-Deno.test("object-signed-url: a connection with no recorded email says to reconnect", async () => {
+test("object-signed-url: a connection with no recorded email says to reconnect", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   let message = "";
   try {
@@ -111,7 +112,7 @@ Deno.test("object-signed-url: a connection with no recorded email says to reconn
 });
 
 /** A run log is exactly where a bearer credential should not end up. */
-Deno.test("object-signed-url: never logs the URL it minted", async () => {
+test("object-signed-url: never logs the URL it minted", async () => {
   const { ctx, logs } = mockCtx([signed], { display });
   await action.execute({ bucket: "uploads", object: "a.pdf" }, ctx);
   const line = JSON.stringify(logs[0]);

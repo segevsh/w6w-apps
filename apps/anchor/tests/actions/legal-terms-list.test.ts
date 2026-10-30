@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import legalTermsList from "../../actions/legal-terms-list.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("legal-terms-list: sends GET /legal-terms", async () => {
+test("legal-terms-list: sends GET /legal-terms", async () => {
   const { ctx, calls } = mockCtx([{ body: { "entries": [] } }]);
   const out = await legalTermsList.execute({ "isDetailed": true } as never, ctx) as Record<
     string,
@@ -22,7 +23,7 @@ Deno.test("legal-terms-list: sends GET /legal-terms", async () => {
   assertEquals(out.entries, []);
 });
 
-Deno.test("legal-terms-list: a non-2xx answer throws with the vendor's error code", async () => {
+test("legal-terms-list: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

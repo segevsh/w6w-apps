@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import changeContactStatus from "../../actions/change-contact-status.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("change-contact-status: PUT .../change_status/{status_id}", async () => {
+test("change-contact-status: PUT .../change_status/{status_id}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ contact: { id: "c1", status_id: "s2" } }) }]);
   const out = await changeContactStatus.execute({ contactId: "c1", statusId: "s2" }, ctx) as Record<
     string,

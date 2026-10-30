@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-stop.ts";
 
-Deno.test("time-entry-stop: PATCHes /time_entries/{id}/stop", async () => {
+test("time-entry-stop: PATCHes /time_entries/{id}/stop", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, is_running: false } }]);
   const result = await action.execute({ timeEntryId: "1" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fieldCreate from "../../actions/field-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("field-create: POSTs to /v2/fields", async () => {
+test("field-create: POSTs to /v2/fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

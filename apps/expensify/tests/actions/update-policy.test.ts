@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-policy.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
@@ -8,7 +9,7 @@ const CATS = [{ name: "Category 1", enabled: true, glCode: "GL1", maxExpenseAmou
 const TAGS = [{ name: "Tag", tags: [{ name: "Tag 1", glCode: "G" }] }];
 const FIELDS = [{ name: "Report field 1", type: "dropdown", values: ["a", "b"] }];
 
-Deno.test("update-policy: one policy, all three sections, documented shape", async () => {
+test("update-policy: one policy, all three sections, documented shape", async () => {
   const { ctx, calls } = mockCtx([OK]);
   const out = await action.execute!({
     policyID: "0123456789ABCDEF",
@@ -28,7 +29,7 @@ Deno.test("update-policy: one policy, all three sections, documented shape", asy
   assertEquals(out, { response: { responseCode: 200 } });
 });
 
-Deno.test("update-policy: several policies use policyIDList, JSON text is parsed, absent sections are omitted", async () => {
+test("update-policy: several policies use policyIDList, JSON text is parsed, absent sections are omitted", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({ policyIDList: "A, B", reportFields: JSON.stringify(FIELDS) }, ctx);
   const job = sent(calls[0]).job;
@@ -37,7 +38,7 @@ Deno.test("update-policy: several policies use policyIDList, JSON text is parsed
   assert(!("categories" in job) && !("tags" in job));
 });
 
-Deno.test("update-policy: validates the selector, the payload and the mode locally", async () => {
+test("update-policy: validates the selector, the payload and the mode locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ categories: CATS }, ctx),
@@ -72,7 +73,7 @@ Deno.test("update-policy: validates the selector, the payload and the mode local
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-policy: surfaces the documented 404 / 410 errors", async () => {
+test("update-policy: surfaces the documented 404 / 410 errors", async () => {
   const { ctx } = mockCtx([{
     body: { responseMessage: "'categories' object malformed", responseCode: 410 },
   }]);
@@ -83,6 +84,6 @@ Deno.test("update-policy: surfaces the documented 404 / 410 errors", async () =>
   );
 });
 
-Deno.test("update-policy: declares an idempotent perform", () => {
+test("update-policy: declares an idempotent perform", () => {
   assertEquals([action.type, action.idempotent], ["perform", true]);
 });

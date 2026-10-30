@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockServiceNowCtx } from "../_helpers.ts";
 import action from "../../actions/incident-update.ts";
 
-Deno.test("incident-update: PATCHes /table/incident/{sysId} with only the set fields", async () => {
+test("incident-update: PATCHes /table/incident/{sysId} with only the set fields", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute({ sysId: "abc", shortDescription: "Renamed" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -10,7 +11,7 @@ Deno.test("incident-update: PATCHes /table/incident/{sysId} with only the set fi
   assertEquals(JSON.parse(calls[0].body!), { short_description: "Renamed" });
 });
 
-Deno.test("incident-update: merges additionalFields into the body", async () => {
+test("incident-update: merges additionalFields into the body", async () => {
   const { ctx, calls } = mockServiceNowCtx([{ body: { result: {} } }]);
   await action.execute({ sysId: "abc", additionalFields: { state: "6" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).state, "6");

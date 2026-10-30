@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingList from "../../actions/booking-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("booking-list: GET /bookings with every filter, sort, include and page serialised", async () => {
+test("booking-list: GET /bookings with every filter, sort, include and page serialised", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -54,7 +55,7 @@ Deno.test("booking-list: GET /bookings with every filter, sort, include and page
   assertEquals((out.items as Record<string, unknown>[])[0].name, "x");
 });
 
-Deno.test("booking-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
+test("booking-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -76,13 +77,13 @@ Deno.test("booking-list: a next link becomes nextCursor, and the cursor is sent 
   assertEquals(queryOf(calls[1].url), { "page[after]": "abc123" });
 });
 
-Deno.test("booking-list: a raw filter object is merged with the typed filters", async () => {
+test("booking-list: a raw filter object is merged with the typed filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await bookingList.execute({ filter: '{"name": {"contains": "x"}, "id": [1, 2]}' }, ctx);
   assertEquals(queryOf(calls[0].url), { "filter[name][contains]": "x", "filter[id]": "1,2" });
 });
 
-Deno.test("booking-list: a vendor error surfaces its status, title and detail", async () => {
+test("booking-list: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -95,7 +96,7 @@ Deno.test("booking-list: a vendor error surfaces its status, title and detail", 
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("booking-list: declares search", () => {
+test("booking-list: declares search", () => {
   assertEquals(bookingList.type, "search");
   assertEquals(bookingList.idempotent, undefined);
   assertEquals(bookingList.key, "booking-list");

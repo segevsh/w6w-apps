@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const page = (api: string, other = "ok") => ({
   ],
 });
 
-Deno.test("service: ok when the API component is ok, fetching the cState index unsigned", async () => {
+test("service: ok when the API component is ok, fetching the cState index unsigned", async () => {
   const { ctx, calls } = mockCtx([{ body: page("ok") }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -22,7 +23,7 @@ Deno.test("service: ok when the API component is ok, fetching the cState index u
   assertEquals(Object.keys(out.components!).length, 3);
 });
 
-Deno.test("service: verdict follows the API component, not the roll-up or other systems", async () => {
+test("service: verdict follows the API component, not the roll-up or other systems", async () => {
   const a = await service.check!({}, mockCtx([{ body: page("ok", "down") }]).ctx);
   assertEquals(a.state, "ok");
   assertEquals(a.components?.["redirects"].state, "down");
@@ -32,12 +33,12 @@ Deno.test("service: verdict follows the API component, not the roll-up or other 
   assertEquals(c.state, "down");
 });
 
-Deno.test("service: unrecognised status becomes unknown, never ok", async () => {
+test("service: unrecognised status becomes unknown, never ok", async () => {
   const out = await service.check!({}, mockCtx([{ body: page("weird") }]).ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: unknown on HTTP failure, HTML body, foreign page, or missing API component", async () => {
+test("service: unknown on HTTP failure, HTML body, foreign page, or missing API component", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ status: 404, body: "x" }]).ctx)).state,
     "unknown",

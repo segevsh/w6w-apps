@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import templateDuplicate from "../../actions/template-duplicate.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-duplicate: POST /api/1/duplicateTemplate/ with the documented form fields", async () => {
+test("template-duplicate: POST /api/1/duplicateTemplate/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   const out = await templateDuplicate.execute(
     { "template_name": "Welcome copy", "origin_template_id": "3" } as never,
@@ -19,7 +20,7 @@ Deno.test("template-duplicate: POST /api/1/duplicateTemplate/ with the documente
   assertEquals(out, { id: "123" });
 });
 
-Deno.test("template-duplicate: a vendor error surfaces its status and body", async () => {
+test("template-duplicate: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await templateDuplicate.execute(
@@ -31,7 +32,7 @@ Deno.test("template-duplicate: a vendor error surfaces its status and body", asy
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("template-duplicate: an empty template_name fails before any request", async () => {
+test("template-duplicate: an empty template_name fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

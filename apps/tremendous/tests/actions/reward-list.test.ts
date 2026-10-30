@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rewardList from "../../actions/reward-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("reward-list: lists rewards with offset/limit", async () => {
+test("reward-list: lists rewards with offset/limit", async () => {
   const page = { rewards: [{ id: "A" }] };
   const { ctx, calls } = mockCtx([{ status: 200, body: page }]);
   const result = await rewardList.execute({ offset: 10, limit: 50 }, ctx);

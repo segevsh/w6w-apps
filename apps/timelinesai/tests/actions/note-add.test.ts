@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import noteAdd from "../../actions/note-add.ts";
 
-Deno.test("note-add: posts the note, keeping is_private=false", async () => {
+test("note-add: posts the note, keeping is_private=false", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "message_uid": "n1" } } }]);
   const out = await noteAdd.execute!(
     { "chatId": 3, "text": "call back", "isPrivate": false } as never,
@@ -20,7 +21,7 @@ Deno.test("note-add: posts the note, keeping is_private=false", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("note-add: refuses an empty path id before the network", async () => {
+test("note-add: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await noteAdd.execute!({ "chatId": "" } as never, ctx);
@@ -29,7 +30,7 @@ Deno.test("note-add: refuses an empty path id before the network", async () => {
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("note-add: surfaces a vendor error envelope", async () => {
+test("note-add: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

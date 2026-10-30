@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reservationCreate from "../../actions/reservation-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("reservation-create: flat fields fold into guests / guest / financials", async () => {
+test("reservation-create: flat fields fold into guests / guest / financials", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "r9" } } }]);
   const out = await reservationCreate.execute({
     property_id: "p1",

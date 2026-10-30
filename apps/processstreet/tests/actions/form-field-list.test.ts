@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-field-list.ts";
 
-Deno.test("form-field-list: GETs /workflow-runs/{id}/form-fields", async () => {
+test("form-field-list: GETs /workflow-runs/{id}/form-fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       fields: [{
@@ -23,7 +24,7 @@ Deno.test("form-field-list: GETs /workflow-runs/{id}/form-fields", async () => {
   assertEquals(out.fields?.length, 1);
 });
 
-Deno.test("form-field-list: extracts nextCursor", async () => {
+test("form-field-list: extracts nextCursor", async () => {
   const { ctx } = mockCtx([{
     body: {
       fields: [],

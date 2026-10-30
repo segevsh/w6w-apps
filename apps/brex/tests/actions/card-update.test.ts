@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import cardUpdate, {
   buildSpendControls,
   MAX_MERCHANTS,
@@ -6,7 +7,7 @@ import cardUpdate, {
 } from "../../actions/card-update.ts";
 import { bodyOf, CARD, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-update: PUTs spend controls under Brex's nested field names", async () => {
+test("card-update: PUTs spend controls under Brex's nested field names", async () => {
   const { ctx, calls } = mockCtx([{ body: CARD }]);
   await cardUpdate.execute({
     id: "card_1",
@@ -29,14 +30,14 @@ Deno.test("card-update: PUTs spend controls under Brex's nested field names", as
   });
 });
 
-Deno.test("card-update: metadata alone sends no spend_controls block", async () => {
+test("card-update: metadata alone sends no spend_controls block", async () => {
   const { ctx, calls } = mockCtx([{ body: CARD }]);
   await cardUpdate.execute({ id: "card_1", metadata: '{"team": "platform"}' }, ctx);
 
   assertEquals(bodyOf(calls[0]), { metadata: { team: "platform" } });
 });
 
-Deno.test("card-update: a merchant list is parsed from JSON into BREX's [{name}] shape", async () => {
+test("card-update: a merchant list is parsed from JSON into BREX's [{name}] shape", async () => {
   const { ctx, calls } = mockCtx([{ body: CARD }]);
   await cardUpdate.execute({
     id: "card_1",
@@ -52,7 +53,7 @@ Deno.test("card-update: a merchant list is parsed from JSON into BREX's [{name}]
  * "Cannot be used together", per Brex — so the request is wrong before it is
  * sent, and no call is made.
  */
-Deno.test("card-update: allowed and blocked merchants together are refused locally", async () => {
+test("card-update: allowed and blocked merchants together are refused locally", async () => {
   const { ctx, calls } = mockCtx([{ body: CARD }]);
   let message = "";
   try {
@@ -68,7 +69,7 @@ Deno.test("card-update: allowed and blocked merchants together are refused local
   assertEquals(calls.length, 0);
 });
 
-Deno.test("card-update: the documented 50-merchant maximum is enforced", () => {
+test("card-update: the documented 50-merchant maximum is enforced", () => {
   assertEquals(MAX_MERCHANTS, 50);
   const fifty = JSON.stringify(Array.from({ length: 50 }, (_, i) => ({ name: `m${i}` })));
   assertEquals(merchantList(fifty, "Allowed merchants")?.length, 50);
@@ -83,7 +84,7 @@ Deno.test("card-update: the documented 50-merchant maximum is enforced", () => {
   assert(/at most 50/.test(message), message);
 });
 
-Deno.test("card-update: a malformed merchant entry is refused with its index", () => {
+test("card-update: a malformed merchant entry is refused with its index", () => {
   let message = "";
   try {
     merchantList('[{"name": "Github"}, {"nope": "AWS"}]', "Allowed merchants");
@@ -102,7 +103,7 @@ Deno.test("card-update: a malformed merchant entry is refused with its index", (
 });
 
 /** Brex requires `amount` inside spend_limit, so a lone currency is unbuildable. */
-Deno.test("card-update: a currency without an amount is refused locally", () => {
+test("card-update: a currency without an amount is refused locally", () => {
   let message = "";
   try {
     buildSpendControls({ id: "card_1", spendLimitCurrency: "USD" });
@@ -113,7 +114,7 @@ Deno.test("card-update: a currency without an amount is refused locally", () => 
   assertEquals(buildSpendControls({ id: "card_1" }), undefined);
 });
 
-Deno.test("card-update: it is a perform declared idempotent, and forwards an idempotency key", async () => {
+test("card-update: it is a perform declared idempotent, and forwards an idempotency key", async () => {
   assertEquals(cardUpdate.type, "perform");
   assertEquals(cardUpdate.idempotent, true);
 

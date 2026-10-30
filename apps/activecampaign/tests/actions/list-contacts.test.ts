@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockActiveCampaignCtx } from "../_helpers.ts";
 import action from "../../actions/list-contacts.ts";
 
-Deno.test("list-contacts: GETs /contacts with filters mapped to AC's query names", async () => {
+test("list-contacts: GETs /contacts with filters mapped to AC's query names", async () => {
   const body = { contacts: [], meta: { total: "0" } };
   const { ctx, calls } = mockActiveCampaignCtx([{ body }]);
   const result = await action.execute(
@@ -29,7 +30,7 @@ Deno.test("list-contacts: GETs /contacts with filters mapped to AC's query names
   assertEquals(result, body);
 });
 
-Deno.test("list-contacts: omits unset filters", async () => {
+test("list-contacts: omits unset filters", async () => {
   const { ctx, calls } = mockActiveCampaignCtx([{ body: { contacts: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

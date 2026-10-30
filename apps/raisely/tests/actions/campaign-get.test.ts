@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignGet from "../../actions/campaign-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-get: GETs /v3/campaigns/spring-appeal and unwraps the data envelope", async () => {
+test("campaign-get: GETs /v3/campaigns/spring-appeal and unwraps the data envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "spring-appeal", name: "N" }) }]);
   const out = await campaignGet.execute({
     "campaign": "spring-appeal",
@@ -21,13 +22,13 @@ Deno.test("campaign-get: GETs /v3/campaigns/spring-appeal and unwraps the data e
   assertEquals(out, { uuid: "spring-appeal", name: "N" });
 });
 
-Deno.test("campaign-get: the id is percent-encoded as one path segment", async () => {
+test("campaign-get: the id is percent-encoded as one path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await campaignGet.execute({ campaign: "a/b c" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/campaigns/a%2Fb%20c");
 });
 
-Deno.test("campaign-get: a user accessToken in the response is stripped", async () => {
+test("campaign-get: a user accessToken in the response is stripped", async () => {
   const { ctx } = mockCtx([{
     body: envelope({ uuid: "x", user: { accessToken: "secret-token", email: "a@b.org" } }),
   }]);
@@ -36,7 +37,7 @@ Deno.test("campaign-get: a user accessToken in the response is stripped", async 
   assertEquals(out.includes("a@b.org"), true);
 });
 
-Deno.test("campaign-get: an HTTP error becomes a readable Raisely error", async () => {
+test("campaign-get: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "not found", detail: "No such record" },

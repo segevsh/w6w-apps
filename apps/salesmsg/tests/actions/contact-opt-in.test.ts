@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactOptIn from "../../actions/contact-opt-in.ts";
 import { API_ROOT, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-opt-in: sends the documented request and returns the answer", async () => {
+test("contact-opt-in: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await contactOptIn.execute({ "contact": 42 }, ctx) as { id: number };
 
@@ -13,12 +14,12 @@ Deno.test("contact-opt-in: sends the documented request and returns the answer",
   assertEquals(result.id, 1);
 });
 
-Deno.test("contact-opt-in: declares idempotent = true", () => {
+test("contact-opt-in: declares idempotent = true", () => {
   assertEquals(contactOptIn.idempotent, true);
   assertEquals(contactOptIn.type, "perform");
 });
 
-Deno.test("contact-opt-in: a refused token surfaces the vendor message", async () => {
+test("contact-opt-in: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

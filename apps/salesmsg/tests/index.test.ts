@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 /** The 27 operations chosen for this build, pinned by key so scope creep and a dropped action fail. */
@@ -32,7 +34,7 @@ const EXPECTED_KEYS = [
   "message-list",
 ];
 
-Deno.test("index: exports the 27 chosen actions, one auth method and two health checks", () => {
+test("index: exports the 27 chosen actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, EXPECTED_KEYS.length);
   assertEquals(app.actions.map((a) => a.key).sort(), EXPECTED_KEYS.slice().sort());
   assertEquals(app.auth.length, 1);
@@ -40,13 +42,13 @@ Deno.test("index: exports the 27 chosen actions, one auth method and two health 
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), `not kebab-case: ${key}`);
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assert(typeof action.idempotent === "boolean", `${action.key} has no idempotent flag`);
@@ -54,7 +56,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
   }
 });
 
-Deno.test("index: every send and create is non-idempotent", () => {
+test("index: every send and create is non-idempotent", () => {
   const nonIdempotent = app.actions.filter((a) => a.type === "perform" && a.idempotent === false)
     .map((a) => a.key).sort();
   assertEquals(nonIdempotent, [
@@ -66,9 +68,9 @@ Deno.test("index: every send and create is non-idempotent", () => {
   ]);
 });
 
-Deno.test("index: no action mentions a credential header", async () => {
+test("index: no action mentions a credential header", async () => {
   for (const action of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${action.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${action.key}.ts`, import.meta.url));
     assert(!/authorization|bearer/i.test(src.replace(/\/\*\*[\s\S]*?\*\//g, "")), action.key);
   }
 });

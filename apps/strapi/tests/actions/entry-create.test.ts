@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/entry-create.ts";
 
 const display = { endpoint: "https://example.com" };
 
-Deno.test("entry-create: POSTs /api/<collection> with a { data } envelope", async () => {
+test("entry-create: POSTs /api/<collection> with a { data } envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: 1, title: "hi" } } }], {
     display,
   });
@@ -18,7 +19,7 @@ Deno.test("entry-create: POSTs /api/<collection> with a { data } envelope", asyn
   assertEquals(result, { data: { id: 1, title: "hi" } });
 });
 
-Deno.test("entry-create: is declared not idempotent", () => {
+test("entry-create: is declared not idempotent", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.type, "perform");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/used-area-get.ts";
 
-Deno.test("used-area-get: POSTs worksheet.usedarea and returns the bounds", async () => {
+test("used-area-get: POSTs worksheet.usedarea and returns the bounds", async () => {
   const { ctx, calls } = mockSheetCtx([
     {
       body: {

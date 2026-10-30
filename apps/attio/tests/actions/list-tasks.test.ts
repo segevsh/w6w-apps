@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import listTasks from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: passes every filter on the query string", async () => {
+test("list-tasks: passes every filter on the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await listTasks.execute({
     linkedObject: "people",
@@ -26,19 +27,19 @@ Deno.test("list-tasks: passes every filter on the query string", async () => {
  * hidden every completed task, which is why this is a select whose empty option
  * is dropped by the client's query builder.
  */
-Deno.test("list-tasks: the empty completion choice sends no is_completed at all", async () => {
+test("list-tasks: the empty completion choice sends no is_completed at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await listTasks.execute({ isCompleted: "" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("is_completed"), false);
 });
 
-Deno.test("list-tasks: offers three completion states, not a boolean", () => {
+test("list-tasks: offers three completion states, not a boolean", () => {
   const p = param(listTasks, "isCompleted");
   assertEquals(p.type, "select");
   assertEquals(optionValues(listTasks, "isCompleted"), ["", "true", "false"]);
 });
 
-Deno.test("list-tasks: the sort enum is verbatim from the spec", () => {
+test("list-tasks: the sort enum is verbatim from the spec", () => {
   assertEquals(optionValues(listTasks, "sort"), [
     "created_at:asc",
     "created_at:desc",
@@ -47,15 +48,15 @@ Deno.test("list-tasks: the sort enum is verbatim from the spec", () => {
   ]);
 });
 
-Deno.test("list-tasks: warns the default order is oldest-first", () => {
+test("list-tasks: warns the default order is oldest-first", () => {
   assert(/oldest first/i.test(listTasks.description!), listTasks.description);
 });
 
-Deno.test("list-tasks: says the two linked_* params must be given together", () => {
+test("list-tasks: says the two linked_* params must be given together", () => {
   assert(/together/i.test(param(listTasks, "linkedObject").hint!));
   assert(/paired/i.test(param(listTasks, "linkedRecordId").hint!));
 });
 
-Deno.test("list-tasks: documents the literal `null` assignee filter", () => {
+test("list-tasks: documents the literal `null` assignee filter", () => {
   assert(/unassigned/i.test(param(listTasks, "assignee").hint!));
 });

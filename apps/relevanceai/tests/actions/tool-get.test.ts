@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolGet from "../../actions/tool-get.ts";
 import { mockRelevanceCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tool-get: GETs /studios/{id}/get and passes the definition through", async () => {
+test("tool-get: GETs /studios/{id}/get and passes the definition through", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     { body: { studio: { studio_id: "s1", title: "Search", params: { q: "string" } } } },
   ]);
@@ -15,13 +16,13 @@ Deno.test("tool-get: GETs /studios/{id}/get and passes the definition through", 
   assertEquals(out.studio.params, { q: "string" });
 });
 
-Deno.test("tool-get: the version selector is the documented one", async () => {
+test("tool-get: the version selector is the documented one", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { studio: {} } }]);
   await toolGet.execute({ toolId: "s1", toolVersion: "active" }, ctx);
   assertEquals(queryOf(calls[0].url), { tool_version: "active" });
 });
 
-Deno.test("tool-get: exposes no undocumented `version` param", () => {
+test("tool-get: exposes no undocumented `version` param", () => {
   assertEquals(toolGet.type, "read");
   assertEquals(toolGet.resource, "tool");
   assertEquals(toolGet.params?.map((p) => p.key), ["toolId", "toolVersion"]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/web-search.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("web-search: calls web/search with the nested input and shapes the output", async () => {
+test("web-search: calls web/search with the nested input and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -30,7 +31,7 @@ Deno.test("web-search: calls web/search with the nested input and shapes the out
   assertEquals(out.output, { query: "eden ai", results: [{ url: "https://e" }], answer: "A" });
 });
 
-Deno.test("web-search: a provider failure inside a 200 is thrown", async () => {
+test("web-search: a provider failure inside a 200 is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "linkup", error: { message: "provider down" } },
   }]);
@@ -45,7 +46,7 @@ Deno.test("web-search: a provider failure inside a 200 is thrown", async () => {
   );
 });
 
-Deno.test("web-search: fallbacks and a provider model reach the request", async () => {
+test("web-search: fallbacks and a provider model reach the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", output: {} } }]);
   await action.execute({
     ...{ query: "eden ai", maxResults: 3, depth: "deep", provider: "linkup" },

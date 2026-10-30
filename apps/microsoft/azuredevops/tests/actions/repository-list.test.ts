@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, list } from "./_shared.ts";
 import action from "../../actions/repository-list.ts";
 
 /** A disabled repository is still listed and rejects every operation. */
-Deno.test("repository-list: separates the disabled repositories", async () => {
+test("repository-list: separates the disabled repositories", async () => {
   const { ctx, calls } = mockCtx([list([
     { id: "r1", name: "api" },
     { id: "r2", name: "legacy", isDisabled: true },
@@ -21,13 +22,13 @@ Deno.test("repository-list: separates the disabled repositories", async () => {
   assertEquals(result.disabled, ["legacy"]);
 });
 
-Deno.test("repository-list: needs a project", async () => {
+test("repository-list: needs a project", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "project");
   assertEquals(calls.length, 0);
 });
 
 /** Azure DevOps nests repositories inside projects. */
-Deno.test("repository-list: names the nesting", () => {
+test("repository-list: names the nesting", () => {
   assert(/nests them/.test(action.description!), action.description);
 });

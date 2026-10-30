@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const EXPECTED = [
@@ -27,12 +28,12 @@ const EXPECTED = [
   "template-update",
 ];
 
-Deno.test("index: declares exactly one auth method, `aws-iam`", () => {
+test("index: declares exactly one auth method, `aws-iam`", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "aws-iam");
 });
 
-Deno.test("index: declares the 23 actions with unique kebab-case keys", () => {
+test("index: declares the 23 actions with unique kebab-case keys", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
   for (const key of keys) {
@@ -41,7 +42,7 @@ Deno.test("index: declares the 23 actions with unique kebab-case keys", () => {
   assertEquals([...keys].sort(), EXPECTED);
 });
 
-Deno.test("index: every action has execute and output; every perform declares idempotent honestly", () => {
+test("index: every action has execute and output; every perform declares idempotent honestly", () => {
   for (const action of app.actions) {
     if (typeof action.execute !== "function") throw new Error(`${action.key}: missing execute`);
     if (!Array.isArray(action.output)) throw new Error(`${action.key}: missing output`);
@@ -77,6 +78,6 @@ Deno.test("index: every action has execute and output; every perform declares id
   }
 });
 
-Deno.test("index: declares the `service` and `quota` health checks", () => {
+test("index: declares the `service` and `quota` health checks", () => {
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "quota"]);
 });

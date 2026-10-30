@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/entity-search.ts";
@@ -18,7 +19,7 @@ const results = ok({
   },
 });
 
-Deno.test("entity-search: builds the entity-search clause from the friendly fields", async () => {
+test("entity-search: builds the entity-search clause from the friendly fields", async () => {
   const { ctx, calls } = mockCtx([results], { display });
   await action.execute!({ name: "checkout", domain: "APM", type: "APPLICATION" }, ctx);
   assertEquals(
@@ -27,7 +28,7 @@ Deno.test("entity-search: builds the entity-search clause from the friendly fiel
   );
 });
 
-Deno.test("entity-search: a raw query is wrapped and combined", async () => {
+test("entity-search: a raw query is wrapped and combined", async () => {
   const { ctx, calls } = mockCtx([results], { display });
   await action.execute!({ query: "tags.env = 'prod'", domain: "APM" }, ctx);
   assertEquals(
@@ -37,14 +38,14 @@ Deno.test("entity-search: a raw query is wrapped and combined", async () => {
 });
 
 /** The syntax is single-quoted, so a quote in a value would break the clause. */
-Deno.test("entity-search: quotes in a value are stripped rather than breaking the clause", async () => {
+test("entity-search: quotes in a value are stripped rather than breaking the clause", async () => {
   const { ctx, calls } = mockCtx([results], { display });
   await action.execute!({ name: "it's broken" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.query, "name LIKE 'its broken'");
 });
 
 /** An entity that stopped reporting stays searchable for about eight days. */
-Deno.test("entity-search: entities that stopped reporting are counted and can be dropped", async () => {
+test("entity-search: entities that stopped reporting are counted and can be dropped", async () => {
   const kept = mockCtx([results], { display });
   const withAll = await action.execute!({ name: "checkout" }, kept.ctx) as {
     count: number;
@@ -62,13 +63,13 @@ Deno.test("entity-search: entities that stopped reporting are counted and can be
   assertEquals(without.notReporting, 1, "still reported, so the filtering is visible");
 });
 
-Deno.test("entity-search: the GUIDs are lifted out, since everything else needs them", async () => {
+test("entity-search: the GUIDs are lifted out, since everything else needs them", async () => {
   const { ctx } = mockCtx([results], { display });
   const result = await action.execute!({ name: "checkout" }, ctx) as { guids: string[] };
   assertEquals(result.guids, ["g1", "g2"]);
 });
 
-Deno.test("entity-search: the total and cursor come back for paging", async () => {
+test("entity-search: the total and cursor come back for paging", async () => {
   const { ctx } = mockCtx([results], { display });
   const result = await action.execute!({ name: "checkout" }, ctx) as {
     total: number;
@@ -78,13 +79,13 @@ Deno.test("entity-search: the total and cursor come back for paging", async () =
   assertEquals(result.cursor, "c1");
 });
 
-Deno.test("entity-search: no criteria at all is refused", async () => {
+test("entity-search: no criteria at all is refused", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "search by");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("entity-search: logs counts, never the names", async () => {
+test("entity-search: logs counts, never the names", async () => {
   const { ctx, logs } = mockCtx([results], { display });
   await action.execute!({ name: "checkout" }, ctx);
   assert(!JSON.stringify(logs).includes("checkout"), JSON.stringify(logs));
@@ -92,7 +93,7 @@ Deno.test("entity-search: logs counts, never the names", async () => {
 });
 
 /** Three query languages in one API is worth stating. */
-Deno.test("entity-search: says the syntax is neither NRQL nor SQL", () => {
+test("entity-search: says the syntax is neither NRQL nor SQL", () => {
   assert(/not NRQL and not SQL/.test(
     (action.params as Array<{ key: string; hint?: string }>).find((p) => p.key === "query")!.hint!,
   ));

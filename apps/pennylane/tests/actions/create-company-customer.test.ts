@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, rejection } from "../_helpers.ts";
 import action from "../../actions/create-company-customer.ts";
 
@@ -9,7 +10,7 @@ const BILLING = {
   country_alpha2: "FR",
 };
 
-Deno.test("create-company-customer: POSTs /company_customers with name and billing address", async () => {
+test("create-company-customer: POSTs /company_customers with name and billing address", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42, name: "Acme" } }]);
   await action.execute({ name: "Acme", billing_address: BILLING }, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("create-company-customer: POSTs /company_customers with name and billi
   });
 });
 
-Deno.test("create-company-customer: keeps every documented optional field, verbatim", async () => {
+test("create-company-customer: keeps every documented optional field, verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }]);
   await action.execute({
     name: "Acme",
@@ -64,7 +65,7 @@ Deno.test("create-company-customer: keeps every documented optional field, verba
   assertEquals(sent.emails, ["hello@example.org"]);
 });
 
-Deno.test("create-company-customer: an untouched optional address is dropped, not sent empty", async () => {
+test("create-company-customer: an untouched optional address is dropped, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }]);
   await action.execute({
     name: "Acme",
@@ -77,7 +78,7 @@ Deno.test("create-company-customer: an untouched optional address is dropped, no
   assertEquals(Object.keys(sent).sort(), ["billing_address", "name"]);
 });
 
-Deno.test("create-company-customer: a 409 duplicate prints the vendor's `error` as the message", async () => {
+test("create-company-customer: a 409 duplicate prints the vendor's `error` as the message", async () => {
   // The vendor's duplicate shape is `{ "status": 409, "error": "<message>" }` —
   // no `message` key at all.
   const { ctx } = mockCtx([{
@@ -94,7 +95,7 @@ Deno.test("create-company-customer: a 409 duplicate prints the vendor's `error` 
   );
 });
 
-Deno.test("create-company-customer: a 422 prints the actionable `details` object", async () => {
+test("create-company-customer: a 422 prints the actionable `details` object", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

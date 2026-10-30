@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import prospectAddToCampaign from "../../actions/prospect-add-to-campaign.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("prospect-add-to-campaign: POSTs the documented body", async () => {
+test("prospect-add-to-campaign: POSTs the documented body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -34,7 +35,7 @@ Deno.test("prospect-add-to-campaign: POSTs the documented body", async () => {
   assertEquals((out.prospects as Array<{ id: number }>)[0].id, 1091123457);
 });
 
-Deno.test("prospect-add-to-campaign: a body-level ERROR status is a failure", async () => {
+test("prospect-add-to-campaign: a body-level ERROR status is a failure", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -75,7 +76,7 @@ Deno.test("prospect-add-to-campaign: a body-level ERROR status is a failure", as
   });
 });
 
-Deno.test("prospect-add-to-campaign: an empty prospects array is refused without a request", async () => {
+test("prospect-add-to-campaign: an empty prospects array is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

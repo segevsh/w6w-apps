@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockAcceloCtx } from "../_helpers.ts";
 import action from "../../actions/prospect-list.ts";
 
-Deno.test("prospect-list: GETs /prospects with default paging and unwraps the envelope", async () => {
+test("prospect-list: GETs /prospects with default paging and unwraps the envelope", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: [{ id: "1" }, { id: "2" }] },
   }]);
@@ -12,7 +13,7 @@ Deno.test("prospect-list: GETs /prospects with default paging and unwraps the en
   assertEquals(calls[0].url, "https://acme.api.accelo.com/api/v0/prospects?_page=0&_limit=50");
 });
 
-Deno.test("prospect-list: sends search, filters, ordering and extra fields; a full page may have more", async () => {
+test("prospect-list: sends search, filters, ordering and extra fields; a full page may have more", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: [{ id: "9" }] },
   }]);
@@ -36,7 +37,7 @@ Deno.test("prospect-list: sends search, filters, ordering and extra fields; a fu
   assertEquals(out.page, 2);
 });
 
-Deno.test("prospect-list: surfaces Accelo's own error message", async () => {
+test("prospect-list: surfaces Accelo's own error message", async () => {
   const { ctx } = mockAcceloCtx([{
     status: 400,
     body: { meta: { status: "invalid_request", message: "bad filter" }, response: null },

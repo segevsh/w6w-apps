@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import scaleList from "../../actions/scale-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("scale-list: GET /computer/{id}/scales (singular computer)", async () => {
+test("scale-list: GET /computer/{id}/scales (singular computer)", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ deviceName: "PrintNode Test Scale", mass: [779000000, null] }],
   }]);
@@ -11,7 +12,7 @@ Deno.test("scale-list: GET /computer/{id}/scales (singular computer)", async () 
   assertEquals(out.count, 1);
 });
 
-Deno.test("scale-list: device name is escaped into the path", async () => {
+test("scale-list: device name is escaped into the path", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await scaleList.execute({ computerId: 12, deviceName: "PrintNode Test Scale" }, ctx);
   assertEquals(
@@ -21,7 +22,7 @@ Deno.test("scale-list: device name is escaped into the path", async () => {
   assertEquals(out, { items: [], count: 0 });
 });
 
-Deno.test("scale-list: a fractional computer id is refused", async () => {
+test("scale-list: a fractional computer id is refused", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await scaleList.execute({ computerId: 1.5 }, ctx),

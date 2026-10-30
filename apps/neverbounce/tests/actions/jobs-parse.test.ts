@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsParse from "../../actions/jobs-parse.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-parse: posts job_id and auto_start, returns queue_id", async () => {
+test("jobs-parse: posts job_id and auto_start, returns queue_id", async () => {
   const body = { status: "success", queue_id: "NB-PQ-59246392E9E5D", execution_time: 712 };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -14,7 +15,7 @@ Deno.test("jobs-parse: posts job_id and auto_start, returns queue_id", async () 
   assertEquals(result, body);
 });
 
-Deno.test("jobs-parse: defaults auto_start to false", async () => {
+test("jobs-parse: defaults auto_start to false", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", queue_id: "x", execution_time: 1 } },
   ]);

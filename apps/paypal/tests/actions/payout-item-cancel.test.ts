@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/payout-item-cancel.ts";
 
-Deno.test("payout-item-cancel: posts to /cancel", async () => {
+test("payout-item-cancel: posts to /cancel", async () => {
   const { ctx, calls } = mockCtx([{
     body: { payout_item_id: "ITEM-1", transaction_status: "UNCLAIMED" },
   }]);
@@ -12,7 +13,7 @@ Deno.test("payout-item-cancel: posts to /cancel", async () => {
   assertEquals(result, { payout_item_id: "ITEM-1", transaction_status: "UNCLAIMED" });
 });
 
-Deno.test("payout-item-cancel: payoutItemId is required", async () => {
+test("payout-item-cancel: payoutItemId is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!({ payoutItemId: "" }, ctx)),

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
-Deno.test("invoice-create: POSTs /invoices with the contact as a full resource URL", async () => {
+test("invoice-create: POSTs /invoices with the contact as a full resource URL", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 201, body: { invoice: { url: "x" } } }]);
   await action.execute({
     contactId: "2",
@@ -16,7 +17,7 @@ Deno.test("invoice-create: POSTs /invoices with the contact as a full resource U
   ]);
 });
 
-Deno.test("invoice-create: merges additionalFields and datedOn", async () => {
+test("invoice-create: merges additionalFields and datedOn", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 201, body: { invoice: { url: "x" } } }]);
   await action.execute({
     contactId: "2",
@@ -29,7 +30,7 @@ Deno.test("invoice-create: merges additionalFields and datedOn", async () => {
   assertEquals(body.invoice.reference, "003");
 });
 
-Deno.test("invoice-create: rejects a non-array invoiceItems before ever calling fetch", async () => {
+test("invoice-create: rejects a non-array invoiceItems before ever calling fetch", async () => {
   const { ctx } = mockFreeAgentCtx([]);
   await assertRejects(
     async () => await action.execute({ contactId: "2", invoiceItems: { not: "an array" } }, ctx),

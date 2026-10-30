@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-contact.ts";
 
@@ -7,7 +8,7 @@ const person = {
   names: [{ givenName: "Ada" }],
 };
 
-Deno.test("update-contact: PATCHes :updateContact with updatePersonFields", async () => {
+test("update-contact: PATCHes :updateContact with updatePersonFields", async () => {
   const { ctx, calls } = mockCtx([{ body: { resourceName: "people/c1", etag: "%new" } }]);
   const result = await action.execute({
     resourceName: "people/c1",
@@ -23,7 +24,7 @@ Deno.test("update-contact: PATCHes :updateContact with updatePersonFields", asyn
   assertEquals(result, { resourceName: "people/c1", etag: "%new" });
 });
 
-Deno.test("update-contact: joins and de-duplicates updatePersonFields into one mask", async () => {
+test("update-contact: joins and de-duplicates updatePersonFields into one mask", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     resourceName: "c1",
@@ -35,7 +36,7 @@ Deno.test("update-contact: joins and de-duplicates updatePersonFields into one m
   assertEquals(url.searchParams.getAll("updatePersonFields").length, 1);
 });
 
-Deno.test("update-contact: updatePersonFields has NO default — an empty mask throws", () => {
+test("update-contact: updatePersonFields has NO default — an empty mask throws", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ resourceName: "c1", person, updatePersonFields: [] }, ctx),
@@ -50,7 +51,7 @@ Deno.test("update-contact: updatePersonFields has NO default — an empty mask t
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-contact: refuses a body with no etag — Google's concurrency check", () => {
+test("update-contact: refuses a body with no etag — Google's concurrency check", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () =>
@@ -65,7 +66,7 @@ Deno.test("update-contact: refuses a body with no etag — Google's concurrency 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-contact: accepts an etag carried on metadata.sources[]", async () => {
+test("update-contact: accepts an etag carried on metadata.sources[]", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     resourceName: "c1",
@@ -75,7 +76,7 @@ Deno.test("update-contact: accepts an etag carried on metadata.sources[]", async
   assertEquals(calls.length, 1);
 });
 
-Deno.test("update-contact: personFields (the response mask) is optional and omitted when unset", async () => {
+test("update-contact: personFields (the response mask) is optional and omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute({ resourceName: "c1", person, updatePersonFields: ["names"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("personFields"), false);
@@ -89,7 +90,7 @@ Deno.test("update-contact: personFields (the response mask) is optional and omit
   assertEquals(new URL(calls[1].url).searchParams.get("personFields"), "names,urls");
 });
 
-Deno.test("update-contact: the writable mask excludes read-only fields", () => {
+test("update-contact: the writable mask excludes read-only fields", () => {
   const options = (action.params?.find((p) => p.key === "updatePersonFields")
     ?.options as Array<{ value: string }>).map((o) => o.value);
   for (const readOnly of ["metadata", "photos", "coverPhotos", "ageRanges", "skills"]) {

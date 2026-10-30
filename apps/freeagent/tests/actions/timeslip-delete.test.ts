@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/timeslip-delete.ts";
 
-Deno.test("timeslip-delete: DELETEs /timeslips/:id", async () => {
+test("timeslip-delete: DELETEs /timeslips/:id", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 200 }]);
   const out = await action.execute({ timeslipId: "25" }, ctx);
   assertEquals(calls[0].method, "DELETE");

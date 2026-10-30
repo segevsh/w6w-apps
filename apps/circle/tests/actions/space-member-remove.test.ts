@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/space-member-remove.ts";
 
@@ -8,7 +9,7 @@ import action from "../../actions/space-member-remove.ts";
  * parameter table rather than assumed by symmetry. Sending them as a body here
  * reaches a route that never sees them.
  */
-Deno.test("space-member-remove: DELETEs with query parameters and no body", async () => {
+test("space-member-remove: DELETEs with query parameters and no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute({ email: "a@b.c", spaceId: 3 }, ctx);
   assertEquals(pathOf(calls[0]), "/api/admin/v2/space_members");
@@ -17,6 +18,6 @@ Deno.test("space-member-remove: DELETEs with query parameters and no body", asyn
   assertEquals(queryOf(calls[0]), { email: ["a@b.c"], space_id: ["3"] });
 });
 
-Deno.test("space-member-remove: is idempotent", () => {
+test("space-member-remove: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCancel from "../../actions/task-cancel.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-cancel: POSTs /v2/tasks/{id}/cancel", async () => {
+test("task-cancel: POSTs /v2/tasks/{id}/cancel", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "t1", status: "processing" }),
@@ -13,6 +14,6 @@ Deno.test("task-cancel: POSTs /v2/tasks/{id}/cancel", async () => {
   assertEquals(out.status, "processing");
 });
 
-Deno.test("task-cancel: is declared non-idempotent — CloudConvert documents no repeat-call behavior", () => {
+test("task-cancel: is declared non-idempotent — CloudConvert documents no repeat-call behavior", () => {
   assertEquals(taskCancel.idempotent, false);
 });

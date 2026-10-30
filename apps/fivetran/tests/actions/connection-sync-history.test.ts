@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { page } from "./_shared.ts";
 import action from "../../actions/connection-sync-history.ts";
 
-Deno.test("connection-sync-history: reads the runs and counts the failures", async () => {
+test("connection-sync-history: reads the runs and counts the failures", async () => {
   const { ctx, calls } = mockCtx([page([
     { status: "SUCCESSFUL" },
     { status: "FAILURE" },
@@ -21,7 +22,7 @@ Deno.test("connection-sync-history: reads the runs and counts the failures", asy
   assertEquals(result.failedCount, 1);
 });
 
-Deno.test("connection-sync-history: the window is normalised to ISO timestamps", async () => {
+test("connection-sync-history: the window is normalised to ISO timestamps", async () => {
   const { ctx, calls } = mockCtx([page([])]);
   await action.execute!({
     connectionId: "c1",
@@ -34,7 +35,7 @@ Deno.test("connection-sync-history: the window is normalised to ISO timestamps",
 });
 
 /** Fivetran caps the window at seven days and truncates silently. */
-Deno.test("connection-sync-history: a range over seven days is refused, not truncated", async () => {
+test("connection-sync-history: a range over seven days is refused, not truncated", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () =>
@@ -49,12 +50,12 @@ Deno.test("connection-sync-history: a range over seven days is refused, not trun
   assertEquals(calls.length, 0);
 });
 
-Deno.test("connection-sync-history: needs a connection id", async () => {
+test("connection-sync-history: needs a connection id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "connectionId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("connection-sync-history: states the seven-day cap", () => {
+test("connection-sync-history: states the seven-day cap", () => {
   assert(/SEVEN DAYS/.test(action.description!), action.description);
 });

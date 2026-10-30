@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/collection-delete.ts";
 
-Deno.test("collection-delete: deletes once the name is typed twice", async () => {
+test("collection-delete: deletes once the name is typed twice", async () => {
   const { ctx, calls, logs } = mockCtx([ok(true)], { display });
   const result = await action.execute!({ collection: "docs", confirmName: "docs" }, ctx);
   assertEquals(calls[0].url, "https://xyz.cloud.qdrant.io:6333/collections/docs");
@@ -16,7 +17,7 @@ Deno.test("collection-delete: deletes once the name is typed twice", async () =>
  * The whole point of the second field: a workflow parameter with a typo is how
  * the wrong collection gets destroyed, and re-embedding a corpus is real money.
  */
-Deno.test("collection-delete: a mismatched confirmation refuses, and no request goes out", async () => {
+test("collection-delete: a mismatched confirmation refuses, and no request goes out", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", confirmName: "doc" }, ctx),
@@ -26,7 +27,7 @@ Deno.test("collection-delete: a mismatched confirmation refuses, and no request 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("collection-delete: a missing confirmation refuses", async () => {
+test("collection-delete: a missing confirmation refuses", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs" }, ctx),
@@ -36,7 +37,7 @@ Deno.test("collection-delete: a missing confirmation refuses", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("collection-delete: the error names both strings so the typo is visible", async () => {
+test("collection-delete: the error names both strings so the typo is visible", async () => {
   const { ctx } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ collection: "prod-docs", confirmName: "prod-doc" }, ctx),
@@ -46,13 +47,13 @@ Deno.test("collection-delete: the error names both strings so the typo is visibl
   assert(error.message.includes("prod-doc"), error.message);
 });
 
-Deno.test("collection-delete: surrounding whitespace does not defeat the confirmation", async () => {
+test("collection-delete: surrounding whitespace does not defeat the confirmation", async () => {
   const { ctx, calls } = mockCtx([ok(true)], { display });
   await action.execute!({ collection: " docs ", confirmName: "docs " }, ctx);
   assertEquals(calls[0].url, "https://xyz.cloud.qdrant.io:6333/collections/docs");
 });
 
-Deno.test("collection-delete: needs a collection", async () => {
+test("collection-delete: needs a collection", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ confirmName: "docs" }, ctx),

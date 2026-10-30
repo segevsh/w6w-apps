@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get.ts";
 
-Deno.test("user-get: fetches by id", async () => {
+test("user-get: fetches by id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "user_1", email_verified: false, last_sign_in_at: null },
@@ -12,13 +13,13 @@ Deno.test("user-get: fetches by id", async () => {
   assertEquals(result.email_verified, false);
 });
 
-Deno.test("user-get: needs a user id", async () => {
+test("user-get: needs a user id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "userId");
   assertEquals(calls.length, 0);
 });
 
 /** A seat audit built on created dates counts people who never came back. */
-Deno.test("user-get: points at last sign-in as the honest usage signal", () => {
+test("user-get: points at last sign-in as the honest usage signal", () => {
   assert(/last_sign_in_at/.test(action.description!), action.description);
 });

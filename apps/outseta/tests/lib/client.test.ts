@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   apiHost,
   asObject,
@@ -13,7 +14,7 @@ import {
 } from "../../lib/client.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 
-Deno.test("normalizeSubdomain: accepts bare names, hosts and pasted URLs", () => {
+test("normalizeSubdomain: accepts bare names, hosts and pasted URLs", () => {
   for (
     const raw of [
       "acme",
@@ -25,23 +26,23 @@ Deno.test("normalizeSubdomain: accepts bare names, hosts and pasted URLs", () =>
   ) assertEquals(normalizeSubdomain(raw), "acme");
 });
 
-Deno.test("apiHost: rejects empty and multi-label input, so the host stays under outseta.com", () => {
+test("apiHost: rejects empty and multi-label input, so the host stays under outseta.com", () => {
   assertEquals(apiHost("acme"), "acme.outseta.com");
   assertThrows(() => apiHost(""));
   assertThrows(() => apiHost("evil.example.com"));
   assertThrows(() => apiHost("a b"));
 });
 
-Deno.test("resolveApiUrl: needs a connection subdomain", () => {
+test("resolveApiUrl: needs a connection subdomain", () => {
   assertEquals(resolveApiUrl({ subdomain: "acme" }), "https://acme.outseta.com/api/v1");
   assertThrows(() => resolveApiUrl(undefined));
 });
 
-Deno.test("compact: drops undefined, null and empty strings but keeps false and 0", () => {
+test("compact: drops undefined, null and empty strings but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0 }), { d: false, e: 0 });
 });
 
-Deno.test("asObject: parses a JSON string, passes an object, rejects arrays and junk", () => {
+test("asObject: parses a JSON string, passes an object, rejects arrays and junk", () => {
   assertEquals(asObject('{"a":1}', "x"), { a: 1 });
   assertEquals(asObject({ a: 1 }, "x"), { a: 1 });
   assertEquals(asObject("", "x"), undefined);
@@ -49,14 +50,14 @@ Deno.test("asObject: parses a JSON string, passes an object, rejects arrays and 
   assertThrows(() => asObject("{nope", "x"), Error, "not valid JSON");
 });
 
-Deno.test("buildBody: typed fields win over free-form properties", () => {
+test("buildBody: typed fields win over free-form properties", () => {
   assertEquals(buildBody({ Name: "typed", Empty: "" }, { Name: "free", Custom: 1 }), {
     Name: "typed",
     Custom: 1,
   });
 });
 
-Deno.test("filterQuery: passes property filters, refuses paging names and nested values", () => {
+test("filterQuery: passes property filters, refuses paging names and nested values", () => {
   assertEquals(filterQuery({ AccountStage: 3, Created__gt: "2026-01-01", X: null }), {
     AccountStage: 3,
     Created__gt: "2026-01-01",
@@ -66,7 +67,7 @@ Deno.test("filterQuery: passes property filters, refuses paging names and nested
   assertThrows(() => filterQuery({ A: { b: 1 } }), Error, "must be a string");
 });
 
-Deno.test("pageQuery: explicit paging wins over filters and unset values vanish", () => {
+test("pageQuery: explicit paging wins over filters and unset values vanish", () => {
   assertEquals(pageQuery({ limit: 10, offset: 0, filters: { Email: "a@b.c" } }), {
     Email: "a@b.c",
     limit: 10,
@@ -76,7 +77,7 @@ Deno.test("pageQuery: explicit paging wins over filters and unset values vanish"
   });
 });
 
-Deno.test("request: sends JSON bodies, skips empty query values, never sets authorization", async () => {
+test("request: sends JSON bodies, skips empty query values, never sets authorization", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { ok: 1 } }]);
   const client = OutsetaClient.fromConnection(connected(ctx));
   await client.request("/crm/people", {
@@ -92,7 +93,7 @@ Deno.test("request: sends JSON bodies, skips empty query values, never sets auth
   assertEquals(calls[0].body, '{"A":1}');
 });
 
-Deno.test("request: an empty 200 is undefined; a non-JSON 200 is wrapped; HTML is refused", async () => {
+test("request: an empty 200 is undefined; a non-JSON 200 is wrapped; HTML is refused", async () => {
   const empty = mockCtx([{ status: 200 }]);
   assertEquals(
     await OutsetaClient.fromConnection(connected(empty.ctx)).request("/x"),
@@ -116,7 +117,7 @@ Deno.test("request: an empty 200 is undefined; a non-JSON 200 is wrapped; HTML i
   assert(threw);
 });
 
-Deno.test("describeFailure: uses the vendor's ErrorMessage, else names the likely cause", () => {
+test("describeFailure: uses the vendor's ErrorMessage, else names the likely cause", () => {
   assert(
     describeFailure(
       400,

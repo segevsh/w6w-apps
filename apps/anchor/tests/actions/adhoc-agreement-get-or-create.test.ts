@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import adhocAgreementGetOrCreate from "../../actions/adhoc-agreement-get-or-create.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("adhoc-agreement-get-or-create: sends POST /relationship/create-adhoc", async () => {
+test("adhoc-agreement-get-or-create: sends POST /relationship/create-adhoc", async () => {
   const { ctx, calls } = mockCtx([{ body: { "relationshipId": "r1" } }]);
   const out = await adhocAgreementGetOrCreate.execute(
     { "clientContactId": "c1" } as never,
@@ -24,7 +25,7 @@ Deno.test("adhoc-agreement-get-or-create: sends POST /relationship/create-adhoc"
   assertEquals(out.relationshipId, "r1");
 });
 
-Deno.test("adhoc-agreement-get-or-create: a non-2xx answer throws with the vendor's error code", async () => {
+test("adhoc-agreement-get-or-create: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

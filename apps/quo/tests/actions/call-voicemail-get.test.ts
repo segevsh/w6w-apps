@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callVoicemailGet from "../../actions/call-voicemail-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-voicemail-get: GETs /v1/call-voicemails/{callId}", async () => {
+test("call-voicemail-get: GETs /v1/call-voicemails/{callId}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { id: "vm1", status: "in-progress" } },
@@ -11,6 +12,6 @@ Deno.test("call-voicemail-get: GETs /v1/call-voicemails/{callId}", async () => {
   assertEquals(pathOf(calls[0].url), "/v1/call-voicemails/call1");
 });
 
-Deno.test("call-voicemail-get: is a read action", () => {
+test("call-voicemail-get: is a read action", () => {
   assertEquals(callVoicemailGet.type, "read");
 });

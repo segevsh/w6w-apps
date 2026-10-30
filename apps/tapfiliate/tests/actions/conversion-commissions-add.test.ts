@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionCommissionsAdd from "../../actions/conversion-commissions-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversion-commissions-add: posts to the commissions sub-resource and returns the array", async () => {
+test("conversion-commissions-add: posts to the commissions sub-resource and returns the array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 3, amount: 2 }, { id: 4, amount: 1 }] }]);
   const out = await conversionCommissionsAdd.execute(
     { conversionId: 1, conversionSubAmount: 20, commissionType: "standard", comment: "Awesome!" },

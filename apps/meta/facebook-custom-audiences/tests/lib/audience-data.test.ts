@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   AudienceDataError,
   normalizeValue,
@@ -11,23 +12,23 @@ import {
 const MARY = "f1904cf1a9d73a55fa5de0ac823c4403ded71afd4c3248d00bdcd0866552bb79";
 const PHONE = "1ef970831d7963307784fa8688e8fce101a15685d62aa765fed23f3a2c576a4e";
 
-Deno.test("sha256Hex: matches Meta's published vectors", async () => {
+test("sha256Hex: matches Meta's published vectors", async () => {
   assertEquals(await sha256Hex("mary@example.com"), MARY);
   assertEquals(await sha256Hex("15559876543"), PHONE);
 });
 
-Deno.test("prepareUsers: normalises an email and a phone to Meta's vectors", async () => {
+test("prepareUsers: normalises an email and a phone to Meta's vectors", async () => {
   const out = await prepareUsers([{ email: "  Mary@Example.COM ", phone: "+1 (555) 987-6543" }]);
   assertEquals(out.schema, ["EMAIL", "PHONE"]);
   assertEquals(out.data, [[MARY, PHONE]]);
 });
 
-Deno.test("prepareUsers: strips leading zeroes from a phone", async () => {
+test("prepareUsers: strips leading zeroes from a phone", async () => {
   const out = await prepareUsers([{ phone: "0015559876543" }]);
   assertEquals(out.data, [[PHONE]]);
 });
 
-Deno.test("normalizeValue: per-key rules from the guide", () => {
+test("normalizeValue: per-key rules from the guide", () => {
   assertEquals(normalizeValue("GEN", "female"), "f");
   assertEquals(normalizeValue("DOBM", "4"), "04");
   assertEquals(normalizeValue("DOBD", "9"), "09");
@@ -43,7 +44,7 @@ Deno.test("normalizeValue: per-key rules from the guide", () => {
   assertEquals(normalizeValue("COUNTRY", "us"), "us");
 });
 
-Deno.test("normalizeValue: rejects out-of-range values", () => {
+test("normalizeValue: rejects out-of-range values", () => {
   assertEquals(
     [
       () => normalizeValue("DOBY", "1850"),
@@ -64,13 +65,13 @@ Deno.test("normalizeValue: rejects out-of-range values", () => {
   );
 });
 
-Deno.test("prepareUsers: MADID is lowercased not hashed, EXTERN_ID is untouched", async () => {
+test("prepareUsers: MADID is lowercased not hashed, EXTERN_ID is untouched", async () => {
   const out = await prepareUsers([{ madid: "AAAA-BBBB", externalId: "Cust-42" }]);
   assertEquals(out.schema, ["MADID", "EXTERN_ID"]);
   assertEquals(out.data, [["aaaa-bbbb", "Cust-42"]]);
 });
 
-Deno.test("prepareUsers: schema is the union of columns, gaps are empty strings", async () => {
+test("prepareUsers: schema is the union of columns, gaps are empty strings", async () => {
   const out = await prepareUsers([
     { email: "mary@example.com" },
     { email: "bob@example.com", firstName: "Bob" },
@@ -80,7 +81,7 @@ Deno.test("prepareUsers: schema is the union of columns, gaps are empty strings"
   assertEquals(out.data[1][1], await sha256Hex("bob"));
 });
 
-Deno.test("prepareUsers: every hashed cell is a 64-hex digest (nothing raw leaves)", async () => {
+test("prepareUsers: every hashed cell is a 64-hex digest (nothing raw leaves)", async () => {
   const out = await prepareUsers([{
     email: "a@b.co",
     phone: "5551234567",
@@ -100,12 +101,12 @@ Deno.test("prepareUsers: every hashed cell is a 64-hex digest (nothing raw leave
   for (const cell of out.data[0]) assert(SHA256_HEX.test(cell), cell);
 });
 
-Deno.test("prepareUsers: a value that is already a digest passes through", async () => {
+test("prepareUsers: a value that is already a digest passes through", async () => {
   const out = await prepareUsers([{ email: MARY }], "pre-hashed");
   assertEquals(out.data, [[MARY]]);
 });
 
-Deno.test("prepareUsers: pre-hashed mode refuses a raw value without echoing it", async () => {
+test("prepareUsers: pre-hashed mode refuses a raw value without echoing it", async () => {
   const err = await assertRejects(
     () => prepareUsers([{ email: "secret.person@example.com" }], "pre-hashed"),
     AudienceDataError,
@@ -114,7 +115,7 @@ Deno.test("prepareUsers: pre-hashed mode refuses a raw value without echoing it"
   assert(!err.message.includes("secret.person"));
 });
 
-Deno.test("prepareUsers: validation errors name row and field, never the value", async () => {
+test("prepareUsers: validation errors name row and field, never the value", async () => {
   const err = await assertRejects(
     () => prepareUsers([{ email: "fine@example.com" }, { email: "not-an-email-77" }]),
     AudienceDataError,
@@ -123,7 +124,7 @@ Deno.test("prepareUsers: validation errors name row and field, never the value",
   assert(!err.message.includes("not-an-email-77"));
 });
 
-Deno.test("prepareUsers: unknown column, empty list and empty row are rejected", async () => {
+test("prepareUsers: unknown column, empty list and empty row are rejected", async () => {
   await assertRejects(() => prepareUsers([{ shoeSize: 9 }]), AudienceDataError, "unknown column");
   await assertRejects(() => prepareUsers([]), Error, "non-empty");
   await assertRejects(() => prepareUsers("x"), Error, "non-empty");

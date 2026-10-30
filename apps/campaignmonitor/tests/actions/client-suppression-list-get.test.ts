@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clientSuppressionListGet from "../../actions/client-suppression-list-get.ts";
 import { API_PATH, mockCtx, pagedBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client-suppression-list-get: GETs suppressionlist with lowercase query keys", async () => {
+test("client-suppression-list-get: GETs suppressionlist with lowercase query keys", async () => {
   const { ctx, calls } = mockCtx([{ body: pagedBody([]) }]);
   await clientSuppressionListGet.execute(
     { clientId: "cid", page: 2, pageSize: 50, orderField: "date", orderDirection: "desc" },
@@ -18,13 +19,13 @@ Deno.test("client-suppression-list-get: GETs suppressionlist with lowercase quer
   });
 });
 
-Deno.test("client-suppression-list-get: omits every parameter the caller left unset", async () => {
+test("client-suppression-list-get: omits every parameter the caller left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: pagedBody([]) }]);
   await clientSuppressionListGet.execute({ clientId: "cid" }, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("client-suppression-list-get: returns the paged envelope intact", async () => {
+test("client-suppression-list-get: returns the paged envelope intact", async () => {
   const record = {
     SuppressionReason: "Bounced",
     EmailAddress: "a@example.com",

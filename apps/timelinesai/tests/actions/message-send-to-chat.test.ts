@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import messageSendToChat from "../../actions/message-send-to-chat.ts";
 
-Deno.test("message-send-to-chat: posts text, file and reply to the chat", async () => {
+test("message-send-to-chat: posts text, file and reply to the chat", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "message_uid": "m1" } } }]);
   const out = await messageSendToChat.execute!(
     { "chatId": 9, "text": "hi", "fileUid": "f1", "replyTo": "m0" } as never,
@@ -20,7 +21,7 @@ Deno.test("message-send-to-chat: posts text, file and reply to the chat", async 
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("message-send-to-chat: surfaces a vendor error envelope", async () => {
+test("message-send-to-chat: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },
@@ -34,7 +35,7 @@ Deno.test("message-send-to-chat: surfaces a vendor error envelope", async () => 
   assert(err.message.includes("not_found"), err.message);
 });
 
-Deno.test("message-send-to-chat: refuses a message with no content, before the network", async () => {
+test("message-send-to-chat: refuses a message with no content, before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await messageSendToChat.execute!({ chatId: 9 } as never, ctx);

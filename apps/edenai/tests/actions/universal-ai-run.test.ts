@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import universalAiRun from "../../actions/universal-ai-run.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("universal-ai-run: runs any feature with a JSON input and provider params", async () => {
+test("universal-ai-run: runs any feature with a JSON input and provider params", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -31,7 +32,7 @@ Deno.test("universal-ai-run: runs any feature with a JSON input and provider par
   assertEquals(out.cost, 0.01);
 });
 
-Deno.test("universal-ai-run: input that is not a JSON object fails before any request", async () => {
+test("universal-ai-run: input that is not a JSON object fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const base = { feature: "f", subfeature: "s", provider: "p" };
   await assertRejects(
@@ -47,7 +48,7 @@ Deno.test("universal-ai-run: input that is not a JSON object fails before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("universal-ai-run: a failed provider call is thrown", async () => {
+test("universal-ai-run: a failed provider call is thrown", async () => {
   const { ctx } = mockCtx([{
     body: { status: "fail", provider: "p", error: { message: "unsupported file" } },
   }]);

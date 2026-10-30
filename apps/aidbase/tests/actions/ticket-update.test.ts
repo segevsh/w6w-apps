@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import ticketUpdate from "../../actions/ticket-update.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => ticketUpdate.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("ticket-update: declares a perform action with a description, params and output", () => {
+test("ticket-update: declares a perform action with a description, params and output", () => {
   assertEquals(ticketUpdate.key, "ticket-update");
   assertEquals(ticketUpdate.type, "perform");
   assert((ticketUpdate.description ?? "").length > 0);
@@ -16,7 +17,7 @@ Deno.test("ticket-update: declares a perform action with a description, params a
   assertEquals(ticketUpdate.idempotent, true);
 });
 
-Deno.test("ticket-update: sends the documented request and returns the documented shape", async () => {
+test("ticket-update: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true } }]);
   const out = await run(ctx);
   assertEquals(out, { "ok": true });
@@ -32,12 +33,12 @@ Deno.test("ticket-update: sends the documented request and returns the documente
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("ticket-update: an Aidbase failure body is thrown with its message", async () => {
+test("ticket-update: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });
 
-Deno.test("ticket-update: refuses an empty update without calling Aidbase", async () => {
+test("ticket-update: refuses an empty update without calling Aidbase", async () => {
   const { ctx, calls } = mockCtx([]);
   const input = { "ticketFormId": "tf1", "ticketId": "t1" };
   await assertRejects(() => run(ctx, input), Error, "at least one");

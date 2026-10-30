@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarEventsApprove from "../../actions/calendar-events-approve.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("calendar-events-approve: posts calendar_event_id and returns ok", async () => {
+test("calendar-events-approve: posts calendar_event_id and returns ok", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await calendarEventsApprove.execute({ calendarEventId: "calev-1" }, ctx);
 

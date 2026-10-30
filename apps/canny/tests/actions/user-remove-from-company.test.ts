@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userRemoveFromCompany from "../../actions/user-remove-from-company.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("user-remove-from-company: posts id and companyID, unwraps the confirmation", async () => {
+test("user-remove-from-company: posts id and companyID, unwraps the confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: '"success"' }]);
   const out = await userRemoveFromCompany.execute({ id: "u1", companyID: "co1" }, ctx) as {
     message: string;

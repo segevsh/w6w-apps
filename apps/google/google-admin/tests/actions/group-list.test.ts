@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-list.ts";
 
-Deno.test("group-list: GETs /groups with customer=my_customer by default", async () => {
+test("group-list: GETs /groups with customer=my_customer by default", async () => {
   const body = { groups: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -15,7 +16,7 @@ Deno.test("group-list: GETs /groups with customer=my_customer by default", async
   assertEquals(result, body);
 });
 
-Deno.test("group-list: userKey drops the customer default (mutually exclusive per Google)", async () => {
+test("group-list: userKey drops the customer default (mutually exclusive per Google)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ userKey: "person@example.com" }, ctx);
   const url = new URL(calls[0].url);
@@ -23,7 +24,7 @@ Deno.test("group-list: userKey drops the customer default (mutually exclusive pe
   assertEquals(url.searchParams.get("customer"), null);
 });
 
-Deno.test("group-list: domain drops the customer default", async () => {
+test("group-list: domain drops the customer default", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ domain: "example.com" }, ctx);
   const url = new URL(calls[0].url);

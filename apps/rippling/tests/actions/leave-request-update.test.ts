@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import leaveRequestUpdate from "../../actions/leave-request-update.ts";
 
-Deno.test("leave-request-update: PATCHes /leave-requests/<id>/ to approve with reviewer fields", async () => {
+test("leave-request-update: PATCHes /leave-requests/<id>/ to approve with reviewer fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "lr1", status: "APPROVED" } }]);
   await leaveRequestUpdate.execute(
     { id: "lr1", status: "APPROVED", reviewerId: "w9", reviewedAt: "2026-11-01T10:00:00Z" },
@@ -18,7 +19,7 @@ Deno.test("leave-request-update: PATCHes /leave-requests/<id>/ to approve with r
   });
 });
 
-Deno.test("leave-request-update: nothing is required on a PATCH but an id and one change", async () => {
+test("leave-request-update: nothing is required on a PATCH but an id and one change", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(
     leaveRequestUpdate.params!.filter((p) => p.key !== "id").some((p) => p.required),

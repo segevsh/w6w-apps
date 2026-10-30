@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import auditEventList from "../../actions/audit-event-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("audit-event-list: maps filters to the vendor query", async () => {
+test("audit-event-list: maps filters to the vendor query", async () => {
   const page = { events: [], hasMore: false, cursor: null };
   const { ctx, calls } = mockCtx([{ body: page }]);
   assertEquals(
@@ -25,7 +26,7 @@ Deno.test("audit-event-list: maps filters to the vendor query", async () => {
   });
 });
 
-Deno.test("audit-event-list: a date outside retention is the vendor's 400", async () => {
+test("audit-event-list: a date outside retention is the vendor's 400", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BAD_REQUEST", message: "retention" } }]);
   await assertRejects(
     async () => await auditEventList.execute({ occurredAfter: "2020-01-01" }, ctx),

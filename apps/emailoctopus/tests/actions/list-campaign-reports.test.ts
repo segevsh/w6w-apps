@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/list-campaign-reports.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-campaign-reports: always sends the required `status` bucket", async () => {
+test("list-campaign-reports: always sends the required `status` bucket", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "opened", data: [] } }]);
   await action.execute!({ campaignId: "cmp1", status: "opened" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-campaign-reports: always sends the required `status` bucket", as
   assertEquals(url.searchParams.get("status"), "opened");
 });
 
-Deno.test("list-campaign-reports: declares `status` required — the API 400s without it", () => {
+test("list-campaign-reports: declares `status` required — the API 400s without it", () => {
   const status = action.params!.find((p) => p.key === "status")!;
   assertEquals(status.required, true);
   const values = (status.options as Array<{ value: string }>).map((o) => o.value);
@@ -27,7 +28,7 @@ Deno.test("list-campaign-reports: declares `status` required — the API 400s wi
   ]);
 });
 
-Deno.test("list-campaign-reports: pages with limit and cursor alongside the bucket", async () => {
+test("list-campaign-reports: pages with limit and cursor alongside the bucket", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!(
     { campaignId: "cmp1", status: "not-clicked", limit: 100, startingAfter: "cur" },

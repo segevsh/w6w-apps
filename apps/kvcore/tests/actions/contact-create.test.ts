@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: posts to /contact and joins deal_type", async () => {
+test("contact-create: posts to /contact and joins deal_type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 5, email: "a@b.com" } }]);
   const out = await contactCreate.execute(
     { first_name: "A", last_name: "B", email: "a@b.com", deal_type: ["buyer", "seller"] },
@@ -15,13 +16,13 @@ Deno.test("contact-create: posts to /contact and joins deal_type", async () => {
   assertEquals(out, { id: 5, email: "a@b.com" });
 });
 
-Deno.test("contact-create: first_name, last_name and email are required", () => {
+test("contact-create: first_name, last_name and email are required", () => {
   const required = (contactCreate.params ?? [])
     .filter((p) => p.required)
     .map((p) => p.key);
   assertEquals(required.sort(), ["email", "first_name", "last_name"]);
 });
 
-Deno.test("contact-create: is not idempotent — kvCORE allows duplicate contacts", () => {
+test("contact-create: is not idempotent — kvCORE allows duplicate contacts", () => {
   assertEquals(contactCreate.idempotent, false);
 });

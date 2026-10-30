@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/property-get.ts";
 
-Deno.test("property-get: reads the property off the Admin host", async () => {
+test("property-get: reads the property off the Admin host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "properties/123" } }], {
     display: { propertyId: "123" },
   });
@@ -11,7 +12,7 @@ Deno.test("property-get: reads the property off the Admin host", async () => {
   assertEquals(result, { name: "properties/123" });
 });
 
-Deno.test("property-get: a prefixed override is normalized", async () => {
+test("property-get: a prefixed override is normalized", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: { propertyId: "123" } });
   await action.execute!({ propertyId: "properties/999" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1beta/properties/999");

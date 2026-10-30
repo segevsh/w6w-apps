@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/domain-list.ts";
 
@@ -7,7 +8,7 @@ const page = (items: unknown[], next: number | null) => ({
   pagination: { count: items.length, next, prev: null },
 });
 
-Deno.test("domain-list: lists account-level domains", async () => {
+test("domain-list: lists account-level domains", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ name: "a.com" }], null) }], {
     display: { teamId: "team_abc" },
   });

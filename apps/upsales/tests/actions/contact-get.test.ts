@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { API_ROOT, envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-get: GETs /contacts/{id} and returns the record", async () => {
+test("contact-get: GETs /contacts/{id} and returns the record", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7, name: "X" }) }]);
   const out = await contactGet.execute({ id: 7 }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("contact-get: GETs /contacts/{id} and returns the record", async () =>
   assertEquals(out, { data: { id: 7, name: "X" } });
 });
 
-Deno.test("contact-get: a non-JSON 200 (proxy page) is refused", async () => {
+test("contact-get: a non-JSON 200 (proxy page) is refused", async () => {
   const { ctx } = mockCtx([{
     headers: { "content-type": "text/html" },
     body: "<html>login</html>",
@@ -20,7 +21,7 @@ Deno.test("contact-get: a non-JSON 200 (proxy page) is refused", async () => {
   await assertRejects(async () => await contactGet.execute({ id: 7 }, ctx), Error, "non-JSON");
 });
 
-Deno.test("contact-get: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("contact-get: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -29,7 +30,7 @@ Deno.test("contact-get: a rejected key surfaces Upsales' plain-text Unauthorized
   await assertRejects(async () => await contactGet.execute({ id: 7 }, ctx), Error, "401");
 });
 
-Deno.test("contact-get: a JSON error envelope surfaces the vendor key", async () => {
+test("contact-get: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

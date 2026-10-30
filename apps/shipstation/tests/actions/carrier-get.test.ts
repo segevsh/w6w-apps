@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/carrier-get.ts";
 
-Deno.test("carrier-get: fetches by carrierId", async () => {
+test("carrier-get: fetches by carrierId", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -18,7 +19,7 @@ Deno.test("carrier-get: fetches by carrierId", async () => {
   assertEquals(result.services.length, 1);
 });
 
-Deno.test("carrier-get: requires carrierId", async () => {
+test("carrier-get: requires carrierId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "carrierId");
   assertEquals(calls.length, 0);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/client-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const RESPONSE = {
   },
 };
 
-Deno.test("client-get: sends GET /clients/client1 with the mapped input", async () => {
+test("client-get: sends GET /clients/client1 with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -28,20 +29,20 @@ Deno.test("client-get: sends GET /clients/client1 with the mapped input", async 
   assertEquals(JSON.parse(JSON.stringify(out)), { "id": "c1", "name": "Acme" });
 });
 
-Deno.test("client-get: sends no optional field when only required input is given", async () => {
+test("client-get: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "client_id": "client1" } as never, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.search, "");
 });
 
-Deno.test("client-get: sends no credential header of its own", async () => {
+test("client-get: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("client-get: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("client-get: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -55,7 +56,7 @@ Deno.test("client-get: surfaces Klipfolio's error envelope as a thrown error", a
   );
 });
 
-Deno.test("client-get: declares type, idempotency and output", () => {
+test("client-get: declares type, idempotency and output", () => {
   assertEquals(action.type, "read");
   assert(Array.isArray(action.output) && action.output.length > 0);
 });

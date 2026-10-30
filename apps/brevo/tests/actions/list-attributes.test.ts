@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-attributes.ts";
 
-Deno.test("list-attributes: GETs /v3/contacts/attributes and returns the envelope", async () => {
+test("list-attributes: GETs /v3/contacts/attributes and returns the envelope", async () => {
   const body = {
     attributes: [
       { name: "FIRSTNAME", category: "normal" },
@@ -16,7 +17,7 @@ Deno.test("list-attributes: GETs /v3/contacts/attributes and returns the envelop
   assertEquals(result, body);
 });
 
-Deno.test("list-attributes: applies limit client-side when provided", async () => {
+test("list-attributes: applies limit client-side when provided", async () => {
   const body = {
     attributes: [
       { name: "A" },

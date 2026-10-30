@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/event-get.ts";
 
-Deno.test("event-get: GETs /events/{id}", async () => {
+test("event-get: GETs /events/{id}", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: { id: "1", type: "events", attributes: { start_at: "2026-10-01T18:00:00Z" } } },
   }]);

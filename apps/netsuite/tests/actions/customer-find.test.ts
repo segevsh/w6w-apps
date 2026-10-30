@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerFind from "../../actions/customer-find.ts";
 import { BASE, mockCtx, run } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const LIST = {
   hasMore: false,
 };
 
-Deno.test("customer-find: builds the q filter, excludes inactive, then fetches each match", async () => {
+test("customer-find: builds the q filter, excludes inactive, then fetches each match", async () => {
   const { ctx, calls } = mockCtx([
     { body: LIST },
     { body: { links: [], companyName: "Glenrock", email: "alan@ns.com" } },
@@ -35,7 +36,7 @@ Deno.test("customer-find: builds the q filter, excludes inactive, then fetches e
   });
 });
 
-Deno.test("customer-find: blank fields returns ids only, in one request", async () => {
+test("customer-find: blank fields returns ids only, in one request", async () => {
   const { ctx, calls } = mockCtx([{ body: LIST }]);
   const out = await run(customerFind, {
     companyName: "Acme Corp",
@@ -51,7 +52,7 @@ Deno.test("customer-find: blank fields returns ids only, in one request", async 
   assertEquals(out.customers, [{ id: "107" }, { id: "41" }]);
 });
 
-Deno.test("customer-find: needs a criterion, and a quote in a value never reaches the filter", async () => {
+test("customer-find: needs a criterion, and a quote in a value never reaches the filter", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await run(customerFind, {}, ctx), Error, "at least one");
   await assertRejects(

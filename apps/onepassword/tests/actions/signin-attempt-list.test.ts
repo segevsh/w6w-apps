@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, eventsDisplay, ok } from "./_shared.ts";
 import action from "../../actions/signin-attempt-list.ts";
@@ -18,7 +19,7 @@ const attempts = ok({
  * `mfa_failed` is the serious one — it means somebody had a working password —
  * so it is counted apart from ordinary wrong-password noise.
  */
-Deno.test("signin-attempt-list: counts MFA failures separately from the rest", async () => {
+test("signin-attempt-list: counts MFA failures separately from the rest", async () => {
   const { ctx, calls } = mockCtx([attempts], { display: eventsDisplay });
   const result = await action.execute!({}, ctx) as {
     count: number;
@@ -34,7 +35,7 @@ Deno.test("signin-attempt-list: counts MFA failures separately from the rest", a
 });
 
 /** Success and failure share the stream; `category` is the discriminator. */
-Deno.test("signin-attempt-list: success is not counted as a failure", async () => {
+test("signin-attempt-list: success is not counted as a failure", async () => {
   const { ctx } = mockCtx([ok({ items: [{ category: "success" }], has_more: false })], {
     display: eventsDisplay,
   });
@@ -43,25 +44,25 @@ Deno.test("signin-attempt-list: success is not counted as a failure", async () =
   assertEquals(result.failed, 0);
 });
 
-Deno.test("signin-attempt-list: a continuation sends the cursor alone", async () => {
+test("signin-attempt-list: a continuation sends the cursor alone", async () => {
   const { ctx, calls } = mockCtx([attempts], { display: eventsDisplay });
   await action.execute!({ cursor: "c1", startTime: "2026-08-18T00:00:00Z" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { cursor: "c1" });
 });
 
 /** An attempt carries an email address and an IP. */
-Deno.test("signin-attempt-list: logs counts only", async () => {
+test("signin-attempt-list: logs counts only", async () => {
   const { ctx, logs } = mockCtx([attempts], { display: eventsDisplay });
   await action.execute!({}, ctx);
   assertEquals(logs[0].data, { count: 4, failed: 3, mfaFailed: 1 });
 });
 
-Deno.test("signin-attempt-list: a Connect connection is refused", async () => {
+test("signin-attempt-list: a Connect connection is refused", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "**Events**");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("signin-attempt-list: says why mfa_failed matters most", () => {
+test("signin-attempt-list: says why mfa_failed matters most", () => {
   assert(/somebody had a working password/.test(action.description!), action.description);
 });

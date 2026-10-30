@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs to /api/v2/contacts using only the preferred snake_case fields", async () => {
+test("contact-create: POSTs to /api/v2/contacts using only the preferred snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", contact: {} } }]);
   await contactCreate.execute({
     number: "+1",

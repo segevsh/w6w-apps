@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-environments.ts";
 
-Deno.test("list-environments: metadata", () => {
+test("list-environments: metadata", () => {
   assertEquals(action.key, "list-environments");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["includeCount", "asc", "desc"]);
 });
 
-Deno.test("list-environments: calls GET /environments on the NA host", async () => {
+test("list-environments: calls GET /environments on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "environments": [{ "name": "production" }] } }]);
   const out = await action.execute({ "includeCount": true }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("list-environments: calls GET /environments on the NA host", async () 
   assertEquals(out, { "environments": [{ "name": "production" }] });
 });
 
-Deno.test("list-environments: uses the connection's regional host", async () => {
+test("list-environments: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "environments": [{ "name": "production" }] } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -31,7 +32,7 @@ Deno.test("list-environments: uses the connection's regional host", async () => 
   );
 });
 
-Deno.test("list-environments: surfaces Contentstack's own error body", async () => {
+test("list-environments: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

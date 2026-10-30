@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import jobCheck from "../../actions/job-check.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-check: posts jobid (lowercase) to /v1/job/check", async () => {
+test("job-check: posts jobid (lowercase) to /v1/job/check", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", url: "https://x/out.pdf" } }]);
   const out = await jobCheck.execute({ jobid: "ABC123" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("job-check: posts jobid (lowercase) to /v1/job/check", async () => {
   assertEquals(out.status, "success");
 });
 
-Deno.test("job-check: a jobid unknown to this API key surfaces PDF.co's 404", async () => {
+test("job-check: a jobid unknown to this API key surfaces PDF.co's 404", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: { errorCode: 404, error: true, message: "Job not found" } },
   ]);

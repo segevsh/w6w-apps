@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import lookupPerson from "../../actions/lookup-person.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("lookup-person: GETs /person/lookup with query params and maps a complete profile", async () => {
+test("lookup-person: GETs /person/lookup with query params and maps a complete profile", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: 5244,
@@ -29,13 +30,13 @@ Deno.test("lookup-person: GETs /person/lookup with query params and maps a compl
   assertEquals(out.phones.length, 1);
 });
 
-Deno.test("lookup-person: an in-progress lookup is complete: false", async () => {
+test("lookup-person: an in-progress lookup is complete: false", async () => {
   const { ctx } = mockCtx([{ body: { id: 5, status: "searching" } }]);
   const out = await run(lookupPerson, { id: 5, return_cached_emails: false }, ctx);
   assertEquals([out.status, out.complete, out.emails], ["searching", false, []]);
 });
 
-Deno.test("lookup-person: sends return_cached_emails=false, refuses an unidentified person", async () => {
+test("lookup-person: sends return_cached_emails=false, refuses an unidentified person", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 5, status: "complete" } }]);
   await run(lookupPerson, { id: 5, return_cached_emails: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("return_cached_emails"), "false");
@@ -48,7 +49,7 @@ Deno.test("lookup-person: sends return_cached_emails=false, refuses an unidentif
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("lookup-person: a 403 (lookup credits exhausted) throws with the vendor text", async () => {
+test("lookup-person: a 403 (lookup credits exhausted) throws with the vendor text", async () => {
   const bad = mockCtx([{ status: 403, body: { detail: "You have no lookup credits" } }]);
   await assertRejects(() => run(lookupPerson, { id: 1 }, bad.ctx), Error, "no lookup credits");
 });

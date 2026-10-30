@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-package-instance.ts";
 import { API_ROOT, bodyOf, mockCtx, urlOf } from "../_helpers.ts";
 
 const created = { id: "pi-9", name: "Ada's package" };
 const required = { clientRecordId: "rec-1", packageId: "pkg-1", name: "Ada's package" };
 
-Deno.test("create-package-instance: POSTs to /consultant/packages/instances", async () => {
+test("create-package-instance: POSTs to /consultant/packages/instances", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   const result = await action.execute(required, ctx);
   assertEquals(calls[0].method, "POST");
@@ -17,7 +18,7 @@ Deno.test("create-package-instance: POSTs to /consultant/packages/instances", as
   assertEquals(result, created);
 });
 
-Deno.test("create-package-instance: the optional shape is passed through as given", async () => {
+test("create-package-instance: the optional shape is passed through as given", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await action.execute({
     ...required,
@@ -45,14 +46,14 @@ Deno.test("create-package-instance: the optional shape is passed through as give
   assertEquals(body.courses, [{ courseId: "course-1" }]);
 });
 
-Deno.test("create-package-instance: only the three required fields go out when nothing else is set", async () => {
+test("create-package-instance: only the three required fields go out when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await action.execute(required, ctx);
   assertEquals(Object.keys(bodyOf(calls[0])).sort(), ["clientRecordId", "name", "packageId"]);
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-package-instance: a JSON-string service array is parsed, not double-encoded", async () => {
+test("create-package-instance: a JSON-string service array is parsed, not double-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await action.execute({ ...required, services: '[{"serviceId":"svc-1"}]' }, ctx);
   assertEquals(bodyOf(calls[0]).services, [{ serviceId: "svc-1" }]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
@@ -10,7 +11,7 @@ const fields = {
   appKey: "key1",
 };
 
-Deno.test("sign: stamps Authorization and ST-App-Key, network-less", async () => {
+test("sign: stamps Authorization and ST-App-Key, network-less", async () => {
   const { ctx, calls } = mockCtx();
   const request = {
     url: "https://api.servicetitan.io/crm/v2/tenant/42/customers",
@@ -26,7 +27,7 @@ Deno.test("sign: stamps Authorization and ST-App-Key, network-less", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("fields: tenant, id, secret and app key are required; the three credentials are masked", () => {
+test("fields: tenant, id, secret and app key are required; the three credentials are masked", () => {
   assertEquals(
     auth.fields!.filter((f) => f.required).map((f) => f.key).sort(),
     ["appKey", "clientId", "clientSecret", "tenantId"],
@@ -37,7 +38,7 @@ Deno.test("fields: tenant, id, secret and app key are required; the three creden
   );
 });
 
-Deno.test("exchange: form-encodes the client_credentials grant against the production token host", async () => {
+test("exchange: form-encodes the client_credentials grant against the production token host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { access_token: "t1", expires_in: 900 } }]);
   const cred = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://auth.servicetitan.io/connect/token");
@@ -55,13 +56,13 @@ Deno.test("exchange: form-encodes the client_credentials grant against the produ
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("exchange: the integration environment mints from the integration token host", async () => {
+test("exchange: the integration environment mints from the integration token host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { access_token: "t1" } }]);
   await auth.exchange!({ fields: { ...fields, environment: "integration" } }, ctx);
   assertEquals(calls[0].url, "https://auth-integration.servicetitan.io/connect/token");
 });
 
-Deno.test("exchange: refuses a missing secret or a non-numeric tenant before any request", async () => {
+test("exchange: refuses a missing secret or a non-numeric tenant before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await auth.exchange!({ fields: { ...fields, appKey: "" } }, ctx),
@@ -75,7 +76,7 @@ Deno.test("exchange: refuses a missing secret or a non-numeric tenant before any
   assertEquals(calls.length, 0);
 });
 
-Deno.test("exchange: surfaces the vendor's error body on a rejected client", async () => {
+test("exchange: surfaces the vendor's error body on a rejected client", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "invalid_client" } }]);
   await assertRejects(
     async () => await auth.exchange!({ fields }, ctx),
@@ -84,7 +85,7 @@ Deno.test("exchange: surfaces the vendor's error body on a rejected client", asy
   );
 });
 
-Deno.test("refresh: re-mints from the stored credential, keeping tenant and app key", async () => {
+test("refresh: re-mints from the stored credential, keeping tenant and app key", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { access_token: "t2", expires_in: 900 } }]);
   const cred = await auth.refresh!(
     { credential: { ...fields, accessToken: "old" } },
@@ -98,7 +99,7 @@ Deno.test("refresh: re-mints from the stored credential, keeping tenant and app 
   assertEquals(cred.appKey, "key1");
 });
 
-Deno.test("test: passes on a 200 and sends both credentials to the settings probe", async () => {
+test("test: passes on a 200 and sends both credentials to the settings probe", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   const out = await auth.test!({ credential: { ...fields, accessToken: "tok" } }, ctx);
   assertEquals(out, { ok: true });
@@ -110,7 +111,7 @@ Deno.test("test: passes on a 200 and sends both credentials to the settings prob
   assertEquals(calls[0].headers["st-app-key"], "key1");
 });
 
-Deno.test("test: classifies 401 and 403 separately, and never echoes the credential", async () => {
+test("test: classifies 401 and 403 separately, and never echoes the credential", async () => {
   const cred = { ...fields, accessToken: "tok-secret" };
   const r401 = await auth.test!(
     { credential: cred },
@@ -126,14 +127,14 @@ Deno.test("test: classifies 401 and 403 separately, and never echoes the credent
   }
 });
 
-Deno.test("test: a credential with no access token fails without a request", async () => {
+test("test: a credential with no access token fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await auth.test!({ credential: fields }, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: records tenant and environment, never a secret", async () => {
+test("afterConnect: records tenant and environment, never a secret", async () => {
   const out = await auth.afterConnect!(
     { credential: { ...fields, accessToken: "tok" } },
     mockCtx().ctx,

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/list-tags.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-tags: GETs /v4/tags with no params by default", async () => {
+test("list-tags: GETs /v4/tags with no params by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { tags: [], pagination: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-tags: GETs /v4/tags with no params by default", async () => {
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-tags: forwards include and cursor pagination", async () => {
+test("list-tags: forwards include and cursor pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { tags: [] } }]);
   await action.execute!({ include: "subscriber_count", perPage: 50, before: "c1" }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -20,7 +21,7 @@ Deno.test("list-tags: forwards include and cursor pagination", async () => {
   assert(!p.has("after"));
 });
 
-Deno.test("list-tags: returns rows plus the pagination envelope", async () => {
+test("list-tags: returns rows plus the pagination envelope", async () => {
   const body = { tags: [{ id: 1, name: "VIP" }], pagination: { has_next_page: false } };
   const { ctx } = mockCtx([{ body }]);
   assertEquals(await action.execute!({}, ctx), body);

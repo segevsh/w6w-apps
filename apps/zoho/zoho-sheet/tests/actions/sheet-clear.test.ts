@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-clear.ts";
 
-Deno.test("sheet-clear: POSTs range.content.clear with all four bounds", async () => {
+test("sheet-clear: POSTs range.content.clear with all four bounds", async () => {
   const { ctx, calls } = mockSheetCtx([
     { body: { status: "success", method: "range.content.clear" } },
   ]);

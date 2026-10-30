@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
 function feedOf(titles: string[]) {
@@ -9,7 +10,7 @@ function feedOf(titles: string[]) {
   };
 }
 
-Deno.test("service: unknown, never down, when the feed itself failed", () => {
+test("service: unknown, never down, when the feed itself failed", () => {
   const result = service.check!(
     { feed: { entries: [], latest: [], fetchedAt: "", error: "boom" } },
     {} as never,
@@ -17,7 +18,7 @@ Deno.test("service: unknown, never down, when the feed itself failed", () => {
   assertEquals((result as { state: string }).state, "unknown");
 });
 
-Deno.test("service: unknown when the feed carries no Zoho Bigin component", () => {
+test("service: unknown when the feed carries no Zoho Bigin component", () => {
   const result = service.check!(
     { feed: feedOf(["Zoho CRM - Operational", "Zoho Mail - Operational"]) },
     {} as never,
@@ -30,7 +31,7 @@ Deno.test("service: unknown when the feed carries no Zoho Bigin component", () =
  * different product, and a substring match on "Bigin" would report one
  * product's outage as the other's.
  */
-Deno.test("service: matches 'Zoho Bigin' exactly and ignores 'Bigin Marketplace'", () => {
+test("service: matches 'Zoho Bigin' exactly and ignores 'Bigin Marketplace'", () => {
   const marketplaceOnly = service.check!(
     { feed: feedOf(["Bigin Marketplace - Major Outage"]) },
     {} as never,
@@ -49,7 +50,7 @@ Deno.test("service: matches 'Zoho Bigin' exactly and ignores 'Bigin Marketplace'
   assertEquals((both as { state: string }).state, "ok");
 });
 
-Deno.test("service: maps the StatusIQ status words", () => {
+test("service: maps the StatusIQ status words", () => {
   const cases: Array<[string, string]> = [
     ["Operational", "ok"],
     ["Under Maintenance", "degraded"],
@@ -63,12 +64,12 @@ Deno.test("service: maps the StatusIQ status words", () => {
   }
 });
 
-Deno.test("service: an unrecognised status word is unknown, not guessed", () => {
+test("service: an unrecognised status word is unknown, not guessed", () => {
   const result = service.check!({ feed: feedOf(["Zoho Bigin - Something New"]) }, {} as never);
   assertEquals((result as { state: string }).state, "unknown");
 });
 
-Deno.test("service: declares the feed, stays unsigned, and never widens egress by hand", () => {
+test("service: declares the feed, stays unsigned, and never widens egress by hand", () => {
   assertEquals(service.feed?.url, "https://us.zohostatus.com/rss");
   assertEquals(service.network, undefined);
   assertEquals(service.kind, "service");

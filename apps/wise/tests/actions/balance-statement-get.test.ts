@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import balanceStatementGet from "../../actions/balance-statement-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("balance-statement-get: GETs the statement.json path with the required query params", async () => {
+test("balance-statement-get: GETs the statement.json path with the required query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { accountHolder: {}, transactions: [] } }]);
   await balanceStatementGet.execute(
     {
@@ -24,11 +25,11 @@ Deno.test("balance-statement-get: GETs the statement.json path with the required
   });
 });
 
-Deno.test("balance-statement-get: describes the SCA/country restriction rather than hiding it", () => {
+test("balance-statement-get: describes the SCA/country restriction rather than hiding it", () => {
   assertEquals(balanceStatementGet.description?.includes("SCA-protected"), true);
 });
 
-Deno.test("balance-statement-get: currency/intervalStart/intervalEnd are all required", () => {
+test("balance-statement-get: currency/intervalStart/intervalEnd are all required", () => {
   for (const key of ["currency", "intervalStart", "intervalEnd"]) {
     const p = balanceStatementGet.params?.find((p) => p.key === key);
     assertEquals(p?.required, true, key);

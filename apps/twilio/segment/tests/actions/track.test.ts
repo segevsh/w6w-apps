@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track.ts";
 
-Deno.test("track: posts event + userId + properties to /track", async () => {
+test("track: posts event + userId + properties to /track", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!(
     { event: "Order Completed", userId: "u1", properties: { revenue: 9.99 } },
@@ -17,7 +18,7 @@ Deno.test("track: posts event + userId + properties to /track", async () => {
   assertEquals(result, { success: true });
 });
 
-Deno.test("track: rejects a blank event", async () => {
+test("track: rejects a blank event", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ event: "  ", userId: "u1" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("track: rejects a blank event", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("track: rejects when neither userId nor anonymousId is set", async () => {
+test("track: rejects when neither userId nor anonymousId is set", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ event: "Signed Up" }, ctx),
@@ -36,7 +37,7 @@ Deno.test("track: rejects when neither userId nor anonymousId is set", async () 
   );
 });
 
-Deno.test("track: anonymousId alone satisfies the identity requirement", async () => {
+test("track: anonymousId alone satisfies the identity requirement", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ event: "Page Viewed", anonymousId: "anon-1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { event: "Page Viewed", anonymousId: "anon-1" });

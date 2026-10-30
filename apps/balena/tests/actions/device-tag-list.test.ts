@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-tag-list.ts";
 
@@ -15,7 +16,7 @@ const tags = {
 };
 
 /** The closest thing balena has to a sub-fleet. */
-Deno.test("device-tag-list: finds every device carrying a key", async () => {
+test("device-tag-list: finds every device carrying a key", async () => {
   const { ctx, calls } = mockCtx([tags]);
   const result = await action.execute({ key: "site" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).searchParams.get("$filter"), "tag_key eq 'site'");
@@ -24,7 +25,7 @@ Deno.test("device-tag-list: finds every device carrying a key", async () => {
   assertEquals(result.values, ["berlin", "munich"]);
 });
 
-Deno.test("device-tag-list: a key and value filter both go into the query", async () => {
+test("device-tag-list: a key and value filter both go into the query", async () => {
   const { ctx, calls } = mockCtx([tags]);
   await action.execute({ key: "site", value: "berlin", fleet: "acme/sensors" }, ctx);
   const filter = new URL(calls[0].url).searchParams.get("$filter")!;
@@ -33,7 +34,7 @@ Deno.test("device-tag-list: a key and value filter both go into the query", asyn
   assert(/a\/slug eq 'acme\/sensors'/.test(filter), filter);
 });
 
-Deno.test("device-tag-list: a uuid reads one device's tags as a map", async () => {
+test("device-tag-list: a uuid reads one device's tags as a map", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -49,7 +50,7 @@ Deno.test("device-tag-list: a uuid reads one device's tags as a map", async () =
 });
 
 /** An unfiltered listing is every tag in every fleet. */
-Deno.test("device-tag-list: refuses to list everything", async () => {
+test("device-tag-list: refuses to list everything", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => await action.execute({}, ctx), Error);
   assert(/every tag in every fleet/.test(err.message), err.message);
@@ -57,6 +58,6 @@ Deno.test("device-tag-list: refuses to list everything", async () => {
 });
 
 /** Everything is a string, matched exactly. */
-Deno.test("device-tag-list: says values are strings matched exactly", () => {
+test("device-tag-list: says values are strings matched exactly", () => {
   assert(/`version=2` does not find a device tagged `version=2\.0`/.test(action.description!));
 });

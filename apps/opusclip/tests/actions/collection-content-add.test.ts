@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionContentAdd from "../../actions/collection-content-add.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-content-add: POSTs collectionId + contentId", async () => {
+test("collection-content-add: POSTs collectionId + contentId", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: envelope({ collectionId: "col1", contentId: "P1.C1" }) },
   ]);

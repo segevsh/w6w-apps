@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const EXPECTED = [
@@ -25,28 +27,28 @@ const EXPECTED = [
   "create-application",
 ];
 
-Deno.test("index: exports exactly the documented actions, keys unique and kebab-case", () => {
+test("index: exports exactly the documented actions, keys unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys, EXPECTED);
   assertEquals(new Set(keys).size, keys.length);
   for (const k of keys) assert(/^[a-z][a-z0-9-]*$/.test(k), k);
 });
 
-Deno.test("index: one basic auth method and the service + quota checks", () => {
+test("index: one basic auth method and the service + quota checks", () => {
   assertEquals(app.auth.map((a) => [a.key, a.type]), [["basic", "basic"]]);
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: every action has a title and every perform action states idempotency", () => {
+test("index: every action has a title and every perform action states idempotency", () => {
   for (const a of app.actions) {
     assert(a.title.length > 0, a.key);
     if (a.type === "perform") assert(typeof a.idempotent === "boolean", a.key);
   }
 });
 
-Deno.test("index: no action source holds a credential or the global fetch", async () => {
+test("index: no action source holds a credential or the global fetch", async () => {
   for (const k of EXPECTED) {
-    const src = await Deno.readTextFile(new URL(`../actions/${k}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${k}.ts`, import.meta.url));
     assert(!/authorization/i.test(src), `${k}: Authorization in an action`);
     assert(!/(^|[^.\w])fetch\(/.test(src), `${k}: global fetch`);
   }

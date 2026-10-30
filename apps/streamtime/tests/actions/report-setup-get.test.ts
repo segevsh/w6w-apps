@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reportSetupGet from "../../actions/report-setup-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("report-setup-get: reads GET /v2/report/setup and returns the three arrays", async () => {
+test("report-setup-get: reads GET /v2/report/setup and returns the three arrays", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -23,7 +24,7 @@ Deno.test("report-setup-get: reads GET /v2/report/setup and returns the three ar
 });
 
 /** The report view list is not the search view list: 12 entries, no line items. */
-Deno.test("report-setup-get: only the 12 documented report views are offered", () => {
+test("report-setup-get: only the 12 documented report views are offered", () => {
   const view = (reportSetupGet.params ?? []).find((p) => p.key === "searchView");
   const options = Array.isArray(view?.options) ? view!.options! : [];
   assertEquals(options.length, 12);

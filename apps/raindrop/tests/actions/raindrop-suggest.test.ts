@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import raindropSuggest from "../../actions/raindrop-suggest.ts";
 import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
 
 const SUGGESTION = { collections: [{ $id: 568368 }], tags: ["fonts", "free"] };
 
 /** An unsaved URL goes to POST /raindrop/suggest with the link in the body. */
-Deno.test("raindrop-suggest: a URL POSTs to /raindrop/suggest", async () => {
+test("raindrop-suggest: a URL POSTs to /raindrop/suggest", async () => {
   const { ctx, calls } = mockCtx([{ body: item(SUGGESTION) }]);
   const out = await raindropSuggest.execute({ link: "https://example.com" }, ctx) as {
     collections: unknown[];
@@ -19,7 +20,7 @@ Deno.test("raindrop-suggest: a URL POSTs to /raindrop/suggest", async () => {
 });
 
 /** An existing bookmark is a GET on a different path entirely. */
-Deno.test("raindrop-suggest: a raindrop ID GETs /raindrop/{id}/suggest", async () => {
+test("raindrop-suggest: a raindrop ID GETs /raindrop/{id}/suggest", async () => {
   const { ctx, calls } = mockCtx([{ body: item(SUGGESTION) }]);
   await raindropSuggest.execute({ raindropId: 373777232 }, ctx);
 
@@ -32,7 +33,7 @@ Deno.test("raindrop-suggest: a raindrop ID GETs /raindrop/{id}/suggest", async (
  * Both inputs is a request the API has no way to reconcile, so it is refused
  * rather than resolved by an invisible precedence rule.
  */
-Deno.test("raindrop-suggest: refuses both inputs, and neither, without a request", async () => {
+test("raindrop-suggest: refuses both inputs, and neither, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(raindropSuggest.execute({ link: "https://x", raindropId: 1 }, ctx)),
@@ -42,7 +43,7 @@ Deno.test("raindrop-suggest: refuses both inputs, and neither, without a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("raindrop-suggest: a response with neither key yields empty arrays", async () => {
+test("raindrop-suggest: a response with neither key yields empty arrays", async () => {
   const { ctx } = mockCtx([{ body: item({}) }]);
   assertEquals(await raindropSuggest.execute({ link: "https://x" }, ctx), {
     collections: [],
@@ -51,7 +52,7 @@ Deno.test("raindrop-suggest: a response with neither key yields empty arrays", a
 });
 
 /** It creates nothing, whatever verb the vendor picked. */
-Deno.test("raindrop-suggest: is typed read despite the POST", () => {
+test("raindrop-suggest: is typed read despite the POST", () => {
   assertEquals(raindropSuggest.type, "read");
   assertEquals(raindropSuggest.idempotent, undefined);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota, { parseIntHeader, quotaState } from "../../health/quota.ts";
 
@@ -11,7 +12,7 @@ const rateHeaders = (limit: string, remaining: string, extra: Record<string, str
   ...extra,
 });
 
-Deno.test("quota: signed, connection-scoped, informational, and widens no egress", () => {
+test("quota: signed, connection-scoped, informational, and widens no egress", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.credential ?? "signed", "signed");
   assertEquals(quota.scope ?? "connection", "connection");
@@ -21,13 +22,13 @@ Deno.test("quota: signed, connection-scoped, informational, and widens no egress
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: probes /identity, not /me", async () => {
+test("quota: probes /identity, not /me", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, headers: rateHeaders("250", "200"), body: {} }]);
   await quota.check!({}, ctx);
   assertEquals(calls[0].url, "https://api.followupboss.com/v1/identity");
 });
 
-Deno.test("quota: reads the documented X-RateLimit headers into a reading", async () => {
+test("quota: reads the documented X-RateLimit headers into a reading", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: rateHeaders("250", "156"), body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -42,13 +43,13 @@ Deno.test("quota: reads the documented X-RateLimit headers into a reading", asyn
  * is no instant at which the allowance resets, and synthesising one would invent
  * a precise-looking fact.
  */
-Deno.test("quota: never fabricates a resetAt for a sliding window", async () => {
+test("quota: never fabricates a resetAt for a sliding window", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: rateHeaders("250", "156"), body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.quota?.[0].resetAt, undefined);
 });
 
-Deno.test("quota: low headroom degrades, near-zero reads as down", async () => {
+test("quota: low headroom degrades, near-zero reads as down", async () => {
   const low = mockCtx([{ status: 200, headers: rateHeaders("250", "20"), body: {} }]);
   assertEquals((await quota.check!({}, low.ctx)).state, "degraded");
 
@@ -61,7 +62,7 @@ Deno.test("quota: low headroom degrades, near-zero reads as down", async () => {
  * The wire behaviour of these headers could not be verified without an account,
  * so this is the path that matters most if the docs turn out to be wrong.
  */
-Deno.test("quota: absent rate-limit headers report unknown, never ok", async () => {
+test("quota: absent rate-limit headers report unknown, never ok", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: { "content-type": "application/json" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -69,7 +70,7 @@ Deno.test("quota: absent rate-limit headers report unknown, never ok", async () 
   assertEquals(report.quota, undefined);
 });
 
-Deno.test("quota: an unparseable header reads as unknown, not as zero", async () => {
+test("quota: an unparseable header reads as unknown, not as zero", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: rateHeaders("not-a-number", "also-not"),
@@ -79,7 +80,7 @@ Deno.test("quota: an unparseable header reads as unknown, not as zero", async ()
 });
 
 /** A 429 is a positive reading — being throttled is exactly what this reports. */
-Deno.test("quota: a 429 reports down and surfaces Retry-After", async () => {
+test("quota: a 429 reports down and surfaces Retry-After", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: rateHeaders("250", "0", { "retry-after": "8" }),
@@ -96,7 +97,7 @@ Deno.test("quota: a 429 reports down and surfaces Retry-After", async () => {
  * A 401/403 is a credential story, and the derived `auth:api-key` check is the
  * one that reports it. A probe that could not run says nothing about headroom.
  */
-Deno.test("quota: a non-429 failure reports unknown, not down", async () => {
+test("quota: a non-429 failure reports unknown, not down", async () => {
   for (const status of [401, 403, 500]) {
     const { ctx } = mockCtx([{ status, body: {} }]);
     const report = await quota.check!({}, ctx);
@@ -105,7 +106,7 @@ Deno.test("quota: a non-429 failure reports unknown, not down", async () => {
   }
 });
 
-Deno.test("quota: reports whichever context the API says applied", async () => {
+test("quota: reports whichever context the API says applied", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     headers: { ...rateHeaders("10", "9"), "x-ratelimit-context": "notes" },
@@ -118,7 +119,7 @@ Deno.test("quota: reports whichever context the API says applied", async () => {
 
 // --- helpers ---------------------------------------------------------------
 
-Deno.test("parseIntHeader: distinguishes absent from zero", () => {
+test("parseIntHeader: distinguishes absent from zero", () => {
   assertEquals(parseIntHeader("0"), 0);
   assertEquals(parseIntHeader(null), undefined);
   assertEquals(parseIntHeader(undefined), undefined);
@@ -127,7 +128,7 @@ Deno.test("parseIntHeader: distinguishes absent from zero", () => {
   assertEquals(parseIntHeader("250"), 250);
 });
 
-Deno.test("quotaState: thresholds", () => {
+test("quotaState: thresholds", () => {
   assertEquals(quotaState(250, 250), "ok");
   assertEquals(quotaState(38, 250), "ok");
   assertEquals(quotaState(30, 250), "degraded");

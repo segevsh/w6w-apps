@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import contactTransactionalOptIn from "../../actions/contact-transactional-opt-in.ts";
 
-Deno.test("contact-transactional-opt-in: sends every documented field in its documented place", async () => {
+test("contact-transactional-opt-in: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -27,7 +28,7 @@ Deno.test("contact-transactional-opt-in: sends every documented field in its doc
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-transactional-opt-in: a minimal call sends only what was set", async () => {
+test("contact-transactional-opt-in: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -48,7 +49,7 @@ Deno.test("contact-transactional-opt-in: a minimal call sends only what was set"
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-transactional-opt-in: declares its params and kind", () => {
+test("contact-transactional-opt-in: declares its params and kind", () => {
   assertEquals((contactTransactionalOptIn.params ?? []).map((p) => p.key), [
     "phoneNumber",
     "locationUid",

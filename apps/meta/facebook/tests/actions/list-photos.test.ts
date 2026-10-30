@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-photos.ts";
 
-Deno.test("list-photos: GETs /{pageId}/photos with fields and default type=uploaded", async () => {
+test("list-photos: GETs /{pageId}/photos with fields and default type=uploaded", async () => {
   const body = { data: [{ id: "photo-1" }], paging: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ pageId: "page-1" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-photos: GETs /{pageId}/photos with fields and default type=uploa
   assertEquals(result, body);
 });
 
-Deno.test("list-photos: honours type=tagged", async () => {
+test("list-photos: honours type=tagged", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ pageId: "page-1", type: "tagged" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("type"), "tagged");

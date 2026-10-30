@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
-Deno.test("client-credentials: collects the numeric account ID and the secret, both masked", () => {
+test("client-credentials: collects the numeric account ID and the secret, both masked", () => {
   assertEquals(auth.key, "client-credentials");
   // `custom`: the client_credentials grant has no browser redirect/PKCE, so it is not
   // the `oauth2` type's authorization-code flow.
@@ -13,7 +14,7 @@ Deno.test("client-credentials: collects the numeric account ID and the secret, b
   assertEquals(auth.fields?.[1].type, "secret");
 });
 
-Deno.test("client-credentials: exchange POSTs the documented form body to /v1/accessTokens", async () => {
+test("client-credentials: exchange POSTs the documented form body to /v1/accessTokens", async () => {
   const { ctx, calls } = mockCtx([{
     body: { token_type: "Bearer", expires_in: 15897600, access_token: "jwt" },
   }]);
@@ -34,7 +35,7 @@ Deno.test("client-credentials: exchange POSTs the documented form body to /v1/ac
   assertEquals(cred.accountId, "12471");
 });
 
-Deno.test("client-credentials: the recorded expiry comes from the LIVE expires_in, not the docs' '24 months'", async () => {
+test("client-credentials: the recorded expiry comes from the LIVE expires_in, not the docs' '24 months'", async () => {
   const { ctx } = mockCtx([{
     body: { token_type: "Bearer", expires_in: 15897600, access_token: "jwt" },
   }]);
@@ -49,7 +50,7 @@ Deno.test("client-credentials: the recorded expiry comes from the LIVE expires_i
   assert(ttlMs < documented, "must expire before Hostaway's own token does");
 });
 
-Deno.test("client-credentials: a zero/absent expires_in does not invent a long life", async () => {
+test("client-credentials: a zero/absent expires_in does not invent a long life", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "jwt" } }]);
   const cred = await auth.exchange!(
     { fields: { accountId: "1", clientSecret: "s" } },
@@ -59,14 +60,14 @@ Deno.test("client-credentials: a zero/absent expires_in does not invent a long l
   assert(ttlMs <= 0, "no expires_in means no documented life to claim");
 });
 
-Deno.test("client-credentials: exchange refuses missing fields without a request", () => {
+test("client-credentials: exchange refuses missing fields without a request", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(() => auth.exchange!({ fields: { accountId: "1" } }, ctx), Error, "required");
   assertThrows(() => auth.exchange!({ fields: {} }, ctx), Error, "required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: exchange surfaces the RFC 6749 rejection reason", async () => {
+test("client-credentials: exchange surfaces the RFC 6749 rejection reason", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -82,7 +83,7 @@ Deno.test("client-credentials: exchange surfaces the RFC 6749 rejection reason",
   );
 });
 
-Deno.test("client-credentials: refresh re-mints from the stored account id and secret", async () => {
+test("client-credentials: refresh re-mints from the stored account id and secret", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "jwt2", expires_in: 1000 } }]);
   const cred = await auth.refresh!(
     { credential: { accountId: "12471", clientSecret: "s", accessToken: "old" } },
@@ -92,7 +93,7 @@ Deno.test("client-credentials: refresh re-mints from the stored account id and s
   assertEquals(cred.accessToken, "jwt2");
 });
 
-Deno.test("client-credentials: sign stamps the current token as a bearer frame", async () => {
+test("client-credentials: sign stamps the current token as a bearer frame", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.hostaway.com/v1/listings",
@@ -103,7 +104,7 @@ Deno.test("client-credentials: sign stamps the current token as a bearer frame",
   assertEquals(out.headers["authorization"], "Bearer jwt");
 });
 
-Deno.test("client-credentials: test re-runs the exchange and reports ok", async () => {
+test("client-credentials: test re-runs the exchange and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "jwt", expires_in: 100 } }]);
   const result = await auth.test({ credential: { accountId: "1", clientSecret: "s" } }, ctx);
   assertEquals(result, { ok: true });
@@ -111,7 +112,7 @@ Deno.test("client-credentials: test re-runs the exchange and reports ok", async 
   assertEquals(calls[0].url, "https://api.hostaway.com/v1/accessTokens");
 });
 
-Deno.test("client-credentials: test tells the user to reconnect when the credential is incomplete", async () => {
+test("client-credentials: test tells the user to reconnect when the credential is incomplete", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -120,7 +121,7 @@ Deno.test("client-credentials: test tells the user to reconnect when the credent
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: test reports failure without throwing", async () => {
+test("client-credentials: test reports failure without throwing", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "invalid_client" } }]);
   const result = await auth.test({ credential: { accountId: "1", clientSecret: "wrong" } }, ctx);
   assertEquals(result.ok, false);

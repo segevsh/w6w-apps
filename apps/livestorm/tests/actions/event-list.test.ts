@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventList from "../../actions/event-list.ts";
 import type { JsonApiListResponse } from "../../lib/client.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("event-list: paginates and filters", async () => {
+test("event-list: paginates and filters", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("events", "e1", { title: "Demo" })]) }]);
   const result = await eventList.execute({
     pageNumber: 1,
@@ -25,7 +26,7 @@ Deno.test("event-list: paginates and filters", async () => {
   assertEquals(result.meta?.record_count, 1);
 });
 
-Deno.test("event-list: no filters sends a bare request", async () => {
+test("event-list: no filters sends a bare request", async () => {
   const { ctx, calls } = mockCtx([{ body: list([]) }]);
   await eventList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

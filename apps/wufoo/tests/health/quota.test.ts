@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
 /**
@@ -8,7 +9,7 @@ import quota from "../../health/quota.ts";
  * run out. Declaring the absence is what keeps the app's health surface from
  * sitting at `unknown` forever.
  */
-Deno.test("quota: declared unavailable with a reason, and no probe", () => {
+test("quota: declared unavailable with a reason, and no probe", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
@@ -19,7 +20,7 @@ Deno.test("quota: declared unavailable with a reason, and no probe", () => {
  * `informational` is load-bearing: at the default severity a check that cannot
  * run would drag the app's rolled-up health down permanently.
  */
-Deno.test("quota: informational, so the absence cannot degrade the app", () => {
+test("quota: informational, so the absence cannot degrade the app", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.covers, ["*"]);
 });
@@ -28,7 +29,7 @@ Deno.test("quota: informational, so the absence cannot degrade the app", () => {
  * The reason names both limits and the observed refusal body, so a later reader
  * knows the limits are real and only the *headroom* is unreadable.
  */
-Deno.test("quota: the reason records both enforced limits", () => {
+test("quota: the reason records both enforced limits", () => {
   const reason = quota.unavailable!.reason!;
   assert(reason.includes("daily"), reason);
   assert(reason.includes("50 entry submissions"), reason);
@@ -36,6 +37,6 @@ Deno.test("quota: the reason records both enforced limits", () => {
 });
 
 /** No probe means no host to reach — a declared allowlist here would be dead weight. */
-Deno.test("quota: declares no network allowance", () => {
+test("quota: declares no network allowance", () => {
   assertEquals(quota.network, undefined);
 });

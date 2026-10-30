@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tag-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ interface Out {
   nextCursor?: string;
 }
 
-Deno.test("tag-list: sends GET to the documented path", async () => {
+test("tag-list: sends GET to the documented path", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: "x1" }],
@@ -29,7 +30,7 @@ Deno.test("tag-list: sends GET to the documented path", async () => {
   assertEquals(out.nextPage, 2);
 });
 
-Deno.test("tag-list: a vendor error surfaces its code", async () => {
+test("tag-list: a vendor error surfaces its code", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {

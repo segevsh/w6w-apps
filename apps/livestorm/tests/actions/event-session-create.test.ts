@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSessionCreate from "../../actions/event-session-create.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("event-session-create: POSTs a sessions body with no relationships when no people given", async () => {
+test("event-session-create: POSTs a sessions body with no relationships when no people given", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("sessions", "s1", { name: "Session #1" }),
@@ -15,7 +16,7 @@ Deno.test("event-session-create: POSTs a sessions body with no relationships whe
   });
 });
 
-Deno.test("event-session-create: attaches people as a relationships.people array", async () => {
+test("event-session-create: attaches people as a relationships.people array", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("sessions", "s1") }]);
   await eventSessionCreate.execute(
     { id: "e1", peopleIds: ["p1", "p2"], peopleRole: "participant" },

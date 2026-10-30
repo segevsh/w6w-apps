@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/list-contacts.ts";
 
-Deno.test("list-contacts: GETs /contacts/ scoped to the connection's location", async () => {
+test("list-contacts: GETs /contacts/ scoped to the connection's location", async () => {
   const { ctx, calls } = mockHighLevelCtx([
     { body: { contacts: [{ id: "c1" }], count: 1 } },
   ], "loc-1");

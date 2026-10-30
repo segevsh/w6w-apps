@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/shared-label-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("shared-label-create: posts name/organization/color", async () => {
+test("shared-label-create: posts name/organization/color", async () => {
   const { ctx, calls } = mockCtx([
     { body: { shared_labels: [{ id: "l1", name: "Heroku" }] } },
   ]);
@@ -17,7 +18,7 @@ Deno.test("shared-label-create: posts name/organization/color", async () => {
   assertEquals(out, { id: "l1", name: "Heroku" });
 });
 
-Deno.test("shared-label-create: requires name and organization", async () => {
+test("shared-label-create: requires name and organization", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ name: "", organization: "org-1" }, ctx));
   await assertActionRejects(() => action.execute({ name: "Heroku", organization: "" }, ctx));

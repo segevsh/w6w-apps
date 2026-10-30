@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-create.ts";
 
@@ -6,7 +7,7 @@ const conn = { display: { tenantId: "42", environment: "production" } };
 
 const address = { street: "1 Main", city: "Glendale", state: "CA", zip: "91201", country: "USA" };
 
-Deno.test("customer-create: POSTs name, bill-to address, one location and contacts", async () => {
+test("customer-create: POSTs name, bill-to address, one location and contacts", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 5, name: "Ann" } }], conn);
   await action.execute!(
     {
@@ -33,7 +34,7 @@ Deno.test("customer-create: POSTs name, bill-to address, one location and contac
   assertEquals(body.tagTypeIds, [3, 4]);
 });
 
-Deno.test("customer-create: location name overrides, contacts are omitted when none given", async () => {
+test("customer-create: location name overrides, contacts are omitted when none given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 5 } }], conn);
   await action.execute!({ name: "Ann", ...address, locationName: "Home" }, ctx);
   const body = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rowUpdate from "../../actions/row-update.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("row-update: PUTs table_name and updates to /rows/", async () => {
+test("row-update: PUTs table_name and updates to /rows/", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const updates = [{ row_id: "Bko1e60YT-egit2SljWSZA", row: { Name: "Max" } }];
   const out = await rowUpdate.execute({ tableName: "Table1", updates }, ctx) as {
@@ -14,13 +15,13 @@ Deno.test("row-update: PUTs table_name and updates to /rows/", async () => {
   assertEquals(out.success, true);
 });
 
-Deno.test("row-update: updates may arrive as JSON text", async () => {
+test("row-update: updates may arrive as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await rowUpdate.execute({ tableName: "T", updates: '[{"row_id":"x","row":{"a":1}}]' }, ctx);
   assertEquals(bodyOf(calls[0]).updates, [{ row_id: "x", row: { a: 1 } }]);
 });
 
-Deno.test("row-update: an empty updates array is refused", async () => {
+test("row-update: an empty updates array is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -32,6 +33,6 @@ Deno.test("row-update: an empty updates array is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("row-update: is declared idempotent", () => {
+test("row-update: is declared idempotent", () => {
   assertEquals(rowUpdate.idempotent, true);
 });

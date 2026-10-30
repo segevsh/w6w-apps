@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import classifierTrain from "../../actions/classifier-train.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("classifier-train: create form sends model + input + access + numIters", async () => {
+test("classifier-train: create form sends model + input + access + numIters", async () => {
   const { ctx, calls } = mockCtx([{ body: { classifier_id: "clf-1", num_samples: 2 } }]);
   const input = [{ text: "a", label: "x" }, { text: "b", label: "y" }];
   await classifierTrain.execute(
@@ -19,7 +20,7 @@ Deno.test("classifier-train: create form sends model + input + access + numIters
   });
 });
 
-Deno.test("classifier-train: update form sends classifier_id + input only", async () => {
+test("classifier-train: update form sends classifier_id + input only", async () => {
   const { ctx, calls } = mockCtx([{ body: { classifier_id: "clf-1", num_samples: 1 } }]);
   const input = [{ text: "more", label: "x" }];
   await classifierTrain.execute({ classifierId: "clf-1", input }, ctx);
@@ -27,7 +28,7 @@ Deno.test("classifier-train: update form sends classifier_id + input only", asyn
   assertEquals(JSON.parse(calls[0].body!), { input, classifier_id: "clf-1" });
 });
 
-Deno.test("classifier-train: create form rejects a missing model", async () => {
+test("classifier-train: create form rejects a missing model", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => {
     await classifierTrain.execute({ input: [{ text: "a", label: "x" }] }, ctx);

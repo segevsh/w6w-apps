@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-update.ts";
 
-Deno.test("lead-update: puts the documented tag fields in the body", async () => {
+test("lead-update: puts the documented tag fields in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { leadId: 1 } }]);
   const result = await action.execute!({
     leadId: 1,
@@ -24,12 +25,12 @@ Deno.test("lead-update: puts the documented tag fields in the body", async () =>
   assertEquals(result.leadId, 1);
 });
 
-Deno.test("lead-update: a request with only leadId sends an empty object", async () => {
+test("lead-update: a request with only leadId sends an empty object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { leadId: 1 } }]);
   await action.execute!({ leadId: 1 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
 });
 
-Deno.test("lead-update: is idempotent — a retry lands on the same state", () => {
+test("lead-update: is idempotent — a retry lands on the same state", () => {
   assertEquals(action.idempotent, true);
 });

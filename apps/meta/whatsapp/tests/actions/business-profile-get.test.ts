@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/business-profile-get.ts";
 
-Deno.test("business-profile-get: GETs the business profile with the standard field set", async () => {
+test("business-profile-get: GETs the business profile with the standard field set", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ about: "We sell widgets." }] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(out, { data: [{ about: "We sell widgets." }] });
@@ -14,7 +15,7 @@ Deno.test("business-profile-get: GETs the business profile with the standard fie
   );
 });
 
-Deno.test("business-profile-get: is a read action safe to invoke with {}", () => {
+test("business-profile-get: is a read action safe to invoke with {}", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params?.length, 0);
 });

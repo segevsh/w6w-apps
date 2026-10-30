@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 import { USER_AGENT } from "../../lib/client.ts";
 
-Deno.test("oauth2: declares Reddit's endpoints, permanent duration, and no PKCE", () => {
+test("oauth2: declares Reddit's endpoints, permanent duration, and no PKCE", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://www.reddit.com/api/v1/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://www.reddit.com/api/v1/access_token");
@@ -13,7 +14,7 @@ Deno.test("oauth2: declares Reddit's endpoints, permanent duration, and no PKCE"
   assertEquals(auth.oauth2?.scopes, ["identity", "read", "submit", "vote"]);
 });
 
-Deno.test("oauth2: sign sets both the Bearer header and the mandatory User-Agent", async () => {
+test("oauth2: sign sets both the Bearer header and the mandatory User-Agent", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://oauth.reddit.com/api/v1/me",
@@ -25,7 +26,7 @@ Deno.test("oauth2: sign sets both the Bearer header and the mandatory User-Agent
   assertEquals(out.headers["user-agent"], USER_AGENT);
 });
 
-Deno.test("oauth2: test reports the upstream status", async () => {
+test("oauth2: test reports the upstream status", async () => {
   const bad = mockCtx([{ status: 403, body: {} }]);
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, bad.ctx), {
     ok: false,
@@ -33,7 +34,7 @@ Deno.test("oauth2: test reports the upstream status", async () => {
   });
 });
 
-Deno.test("oauth2: test refuses an empty credential without a request", async () => {
+test("oauth2: test refuses an empty credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -42,13 +43,13 @@ Deno.test("oauth2: test refuses an empty credential without a request", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test sends the User-Agent itself, since sign never runs for it", async () => {
+test("oauth2: test sends the User-Agent itself, since sign never runs for it", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await auth.test({ credential: { accessToken: "t" } }, ctx);
   assertEquals(calls[0].headers["user-agent"], USER_AGENT);
 });
 
-Deno.test("oauth2: afterConnect labels the connection with the username", async () => {
+test("oauth2: afterConnect labels the connection with the username", async () => {
   const { ctx } = mockCtx([{ body: { id: "7", name: "acme" } }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {
     user: { id: "7", name: "acme" },

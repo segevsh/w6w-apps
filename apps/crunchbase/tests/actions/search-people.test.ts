@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-people.ts";
 
-Deno.test("search-people: POSTs to /searches/people", async () => {
+test("search-people: POSTs to /searches/people", async () => {
   const query = [{ type: "predicate", field_id: "name", operator_id: "contains", values: ["ada"] }];
   const { ctx, calls } = mockCtx([{ status: 200, body: { count: 0, entities: [] } }]);
   await action.execute!({ fieldIds: "identifier,name", query: JSON.stringify(query) }, ctx);
@@ -11,7 +12,7 @@ Deno.test("search-people: POSTs to /searches/people", async () => {
   assertEquals(JSON.parse(calls[0].body!).query, query);
 });
 
-Deno.test("search-people: a 403 on a Basic-tier key surfaces the vendor's message", async () => {
+test("search-people: a 403 on a Basic-tier key surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: [{ status: 403, code: "LA403", message: "Insufficient package access" }],

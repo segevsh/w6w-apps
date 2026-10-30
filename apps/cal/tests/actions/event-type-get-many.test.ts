@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-type-get-many.ts";
 
-Deno.test("event-type-get-many: GETs /event-types with cal-api-version 2024-06-14", async () => {
+test("event-type-get-many: GETs /event-types with cal-api-version 2024-06-14", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("event-type-get-many: GETs /event-types with cal-api-version 2024-06-1
   assertEquals(calls[0].headers["cal-api-version"], "2024-06-14");
 });
 
-Deno.test("event-type-get-many: maps username and orgSlug", async () => {
+test("event-type-get-many: maps username and orgSlug", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ username: "jdoe", orgSlug: "acme" }, ctx);
   const url = new URL(calls[0].url);
@@ -19,7 +20,7 @@ Deno.test("event-type-get-many: maps username and orgSlug", async () => {
   assertEquals(url.searchParams.get("orgSlug"), "acme");
 });
 
-Deno.test("event-type-get-many: joins usernames with a comma", async () => {
+test("event-type-get-many: joins usernames with a comma", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ usernames: ["alice", "bob"] }, ctx);
   const url = new URL(calls[0].url);

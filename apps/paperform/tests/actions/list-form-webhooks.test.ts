@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listFormWebhooks from "../../actions/list-form-webhooks.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-form-webhooks: GETs /v1/forms/{slugOrId}/webhooks", async () => {
+test("list-form-webhooks: GETs /v1/forms/{slugOrId}/webhooks", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope({ webhooks: [{ id: "w1" }] }, { total: 1 }),

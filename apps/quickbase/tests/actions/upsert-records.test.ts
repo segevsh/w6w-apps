@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/upsert-records.ts";
 
 const body = (raw: string | null) => JSON.parse(raw!);
 
-Deno.test("upsert-records: posts to /records with `to` and field-id-keyed rows", async () => {
+test("upsert-records: posts to /records with `to` and field-id-keyed rows", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { metadata: {} } }]);
   await action.execute({ tableId: "bck1", data: [{ "6": { value: "Acme" } }] }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("upsert-records: posts to /records with `to` and field-id-keyed rows",
   assertEquals(body(calls[0].body), { to: "bck1", data: [{ "6": { value: "Acme" } }] });
 });
 
-Deno.test("upsert-records: forwards mergeFieldId and fieldsToReturn", async () => {
+test("upsert-records: forwards mergeFieldId and fieldsToReturn", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { metadata: {} } }]);
   await action.execute({
     tableId: "bck1",
@@ -26,7 +27,7 @@ Deno.test("upsert-records: forwards mergeFieldId and fieldsToReturn", async () =
   assertEquals(body(calls[0].body).fieldsToReturn, [6, 7]);
 });
 
-Deno.test("upsert-records: a clean 200 reports partialFailure false", async () => {
+test("upsert-records: a clean 200 reports partialFailure false", async () => {
   const { ctx, logs } = mockQbCtx([{
     body: {
       data: [{ "3": { value: 11 } }],
@@ -40,7 +41,7 @@ Deno.test("upsert-records: a clean 200 reports partialFailure false", async () =
   assertEquals(logs.length, 0);
 });
 
-Deno.test("upsert-records: HTTP 207 partial write is surfaced, not swallowed", async () => {
+test("upsert-records: HTTP 207 partial write is surfaced, not swallowed", async () => {
   // 207 is a 2xx, so a client that only checks `res.ok` would report success
   // while dropping rows. This is the regression that test exists for.
   const { ctx, logs } = mockQbCtx([{
@@ -69,7 +70,7 @@ Deno.test("upsert-records: HTTP 207 partial write is surfaced, not swallowed", a
   assert(logs[0].message.includes("1 of 3"));
 });
 
-Deno.test("upsert-records: lineErrors on a plain 200 also counts as partial failure", async () => {
+test("upsert-records: lineErrors on a plain 200 also counts as partial failure", async () => {
   const { ctx } = mockQbCtx([{
     body: { metadata: { createdRecordIds: [11], lineErrors: { "2": ["bad"] } } },
   }]);
@@ -77,7 +78,7 @@ Deno.test("upsert-records: lineErrors on a plain 200 also counts as partial fail
   assertEquals(out.partialFailure, true);
 });
 
-Deno.test("upsert-records: rejects a missing/blank record payload before calling", async () => {
+test("upsert-records: rejects a missing/blank record payload before calling", async () => {
   const { ctx, calls } = mockQbCtx([]);
   let threw = false;
   try {

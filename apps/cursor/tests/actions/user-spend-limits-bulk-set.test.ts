@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import userSpendLimitsBulkSet from "../../actions/user-spend-limits-bulk-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const updates = [
   { userEmail: "b@co.com", spendLimitDollars: null },
 ];
 
-Deno.test("user-spend-limits-bulk-set: posts the updates array", async () => {
+test("user-spend-limits-bulk-set: posts the updates array", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -24,7 +25,7 @@ Deno.test("user-spend-limits-bulk-set: posts the updates array", async () => {
   assertEquals(JSON.parse(calls[0].body!), { updates });
 });
 
-Deno.test("user-spend-limits-bulk-set: accepts a JSON string too", async () => {
+test("user-spend-limits-bulk-set: accepts a JSON string too", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { requestedCount: 1, updatedCount: 1, unchangedCount: 0, failedCount: 0, results: [] },
@@ -34,7 +35,7 @@ Deno.test("user-spend-limits-bulk-set: accepts a JSON string too", async () => {
   assertEquals(JSON.parse(calls[0].body!), { updates: [updates[0]] });
 });
 
-Deno.test("user-spend-limits-bulk-set: rejects more than 100 updates client-side", async () => {
+test("user-spend-limits-bulk-set: rejects more than 100 updates client-side", async () => {
   const { ctx } = mockCtx([]);
   const many = Array.from(
     { length: 101 },
@@ -43,7 +44,7 @@ Deno.test("user-spend-limits-bulk-set: rejects more than 100 updates client-side
   await assertRejects(async () => await userSpendLimitsBulkSet.execute({ updates: many }, ctx));
 });
 
-Deno.test("user-spend-limits-bulk-set: rejects an empty array", async () => {
+test("user-spend-limits-bulk-set: rejects an empty array", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await userSpendLimitsBulkSet.execute({ updates: [] }, ctx));
 });

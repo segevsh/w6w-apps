@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertNotEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertNotEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   clientFirstMessage,
   computeClientFinal,
@@ -33,7 +34,7 @@ const VECTOR = {
 };
 
 /** (a) — the arithmetic, against an oracle outside this repo. */
-Deno.test("scram: reproduces RFC 7677 §3's exchange byte-for-byte", async () => {
+test("scram: reproduces RFC 7677 §3's exchange byte-for-byte", async () => {
   const first = clientFirstMessage(VECTOR.username, VECTOR.password, VECTOR.clientNonce);
   assertEquals(first.message, VECTOR.clientFirstMessage);
 
@@ -52,7 +53,7 @@ Deno.test("scram: reproduces RFC 7677 §3's exchange byte-for-byte", async () =>
  * because a happy-path vector test is *greener*, not redder, without the
  * check.
  */
-Deno.test("scram: a corrupted server signature is rejected", async () => {
+test("scram: a corrupted server signature is rejected", async () => {
   const first = clientFirstMessage(VECTOR.username, VECTOR.password, VECTOR.clientNonce);
   const final = await computeClientFinal(VECTOR.serverFirstMessage, first.state);
   const corrupted = "v=" + "A".repeat(43) + "=";
@@ -64,7 +65,7 @@ Deno.test("scram: a corrupted server signature is rejected", async () => {
 });
 
 /** (c) — the named SCRAM abort condition (RFC 5802 §5.1). */
-Deno.test("scram: a server nonce not prefixed by the client nonce throws", async () => {
+test("scram: a server nonce not prefixed by the client nonce throws", async () => {
   const first = clientFirstMessage(VECTOR.username, VECTOR.password, VECTOR.clientNonce);
   const badServerFirst = "r=totally-different-nonce,s=W22ZaJ0SNY7soEsUEjb6gQ==,i=4096";
   await assertRejects(
@@ -75,7 +76,7 @@ Deno.test("scram: a server nonce not prefixed by the client nonce throws", async
 });
 
 /** (d) — the escaping arm: `,` and `=` are both replaced, in one pass. */
-Deno.test("scram: a username containing `,` and `=` is escaped as =2C / =3D", () => {
+test("scram: a username containing `,` and `=` is escaped as =2C / =3D", () => {
   assertEquals(escapeSaslName("a,b=c"), "a=2Cb=3Dc");
   assertEquals(escapeSaslName("==,,"), "=3D=3D=2C=2C");
   const first = clientFirstMessage("weird,=name", "pw", "fixed-nonce");
@@ -83,13 +84,13 @@ Deno.test("scram: a username containing `,` and `=` is escaped as =2C / =3D", ()
 });
 
 /** (e) — `crypto.getRandomValues`, not a constant. A fixed nonce passes (a) perfectly. */
-Deno.test("scram: two successive first messages produce different client nonces", () => {
+test("scram: two successive first messages produce different client nonces", () => {
   const a = clientFirstMessage("user", "pencil");
   const b = clientFirstMessage("user", "pencil");
   assertNotEquals(a.state.clientNonce, b.state.clientNonce);
 });
 
-Deno.test("scram: an iteration count below the floor is refused", async () => {
+test("scram: an iteration count below the floor is refused", async () => {
   const first = clientFirstMessage(VECTOR.username, VECTOR.password, VECTOR.clientNonce);
   const cheap = `r=${VECTOR.clientNonce}abc,s=W22ZaJ0SNY7soEsUEjb6gQ==,i=1`;
   await assertRejects(
@@ -99,7 +100,7 @@ Deno.test("scram: an iteration count below the floor is refused", async () => {
   );
 });
 
-Deno.test("scram: a malformed server-first-message (missing s=/i=/r=) throws", async () => {
+test("scram: a malformed server-first-message (missing s=/i=/r=) throws", async () => {
   const state: ScramClientState = {
     clientNonce: "abc",
     clientFirstMessageBare: "n=user,r=abc",
@@ -108,7 +109,7 @@ Deno.test("scram: a malformed server-first-message (missing s=/i=/r=) throws", a
   await assertRejects(() => computeClientFinal("r=abc", state), Error, "malformed");
 });
 
-Deno.test("scram: verifyServerFinalMessage surfaces a server-sent e= error", () => {
+test("scram: verifyServerFinalMessage surfaces a server-sent e= error", () => {
   assertThrows(
     () => verifyServerFinalMessage("e=other-error", new Uint8Array(32)),
     Error,
@@ -116,7 +117,7 @@ Deno.test("scram: verifyServerFinalMessage surfaces a server-sent e= error", () 
   );
 });
 
-Deno.test("scram: timingSafeEqual compares equal and unequal byte strings, including length mismatches", () => {
+test("scram: timingSafeEqual compares equal and unequal byte strings, including length mismatches", () => {
   const a = new Uint8Array([1, 2, 3]);
   const b = new Uint8Array([1, 2, 3]);
   const c = new Uint8Array([1, 2, 4]);

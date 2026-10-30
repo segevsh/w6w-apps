@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import enterpriseUsersList from "../../actions/enterprise-users-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("enterprise-users-list: GETs /v3/enterprise/users with no format param (always JSON)", async () => {
+test("enterprise-users-list: GETs /v3/enterprise/users with no format param (always JSON)", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ userId: "u1", email: "a@acme.example", role: "admin" }],
   }]);

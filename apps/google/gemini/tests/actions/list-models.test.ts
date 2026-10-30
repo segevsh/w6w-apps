@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
-Deno.test("list-models: GETs /models with no query params by default", async () => {
+test("list-models: GETs /models with no query params by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { models: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("list-models: GETs /models with no query params by default", async () 
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("list-models: forwards pageSize and pageToken", async () => {
+test("list-models: forwards pageSize and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: { models: [] } }]);
   await action.execute!({ pageSize: 10, pageToken: "abc" }, ctx);
   const url = new URL(calls[0].url);

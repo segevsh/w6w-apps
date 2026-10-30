@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountSearch from "../../actions/account-search.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-search: POSTs a JSON body (unlike the database org search)", async () => {
+test("account-search: POSTs a JSON body (unlike the database org search)", async () => {
   const { ctx, calls } = mockCtx([
     { body: { accounts: [{ id: "a1" }], pagination: { total_entries: 1 } } },
   ]);

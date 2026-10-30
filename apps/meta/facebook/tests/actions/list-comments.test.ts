@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-comments.ts";
 
-Deno.test("list-comments: GETs /{postId}/comments with fields and default order", async () => {
+test("list-comments: GETs /{postId}/comments with fields and default order", async () => {
   const body = { data: [{ id: "c1", message: "nice" }], paging: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ postId: "post-1" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-comments: GETs /{postId}/comments with fields and default order"
   assertEquals(result, body);
 });
 
-Deno.test("list-comments: honours order/cursor/limit", async () => {
+test("list-comments: honours order/cursor/limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!(
     { postId: "post-1", order: "reverse_chronological", cursor: "abc", limit: 5 },

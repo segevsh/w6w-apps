@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   compact,
@@ -15,7 +16,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: buildQuery encodes bracketed keys, repeats arrays and skips empties", () => {
+test("client: buildQuery encodes bracketed keys, repeats arrays and skips empties", () => {
   const q = buildQuery({
     "filter[status]": "started",
     "user_ids[]": [1, 2],
@@ -32,7 +33,7 @@ Deno.test("client: buildQuery encodes bracketed keys, repeats arrays and skips e
   assertEquals(buildQuery({}), "");
 });
 
-Deno.test("client: list coercions accept arrays and comma text", () => {
+test("client: list coercions accept arrays and comma text", () => {
   assertEquals(strList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(strList([]), undefined);
   assertEquals(intList("1, 2"), [1, 2]);
@@ -44,7 +45,7 @@ Deno.test("client: list coercions accept arrays and comma text", () => {
   assertEquals(seg(" a/b "), "a%2Fb");
 });
 
-Deno.test("client: flatten, listResult, itemResult and jsonApiBody shape JSON:API", () => {
+test("client: flatten, listResult, itemResult and jsonApiBody shape JSON:API", () => {
   assertEquals(flatten({ id: "1", type: "t", attributes: { a: 1, id: "wrong" } }), {
     a: 1,
     id: "1",
@@ -59,7 +60,7 @@ Deno.test("client: flatten, listResult, itemResult and jsonApiBody shape JSON:AP
   assertEquals(jsonApiBody("groups", {}), { data: { type: "groups", attributes: {} } });
 });
 
-Deno.test("client: errorText joins title and detail, ignores HTML", () => {
+test("client: errorText joins title and detail, ignores HTML", () => {
   assertEquals(
     errorText({ errors: [{ title: "Bad", detail: "why" }, { title: "Worse" }] }, ""),
     "Bad: why; Worse",
@@ -68,7 +69,7 @@ Deno.test("client: errorText joins title and detail, ignores HTML", () => {
   assertEquals(errorText(undefined, " plain "), "plain");
 });
 
-Deno.test("client: request sends the JSON:API media type and adds a hint to failures", async () => {
+test("client: request sends the JSON:API media type and adds a hint to failures", async () => {
   const { ctx, calls } = mockCtx([{ status: 429, body: { errors: [{ title: "Too many" }] } }, {
     status: 200,
     body: "",

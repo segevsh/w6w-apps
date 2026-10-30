@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBiginCtx } from "../_helpers.ts";
 import action from "../../actions/company-get.ts";
 
-Deno.test("company-get: GETs one record and unwraps the data array", async () => {
+test("company-get: GETs one record and unwraps the data array", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [{ id: "42", Last_Name: "Brooks" }] } }]);
   const record = await action.execute({ recordId: "42" }, ctx) as { id: string };
   assertEquals(calls[0].method, "GET");
@@ -10,13 +11,13 @@ Deno.test("company-get: GETs one record and unwraps the data array", async () =>
   assertEquals(record.id, "42");
 });
 
-Deno.test("company-get: sends no `fields` query parameter when none was asked for", async () => {
+test("company-get: sends no `fields` query parameter when none was asked for", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [{ id: "42" }] } }]);
   await action.execute({ recordId: "42" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("company-get: throws when Bigin answers 200 with no record", async () => {
+test("company-get: throws when Bigin answers 200 with no record", async () => {
   const { ctx } = mockBiginCtx([{ body: { data: [] } }]);
   await assertRejects(() => Promise.resolve(action.execute({ recordId: "42" }, ctx)), Error);
 });

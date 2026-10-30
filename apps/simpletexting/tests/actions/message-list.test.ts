@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageList from "../../actions/message-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const MESSAGES = [
   },
 ];
 
-Deno.test("message-list: reads the messages page and returns its rows", async () => {
+test("message-list: reads the messages page and returns its rows", async () => {
   const { ctx, calls } = mockCtx([{ body: page(MESSAGES, { totalElements: 1 }) }]);
   const result = await messageList.execute({}, ctx) as {
     content: unknown[];
@@ -27,7 +28,7 @@ Deno.test("message-list: reads the messages page and returns its rows", async ()
   assertEquals(result.totalElements, 1);
 });
 
-Deno.test("message-list: every documented filter is forwarded, blank ones are not sent", async () => {
+test("message-list: every documented filter is forwarded, blank ones are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: page(MESSAGES) }]);
   await messageList.execute(
     {
@@ -57,12 +58,12 @@ Deno.test("message-list: every documented filter is forwarded, blank ones are no
  * blank means only the primary account number's messages come back. A secondary
  * sender's traffic is invisible unless the number is passed.
  */
-Deno.test("message-list: documents that a blank accountPhone means the primary number only", () => {
+test("message-list: documents that a blank accountPhone means the primary number only", () => {
   const hint = messageList.params!.find((p) => p.key === "accountPhone")?.hint ?? "";
   assertEquals(hint.includes("primary"), true);
 });
 
-Deno.test("message-list: is a search action, so a host may treat it as a read", () => {
+test("message-list: is a search action, so a host may treat it as a read", () => {
   assertEquals(messageList.type, "search");
   assertEquals(messageList.idempotent, undefined);
 });

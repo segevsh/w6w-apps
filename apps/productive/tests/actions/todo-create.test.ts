@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import todoCreate from "../../actions/todo-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("todo-create: POST /todos sends a JSON:API document of attributes", async () => {
+test("todo-create: POST /todos sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "todos", "attributes": { "name": "x" } } },
@@ -40,7 +41,7 @@ Deno.test("todo-create: POST /todos sends a JSON:API document of attributes", as
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("todo-create: a vendor error surfaces its status, title and detail", async () => {
+test("todo-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -53,7 +54,7 @@ Deno.test("todo-create: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("todo-create: declares perform and idempotent=false", () => {
+test("todo-create: declares perform and idempotent=false", () => {
   assertEquals(todoCreate.type, "perform");
   assertEquals(todoCreate.idempotent, false);
   assertEquals(todoCreate.key, "todo-create");

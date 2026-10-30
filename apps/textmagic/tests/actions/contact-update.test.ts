@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs /contacts/{id}/normalized without the id in the body", async () => {
+test("contact-update: PUTs /contacts/{id}/normalized without the id in the body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: 27074, href: "/api/v2/contacts/27074" },
@@ -15,6 +16,6 @@ Deno.test("contact-update: PUTs /contacts/{id}/normalized without the id in the 
   assertEquals(out, { id: 27074, href: "/api/v2/contacts/27074" });
 });
 
-Deno.test("contact-update: is idempotent", () => {
+test("contact-update: is idempotent", () => {
   assertEquals(contactUpdate.idempotent, true);
 });

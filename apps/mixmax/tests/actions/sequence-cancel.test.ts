@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sequence-cancel.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sequence-cancel: POST /sequences/s1/cancel", async () => {
+test("sequence-cancel: POST /sequences/s1/cancel", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await action.execute!({ sequenceId: "s1", emails: "a@x.com, b@x.com" } as never, ctx);
   assertEquals(calls[0].method, "POST");

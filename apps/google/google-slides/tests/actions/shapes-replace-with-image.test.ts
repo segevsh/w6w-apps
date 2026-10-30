@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shapes-replace-with-image.ts";
 
-Deno.test("shapes-replace-with-image: builds the request and lifts occurrencesChanged", async () => {
+test("shapes-replace-with-image: builds the request and lifts occurrencesChanged", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       presentationId: "p1",
@@ -26,7 +27,7 @@ Deno.test("shapes-replace-with-image: builds the request and lifts occurrencesCh
   assertEquals(out.occurrencesChanged, 2);
 });
 
-Deno.test("shapes-replace-with-image: sends the modern imageReplaceMethod only", async () => {
+test("shapes-replace-with-image: sends the modern imageReplaceMethod only", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ replaceAllShapesWithImage: {} }] } }]);
   await action.execute({
     presentationId: "p1",
@@ -42,7 +43,7 @@ Deno.test("shapes-replace-with-image: sends the modern imageReplaceMethod only",
   assertEquals(paramKeys.includes("replaceMethod"), false);
 });
 
-Deno.test("shapes-replace-with-image: an unmatched 200 normalises to 0", async () => {
+test("shapes-replace-with-image: an unmatched 200 normalises to 0", async () => {
   const { ctx } = mockCtx([{ body: { replies: [{ replaceAllShapesWithImage: {} }] } }]);
   const out = await action.execute(
     { presentationId: "p1", containsText: "nope", imageUrl: "https://cdn.example.com/l.png" },
@@ -51,7 +52,7 @@ Deno.test("shapes-replace-with-image: an unmatched 200 normalises to 0", async (
   assertEquals(out.occurrencesChanged, 0);
 });
 
-Deno.test("shapes-replace-with-image: failIfNoMatch raises on a zero-match 200", async () => {
+test("shapes-replace-with-image: failIfNoMatch raises on a zero-match 200", async () => {
   const { ctx } = mockCtx([{ body: { replies: [{ replaceAllShapesWithImage: {} }] } }]);
   await assertRejects(
     async () => {
@@ -67,7 +68,7 @@ Deno.test("shapes-replace-with-image: failIfNoMatch raises on a zero-match 200",
   );
 });
 
-Deno.test("shapes-replace-with-image: forwards pageObjectIds and the revision guard", async () => {
+test("shapes-replace-with-image: forwards pageObjectIds and the revision guard", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ replaceAllShapesWithImage: {} }] } }]);
   await action.execute({
     presentationId: "p1",

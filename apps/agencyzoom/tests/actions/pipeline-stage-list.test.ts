@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pipelineStageList from "../../actions/pipeline-stage-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("pipeline-stage-list: GET /pipelines-and-stages with nested stages", async () => {
+test("pipeline-stage-list: GET /pipelines-and-stages with nested stages", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: 1, name: "New Business", stages: [{ id: 10, name: "Contacted" }] }] },
   ]);
@@ -15,7 +16,7 @@ Deno.test("pipeline-stage-list: GET /pipelines-and-stages with nested stages", a
   assertEquals(result.pipelines[0].stages[0].id, 10);
 });
 
-Deno.test("pipeline-stage-list: type is optional — no query param when omitted", async () => {
+test("pipeline-stage-list: type is optional — no query param when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await pipelineStageList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-unsubscribes-list.ts";
 
-Deno.test("email-unsubscribes-list: sends the date range, sort_direction and email filter", async () => {
+test("email-unsubscribes-list: sends the date range, sort_direction and email filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { emails: [] } }], {
     display: { instance: "iad-01" },
   });

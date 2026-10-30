@@ -1,4 +1,5 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertExists } from "./_assert.ts";
 import type { ActionDefinition } from "@w6w/types";
 import app from "../index.ts";
 import contracts from "./fixtures/contracts.json" with { type: "json" };
@@ -8,7 +9,7 @@ import { mockCtx } from "./_helpers.ts";
 export function testContract(key: string): void {
   const contract = contracts.find((c) => c.action === key);
   assertExists(contract, `Missing OpenAPI contract: ${key}`);
-  Deno.test(`OpenAPI transport contract: ${key}`, async () => {
+  test(`OpenAPI transport contract: ${key}`, async () => {
     const action = app.actions.find((a) => a.key === contract.action) as ActionDefinition;
     assertExists(action);
     const response = { id: "result", results: [], has_more: true, next_cursor: "next" };

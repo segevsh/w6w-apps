@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/directory-user-get.ts";
 
@@ -8,7 +9,7 @@ import action from "../../actions/directory-user-get.ts";
  * customer calls `dept`. Surfacing the names makes that visible instead of
  * producing an `undefined` three steps later.
  */
-Deno.test("directory-user-get: reports which custom attributes are actually present", async () => {
+test("directory-user-get: reports which custom attributes are actually present", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "du_1", custom_attributes: { department: "Engineering", employee_number: "42" } },
@@ -20,7 +21,7 @@ Deno.test("directory-user-get: reports which custom attributes are actually pres
   assertEquals(result.customAttributeNames, ["department", "employee_number"]);
 });
 
-Deno.test("directory-user-get: a user with no custom attributes reports an empty list", async () => {
+test("directory-user-get: a user with no custom attributes reports an empty list", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "du_1" } }]);
   const result = await action.execute!({ directoryUserId: "du_1" }, ctx) as {
     customAttributeNames: string[];
@@ -28,7 +29,7 @@ Deno.test("directory-user-get: a user with no custom attributes reports an empty
   assertEquals(result.customAttributeNames, []);
 });
 
-Deno.test("directory-user-get: needs a directory user id", async () => {
+test("directory-user-get: needs a directory user id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "directoryUserId");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import custodianAdd from "../../actions/custodian-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custodian-add: posts the custodian objects", async () => {
+test("custodian-add: posts the custodian objects", async () => {
   const body = { custodians: [{ id: "lhc_x" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await custodianAdd.execute(
@@ -17,7 +18,7 @@ Deno.test("custodian-add: posts the custodian objects", async () => {
   });
 });
 
-Deno.test("custodian-add: refuses an empty set without calling the API", async () => {
+test("custodian-add: refuses an empty set without calling the API", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await custodianAdd.execute({ holdId: "lgh_x" }, ctx),
@@ -27,7 +28,7 @@ Deno.test("custodian-add: refuses an empty set without calling the API", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("custodian-add: refuses more than 100 custodians", async () => {
+test("custodian-add: refuses more than 100 custodians", async () => {
   const { ctx, calls } = mockCtx([]);
   const emails = Array.from({ length: 101 }, (_, i) => "u" + i + "@x.com");
   await assertRejects(
@@ -38,7 +39,7 @@ Deno.test("custodian-add: refuses more than 100 custodians", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("custodian-add: 404 surfaces", async () => {
+test("custodian-add: 404 surfaces", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { code: "NOT_FOUND", message: "none" } }]);
   await assertRejects(
     async () => await custodianAdd.execute({ holdId: "lgh_x", emails: "a@x.com" }, ctx),

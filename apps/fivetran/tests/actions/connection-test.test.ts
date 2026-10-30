@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { ok } from "./_shared.ts";
 import action from "../../actions/connection-test.ts";
 
 const tests = (results: Array<{ title: string; status: string }>) => ok({ setup_tests: results });
 
-Deno.test("connection-test: posts and reports every test passing", async () => {
+test("connection-test: posts and reports every test passing", async () => {
   const { ctx, calls } = mockCtx([tests([
     { title: "Connecting to host", status: "PASSED" },
     { title: "Validating credentials", status: "PASSED" },
@@ -21,7 +22,7 @@ Deno.test("connection-test: posts and reports every test passing", async () => {
 });
 
 /** "Credentials fine, network not" is a different Monday from the reverse. */
-Deno.test("connection-test: names the tests that failed", async () => {
+test("connection-test: names the tests that failed", async () => {
   const { ctx } = mockCtx([tests([
     { title: "Connecting to host", status: "FAILED" },
     { title: "Validating credentials", status: "PASSED" },
@@ -34,13 +35,13 @@ Deno.test("connection-test: names the tests that failed", async () => {
   assertEquals(result.failed[0].title, "Connecting to host");
 });
 
-Deno.test("connection-test: no tests at all does not report success", async () => {
+test("connection-test: no tests at all does not report success", async () => {
   const { ctx } = mockCtx([tests([])]);
   const result = await action.execute!({ connectionId: "c1" }, ctx) as { allPassed: boolean };
   assertEquals(result.allPassed, false);
 });
 
-Deno.test("connection-test: trusting certificates is opt-in", async () => {
+test("connection-test: trusting certificates is opt-in", async () => {
   const off = mockCtx([tests([])]);
   await action.execute!({ connectionId: "c1" }, off.ctx);
   assertEquals(JSON.parse(off.calls[0].body!), {});
@@ -50,13 +51,13 @@ Deno.test("connection-test: trusting certificates is opt-in", async () => {
   assertEquals(JSON.parse(on.calls[0].body!), { trust_certificates: true });
 });
 
-Deno.test("connection-test: needs a connection id", async () => {
+test("connection-test: needs a connection id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "connectionId");
   assertEquals(calls.length, 0);
 });
 
 /** Setup tests have their own much tighter budget. */
-Deno.test("connection-test: says it is a repair step rather than a monitor", () => {
+test("connection-test: says it is a repair step rather than a monitor", () => {
   assert(/repair step, not a monitor/.test(action.description!), action.description);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/link-bulk-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const failed = {
   code: "unprocessable_entity",
 };
 
-Deno.test("link-bulk-create: POSTs the array as the body and splits links from errors", async () => {
+test("link-bulk-create: POSTs the array as the body and splits links from errors", async () => {
   const { ctx, calls } = mockCtx([{ body: [ok, failed] }]);
   const out = await action.execute!({
     links: '[{"url":"https://a.com"},{"url":"nope"}]',
@@ -20,13 +21,13 @@ Deno.test("link-bulk-create: POSTs the array as the body and splits links from e
   assertEquals(out, { links: [ok], errors: [failed] });
 });
 
-Deno.test("link-bulk-create: accepts an already-parsed array", async () => {
+test("link-bulk-create: accepts an already-parsed array", async () => {
   const { ctx, calls } = mockCtx([{ body: [ok] }]);
   await action.execute!({ links: [{ url: "https://a.com" }] }, ctx);
   assertEquals(JSON.parse(calls[0].body!), [{ url: "https://a.com" }]);
 });
 
-Deno.test("link-bulk-create: rejects empty, non-array and >100 input before any request", async () => {
+test("link-bulk-create: rejects empty, non-array and >100 input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ links: "[]" }, ctx), Error, "non-empty");
   await assertRejects(
@@ -43,7 +44,7 @@ Deno.test("link-bulk-create: rejects empty, non-array and >100 input before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("link-bulk-create: sends no authorization header and is not idempotent", async () => {
+test("link-bulk-create: sends no authorization header and is not idempotent", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute!({ links: [{ url: "https://a.com" }] }, ctx);
   assert(!("authorization" in calls[0].headers));

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksSummaryComparisonGet from "../../actions/backlinks-summary-comparison-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-summary-comparison-get: joins `urls` into one comma-separated value", async () => {
+test("backlinks-summary-comparison-get: joins `urls` into one comma-separated value", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([
@@ -25,7 +26,7 @@ Deno.test("backlinks-summary-comparison-get: joins `urls` into one comma-separat
   assertEquals(out.data.length, 2);
 });
 
-Deno.test("backlinks-summary-comparison-get: requires urls and offers the three-target scope set", () => {
+test("backlinks-summary-comparison-get: requires urls and offers the three-target scope set", () => {
   const urls = backlinksSummaryComparisonGet.params?.find((p) => p.key === "urls");
   const scope = backlinksSummaryComparisonGet.params?.find((p) => p.key === "scope");
   const values = Array.isArray(scope?.options) ? scope.options.map((o) => o.value) : [];

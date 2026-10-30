@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-operation-list.ts";
 
-Deno.test("batch-operation-list: GETs /v1/emails/operations with page params and returns the body verbatim", async () => {
+test("batch-operation-list: GETs /v1/emails/operations with page params and returns the body verbatim", async () => {
   const body = { operations: [{ name: "operations/op-1", done: true }], nextPageToken: "" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ pageSize: 10, pageToken: "tok" }, ctx);
@@ -16,7 +17,7 @@ Deno.test("batch-operation-list: GETs /v1/emails/operations with page params and
   assertEquals(result, body);
 });
 
-Deno.test("batch-operation-list: omits page params when not supplied", async () => {
+test("batch-operation-list: omits page params when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { operations: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("batch-operation-list: omits page params when not supplied", async () 
   assertEquals(url.searchParams.has("page_token"), false);
 });
 
-Deno.test("batch-operation-list: is a read action scoped to batch with no required params", () => {
+test("batch-operation-list: is a read action scoped to batch with no required params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "batch");
   assertEquals(action.params?.every((p) => !p.required), true);

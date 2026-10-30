@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reads RateLimit-* headers, treating Reset as a Unix timestamp", async () => {
+test("quota: reads RateLimit-* headers, treating Reset as a Unix timestamp", async () => {
   const resetAt = Math.floor(Date.now() / 1000) + 10;
   const { ctx, calls } = mockNationBuilderCtx([{
     status: 200,
@@ -22,7 +23,7 @@ Deno.test("quota: reads RateLimit-* headers, treating Reset as a Unix timestamp"
   assertEquals(calls[0].url, "https://acme.nationbuilder.com/api/v2/signups/me");
 });
 
-Deno.test("quota: near-exhausted headroom degrades", async () => {
+test("quota: near-exhausted headroom degrades", async () => {
   const { ctx } = mockNationBuilderCtx([{
     headers: {
       "content-type": "application/json",
@@ -34,7 +35,7 @@ Deno.test("quota: near-exhausted headroom degrades", async () => {
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: zero remaining is down", async () => {
+test("quota: zero remaining is down", async () => {
   const { ctx } = mockNationBuilderCtx([{
     headers: { "content-type": "application/json", "ratelimit-remaining": "0" },
     body: {},
@@ -42,7 +43,7 @@ Deno.test("quota: zero remaining is down", async () => {
   assertEquals((await quota.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: no RateLimit-* headers is unknown", async () => {
+test("quota: no RateLimit-* headers is unknown", async () => {
   const { ctx } = mockNationBuilderCtx([{
     headers: { "content-type": "application/json" },
     body: {},
@@ -52,7 +53,7 @@ Deno.test("quota: no RateLimit-* headers is unknown", async () => {
   assert(report.message!.includes("no RateLimit-*"));
 });
 
-Deno.test("quota: a connection with no slug is unknown, not down", async () => {
+test("quota: a connection with no slug is unknown, not down", async () => {
   const { ctx } = mockNationBuilderCtx([]);
   (ctx as { connection?: unknown }).connection = { display: {} };
   const report = await quota.check!({}, ctx);
@@ -60,6 +61,6 @@ Deno.test("quota: a connection with no slug is unknown, not down", async () => {
   assert(report.message!.includes("no nation slug"));
 });
 
-Deno.test("quota: is informational so it never worsens the overall verdict", () => {
+test("quota: is informational so it never worsens the overall verdict", () => {
   assertEquals(quota.severity, "informational");
 });

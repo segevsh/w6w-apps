@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import invoiceList from "../../actions/invoice-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("invoice-list: sends GET /invoices and reads pagination from headers", async () => {
+test("invoice-list: sends GET /invoices and reads pagination from headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ "id": "i1", "amount": 1000 }],
     headers: {
@@ -31,7 +32,7 @@ Deno.test("invoice-list: sends GET /invoices and reads pagination from headers",
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("invoice-list: last page has no next link", async () => {
+test("invoice-list: last page has no next link", async () => {
   const { ctx } = mockCtx([{
     body: [],
     headers: { "content-type": "application/json", "total-count": "0" },

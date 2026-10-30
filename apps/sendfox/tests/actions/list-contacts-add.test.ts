@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listContactsAdd from "../../actions/list-contacts-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-contacts-add: POSTs contact_id to /lists/{list_id}/contacts", async () => {
+test("list-contacts-add: POSTs contact_id to /lists/{list_id}/contacts", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, email: "a@b.c" } }]);
   const out = await listContactsAdd.execute({ listId: 1, contactId: 3 }, ctx) as { id: number };
 
@@ -13,6 +14,6 @@ Deno.test("list-contacts-add: POSTs contact_id to /lists/{list_id}/contacts", as
 });
 
 /** "If the contact is already in the list, no duplicate is created." */
-Deno.test("list-contacts-add: is marked idempotent", () => {
+test("list-contacts-add: is marked idempotent", () => {
   assertEquals(listContactsAdd.idempotent, true);
 });

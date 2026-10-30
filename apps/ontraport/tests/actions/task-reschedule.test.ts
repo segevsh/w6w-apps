@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskReschedule from "../../actions/task-reschedule.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-reschedule: calls POST /1/task/reschedule with id and newtime", async () => {
+test("task-reschedule: calls POST /1/task/reschedule with id and newtime", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 0 } }]);
   await taskReschedule.execute({ id: "2", newTime: 1713628490 }, ctx);
 

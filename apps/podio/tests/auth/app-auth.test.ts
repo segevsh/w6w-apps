@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import appAuth, {
   authHeaders,
   describeScope,
@@ -37,7 +38,7 @@ const TOKEN_RESPONSE = {
 
 // --- configuration -----------------------------------------------------------
 
-Deno.test("app-auth: declares every credential field as a secret except the app id", () => {
+test("app-auth: declares every credential field as a secret except the app id", () => {
   assertEquals(appAuth.key, "app-auth");
   assertEquals(appAuth.type, "custom");
   const byKey = Object.fromEntries((appAuth.fields ?? []).map((f) => [f.key, f]));
@@ -55,12 +56,12 @@ Deno.test("app-auth: declares every credential field as a secret except the app 
  * form-encoded, so pointing at it would fail with "must be object" — an error
  * that reads like bad credentials. Pinning the URL makes a change deliberate.
  */
-Deno.test("app-auth: the token endpoint is the form-encoded one, not the JSON-only /v2", () => {
+test("app-auth: the token endpoint is the form-encoded one, not the JSON-only /v2", () => {
   assertEquals(TOKEN_URL, "https://api.podio.com/oauth/token");
   assert(!TOKEN_URL.endsWith("/v2"), "pointed at the JSON-only endpoint while posting a form");
 });
 
-Deno.test("app-auth: the probe is /oauth/scope, and the whoami is rejected with a reason", () => {
+test("app-auth: the probe is /oauth/scope, and the whoami is rejected with a reason", () => {
   assertEquals(PROBE_PATH, "/oauth/scope");
   assert(WHY_NOT_USER_STATUS.includes("calendar_code"));
   assert(WHY_NOT_USER_STATUS.includes("App Authentication"));
@@ -68,7 +69,7 @@ Deno.test("app-auth: the probe is /oauth/scope, and the whoami is rejected with 
 
 // --- sign --------------------------------------------------------------------
 
-Deno.test("app-auth sign: stamps the OAuth2 scheme Podio documents, not Bearer", () => {
+test("app-auth sign: stamps the OAuth2 scheme Podio documents, not Bearer", () => {
   const request: SignableRequest = {
     url: "https://api.podio.com/item/1",
     method: "GET",
@@ -82,7 +83,7 @@ Deno.test("app-auth sign: stamps the OAuth2 scheme Podio documents, not Bearer",
   );
 });
 
-Deno.test("app-auth sign: never puts the token in the URL", () => {
+test("app-auth sign: never puts the token in the URL", () => {
   const request: SignableRequest = {
     url: "https://api.podio.com/item/1",
     method: "GET",
@@ -96,14 +97,14 @@ Deno.test("app-auth sign: never puts the token in the URL", () => {
   );
 });
 
-Deno.test("authHeaders: one place builds the wire format, and it tolerates an absent token", () => {
+test("authHeaders: one place builds the wire format, and it tolerates an absent token", () => {
   assertEquals(authHeaders("abc"), { authorization: "OAuth2 abc" });
   assertEquals(authHeaders(undefined), { authorization: "OAuth2 " });
 });
 
 // --- exchange ----------------------------------------------------------------
 
-Deno.test("app-auth exchange: posts the app grant form-encoded, without a redirect_uri", async () => {
+test("app-auth exchange: posts the app grant form-encoded, without a redirect_uri", async () => {
   const { ctx, calls } = mockCtx([{ body: TOKEN_RESPONSE }]);
   const credential = await appAuth.exchange!({
     fields: {
@@ -134,7 +135,7 @@ Deno.test("app-auth exchange: posts the app grant form-encoded, without a redire
   assert(typeof credential.expiresAt === "string");
 });
 
-Deno.test("app-auth exchange: refuses to call Podio with an incomplete form", async () => {
+test("app-auth exchange: refuses to call Podio with an incomplete form", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(appAuth.exchange!({ fields: { clientId: "a" } }, ctx)),
@@ -144,7 +145,7 @@ Deno.test("app-auth exchange: refuses to call Podio with an incomplete form", as
   assertEquals(calls.length, 0, "made a network call with an incomplete credential");
 });
 
-Deno.test("app-auth exchange: surfaces Podio's OAuth error without echoing the request", async () => {
+test("app-auth exchange: surfaces Podio's OAuth error without echoing the request", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -171,7 +172,7 @@ Deno.test("app-auth exchange: surfaces Podio's OAuth error without echoing the r
   assert(!error.message.includes("token-value"), "the app token leaked into the error");
 });
 
-Deno.test("app-auth exchange: a 200 with no access_token is still a failure", async () => {
+test("app-auth exchange: a 200 with no access_token is still a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { token_type: "bearer" } }]);
   await assertRejects(
     () =>
@@ -185,7 +186,7 @@ Deno.test("app-auth exchange: a 200 with no access_token is still a failure", as
 
 // --- refresh -----------------------------------------------------------------
 
-Deno.test("app-auth refresh: tries the refresh grant first", async () => {
+test("app-auth refresh: tries the refresh grant first", async () => {
   const { ctx, calls } = mockCtx([{ body: TOKEN_RESPONSE }]);
   const out = await appAuth.refresh!({ credential: CRED }, ctx) as Record<string, unknown>;
   assertEquals(calls.length, 1);
@@ -202,7 +203,7 @@ Deno.test("app-auth refresh: tries the refresh grant first", async () => {
  * regenerated. Re-minting from the four stored values is what keeps the
  * Connection alive instead of failing it.
  */
-Deno.test("app-auth refresh: falls back to a fresh app grant when the refresh token is dead", async () => {
+test("app-auth refresh: falls back to a fresh app grant when the refresh token is dead", async () => {
   const { ctx, calls } = mockCtx([
     { status: 400, body: { error: "invalid_grant", error_description: "refresh token expired" } },
     { body: TOKEN_RESPONSE },
@@ -215,14 +216,14 @@ Deno.test("app-auth refresh: falls back to a fresh app grant when the refresh to
   assertEquals(out.accessToken, "new-access-token");
 });
 
-Deno.test("app-auth refresh: goes straight to the app grant with no refresh token stored", async () => {
+test("app-auth refresh: goes straight to the app grant with no refresh token stored", async () => {
   const { ctx, calls } = mockCtx([{ body: TOKEN_RESPONSE }]);
   await appAuth.refresh!({ credential: { ...CRED, refreshToken: undefined } }, ctx);
   assertEquals(calls.length, 1);
   assertEquals(formOf(calls[0]).grant_type, "app");
 });
 
-Deno.test("app-auth refresh: keeps the old refresh token when a response omits one", async () => {
+test("app-auth refresh: keeps the old refresh token when a response omits one", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "a", expires_in: 100 } }]);
   const out = await appAuth.refresh!({ credential: CRED }, ctx) as Record<string, unknown>;
   assertEquals(
@@ -232,7 +233,7 @@ Deno.test("app-auth refresh: keeps the old refresh token when a response omits o
   );
 });
 
-Deno.test("app-auth refresh: a credential missing its originating values fails loudly", async () => {
+test("app-auth refresh: a credential missing its originating values fails loudly", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(appAuth.refresh!({ credential: { accessToken: "a" } }, ctx)),
@@ -244,14 +245,14 @@ Deno.test("app-auth refresh: a credential missing its originating values fails l
 
 // --- test --------------------------------------------------------------------
 
-Deno.test("app-auth test: probes /oauth/scope with the OAuth2 scheme", async () => {
+test("app-auth test: probes /oauth/scope with the OAuth2 scheme", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ ref_type: "app", ref_id: 654321 }] }]);
   assertEquals(await appAuth.test({ credential: CRED }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), "/oauth/scope");
   assertEquals(calls[0].headers.authorization, "OAuth2 live-access-token");
 });
 
-Deno.test("app-auth test: no access token short-circuits without a call", async () => {
+test("app-auth test: no access token short-circuits without a call", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await appAuth.test({ credential: {} }, ctx);
   assertEquals(out.ok, false);
@@ -263,7 +264,7 @@ Deno.test("app-auth test: no access token short-circuits without a call", async 
  * The whole reason `classifyAuthFailure` reads the body: these two responses
  * share a status AND an `error` code, and mean opposite things.
  */
-Deno.test("app-auth test: the missing-credential 401 says reconnect, not refresh", async () => {
+test("app-auth test: the missing-credential 401 says reconnect, not refresh", async () => {
   const { ctx } = mockCtx([{ status: 401, body: NO_CREDENTIAL_401 }]);
   const out = await appAuth.test({ credential: CRED }, ctx);
   assertEquals(out.ok, false);
@@ -271,7 +272,7 @@ Deno.test("app-auth test: the missing-credential 401 says reconnect, not refresh
   assert(out.message!.includes("reconnect"));
 });
 
-Deno.test("app-auth test: the rejected-token 401 warns that expired_token does not mean expired", async () => {
+test("app-auth test: the rejected-token 401 warns that expired_token does not mean expired", async () => {
   const { ctx } = mockCtx([{ status: 401, body: BAD_TOKEN_401 }]);
   const out = await appAuth.test({ credential: CRED }, ctx);
   assertEquals(out.ok, false);
@@ -283,7 +284,7 @@ Deno.test("app-auth test: the rejected-token 401 warns that expired_token does n
   assert(out.message!.includes("App Token"), "the method-specific hint was lost");
 });
 
-Deno.test("app-auth test: 403 is reported as a permission problem, not an auth failure", async () => {
+test("app-auth test: 403 is reported as a permission problem, not an auth failure", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "no_access", "/oauth/scope"),
@@ -294,7 +295,7 @@ Deno.test("app-auth test: 403 is reported as a permission problem, not an auth f
   assert(out.message!.includes("authenticated but is not permitted"));
 });
 
-Deno.test("app-auth test: a 5xx is reported as Podio's problem, with the status", async () => {
+test("app-auth test: a 5xx is reported as Podio's problem, with the status", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const out = await appAuth.test({ credential: CRED }, ctx);
   assertEquals(out, { ok: false, message: "Podio returned HTTP 503 for /oauth/scope" });
@@ -302,7 +303,7 @@ Deno.test("app-auth test: a 5xx is reported as Podio's problem, with the status"
 
 // --- afterConnect ------------------------------------------------------------
 
-Deno.test("app-auth afterConnect: labels from the scope read and never fetches the app", async () => {
+test("app-auth afterConnect: labels from the scope read and never fetches the app", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{
       ref_type: "app",
@@ -322,7 +323,7 @@ Deno.test("app-auth afterConnect: labels from the scope read and never fetches t
   );
 });
 
-Deno.test("app-auth afterConnect: a failed or thrown label read still yields a usable label", async () => {
+test("app-auth afterConnect: a failed or thrown label read still yields a usable label", async () => {
   const failing = mockCtx([{ status: 500, body: "" }]);
   assertEquals(
     await appAuth.afterConnect!({ credential: CRED }, failing.ctx),
@@ -336,7 +337,7 @@ Deno.test("app-auth afterConnect: a failed or thrown label read still yields a u
   );
 });
 
-Deno.test("describeScope: names the grant, falls back to type+id, and caps the list", () => {
+test("describeScope: names the grant, falls back to type+id, and caps the list", () => {
   assertEquals(describeScope(null), "no scope reported");
   assertEquals(describeScope([]), "no scope reported");
   assertEquals(
@@ -364,7 +365,7 @@ Deno.test("describeScope: names the grant, falls back to type+id, and caps the l
  * `/oauth/token` answers `invalid_client: "Missing parameter client_id"`
  * (measured), which reads like wrong credentials. The body must be a form.
  */
-Deno.test("app-auth: the token request body is a form, never JSON", async () => {
+test("app-auth: the token request body is a form, never JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: TOKEN_RESPONSE }]);
   await appAuth.exchange!({
     fields: { clientId: "a", clientSecret: "b", appId: "1", appToken: "t" },

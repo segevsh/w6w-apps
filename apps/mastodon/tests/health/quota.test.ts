@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -15,7 +16,7 @@ const withHeaders = (remaining: number, limit = 300) => ({
   },
 });
 
-Deno.test("quota: reads the headers off an unauthenticated call", async () => {
+test("quota: reads the headers off an unauthenticated call", async () => {
   const { ctx, calls } = mockCtx([withHeaders(298)], { display });
   const result = await quota.check!({}, ctx);
   assertEquals(calls[0].url, "https://mastodon.social/api/v2/instance");
@@ -25,14 +26,14 @@ Deno.test("quota: reads the headers off an unauthenticated call", async () => {
 });
 
 /** The reset is an ISO timestamp; parsing it as a number would give NaN. */
-Deno.test("quota: the ISO reset is turned into seconds from now", async () => {
+test("quota: the ISO reset is turned into seconds from now", async () => {
   const { ctx } = mockCtx([withHeaders(298)], { display });
   const result = await quota.check!({}, ctx);
   assert(/resets in 1[12]\d?s/.test(result.message!), result.message);
   assert(!/NaN/.test(result.message!), result.message);
 });
 
-Deno.test("quota: an unparseable reset does not break the report", async () => {
+test("quota: an unparseable reset does not break the report", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -48,7 +49,7 @@ Deno.test("quota: an unparseable reset does not break the report", async () => {
   assert(!/resets in/.test(result.message!), result.message);
 });
 
-Deno.test("quota: running low is degraded, exhausted is down", async () => {
+test("quota: running low is degraded, exhausted is down", async () => {
   const low = mockCtx([withHeaders(20)], { display });
   assertEquals((await quota.check!({}, low.ctx)).state, "degraded");
 
@@ -59,14 +60,14 @@ Deno.test("quota: running low is degraded, exhausted is down", async () => {
 });
 
 /** Some instances do not publish them, and a proxy can strip them. */
-Deno.test("quota: an instance without the headers is unknown, not broken", async () => {
+test("quota: an instance without the headers is unknown, not broken", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }], { display });
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/a proxy\s+in front can strip them/.test(result.message!), result.message);
 });
 
-Deno.test("quota: an unreachable instance is unknown", async () => {
+test("quota: an unreachable instance is unknown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -76,7 +77,7 @@ Deno.test("quota: an unreachable instance is unknown", async () => {
 });
 
 /** Small servers set far lower limits than mastodon.social. */
-Deno.test("quota: says the limit belongs to the instance", () => {
+test("quota: says the limit belongs to the instance", () => {
   assert(/a fraction of what mastodon.social does/.test(quota.description!), quota.description);
   assertEquals(quota.credential, "context");
 });

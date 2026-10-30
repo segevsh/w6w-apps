@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { transcriptOptionsBody } from "../../lib/params.ts";
 
-Deno.test("transcriptOptionsBody: maps camelCase input to the vendor's snake_case fields", () => {
+test("transcriptOptionsBody: maps camelCase input to the vendor's snake_case fields", () => {
   const body = transcriptOptionsBody({
     languageCode: "en_us",
     punctuate: true,
@@ -20,19 +21,19 @@ Deno.test("transcriptOptionsBody: maps camelCase input to the vendor's snake_cas
   assertEquals(body.speech_models, ["universal-2"]);
 });
 
-Deno.test("transcriptOptionsBody: empty-string fields become undefined, not sent as ''", () => {
+test("transcriptOptionsBody: empty-string fields become undefined, not sent as ''", () => {
   const body = transcriptOptionsBody({ languageCode: "", prompt: "", domain: "" });
   assertEquals(body.language_code, undefined);
   assertEquals(body.prompt, undefined);
   assertEquals(body.domain, undefined);
 });
 
-Deno.test("transcriptOptionsBody: array fields accept a comma-string the same as an array", () => {
+test("transcriptOptionsBody: array fields accept a comma-string the same as an array", () => {
   const body = transcriptOptionsBody({ redactPiiPolicies: "person_name, email_address" });
   assertEquals(body.redact_pii_policies, ["person_name", "email_address"]);
 });
 
-Deno.test("transcriptOptionsBody: an empty array field becomes undefined, not []", () => {
+test("transcriptOptionsBody: an empty array field becomes undefined, not []", () => {
   const body = transcriptOptionsBody({ redactPiiPolicies: [] });
   assertEquals(body.redact_pii_policies, undefined);
 });

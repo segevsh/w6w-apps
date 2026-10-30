@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionArchive from "../../actions/session-archive.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("session-archive: POSTs to /sessions/{id}/archive", async () => {
+test("session-archive: POSTs to /sessions/{id}/archive", async () => {
   const { ctx, calls } = mockCtx([{
     body: { session_id: "devin-1", status: "exit", is_archived: true },
   }]);
@@ -14,6 +15,6 @@ Deno.test("session-archive: POSTs to /sessions/{id}/archive", async () => {
   assertEquals(out.is_archived, true);
 });
 
-Deno.test("session-archive: is marked idempotent — retrying lands on the same archived state", () => {
+test("session-archive: is marked idempotent — retrying lands on the same archived state", () => {
   assertEquals(sessionArchive.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailingListContactList from "../../actions/mailing-list-contact-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("mailing-list-contact-list: calls the list-scoped contacts route", async () => {
+test("mailing-list-contact-list: calls the list-scoped contacts route", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ contactId: "CID_1" }]) }]);
   const out = await mailingListContactList.execute({ mailingListId: "CG_1" }, ctx) as {
     elements: unknown[];
@@ -12,7 +13,7 @@ Deno.test("mailing-list-contact-list: calls the list-scoped contacts route", asy
   assertEquals(out.elements, [{ contactId: "CID_1" }]);
 });
 
-Deno.test("mailing-list-contact-list: path-escapes the list id", async () => {
+test("mailing-list-contact-list: path-escapes the list id", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await mailingListContactList.execute({ mailingListId: "CG/1" }, ctx);
 

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -47,7 +48,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: reads summary.json on the status host, not on the API host", () => {
+test("service: reads summary.json on the status host, not on the API host", () => {
   assertEquals(STATUS_URL, "https://status.housecallpro.com/api/v2/summary.json");
   assertEquals(service.network?.allow, [STATUS_HOST]);
   assertEquals(service.credential, "none");
@@ -59,13 +60,13 @@ Deno.test("service: reads summary.json on the status host, not on the API host",
  * Partner Jobs intake surface — so this reading must never move the app's
  * verdict.
  */
-Deno.test("service: is informational, because no component covers the public API", () => {
+test("service: is informational, because no component covers the public API", () => {
   assertEquals(service.severity, "informational");
   assertEquals(LIVE_COMPONENTS.filter((n) => /api/i.test(n)), [PARTNER_JOBS_COMPONENT]);
   assertEquals(LIVE_COMPONENTS.some((n) => /housecallpro\.com/i.test(n)), false);
 });
 
-Deno.test("service: reports every component and labels the Partner Jobs one", async () => {
+test("service: reports every component and labels the Partner Jobs one", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const out = await service.check!({} as never, ctx);
 
@@ -76,14 +77,14 @@ Deno.test("service: reports every component and labels the Partner Jobs one", as
   assert(partner.message!.includes("Partner Jobs intake — not the public API"));
 });
 
-Deno.test("service: the page indicator is the verdict, not the component roll-up", async () => {
+test("service: the page indicator is the verdict, not the component roll-up", async () => {
   const { ctx } = mockCtx([{
     body: summary({ status: { indicator: "critical", description: "Major outage" } }),
   }]);
   assertEquals((await service.check!({} as never, ctx)).state, "down");
 });
 
-Deno.test("service: an affected component is named in the message", async () => {
+test("service: an affected component is named in the message", async () => {
   const body = summary();
   (body.components[0] as { status: string }).status = "major_outage";
   const { ctx } = mockCtx([{ body: { ...body, status: { indicator: "major" } } }]);
@@ -93,14 +94,14 @@ Deno.test("service: an affected component is named in the message", async () => 
   assert(out.message!.includes("Pro web (major_outage)"));
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   for (const response of [{ status: 503, body: "" }, { status: 200, body: "not json" }]) {
     const { ctx } = mockCtx([response]);
     assertEquals((await service.check!({} as never, ctx)).state, "unknown");
   }
 });
 
-Deno.test("service: a page that stops self-identifying is unknown", async () => {
+test("service: a page that stops self-identifying is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { id: "x", name: "Someone Else", url: "https://status.example.com" } }),
   }]);
@@ -109,12 +110,12 @@ Deno.test("service: a page that stops self-identifying is unknown", async () => 
   assert(out.message!.includes("no longer self-identifies"));
 });
 
-Deno.test("service: an empty component list is unknown rather than a vacuous ok", async () => {
+test("service: an empty component list is unknown rather than a vacuous ok", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({} as never, ctx)).state, "unknown");
 });
 
-Deno.test("service: group container rows are not double-counted", async () => {
+test("service: group container rows are not double-counted", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -126,7 +127,7 @@ Deno.test("service: group container rows are not double-counted", async () => {
   assertEquals(Object.keys((await service.check!({} as never, ctx)).components ?? {}), ["c"]);
 });
 
-Deno.test("service: the Statuspage vocabularies map as documented", () => {
+test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -142,7 +143,7 @@ Deno.test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: a component without an id still gets a stable key", () => {
+test("service: a component without an id still gets a stable key", () => {
   assertEquals(componentKey({ id: "abc" }, 0), "abc");
   assertEquals(componentKey({ name: "Pro web" }, 3), "pro-web-3");
   assertEquals(componentKey({}, 7), "component-7");

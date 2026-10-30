@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/validate-email.ts";
 
-Deno.test("validate-email: GETs /email with the email query param and returns the full report", async () => {
+test("validate-email: GETs /email with the email query param and returns the full report", async () => {
   const body = {
     is_format_valid: true,
     is_domain_valid: true,

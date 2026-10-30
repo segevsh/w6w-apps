@@ -1,7 +1,8 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { asOptionalJson, compact, formatHexError, toList } from "../../lib/client.ts";
 
-Deno.test("formatHexError: {code,message,issues} shape", () => {
+test("formatHexError: {code,message,issues} shape", () => {
   const m = formatHexError(
     400,
     "GET",
@@ -14,17 +15,17 @@ Deno.test("formatHexError: {code,message,issues} shape", () => {
   }
 });
 
-Deno.test("formatHexError: {reason,details} shape", () => {
+test("formatHexError: {reason,details} shape", () => {
   const m = formatHexError(422, "DELETE", "/p", JSON.stringify({ reason: "R", details: "D" }));
   assertEquals(m.includes("R") && m.includes("D"), true);
 });
 
-Deno.test("formatHexError: plain text body and 429 hint", () => {
+test("formatHexError: plain text body and 429 hint", () => {
   assertEquals(formatHexError(401, "GET", "/p", "Unauthorized").includes("Unauthorized"), true);
   assertEquals(formatHexError(429, "GET", "/p", "{}").includes("retry"), true);
 });
 
-Deno.test("toList / compact / asOptionalJson", () => {
+test("toList / compact / asOptionalJson", () => {
   assertEquals(toList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(toList(""), undefined);
   assertEquals(compact({ a: 1, b: undefined, c: "", d: false }), { a: 1, d: false });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/service-account.ts";
 
@@ -13,7 +14,7 @@ const orgs = {
  * Measured: the body form answers 400 "No Authorization header provided",
  * which reads like a client bug rather than a choice of form.
  */
-Deno.test("service-account: sends the client credentials as Basic, not in the body", async () => {
+test("service-account: sends the client credentials as Basic, not in the body", async () => {
   const { ctx, calls } = mockCtx([token]);
   await auth.exchange!({ fields }, ctx);
   assertEquals(calls[0].url, "https://cloud.mongodb.com/api/oauth/token");
@@ -23,7 +24,7 @@ Deno.test("service-account: sends the client credentials as Basic, not in the bo
   assertEquals(calls[0].body!.includes("client_secret"), false);
 });
 
-Deno.test("service-account: keeps the client credentials so refresh can re-mint", async () => {
+test("service-account: keeps the client credentials so refresh can re-mint", async () => {
   const { ctx } = mockCtx([token]);
   const credential = await auth.exchange!({ fields }, ctx) as Record<string, unknown>;
   assertEquals(credential.clientId, "mdb_sa_id_x");
@@ -33,21 +34,21 @@ Deno.test("service-account: keeps the client credentials so refresh can re-mint"
 });
 
 /** An hour, with a minute of headroom for clock skew. */
-Deno.test("service-account: records an expiry inside the token's stated lifetime", async () => {
+test("service-account: records an expiry inside the token's stated lifetime", async () => {
   const { ctx } = mockCtx([token]);
   const credential = await auth.exchange!({ fields }, ctx) as Record<string, string>;
   const ttl = new Date(credential.expiresAt).getTime() - Date.now();
   assert(ttl > 0 && ttl < 3600_000, `expiry ${ttl}ms is not inside the hour`);
 });
 
-Deno.test("service-account: refresh is the same call again", async () => {
+test("service-account: refresh is the same call again", async () => {
   const { ctx, calls } = mockCtx([token]);
   const credential = await auth.refresh!({ credential: fields }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://cloud.mongodb.com/api/oauth/token");
   assertEquals(credential.accessToken, "at-1");
 });
 
-Deno.test("service-account: a rejected client secret surfaces the OAuth error", async () => {
+test("service-account: a rejected client secret surfaces the OAuth error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "invalid_client", error_description: "Invalid credentials provided" },
@@ -61,7 +62,7 @@ Deno.test("service-account: a rejected client secret surfaces the OAuth error", 
   assert(/Invalid credentials provided/.test(message), message);
 });
 
-Deno.test("service-account: exchange refuses without both values", async () => {
+test("service-account: exchange refuses without both values", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -73,7 +74,7 @@ Deno.test("service-account: exchange refuses without both values", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-account: signs as a bearer", () => {
+test("service-account: signs as a bearer", () => {
   const request = {
     url: "https://cloud.mongodb.com/api/atlas/v2/orgs",
     headers: {} as Record<string, string>,
@@ -86,7 +87,7 @@ Deno.test("service-account: signs as a bearer", () => {
   assertEquals(auth.type, "custom");
 });
 
-Deno.test("service-account: the test reads the organisation list", async () => {
+test("service-account: the test reads the organisation list", async () => {
   const { ctx, calls } = mockCtx([orgs]);
   const result = await auth.test!({ credential: { accessToken: "at-1" } } as never, ctx);
   assertEquals(calls[0].url, "https://cloud.mongodb.com/api/atlas/v2/orgs");
@@ -99,7 +100,7 @@ Deno.test("service-account: the test reads the organisation list", async () => {
  * The state nothing else reports: the credential is perfect and the account
  * has no role, so it can do nothing at all.
  */
-Deno.test("service-account: a token with no role fails the test, explaining why", async () => {
+test("service-account: a token with no role fails the test, explaining why", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { results: [], totalCount: 0 } }]);
   const result = await auth.test!({ credential: { accessToken: "at-1" } } as never, ctx);
   assertEquals(result.ok, false);
@@ -107,7 +108,7 @@ Deno.test("service-account: a token with no role fails the test, explaining why"
   assert(/Access Manager/.test(result.message!), result.message);
 });
 
-Deno.test("service-account: a missing or rejected token fails cleanly", async () => {
+test("service-account: a missing or rejected token fails cleanly", async () => {
   const none = mockCtx([]);
   assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);
@@ -118,7 +119,7 @@ Deno.test("service-account: a missing or rejected token fails cleanly", async ()
   assert(/lasts an hour/.test(result.message!), result.message);
 });
 
-Deno.test("service-account: afterConnect records the organisation", async () => {
+test("service-account: afterConnect records the organisation", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { results: [{ id: "org-1", name: "Acme" }, { id: "org-2", name: "Labs" }] },
@@ -132,13 +133,13 @@ Deno.test("service-account: afterConnect records the organisation", async () => 
   assertEquals(display.orgCount, 2);
 });
 
-Deno.test("service-account: afterConnect survives the call failing", async () => {
+test("service-account: afterConnect survives the call failing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "at-1" } }, ctx), {});
 });
 
 /** Digest needs a challenge round-trip; a sign hook sees one request. */
-Deno.test("service-account: says why the API-key scheme is not offered", () => {
+test("service-account: says why the API-key scheme is not offered", () => {
   assert(/HTTP DIGEST/.test(auth.description!), auth.description);
   assert(/challenge round-trip/.test(auth.description!), auth.description);
   assertEquals(auth.fields!.map((f) => f.key), ["clientId", "clientSecret"]);

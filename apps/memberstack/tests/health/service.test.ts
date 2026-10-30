@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { mapResourceStatus, resourceKey, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -23,7 +24,7 @@ const run = (body: unknown, status = 200) => {
   return Promise.resolve(service.check!({} as never, ctx)).then((r) => ({ r, calls }));
 };
 
-Deno.test("service: reads the Better Stack /index.json on status.memberstack.com", async () => {
+test("service: reads the Better Stack /index.json on status.memberstack.com", async () => {
   const { r, calls } = await run(page("operational"));
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(STATUS_URL, "https://status.memberstack.com/index.json");
@@ -35,7 +36,7 @@ Deno.test("service: reads the Better Stack /index.json on status.memberstack.com
   ]);
 });
 
-Deno.test("service: the verdict is the Admin API monitor, not the other components", async () => {
+test("service: the verdict is the Admin API monitor, not the other components", async () => {
   assertEquals((await run(page("downtime"))).r.state, "down");
   assertEquals((await run(page("degraded"))).r.state, "degraded");
   const { r } = await run(page("operational", "downtime"));
@@ -43,7 +44,7 @@ Deno.test("service: the verdict is the Admin API monitor, not the other componen
   assertEquals(r.components!["marketing-website"].state, "down");
 });
 
-Deno.test("service: a missing Admin API monitor is unknown, never ok", async () => {
+test("service: a missing Admin API monitor is unknown, never ok", async () => {
   const p = page("operational");
   p.included = p.included.filter((i) =>
     (i.attributes as { public_name?: string }).public_name !== "Admin API"
@@ -51,7 +52,7 @@ Deno.test("service: a missing Admin API monitor is unknown, never ok", async () 
   assertEquals((await run(p)).r.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies, an error, or junk is unknown", async () => {
+test("service: a page that no longer self-identifies, an error, or junk is unknown", async () => {
   assertEquals((await run(page("operational", "operational", "Someone Else"))).r.state, "unknown");
   assertEquals((await run({}, 503)).r.state, "unknown");
   assertEquals((await run({ data: {} })).r.state, "unknown");
@@ -62,12 +63,12 @@ Deno.test("service: a page that no longer self-identifies, an error, or junk is 
   );
 });
 
-Deno.test("service: declares the status host on the hook, unsigned", () => {
+test("service: declares the status host on the hook, unsigned", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.memberstack.com"]);
 });
 
-Deno.test("mapResourceStatus / resourceKey", () => {
+test("mapResourceStatus / resourceKey", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
   assertEquals(mapResourceStatus("downtime"), "down");

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listPayments from "../../actions/list-payments.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const page = listEnvelope("payments", [{ id: "PM1", status: "submitted" }], {
   limit: 25,
 });
 
-Deno.test("list-payments: GET /payments with cursors surfaced", async () => {
+test("list-payments: GET /payments with cursors surfaced", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   const out = await listPayments.execute!({ limit: 25, after: "C3" }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("list-payments: GET /payments with cursors surfaced", async () => {
   assertEquals(out.limit, 25);
 });
 
-Deno.test("list-payments: charge_date uses the same bracketed form as created_at", async () => {
+test("list-payments: charge_date uses the same bracketed form as created_at", async () => {
   const { ctx, calls } = mockCtx([{ body: page }]);
   await listPayments.execute!({
     currency: "EUR",

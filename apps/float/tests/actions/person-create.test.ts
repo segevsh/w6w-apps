@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import personCreate from "../../actions/person-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("person-create - POSTs /people with the typed fields, dropping unset ones", async () => {
+test("person-create - POSTs /people with the typed fields, dropping unset ones", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { people_id: 5, name: "New Person" } }]);
   const out = await personCreate.execute(
     { name: "New Person", active: true, employeeType: true },
@@ -18,7 +19,7 @@ Deno.test("person-create - POSTs /people with the typed fields, dropping unset o
   assertEquals(out, { people_id: 5, name: "New Person" });
 });
 
-Deno.test("person-create - extraFields is merged in and overrides typed fields", async () => {
+test("person-create - extraFields is merged in and overrides typed fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await personCreate.execute(
     { name: "New Person", extraFields: { name: "Overridden", department: { department_id: 5 } } },

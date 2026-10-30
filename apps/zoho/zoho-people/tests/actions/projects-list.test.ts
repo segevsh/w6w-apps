@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/projects-list.ts";
 
-Deno.test("projects-list: GETs getprojects with filters", async () => {
+test("projects-list: GETs getprojects with filters", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ projectId: "9" }], status: 0 } },
   }]);
@@ -18,7 +19,7 @@ Deno.test("projects-list: GETs getprojects with filters", async () => {
   assertEquals(out.result.length, 1);
 });
 
-Deno.test("projects-list: no params means a bare request; bad limit rejected", async () => {
+test("projects-list: no params means a bare request; bad limit rejected", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: { response: { result: [], status: 0 } } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

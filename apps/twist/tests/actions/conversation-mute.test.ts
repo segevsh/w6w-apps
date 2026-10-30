@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationMute from "../../actions/conversation-mute.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-mute: POST /api/v3/conversations/mute with every documented parameter", async () => {
+test("conversation-mute: POST /api/v3/conversations/mute with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await conversationMute.execute(
     { "conversationId": 100, "minutes": 101 },
@@ -17,7 +18,7 @@ Deno.test("conversation-mute: POST /api/v3/conversations/mute with every documen
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("conversation-mute: sends a form body, never a query string", async () => {
+test("conversation-mute: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await conversationMute.execute({ "conversationId": 100, "minutes": 101 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("conversation-mute: sends a form body, never a query string", async ()
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("conversation-mute: is declared idempotent", () => {
+test("conversation-mute: is declared idempotent", () => {
   assertEquals(conversationMute.idempotent, true);
 });
 
-Deno.test("conversation-mute: sends no credential of its own", async () => {
+test("conversation-mute: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await conversationMute.execute({ "conversationId": 100, "minutes": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("conversation-mute: surfaces Twist's error body", async () => {
+test("conversation-mute: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth2Methods from "../../auth/oauth2.ts";
 import { REGIONS } from "../../lib/regions.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -9,7 +10,7 @@ function findRegion(key: string) {
   return oauth2Methods.find((m) => m.key === key)!;
 }
 
-Deno.test("oauth2: one AuthDefinition per region, each keyed and hosted correctly", () => {
+test("oauth2: one AuthDefinition per region, each keyed and hosted correctly", () => {
   assertEquals(oauth2Methods.length, REGIONS.length);
   const keys = oauth2Methods.map((m) => m.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate auth key");
@@ -28,12 +29,12 @@ Deno.test("oauth2: one AuthDefinition per region, each keyed and hosted correctl
  * hook (checked further down) must address `calendar.zohocloud.ca`, not the pattern-consistent
  * but nonexistent `accounts.zoho.ca` / `calendar.zoho.ca`.
  */
-Deno.test("oauth2-ca: authorizes against accounts.zohocloud.ca, not accounts.zoho.ca", () => {
+test("oauth2-ca: authorizes against accounts.zohocloud.ca, not accounts.zoho.ca", () => {
   const ca = findRegion("oauth2-ca");
   assertEquals(ca.oauth2?.authorizationUrl, "https://accounts.zohocloud.ca/oauth/v2/auth");
 });
 
-Deno.test("oauth2: every method requests the offline+consent params and the four scopes", () => {
+test("oauth2: every method requests the offline+consent params and the four scopes", () => {
   for (const method of oauth2Methods) {
     assertEquals(method.oauth2?.extraAuthParams, { access_type: "offline", prompt: "consent" });
     assertEquals(method.oauth2?.scopes, [
@@ -45,7 +46,7 @@ Deno.test("oauth2: every method requests the offline+consent params and the four
   }
 });
 
-Deno.test("oauth2-us: sign stamps the Zoho-oauthtoken header and nothing else", () => {
+test("oauth2-us: sign stamps the Zoho-oauthtoken header and nothing else", () => {
   const us = findRegion("oauth2-us");
   const request = {
     method: "GET",
@@ -61,7 +62,7 @@ Deno.test("oauth2-us: sign stamps the Zoho-oauthtoken header and nothing else", 
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("oauth2-us: test passes when /calendars answers", async () => {
+test("oauth2-us: test passes when /calendars answers", async () => {
   const us = findRegion("oauth2-us");
   const { ctx, calls } = mockCtx([{ body: { calendars: [{ uid: "abc" }] } }]);
   const result = await us.test!({ credential: { accessToken: TOKEN } }, ctx);
@@ -72,21 +73,21 @@ Deno.test("oauth2-us: test passes when /calendars answers", async () => {
   assertEquals(calls[0].headers.authorization, `Zoho-oauthtoken ${TOKEN}`);
 });
 
-Deno.test("oauth2-eu: test addresses the EU API host", async () => {
+test("oauth2-eu: test addresses the EU API host", async () => {
   const eu = findRegion("oauth2-eu");
   const { ctx, calls } = mockCtx([{ body: { calendars: [] } }]);
   await eu.test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(new URL(calls[0].url).host, "calendar.zoho.eu");
 });
 
-Deno.test("oauth2-ca: test addresses calendar.zohocloud.ca, not calendar.zoho.ca", async () => {
+test("oauth2-ca: test addresses calendar.zohocloud.ca, not calendar.zoho.ca", async () => {
   const ca = findRegion("oauth2-ca");
   const { ctx, calls } = mockCtx([{ body: { calendars: [] } }]);
   await ca.test!({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(new URL(calls[0].url).host, "calendar.zohocloud.ca");
 });
 
-Deno.test("oauth2-us: test fails with no token, without making a request", async () => {
+test("oauth2-us: test fails with no token, without making a request", async () => {
   const us = findRegion("oauth2-us");
   const { ctx, calls } = mockCtx([]);
   const result = await us.test!({ credential: {} }, ctx);
@@ -100,7 +101,7 @@ Deno.test("oauth2-us: test fails with no token, without making a request", async
  * (`INVALID_OAUTHTOKEN`). Collapsing them into one bare 4xx message is how "the token expired"
  * gets misreported as "no credential configured", or vice versa.
  */
-Deno.test("oauth2-us: an unsigned request is reported as INVALID_TICKET", async () => {
+test("oauth2-us: an unsigned request is reported as INVALID_TICKET", async () => {
   const us = findRegion("oauth2-us");
   const { ctx } = mockCtx([{
     status: 400,
@@ -117,7 +118,7 @@ Deno.test("oauth2-us: an unsigned request is reported as INVALID_TICKET", async 
   assert(/INVALID_TICKET/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: a dead token is reported as INVALID_OAUTHTOKEN", async () => {
+test("oauth2-us: a dead token is reported as INVALID_OAUTHTOKEN", async () => {
   const us = findRegion("oauth2-us");
   const { ctx } = mockCtx([{
     status: 401,
@@ -135,7 +136,7 @@ Deno.test("oauth2-us: a dead token is reported as INVALID_OAUTHTOKEN", async () 
   assert(/reconnect/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("oauth2-us: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const us = findRegion("oauth2-us");
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await us.test!({ credential: { accessToken: TOKEN } }, ctx);
@@ -143,19 +144,19 @@ Deno.test("oauth2-us: a 500 is reported as an HTTP failure, not a credential pro
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2-us: afterConnect records apiHost/region", () => {
+test("oauth2-us: afterConnect records apiHost/region", () => {
   const us = findRegion("oauth2-us");
   const display = us.afterConnect!({ credential: {} }, {} as never);
   assertEquals(display, { apiHost: "calendar.zoho.com", region: "United States" });
 });
 
-Deno.test("oauth2-ca: afterConnect records calendar.zohocloud.ca", () => {
+test("oauth2-ca: afterConnect records calendar.zohocloud.ca", () => {
   const ca = findRegion("oauth2-ca");
   const display = ca.afterConnect!({ credential: {} }, {} as never);
   assertEquals(display, { apiHost: "calendar.zohocloud.ca", region: "Canada" });
 });
 
-Deno.test("oauth2: every method declares both required hooks", () => {
+test("oauth2: every method declares both required hooks", () => {
   for (const method of oauth2Methods) {
     assertEquals(typeof method.test, "function");
     assertEquals(typeof method.sign, "function");

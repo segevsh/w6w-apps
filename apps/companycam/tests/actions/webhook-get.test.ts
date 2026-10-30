@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookGet from "../../actions/webhook-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-get: strips the signing token", async () => {
+test("webhook-get: strips the signing token", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "42", url: "https://a/hook", scopes: ["*"], token: "s3cret", enabled: true },
   }]);

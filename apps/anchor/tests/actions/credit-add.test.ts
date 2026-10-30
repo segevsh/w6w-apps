@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import creditAdd from "../../actions/credit-add.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("credit-add: sends POST /billing/a1/credit", async () => {
+test("credit-add: sends POST /billing/a1/credit", async () => {
   const { ctx, calls } = mockCtx([{ body: { "creditId": "cr1" } }]);
   const out = await creditAdd.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("credit-add: sends POST /billing/a1/credit", async () => {
   assertEquals(out.creditId, "cr1");
 });
 
-Deno.test("credit-add: a non-2xx answer throws with the vendor's error code", async () => {
+test("credit-add: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import verifyEmail from "../../actions/verify-email.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("verify-email: POSTs the email as JSON and maps the verdict", async () => {
+test("verify-email: POSTs the email as JSON and maps the verdict", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       email: "a@b.co",
@@ -20,7 +21,7 @@ Deno.test("verify-email: POSTs the email as JSON and maps the verdict", async ()
   assertEquals(out.checks.disposable, false);
 });
 
-Deno.test("verify-email: unknown is free; an empty email is refused", async () => {
+test("verify-email: unknown is free; an empty email is refused", async () => {
   const { ctx } = mockCtx([{ body: { email: "a@b.co", status: "unknown", credits_charged: 0 } }]);
   assertEquals((await run(verifyEmail, { email: "a@b.co" }, ctx)).creditsCharged, 0);
   const none = mockCtx();
@@ -28,7 +29,7 @@ Deno.test("verify-email: unknown is free; an empty email is refused", async () =
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("verify-email: a 402 names the credit type and is not retried", async () => {
+test("verify-email: a 402 names the credit type and is not retried", async () => {
   const bad = mockCtx([{
     status: 402,
     body: {

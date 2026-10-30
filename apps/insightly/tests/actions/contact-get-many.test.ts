@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInsightlyCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get-many.ts";
 
-Deno.test("contact-get-many: plain list with no filter", async () => {
+test("contact-get-many: plain list with no filter", async () => {
   const { ctx, calls } = mockInsightlyCtx([{ body: [{ CONTACT_ID: 1 }] }]);
   const out = await action.execute({ top: 10 }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("contact-get-many: plain list with no filter", async () => {
   assertEquals(out, { contacts: [{ CONTACT_ID: 1 }] });
 });
 
-Deno.test("contact-get-many: switches to /Search when a filter field is set", async () => {
+test("contact-get-many: switches to /Search when a filter field is set", async () => {
   const { ctx, calls } = mockInsightlyCtx([{ body: [] }]);
   await action.execute({ fieldName: "EMAIL_ADDRESS", fieldValue: "jo@acme.test" }, ctx);
   const url = new URL(calls[0].url);

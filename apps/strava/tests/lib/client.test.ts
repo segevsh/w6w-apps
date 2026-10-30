@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, StravaClient } from "../../lib/client.ts";
 
-Deno.test("compact: drops undefined, null and empty-string values", () => {
+test("compact: drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: "x", f: false }), {
     a: 1,
     e: "x",
@@ -10,7 +11,7 @@ Deno.test("compact: drops undefined, null and empty-string values", () => {
   });
 });
 
-Deno.test("StravaClient.request: builds the URL and query string", async () => {
+test("StravaClient.request: builds the URL and query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await new StravaClient(ctx).request("/athlete", {
     query: { page: 2, unset: undefined },
@@ -22,7 +23,7 @@ Deno.test("StravaClient.request: builds the URL and query string", async () => {
   assertEquals(url.searchParams.has("unset"), false);
 });
 
-Deno.test("StravaClient.request: JSON-encodes and compacts a body", async () => {
+test("StravaClient.request: JSON-encodes and compacts a body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new StravaClient(ctx).request("/activities", {
     method: "POST",
@@ -32,7 +33,7 @@ Deno.test("StravaClient.request: JSON-encodes and compacts a body", async () => 
   assertEquals(JSON.parse(calls[0].body!), { name: "Run" });
 });
 
-Deno.test("StravaClient.request: throws with vendor detail on a non-ok response", async () => {
+test("StravaClient.request: throws with vendor detail on a non-ok response", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { message: "Authorization Error", errors: [{ resource: "Athlete", field: "" }] },
@@ -44,7 +45,7 @@ Deno.test("StravaClient.request: throws with vendor detail on a non-ok response"
   );
 });
 
-Deno.test("StravaClient.request: returns undefined for a 204", async () => {
+test("StravaClient.request: returns undefined for a 204", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   assertEquals(await new StravaClient(ctx).request("/activities/1"), undefined);
 });

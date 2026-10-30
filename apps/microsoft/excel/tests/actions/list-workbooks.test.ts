@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-workbooks.ts";
 
-Deno.test("list-workbooks: searches the drive root with the default .xlsx query", async () => {
+test("list-workbooks: searches the drive root with the default .xlsx query", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
   assertEquals(url.pathname, "/v1.0/me/drive/root/search(q='.xlsx')");
 });
 
-Deno.test("list-workbooks: escapes an apostrophe in the query, per OData", async () => {
+test("list-workbooks: escapes an apostrophe in the query, per OData", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ query: "Bob's budget" }, ctx);
   assert(
@@ -18,7 +19,7 @@ Deno.test("list-workbooks: escapes an apostrophe in the query, per OData", async
   );
 });
 
-Deno.test("list-workbooks: maps $select, $orderby and $top", async () => {
+test("list-workbooks: maps $select, $orderby and $top", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ select: ["id", "name"], orderby: "name asc", top: 5 }, ctx);
   const url = new URL(calls[0].url);
@@ -27,7 +28,7 @@ Deno.test("list-workbooks: maps $select, $orderby and $top", async () => {
   assertEquals(url.searchParams.get("$top"), "5");
 });
 
-Deno.test("list-workbooks: filters non-workbooks out of the page by default", async () => {
+test("list-workbooks: filters non-workbooks out of the page by default", async () => {
   const { ctx } = mockCtx([{
     body: {
       value: [
@@ -45,7 +46,7 @@ Deno.test("list-workbooks: filters non-workbooks out of the page by default", as
   assertEquals(out.value.map((i) => i.id), ["1", "3"]);
 });
 
-Deno.test("list-workbooks: returns everything when the filter is turned off", async () => {
+test("list-workbooks: returns everything when the filter is turned off", async () => {
   const { ctx } = mockCtx([{
     body: { value: [{ id: "1", name: "Q3.xlsx" }, { id: "2", name: "notes.docx" }] },
   }]);
@@ -53,14 +54,14 @@ Deno.test("list-workbooks: returns everything when the filter is turned off", as
   assertEquals(out.value.length, 2);
 });
 
-Deno.test("list-workbooks: replays a nextLink verbatim instead of rebuilding the query", async () => {
+test("list-workbooks: replays a nextLink verbatim instead of rebuilding the query", async () => {
   const link = "https://graph.microsoft.com/v1.0/me/drive/root/search(q='x')?$skiptoken=abc";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ nextLink: link, top: 999, query: "ignored" }, ctx);
   assertEquals(calls[0].url, link);
 });
 
-Deno.test("list-workbooks: follows every page when `all` is set", async () => {
+test("list-workbooks: follows every page when `all` is set", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/drive/root/search(q='x')?$skiptoken=1";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a", name: "a.xlsx" }], "@odata.nextLink": next } },
@@ -72,7 +73,7 @@ Deno.test("list-workbooks: follows every page when `all` is set", async () => {
   assertEquals(out.pages, 2);
 });
 
-Deno.test("list-workbooks: honours maxPages and hands back the cursor", async () => {
+test("list-workbooks: honours maxPages and hands back the cursor", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/drive/root/search(q='x')?$skiptoken=1";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a", name: "a.xlsx" }], "@odata.nextLink": next } },

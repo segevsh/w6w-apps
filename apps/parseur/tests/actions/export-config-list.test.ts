@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import exportConfigList from "../../actions/export-config-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("export-config-list: GETs /parser/{id}/export_config", async () => {
+test("export-config-list: GETs /parser/{id}/export_config", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1, name: "My Download" }]) }]);
   const out = await exportConfigList.execute({ mailboxId: "42" }, ctx) as { results: unknown[] };
 

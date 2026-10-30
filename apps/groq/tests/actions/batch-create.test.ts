@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-create.ts";
 
-Deno.test("batch-create: POSTs to /batches with a fixed endpoint of /v1/chat/completions", async () => {
+test("batch-create: POSTs to /batches with a fixed endpoint of /v1/chat/completions", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "batch_1", status: "validating" } }]);
   await action.execute!(
     { inputFileId: "file-1", completionWindow: "24h" },
@@ -18,14 +19,14 @@ Deno.test("batch-create: POSTs to /batches with a fixed endpoint of /v1/chat/com
   assertEquals(body.completion_window, "24h");
 });
 
-Deno.test("batch-create: accepts a completion window beyond OpenAI's fixed 24h", async () => {
+test("batch-create: accepts a completion window beyond OpenAI's fixed 24h", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ inputFileId: "file-1", completionWindow: "7d" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.completion_window, "7d");
 });
 
-Deno.test("batch-create: forwards metadata when provided, omits it otherwise", async () => {
+test("batch-create: forwards metadata when provided, omits it otherwise", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await action.execute!(
     { inputFileId: "file-1", completionWindow: "24h", metadata: { run: "1" } },

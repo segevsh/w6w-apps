@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueUpdate from "../../actions/issue-update.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("issue-update: PATCH /api/v3/portal/1/projects/2/issues/60", async () => {
+test("issue-update: PATCH /api/v3/portal/1/projects/2/issues/60", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: { "id": "60" } }]);
   const res = await issueUpdate.execute(
     {

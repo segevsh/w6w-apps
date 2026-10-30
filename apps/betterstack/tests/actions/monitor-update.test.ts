@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import monitorUpdate from "../../actions/monitor-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("monitor-update: PATCH /api/v2/monitors/{monitor_id}", async () => {
+test("monitor-update: PATCH /api/v2/monitors/{monitor_id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -29,7 +30,7 @@ Deno.test("monitor-update: PATCH /api/v2/monitors/{monitor_id}", async () => {
   assertEquals(out.status, "paused");
 });
 
-Deno.test("monitor-update: puts no credential on the request (sign owns that)", async () => {
+test("monitor-update: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -49,7 +50,7 @@ Deno.test("monitor-update: puts no credential on the request (sign owns that)", 
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("monitor-update: a vendor error surfaces its own message", async () => {
+test("monitor-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await monitorUpdate.execute(

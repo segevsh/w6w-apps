@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userCreate from "../../actions/user-create.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("user-create: POSTs a users body", async () => {
+test("user-create: POSTs a users body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: single("users", "u1", { email: "a@b.com" }),

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-employees.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
@@ -10,7 +11,7 @@ const EMP = {
   employeeID: "12345",
 };
 
-Deno.test("update-employees: posts the advanced updater job with the feed in the data field", async () => {
+test("update-employees: posts the advanced updater job with the feed in the data field", async () => {
   const body = {
     responseCode: 200,
     "dry-run": false,
@@ -52,7 +53,7 @@ Deno.test("update-employees: posts the advanced updater job with the feed in the
   });
 });
 
-Deno.test("update-employees: defaults to a dry run and never sends the deprecated CSV fileType", async () => {
+test("update-employees: defaults to a dry run and never sends the deprecated CSV fileType", async () => {
   const { ctx, calls } = mockCtx([{
     body: { responseCode: 200, "dry-run": true, updatedEmployeesCount: 0 },
   }]);
@@ -67,7 +68,7 @@ Deno.test("update-employees: defaults to a dry run and never sends the deprecate
   assertEquals(out.dryRun, true);
 });
 
-Deno.test("update-employees: every employee needs the four required fields", async () => {
+test("update-employees: every employee needs the four required fields", async () => {
   const { ctx, calls } = mockCtx([]);
   for (const f of ["employeeEmail", "managerEmail", "employeeID", "policyID"]) {
     const bad = { ...EMP, [f]: "" };
@@ -91,7 +92,7 @@ Deno.test("update-employees: every employee needs the four required fields", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-employees: surfaces the vendor error", async () => {
+test("update-employees: surfaces the vendor error", async () => {
   const { ctx } = mockCtx([{
     body: { responseMessage: "Invalid input data, employee data is missing", responseCode: 410 },
   }]);
@@ -102,7 +103,7 @@ Deno.test("update-employees: surfaces the vendor error", async () => {
   );
 });
 
-Deno.test("update-employees: declares an idempotent perform with a dry-run default", () => {
+test("update-employees: declares an idempotent perform with a dry-run default", () => {
   assertEquals([action.type, action.idempotent], ["perform", true]);
   assertEquals(action.params!.find((p) => p.key === "dryRun")!.default, true);
 });

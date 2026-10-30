@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import payoutUpcoming from "../../actions/payout-upcoming.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "includeSales": true, "includeTransactions": true };
 
-Deno.test("payout-upcoming: sends GET /v2/payouts/upcoming with the mapped parameters", async () => {
+test("payout-upcoming: sends GET /v2/payouts/upcoming with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true, "payouts": [{ "id": "a" }] } }]);
   await payoutUpcoming.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -14,12 +15,12 @@ Deno.test("payout-upcoming: sends GET /v2/payouts/upcoming with the mapped param
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("payout-upcoming: returns the documented result shape", async () => {
+test("payout-upcoming: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: { "success": true, "payouts": [{ "id": "a" }] } }]);
   assertEquals(await payoutUpcoming.execute(INPUT, ctx), { "payouts": [{ "id": "a" }] });
 });
 
-Deno.test("payout-upcoming: a 404 surfaces Gumroad's own message", async () => {
+test("payout-upcoming: a 404 surfaces Gumroad's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { success: false, message: "The thing could not be found." },
@@ -28,7 +29,7 @@ Deno.test("payout-upcoming: a 404 surfaces Gumroad's own message", async () => {
   assertEquals(err.message.includes("The thing could not be found."), true, err.message);
 });
 
-Deno.test("payout-upcoming: a 200 carrying success:false is still a failure", async () => {
+test("payout-upcoming: a 200 carrying success:false is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { success: false, message: "refused" } }]);
   await assertRejects(() => Promise.resolve(payoutUpcoming.execute(INPUT, ctx)), Error, "refused");
 });

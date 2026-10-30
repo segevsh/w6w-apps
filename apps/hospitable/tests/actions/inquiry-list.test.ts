@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import inquiryList from "../../actions/inquiry-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const requiredOf = (a: { params?: Array<{ key: string; required?: boolean }> }) =>
   (a.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
 
-Deno.test("inquiry-list: properties[] required, last_message_at and include forwarded", async () => {
+test("inquiry-list: properties[] required, last_message_at and include forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await inquiryList.execute({
     property_ids: "p1,p2",

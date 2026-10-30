@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postCreate from "../../actions/post-create.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-create: posts required + optional fields, parsing customFields JSON", async () => {
+test("post-create: posts required + optional fields, parsing customFields JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1" } }]);
   const out = await postCreate.execute(
     {
@@ -28,6 +29,6 @@ Deno.test("post-create: posts required + optional fields, parsing customFields J
   assertEquals(out.id, "p1");
 });
 
-Deno.test("post-create: is not idempotent", () => {
+test("post-create: is not idempotent", () => {
   assertEquals(postCreate.idempotent, false);
 });

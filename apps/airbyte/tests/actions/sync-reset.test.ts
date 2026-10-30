@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sync-reset.ts";
 
@@ -11,7 +12,7 @@ const connection = {
 const started = { status: 200, body: { jobId: 99, status: "pending" } };
 
 /** One word apart from a sync, in the same request. */
-Deno.test("sync-reset: posts jobType reset", async () => {
+test("sync-reset: posts jobType reset", async () => {
   const { ctx, calls } = mockCtx([connection, started], D);
   const result = await action.execute({ connectionId: UUID, confirm: true }, ctx) as Record<
     string,
@@ -24,7 +25,7 @@ Deno.test("sync-reset: posts jobType reset", async () => {
 });
 
 /** The destination's data is deleted and the source is re-read in full. */
-Deno.test("sync-reset: refuses without confirmation, before any request", async () => {
+test("sync-reset: refuses without confirmation, before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ connectionId: UUID }, ctx),
@@ -35,7 +36,7 @@ Deno.test("sync-reset: refuses without confirmation, before any request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sync-reset: warns about what is being cleared", async () => {
+test("sync-reset: warns about what is being cleared", async () => {
   const { ctx, logs } = mockCtx([connection, started], D);
   await action.execute({ connectionId: UUID, confirm: true }, ctx);
   assert(
@@ -44,7 +45,7 @@ Deno.test("sync-reset: warns about what is being cleared", async () => {
   );
 });
 
-Deno.test("sync-reset: is not idempotent and is marked destructive", () => {
+test("sync-reset: is not idempotent and is marked destructive", () => {
   assertEquals(action.idempotent, false);
   assert(/DESTRUCTIVE/.test(action.description!), action.description);
 });

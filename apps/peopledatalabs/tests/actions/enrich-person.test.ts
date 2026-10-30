@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-person.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-person: GETs /v5/person/enrich with only the set inputs", async () => {
+test("enrich-person: GETs /v5/person/enrich with only the set inputs", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: 200, likelihood: 8, data: { id: "x" } } }]);
   const out = await action.execute!(
     {
@@ -30,7 +31,7 @@ Deno.test("enrich-person: GETs /v5/person/enrich with only the set inputs", asyn
   assertEquals(out, { found: true, status: 200, likelihood: 8, data: { id: "x" } });
 });
 
-Deno.test("enrich-person: a 404 is a no-match result, not an error", async () => {
+test("enrich-person: a 404 is a no-match result, not an error", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: 404, error: { type: ["not_found"], message: "No records were found" } },
@@ -43,7 +44,7 @@ Deno.test("enrich-person: a 404 is a no-match result, not an error", async () =>
   assertEquals(out.status, 404);
 });
 
-Deno.test("enrich-person: the vendor `matched` list is kept, and sandbox switches host", async () => {
+test("enrich-person: the vendor `matched` list is kept, and sandbox switches host", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: 200, data: {}, matched: ["email"] } }]);
   const out = await action.execute!({ email: "a@b.com", sandbox: true } as never, ctx) as Record<
     string,
@@ -54,7 +55,7 @@ Deno.test("enrich-person: the vendor `matched` list is kept, and sandbox switche
   assertEquals(out.found, true);
 });
 
-Deno.test("enrich-person: other errors throw with the vendor type and message", async () => {
+test("enrich-person: other errors throw with the vendor type and message", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { status: 402, error: { type: ["payment_required"], message: "Account limit reached" } },

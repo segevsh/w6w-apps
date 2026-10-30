@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactTagReplace from "../../actions/contact-tag-replace.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-replace: PATCHes the full tag set", async () => {
+test("contact-tag-replace: PATCHes the full tag set", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await contactTagReplace.execute({ contactId: "9", tagIds: "1,2" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -25,7 +26,7 @@ Deno.test("contact-tag-replace: PATCHes the full tag set", async () => {
  * API has no history to restore it from — so the action refuses rather than
  * guessing, and says what to do instead.
  */
-Deno.test("contact-tag-replace: refuses a blank list rather than stripping every tag", async () => {
+test("contact-tag-replace: refuses a blank list rather than stripping every tag", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => {
@@ -39,6 +40,6 @@ Deno.test("contact-tag-replace: refuses a blank list rather than stripping every
 });
 
 /** Its description must warn, since an operator picks actions from a list. */
-Deno.test("contact-tag-replace: announces that it is destructive", () => {
+test("contact-tag-replace: announces that it is destructive", () => {
   assert(/destructive/i.test(contactTagReplace.description!));
 });

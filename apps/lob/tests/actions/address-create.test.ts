@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import addressCreate from "../../actions/address-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("address-create: POSTs a JSON body with Lob's snake_case field names", async () => {
+test("address-create: POSTs a JSON body with Lob's snake_case field names", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "adr_1", object: "address" } }]);
   const out = await addressCreate.execute({
     name: "Harry Zhang",
@@ -27,7 +28,7 @@ Deno.test("address-create: POSTs a JSON body with Lob's snake_case field names",
   assertEquals(out.id, "adr_1");
 });
 
-Deno.test("address-create: an international address keeps its country and omits unset fields", async () => {
+test("address-create: an international address keeps its country and omits unset fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "adr_2" } }]);
   await addressCreate.execute(
     { company: "Acme", addressLine1: "1 Main St", addressCountry: "CA" },
@@ -40,11 +41,11 @@ Deno.test("address-create: an international address keeps its country and omits 
   });
 });
 
-Deno.test("address-create: is declared non-idempotent", () => {
+test("address-create: is declared non-idempotent", () => {
   assertEquals(addressCreate.idempotent, false);
 });
 
-Deno.test("address-create: invalid JSON metadata is rejected before any request", async () => {
+test("address-create: invalid JSON metadata is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await addressCreate.execute({ addressLine1: "x", metadata: "{nope" }, ctx),
@@ -54,7 +55,7 @@ Deno.test("address-create: invalid JSON metadata is rejected before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("address-create: a validation failure surfaces Lob's code and message", async () => {
+test("address-create: a validation failure surfaces Lob's code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid", "address_zip is required", 422),

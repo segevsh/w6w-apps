@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationCustomAttributesUpdate from "../../actions/conversation-custom-attributes-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-custom-attributes-update: calls PATCH /v1/conversations/4711/custom-attributes", async () => {
+test("conversation-custom-attributes-update: calls PATCH /v1/conversations/4711/custom-attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -40,7 +41,7 @@ Deno.test("conversation-custom-attributes-update: calls PATCH /v1/conversations/
   });
 });
 
-Deno.test("conversation-custom-attributes-update: surfaces a Dixa error message with the status", async () => {
+test("conversation-custom-attributes-update: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -58,7 +59,7 @@ Deno.test("conversation-custom-attributes-update: surfaces a Dixa error message 
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("conversation-custom-attributes-update: rejects bad input before any request", async () => {
+test("conversation-custom-attributes-update: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callroutersUpdate from "../../actions/callrouters-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("callrouters-update: PATCHes /callrouters/{id} and strips the signing secret", async () => {
+test("callrouters-update: PATCHes /callrouters/{id} and strips the signing secret", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "1", enabled: true, signature: { algo: "HS256", secret: "live-secret" } },
@@ -20,6 +21,6 @@ Deno.test("callrouters-update: PATCHes /callrouters/{id} and strips the signing 
   assertEquals(out.signature.secret, undefined);
 });
 
-Deno.test("callrouters-update: declared idempotent", () => {
+test("callrouters-update: declared idempotent", () => {
   assertEquals(callroutersUpdate.idempotent, true);
 });

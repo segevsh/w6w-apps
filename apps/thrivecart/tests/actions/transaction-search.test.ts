@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionSearch from "../../actions/transaction-search.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-search: calls GET /transactions with the search params", async () => {
+test("transaction-search: calls GET /transactions with the search params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { transactions: [{ event_id: "1" }], meta: { total: 1, results: 1 } } },
   ]);

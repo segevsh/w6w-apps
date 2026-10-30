@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import publicationList from "../../actions/publication-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("publication-list: fetches GET /publications with the given filters", async () => {
+test("publication-list: fetches GET /publications with the given filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "pub_1", name: "Acme" }], page: 1, limit: 10, total_results: 1 },
   }]);
@@ -22,12 +23,12 @@ Deno.test("publication-list: fetches GET /publications with the given filters", 
   assertEquals(out.data[0].id, "pub_1");
 });
 
-Deno.test("publication-list: omits unset filters entirely", async () => {
+test("publication-list: omits unset filters entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await publicationList.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("publication-list: is a read action", () => {
+test("publication-list: is a read action", () => {
   assertEquals(publicationList.type, "read");
 });

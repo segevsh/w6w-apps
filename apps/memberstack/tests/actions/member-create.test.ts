@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import memberCreate from "../../actions/member-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("member-create: POSTs plans as [{planId}] and parses JSON-text fields", async () => {
+test("member-create: POSTs plans as [{planId}] and parses JSON-text fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "mem_new" } } }]);
   const out = await memberCreate.execute({
     email: "j@example.com",
@@ -26,7 +27,7 @@ Deno.test("member-create: POSTs plans as [{planId}] and parses JSON-text fields"
   assertEquals(out, { member: { id: "mem_new" } });
 });
 
-Deno.test("member-create: an invalid-email 400 surfaces with its message and code", async () => {
+test("member-create: an invalid-email 400 surfaces with its message and code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("Email is invalid", "invalid-email") }]);
   await assertRejects(
     () => Promise.resolve(memberCreate.execute({ email: "nope" }, ctx)),
@@ -35,7 +36,7 @@ Deno.test("member-create: an invalid-email 400 surfaces with its message and cod
   );
 });
 
-Deno.test("member-create: non-object customFields is refused before any request", async () => {
+test("member-create: non-object customFields is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(memberCreate.execute({ email: "a@b.c", customFields: "[1]" }, ctx)),

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   accountDomainFromConnection,
@@ -11,81 +12,81 @@ import {
   tagList,
 } from "../../lib/client.ts";
 
-Deno.test("normalizeAccountDomain: assumes .kommo.com for a bare subdomain", () => {
+test("normalizeAccountDomain: assumes .kommo.com for a bare subdomain", () => {
   assertEquals(normalizeAccountDomain("acme"), "acme.kommo.com");
 });
 
-Deno.test("normalizeAccountDomain: keeps a full .kommo.com host as-is", () => {
+test("normalizeAccountDomain: keeps a full .kommo.com host as-is", () => {
   assertEquals(normalizeAccountDomain("acme.kommo.com"), "acme.kommo.com");
 });
 
-Deno.test("normalizeAccountDomain: keeps the legacy .amocrm.com host as-is", () => {
+test("normalizeAccountDomain: keeps the legacy .amocrm.com host as-is", () => {
   assertEquals(normalizeAccountDomain("acme.amocrm.com"), "acme.amocrm.com");
 });
 
-Deno.test("normalizeAccountDomain: strips a pasted scheme and path", () => {
+test("normalizeAccountDomain: strips a pasted scheme and path", () => {
   assertEquals(normalizeAccountDomain("https://acme.kommo.com/leads"), "acme.kommo.com");
 });
 
-Deno.test("normalizeAccountDomain: lowercases the host", () => {
+test("normalizeAccountDomain: lowercases the host", () => {
   assertEquals(normalizeAccountDomain("ACME.Kommo.com"), "acme.kommo.com");
 });
 
-Deno.test("normalizeAccountDomain: rejects an empty address", () => {
+test("normalizeAccountDomain: rejects an empty address", () => {
   assertThrows(() => normalizeAccountDomain(""), Error, "empty");
 });
 
-Deno.test("normalizeAccountDomain: rejects a host on neither known apex", () => {
+test("normalizeAccountDomain: rejects a host on neither known apex", () => {
   assertThrows(() => normalizeAccountDomain("acme.example.com"), Error, "doesn't look like");
 });
 
-Deno.test("accountDomainFromConnection: reads the connection's accountDomain", () => {
+test("accountDomainFromConnection: reads the connection's accountDomain", () => {
   const { ctx } = mockCtx([], { display: { accountDomain: "acme.kommo.com" } });
   assertEquals(accountDomainFromConnection(ctx.connection), "acme.kommo.com");
 });
 
-Deno.test("accountDomainFromConnection: throws a reconnect message when there is none", () => {
+test("accountDomainFromConnection: throws a reconnect message when there is none", () => {
   assertThrows(() => accountDomainFromConnection(undefined), Error, "records no account address");
 });
 
-Deno.test("compact: drops undefined, null, empty string and empty arrays", () => {
+test("compact: drops undefined, null, empty string and empty arrays", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: [], f: "x", g: [1] }),
     { a: 1, f: "x", g: [1] },
   );
 });
 
-Deno.test("csv: splits a comma-separated string and trims", () => {
+test("csv: splits a comma-separated string and trims", () => {
   assertEquals(csv(" a, b ,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv(undefined), undefined);
   assertEquals(csv(["x", " y "]), ["x", "y"]);
 });
 
-Deno.test("jsonArray: parses a JSON-string array", () => {
+test("jsonArray: parses a JSON-string array", () => {
   assertEquals(jsonArray('[{"field_id":1}]'), [{ field_id: 1 }]);
 });
 
-Deno.test("jsonArray: passes an already-parsed array through", () => {
+test("jsonArray: passes an already-parsed array through", () => {
   assertEquals(jsonArray([{ a: 1 }]), [{ a: 1 }]);
 });
 
-Deno.test("jsonArray: treats an empty value as unset", () => {
+test("jsonArray: treats an empty value as unset", () => {
   assertEquals(jsonArray(undefined), undefined);
   assertEquals(jsonArray(""), undefined);
   assertEquals(jsonArray([]), undefined);
 });
 
-Deno.test("jsonArray: rejects a non-array", () => {
+test("jsonArray: rejects a non-array", () => {
   assertThrows(() => jsonArray('{"a":1}'), Error, "expected a JSON array");
 });
 
-Deno.test("tagList: turns comma-separated names into Kommo's [{name}] shape", () => {
+test("tagList: turns comma-separated names into Kommo's [{name}] shape", () => {
   assertEquals(tagList("vip, lead"), [{ name: "vip" }, { name: "lead" }]);
   assertEquals(tagList(undefined), undefined);
 });
 
-Deno.test("errorMessage: reads the problem+json envelope {title, detail}", () => {
+test("errorMessage: reads the problem+json envelope {title, detail}", () => {
   const msg = errorMessage(JSON.stringify({
     title: "Unauthorized",
     type: "https://httpstatus.es/401",
@@ -95,7 +96,7 @@ Deno.test("errorMessage: reads the problem+json envelope {title, detail}", () =>
   assertEquals(msg, "Unauthorized: Invalid user name or password");
 });
 
-Deno.test("errorMessage: folds validation-errors into the message", () => {
+test("errorMessage: folds validation-errors into the message", () => {
   const msg = errorMessage(JSON.stringify({
     title: "Bad Request",
     detail: "Request validation failed",
@@ -106,21 +107,21 @@ Deno.test("errorMessage: folds validation-errors into the message", () => {
   assertEquals(msg, "Bad Request: Request validation failed; status_id: not a valid choice");
 });
 
-Deno.test("errorMessage: falls back to the raw text when it is not JSON", () => {
+test("errorMessage: falls back to the raw text when it is not JSON", () => {
   assertEquals(errorMessage("<html>nope</html>"), "<html>nope</html>");
   assertEquals(errorMessage(""), "");
 });
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("KommoClient.request: builds the URL under /api/v4 and forwards query params", async () => {
+test("KommoClient.request: builds the URL under /api/v4 and forwards query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }], conn);
   const client = new KommoClient(ctx);
   await client.request("/leads/1", { query: { with: "contacts", empty: undefined } });
   assertEquals(calls[0].url, "https://acme.kommo.com/api/v4/leads/1?with=contacts");
 });
 
-Deno.test("KommoClient.request: throws a message carrying the problem+json envelope", async () => {
+test("KommoClient.request: throws a message carrying the problem+json envelope", async () => {
   const { ctx } = mockCtx(
     [{
       status: 401,
@@ -137,13 +138,13 @@ Deno.test("KommoClient.request: throws a message carrying the problem+json envel
   );
 });
 
-Deno.test("KommoClient.request: treats a 204 as no body", async () => {
+test("KommoClient.request: treats a 204 as no body", async () => {
   const { ctx } = mockCtx([{ status: 204 }], conn);
   const client = new KommoClient(ctx);
   assertEquals(await client.request("/leads"), undefined);
 });
 
-Deno.test("KommoClient.requestPage: unwraps _embedded.<key> and reports hasMore", async () => {
+test("KommoClient.requestPage: unwraps _embedded.<key> and reports hasMore", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 1 }, { id: 2 }] } } }],
     conn,
@@ -156,7 +157,7 @@ Deno.test("KommoClient.requestPage: unwraps _embedded.<key> and reports hasMore"
   assertEquals(calls[0].url, "https://acme.kommo.com/api/v4/leads?page=1&limit=2");
 });
 
-Deno.test("KommoClient.requestPage: a short page means no more", async () => {
+test("KommoClient.requestPage: a short page means no more", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 1 }] } } }],
     conn,
@@ -166,7 +167,7 @@ Deno.test("KommoClient.requestPage: a short page means no more", async () => {
   assertEquals(hasMore, false);
 });
 
-Deno.test("KommoClient.requestPage: an empty collection is an empty array, not a throw", async () => {
+test("KommoClient.requestPage: an empty collection is an empty array, not a throw", async () => {
   const { ctx } = mockCtx([{ status: 204 }], conn);
   const client = new KommoClient(ctx);
   const { items, hasMore } = await client.requestPage("/leads", "leads");
@@ -174,7 +175,7 @@ Deno.test("KommoClient.requestPage: an empty collection is an empty array, not a
   assertEquals(hasMore, false);
 });
 
-Deno.test("KommoClient.createOne: wraps the body in an array and unwraps the echoed row", async () => {
+test("KommoClient.createOne: wraps the body in an array and unwraps the echoed row", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -188,7 +189,7 @@ Deno.test("KommoClient.createOne: wraps the body in an array and unwraps the ech
   assertEquals(JSON.parse(calls[0].body!), [{ name: "Example" }]);
 });
 
-Deno.test("KommoClient.createOne: throws when Kommo echoes back no row", async () => {
+test("KommoClient.createOne: throws when Kommo echoes back no row", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { _embedded: { leads: [] } } }], conn);
   const client = new KommoClient(ctx);
   await assertRejects(
@@ -198,7 +199,7 @@ Deno.test("KommoClient.createOne: throws when Kommo echoes back no row", async (
   );
 });
 
-Deno.test("KommoClient.updateOne: sends a plain object body and unwraps the envelope", async () => {
+test("KommoClient.updateOne: sends a plain object body and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,

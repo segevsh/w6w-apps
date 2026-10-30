@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pass-thread-control.ts";
 
-Deno.test("pass-thread-control: POST /{page}/pass_thread_control with query params", async () => {
+test("pass-thread-control: POST /{page}/pass_thread_control with query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await action.execute!(
     { recipientId: "psid", targetAppId: "263902037430900", metadata: "escalated" },
@@ -18,7 +19,7 @@ Deno.test("pass-thread-control: POST /{page}/pass_thread_control with query para
   assertEquals(out, { success: true });
 });
 
-Deno.test("pass-thread-control: recipient and target are required", async () => {
+test("pass-thread-control: recipient and target are required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ recipientId: "", targetAppId: "1" }, ctx),

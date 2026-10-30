@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/supervisory-organization-get.ts";
 
 const D = { display: { host: "wd2-impl-services1.workday.com", tenant: "acme_impl1" } };
 
-Deno.test("supervisory-organization-get: calls the documented URL and returns the record", async () => {
+test("supervisory-organization-get: calls the documented URL and returns the record", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "a3f1c2d4e5b6478990a1b2c3d4e5f607", descriptor: "Ana Lopez" },
   }], D);
@@ -20,13 +21,13 @@ Deno.test("supervisory-organization-get: calls the documented URL and returns th
   assertEquals(result.record, { id: "a3f1c2d4e5b6478990a1b2c3d4e5f607", descriptor: "Ana Lopez" });
 });
 
-Deno.test("supervisory-organization-get: an ID is required and is validated before any call", async () => {
+test("supervisory-organization-get: an ID is required and is validated before any call", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("supervisory-organization-get: a 404 carries Workday's error text", async () => {
+test("supervisory-organization-get: a 404 carries Workday's error text", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "Resource not found" } }], D);
   await assertRejects(
     async () => await action.execute({ "organizationId": "a3f1c2d4e5b6478990a1b2c3d4e5f607" }, ctx),

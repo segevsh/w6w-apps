@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/visit-create.ts";
 
@@ -8,7 +9,7 @@ const OK = {
   },
 };
 
-Deno.test("visit-create: the schedule is wall-clock — date, time and timezone, not a timestamp", async () => {
+test("visit-create: the schedule is wall-clock — date, time and timezone, not a timestamp", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({
     jobId: "j1",
@@ -37,20 +38,20 @@ Deno.test("visit-create: the schedule is wall-clock — date, time and timezone,
   });
 });
 
-Deno.test("visit-create: omitting the time makes it an all-day visit", async () => {
+test("visit-create: omitting the time makes it an all-day visit", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({ jobId: "j1", startDate: "2026-08-10", timezone: "UTC" }, ctx);
   const startAt = JSON.parse(calls[0].body!).variables.input.visits[0].schedule.startAt;
   assertEquals(startAt, { date: "2026-08-10", timezone: "UTC" });
 });
 
-Deno.test("visit-create: omitting the date entirely creates an unscheduled visit", async () => {
+test("visit-create: omitting the date entirely creates an unscheduled visit", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute({ jobId: "j1", title: "To be booked" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.input.visits[0], { title: "To be booked" });
 });
 
-Deno.test("visit-create: a date without a timezone fails locally, before any call", async () => {
+test("visit-create: a date without a timezone fails locally, before any call", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ jobId: "j1", startDate: "2026-08-10" }, ctx),
@@ -60,7 +61,7 @@ Deno.test("visit-create: a date without a timezone fails locally, before any cal
   assertEquals(calls.length, 0);
 });
 
-Deno.test("visit-create: userErrors throws", async () => {
+test("visit-create: userErrors throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import meGet from "../../actions/me-get.ts";
 
-Deno.test("me-get: returns the current user", async () => {
+test("me-get: returns the current user", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { me: { id: "u1", name: "Ada", email: "ada@example.com", username: "ada" } } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("me-get: returns the current user", async () => {
   assertEquals(body.query, "{ me { id name email username } }");
 });
 
-Deno.test("me-get: type/resource metadata", () => {
+test("me-get: type/resource metadata", () => {
   assertEquals(meGet.type, "read");
   assertEquals(meGet.resource, "user");
   assertEquals(meGet.requiresAuth, undefined);

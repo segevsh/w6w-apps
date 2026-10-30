@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/view-list.ts";
 
@@ -14,7 +15,7 @@ const views = {
   },
 };
 
-Deno.test("view-list: names the view types and returns a title lookup", async () => {
+test("view-list: names the view types and returns a title lookup", async () => {
   const { ctx, calls } = mockCtx([views], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/meta/tables/mtbl1/views");
@@ -24,7 +25,7 @@ Deno.test("view-list: names the view types and returns a title lookup", async ()
 });
 
 /** A shared view serves its rows to anybody with the link. */
-Deno.test("view-list: flags shared views and warns", async () => {
+test("view-list: flags shared views and warns", async () => {
   const { ctx, logs } = mockCtx([views], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.sharedViews, ["Open"]);
@@ -34,13 +35,13 @@ Deno.test("view-list: flags shared views and warns", async () => {
   );
 });
 
-Deno.test("view-list: no shared views means no warning", async () => {
+test("view-list: no shared views means no warning", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { list: [views.body.list[0]] } }], D);
   await action.execute({ tableId: "mtbl1" }, ctx);
   assertEquals(logs.length, 0);
 });
 
-Deno.test("view-list: requires a table id", async () => {
+test("view-list: requires a table id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`tableId` is required");
 });

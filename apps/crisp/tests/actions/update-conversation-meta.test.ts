@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updateConversationMeta from "../../actions/update-conversation-meta.ts";
 
-Deno.test("update-conversation-meta: PATCHes only the fields set, comma-splits segments", async () => {
+test("update-conversation-meta: PATCHes only the fields set, comma-splits segments", async () => {
   const { ctx, calls } = mockCtx([
     { body: { error: false, reason: "updated", data: {} } },
   ], "site_1");
@@ -22,7 +23,7 @@ Deno.test("update-conversation-meta: PATCHes only the fields set, comma-splits s
   assertEquals(url.pathname, "/v1/website/site_1/conversation/session_x/meta");
 });
 
-Deno.test("update-conversation-meta: omits unset optional fields from the body entirely", async () => {
+test("update-conversation-meta: omits unset optional fields from the body entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: {} } }], "site_1");
   await updateConversationMeta.execute({ sessionId: "session_x", subject: "Refund" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { subject: "Refund" });

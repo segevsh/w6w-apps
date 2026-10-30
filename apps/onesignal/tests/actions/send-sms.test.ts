@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sendSms from "../../actions/send-sms.ts";
 import { mockCtxWithInvocation } from "../_helpers.ts";
 
-Deno.test("send-sms: always sends target_channel sms, and contents as a locale map", async () => {
+test("send-sms: always sends target_channel sms, and contents as a locale map", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ status: 200, body: { id: "msg-1" } }]);
   await sendSms.execute(
     { contents: "Your code is 1234", includePhoneNumbers: "+15551234567" },

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-create-from-emails.ts";
 
-Deno.test("submission-create-from-emails: sends templateId and the comma-separated emails", async () => {
+test("submission-create-from-emails: sends templateId and the comma-separated emails", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: 1 }] }]);
   await action.execute!({ templateId: 7, emails: "a@example.com,b@example.com" }, ctx);
   assertEquals(calls[0].url, "https://api.docuseal.com/submissions/emails");
@@ -12,7 +13,7 @@ Deno.test("submission-create-from-emails: sends templateId and the comma-separat
   );
 });
 
-Deno.test("submission-create-from-emails: emails is required", async () => {
+test("submission-create-from-emails: emails is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {

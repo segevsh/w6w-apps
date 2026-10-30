@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import listNotes from "../../actions/list-notes.ts";
 
-Deno.test("list-notes: filters by parent object and record on the query string", async () => {
+test("list-notes: filters by parent object and record on the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await listNotes.execute({
     parentObject: "people",
@@ -21,7 +22,7 @@ Deno.test("list-notes: filters by parent object and record on the query string",
  * The default here is 10 and the max 50, against 500 everywhere else in this
  * app. A workflow that assumes otherwise silently drops results.
  */
-Deno.test("list-notes: carries the unusual 10/50 limit into the hint and the validation", () => {
+test("list-notes: carries the unusual 10/50 limit into the hint and the validation", () => {
   const limit = param(listNotes, "limit");
   assert(limit.hint!.includes("defaults to 10"), limit.hint);
   assertEquals(limit.validation?.max, 50);

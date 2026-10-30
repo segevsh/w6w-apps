@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/data-list.ts";
 
 const display = { baseUrl: "https://myapp.bubbleapps.io/version-test" };
 
-Deno.test("data-list: builds the query string from limit/cursor/sort/constraints", async () => {
+test("data-list: builds the query string from limit/cursor/sort/constraints", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -34,7 +35,7 @@ Deno.test("data-list: builds the query string from limit/cursor/sort/constraints
   assertEquals(out.results, [{ _id: "1" }]);
 });
 
-Deno.test("data-list: the type name is lowercased and stripped of spaces", async () => {
+test("data-list: the type name is lowercased and stripped of spaces", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { response: { results: [], cursor: 0, count: 0, remaining: 0 } } },
   ], { display });
@@ -43,7 +44,7 @@ Deno.test("data-list: the type name is lowercased and stripped of spaces", async
   assertEquals(url.pathname, "/version-test/api/1.1/obj/sportsteam");
 });
 
-Deno.test("data-list: descending is only sent when a sort field is given", async () => {
+test("data-list: descending is only sent when a sort field is given", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { response: { results: [], cursor: 0, count: 0, remaining: 0 } } },
   ], { display });
@@ -52,14 +53,14 @@ Deno.test("data-list: descending is only sent when a sort field is given", async
   assertEquals(url.searchParams.has("descending"), false);
 });
 
-Deno.test("data-list: rejects constraints that are not a JSON array", async () => {
+test("data-list: rejects constraints that are not a JSON array", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ type: "thing", constraints: '{"not":"array"}' }, ctx);
   });
 });
 
-Deno.test('data-list: exclude_remaining is sent as the string "true"', async () => {
+test('data-list: exclude_remaining is sent as the string "true"', async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { response: { results: [], cursor: 0, count: 0, remaining: 0 } } },
   ], { display });

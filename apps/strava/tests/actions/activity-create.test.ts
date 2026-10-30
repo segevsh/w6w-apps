@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/activity-create.ts";
 
-Deno.test("activity-create: POSTs a manual activity with sport_type only", async () => {
+test("activity-create: POSTs a manual activity with sport_type only", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "Evening Ride" } }]);
   const out = await action.execute({
     name: "Evening Ride",

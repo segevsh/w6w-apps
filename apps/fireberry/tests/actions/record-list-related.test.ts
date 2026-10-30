@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/record-list-related.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("record-list-related: sends GET /api/record/{n}/{id}/{related} and flattens the page", async () => {
+test("record-list-related: sends GET /api/record/{n}/{id}/{related} and flattens the page", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       success: true,
@@ -27,13 +28,13 @@ Deno.test("record-list-related: sends GET /api/record/{n}/{id}/{related} and fla
   assertEquals((out as { hasMore: boolean }).hasMore, false);
 });
 
-Deno.test("record-list-related: sends no tokenid header of its own", async () => {
+test("record-list-related: sends no tokenid header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { Records: [] } } }]);
   await action.execute!({ objectNumber: 1, recordId: "a1", relatedObjectNumber: 2 }, ctx);
   assert(!("tokenid" in calls[0].headers));
 });
 
-Deno.test("record-list-related: surfaces vendor errors", async () => {
+test("record-list-related: surfaces vendor errors", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { Message: "Invalid Object Name" } }]);
   await assertRejects(
     async () =>
@@ -43,7 +44,7 @@ Deno.test("record-list-related: surfaces vendor errors", async () => {
   );
 });
 
-Deno.test("record-list-related: declares type and output", () => {
+test("record-list-related: declares type and output", () => {
   assertEquals(action.type, "search");
   assert(Array.isArray(action.output) && action.output.length > 0);
 });

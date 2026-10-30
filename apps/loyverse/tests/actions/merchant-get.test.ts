@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/merchant-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("merchant-get: GET /v1.0/merchant and returns the body as-is", async () => {
+test("merchant-get: GET /v1.0/merchant and returns the body as-is", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "m1", business_name: "Cafe", currency: { code: "USD" } },
   }]);

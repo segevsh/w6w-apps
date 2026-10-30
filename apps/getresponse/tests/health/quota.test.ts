@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
 /**
@@ -7,7 +8,7 @@ import quota from "../../health/quota.ts";
  * budget runs out. Declaring the absence is what keeps the app's health surface
  * from sitting at `unknown` forever.
  */
-Deno.test("quota: declared unavailable with a stated reason, and no probe", () => {
+test("quota: declared unavailable with a stated reason, and no probe", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
@@ -18,7 +19,7 @@ Deno.test("quota: declared unavailable with a stated reason, and no probe", () =
  * `informational` is load-bearing: at the default severity an unavailable check
  * would drag the app's rolled-up health down over a probe that does not exist.
  */
-Deno.test("quota: informational, so the absence cannot degrade the app", () => {
+test("quota: informational, so the absence cannot degrade the app", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.covers, ["*"]);
 });
@@ -28,7 +29,7 @@ Deno.test("quota: informational, so the absence cannot degrade the app", () => {
  * thing to reach for and it reports an EMAIL allowance, not API headroom — a
  * future reader who wires it up would be publishing the wrong number.
  */
-Deno.test("quota: the reason records why sending-limits is not the answer", () => {
+test("quota: the reason records why sending-limits is not the answer", () => {
   const reason = quota.unavailable!.reason!;
   assert(reason.includes("sending-limits"), reason);
   assert(reason.includes("1015"), reason);

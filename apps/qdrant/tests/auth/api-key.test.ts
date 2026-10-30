@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
@@ -9,7 +10,7 @@ const collections = (names: string[]) => ({
 });
 
 /** Its own header, not Authorization, and not Bearer. */
-Deno.test("api-key: sign sets the api-key header", () => {
+test("api-key: sign sets the api-key header", () => {
   const request = {
     url: "https://xyz.cloud.qdrant.io:6333/collections",
     method: "GET",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign sets the api-key header", () => {
   assertEquals(signed.headers["authorization"], undefined);
 });
 
-Deno.test("api-key: test names the collections it found", async () => {
+test("api-key: test names the collections it found", async () => {
   const { ctx, calls } = mockCtx([collections(["docs", "images"])]);
   const result = await auth.test!({ credential: creds }, ctx);
   assertEquals(calls[0].url, "https://xyz.cloud.qdrant.io:6333/collections");
@@ -31,7 +32,7 @@ Deno.test("api-key: test names the collections it found", async () => {
 });
 
 /** An empty instance is a normal state, and saying so avoids a false alarm. */
-Deno.test("api-key: an instance with no collections still connects", async () => {
+test("api-key: an instance with no collections still connects", async () => {
   const { ctx } = mockCtx([collections([])]);
   const result = await auth.test!({ credential: creds }, ctx);
   assertEquals(result.ok, true);
@@ -39,34 +40,34 @@ Deno.test("api-key: an instance with no collections still connects", async () =>
 });
 
 /** A URL with no port would go to 443, which is usually nothing at all. */
-Deno.test("api-key: a URL without a port gets Qdrant's REST port", async () => {
+test("api-key: a URL without a port gets Qdrant's REST port", async () => {
   const { ctx, calls } = mockCtx([collections([])]);
   await auth.test!({ credential: { url: "qdrant.internal", apiKey: "qk_1" } }, ctx);
   assertEquals(calls[0].url, "https://qdrant.internal:6333/collections");
 });
 
-Deno.test("api-key: a rejected key does not connect", async () => {
+test("api-key: a rejected key does not connect", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   const result = await auth.test!({ credential: creds }, ctx);
   assertEquals(result.ok, false);
   assert(/rejected/.test(result.message!), result.message);
 });
 
-Deno.test("api-key: any other failure reports the status and host", async () => {
+test("api-key: any other failure reports the status and host", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "" }]);
   const result = await auth.test!({ credential: creds }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("502"), result.message);
 });
 
-Deno.test("api-key: a malformed URL is refused before a request", async () => {
+test("api-key: a malformed URL is refused before a request", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test!({ credential: { url: "not a url", apiKey: "k" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: a half-missing credential is refused before a request", async () => {
+test("api-key: a half-missing credential is refused before a request", async () => {
   const noUrl = mockCtx();
   assertEquals((await auth.test!({ credential: { apiKey: "k" } }, noUrl.ctx)).ok, false);
   assertEquals(noUrl.calls.length, 0);
@@ -77,7 +78,7 @@ Deno.test("api-key: a half-missing credential is refused before a request", asyn
 });
 
 /** The instance is public metadata; the key never is. */
-Deno.test("api-key: afterConnect records the instance, not the key", () => {
+test("api-key: afterConnect records the instance, not the key", () => {
   const display = auth.afterConnect!(
     { credential: { url: "xyz.cloud.qdrant.io:6333", apiKey: "qk_secret" } },
     mockCtx().ctx,
@@ -89,7 +90,7 @@ Deno.test("api-key: afterConnect records the instance, not the key", () => {
   assert(!JSON.stringify(display).includes("qk_secret"));
 });
 
-Deno.test("api-key: declares the URL and one secret field", () => {
+test("api-key: declares the URL and one secret field", () => {
   assertEquals(auth.fields!.map((f) => f.key), ["url", "apiKey"]);
   assertEquals(auth.fields![1].type, "secret");
 });

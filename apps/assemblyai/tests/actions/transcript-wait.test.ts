@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transcriptWait from "../../actions/transcript-wait.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transcript-wait: polls until completed, then returns the transcript", async () => {
+test("transcript-wait: polls until completed, then returns the transcript", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "t1", status: "queued" } },
     { status: 200, body: { id: "t1", status: "processing" } },
@@ -18,7 +19,7 @@ Deno.test("transcript-wait: polls until completed, then returns the transcript",
   assertEquals(out.text, "done");
 });
 
-Deno.test("transcript-wait: returns an error-status transcript rather than throwing", async () => {
+test("transcript-wait: returns an error-status transcript rather than throwing", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { id: "t1", status: "error", error: "Download error" } },
   ]);
@@ -30,7 +31,7 @@ Deno.test("transcript-wait: returns an error-status transcript rather than throw
   assertEquals(out.error, "Download error");
 });
 
-Deno.test("transcript-wait: throws once the poll budget runs out", async () => {
+test("transcript-wait: throws once the poll budget runs out", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { id: "t1", status: "processing" } },
     { status: 200, body: { id: "t1", status: "processing" } },
@@ -46,6 +47,6 @@ Deno.test("transcript-wait: throws once the poll budget runs out", async () => {
   );
 });
 
-Deno.test("transcript-wait: is a read action", () => {
+test("transcript-wait: is a read action", () => {
   assertEquals(transcriptWait.type, "read");
 });

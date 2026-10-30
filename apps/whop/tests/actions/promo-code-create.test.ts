@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import promoCodeCreate from "../../actions/promo-code-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("promo-code-create: POSTs the required fields", async () => {
+test("promo-code-create: POSTs the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "promo_1", code: "AFFILIATE25" } }]);
   await promoCodeCreate.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("promo-code-create: POSTs the required fields", async () => {
   });
 });
 
-Deno.test("promo-code-create: amount_off hint documents the write/read unit mismatch", () => {
+test("promo-code-create: amount_off hint documents the write/read unit mismatch", () => {
   const p = promoCodeCreate.params?.find((p) => p.key === "amountOff");
   const hint = p?.hint ?? "";
   assertEquals(hint.includes("25"), true);

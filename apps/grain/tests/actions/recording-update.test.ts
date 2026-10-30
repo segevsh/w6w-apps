@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-update.ts";
 
-Deno.test("recording-update: PATCHes the recording with the new title", async () => {
+test("recording-update: PATCHes the recording with the new title", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const result = await action.execute({ recordingId: "r1", title: "A new title" }, ctx);
 
@@ -12,13 +13,13 @@ Deno.test("recording-update: PATCHes the recording with the new title", async ()
   assertEquals(result, { success: true });
 });
 
-Deno.test("recording-update: defaults success to false when Grain omits it", async () => {
+test("recording-update: defaults success to false when Grain omits it", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const result = await action.execute({ recordingId: "r1", title: "x" }, ctx);
   assertEquals(result, { success: false });
 });
 
-Deno.test("recording-update: is an idempotent perform action", () => {
+test("recording-update: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

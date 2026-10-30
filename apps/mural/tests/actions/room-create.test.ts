@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import roomCreate from "../../actions/room-create.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "confidential": false,
 };
 
-Deno.test("room-create: POST /rooms", async () => {
+test("room-create: POST /rooms", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -32,7 +33,7 @@ Deno.test("room-create: POST /rooms", async () => {
   assertEquals(out.id, "x1");
 });
 
-Deno.test("room-create: puts no credential on the request (sign owns that)", async () => {
+test("room-create: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "value": { "id": "x1", "title": "T" } },
@@ -41,7 +42,7 @@ Deno.test("room-create: puts no credential on the request (sign owns that)", asy
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("room-create: a vendor error surfaces its own code and message", async () => {
+test("room-create: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },

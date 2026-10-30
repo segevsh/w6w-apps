@@ -3,7 +3,7 @@
  * unqueued fetch throws, so a test that makes an unexpected extra request fails loudly.
  */
 import type { HookContext } from "@w6w/types";
-import { assertRejects as stdAssertRejects } from "@std/assert";
+import { assertRejects as stdAssertRejects } from "./_assert.ts";
 
 export interface MockResponse {
   status?: number;

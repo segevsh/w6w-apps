@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pageLeadCreate from "../../actions/page-lead-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("page-lead-create: posts a form_submission with the vendor's shape", async () => {
+test("page-lead-create: posts a form_submission with the vendor's shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "lead-1" } }]);
   await pageLeadCreate.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("page-lead-create: posts a form_submission with the vendor's shape", a
   });
 });
 
-Deno.test("page-lead-create: omits optional fields the caller left unset", async () => {
+test("page-lead-create: omits optional fields the caller left unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "lead-1" } }]);
   await pageLeadCreate.execute(
     { pageId: "p1", variantId: "a", submitterIp: "127.0.0.1", formData: {} },

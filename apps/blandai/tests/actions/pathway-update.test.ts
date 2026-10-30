@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pathwayUpdate from "../../actions/pathway-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pathway-update: posts to /v1/pathway/{id} with only the set fields", async () => {
+test("pathway-update: posts to /v1/pathway/{id} with only the set fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   const out = await pathwayUpdate.execute({ pathwayId: "p-1", name: "Renamed" }, ctx) as Record<
     string,
@@ -14,7 +15,7 @@ Deno.test("pathway-update: posts to /v1/pathway/{id} with only the set fields", 
   assertEquals(out.status, "success");
 });
 
-Deno.test("pathway-update: parses nodes/edges JSON params", async () => {
+test("pathway-update: parses nodes/edges JSON params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   await pathwayUpdate.execute({
     pathwayId: "p-1",
@@ -26,6 +27,6 @@ Deno.test("pathway-update: parses nodes/edges JSON params", async () => {
   assertEquals(body.edges, [{ id: "e1" }]);
 });
 
-Deno.test("pathway-update: is declared idempotent", () => {
+test("pathway-update: is declared idempotent", () => {
   assertEquals(pathwayUpdate.idempotent, true);
 });

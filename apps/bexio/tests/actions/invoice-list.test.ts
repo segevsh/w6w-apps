@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-list.ts";
 
-Deno.test("invoice-list: GETs /2.0/kb_invoice with mapped query", async () => {
+test("invoice-list: GETs /2.0/kb_invoice with mapped query", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, document_nr: "RE-0001" }] }]);
   const result = await action.execute!({ orderBy: "total", descending: false, limit: 25 }, ctx);
   const url = new URL(calls[0].url);

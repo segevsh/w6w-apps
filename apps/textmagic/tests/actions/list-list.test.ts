@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listList from "../../actions/list-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-list: GETs /lists with filters", async () => {
+test("list-list: GETs /lists with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 715 }]) }]);
   await listList.execute({ favoriteOnly: 1, onlyMine: 1 }, ctx);
 

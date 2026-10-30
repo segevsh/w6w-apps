@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/people-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("people-search: maps named filters, merges raw filters and paginates", async () => {
+test("people-search: maps named filters, merges raw filters and paginates", async () => {
   const { ctx, calls } = mockCtx([{
     body: { people: [{ id: "p1" }], metadata: { total: 99, credits: 0.25, search_after: "abc" } },
   }]);
@@ -25,14 +26,14 @@ Deno.test("people-search: maps named filters, merges raw filters and paginates",
   assertEquals(out, { people: [{ id: "p1" }], total: 99, credits: 0.25, searchAfter: "abc" });
 });
 
-Deno.test("people-search: an empty search sends an empty body and tolerates no results", async () => {
+test("people-search: an empty search sends an empty body and tolerates no results", async () => {
   const { ctx, calls } = mockCtx([{ body: { people: [] } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
   assertEquals(out, { people: [], total: null, credits: null, searchAfter: null });
 });
 
-Deno.test("people-search: rate limiting is thrown with the vendor code", async () => {
+test("people-search: rate limiting is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { code: "error.rate.limit", message: "Too many requests. Try again in 1m" },

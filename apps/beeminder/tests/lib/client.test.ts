@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   BeeminderClient,
   BeeminderError,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: builds the /api/v1 URL, drops empty query values, GET by default", async () => {
+test("client: builds the /api/v1 URL, drops empty query values, GET by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { a: 1 } }]);
   const res = await new BeeminderClient(ctx).request("/x.json", {
     query: { q: "v", e: "", n: undefined, f: false },
@@ -22,7 +23,7 @@ Deno.test("client: builds the /api/v1 URL, drops empty query values, GET by defa
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("client: form bodies are urlencoded, json bodies keep nulls", async () => {
+test("client: form bodies are urlencoded, json bodies keep nulls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   const c = new BeeminderClient(ctx);
   await c.request("/x.json", { form: { a: "b c", n: undefined, z: 0 } });
@@ -34,7 +35,7 @@ Deno.test("client: form bodies are urlencoded, json bodies keep nulls", async ()
   assertEquals(calls[1].body, '{"goalval":null}');
 });
 
-Deno.test("client: a `true` body (refresh_graph) parses; errors throw with the vendor text", async () => {
+test("client: a `true` body (refresh_graph) parses; errors throw with the vendor text", async () => {
   const ok = mockCtx([{ body: "true" }]);
   assertEquals((await new BeeminderClient(ok.ctx).request("/x.json")).data, true);
   const bad = mockCtx([{ status: 406, body: { errors: "newsafety cannot exceed 5" } }]);
@@ -46,7 +47,7 @@ Deno.test("client: a `true` body (refresh_graph) parses; errors throw with the v
   assertEquals(err.httpStatus, 406);
 });
 
-Deno.test("client: formatError reads object, string and singular error shapes with hints", () => {
+test("client: formatError reads object, string and singular error shapes with hints", () => {
   const obj = formatError(401, "GET", "/p", { errors: { message: "No such auth_token" } }, "");
   assert(obj.includes("No such auth_token") && obj.includes("personal token"));
   assert(formatError(404, "GET", "/p", { error: "not found" }, "").includes("not found"));
@@ -54,7 +55,7 @@ Deno.test("client: formatError reads object, string and singular error shapes wi
   assert(formatError(500, "GET", "/p", { errors: { a: 1 } }, "").includes('{"a":1}'));
 });
 
-Deno.test("client: path helpers encode segments and default the user to me", () => {
+test("client: path helpers encode segments and default the user to me", () => {
   assertEquals(userPath(), "/users/me");
   assertEquals(userPath(" "), "/users/me");
   assertEquals(goalPath("al ice", "my/goal"), "/users/al%20ice/goals/my%2Fgoal");
@@ -67,7 +68,7 @@ Deno.test("client: path helpers encode segments and default the user to me", () 
   }
 });
 
-Deno.test("client: defined keeps null but drops undefined; splitList splits", () => {
+test("client: defined keeps null but drops undefined; splitList splits", () => {
   assertEquals(defined({ a: null, b: undefined, c: 0 }), { a: null, c: 0 });
   assertEquals(splitList("a, b;c\nd"), ["a", "b", "c", "d"]);
   assertEquals(splitList(["x", " "]), ["x"]);

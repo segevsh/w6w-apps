@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userCreate from "../../actions/user-create.ts";
 import { mockCtx, pathOf, STUDIO_API_ROOT } from "../_helpers.ts";
 
-Deno.test("user-create: POSTs to /users on the Studio API host, with the Softr-Domain header", async () => {
+test("user-create: POSTs to /users on the Studio API host, with the Softr-Domain header", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1" } }]);
   await userCreate.execute(
     { domain: "yourdomain.com", fullName: "John Richardson", email: "johnr@example.com" },
@@ -19,7 +20,7 @@ Deno.test("user-create: POSTs to /users on the Studio API host, with the Softr-D
   });
 });
 
-Deno.test("user-create: password and generateMagicLink are optional and snake_cased on the wire", async () => {
+test("user-create: password and generateMagicLink are optional and snake_cased on the wire", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await userCreate.execute(
     {
@@ -39,6 +40,6 @@ Deno.test("user-create: password and generateMagicLink are optional and snake_ca
   });
 });
 
-Deno.test("user-create: is explicitly not idempotent — retrying creates a duplicate user", () => {
+test("user-create: is explicitly not idempotent — retrying creates a duplicate user", () => {
   assertEquals(userCreate.idempotent, false);
 });

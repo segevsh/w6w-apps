@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -11,7 +12,7 @@ const pq = (tokensPerDayRemaining: number, consumed = 10) => ({
   },
 });
 
-Deno.test("quota: is informational and signed on the app's own egress", () => {
+test("quota: is informational and signed on the app's own egress", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   // A signed check must not widen the allowlist.
@@ -20,7 +21,7 @@ Deno.test("quota: is informational and signed on the app's own egress", () => {
   assertEquals(quota.minIntervalSeconds, 900);
 });
 
-Deno.test("quota: runs the cheapest possible report and reads propertyQuota off it", async () => {
+test("quota: runs the cheapest possible report and reads propertyQuota off it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: pq(180000) }], { display });
   const result = await quota.check!({} as never, ctx) as {
     state: string;
@@ -46,14 +47,14 @@ Deno.test("quota: runs the cheapest possible report and reads propertyQuota off 
   assertEquals(result.quota[2].unit, "requests");
 });
 
-Deno.test("quota: under 10% of the day's tokens degrades, exhaustion is down", async () => {
+test("quota: under 10% of the day's tokens degrades, exhaustion is down", async () => {
   const low = mockCtx([{ status: 200, body: pq(500, 9500) }], { display });
   assertEquals((await quota.check!({} as never, low.ctx) as { state: string }).state, "degraded");
   const out = mockCtx([{ status: 200, body: pq(0, 200000) }], { display });
   assertEquals((await quota.check!({} as never, out.ctx) as { state: string }).state, "down");
 });
 
-Deno.test("quota: a report with no propertyQuota, or no property, is unknown", async () => {
+test("quota: a report with no propertyQuota, or no property, is unknown", async () => {
   const bare = mockCtx([{ status: 200, body: { rows: [] } }], { display });
   const a = await quota.check!({} as never, bare.ctx) as { state: string; message: string };
   assertEquals(a.state, "unknown");
@@ -66,7 +67,7 @@ Deno.test("quota: a report with no propertyQuota, or no property, is unknown", a
   assertEquals(noProp.calls.length, 0);
 });
 
-Deno.test("quota: a failed probe is unknown and names the status", async () => {
+test("quota: a failed probe is unknown and names the status", async () => {
   const { ctx } = mockCtx([{ status: 429, body: "" }], { display });
   const result = await quota.check!({} as never, ctx) as { state: string; message: string };
   assertEquals(result.state, "unknown");

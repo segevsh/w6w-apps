@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, json, mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-message.ts";
 
@@ -8,7 +9,7 @@ const QUEUED = {
   api_id: "db342550-7f1d-11e1-8ea7-1231380bc196",
 };
 
-Deno.test("send-message: POSTs JSON src/dst/text to Message/ and returns Plivo's body", async () => {
+test("send-message: POSTs JSON src/dst/text to Message/ and returns Plivo's body", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: QUEUED }], CONN);
   const out = await action.execute!(
     { from: "+14151234567", to: "+14157654321", text: "Hello" },
@@ -24,13 +25,13 @@ Deno.test("send-message: POSTs JSON src/dst/text to Message/ and returns Plivo's
   assertEquals(out, QUEUED);
 });
 
-Deno.test("send-message: several recipients are joined with `<`", async () => {
+test("send-message: several recipients are joined with `<`", async () => {
   const { ctx, calls } = mockCtx([{ body: QUEUED }], CONN);
   await action.execute!({ from: "1", to: ["14156667777", " 14157778888 ", ""], text: "x" }, ctx);
   assertEquals(json(calls[0]).dst, "14156667777<14157778888");
 });
 
-Deno.test("send-message: media URLs make it an MMS with an array media_urls", async () => {
+test("send-message: media URLs make it an MMS with an array media_urls", async () => {
   const { ctx, calls } = mockCtx([{ body: QUEUED }], CONN);
   await action.execute!(
     { from: "1", to: "2", mediaUrls: ["https://x/a.jpg", "  ", "https://x/b.png"] },
@@ -42,7 +43,7 @@ Deno.test("send-message: media URLs make it an MMS with an array media_urls", as
   assertEquals("text" in body, false);
 });
 
-Deno.test("send-message: Powerpack, callback and delivery options use the documented names", async () => {
+test("send-message: Powerpack, callback and delivery options use the documented names", async () => {
   const { ctx, calls } = mockCtx([{ body: QUEUED }], CONN);
   await action.execute!(
     {
@@ -71,7 +72,7 @@ Deno.test("send-message: Powerpack, callback and delivery options use the docume
   });
 });
 
-Deno.test("send-message: refuses before any request when sender, recipient or content is missing", async () => {
+test("send-message: refuses before any request when sender, recipient or content is missing", async () => {
   for (
     const [input, needle] of [
       [{ to: "2", text: "x" }, "sender is required"],
@@ -85,7 +86,7 @@ Deno.test("send-message: refuses before any request when sender, recipient or co
   }
 });
 
-Deno.test("send-message: a 400 carries Plivo's error body", async () => {
+test("send-message: a 400 carries Plivo's error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { api_id: "a", error: "invalid dst" } }], CONN);
   await assertRejects(
     async () => await action.execute!({ from: "1", to: "bad", text: "x" }, ctx),

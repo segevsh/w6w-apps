@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { slug, STATUS_HOST, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -22,7 +23,7 @@ function payload(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: declares groqstatus.com, unsigned, with its own egress", () => {
+test("service: declares groqstatus.com, unsigned, with its own egress", () => {
   assertEquals(STATUS_HOST, "groqstatus.com");
   assertEquals(STATUS_URL, "https://groqstatus.com/api/v2/summary.json");
   assertEquals(service.network?.allow, [STATUS_HOST]);
@@ -32,13 +33,13 @@ Deno.test("service: declares groqstatus.com, unsigned, with its own egress", () 
   assert(service.credential === undefined || service.credential === "none");
 });
 
-Deno.test("slug: normalizes a component name to a stable kebab-case id", () => {
+test("slug: normalizes a component name to a stable kebab-case id", () => {
   assertEquals(slug("openai/gpt-oss-20b"), "openai-gpt-oss-20b");
   assertEquals(slug("API"), "api");
   assertEquals(slug("Canopy Labs Orpheus Arabic Saudi"), "canopy-labs-orpheus-arabic-saudi");
 });
 
-Deno.test("service: an all-clear page reports ok and lists every component", async () => {
+test("service: an all-clear page reports ok and lists every component", async () => {
   const { ctx, calls } = mockCtx([{ body: payload() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -48,7 +49,7 @@ Deno.test("service: an all-clear page reports ok and lists every component", asy
   assertEquals(report.components?.website, { state: "ok" });
 });
 
-Deno.test("service: a degraded MODEL component alone does not worsen the roll-up", async () => {
+test("service: a degraded MODEL component alone does not worsen the roll-up", async () => {
   const { ctx } = mockCtx([{
     body: payload({
       components: [
@@ -65,7 +66,7 @@ Deno.test("service: a degraded MODEL component alone does not worsen the roll-up
   assertEquals(report.components?.["openai-gpt-oss-20b"], { state: "down" });
 });
 
-Deno.test("service: a degraded API component DOES worsen the roll-up", async () => {
+test("service: a degraded API component DOES worsen the roll-up", async () => {
   const { ctx } = mockCtx([{
     body: payload({
       components: [
@@ -78,7 +79,7 @@ Deno.test("service: a degraded API component DOES worsen the roll-up", async () 
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: falls back to the page-level indicator if API/Website are ever absent", async () => {
+test("service: falls back to the page-level indicator if API/Website are ever absent", async () => {
   const { ctx } = mockCtx([{
     body: payload({
       status: { description: "Partial outage", indicator: "major" },
@@ -90,7 +91,7 @@ Deno.test("service: falls back to the page-level indicator if API/Website are ev
   assertEquals(report.message, "Partial outage");
 });
 
-Deno.test("service: an unreachable status API reports unknown, never down", async () => {
+test("service: an unreachable status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

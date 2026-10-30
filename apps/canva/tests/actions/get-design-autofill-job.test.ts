@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-design-autofill-job.ts";
 
-Deno.test("get-design-autofill-job: GETs /rest/v1/autofills/{jobId} and unwraps job", async () => {
+test("get-design-autofill-job: GETs /rest/v1/autofills/{jobId} and unwraps job", async () => {
   const { ctx, calls } = mockCtx([{
     body: { job: { id: "j1", status: "success", result: { type: "create_design" } } },
   }]);

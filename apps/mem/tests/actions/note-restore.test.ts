@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteRestore from "../../actions/note-restore.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "note_id": "11111111-1111-4111-8111-111111111111" };
 const RESPONSE = { "request_id": "r9" };
 
-Deno.test("note-restore: POST /v2/notes/{note_id}/restore", async () => {
+test("note-restore: POST /v2/notes/{note_id}/restore", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await noteRestore.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -19,13 +20,13 @@ Deno.test("note-restore: POST /v2/notes/{note_id}/restore", async () => {
   assertEquals(out.requestId, "r9");
 });
 
-Deno.test("note-restore: puts no credential on the request (sign owns that)", async () => {
+test("note-restore: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await noteRestore.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("note-restore: a vendor error surfaces its own message", async () => {
+test("note-restore: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: {

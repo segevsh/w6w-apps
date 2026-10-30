@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs the body with the caller's version overriding any inside it", async () => {
+test("contact-update: PUTs the body with the caller's version overriding any inside it", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", version: 5 } }]);
   const out = await action.execute({
     id: "c1",
@@ -16,7 +17,7 @@ Deno.test("contact-update: PUTs the body with the caller's version overriding an
   assertEquals(out.version, 5);
 });
 
-Deno.test("contact-update: a stale version surfaces the 409 with guidance", async () => {
+test("contact-update: a stale version surfaces the 409 with guidance", async () => {
   const { ctx } = mockCtx([{ status: 409, body: { status: 409, message: "Conflict" } }]);
   const err = await assertRejects(
     async () => await action.execute({ id: "c1", version: 1, contact: "{}" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("contact-update: a stale version surfaces the 409 with guidance", asyn
   assert(err.message.includes("409") && err.message.includes("version"));
 });
 
-Deno.test("contact-update: requires id, integer version and an object", async () => {
+test("contact-update: requires id, integer version and an object", async () => {
   const n = mockCtx();
   await assertRejects(
     async () => await action.execute({ id: "", version: 1, contact: {} }, n.ctx),

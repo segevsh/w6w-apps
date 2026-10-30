@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import entityCreate from "../../actions/entity-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("entity-create: POST /entities, 201 body returned", async () => {
+test("entity-create: POST /entities, 201 body returned", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "e2", name: "Acme" } }]);
   const out = await entityCreate.execute(
     { name: "Acme", relationshipTypeKey: '["counterparty"]', status: "ACTIVE" },

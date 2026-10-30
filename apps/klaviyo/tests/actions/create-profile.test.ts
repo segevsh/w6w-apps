@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-profile.ts";
 
-Deno.test("create-profile: POSTs a JSON:API envelope to /profiles/", async () => {
+test("create-profile: POSTs a JSON:API envelope to /profiles/", async () => {
   const body = { data: { type: "profile", id: "p1" } };
   const { ctx, calls } = mockCtx([{ status: 201, body }]);
   const result = await action.execute!(

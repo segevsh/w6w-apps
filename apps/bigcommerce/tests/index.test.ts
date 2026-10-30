@@ -1,26 +1,28 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import manifest from "../package.json" with { type: "json" };
 
 const actionKeys = app.actions.map((a) => a.key);
 
-Deno.test("index: exports every action exactly once, with unique kebab-case keys", () => {
+test("index: exports every action exactly once, with unique kebab-case keys", () => {
   assertEquals(new Set(actionKeys).size, actionKeys.length, "duplicate action key");
   for (const key of actionKeys) {
     assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key), `not kebab-case: ${key}`);
   }
 });
 
-Deno.test("index: the exported action list matches the files in actions/", async () => {
+test("index: the exported action list matches the files in actions/", async () => {
   // A hand-written list would drift silently; this walks the directory.
   const files: string[] = [];
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (entry.isFile && entry.name.endsWith(".ts")) files.push(entry.name.replace(/\.ts$/, ""));
   }
   assertEquals(files.sort(), [...actionKeys].sort());
 });
 
-Deno.test("index: every action declares a type the spec allows", () => {
+test("index: every action declares a type the spec allows", () => {
   for (const action of app.actions) {
     assert(
       ["read", "search", "perform"].includes(action.type),
@@ -29,7 +31,7 @@ Deno.test("index: every action declares a type the spec allows", () => {
   }
 });
 
-Deno.test("index: every perform action states `idempotent` explicitly", () => {
+test("index: every perform action states `idempotent` explicitly", () => {
   for (const action of app.actions) {
     if (action.type !== "perform") continue;
     assertEquals(
@@ -40,7 +42,7 @@ Deno.test("index: every perform action states `idempotent` explicitly", () => {
   }
 });
 
-Deno.test("index: every action has a description, params array and output", () => {
+test("index: every action has a description, params array and output", () => {
   for (const action of app.actions) {
     assert(action.description, `${action.key} has no description`);
     assert(Array.isArray(action.params), `${action.key} has no params array`);
@@ -48,7 +50,7 @@ Deno.test("index: every action has a description, params array and output", () =
   }
 });
 
-Deno.test("index: every action param has a unique key and a label", () => {
+test("index: every action param has a unique key and a label", () => {
   for (const action of app.actions) {
     const keys = (action.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${action.key} has a duplicate param key`);
@@ -58,7 +60,7 @@ Deno.test("index: every action param has a unique key and a label", () => {
   }
 });
 
-Deno.test("index: declares the one auth method, with the fields the API needs", () => {
+test("index: declares the one auth method, with the fields the API needs", () => {
   assertEquals(app.auth?.length, 1);
   const auth = app.auth![0];
   assertEquals(auth.key, "access-token");
@@ -75,7 +77,7 @@ Deno.test("index: declares the one auth method, with the fields the API needs", 
   assertEquals(fields.storeHash.secret, undefined);
 });
 
-Deno.test("index: declares five health checks, four live and one declared absence", () => {
+test("index: declares five health checks, four live and one declared absence", () => {
   const checks = app.healthChecks ?? [];
   assertEquals(checks.map((c) => c.key).sort(), [
     "api",
@@ -90,7 +92,7 @@ Deno.test("index: declares five health checks, four live and one declared absenc
   assertEquals(absent.length, 1);
 });
 
-Deno.test("index: the declared absence is `informational`, or it pins the app at unknown", () => {
+test("index: the declared absence is `informational`, or it pins the app at unknown", () => {
   for (const check of app.healthChecks ?? []) {
     if (!check.unavailable) continue;
     assertEquals(check.severity, "informational", `${check.key} would pin the roll-up at unknown`);
@@ -99,7 +101,7 @@ Deno.test("index: the declared absence is `informational`, or it pins the app at
   }
 });
 
-Deno.test("index: only unsigned checks widen egress, and only to the status host", () => {
+test("index: only unsigned checks widen egress, and only to the status host", () => {
   for (const check of app.healthChecks ?? []) {
     if (!check.network?.allow?.length) continue;
     assert(
@@ -110,15 +112,15 @@ Deno.test("index: only unsigned checks widen egress, and only to the status host
   }
 });
 
-Deno.test("index: the manifest allows exactly the one API host", () => {
+test("index: the manifest allows exactly the one API host", () => {
   assertEquals(manifest.w6w.network.allow, ["api.bigcommerce.com"]);
   assertEquals(manifest.w6w.id, "io.w6w.bigcommerce");
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
   assert(manifest.w6w.categories.length >= 1 && manifest.w6w.categories.length <= 3);
 });
 
-Deno.test("index: the shipped icon is the verbatim simple-icons BigCommerce mark", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the shipped icon is the verbatim simple-icons BigCommerce mark", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   // The vendor's own site serves a ~378 KB catch-all for unknown asset paths, so
   // "we downloaded something" is not evidence. The title is.
   assert(svg.includes("<title>BigCommerce</title>"), "icon does not identify itself");
@@ -141,9 +143,9 @@ Deno.test("index: the shipped icon is the verbatim simple-icons BigCommerce mark
 async function routesFromActions(): Promise<string[]> {
   const dir = new URL("../actions/", import.meta.url);
   const routes = new Set<string>();
-  for await (const entry of Deno.readDir(dir)) {
+  for await (const entry of denoReadDir(dir)) {
     if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
-    const src = await Deno.readTextFile(new URL(entry.name, dir));
+    const src = await denoReadTextFile(new URL(entry.name, dir));
     // Strip comments: deprecated paths are discussed in prose on purpose.
     const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
     const call = /\.(v2List|v2|v3Page|v3|status)\(\s*(?:`([^`]*)`|"([^"]*)")/g;
@@ -158,7 +160,7 @@ async function routesFromActions(): Promise<string[]> {
   return [...routes].sort();
 }
 
-Deno.test("index: every route the actions call was verified live against the API", async () => {
+test("index: every route the actions call was verified live against the API", async () => {
   // Each of these answered `401 X-Auth-Token header is required` to an
   // unauthenticated request on 2026-08-11 — which, because BigCommerce resolves
   // the route before authenticating, proves the route exists. A path not on this
@@ -197,7 +199,7 @@ Deno.test("index: every route the actions call was verified live against the API
   assertEquals(await routesFromActions(), verified);
 });
 
-Deno.test("index: no action reaches a path the vendor has deprecated", async () => {
+test("index: no action reaches a path the vendor has deprecated", async () => {
   // From the Deprecations and Sunsets page, read 2026-08-11. Compared against
   // the derived route set above, so the version prefix is part of the match —
   // `/v2/customers` is deprecated while `/v3/customers` is the replacement.

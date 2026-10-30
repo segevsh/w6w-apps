@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-list.ts";
 
@@ -17,7 +18,7 @@ const services = (list: Array<[string, string, boolean?]>) => ({
   },
 });
 
-Deno.test("service-list: lists the organisation's services", async () => {
+test("service-list: lists the organisation's services", async () => {
   const { ctx, calls } = mockCtx([services([["prod", "running"], ["dev", "idle"]])], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, `https://api.clickhouse.cloud/v1/organizations/${ORG}/services`);
@@ -29,7 +30,7 @@ Deno.test("service-list: lists the organisation's services", async () => {
  * `idle` wakes on a query and `stopped` does not — the distinction a failed
  * query cannot make.
  */
-Deno.test("service-list: counts running, idle and stopped separately", async () => {
+test("service-list: counts running, idle and stopped separately", async () => {
   const { ctx } = mockCtx([services([
     ["a", "running"],
     ["b", "idle"],
@@ -47,7 +48,7 @@ Deno.test("service-list: counts running, idle and stopped separately", async () 
 });
 
 /** Idle scaling off means paying for compute around the clock. */
-Deno.test("service-list: counts the services that bill continuously", async () => {
+test("service-list: counts the services that bill continuously", async () => {
   const { ctx, logs } = mockCtx([services([
     ["prod", "running", false],
     ["dev", "idle", true],
@@ -57,7 +58,7 @@ Deno.test("service-list: counts the services that bill continuously", async () =
   assertEquals(logs[0].data, { count: 2, runningCount: 1, alwaysOnCount: 1 });
 });
 
-Deno.test("service-list: filters by name locally and returns the single id", async () => {
+test("service-list: filters by name locally and returns the single id", async () => {
   const { ctx, calls } = mockCtx([services([["prod-eu", "running"], ["dev", "idle"]])], D);
   const result = await action.execute({ name: "PROD" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
@@ -66,7 +67,7 @@ Deno.test("service-list: filters by name locally and returns the single id", asy
   assertEquals(new URL(calls[0].url).searchParams.get("name"), null);
 });
 
-Deno.test("service-list: an organisation with no services is not an error", async () => {
+test("service-list: an organisation with no services is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { result: [] } }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
@@ -74,7 +75,7 @@ Deno.test("service-list: an organisation with no services is not an error", asyn
 });
 
 /** A query connection cannot manage services. */
-Deno.test("service-list: a service connection is refused with the reason", async () => {
+test("service-list: a service connection is refused with the reason", async () => {
   const { ctx, calls } = mockCtx([], { display: { host: "https://x:8443", plane: "query" } });
   let message = "";
   try {

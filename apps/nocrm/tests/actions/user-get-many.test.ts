@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/user-get-many.ts";
 
-Deno.test("user-get-many: sends every documented filter", async () => {
+test("user-get-many: sends every documented filter", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: [{ id: 514 }] }]);
   await action.execute({
     email: "john.doe@mycompany.com",
@@ -25,13 +26,13 @@ Deno.test("user-get-many: sends every documented filter", async () => {
   assertEquals(url.searchParams.get("teams"), "Sales,517");
 });
 
-Deno.test("user-get-many: sends no filters when the caller sets none", async () => {
+test("user-get-many: sends no filters when the caller sets none", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: [] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/v2/users");
 });
 
-Deno.test("user-get-many: reads X-TOTAL-COUNT beside the bare array", async () => {
+test("user-get-many: reads X-TOTAL-COUNT beside the bare array", async () => {
   const { ctx } = mockNocrmCtx([{
     body: [{ id: 514 }],
     headers: { "content-type": "application/json", "x-total-count": "27" },

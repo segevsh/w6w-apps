@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerGet from "../../actions/customer-get.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-get: GET /customers/42/ with the documented query and body", async () => {
+test("customer-get: GET /customers/42/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "customer": { "id": 42, "name": "Ana" } },
@@ -18,7 +19,7 @@ Deno.test("customer-get: GET /customers/42/ with the documented query and body",
   assertEquals(out, { "id": 42, "name": "Ana" });
 });
 
-Deno.test("customer-get: a Landbot error surfaces its status and message", async () => {
+test("customer-get: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () => Promise.resolve(customerGet.execute({ "customerId": 42 } as never, ctx)),
@@ -28,7 +29,7 @@ Deno.test("customer-get: a Landbot error surfaces its status and message", async
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("customer-get: declares read", () => {
+test("customer-get: declares read", () => {
   assertEquals(customerGet.type, "read");
   assertEquals(detailBody("x"), { detail: "x" });
 });

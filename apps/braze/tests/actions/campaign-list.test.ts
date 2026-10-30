@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-list.ts";
 
-Deno.test("campaign-list: sends page, include_archived and the last-edit filter", async () => {
+test("campaign-list: sends page, include_archived and the last-edit filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { campaigns: [] } }], {
     display: { instance: "iad-01" },
   });

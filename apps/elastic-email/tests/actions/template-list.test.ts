@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/template-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-list: GET /templates repeats scopeType and templateTypes", async () => {
+test("template-list: GET /templates repeats scopeType and templateTypes", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ Name: "welcome" }] }]);
   const out = await action.execute({
     scopeType: "Personal,Global",
@@ -17,6 +18,6 @@ Deno.test("template-list: GET /templates repeats scopeType and templateTypes", a
   assertEquals(out.count, 1);
 });
 
-Deno.test("template-list: scope is required (the vendor requires it)", async () => {
+test("template-list: scope is required (the vendor requires it)", async () => {
   await assertRejects(async () => await action.execute({}, mockCtx().ctx), Error, "Scope");
 });

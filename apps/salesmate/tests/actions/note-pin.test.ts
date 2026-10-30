@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import pin from "../../actions/note-pin.ts";
 
 const ok = (Data?: unknown) => ({ body: { Status: "success", Data } });
 const B = "https://acme.salesmate.io/apis";
 
-Deno.test("note-pin: PATCHes pin-it with an empty object body", async () => {
+test("note-pin: PATCHes pin-it with an empty object body", async () => {
   const a = mockSalesmateCtx([ok({})]);
   assertEquals(await pin.execute({ module: "activity", recordId: 2, noteId: 4 }, a.ctx), {
     pinned: true,

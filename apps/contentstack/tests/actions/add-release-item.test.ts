@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-release-item.ts";
 
-Deno.test("add-release-item: metadata", () => {
+test("add-release-item: metadata", () => {
   assertEquals(action.key, "add-release-item");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -16,7 +17,7 @@ Deno.test("add-release-item: metadata", () => {
   ]);
 });
 
-Deno.test("add-release-item: calls POST /releases/bltr/item on the NA host", async () => {
+test("add-release-item: calls POST /releases/bltr/item on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Item added" } }]);
   const out = await action.execute({
     "releaseUid": "bltr",
@@ -43,7 +44,7 @@ Deno.test("add-release-item: calls POST /releases/bltr/item on the NA host", asy
   assertEquals(out, { "notice": "Item added" });
 });
 
-Deno.test("add-release-item: uses the connection's regional host", async () => {
+test("add-release-item: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Item added" } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -58,7 +59,7 @@ Deno.test("add-release-item: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/releases/bltr/item");
 });
 
-Deno.test("add-release-item: sends the branch header only when a branch is given", async () => {
+test("add-release-item: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Item added" } }, {
     body: { "notice": "Item added" },
   }]);
@@ -83,7 +84,7 @@ Deno.test("add-release-item: sends the branch header only when a branch is given
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("add-release-item: rejects without `releaseUid` and makes no request", async () => {
+test("add-release-item: rejects without `releaseUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -101,7 +102,7 @@ Deno.test("add-release-item: rejects without `releaseUid` and makes no request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-release-item: surfaces Contentstack's own error body", async () => {
+test("add-release-item: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

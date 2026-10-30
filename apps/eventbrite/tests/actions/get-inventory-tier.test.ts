@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-inventory-tier.ts";
 
-Deno.test("get-inventory-tier: GETs the tier", async () => {
+test("get-inventory-tier: GETs the tier", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory_tier: { id: "t1" } } }]);
   const result = await action.execute!({ eventId: "e1", inventoryTierId: "t/1" }, ctx);
   const url = new URL(calls[0].url);

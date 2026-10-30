@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import apiUnitsBalanceGet from "../../actions/api-units-balance-get.ts";
 import { hostOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("api-units-balance-get: reads the free balance endpoint on the legacy host", async () => {
+test("api-units-balance-get: reads the free balance endpoint on the legacy host", async () => {
   const { ctx, calls } = mockCtx([{ body: "1,000" }]);
 
   const out = await apiUnitsBalanceGet.execute({}, ctx) as { balance: number };
@@ -14,7 +15,7 @@ Deno.test("api-units-balance-get: reads the free balance endpoint on the legacy 
   assertEquals(out.balance, 1000);
 });
 
-Deno.test("api-units-balance-get: a zero balance is a valid reading, not an error", async () => {
+test("api-units-balance-get: a zero balance is a valid reading, not an error", async () => {
   const { ctx } = mockCtx([{ body: "0" }]);
 
   const out = await apiUnitsBalanceGet.execute({}, ctx) as { balance: number };
@@ -27,7 +28,7 @@ Deno.test("api-units-balance-get: a zero balance is a valid reading, not an erro
  * submitted API key back inside `errors[0].message`. Nothing downstream may
  * ever repeat that text, so the Action returns a status-only message.
  */
-Deno.test("api-units-balance-get: a 400 does NOT echo the vendor's raw error text", async () => {
+test("api-units-balance-get: a 400 does NOT echo the vendor's raw error text", async () => {
   const secret = "sk-live-0000-1111-2222-3333";
   const { ctx } = mockCtx([
     {
@@ -46,7 +47,7 @@ Deno.test("api-units-balance-get: a 400 does NOT echo the vendor's raw error tex
   assertEquals(err.message, "SEMrush returned HTTP 400 for the API-units endpoint");
 });
 
-Deno.test("api-units-balance-get: a non-numeric 200 body is an error with no body text", async () => {
+test("api-units-balance-get: a non-numeric 200 body is an error with no body text", async () => {
   const { ctx } = mockCtx([{ body: "<html>maintenance</html>" }]);
 
   const err = await assertRejects(async () => {
@@ -60,7 +61,7 @@ Deno.test("api-units-balance-get: a non-numeric 200 body is an error with no bod
   );
 });
 
-Deno.test("api-units-balance-get: takes no parameters and declares `balance`", () => {
+test("api-units-balance-get: takes no parameters and declares `balance`", () => {
   assertEquals(apiUnitsBalanceGet.params?.length, 0);
   assertEquals(apiUnitsBalanceGet.output, [
     { key: "balance", type: "number", label: "API units remaining" },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, {
   authHeaders,
   MISSING_HEADER_ERROR_TYPE,
@@ -7,7 +8,7 @@ import apiToken, {
 } from "../../auth/api-token.ts";
 import { API_ROOT, authInfo, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("api-token: collects the region id beside the key", () => {
+test("api-token: collects the region id beside the key", () => {
   assertEquals(apiToken.key, "api-token");
   assertEquals(apiToken.type, "apiKey");
   // One header, no prefix: the vendor's security scheme is `apiKey` in
@@ -20,7 +21,7 @@ Deno.test("api-token: collects the region id beside the key", () => {
   assertEquals(apiToken.connectionLabel, "{{user.name}} ({{regionId}})");
 });
 
-Deno.test("api-token: authHeaders() sends the key verbatim, with no prefix at all", () => {
+test("api-token: authHeaders() sends the key verbatim, with no prefix at all", () => {
   assertEquals(authHeaders({ apiKey: "proj-1:secret" }), { authorization: "proj-1:secret" });
   assertEquals(authHeaders({}), { authorization: "" });
   // The two narrative doc pages that show `Bearer :<key>` are the ones the
@@ -28,7 +29,7 @@ Deno.test("api-token: authHeaders() sends the key verbatim, with no prefix at al
   assertEquals(PROBE_PATH, "/auth/info");
 });
 
-Deno.test("api-token: sign() stamps the raw header", async () => {
+test("api-token: sign() stamps the raw header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: `${API_ROOT}/auth/info`,
@@ -43,7 +44,7 @@ Deno.test("api-token: sign() stamps the raw header", async () => {
   assert(!/bearer/i.test(out.headers["authorization"]));
 });
 
-Deno.test("api-token: test refuses a half-filled credential without a request", async () => {
+test("api-token: test refuses a half-filled credential without a request", async () => {
   for (
     const credential of [
       { regionId: "f1db6c" },
@@ -60,7 +61,7 @@ Deno.test("api-token: test refuses a half-filled credential without a request", 
   }
 });
 
-Deno.test("api-token: test probes the connection's own region host, with the key", async () => {
+test("api-token: test probes the connection's own region host, with the key", async () => {
   const { ctx, calls } = mockCtx([{ body: authInfo() }]);
   assertEquals(
     await apiToken.test!(
@@ -79,7 +80,7 @@ Deno.test("api-token: test probes the connection's own region host, with the key
  * would have called that "something else went wrong" and let a dead credential
  * through as a non-401 surprise; the body is what says which it is.
  */
-Deno.test("api-token: a wrong key on HTTP 400 is a failure, classified from the body", async () => {
+test("api-token: a wrong key on HTTP 400 is a failure, classified from the body", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -96,7 +97,7 @@ Deno.test("api-token: a wrong key on HTTP 400 is a failure, classified from the 
   assert(/copied whole/.test(out.message ?? ""), out.message);
 });
 
-Deno.test("api-token: a missing header is named as a missing header", async () => {
+test("api-token: a missing header is named as a missing header", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -115,7 +116,7 @@ Deno.test("api-token: a missing header is named as a missing header", async () =
   assert(/reconnect/.test(out.message ?? ""), out.message);
 });
 
-Deno.test("api-token: a non-JSON answer points at the region id first", async () => {
+test("api-token: a non-JSON answer points at the region id first", async () => {
   const { ctx } = mockCtx([
     { status: 403, headers: { "content-type": "text/html" }, body: "<html>Forbidden</html>" },
   ]);
@@ -127,7 +128,7 @@ Deno.test("api-token: a non-JSON answer points at the region id first", async ()
   assert(/region id/.test(out.message ?? ""), out.message);
 });
 
-Deno.test("api-token: an unreachable host reports the region id, not the key", async () => {
+test("api-token: an unreachable host reports the region id, not the key", async () => {
   const { ctx } = mockCtx();
   // No queued response: the host is treated as unreachable.
   const out = await apiToken.test!(
@@ -139,7 +140,7 @@ Deno.test("api-token: an unreachable host reports the region id, not the key", a
   assert(/region id/.test(out.message ?? ""), out.message);
 });
 
-Deno.test("api-token: afterConnect records the region id and a display name", async () => {
+test("api-token: afterConnect records the region id and a display name", async () => {
   const { ctx, calls } = mockCtx([{ body: authInfo() }]);
   const out = await apiToken.afterConnect!(
     { credential: { regionId: "f1db6c", apiKey: "proj-1:secret" } },
@@ -158,7 +159,7 @@ Deno.test("api-token: afterConnect records the region id and a display name", as
   assertEquals(calls[0].headers["authorization"], "proj-1:secret");
 });
 
-Deno.test("api-token: afterConnect falls back to the email when there is no name", async () => {
+test("api-token: afterConnect falls back to the email when there is no name", async () => {
   const { ctx } = mockCtx([{ body: authInfo({ first_name: "", last_name: "" }) }]);
   const out = await apiToken.afterConnect!(
     { credential: { regionId: "f1db6c", apiKey: "k" } },
@@ -167,7 +168,7 @@ Deno.test("api-token: afterConnect falls back to the email when there is no name
   assertEquals(out.user.name, "jo@acme.test");
 });
 
-Deno.test("api-token: afterConnect still records the region id when the probe fails", async () => {
+test("api-token: afterConnect still records the region id when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await apiToken.afterConnect!(
     { credential: { regionId: "f1db6c", apiKey: "k" } },
@@ -185,7 +186,7 @@ Deno.test("api-token: afterConnect still records the region id when the probe fa
  * wording: if someone pastes a real response that includes a key field, this
  * fails.
  */
-Deno.test("api-token: the whoami shape has no credential field in it", () => {
+test("api-token: the whoami shape has no credential field in it", () => {
   const fields = Object.keys(authInfo());
   assert(fields.includes("user_id"));
   assert(fields.includes("key_id"));

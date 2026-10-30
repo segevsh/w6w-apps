@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-role.ts";
 
-Deno.test("update-role: PATCHes /guilds/{gid}/roles/{rid} with supplied fields", async () => {
+test("update-role: PATCHes /guilds/{gid}/roles/{rid} with supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1" } }]);
   await action.execute!(
     { guildId: "g1", roleId: "r1", name: "Renamed", color: 42 },

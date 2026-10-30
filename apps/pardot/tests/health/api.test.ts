@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockPardotCtx } from "../_helpers.ts";
 import api from "../../health/api.ts";
 
-Deno.test("api: is unsigned, per connection", () => {
+test("api: is unsigned, per connection", () => {
   assertEquals(api.credential, "context");
   assertEquals(api.scope, "connection");
   assertEquals(api.kind, "dependency");
 });
 
-Deno.test("api: a schema-correct 401 is a PASS, and no credential header is sent", async () => {
+test("api: a schema-correct 401 is a PASS, and no credential header is sent", async () => {
   const { ctx, calls } = mockPardotCtx([{
     status: 401,
     body: { code: 49, message: "Access Denied" },
@@ -19,7 +20,7 @@ Deno.test("api: a schema-correct 401 is a PASS, and no credential header is sent
   assertEquals(Object.keys(calls[0].headers), ["accept"]);
 });
 
-Deno.test("api: probes the demo host for a demo connection", async () => {
+test("api: probes the demo host for a demo connection", async () => {
   const { ctx, calls } = mockPardotCtx([{
     status: 401,
     body: { code: 49, message: "Access Denied" },
@@ -28,7 +29,7 @@ Deno.test("api: probes the demo host for a demo connection", async () => {
   assertEquals(new URL(calls[0].url).host, "pi.demo.pardot.com");
 });
 
-Deno.test("api: a 5xx is down; an HTML shell is down; a foreign JSON body is unknown", async () => {
+test("api: a 5xx is down; an HTML shell is down; a foreign JSON body is unknown", async () => {
   assertEquals(
     (await api.check!({} as never, mockPardotCtx([{ status: 502, body: "x" }]).ctx)).state,
     "down",
@@ -44,7 +45,7 @@ Deno.test("api: a 5xx is down; an HTML shell is down; a foreign JSON body is unk
   );
 });
 
-Deno.test("api: a connection with a bad recorded host is unknown, with no request", async () => {
+test("api: a connection with a bad recorded host is unknown, with no request", async () => {
   const { ctx, calls } = mockPardotCtx([], "evil.example.com");
   assertEquals((await api.check!({} as never, ctx)).state, "unknown");
   assertEquals(calls.length, 0);

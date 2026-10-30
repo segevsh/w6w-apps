@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getClips from "../../actions/get-clips.ts";
 import { mockCtx, page, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("get-clips: calls GET /helix/clips", async () => {
+test("get-clips: calls GET /helix/clips", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "AwkwardHelplessSalamander" }], "cur") }]);
   const out = await getClips.execute({ broadcasterId: "1234" }, ctx) as { data: unknown[] };
 
@@ -11,7 +12,7 @@ Deno.test("get-clips: calls GET /helix/clips", async () => {
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("get-clips: the three selectors are mutually exclusive and spend no request", async () => {
+test("get-clips: the three selectors are mutually exclusive and spend no request", async () => {
   const both = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(getClips.execute({ broadcasterId: "1", gameId: "2" }, both.ctx)),
@@ -25,7 +26,7 @@ Deno.test("get-clips: the three selectors are mutually exclusive and spend no re
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("get-clips: clip IDs repeat their key", async () => {
+test("get-clips: clip IDs repeat their key", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await getClips.execute({ id: "foo,bar" }, ctx);
   assertEquals(queryAll(calls[0].url, "id"), ["foo", "bar"]);
@@ -36,7 +37,7 @@ Deno.test("get-clips: clip IDs repeat their key", async () => {
  * returns only unfeatured clips. Dropping `false` would make one of the three
  * inexpressible.
  */
-Deno.test("get-clips: is_featured=false is sent explicitly, not dropped", async () => {
+test("get-clips: is_featured=false is sent explicitly, not dropped", async () => {
   const off = mockCtx([{ body: page([]) }]);
   await getClips.execute({ gameId: "33214", isFeatured: false }, off.ctx);
   assertEquals(queryOf(off.calls[0].url).is_featured, "false");
@@ -46,7 +47,7 @@ Deno.test("get-clips: is_featured=false is sent explicitly, not dropped", async 
   assertEquals("is_featured" in queryOf(unset.calls[0].url), false);
 });
 
-Deno.test("get-clips: the date window is forwarded verbatim", async () => {
+test("get-clips: the date window is forwarded verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await getClips.execute({
     broadcasterId: "1",

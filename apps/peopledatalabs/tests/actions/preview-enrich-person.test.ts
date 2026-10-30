@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/preview-enrich-person.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("preview-enrich-person: GETs /v5/person/enrich/preview", async () => {
+test("preview-enrich-person: GETs /v5/person/enrich/preview", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: 200, likelihood: 6, data: { emails: true } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("preview-enrich-person: GETs /v5/person/enrich/preview", async () => {
   assertEquals((out as Record<string, unknown>).found, true);
 });
 
-Deno.test("preview-enrich-person: 404 is found: false", async () => {
+test("preview-enrich-person: 404 is found: false", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { status: 404, error: { type: "not_found" } } }]);
   const out = await action.execute!({ email: "x@y.z" } as never, ctx) as Record<string, unknown>;
   assertEquals(out.found, false);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getShopInfo from "../../actions/get-shop-info.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-shop-info: GETs with no body, and unwraps `shop`", async () => {
+test("get-shop-info: GETs with no body, and unwraps `shop`", async () => {
   const { ctx, calls } = mockCtx([{ body: { shop: { id: "111", plan: "basic" } } }]);
   const out = await getShopInfo.execute({}, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("get-shop-info: GETs with no body, and unwraps `shop`", async () => {
   assertEquals(out, { shop: { id: "111", plan: "basic" } });
 });
 
-Deno.test("get-shop-info: falls back to the raw body when there's no `shop` key", async () => {
+test("get-shop-info: falls back to the raw body when there's no `shop` key", async () => {
   const { ctx } = mockCtx([{ body: { unexpected: true } }]);
   const out = await getShopInfo.execute({}, ctx);
   assertEquals(out, { shop: { unexpected: true } });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, PAGE_ID } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -23,13 +24,13 @@ const summary = (over: Record<string, string> = {}) => ({
   status: { indicator: "none" },
 });
 
-Deno.test("service: a unsigned status-feed check on status.peopledatalabs.com", () => {
+test("service: a unsigned status-feed check on status.peopledatalabs.com", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.peopledatalabs.com"]);
 });
 
-Deno.test("service: all operational is ok, group rows are skipped", async () => {
+test("service: all operational is ok, group rows are skipped", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -37,7 +38,7 @@ Deno.test("service: all operational is ok, group rows are skipped", async () => 
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/summary.json");
 });
 
-Deno.test("service: an API component outage drives the verdict", async () => {
+test("service: an API component outage drives the verdict", async () => {
   const r = await service.check!(
     {} as never,
     mockCtx([{ body: summary({ c1: "major_outage" }) }]).ctx,
@@ -46,7 +47,7 @@ Deno.test("service: an API component outage drives the verdict", async () => {
   assert(r.message!.includes("Person Enrichment API (major_outage)"));
 });
 
-Deno.test("service: sandbox and dashboard trouble is shown but does not drive the verdict", async () => {
+test("service: sandbox and dashboard trouble is shown but does not drive the verdict", async () => {
   const r = await service.check!(
     {} as never,
     mockCtx([{ body: summary({ s1: "major_outage", w1: "partial_outage" }) }]).ctx,
@@ -56,7 +57,7 @@ Deno.test("service: sandbox and dashboard trouble is shown but does not drive th
   assert(r.message!.includes("Sandbox Person Search API"));
 });
 
-Deno.test("service: a foreign page, a bad body and an HTTP error are unknown, never down", async () => {
+test("service: a foreign page, a bad body and an HTTP error are unknown, never down", async () => {
   const foreign = await service.check!(
     {} as never,
     mockCtx([{ body: { ...summary(), page: { id: "zzz" } } }]).ctx,
@@ -76,7 +77,7 @@ Deno.test("service: a foreign page, a bad body and an HTTP error are unknown, ne
   );
 });
 
-Deno.test("service: maps Statuspage's component vocabulary", () => {
+test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

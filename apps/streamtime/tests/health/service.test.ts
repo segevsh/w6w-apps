@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_NAME,
   componentKey,
@@ -28,14 +29,14 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, unsigned, with its own allowlist", () => {
+test("service: probes the status host, unsigned, with its own allowlist", () => {
   assertEquals(STATUS_URL, "https://streamtime.statuspage.io/api/v2/summary.json");
   assertEquals(service.network?.allow, ["streamtime.statuspage.io"]);
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
 });
 
-Deno.test("service: an all-operational page reports ok", async () => {
+test("service: an all-operational page reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -49,7 +50,7 @@ Deno.test("service: an all-operational page reports ok", async () => {
  * API for our MCP Server"). A substring match would pick the wrong component, so
  * the roll-up matches the name exactly.
  */
-Deno.test("service: the verdict comes from the component named API, matched exactly", async () => {
+test("service: the verdict comes from the component named API, matched exactly", async () => {
   assertEquals(API_COMPONENT_NAME, "API");
 
   const { ctx } = mockCtx([
@@ -70,7 +71,7 @@ Deno.test("service: the verdict comes from the component named API, matched exac
   assert(report.message?.includes("MCP API (major_outage)"), report.message);
 });
 
-Deno.test("service: a Frontend outage alone does not fail the API check", async () => {
+test("service: a Frontend outage alone does not fail the API check", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -86,7 +87,7 @@ Deno.test("service: a Frontend outage alone does not fail the API check", async 
   assert(report.message?.includes("affected: Frontend (major_outage)"), report.message);
 });
 
-Deno.test("service: a degraded API reports degraded, an outage reports down", async () => {
+test("service: a degraded API reports degraded, an outage reports down", async () => {
   for (
     const [status, expected] of [
       ["degraded_performance", "degraded"],
@@ -104,20 +105,20 @@ Deno.test("service: a degraded API reports degraded, an outage reports down", as
   }
 });
 
-Deno.test("service: mapComponentStatus is a three-value vocabulary", () => {
+test("service: mapComponentStatus is a three-value vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id, then a slug of the name", () => {
+test("service: componentKey prefers the vendor id, then a slug of the name", () => {
   assertEquals(componentKey({ id: "yk5flc04qqv8", name: "API" }, 0), "yk5flc04qqv8");
   assertEquals(componentKey({ name: "MCP API" }, 3), "mcp-api-3");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("service: a renamed page is not trusted", async () => {
+test("service: a renamed page is not trusted", async () => {
   const { ctx } = mockCtx([
     { body: summary({ page: { name: "Somebody Else", url: "https://other.statuspage.io" } }) },
   ]);
@@ -126,7 +127,7 @@ Deno.test("service: a renamed page is not trusted", async () => {
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page that no longer lists an API component is unknown", async () => {
+test("service: a page that no longer lists an API component is unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary({ components: [{ id: "a", name: "Frontend", status: "operational" }] }) },
   ]);
@@ -135,12 +136,12 @@ Deno.test("service: a page that no longer lists an API component is unknown", as
   assert(/no longer lists a component named "API"/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a broken status API says nothing about Streamtime", async () => {
+test("service: a broken status API says nothing about Streamtime", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "oops" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: group containers are excluded, incidents are counted", async () => {
+test("service: group containers are excluded, incidents are counted", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -159,7 +160,7 @@ Deno.test("service: group containers are excluded, incidents are counted", async
   assert(report.message?.includes("1 scheduled maintenance window(s)"), report.message);
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "not json" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

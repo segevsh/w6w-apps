@@ -1,11 +1,13 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as { w6w: { id: string; categories: string[]; network: { allow: string[] } } };
 
-Deno.test("index: exports 30 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 30 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 30);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -17,14 +19,14 @@ Deno.test("index: exports 30 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
 });
 
 /** Creating something new (a user, an org, an invitation, a token) is never safe to retry blindly. */
-Deno.test("index: the actions that duplicate on a retry say so", () => {
+test("index: the actions that duplicate on a retry say so", () => {
   const notIdempotent = app.actions.filter((a) => a.idempotent === false).map((a) => a.key).sort();
   assertEquals(notIdempotent, [
     "invitation-create",
@@ -37,7 +39,7 @@ Deno.test("index: the actions that duplicate on a retry say so", () => {
 });
 
 /** Deleting a user frees their identifier for reuse and does not revoke tokens — irreversible. */
-Deno.test("index: user-delete is gated behind a confirmation", () => {
+test("index: user-delete is gated behind a confirmation", () => {
   const action = app.actions.find((a) => a.key === "user-delete")!;
   const confirm = (action.params as Array<{ key: string; required?: boolean }>)
     .find((p) => p.key === "confirm");
@@ -46,7 +48,7 @@ Deno.test("index: user-delete is gated behind a confirmation", () => {
 });
 
 /** Deleting an organization cascades to its memberships and invitations — irreversible. */
-Deno.test("index: organization-delete is gated behind a confirmation", () => {
+test("index: organization-delete is gated behind a confirmation", () => {
   const action = app.actions.find((a) => a.key === "organization-delete")!;
   const confirm = (action.params as Array<{ key: string; required?: boolean }>)
     .find((p) => p.key === "confirm");
@@ -55,11 +57,11 @@ Deno.test("index: organization-delete is gated behind a confirmation", () => {
 });
 
 /** Only the auth hook may hold the Secret Key. */
-Deno.test("index: no action outside auth/ reads or builds a credential", async () => {
+test("index: no action outside auth/ reads or builds a credential", async () => {
   for (const dir of ["actions", "lib", "health"]) {
-    for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+    for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
       if (!entry.name.endsWith(".ts")) continue;
-      const src = await Deno.readTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url));
+      const src = await denoReadTextFile(new URL(`../${dir}/${entry.name}`, import.meta.url));
       const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
       assert(!/secretKey\s*[:=]\s*["'`]sk_/.test(code), `${dir}/${entry.name} hardcodes a key`);
       assert(
@@ -71,22 +73,22 @@ Deno.test("index: no action outside auth/ reads or builds a credential", async (
 });
 
 /** Every Action calls only the declared host; nothing reaches status.clerk.com directly. */
-Deno.test("index: the egress allowlist is exactly api.clerk.com", () => {
+test("index: the egress allowlist is exactly api.clerk.com", () => {
   assertEquals(manifest.w6w.network.allow, ["api.clerk.com"]);
 });
 
-Deno.test("index: one auth method and two declared health checks", () => {
+test("index: one auth method and two declared health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["secret-key"]);
   assertEquals(app.healthChecks!.map((h) => h.key).sort(), ["instance", "service"]);
 });
 
-Deno.test("index: the manifest's categories are in the controlled vocabulary", () => {
+test("index: the manifest's categories are in the controlled vocabulary", () => {
   assertEquals(manifest.w6w.id, "io.w6w.clerk");
   assertEquals(manifest.w6w.categories, ["security", "developer-tools"]);
 });
 
 /** The `{ data, totalCount? }` output shape is deliberately uniform across every list action. */
-Deno.test("index: every list-shaped action normalises its output to `data`", () => {
+test("index: every list-shaped action normalises its output to `data`", () => {
   const listActions = app.actions.filter((a) => a.key.endsWith("-list"));
   assert(listActions.length >= 7, "expected at least 7 list actions");
   for (const a of listActions) {

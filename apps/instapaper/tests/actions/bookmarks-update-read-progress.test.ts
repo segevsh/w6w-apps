@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookmarksUpdateReadProgress from "../../actions/bookmarks-update-read-progress.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bookmarks-update-read-progress: sends progress and timestamp, returns the modified bookmark", async () => {
+test("bookmarks-update-read-progress: sends progress and timestamp, returns the modified bookmark", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ type: "bookmark", bookmark_id: 5, progress: 0.5 }]),
   }]);
@@ -20,7 +21,7 @@ Deno.test("bookmarks-update-read-progress: sends progress and timestamp, returns
   assertEquals(result, { type: "bookmark", bookmark_id: 5, progress: 0.5 });
 });
 
-Deno.test("bookmarks-update-read-progress: throws if Instapaper returns no bookmark", async () => {
+test("bookmarks-update-read-progress: throws if Instapaper returns no bookmark", async () => {
   const { ctx } = mockCtx([{ body: envelope([]) }]);
   await assertRejects(
     async () =>
@@ -34,6 +35,6 @@ Deno.test("bookmarks-update-read-progress: throws if Instapaper returns no bookm
   );
 });
 
-Deno.test("bookmarks-update-read-progress: is marked idempotent", () => {
+test("bookmarks-update-read-progress: is marked idempotent", () => {
   assertEquals(bookmarksUpdateReadProgress.idempotent, true);
 });

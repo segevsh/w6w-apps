@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapIndicator, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,13 +9,13 @@ const summary = (indicator: string, name = "RecruitCRM") => ({
   components: [],
 });
 
-Deno.test("service: is informational, unsigned and scoped to the status host", () => {
+test("service: is informational, unsigned and scoped to the status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.recruitcrm.io"]);
 });
 
-Deno.test("service: maps the page indicator", async () => {
+test("service: maps the page indicator", async () => {
   const cases: Array<[string, string]> = [
     ["none", "ok"],
     ["minor", "degraded"],
@@ -32,12 +33,12 @@ Deno.test("service: maps the page indicator", async () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: a feed with another page name is not trusted", async () => {
+test("service: a feed with another page name is not trusted", async () => {
   const { ctx } = mockCtx([{ body: summary("none", "Someone Else") }]);
   assertEquals((await service.check!({} as never, ctx)).state, "unknown");
 });
 
-Deno.test("service: HTTP errors and non-JSON bodies are unknown, not down", async () => {
+test("service: HTTP errors and non-JSON bodies are unknown, not down", async () => {
   const a = mockCtx([{ status: 503, body: "x" }]);
   assertEquals((await service.check!({} as never, a.ctx)).state, "unknown");
   const b = mockCtx([{ body: "<html>", headers: { "content-type": "text/html" } }]);

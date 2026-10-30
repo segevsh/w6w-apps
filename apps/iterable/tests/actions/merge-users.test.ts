@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/merge-users.ts";
 
-Deno.test("merge-users: metadata", () => {
+test("merge-users: metadata", () => {
   assertEquals(action.key, "merge-users");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -14,7 +15,7 @@ Deno.test("merge-users: metadata", () => {
   ]);
 });
 
-Deno.test("merge-users: calls POST /users/merge on the US host", async () => {
+test("merge-users: calls POST /users/merge on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({ "sourceEmail": "abc", "destinationEmail": "abc" }, ctx);
   assertEquals(calls.length, 1);
@@ -25,7 +26,7 @@ Deno.test("merge-users: calls POST /users/merge on the US host", async () => {
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("merge-users: uses the EU host when the connection region is eu", async () => {
+test("merge-users: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -33,7 +34,7 @@ Deno.test("merge-users: uses the EU host when the connection region is eu", asyn
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/merge");
 });
 
-Deno.test("merge-users: rejects an input with no identifier without calling Iterable", async () => {
+test("merge-users: rejects an input with no identifier without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -45,7 +46,7 @@ Deno.test("merge-users: rejects an input with no identifier without calling Iter
   assertEquals(calls.length, 0);
 });
 
-Deno.test("merge-users: rejects more than one of sourceEmail, sourceUserId", async () => {
+test("merge-users: rejects more than one of sourceEmail, sourceUserId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -60,7 +61,7 @@ Deno.test("merge-users: rejects more than one of sourceEmail, sourceUserId", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("merge-users: rejects more than one of destinationEmail, destinationUserId", async () => {
+test("merge-users: rejects more than one of destinationEmail, destinationUserId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -76,7 +77,7 @@ Deno.test("merge-users: rejects more than one of destinationEmail, destinationUs
   assertEquals(calls.length, 0);
 });
 
-Deno.test("merge-users: surfaces an HTTP error with Iterable's own code", async () => {
+test("merge-users: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -87,7 +88,7 @@ Deno.test("merge-users: surfaces an HTTP error with Iterable's own code", async 
   );
 });
 
-Deno.test("merge-users: treats a 200 carrying a non-Success code as a failure", async () => {
+test("merge-users: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clockOut from "../../actions/clock-out.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("clock-out: POSTs to the time clock's clock-out path", async () => {
+test("clock-out: POSTs to the time clock's clock-out path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ shift: { id: "sh_1" } }) }]);
   const out = await clockOut.execute({ timeClockId: 99, userId: 7 }, ctx);
   assertEquals(pathOf(calls[0].url), "/time-clock/v1/time-clocks/99/clock-out");
@@ -11,6 +12,6 @@ Deno.test("clock-out: POSTs to the time clock's clock-out path", async () => {
   assertEquals(out, { shift: { id: "sh_1" } });
 });
 
-Deno.test("clock-out: not idempotent — a retry has no open shift left to close", () => {
+test("clock-out: not idempotent — a retry has no open shift left to close", () => {
   assertEquals(clockOut.idempotent, false);
 });

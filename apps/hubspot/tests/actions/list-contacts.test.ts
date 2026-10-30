@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-contacts.ts";
 
-Deno.test("list-contacts: GETs /crm/v3/objects/contacts with paging cursor", async () => {
+test("list-contacts: GETs /crm/v3/objects/contacts with paging cursor", async () => {
   const { ctx, calls } = mockCtx([
     { body: { results: [{ id: "1" }], paging: { next: { after: "cursor2" } } } },
   ]);

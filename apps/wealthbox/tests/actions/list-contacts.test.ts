@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-contacts.ts";
 
-Deno.test("list-contacts: is a search action", () => {
+test("list-contacts: is a search action", () => {
   assertEquals(action.type, "search");
 });
 
-Deno.test("list-contacts: GETs /contacts with mapped filters and pagination", async () => {
+test("list-contacts: GETs /contacts with mapped filters and pagination", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { contacts: [] } }]);
   await action.execute({
     name: "Kevin",
@@ -28,14 +29,14 @@ Deno.test("list-contacts: GETs /contacts with mapped filters and pagination", as
   assertEquals(url.searchParams.get("per_page"), "50");
 });
 
-Deno.test("list-contacts: omits filters the caller did not supply", async () => {
+test("list-contacts: omits filters the caller did not supply", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { contacts: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
   assertEquals([...url.searchParams.keys()].length, 0);
 });
 
-Deno.test("list-contacts: returns the parsed response", async () => {
+test("list-contacts: returns the parsed response", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { contacts: [{ id: 1 }] } }]);
   const result = await action.execute({}, ctx) as { contacts: unknown[] };
   assertEquals(result.contacts.length, 1);

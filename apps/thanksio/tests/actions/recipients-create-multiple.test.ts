@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import recipientsCreateMultiple from "../../actions/recipients-create-multiple.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipients-create-multiple: calls POST /api/v2/recipients-utils/create-multiple and shapes the output", async () => {
+test("recipients-create-multiple: calls POST /api/v2/recipients-utils/create-multiple and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "name": "A" }, { "email": "b@x.io" }] }]);
   const out = await recipientsCreateMultiple.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("recipients-create-multiple: calls POST /api/v2/recipients-utils/creat
   assert((out.recipients as unknown[]).length === 2, JSON.stringify(out));
 });
 
-Deno.test("recipients-create-multiple: a vendor error surfaces the HTTP status and message", async () => {
+test("recipients-create-multiple: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { "message": "Mailing List Does Not Exist" } }]);
   const err = await assertRejects(
     () =>
@@ -43,7 +44,7 @@ Deno.test("recipients-create-multiple: a vendor error surfaces the HTTP status a
   assert(err.message.includes("HTTP 400") && err.message.includes("Does Not Exist"), err.message);
 });
 
-Deno.test("recipients-create-multiple: rejects an empty array", async () => {
+test("recipients-create-multiple: rejects an empty array", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(recipientsCreateMultiple.execute({ recipients: "[]" } as never, ctx)),

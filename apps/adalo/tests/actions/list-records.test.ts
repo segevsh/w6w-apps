@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { APP_ID, mockConnectedCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/list-records.ts";
 
-Deno.test("list-records: GETs /v0/apps/{appId}/collections/{id} with query params", async () => {
+test("list-records: GETs /v0/apps/{appId}/collections/{id} with query params", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { records: [{ id: 1 }] } }]);
   const result = await action.execute!(
     { collectionId: "c1", offset: 10, limit: 5, filterKey: "Status", filterValue: "open" },
@@ -19,7 +20,7 @@ Deno.test("list-records: GETs /v0/apps/{appId}/collections/{id} with query param
   assertEquals(result, { records: [{ id: 1 }] });
 });
 
-Deno.test("list-records: omits unset query params entirely", async () => {
+test("list-records: omits unset query params entirely", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { records: [] } }]);
   await action.execute!({ collectionId: "c1" }, ctx);
   assertEquals(queryOf(calls[0].url), {});

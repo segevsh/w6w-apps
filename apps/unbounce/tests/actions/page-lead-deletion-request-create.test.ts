@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pageLeadDeletionRequestCreate from "../../actions/page-lead-deletion-request-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("page-lead-deletion-request-create: posts a lead_ids array parsed from a CSV string", async () => {
+test("page-lead-deletion-request-create: posts a lead_ids array parsed from a CSV string", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "req-1", status: "pending" } }]);
   await pageLeadDeletionRequestCreate.execute(
     { pageId: "p1", leadIds: "l1, l2 ,l3" },
@@ -13,7 +14,7 @@ Deno.test("page-lead-deletion-request-create: posts a lead_ids array parsed from
   assertEquals(JSON.parse(calls[0].body!), { lead_ids: ["l1", "l2", "l3"] });
 });
 
-Deno.test("page-lead-deletion-request-create: all_leads mode omits lead_ids", async () => {
+test("page-lead-deletion-request-create: all_leads mode omits lead_ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "req-1", status: "pending" } }]);
   await pageLeadDeletionRequestCreate.execute({ pageId: "p1", allLeads: true }, ctx);
 

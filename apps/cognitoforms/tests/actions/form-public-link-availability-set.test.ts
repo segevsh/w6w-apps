@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-public-link-availability-set.ts";
 
-Deno.test("form-public-link-availability-set: POSTs Start/End/Message to /forms/{formId}/public-link-availability", async () => {
+test("form-public-link-availability-set: POSTs Start/End/Message to /forms/{formId}/public-link-availability", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -33,6 +34,6 @@ Deno.test("form-public-link-availability-set: POSTs Start/End/Message to /forms/
   });
 });
 
-Deno.test("form-public-link-availability-set: is idempotent", () => {
+test("form-public-link-availability-set: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ragDocumentUpdate from "../../actions/rag-document-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rag-document-update: PATCHes status only when annotation is omitted", async () => {
+test("rag-document-update: PATCHes status only when annotation is omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "doc1", status: "Active" } }]);
   await ragDocumentUpdate.execute({ documentId: "doc1", status: "Active" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("rag-document-update: PATCHes status only when annotation is omitted",
   assertEquals(JSON.parse(calls[0].body ?? "{}"), { status: "Active" });
 });
 
-Deno.test("rag-document-update: parses a text annotation into JSON before sending", async () => {
+test("rag-document-update: parses a text annotation into JSON before sending", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "doc1", status: "Active" } }]);
   await ragDocumentUpdate.execute(
     { documentId: "doc1", annotation: '{"fields":[{"name":"total"}]}' },

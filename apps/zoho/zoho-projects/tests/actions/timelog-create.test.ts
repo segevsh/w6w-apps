@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timelogCreate from "../../actions/timelog-create.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("timelog-create: POST /api/v3/portal/1/projects/2/log", async () => {
+test("timelog-create: POST /api/v3/portal/1/projects/2/log", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: { "id": "70" } }]);
   const res = await timelogCreate.execute(
     {

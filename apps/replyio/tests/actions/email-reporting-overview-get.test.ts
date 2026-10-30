@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailReportingOverviewGet from "../../actions/email-reporting-overview-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-reporting-overview-get: POSTs {filters} — filters is always present, even empty", async () => {
+test("email-reporting-overview-get: POSTs {filters} — filters is always present, even empty", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacted: 10, delivered: 9, replied: 2 } }]);
   const out = await emailReportingOverviewGet.execute({}, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("email-reporting-overview-get: POSTs {filters} — filters is always p
   assertEquals(out as unknown, { contacted: 10, delivered: 9, replied: 2 });
 });
 
-Deno.test("email-reporting-overview-get: a date range preset and sequence scoping are forwarded", async () => {
+test("email-reporting-overview-get: a date range preset and sequence scoping are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await emailReportingOverviewGet.execute(
     { dateRangePreset: "lastWeek", sequenceIds: "[1,2]" },

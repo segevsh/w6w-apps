@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealUpdate from "../../actions/deal-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("deal-update: PATCH /v1/deals/{dealId}/", async () => {
+test("deal-update: PATCH /v1/deals/{dealId}/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 5 } }]);
   const result = await dealUpdate.execute({ dealId: "5", dealSource: "Email" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -14,12 +15,12 @@ Deno.test("deal-update: PATCH /v1/deals/{dealId}/", async () => {
   assertEquals(result, { id: 5 });
 });
 
-Deno.test("deal-update: declares type perform", () => {
+test("deal-update: declares type perform", () => {
   assertEquals(dealUpdate.type, "perform");
   assertEquals(dealUpdate.idempotent, true);
 });
 
-Deno.test("deal-update: surfaces the vendor error body", async () => {
+test("deal-update: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

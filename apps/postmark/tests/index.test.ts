@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 13 unique actions, one auth method, two health checks", () => {
+test("index: exports 13 unique actions, one auth method, two health checks", () => {
   assertEquals(app.actions.length, 13);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -10,7 +11,7 @@ Deno.test("index: exports 13 unique actions, one auth method, two health checks"
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: every action declares a type, title, and params array", () => {
+test("index: every action declares a type, title, and params array", () => {
   for (const action of app.actions) {
     assert(["read", "search", "perform"].includes(action.type), `${action.key}: valid type`);
     assert(action.title.length > 0, `${action.key}: has a title`);
@@ -18,7 +19,7 @@ Deno.test("index: every action declares a type, title, and params array", () => 
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assert(typeof action.idempotent === "boolean", `${action.key}: declares idempotent`);

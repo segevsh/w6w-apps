@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connection-list.ts";
 
@@ -8,7 +9,7 @@ const page = (data: unknown[], total = data.length) => ({
   body: { data, extra: { pagination: { count: data.length, total_count: total } } },
 });
 
-Deno.test("connection-list: reads every warehouse connection in the account by default", async () => {
+test("connection-list: reads every warehouse connection in the account by default", async () => {
   const { ctx, calls } = mockCtx([page([{ id: 1, type: "snowflake" }])], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(
@@ -18,7 +19,7 @@ Deno.test("connection-list: reads every warehouse connection in the account by d
   assertEquals(result.count, 1);
 });
 
-Deno.test("connection-list: a project scopes it to that project's own path", async () => {
+test("connection-list: a project scopes it to that project's own path", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ projectId: "3" }, ctx);
   assertEquals(
@@ -28,7 +29,7 @@ Deno.test("connection-list: a project scopes it to that project's own path", asy
 });
 
 /** A connection here is a warehouse, not an authentication link. */
-Deno.test("connection-list: says what a connection is, and what it does not carry", () => {
+test("connection-list: says what a connection is, and what it does not carry", () => {
   assert(/data warehouses/.test(action.description!), action.description);
   assert(/not its credentials/.test(action.description!), action.description);
 });

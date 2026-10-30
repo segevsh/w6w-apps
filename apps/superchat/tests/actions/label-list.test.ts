@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/label-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("label-list: requests one page and surfaces the next cursor", async () => {
+test("label-list: requests one page and surfaces the next cursor", async () => {
   const { ctx, calls } = mockCtx([{
     "body": {
       "url": "u",
@@ -48,7 +49,7 @@ Deno.test("label-list: requests one page and surfaces the next cursor", async ()
   });
 });
 
-Deno.test("label-list: rejects after + before together", async () => {
+test("label-list: rejects after + before together", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "after": "a", "before": "b" } as never, ctx),

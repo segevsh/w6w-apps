@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-solutions.ts";
 
-Deno.test("list-solutions: GETs /solutions/ and returns the bare array", async () => {
+test("list-solutions: GETs /solutions/ and returns the bare array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "sol1", name: "CRM" }] }]);
   const result = await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("list-solutions: GETs /solutions/ and returns the bare array", async (
   assertEquals(result, [{ id: "sol1", name: "CRM" }]);
 });
 
-Deno.test("list-solutions: coerces a non-array body to an empty array", async () => {
+test("list-solutions: coerces a non-array body to an empty array", async () => {
   const { ctx } = mockCtx([{ body: { unexpected: true } }]);
   assertEquals(await action.execute!({}, ctx), []);
 });

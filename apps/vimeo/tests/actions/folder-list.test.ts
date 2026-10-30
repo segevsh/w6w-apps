@@ -1,18 +1,19 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderList from "../../actions/folder-list.ts";
 import { collection, mockCtx, q, url } from "../_helpers.ts";
 
 const folder = { uri: "/users/152184/projects/12345", name: "Rough cuts" };
 
 /** Folders are `projects` in every path — the product word never appears there. */
-Deno.test("folder-list: hits /me/projects", async () => {
+test("folder-list: hits /me/projects", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([folder]) }]);
   const out = await folderList.execute({}, ctx);
   assertEquals(url(calls[0]).pathname, "/me/projects");
   assertEquals(out.total, 1);
 });
 
-Deno.test("folder-list: forwards query, sort, direction, pagination and fields", async () => {
+test("folder-list: forwards query, sort, direction, pagination and fields", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await folderList.execute({
     query: "rough",
@@ -30,6 +31,6 @@ Deno.test("folder-list: forwards query, sort, direction, pagination and fields",
   assertEquals(q(calls[0], "fields"), "uri,name");
 });
 
-Deno.test("folder-list: is a search action", () => {
+test("folder-list: is a search action", () => {
   assertEquals(folderList.type, "search");
 });

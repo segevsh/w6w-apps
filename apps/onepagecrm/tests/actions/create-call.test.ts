@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createCall from "../../actions/create-call.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-call: POST /calls maps call_time_int, call_result and recording_link", async () => {
+test("create-call: POST /calls maps call_time_int, call_result and recording_link", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ call: { id: "k1" } }) }]);
   const out = await createCall.execute({
     contactId: "c1",

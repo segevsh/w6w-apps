@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import muralSearch from "../../actions/mural-search.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "workspaceId": "ws12345", "q": "retro", "roomId": 5, "limit": 10, "next": "tok1" };
 
-Deno.test("mural-search: GET /search/{workspaceId}/murals", async () => {
+test("mural-search: GET /search/{workspaceId}/murals", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "a" }, { "id": "b" }], "next": "NXT" },
@@ -26,7 +27,7 @@ Deno.test("mural-search: GET /search/{workspaceId}/murals", async () => {
   assertEquals(out.next, "NXT");
 });
 
-Deno.test("mural-search: puts no credential on the request (sign owns that)", async () => {
+test("mural-search: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "a" }, { "id": "b" }], "next": "NXT" },
@@ -35,7 +36,7 @@ Deno.test("mural-search: puts no credential on the request (sign owns that)", as
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("mural-search: a vendor error surfaces its own code and message", async () => {
+test("mural-search: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -46,7 +47,7 @@ Deno.test("mural-search: a vendor error surfaces its own code and message", asyn
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("mural-search: an empty workspaceId is refused before any request", async () => {
+test("mural-search: an empty workspaceId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await muralSearch.execute({ ...INPUT, workspaceId: "  " as never }, ctx)

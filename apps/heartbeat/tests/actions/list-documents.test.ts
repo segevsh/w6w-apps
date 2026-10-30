@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listDocuments from "../../actions/list-documents.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-documents: GET /documents, wrapped under `documents` — bare array, no hasMore", async () => {
+test("list-documents: GET /documents, wrapped under `documents` — bare array, no hasMore", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "d1", name: "Readme" }] }]);
   const out = await listDocuments.execute({ startingAfter: "d0", limit: 50 }, ctx) as {
     documents: unknown[];

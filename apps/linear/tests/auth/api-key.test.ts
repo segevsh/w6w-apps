@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is `custom`, because the key carries no auth scheme", () => {
+test("api-key: is `custom`, because the key carries no auth scheme", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "custom");
   assertEquals(auth.fields?.length, 1);
@@ -10,7 +11,7 @@ Deno.test("api-key: is `custom`, because the key carries no auth scheme", () => 
   assert(auth.fields![0].required);
 });
 
-Deno.test("api-key: sign sends the raw key with no Bearer prefix", async () => {
+test("api-key: sign sends the raw key with no Bearer prefix", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.linear.app/graphql",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign sends the raw key with no Bearer prefix", async () => {
   assertEquals(out.headers["authorization"], "lin_api_x");
 });
 
-Deno.test("api-key: test refuses an empty credential without a request", async () => {
+test("api-key: test refuses an empty credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -31,7 +32,7 @@ Deno.test("api-key: test refuses an empty credential without a request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test reports a GraphQL error returned with a 200", async () => {
+test("api-key: test reports a GraphQL error returned with a 200", async () => {
   const bad = mockCtx([{
     status: 200,
     body: { errors: [{ message: "Authentication required" }] },
@@ -45,7 +46,7 @@ Deno.test("api-key: test reports a GraphQL error returned with a 200", async () 
   assertEquals(await auth.test({ credential: { apiKey: "x" } }, ok.ctx), { ok: true });
 });
 
-Deno.test("api-key: afterConnect labels with the user and organisation", async () => {
+test("api-key: afterConnect labels with the user and organisation", async () => {
   const { ctx } = mockCtx([{
     body: { data: { viewer: { id: "u1", name: "Jo" }, organization: { id: "o1", name: "Acme" } } },
   }]);

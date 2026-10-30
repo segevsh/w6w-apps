@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/record-list.ts";
 import { ZohoCreatorApiError } from "../../lib/client.ts";
 
-Deno.test("record-list: GETs /data/<owner>/<app>/report/<report> with from/limit/criteria", async () => {
+test("record-list: GETs /data/<owner>/<app>/report/<report> with from/limit/criteria", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { code: 3000, data: [{ ID: "1", Email: "a@b.com" }] } },
   ]);
@@ -26,7 +27,7 @@ Deno.test("record-list: GETs /data/<owner>/<app>/report/<report> with from/limit
   assertEquals(out, { records: [{ ID: "1", Email: "a@b.com" }] });
 });
 
-Deno.test("record-list: sends environment/demo_user_name headers when set", async () => {
+test("record-list: sends environment/demo_user_name headers when set", async () => {
   const { ctx, calls } = mockCreatorCtx([{ body: { code: 3000, data: [] } }]);
   await action.execute(
     {
@@ -47,7 +48,7 @@ Deno.test("record-list: sends environment/demo_user_name headers when set", asyn
  * "description":"No records found for the given criteria."}` — a real, non-error
  * outcome, folded into an empty array rather than thrown.
  */
-Deno.test("record-list: a code-3100 404 (no records found) is an empty array, not a thrown error", async () => {
+test("record-list: a code-3100 404 (no records found) is an empty array, not a thrown error", async () => {
   const { ctx } = mockCreatorCtx([
     { status: 404, body: { code: 3100, description: "No records found for the given criteria." } },
   ]);
@@ -58,7 +59,7 @@ Deno.test("record-list: a code-3100 404 (no records found) is an empty array, no
   assertEquals(out, { records: [] });
 });
 
-Deno.test("record-list: any other error still throws", async () => {
+test("record-list: any other error still throws", async () => {
   const { ctx } = mockCreatorCtx([
     { status: 401, body: { code: 1030, description: "Authorization Failure." } },
   ]);

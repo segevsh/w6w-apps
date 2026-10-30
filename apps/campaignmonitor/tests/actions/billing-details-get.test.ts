@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import billingDetailsGet from "../../actions/billing-details-get.ts";
 import { API_PATH, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("billing-details-get: GETs the account-level /billingdetails.json", async () => {
+test("billing-details-get: GETs the account-level /billingdetails.json", async () => {
   const { ctx, calls } = mockCtx([{ body: { Credits: 3021 } }]);
   const out = await billingDetailsGet.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), `${API_PATH}/billingdetails.json`);
@@ -13,7 +14,7 @@ Deno.test("billing-details-get: GETs the account-level /billingdetails.json", as
  * A non-agency customer gets 403 with code 403 — a live credential refused an
  * endpoint. The message must say so rather than flattening to "forbidden".
  */
-Deno.test("billing-details-get: surfaces the non-agency 403 with its code", async () => {
+test("billing-details-get: surfaces the non-agency 403 with its code", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody(403, "Not allowed for a Non-agency Customer.") },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-templates.ts";
 
-Deno.test("list-templates: metadata", () => {
+test("list-templates: metadata", () => {
   assertEquals(action.key, "list-templates");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -16,7 +17,7 @@ Deno.test("list-templates: metadata", () => {
   ]);
 });
 
-Deno.test("list-templates: calls GET /templates on the US host", async () => {
+test("list-templates: calls GET /templates on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "templates": [{ "templateId": 1 }] } }]);
   const out = await action.execute({
     "templateType": "Base",
@@ -38,7 +39,7 @@ Deno.test("list-templates: calls GET /templates on the US host", async () => {
   assertEquals(out, { "templates": [{ "templateId": 1 }] });
 });
 
-Deno.test("list-templates: uses the EU host when the connection region is eu", async () => {
+test("list-templates: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "templates": [{ "templateId": 1 }] } }], {
     connection: { display: { region: "eu" } },
   });
@@ -57,7 +58,7 @@ Deno.test("list-templates: uses the EU host when the connection region is eu", a
   );
 });
 
-Deno.test("list-templates: surfaces an HTTP error with Iterable's own code", async () => {
+test("list-templates: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -76,7 +77,7 @@ Deno.test("list-templates: surfaces an HTTP error with Iterable's own code", asy
   );
 });
 
-Deno.test("list-templates: treats a 200 carrying a non-Success code as a failure", async () => {
+test("list-templates: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

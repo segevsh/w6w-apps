@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-routes-set.ts";
 
@@ -7,7 +8,7 @@ const current = (advertised: string[], enabled: string[]) => ({
   body: { advertisedRoutes: advertised, enabledRoutes: enabled },
 });
 
-Deno.test("device-routes-set: replace posts exactly the routes asked for", async () => {
+test("device-routes-set: replace posts exactly the routes asked for", async () => {
   const advertised = ["10.0.0.0/16", "192.168.1.0/24"];
   const { ctx, calls } = mockCtx([
     current(advertised, ["10.0.0.0/16"]),
@@ -24,7 +25,7 @@ Deno.test("device-routes-set: replace posts exactly the routes asked for", async
 });
 
 /** A naive replace takes a network segment dark with no error anywhere. */
-Deno.test("device-routes-set: warns about the approvals a replace withdraws", async () => {
+test("device-routes-set: warns about the approvals a replace withdraws", async () => {
   const { ctx, logs } = mockCtx([
     current(["10.0.0.0/16", "192.168.1.0/24"], ["10.0.0.0/16"]),
     current(["10.0.0.0/16", "192.168.1.0/24"], ["192.168.1.0/24"]),
@@ -36,7 +37,7 @@ Deno.test("device-routes-set: warns about the approvals a replace withdraws", as
   );
 });
 
-Deno.test("device-routes-set: add merges with what is already enabled", async () => {
+test("device-routes-set: add merges with what is already enabled", async () => {
   const advertised = ["10.0.0.0/16", "192.168.1.0/24"];
   const { ctx, calls } = mockCtx([
     current(advertised, ["10.0.0.0/16"]),
@@ -50,7 +51,7 @@ Deno.test("device-routes-set: add merges with what is already enabled", async ()
   assertEquals(result.withdrawn, []);
 });
 
-Deno.test("device-routes-set: remove withdraws only the named routes", async () => {
+test("device-routes-set: remove withdraws only the named routes", async () => {
   const advertised = ["10.0.0.0/16", "192.168.1.0/24"];
   const { ctx, calls } = mockCtx([
     current(advertised, advertised),
@@ -61,7 +62,7 @@ Deno.test("device-routes-set: remove withdraws only the named routes", async () 
 });
 
 /** Approving all of the internet is not the same size of decision. */
-Deno.test("device-routes-set: refuses to approve an exit node without acknowledgement", async () => {
+test("device-routes-set: refuses to approve an exit node without acknowledgement", async () => {
   const { ctx, calls } = mockCtx([current(["0.0.0.0/0", "::/0"], [])]);
   const err = await assertRejects(
     async () => await action.execute({ deviceId: "n1", routes: "0.0.0.0/0, ::/0" }, ctx),
@@ -71,7 +72,7 @@ Deno.test("device-routes-set: refuses to approve an exit node without acknowledg
   assertEquals(calls.length, 1, "it must not post before refusing");
 });
 
-Deno.test("device-routes-set: allowExitNode lets it through", async () => {
+test("device-routes-set: allowExitNode lets it through", async () => {
   const advertised = ["0.0.0.0/0", "::/0"];
   const { ctx, calls } = mockCtx([current(advertised, []), current(advertised, advertised)]);
   const result = await action.execute(
@@ -83,7 +84,7 @@ Deno.test("device-routes-set: allowExitNode lets it through", async () => {
 });
 
 /** A device that already routes everything is not being made an exit node again. */
-Deno.test("device-routes-set: no acknowledgement needed when it was already an exit node", async () => {
+test("device-routes-set: no acknowledgement needed when it was already an exit node", async () => {
   const advertised = ["0.0.0.0/0", "::/0", "10.0.0.0/16"];
   const { ctx } = mockCtx([
     current(advertised, ["0.0.0.0/0", "::/0"]),
@@ -97,7 +98,7 @@ Deno.test("device-routes-set: no acknowledgement needed when it was already an e
 });
 
 /** Advertising is set on the machine, not through the API. */
-Deno.test("device-routes-set: warns about routes the device does not advertise", async () => {
+test("device-routes-set: warns about routes the device does not advertise", async () => {
   const { ctx, logs } = mockCtx([
     current(["10.0.0.0/16"], []),
     current(["10.0.0.0/16"], ["172.16.0.0/12"]),
@@ -113,7 +114,7 @@ Deno.test("device-routes-set: warns about routes the device does not advertise",
   );
 });
 
-Deno.test("device-routes-set: refuses an empty list rather than emptying the router", async () => {
+test("device-routes-set: refuses an empty list rather than emptying the router", async () => {
   const { ctx } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute({ deviceId: "n1", routes: "" }, ctx),

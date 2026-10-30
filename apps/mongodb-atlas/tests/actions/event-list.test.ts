@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-list.ts";
 
@@ -13,7 +14,7 @@ const page = {
   },
 };
 
-Deno.test("event-list: reads the project's events", async () => {
+test("event-list: reads the project's events", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -28,7 +29,7 @@ Deno.test("event-list: reads the project's events", async () => {
 });
 
 /** Without a window, page one is the last few minutes. */
-Deno.test("event-list: passes the type filter and the date window", async () => {
+test("event-list: passes the type filter and the date window", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -42,7 +43,7 @@ Deno.test("event-list: passes the type filter and the date window", async () => 
   assertEquals(url.searchParams.get("maxDate"), "2026-08-19T00:00:00Z");
 });
 
-Deno.test("event-list: newest first, so latest is the first entry", async () => {
+test("event-list: newest first, so latest is the first entry", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -53,7 +54,7 @@ Deno.test("event-list: newest first, so latest is the first entry", async () => 
 });
 
 /** The events themselves name people and clusters; the log records a count. */
-Deno.test("event-list: logs only how many, not who did what", async () => {
+test("event-list: logs only how many, not who did what", async () => {
   const { ctx, logs } = mockCtx([page]);
   await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx);
   assertEquals(logs[0].data, { count: 2 });
@@ -61,11 +62,11 @@ Deno.test("event-list: logs only how many, not who did what", async () => {
 });
 
 /** One service account per automation is what makes this readable later. */
-Deno.test("event-list: says automated changes are attributed to the service account", () => {
+test("event-list: says automated changes are attributed to the service account", () => {
   assert(/attributed to the SERVICE ACCOUNT/.test(action.description!), action.description);
 });
 
-Deno.test("event-list: unset filters are not sent", async () => {
+test("event-list: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e", eventTypes: "", minDate: "" }, ctx);
   const url = new URL(calls[0].url);

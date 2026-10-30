@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-list.ts";
 
@@ -9,7 +10,7 @@ const page = (data: unknown[], total = data.length) => ({
 });
 
 /** One call that answers which jobs are currently broken. */
-Deno.test("job-list: asks for the most recent run by default and counts the failures", async () => {
+test("job-list: asks for the most recent run by default and counts the failures", async () => {
   const { ctx, calls } = mockCtx([page([
     { id: 1, most_recent_run: { status: 20 } },
     { id: 2, most_recent_run: { status: 10 } },
@@ -24,7 +25,7 @@ Deno.test("job-list: asks for the most recent run by default and counts the fail
   assertEquals(result.jobs[1].lastRunStatusName, "Success");
 });
 
-Deno.test("job-list: a job with no run carries no invented status name", async () => {
+test("job-list: a job with no run carries no invented status name", async () => {
   const { ctx } = mockCtx([page([{ id: 1 }])], { display });
   const result = await action.execute!({ withLastRun: false }, ctx) as {
     jobs: Array<{ lastRunStatusName?: string }>;
@@ -33,7 +34,7 @@ Deno.test("job-list: a job with no run carries no invented status name", async (
 });
 
 /** This is why a CI job visible in the UI is missing from the API. */
-Deno.test("job-list: hides dbt's own CI jobs unless asked", async () => {
+test("job-list: hides dbt's own CI jobs unless asked", async () => {
   const hidden = mockCtx([page([])], { display });
   await action.execute!({}, hidden.ctx);
   assertEquals(new URL(hidden.calls[0].url).searchParams.get("is_system"), "false");
@@ -43,7 +44,7 @@ Deno.test("job-list: hides dbt's own CI jobs unless asked", async () => {
   assertEquals(new URL(shown.calls[0].url).searchParams.get("is_system"), null);
 });
 
-Deno.test("job-list: the project, environment and name filters reach the wire", async () => {
+test("job-list: the project, environment and name filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ projectId: "3", environmentId: "5", nameContains: "hourly" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -52,7 +53,7 @@ Deno.test("job-list: the project, environment and name filters reach the wire", 
   assertEquals(q.get("name__icontains"), "hourly");
 });
 
-Deno.test("job-list: the CI toggle explains the missing-job symptom", () => {
+test("job-list: the CI toggle explains the missing-job symptom", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "includeSystemJobs")!;
   assert(/missing from the API/.test(p.hint!), p.hint);

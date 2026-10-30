@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignCreate from "../../actions/campaign-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-create: POSTs to /v2/campaigns and converts googleAnalytics to 1/0", async () => {
+test("campaign-create: POSTs to /v2/campaigns and converts googleAnalytics to 1/0", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, message: "Campaign created", data: { id: "c1" } },
   }]);
@@ -26,7 +27,7 @@ Deno.test("campaign-create: POSTs to /v2/campaigns and converts googleAnalytics 
   assertEquals(body.content_type, "text");
 });
 
-Deno.test("campaign-create: omits google_analytics entirely when unset", async () => {
+test("campaign-create: omits google_analytics entirely when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "c1" } } }]);
   await campaignCreate.execute(
     { subject: "S", from: "F", replyTo: "r@x.com", contentType: "html" },

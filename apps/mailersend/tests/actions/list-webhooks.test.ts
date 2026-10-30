@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-webhooks.ts";
 import { exec, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-webhooks: GETs /v1/webhooks with the required domain_id", async () => {
+test("list-webhooks: GETs /v1/webhooks with the required domain_id", async () => {
   const body = page([{ id: "w1", name: "hook", events: ["activity.sent"] }]);
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await exec(action, { domainId: "d1", limit: 10 }, ctx);
@@ -11,7 +12,7 @@ Deno.test("list-webhooks: GETs /v1/webhooks with the required domain_id", async 
   assertEquals(out, body);
 });
 
-Deno.test("list-webhooks: strips signing secrets at any depth", async () => {
+test("list-webhooks: strips signing secrets at any depth", async () => {
   const { ctx } = mockCtx([{
     body: page([{ id: "w1", signing_secret: "s3cret", nested: { webhookSecret: "x", keep: 1 } }]),
   }]);
@@ -20,6 +21,6 @@ Deno.test("list-webhooks: strips signing secrets at any depth", async () => {
   assertEquals(JSON.stringify(out).includes("s3cret"), false);
 });
 
-Deno.test("list-webhooks: domainId is required", () => {
+test("list-webhooks: domainId is required", () => {
   assertEquals(action.params!.find((p) => p.key === "domainId")?.required, true);
 });

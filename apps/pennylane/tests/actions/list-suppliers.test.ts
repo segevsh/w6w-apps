@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, rejection } from "../_helpers.ts";
 import action from "../../actions/list-suppliers.ts";
 
 const PAGE = { items: [{ id: 3, name: "Papeterie SARL" }], has_more: false, next_cursor: null };
 
-Deno.test("list-suppliers: GETs /suppliers and returns the envelope", async () => {
+test("list-suppliers: GETs /suppliers and returns the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({}, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("list-suppliers: GETs /suppliers and returns the envelope", async () =
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-suppliers: carries cursor, limit and filter", async () => {
+test("list-suppliers: carries cursor, limit and filter", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({
     cursor: "eyJpZCI6MTAwfQ==",
@@ -31,7 +32,7 @@ Deno.test("list-suppliers: carries cursor, limit and filter", async () => {
   );
 });
 
-Deno.test("list-suppliers: a filter the vendor rejects is re-thrown, not swallowed", async () => {
+test("list-suppliers: a filter the vendor rejects is re-thrown, not swallowed", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: "bad_request", message: "Invalid filter operator" },

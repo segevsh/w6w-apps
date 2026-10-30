@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import entityQuery from "../../actions/entity-query.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("entity-query: POSTs the filter to /{Entity}/query, defaults the cap and match-all", async () => {
+test("entity-query: POSTs the filter to /{Entity}/query, defaults the cap and match-all", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       items: [{ id: 1, title: "T" }],
@@ -29,7 +30,7 @@ Deno.test("entity-query: POSTs the filter to /{Entity}/query, defaults the cap a
   });
 });
 
-Deno.test("entity-query: passes the caller's filter, includeFields and a capped maxRecords", async () => {
+test("entity-query: passes the caller's filter, includeFields and a capped maxRecords", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], pageDetails: {} } }], display);
   await run(entityQuery, {
     entity: "Companies",
@@ -44,7 +45,7 @@ Deno.test("entity-query: passes the caller's filter, includeFields and a capped 
   });
 });
 
-Deno.test("entity-query: reports nextPageUrl, and pageUrl follows it with a GET", async () => {
+test("entity-query: reports nextPageUrl, and pageUrl follows it with a GET", async () => {
   const next = "https://webservices2.autotask.net/ATServicesRest/V1.0/Tickets/query?paging=2";
   const first = mockCtx([{
     body: { items: [{ id: 1 }], pageDetails: { nextPageUrl: next } },
@@ -63,7 +64,7 @@ Deno.test("entity-query: reports nextPageUrl, and pageUrl follows it with a GET"
   assertEquals(page.items, [{ id: 2 }]);
 });
 
-Deno.test("entity-query: refuses an unknown entity, a webhook entity and a foreign pageUrl before any request", async () => {
+test("entity-query: refuses an unknown entity, a webhook entity and a foreign pageUrl before any request", async () => {
   const { ctx, calls } = mockCtx([], display);
   for (const entity of ["Nope", "TicketWebhooks", "CompanyAttachments", "ClientPortalUsers"]) {
     await assertRejects(() => run(entityQuery, { entity }, ctx), Error, "not a queryable");
@@ -76,7 +77,7 @@ Deno.test("entity-query: refuses an unknown entity, a webhook entity and a forei
   assertEquals(calls.length, 0);
 });
 
-Deno.test("entity-query: strips secrets from rows", async () => {
+test("entity-query: strips secrets from rows", async () => {
   const { ctx } = mockCtx(
     [{ body: { items: [{ id: 1, secretKey: "x" }], pageDetails: {} } }],
     display,

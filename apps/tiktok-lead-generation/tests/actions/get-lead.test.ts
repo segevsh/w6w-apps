@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getLead from "../../actions/get-lead.ts";
 import { API_ROOT, envelope, errorEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-lead: calls GET /lead/get/ with the standard scoping params", async () => {
+test("get-lead: calls GET /lead/get/ with the standard scoping params", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ leads: [{ lead_id: "1" }] }) },
   ]);
@@ -25,7 +26,7 @@ Deno.test("get-lead: calls GET /lead/get/ with the standard scoping params", asy
   assertEquals(out, { data: { leads: [{ lead_id: "1" }] } });
 });
 
-Deno.test("get-lead: omits optional params entirely when not supplied", async () => {
+test("get-lead: omits optional params entirely when not supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await getLead.execute({ advertiserId: "adv-1" }, ctx);
 
@@ -33,7 +34,7 @@ Deno.test("get-lead: omits optional params entirely when not supplied", async ()
   assertEquals(Object.keys(query).sort(), ["advertiser_id"]);
 });
 
-Deno.test("get-lead: a nonzero TikTok error code raises, carrying the message", async () => {
+test("get-lead: a nonzero TikTok error code raises, carrying the message", async () => {
   const { ctx } = mockCtx([
     { body: errorEnvelope(40105, "Access token is incorrect or has been revoked.") },
   ]);

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/access-grant-list.ts";
 import { listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("access-grant-list: is a read action that declares the shared pagination params", () => {
+test("access-grant-list: is a read action that declares the shared pagination params", () => {
   assertEquals(action.key, "access-grant-list");
   assertEquals(action.type, "read");
   const keys = action.params!.map((p) => p.key);
@@ -10,7 +11,7 @@ Deno.test("access-grant-list: is a read action that declares the shared paginati
   assertEquals(keys.includes("q"), false);
 });
 
-Deno.test("access-grant-list: GETs /api/v2/access_grants and folds the data/pagination envelope", async () => {
+test("access-grant-list: GETs /api/v2/access_grants and folds the data/pagination envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: listBody([{ id: 1 }, { id: 2 }], { page: 1, per_page: 20, total: 2, total_pages: 1 }) },
   ]);
@@ -23,7 +24,7 @@ Deno.test("access-grant-list: GETs /api/v2/access_grants and folds the data/pagi
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("access-grant-list: maps its inputs onto Simplero's snake_case / bracketed query keys", async () => {
+test("access-grant-list: maps its inputs onto Simplero's snake_case / bracketed query keys", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody([]) }]);
   await action.execute({
     ...{ resourceType: "Course", resourceId: 8, accessState: "active" },
@@ -39,13 +40,13 @@ Deno.test("access-grant-list: maps its inputs onto Simplero's snake_case / brack
   });
 });
 
-Deno.test("access-grant-list: has no search param and never sends q", async () => {
+test("access-grant-list: has no search param and never sends q", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody([]) }]);
   await action.execute({ q: "ignored" } as never, ctx);
   assertEquals(queryOf(calls[0].url).q, undefined);
 });
 
-Deno.test("access-grant-list: hasMore is true while pages remain", async () => {
+test("access-grant-list: hasMore is true while pages remain", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody([{ id: 1 }], {
@@ -63,7 +64,7 @@ Deno.test("access-grant-list: hasMore is true while pages remain", async () => {
   assertEquals(out.totalPages, 3);
 });
 
-Deno.test("access-grant-list: under cursor paging a full page means more may follow", async () => {
+test("access-grant-list: under cursor paging a full page means more may follow", async () => {
   const { ctx } = mockCtx([
     {
       body: listBody([{ id: 5 }, { id: 6 }], {
@@ -81,12 +82,12 @@ Deno.test("access-grant-list: under cursor paging a full page means more may fol
   assertEquals(out.page, null);
 });
 
-Deno.test("access-grant-list: a Bad API key 401 surfaces Simplero's own message", async () => {
+test("access-grant-list: a Bad API key 401 surfaces Simplero's own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Bad API key" } }]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "Bad API key");
 });
 
-Deno.test("access-grant-list: a 200 whose body is not a data array is an error", async () => {
+test("access-grant-list: a 200 whose body is not a data array is an error", async () => {
   const { ctx } = mockCtx([{ body: { nope: true } }]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "no `data` array");
 });

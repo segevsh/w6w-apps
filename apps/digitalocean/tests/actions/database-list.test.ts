@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/database-list.ts";
 
@@ -28,7 +29,7 @@ const page = {
   },
 };
 
-Deno.test("database-list: reads the clusters", async () => {
+test("database-list: reads the clusters", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v2/databases");
@@ -38,7 +39,7 @@ Deno.test("database-list: reads the clusters", async () => {
 });
 
 /** The URI embeds the admin password; a workflow's data is a log. */
-Deno.test("database-list: returns the host and port and never the connection URI", async () => {
+test("database-list: returns the host and port and never the connection URI", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   const serialised = JSON.stringify(result);
@@ -52,26 +53,26 @@ Deno.test("database-list: returns the host and port and never the connection URI
 });
 
 /** Private traffic is not billed and does not leave the VPC. */
-Deno.test("database-list: returns the private endpoint separately", async () => {
+test("database-list: returns the private endpoint separately", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   const cluster = (result.databases as Array<Record<string, unknown>>)[0];
   assertEquals(cluster.privateHost, "private-db-1.db.ondigitalocean.com");
 });
 
-Deno.test("database-list: counts by status", async () => {
+test("database-list: counts by status", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.byStatus, { online: 1 });
 });
 
 /** The firewall starts closed and presents as a timeout. */
-Deno.test("database-list: says the password is stripped and why", () => {
+test("database-list: says the password is stripped and why", () => {
   assert(/embed the ADMIN PASSWORD/.test(action.description!), action.description);
   assert(/a credential in a log/.test(action.description!), action.description);
 });
 
-Deno.test("database-list: no clusters is not an error", async () => {
+test("database-list: no clusters is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { databases: [], meta: { total: 0 } } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

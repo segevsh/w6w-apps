@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   PUBLIC_API_COMPONENT_ID,
@@ -20,20 +21,20 @@ function summary(apiStatus: string, over: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: judges the Public API component, not other components or the roll-up", async () => {
+test("service: judges the Public API component, not other components or the roll-up", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("operational") }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(r.state, "ok"); // US Payroll is in major_outage and must not leak in
 });
 
-Deno.test("service: partial and major outage of the Public API map to degraded / down", async () => {
+test("service: partial and major outage of the Public API map to degraded / down", async () => {
   const { ctx } = mockCtx([{ body: summary("partial_outage") }, { body: summary("major_outage") }]);
   assertEquals((await service.check!({} as never, ctx)).state, "degraded");
   assertEquals((await service.check!({} as never, ctx)).state, "down");
 });
 
-Deno.test("service: a different page identity, missing component or bad body is unknown", async () => {
+test("service: a different page identity, missing component or bad body is unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary("operational", { page: { id: "other", name: "Someone Else" } }) },
     { body: summary("operational", { components: [] }) },
@@ -45,7 +46,7 @@ Deno.test("service: a different page identity, missing component or bad body is 
   }
 });
 
-Deno.test("service: declares its own status host and no credential", () => {
+test("service: declares its own status host and no credential", () => {
   assertEquals(service.network, { allow: ["status.hibob.io"] });
   assertEquals(service.credential, "none");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");

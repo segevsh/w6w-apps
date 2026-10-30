@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-space.ts";
 
-Deno.test("create-space: POSTs to /v2/spaces with no body when no config is given", async () => {
+test("create-space: POSTs to /v2/spaces with no body when no config is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc", meetingCode: "abc-mnop-xyz" } }]);
   const result = await action.execute!({}, ctx) as Record<string, unknown>;
   assertEquals(result.name, "spaces/abc");
@@ -13,7 +14,7 @@ Deno.test("create-space: POSTs to /v2/spaces with no body when no config is give
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("create-space: nests flat config fields under `config`", async () => {
+test("create-space: nests flat config fields under `config`", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
   await action.execute!({
     accessType: "TRUSTED",
@@ -35,7 +36,7 @@ Deno.test("create-space: nests flat config fields under `config`", async () => {
   });
 });
 
-Deno.test("create-space: a single config field still sends only that field", async () => {
+test("create-space: a single config field still sends only that field", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "spaces/abc" } }]);
   await action.execute!({ moderation: "OFF" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { config: { moderation: "OFF" } });

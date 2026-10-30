@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import formList from "../../actions/form-list.ts";
 import formGet from "../../actions/form-get.ts";
 import formFields from "../../actions/form-fields.ts";
@@ -9,7 +10,7 @@ import reportList from "../../actions/report-list.ts";
 import reportEntries from "../../actions/report-entries.ts";
 import { envelope, mockWufooCtx } from "../_helpers.ts";
 
-Deno.test("form-list: unwraps the Forms envelope", async () => {
+test("form-list: unwraps the Forms envelope", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: envelope("Forms", [{ Hash: "h1" }]) }]);
   const out = await formList.execute({ includeTodayCount: true }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v3/forms.json");
@@ -21,7 +22,7 @@ Deno.test("form-list: unwraps the Forms envelope", async () => {
  * Wufoo wraps a single form in the collection envelope too. An action called
  * "Get Form" returning a one-element array would be a small lie.
  */
-Deno.test("form-get: returns the form itself, not a one-element array", async () => {
+test("form-get: returns the form itself, not a one-element array", async () => {
   const { ctx, calls } = mockWufooCtx([{
     body: envelope("Forms", [{ Hash: "h1", Name: "Tiny" }]),
   }]);
@@ -30,7 +31,7 @@ Deno.test("form-get: returns the form itself, not a one-element array", async ()
   assertEquals(out, { Hash: "h1", Name: "Tiny" });
 });
 
-Deno.test("form-fields: unwraps Fields and only asks for system fields when told", async () => {
+test("form-fields: unwraps Fields and only asks for system fields when told", async () => {
   const { ctx, calls } = mockWufooCtx([
     { body: envelope("Fields", [{ ID: "Field1" }]) },
     { body: envelope("Fields", []) },
@@ -43,7 +44,7 @@ Deno.test("form-fields: unwraps Fields and only asks for system fields when told
   assertEquals(new URL(calls[1].url).searchParams.get("system"), "true");
 });
 
-Deno.test("entry-list: maps paging and sorting onto Wufoo's parameter names", async () => {
+test("entry-list: maps paging and sorting onto Wufoo's parameter names", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: envelope("Entries", []) }]);
   await entryList.execute({
     identifier: "h1",
@@ -61,7 +62,7 @@ Deno.test("entry-list: maps paging and sorting onto Wufoo's parameter names", as
 });
 
 /** Filters become numbered parameters whose value is three space-separated parts. */
-Deno.test("entry-list: builds numbered Filter parameters from structured input", async () => {
+test("entry-list: builds numbered Filter parameters from structured input", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: envelope("Entries", []) }]);
   await entryList.execute({
     identifier: "h1",
@@ -75,7 +76,7 @@ Deno.test("entry-list: builds numbered Filter parameters from structured input",
   assertEquals(url.searchParams.get("match"), "AND");
 });
 
-Deno.test("entry-list: refuses an operator Wufoo does not publish", async () => {
+test("entry-list: refuses an operator Wufoo does not publish", async () => {
   const { ctx, calls } = mockWufooCtx([]);
   await assertRejects(
     async () => {
@@ -91,7 +92,7 @@ Deno.test("entry-list: refuses an operator Wufoo does not publish", async () => 
 });
 
 /** The count endpoint is a value, not a collection — it must not be unwrapped. */
-Deno.test("entry-count: returns the EntryCount object as the vendor sends it", async () => {
+test("entry-count: returns the EntryCount object as the vendor sends it", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: { EntryCount: "42" } }]);
   const out = await entryCount.execute({ identifier: "h1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v3/forms/h1/entries/count.json");
@@ -99,7 +100,7 @@ Deno.test("entry-count: returns the EntryCount object as the vendor sends it", a
 });
 
 /** Submission is form-encoded and keyed by field id, not by label. */
-Deno.test("entry-create: posts url-encoded field ids", async () => {
+test("entry-create: posts url-encoded field ids", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: { Success: 1, EntryId: "7" } }]);
   const out = await entryCreate.execute(
     { identifier: "h1", fields: '{"Field1":"Ada","Field105":"ada@example.com"}' },
@@ -116,7 +117,7 @@ Deno.test("entry-create: posts url-encoded field ids", async () => {
  * submission with HTTP 200 and `Success: 0`. Anything checking only the status
  * code records a failed submission as a success.
  */
-Deno.test("entry-create: turns a 200 with Success 0 into a real error", async () => {
+test("entry-create: turns a 200 with Success 0 into a real error", async () => {
   const { ctx } = mockWufooCtx([{
     body: {
       Success: 0,
@@ -135,7 +136,7 @@ Deno.test("entry-create: turns a 200 with Success 0 into a real error", async ()
 });
 
 /** Every other scalar in this API is a string, so `"0"` must fail too. */
-Deno.test("entry-create: treats a string Success the same as a number", async () => {
+test("entry-create: treats a string Success the same as a number", async () => {
   const { ctx } = mockWufooCtx([{ body: { Success: "0", ErrorText: "nope" } }]);
   await assertRejects(
     async () => {
@@ -153,7 +154,7 @@ Deno.test("entry-create: treats a string Success the same as a number", async ()
   assertEquals(out.EntryId, "8");
 });
 
-Deno.test("entry-create: rejects a non-object or empty payload before sending", async () => {
+test("entry-create: rejects a non-object or empty payload before sending", async () => {
   const { ctx, calls } = mockWufooCtx([]);
   await assertRejects(
     async () => {
@@ -172,11 +173,11 @@ Deno.test("entry-create: rejects a non-object or empty payload before sending", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("entry-create: is honestly not idempotent", () => {
+test("entry-create: is honestly not idempotent", () => {
   assertEquals(entryCreate.idempotent, false);
 });
 
-Deno.test("report-list: unwraps Reports and takes no parameters", async () => {
+test("report-list: unwraps Reports and takes no parameters", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: envelope("Reports", [{ Hash: "r1" }]) }]);
   const out = await reportList.execute({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v3/reports.json");
@@ -184,7 +185,7 @@ Deno.test("report-list: unwraps Reports and takes no parameters", async () => {
   assertEquals(reportList.params?.length ?? 0, 0);
 });
 
-Deno.test("report-entries: pages the report's own entries", async () => {
+test("report-entries: pages the report's own entries", async () => {
   const { ctx, calls } = mockWufooCtx([{ body: envelope("Entries", [{ EntryId: "1" }]) }]);
   const out = await reportEntries.execute({ identifier: "r1", pageSize: 50 }, ctx);
   const url = new URL(calls[0].url);
@@ -193,7 +194,7 @@ Deno.test("report-entries: pages the report's own entries", async () => {
   assertEquals(out, [{ EntryId: "1" }]);
 });
 
-Deno.test("actions: the submission rate limit surfaces the vendor's own text", async () => {
+test("actions: the submission rate limit surfaces the vendor's own text", async () => {
   const { ctx } = mockWufooCtx([{ status: 429, body: { Text: "Slow Down", HTTPCode: 429 } }]);
   await assertRejects(
     async () => {

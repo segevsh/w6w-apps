@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/blob-upload.ts";
@@ -8,7 +9,7 @@ const blob = ok({
 });
 const PNG = "iVBORw0KGgo=";
 
-Deno.test("blob-upload: posts raw bytes with the declared content type", async () => {
+test("blob-upload: posts raw bytes with the declared content type", async () => {
   const { ctx, calls } = mockCtx([blob], { display });
   const result = await action.execute!({ data: PNG, mimeType: "image/png" }, ctx) as {
     size: number;
@@ -20,7 +21,7 @@ Deno.test("blob-upload: posts raw bytes with the declared content type", async (
 });
 
 /** Pasting a whole data URL is common, and it carries its own type. */
-Deno.test("blob-upload: a data: URL supplies its own mime type", async () => {
+test("blob-upload: a data: URL supplies its own mime type", async () => {
   const { ctx, calls } = mockCtx([blob], { display });
   const result = await action.execute!({
     data: `data:image/webp;base64,${PNG}`,
@@ -31,7 +32,7 @@ Deno.test("blob-upload: a data: URL supplies its own mime type", async () => {
 });
 
 /** Alt text belongs on the embed, which is where it gets forgotten. */
-Deno.test("blob-upload: returns a ready-made embed with the alt text in it", async () => {
+test("blob-upload: returns a ready-made embed with the alt text in it", async () => {
   const { ctx } = mockCtx([blob], { display });
   const result = await action.execute!({ data: PNG, alt: "a red square" }, ctx) as {
     embed: { $type: string; images: Array<{ alt: string; image: unknown }> };
@@ -41,7 +42,7 @@ Deno.test("blob-upload: returns a ready-made embed with the alt text in it", asy
   assert(result.embed.images[0].image, "the blob reference is not in the embed");
 });
 
-Deno.test("blob-upload: an over-size file is refused before the upload, with the number", async () => {
+test("blob-upload: an over-size file is refused before the upload, with the number", async () => {
   const big = btoa("x".repeat(1_000_001));
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
@@ -53,7 +54,7 @@ Deno.test("blob-upload: an over-size file is refused before the upload, with the
   assertEquals(calls.length, 0);
 });
 
-Deno.test("blob-upload: invalid or empty base64 is refused", async () => {
+test("blob-upload: invalid or empty base64 is refused", async () => {
   const bad = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ data: "!!!not base64!!!" }, bad.ctx),
@@ -69,12 +70,12 @@ Deno.test("blob-upload: invalid or empty base64 is refused", async () => {
   );
 });
 
-Deno.test("blob-upload: needs data", async () => {
+test("blob-upload: needs data", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`data` is required");
 });
 
-Deno.test("blob-upload: a PDS that returns no reference fails loudly", async () => {
+test("blob-upload: a PDS that returns no reference fails loudly", async () => {
   const { ctx } = mockCtx([ok({})], { display });
   await assertRejects(
     async () => await action.execute!({ data: PNG }, ctx),
@@ -84,12 +85,12 @@ Deno.test("blob-upload: a PDS that returns no reference fails loudly", async () 
 });
 
 /** An unreferenced blob is garbage — uploading alone shows nothing to anyone. */
-Deno.test("blob-upload: says nothing is visible until a post embeds it", () => {
+test("blob-upload: says nothing is visible until a post embeds it", () => {
   assert(/EMBEDS the reference/.test(action.description!), action.description);
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("blob-upload: logs size and type, never the bytes", async () => {
+test("blob-upload: logs size and type, never the bytes", async () => {
   const { ctx, logs } = mockCtx([blob], { display });
   await action.execute!({ data: PNG }, ctx);
   assertEquals(logs[0].data, { size: 8, mimeType: "image/jpeg" });

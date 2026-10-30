@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapAggregateState,
   mapResourceStatus,
@@ -35,13 +36,13 @@ function statusPage(
   };
 }
 
-Deno.test("service: probes the one path on that host that returns JSON", () => {
+test("service: probes the one path on that host that returns JSON", () => {
   assertEquals(STATUS_URL, "https://status.baserow.org/index.json");
   assertEquals(service.network?.allow, ["status.baserow.org"]);
 });
 
 /** A check that reaches a third-party host must never be signed with the token. */
-Deno.test("service: is unsigned and app-scoped", () => {
+test("service: is unsigned and app-scoped", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
 });
@@ -51,11 +52,11 @@ Deno.test("service: is unsigned and app-scoped", () => {
  * hosted service — so at any higher severity an incident on baserow.io would
  * pin every self-hosted tenant at `degraded`, which is untrue of their instance.
  */
-Deno.test("service: is informational — it speaks only for Baserow's hosted service", () => {
+test("service: is informational — it speaks only for Baserow's hosted service", () => {
   assertEquals(service.severity, "informational");
 });
 
-Deno.test("mapResourceStatus: covers Better Stack's resource vocabulary", () => {
+test("mapResourceStatus: covers Better Stack's resource vocabulary", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
@@ -63,19 +64,19 @@ Deno.test("mapResourceStatus: covers Better Stack's resource vocabulary", () => 
   assertEquals(mapResourceStatus("something_new"), "unknown");
 });
 
-Deno.test("mapAggregateState: covers the page-level roll-up", () => {
+test("mapAggregateState: covers the page-level roll-up", () => {
   assertEquals(mapAggregateState("operational"), "ok");
   assertEquals(mapAggregateState("degraded"), "degraded");
   assertEquals(mapAggregateState("downtime"), "down");
   assertEquals(mapAggregateState(undefined), "unknown");
 });
 
-Deno.test("resourceKey: slugifies the public name", () => {
+test("resourceKey: slugifies the public name", () => {
   assertEquals(resourceKey({ attributes: { public_name: "Backend API" } }, 0), "backend-api");
   assertEquals(resourceKey({ id: "res-9" }, 1), "res-9");
 });
 
-Deno.test("service: reads the aggregate state and reports each resource", async () => {
+test("service: reads the aggregate state and reports each resource", async () => {
   const { ctx } = mockCtx([{
     body: statusPage([
       { name: "Frontend", status: "operational" },
@@ -88,13 +89,13 @@ Deno.test("service: reads the aggregate state and reports each resource", async 
 });
 
 /** The section entry in `included` is not a resource and must not become one. */
-Deno.test("service: ignores non-resource entries in included", async () => {
+test("service: ignores non-resource entries in included", async () => {
   const { ctx } = mockCtx([{ body: statusPage([{ name: "Frontend", status: "operational" }]) }]);
   const result = await service.check!({} as never, ctx);
   assertEquals(Object.keys(result.components ?? {}), ["frontend"]);
 });
 
-Deno.test("service: a degraded resource is reported and named", async () => {
+test("service: a degraded resource is reported and named", async () => {
   const { ctx } = mockCtx([{
     body: statusPage([
       { name: "Backend API", status: "degraded" },
@@ -113,14 +114,14 @@ Deno.test("service: a degraded resource is reported and named", async () => {
  * is the expected signal that the JSON route has gone — not an anomaly. It must
  * report `unknown`, never be parsed as a status.
  */
-Deno.test("service: HTML served at 200 is unknown, not a status", async () => {
+test("service: HTML served at 200 is unknown, not a status", async () => {
   const { ctx } = mockCtx([{ body: "<!DOCTYPE html><html>…</html>" }]);
   const result = await service.check!({} as never, ctx);
   assertEquals(result.state, "unknown");
   assert(result.message!.includes("/index.json"), result.message);
 });
 
-Deno.test("service: an unreachable status page is unknown, not down", async () => {
+test("service: an unreachable status page is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({} as never, ctx)).state, "unknown");
 });
@@ -129,7 +130,7 @@ Deno.test("service: an unreachable status page is unknown, not down", async () =
  * Guards against the failure mode where a healthy, claimed status page belongs
  * to a different product entirely.
  */
-Deno.test("service: refuses a page that no longer self-identifies as Baserow's", async () => {
+test("service: refuses a page that no longer self-identifies as Baserow's", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -154,7 +155,7 @@ Deno.test("service: refuses a page that no longer self-identifies as Baserow's",
  * `unknown`, which outranks `ok`, so at any other severity it would pin the app
  * at `unknown` forever.
  */
-Deno.test("quota: is declared unavailable with a reason, at informational severity", () => {
+test("quota: is declared unavailable with a reason, at informational severity", () => {
   assertEquals(typeof quota.check, "undefined");
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable!.reason.includes("200 items per batch"));

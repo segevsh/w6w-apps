@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import conversationList from "../../actions/conversation-list.ts";
 
-Deno.test("conversation-list: sends every documented field in its documented place", async () => {
+test("conversation-list: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ uid: "r1" }, { uid: "r2" }], metadata: { nextCursor: "c2" } },
   }]);
@@ -30,7 +31,7 @@ Deno.test("conversation-list: sends every documented field in its documented pla
   assertEquals(result, { items: [{ uid: "r1" }, { uid: "r2" }], nextCursor: "c2" });
 });
 
-Deno.test("conversation-list: a minimal call sends only what was set", async () => {
+test("conversation-list: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ uid: "r1" }, { uid: "r2" }], metadata: { nextCursor: "c2" } },
   }]);
@@ -44,7 +45,7 @@ Deno.test("conversation-list: a minimal call sends only what was set", async () 
   assertEquals(result, { items: [{ uid: "r1" }, { uid: "r2" }], nextCursor: "c2" });
 });
 
-Deno.test("conversation-list: declares its params and kind", () => {
+test("conversation-list: declares its params and kind", () => {
   assertEquals((conversationList.params ?? []).map((p) => p.key), [
     "limit",
     "cursor",

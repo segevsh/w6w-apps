@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 import account from "../../health/account.ts";
@@ -12,7 +13,7 @@ const summary = (apiStatus: string, name = "Quaderno") => ({
   ],
 });
 
-Deno.test("service: reads the API component, not the web app", async () => {
+test("service: reads the API component, not the web app", async () => {
   const { ctx, calls } = mockQuadernoCtx([{ body: summary("operational") }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -21,7 +22,7 @@ Deno.test("service: reads the API component, not the web app", async () => {
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: maps degraded and down, and refuses a foreign page", async () => {
+test("service: maps degraded and down, and refuses a foreign page", async () => {
   assertEquals(
     (await service.check!({}, mockQuadernoCtx([{ body: summary("partial_outage") }]).ctx)).state,
     "degraded",
@@ -38,12 +39,12 @@ Deno.test("service: maps degraded and down, and refuses a foreign page", async (
   assertEquals(mapComponentStatus("bogus"), "unknown");
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const r = await service.check!({}, mockQuadernoCtx([{ status: 503, body: "" }]).ctx);
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("quota: reads X-RateLimit-* from /ping", async () => {
+test("quota: reads X-RateLimit-* from /ping", async () => {
   const { ctx, calls } = mockQuadernoCtx([{
     headers: {
       "content-type": "application/json",
@@ -61,7 +62,7 @@ Deno.test("quota: reads X-RateLimit-* from /ping", async () => {
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: exhausted window is down, missing headers are unknown", async () => {
+test("quota: exhausted window is down, missing headers are unknown", async () => {
   const low = mockQuadernoCtx([{
     headers: { "x-ratelimit-limit": "100", "x-ratelimit-remaining": "0" },
     body: { status: "ok" },
@@ -71,7 +72,7 @@ Deno.test("quota: exhausted window is down, missing headers are unknown", async 
   assertEquals((await quota.check!({}, none.ctx)).state, "unknown");
 });
 
-Deno.test("account: a schema-correct 401 proves reachability and passes", async () => {
+test("account: a schema-correct 401 proves reachability and passes", async () => {
   const { ctx, calls } = mockQuadernoCtx([{
     status: 401,
     body: { error: "Wrong API key or the user does not exist." },
@@ -82,7 +83,7 @@ Deno.test("account: a schema-correct 401 proves reachability and passes", async 
   assertEquals(account.credential, "context");
 });
 
-Deno.test("account: 5xx is down; an HTML 200 shell is not a pass", async () => {
+test("account: 5xx is down; an HTML 200 shell is not a pass", async () => {
   assertEquals(
     (await account.check!({}, mockQuadernoCtx([{ status: 502, body: "" }]).ctx)).state,
     "down",

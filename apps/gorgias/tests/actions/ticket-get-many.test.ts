@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-get-many.ts";
 
-Deno.test("ticket-get-many: GETs /tickets with the query filters mapped to Gorgias's names", async () => {
+test("ticket-get-many: GETs /tickets with the query filters mapped to Gorgias's names", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { data: [] } }]);
   await action.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("ticket-get-many: GETs /tickets with the query filters mapped to Gorgi
   assertEquals(url.searchParams.get("limit"), "50");
 });
 
-Deno.test("ticket-get-many: omits unset filters entirely", async () => {
+test("ticket-get-many: omits unset filters entirely", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

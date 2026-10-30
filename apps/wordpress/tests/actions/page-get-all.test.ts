@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-get-all.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("page-get-all: GETs /pages with defaults (perPage=10, page=1)", async () => {
+test("page-get-all: GETs /pages with defaults (perPage=10, page=1)", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("page-get-all: GETs /pages with defaults (perPage=10, page=1)", async 
   assertEquals(url.searchParams.get("page"), "1");
 });
 
-Deno.test("page-get-all: forwards all optional filters with snake_case mapping", async () => {
+test("page-get-all: forwards all optional filters with snake_case mapping", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!(
     {
@@ -44,7 +45,7 @@ Deno.test("page-get-all: forwards all optional filters with snake_case mapping",
   assertEquals(params.get("page"), "3");
 });
 
-Deno.test("page-get-all: omits unset filters", async () => {
+test("page-get-all: omits unset filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display });
   await action.execute!({}, ctx);
   const params = new URL(calls[0].url).searchParams;

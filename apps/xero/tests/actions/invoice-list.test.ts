@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockXeroCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-list.ts";
 
-Deno.test("invoice-list: GETs /Invoices and forwards Statuses", async () => {
+test("invoice-list: GETs /Invoices and forwards Statuses", async () => {
   const { ctx, calls } = mockXeroCtx([{ body: { Invoices: [] } }]);
   await action.execute({ statuses: "DRAFT,AUTHORISED" }, ctx);
   const url = new URL(calls[0].url);

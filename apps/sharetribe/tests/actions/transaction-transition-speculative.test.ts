@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionTransitionSpeculative from "../../actions/transaction-transition-speculative.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-transition-speculative: POST /transactions/transition_speculative, idempotent", async () => {
+test("transaction-transition-speculative: POST /transactions/transition_speculative, idempotent", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

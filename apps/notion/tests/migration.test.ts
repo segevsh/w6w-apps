@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "./_assert.ts";
 import createPage from "../actions/create-page.ts";
 import createRow from "../actions/create-database-page.ts";
 import queryRows from "../actions/get-many-database-pages.ts";
@@ -10,7 +11,7 @@ import session from "../actions/update-session.ts";
 import { NotionClient, NotionError } from "../lib/client.ts";
 import { mockCtx } from "./_helpers.ts";
 
-Deno.test("Create Page supports parentless, untitled workspace pages and correct title properties", async () => {
+test("Create Page supports parentless, untitled workspace pages and correct title properties", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }, { body: {} }]);
   await createPage.execute({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});
@@ -30,7 +31,7 @@ Deno.test("Create Page supports parentless, untitled workspace pages and correct
   assertEquals(createPage.params?.find((p) => p.key === "title")?.required, undefined);
 });
 
-Deno.test("Create Page accepts a copied Notion URL without treating its view query as the parent ID", async () => {
+test("Create Page accepts a copied Notion URL without treating its view query as the parent ID", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await createPage.execute({
     parentType: "page",
@@ -40,7 +41,7 @@ Deno.test("Create Page accepts a copied Notion URL without treating its view que
   assertEquals(JSON.parse(calls[0].body!).parent, { page_id: "a3f51b1002164c728983956c44a70d25" });
 });
 
-Deno.test("Create Page rejects conflicting content and parent inputs before sending", () => {
+test("Create Page rejects conflicting content and parent inputs before sending", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => createPage.execute({ children: [], markdown: "x" }, ctx),
@@ -62,7 +63,7 @@ Deno.test("Create Page rejects conflicting content and parent inputs before send
   assertEquals(calls.length, 0);
 });
 
-Deno.test("Internal integration gets actionable parent guidance; OAuth may omit parent", async () => {
+test("Internal integration gets actionable parent guidance; OAuth may omit parent", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "private" } }]);
   ctx.connection = {
     id: "c",
@@ -83,7 +84,7 @@ Deno.test("Internal integration gets actionable parent guidance; OAuth may omit 
   assertEquals(calls.length, 1);
 });
 
-Deno.test("Database ID compatibility resolves one data source before creating a row", async () => {
+test("Database ID compatibility resolves one data source before creating a row", async () => {
   const { ctx, calls } = mockCtx([{ body: { data_sources: [{ id: "source" }] } }, {
     body: { id: "row" },
   }]);
@@ -92,7 +93,7 @@ Deno.test("Database ID compatibility resolves one data source before creating a 
   assertEquals(JSON.parse(calls[1].body!).parent, { data_source_id: "source" });
 });
 
-Deno.test("Database queries resolve the container and forward filters and cursors to data source query", async () => {
+test("Database queries resolve the container and forward filters and cursors to data source query", async () => {
   const { ctx, calls } = mockCtx([{ body: { data_sources: [{ id: "source" }] } }, {
     body: { results: [], has_more: true, next_cursor: "next" },
   }]);
@@ -108,7 +109,7 @@ Deno.test("Database queries resolve the container and forward filters and cursor
   assertEquals(JSON.parse(calls[1].body!).start_cursor, "cursor");
 });
 
-Deno.test("A database with multiple data sources requires an explicit selection", async () => {
+test("A database with multiple data sources requires an explicit selection", async () => {
   const { ctx, calls } = mockCtx([{ body: { data_sources: [{ id: "one" }, { id: "two" }] } }]);
   await assertRejects(
     async () => await createRow.execute({ databaseId: "database" }, ctx),
@@ -118,7 +119,7 @@ Deno.test("A database with multiple data sources requires an explicit selection"
   assertEquals(calls.length, 1);
 });
 
-Deno.test("Database search resolves and deduplicates data source containers while preserving cursor", async () => {
+test("Database search resolves and deduplicates data source containers while preserving cursor", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -137,7 +138,7 @@ Deno.test("Database search resolves and deduplicates data source containers whil
   assertEquals(JSON.parse(calls[0].body!).filter.value, "data_source");
 });
 
-Deno.test("Get Many Databases continues through duplicate-only pages until a unique-database limit", async () => {
+test("Get Many Databases continues through duplicate-only pages until a unique-database limit", async () => {
   const source = (db: string) => ({ parent: { database_id: db } });
   const { ctx, calls } = mockCtx([
     { body: { results: [source("one")], has_more: true, next_cursor: "c1" } },
@@ -153,7 +154,7 @@ Deno.test("Get Many Databases continues through duplicate-only pages until a uni
   assertEquals(JSON.parse(calls[3].body!).start_cursor, "c2");
 });
 
-Deno.test("Update Page preserves false flags and explicit null icon/cover", async () => {
+test("Update Page preserves false flags and explicit null icon/cover", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await updatePage.execute({
     pageId: "page",
@@ -170,13 +171,13 @@ Deno.test("Update Page preserves false flags and explicit null icon/cover", asyn
   });
 });
 
-Deno.test("Property IDs already escaped by Notion are not double encoded", async () => {
+test("Property IDs already escaped by Notion are not double encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await getProperty.execute({ pageId: "page", propertyId: "a%3Ab%2Fc", startCursor: "next" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/pages/page/properties/a%3Ab%2Fc");
 });
 
-Deno.test("Session streaming preserves event frames and replay IDs in a buffered output", async () => {
+test("Session streaming preserves event frames and replay IDs in a buffered output", async () => {
   const events = 'id: event-2\nevent: message\ndata: {"text":"hello"}\n\n';
   const { ctx, calls } = mockCtx([{
     body: events,
@@ -194,7 +195,7 @@ Deno.test("Session streaming preserves event frames and replay IDs in a buffered
   assertEquals(JSON.parse(calls[0].body!).continue_from, "event-1");
 });
 
-Deno.test("Client preserves rate limit retry information without retrying a mutation", async () => {
+test("Client preserves rate limit retry information without retrying a mutation", async () => {
   const { ctx, calls } = mockCtx([{
     status: 429,
     headers: { "retry-after": "3" },

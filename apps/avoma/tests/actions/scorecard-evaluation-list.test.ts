@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import evaluations from "../../actions/scorecard-evaluation-list.ts";
 import { mockCtx, pageBody } from "../_helpers.ts";
 
-Deno.test("scorecard-evaluation-list: array filters go out as repeated keys, not comma-joined", async () => {
+test("scorecard-evaluation-list: array filters go out as repeated keys, not comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([{ uuid: "ev1" }]) }]);
   const out = await evaluations.execute({
     scorecardUuids: "s1, s2",
@@ -20,7 +21,7 @@ Deno.test("scorecard-evaluation-list: array filters go out as repeated keys, not
   assert(!u.searchParams.has("from_date"));
 });
 
-Deno.test("scorecard-evaluation-list: the date window is optional here", async () => {
+test("scorecard-evaluation-list: the date window is optional here", async () => {
   const { ctx, calls } = mockCtx([{ body: pageBody([]) }]);
   await evaluations.execute({}, ctx);
   assertEquals(calls.length, 1);

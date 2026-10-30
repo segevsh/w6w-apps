@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/account-get-many.ts";
 
-Deno.test("account-get-many: GETs the view path under /sales_accounts", async () => {
+test("account-get-many: GETs the view path under /sales_accounts", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{
     body: { sales_accounts: [{ id: 1 }], meta: { total: 1 } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("account-get-many: GETs the view path under /sales_accounts", async ()
   assertEquals(out, { accounts: [{ id: 1 }], total: 1 });
 });
 
-Deno.test("account-get-many: forwards page/perPage", async () => {
+test("account-get-many: forwards page/perPage", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { sales_accounts: [], meta: { total: 0 } } }]);
   await action.execute({ viewId: 2, page: 3, perPage: 10 }, ctx);
   const url = new URL(calls[0].url);

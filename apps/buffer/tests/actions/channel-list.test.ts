@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { data, gqlOf, mockCtx, optionValues } from "../_helpers.ts";
 import channelList from "../../actions/channel-list.ts";
 
-Deno.test("channel-list: sends only the organization id when nothing is filtered", async () => {
+test("channel-list: sends only the organization id when nothing is filtered", async () => {
   const { ctx, calls } = mockCtx([data({ channels: [] })]);
   await channelList.execute({ organizationId: "o1" }, ctx);
   assertEquals(gqlOf(calls[0]).variables, { input: { organizationId: "o1" } });
 });
 
-Deno.test("channel-list: the locked select becomes a real boolean, not the string", async () => {
+test("channel-list: the locked select becomes a real boolean, not the string", async () => {
   const { ctx, calls } = mockCtx([data({ channels: [] })]);
   await channelList.execute({ organizationId: "o1", locked: "false" }, ctx);
   // `"false"` is truthy — sending the string would invert the filter and
@@ -18,7 +19,7 @@ Deno.test("channel-list: the locked select becomes a real boolean, not the strin
   });
 });
 
-Deno.test("channel-list: locked=true filters the other way", async () => {
+test("channel-list: locked=true filters the other way", async () => {
   const { ctx, calls } = mockCtx([data({ channels: [] })]);
   await channelList.execute({ organizationId: "o1", locked: "true" }, ctx);
   assertEquals(
@@ -28,7 +29,7 @@ Deno.test("channel-list: locked=true filters the other way", async () => {
   );
 });
 
-Deno.test("channel-list: the product filter passes through", async () => {
+test("channel-list: the product filter passes through", async () => {
   const { ctx, calls } = mockCtx([data({ channels: [] })]);
   await channelList.execute({ organizationId: "o1", product: "publish" }, ctx);
   assertEquals(gqlOf(calls[0]).variables, {
@@ -36,13 +37,13 @@ Deno.test("channel-list: the product filter passes through", async () => {
   });
 });
 
-Deno.test("channel-list: offers no network filter — ChannelsFiltersInput has none", () => {
+test("channel-list: offers no network filter — ChannelsFiltersInput has none", () => {
   const keys = (channelList.params ?? []).map((p) => p.key);
   assertEquals(keys, ["organizationId", "locked", "product"]);
   assert(!keys.includes("service"), "a service filter would silently do nothing");
 });
 
-Deno.test("channel-list: the product options are Buffer's six", () => {
+test("channel-list: the product options are Buffer's six", () => {
   assertEquals(optionValues(channelList, "product"), [
     "analyze",
     "engage",
@@ -53,7 +54,7 @@ Deno.test("channel-list: the product options are Buffer's six", () => {
   ]);
 });
 
-Deno.test("channel-list: selects the three flags a workflow needs to branch on", async () => {
+test("channel-list: selects the three flags a workflow needs to branch on", async () => {
   const { ctx, calls } = mockCtx([data({ channels: [] })]);
   await channelList.execute({ organizationId: "o1" }, ctx);
   const { query } = gqlOf(calls[0]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/reverse-lookup-linkedin.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("reverse-lookup-linkedin: sends url and maps the lead", async () => {
+test("reverse-lookup-linkedin: sends url and maps the lead", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -19,7 +20,7 @@ Deno.test("reverse-lookup-linkedin: sends url and maps the lead", async () => {
   assertEquals(lead.totalExperienceInMonths, 60);
 });
 
-Deno.test("reverse-lookup-linkedin: blank url throws; a 402 throws", async () => {
+test("reverse-lookup-linkedin: blank url throws; a 402 throws", async () => {
   await assertRejects(() => run(action, { url: " " }, mockCtx().ctx), Error, "url is required");
   const poor = mockCtx([{
     status: 402,

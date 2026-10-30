@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tokenize-text.ts";
 
-Deno.test("tokenize-text: calls POST /v1/tokenize-text on api.x.ai and returns the body", async () => {
+test("tokenize-text: calls POST /v1/tokenize-text on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({ model: "grok-x", text: "hi" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("tokenize-text: calls POST /v1/tokenize-text on api.x.ai and returns t
   assertEquals(result, reply);
 });
 
-Deno.test("tokenize-text: surfaces the vendor error code on failure", async () => {
+test("tokenize-text: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {

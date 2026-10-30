@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subtaskCreate from "../../actions/subtask-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subtask-create: POST /tasks/:task_id/subtasks", async () => {
+test("subtask-create: POST /tasks/:task_id/subtasks", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 99, name: "Subtask" } }]);
   const out = await subtaskCreate.execute({ taskId: 15, name: "Subtask" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/tasks/15/subtasks");

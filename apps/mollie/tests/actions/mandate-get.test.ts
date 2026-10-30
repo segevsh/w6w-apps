@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mandateGet from "../../actions/mandate-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mandate-get: fetches /customers/{id}/mandates/{mandateId}", async () => {
+test("mandate-get: fetches /customers/{id}/mandates/{mandateId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "mdt_1", status: "valid" } }]);
   const out = await mandateGet.execute({ customerId: "cst_1", mandateId: "mdt_1" }, ctx);
 

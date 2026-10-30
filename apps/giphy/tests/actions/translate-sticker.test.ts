@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import translateSticker from "../../actions/translate-sticker.ts";
 import { envelope, gif, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("translate-sticker: calls GET /v1/stickers/translate", async () => {
+test("translate-sticker: calls GET /v1/stickers/translate", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif("sticker-4")) }]);
   const out = await translateSticker.execute({ s: "thank you" }, ctx) as {
     data: { id: string };
@@ -13,7 +14,7 @@ Deno.test("translate-sticker: calls GET /v1/stickers/translate", async () => {
   assertEquals(out.data.id, "sticker-4");
 });
 
-Deno.test("translate-sticker: rating and weirdness are forwarded", async () => {
+test("translate-sticker: rating and weirdness are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   await translateSticker.execute({ s: "hi", weirdness: 0 }, ctx);
   // 0 survives: it is a meaningful value, not an absent one.

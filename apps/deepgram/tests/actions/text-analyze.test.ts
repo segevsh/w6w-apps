@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/text-analyze.ts";
 
 const display = { projectId: "proj_1" };
 const ok = { status: 200, body: { metadata: { request_id: "req_1" }, results: { topics: {} } } };
 
-Deno.test("text-analyze: posts text and asks for the requested analyses", async () => {
+test("text-analyze: posts text and asks for the requested analyses", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({ text: "The invoice is wrong.", sentiment: true }, ctx);
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("text-analyze: posts text and asks for the requested analyses", async 
   assertEquals(url.searchParams.get("sentiment"), "true");
 });
 
-Deno.test("text-analyze: a URL is sent instead of text", async () => {
+test("text-analyze: a URL is sent instead of text", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({ url: "https://x/doc.txt", topics: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { url: "https://x/doc.txt" });
@@ -24,7 +25,7 @@ Deno.test("text-analyze: a URL is sent instead of text", async () => {
  * Strict keeps the set of possible outcomes equal to the set given, which is
  * what a routing rule needs.
  */
-Deno.test("text-analyze: custom topics default to strict matching", async () => {
+test("text-analyze: custom topics default to strict matching", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({ text: "x", customTopic: "billing dispute, churn risk" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -33,7 +34,7 @@ Deno.test("text-analyze: custom topics default to strict matching", async () => 
   assertEquals(q.get("topics"), "true");
 });
 
-Deno.test("text-analyze: extended matching is available when asked for", async () => {
+test("text-analyze: extended matching is available when asked for", async () => {
   const { ctx, calls } = mockCtx([ok], { display });
   await action.execute!({ text: "x", customIntent: "wants a demo", mode: "extended" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -42,7 +43,7 @@ Deno.test("text-analyze: extended matching is available when asked for", async (
 });
 
 /** Asking for no analysis returns nothing and still costs a request. */
-Deno.test("text-analyze: refuses when no analysis was requested", async () => {
+test("text-analyze: refuses when no analysis was requested", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ text: "x" }, ctx),
@@ -52,7 +53,7 @@ Deno.test("text-analyze: refuses when no analysis was requested", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("text-analyze: needs text or a URL, and refuses both", async () => {
+test("text-analyze: needs text or a URL, and refuses both", async () => {
   const none = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, none.ctx), Error, "text");
   const both = mockCtx([], { display });
@@ -64,7 +65,7 @@ Deno.test("text-analyze: needs text or a URL, and refuses both", async () => {
 });
 
 /** The text is the caller's content. */
-Deno.test("text-analyze: logs the request id and nothing analysed", async () => {
+test("text-analyze: logs the request id and nothing analysed", async () => {
   const { ctx, logs } = mockCtx([ok], { display });
   await action.execute!({ text: "confidential complaint", sentiment: true }, ctx);
   assert(!JSON.stringify(logs).includes("confidential"), JSON.stringify(logs));

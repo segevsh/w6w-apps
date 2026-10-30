@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/account-delete.ts";
 
-Deno.test("account-delete: POSTs /accounts/moveToTrash with an accountIds array", async () => {
+test("account-delete: POSTs /accounts/moveToTrash with an accountIds array", async () => {
   const { ctx, calls } = mockDeskCtx([{ status: 204 }]);
   const out = await action.execute({ recordId: "3" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/accounts/moveToTrash");

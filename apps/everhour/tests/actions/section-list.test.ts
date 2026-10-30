@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sectionList from "../../actions/section-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("section-list: GET /projects/{projectId}/sections with the documented query and body", async () => {
+test("section-list: GET /projects/{projectId}/sections with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await sectionList.execute({ "projectId": "ev:1" }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("section-list: GET /projects/{projectId}/sections with the documented 
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": null });
 });
 
-Deno.test("section-list: an Everhour error surfaces its message and status", async () => {
+test("section-list: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(sectionList.execute({ "projectId": "ev:1" }, ctx)),
@@ -30,6 +31,6 @@ Deno.test("section-list: an Everhour error surfaces its message and status", asy
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("section-list: declares search", () => {
+test("section-list: declares search", () => {
   assertEquals(sectionList.type, "search");
 });

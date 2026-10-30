@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-list.ts";
 
-Deno.test("folder-list: GETs /rest/v1.0/folders", async () => {
+test("folder-list: GETs /rest/v1.0/folders", async () => {
   const record = { id: 77, name: "x" };
   const { ctx, calls } = mockCtx([{ body: record }]);
   const out = await action.execute!(
@@ -18,7 +19,7 @@ Deno.test("folder-list: GETs /rest/v1.0/folders", async () => {
   assertEquals(out, record);
 });
 
-Deno.test("folder-list: surfaces a Procore error", async () => {
+test("folder-list: surfaces a Procore error", async () => {
   const { ctx } = mockCtx([{ status: 404, statusText: "Not Found", body: { errors: "gone" } }]);
   let message = "";
   try {

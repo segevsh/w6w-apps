@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-get.ts";
 
-Deno.test("shipment-get: reads GET /shipments/{id} and sorts rates numerically", async () => {
+test("shipment-get: reads GET /shipments/{id} and sorts rates numerically", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -21,12 +22,12 @@ Deno.test("shipment-get: reads GET /shipments/{id} and sorts rates numerically",
   assertEquals(result.cheapestRate.object_id, "r2");
 });
 
-Deno.test("shipment-get: `shipmentId` is required", async () => {
+test("shipment-get: `shipmentId` is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "shipmentId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("shipment-get: is read-only", () => {
+test("shipment-get: is read-only", () => {
   assertEquals(action.type, "read");
 });

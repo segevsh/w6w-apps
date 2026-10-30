@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshBooksCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-create.ts";
 
-Deno.test("time-entry-create: POSTs /time_entries with the duration/started_at/is_logged envelope", async () => {
+test("time-entry-create: POSTs /time_entries with the duration/started_at/is_logged envelope", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: { time_entry: { id: 1 } } }]);
   await action.execute({ duration: 7200, startedAt: "2026-08-16T20:00:00.000Z" }, ctx);
   assertEquals(calls[0].url, "https://api.freshbooks.com/timetracking/business/biz1/time_entries");
@@ -12,7 +13,7 @@ Deno.test("time-entry-create: POSTs /time_entries with the duration/started_at/i
   });
 });
 
-Deno.test("time-entry-create: honors isLogged: false and merges optional fields", async () => {
+test("time-entry-create: honors isLogged: false and merges optional fields", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: {} }]);
   await action.execute({
     duration: 0,

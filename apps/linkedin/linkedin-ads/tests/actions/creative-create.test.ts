@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import creativeCreate from "../../actions/creative-create.ts";
 import { createdResponse, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("creative-create: POSTs content.reference, campaign URN, and defaults intendedStatus to DRAFT", async () => {
+test("creative-create: POSTs content.reference, campaign URN, and defaults intendedStatus to DRAFT", async () => {
   const { ctx, calls } = mockCtx([createdResponse("urn:li:sponsoredCreative:120491345")]);
   const result = await creativeCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("creative-create: POSTs content.reference, campaign URN, and defaults 
   assertEquals(result, { id: "urn:li:sponsoredCreative:120491345" });
 });
 
-Deno.test("creative-create: name is included only when set", async () => {
+test("creative-create: name is included only when set", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await creativeCreate.execute(
     { accountId: "1", campaignId: "2", contentReference: "urn:li:share:1", name: "Q4 push" },
@@ -31,6 +32,6 @@ Deno.test("creative-create: name is included only when set", async () => {
   assertEquals(JSON.parse(calls[0].body!).name, "Q4 push");
 });
 
-Deno.test("creative-create: is not idempotent", () => {
+test("creative-create: is not idempotent", () => {
   assertEquals(creativeCreate.idempotent, false);
 });

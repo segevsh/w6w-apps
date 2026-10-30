@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-list.ts";
 import { DEFAULT_VERSION } from "../../lib/client.ts";
 
 const display = { orgId: "org-1" };
 
-Deno.test("issue-list: uses the connection's org and stamps the version", async () => {
+test("issue-list: uses the connection's org and stamps the version", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "i1" }], links: {} } }], {
     display,
   });
@@ -17,7 +18,7 @@ Deno.test("issue-list: uses the connection's org and stamps the version", async 
 });
 
 /** Snyk distinguishes inherent from effective severity; triage wants effective. */
-Deno.test("issue-list: severities go as repeated effective_severity_level params", async () => {
+test("issue-list: severities go as repeated effective_severity_level params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], links: {} } }], { display });
   await action.execute!({
     effectiveSeverityLevel: ["critical", "high"],
@@ -31,7 +32,7 @@ Deno.test("issue-list: severities go as repeated effective_severity_level params
   assertEquals(q.get("ignored"), "false");
 });
 
-Deno.test("issue-list: the scan-item filter uses Snyk's dotted parameter names", async () => {
+test("issue-list: the scan-item filter uses Snyk's dotted parameter names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], links: {} } }], { display });
   await action.execute!({ scanItemId: "p1", scanItemType: "project" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -39,7 +40,7 @@ Deno.test("issue-list: the scan-item filter uses Snyk's dotted parameter names",
   assertEquals(q.get("scan_item.type"), "project");
 });
 
-Deno.test("issue-list: returnAll follows links.next", async () => {
+test("issue-list: returnAll follows links.next", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "1" }], links: { next: "/rest/x?starting_after=c2" } } },
     { status: 200, body: { data: [{ id: "2" }], links: {} } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/client-get-many.ts";
 
-Deno.test("client-get-many: GETs /clients with snake_case query params", async () => {
+test("client-get-many: GETs /clients with snake_case query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { clients: [] } }]);
   await action.execute({ isActive: true }, ctx);
   const url = new URL(calls[0].url);

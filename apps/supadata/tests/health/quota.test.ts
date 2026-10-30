@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const me = (used: number, max = 1000) => ({
   usedCredits: used,
 });
 
-Deno.test("quota: ok with the remaining credits, from a signed-posture GET /me", async () => {
+test("quota: ok with the remaining credits, from a signed-posture GET /me", async () => {
   const { ctx, calls } = mockCtx([{ body: me(100) }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -20,7 +21,7 @@ Deno.test("quota: ok with the remaining credits, from a signed-posture GET /me",
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: degraded at 90% used, down at 100% (remaining never negative)", async () => {
+test("quota: degraded at 90% used, down at 100% (remaining never negative)", async () => {
   assertEquals((await quota.check!({}, mockCtx([{ body: me(900) }]).ctx)).state, "degraded");
   const out = await quota.check!({}, mockCtx([{ body: me(1200) }]).ctx);
   assertEquals(out.state, "down");
@@ -28,7 +29,7 @@ Deno.test("quota: degraded at 90% used, down at 100% (remaining never negative)"
   assertEquals((await quota.check!({}, mockCtx([{ body: me(899) }]).ctx)).state, "ok");
 });
 
-Deno.test("quota: unknown on a non-2xx or a document without counters", async () => {
+test("quota: unknown on a non-2xx or a document without counters", async () => {
   assertEquals((await quota.check!({}, mockCtx([{ status: 401, body: {} }]).ctx)).state, "unknown");
   assertEquals((await quota.check!({}, mockCtx([{ body: { plan: "x" } }]).ctx)).state, "unknown");
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import templateCreate from "../../actions/template-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-create: POST /api/1/createTemplate/ with the documented form fields", async () => {
+test("template-create: POST /api/1/createTemplate/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   const out = await templateCreate.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("template-create: POST /api/1/createTemplate/ with the documented form
   assertEquals(out, { id: "123" });
 });
 
-Deno.test("template-create: a vendor error surfaces its status and body", async () => {
+test("template-create: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await templateCreate.execute(
@@ -49,7 +50,7 @@ Deno.test("template-create: a vendor error surfaces its status and body", async 
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("template-create: an empty template_name fails before any request", async () => {
+test("template-create: an empty template_name fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -69,7 +70,7 @@ Deno.test("template-create: an empty template_name fails before any request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("template-create: unset optional fields are not sent", async () => {
+test("template-create: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   await templateCreate.execute(
     { "template_name": "Welcome", "html_content": "<p>Hi</p>" } as never,

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { slug, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -22,14 +23,14 @@ function page(api: string, others = "operational", name = "MaintainX") {
 // Better Stack serves index.json as text/html, so the mock does too.
 const html = { "content-type": "text/html; charset=utf-8" };
 
-Deno.test("service: declared as an unsigned app-scoped service check on the status host", () => {
+test("service: declared as an unsigned app-scoped service check on the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.getmaintainx.com"]);
   assertEquals(STATUS_URL, "https://status.getmaintainx.com/en/index.json");
 });
 
-Deno.test("service: all operational is ok, with a component per resource", async () => {
+test("service: all operational is ok, with a component per resource", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational"), headers: html }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -42,7 +43,7 @@ Deno.test("service: all operational is ok, with a component per resource", async
   ]);
 });
 
-Deno.test("service: the REST API component decides the verdict", async () => {
+test("service: the REST API component decides the verdict", async () => {
   const down = await service.check!(
     {} as never,
     mockCtx([{ body: page("downtime"), headers: html }]).ctx,
@@ -56,14 +57,14 @@ Deno.test("service: the REST API component decides the verdict", async () => {
   assertEquals(degraded.state, "degraded");
 });
 
-Deno.test("service: other components degrade the detail but not the verdict", async () => {
+test("service: other components degrade the detail but not the verdict", async () => {
   const { ctx } = mockCtx([{ body: page("operational", "downtime"), headers: html }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
   assertEquals(r.components?.["website"].state, "down");
 });
 
-Deno.test("service: a page that does not identify as MaintainX is unknown", async () => {
+test("service: a page that does not identify as MaintainX is unknown", async () => {
   const { ctx } = mockCtx([{
     body: page("operational", "operational", "Someone Else"),
     headers: html,
@@ -76,7 +77,7 @@ Deno.test("service: a page that does not identify as MaintainX is unknown", asyn
   void ctx;
 });
 
-Deno.test("service: HTML shell, non-200 and missing REST API are unknown, never down", async () => {
+test("service: HTML shell, non-200 and missing REST API are unknown, never down", async () => {
   const shell = await service.check!(
     {} as never,
     mockCtx([{ body: "<html></html>", headers: html }]).ctx,
@@ -92,4 +93,4 @@ Deno.test("service: HTML shell, non-200 and missing REST API are unknown, never 
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("service: slug", () => assertEquals(slug("GraphQL API"), "graphql-api"));
+test("service: slug", () => assertEquals(slug("GraphQL API"), "graphql-api"));

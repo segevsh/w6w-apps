@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/engagement-statuses-list.ts";
 
 const RESPONSE = { "success": true, "data": [{ "status": "replied" }] };
 
-Deno.test("engagement-statuses-list: calls GET /api/client/v2/engagement-statuses and returns the vendor body", async () => {
+test("engagement-statuses-list: calls GET /api/client/v2/engagement-statuses and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({}, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("engagement-statuses-list: calls GET /api/client/v2/engagement-statuse
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("engagement-statuses-list: surfaces the vendor's error body", async () => {
+test("engagement-statuses-list: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

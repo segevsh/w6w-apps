@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getPerson from "../../actions/get-person.ts";
 import { mockCtx, pathOf, queryOf, single } from "../_helpers.ts";
 
-Deno.test("get-person: calls GET /people/v2/people/{id}?include=emails", async () => {
+test("get-person: calls GET /people/v2/people/{id}?include=emails", async () => {
   const { ctx, calls } = mockCtx([
     { body: single("Person", "42", { first_name: "Jane", last_name: "Doe", name: "Jane Doe" }) },
   ]);
@@ -12,7 +13,7 @@ Deno.test("get-person: calls GET /people/v2/people/{id}?include=emails", async (
   assertEquals(queryOf(calls[0].url)["include"], "emails");
 });
 
-Deno.test("get-person: prefers the email flagged primary:true over the first one", async () => {
+test("get-person: prefers the email flagged primary:true over the first one", async () => {
   const { ctx } = mockCtx([
     {
       body: single(
@@ -33,7 +34,7 @@ Deno.test("get-person: prefers the email flagged primary:true over the first one
   assertEquals(out.email, "new@example.com");
 });
 
-Deno.test("get-person: falls back to the first email when none is flagged primary", async () => {
+test("get-person: falls back to the first email when none is flagged primary", async () => {
   const { ctx } = mockCtx([
     {
       body: single(
@@ -49,14 +50,14 @@ Deno.test("get-person: falls back to the first email when none is flagged primar
   assertEquals(out.email, "only@example.com");
 });
 
-Deno.test("get-person: no included emails leaves email undefined, never throws", async () => {
+test("get-person: no included emails leaves email undefined, never throws", async () => {
   const { ctx } = mockCtx([{ body: single("Person", "42", { first_name: "Jane" }) }]);
   const out = await getPerson.execute({ personId: "42" }, ctx);
 
   assertEquals(out.email, undefined);
 });
 
-Deno.test("get-person: percent-encodes the person id in the path", async () => {
+test("get-person: percent-encodes the person id in the path", async () => {
   const { ctx, calls } = mockCtx([{ body: single("Person", "1", {}) }]);
   await getPerson.execute({ personId: "abc/def" }, ctx);
 

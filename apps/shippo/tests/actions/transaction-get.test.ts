@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/transaction-get.ts";
 
-Deno.test("transaction-get: reads GET /transactions/{id}", async () => {
+test("transaction-get: reads GET /transactions/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { object_id: "trn_1", status: "SUCCESS" },
@@ -12,7 +13,7 @@ Deno.test("transaction-get: reads GET /transactions/{id}", async () => {
   assertEquals(result.status, "SUCCESS");
 });
 
-Deno.test("transaction-get: `transactionId` is required", async () => {
+test("transaction-get: `transactionId` is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "transactionId");
   assertEquals(calls.length, 0);

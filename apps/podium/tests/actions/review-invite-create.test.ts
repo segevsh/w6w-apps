@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import reviewInviteCreate from "../../actions/review-invite-create.ts";
 
-Deno.test("review-invite-create: sends every documented field in its documented place", async () => {
+test("review-invite-create: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -28,7 +29,7 @@ Deno.test("review-invite-create: sends every documented field in its documented 
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("review-invite-create: a minimal call sends only what was set", async () => {
+test("review-invite-create: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -43,7 +44,7 @@ Deno.test("review-invite-create: a minimal call sends only what was set", async 
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("review-invite-create: declares its params and kind", () => {
+test("review-invite-create: declares its params and kind", () => {
   assertEquals((reviewInviteCreate.params ?? []).map((p) => p.key), [
     "locationUid",
     "email",

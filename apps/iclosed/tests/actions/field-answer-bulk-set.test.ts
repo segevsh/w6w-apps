@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fieldAnswerBulkSet from "../../actions/field-answer-bulk-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("field-answer-bulk-set: sends every input as body", async () => {
+test("field-answer-bulk-set: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await fieldAnswerBulkSet.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("field-answer-bulk-set: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("field-answer-bulk-set: omits every unset optional", async () => {
+test("field-answer-bulk-set: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await fieldAnswerBulkSet.execute({ "contactIds": "[1, 2]" } as never, ctx);
 
@@ -38,7 +39,7 @@ Deno.test("field-answer-bulk-set: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("field-answer-bulk-set: declares a perform action's idempotency", () => {
+test("field-answer-bulk-set: declares a perform action's idempotency", () => {
   assertEquals(fieldAnswerBulkSet.type, "perform");
   assertEquals(fieldAnswerBulkSet.idempotent, true);
   assertEquals(fieldAnswerBulkSet.params!.filter((p) => p.required).map((p) => p.key), [

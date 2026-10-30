@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: ok with remaining credits and the reset time, from a GET /account", async () => {
+test("quota: ok with remaining credits and the reset time, from a GET /account", async () => {
   const { ctx, calls } = mockCtx([{
     body: { remaining_total_credits: 250, resets_at: 1617073667 },
   }]);
@@ -20,7 +21,7 @@ Deno.test("quota: ok with remaining credits and the reset time, from a GET /acco
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: zero credits is down; a missing counter or a non-2xx is unknown", async () => {
+test("quota: zero credits is down; a missing counter or a non-2xx is unknown", async () => {
   const zero = await quota.check!({}, mockCtx([{ body: { remaining_total_credits: 0 } }]).ctx);
   assertEquals(zero.state, "down");
   assertEquals(zero.quota?.[0].remaining, 0);

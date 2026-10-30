@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-template-email.ts";
 
-Deno.test("send-template-email: POSTs /v3/smtp/email with templateId and parsed recipients", async () => {
+test("send-template-email: POSTs /v3/smtp/email with templateId and parsed recipients", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { messageId: "abc" } }]);
   await action.execute!(
     { templateId: 42, to: "Ada <ada@x.com>, bob@x.com" },
@@ -15,7 +16,7 @@ Deno.test("send-template-email: POSTs /v3/smtp/email with templateId and parsed 
   assertEquals(body.to, [{ email: "ada@x.com", name: "Ada" }, { email: "bob@x.com" }]);
 });
 
-Deno.test("send-template-email: forwards template params, cc, bcc, tags, attachments", async () => {
+test("send-template-email: forwards template params, cc, bcc, tags, attachments", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!(
     {
@@ -39,7 +40,7 @@ Deno.test("send-template-email: forwards template params, cc, bcc, tags, attachm
   assertEquals(body.headers, { "X-Camp": "spring-2025" });
 });
 
-Deno.test("send-template-email: omits optional fields when not provided", async () => {
+test("send-template-email: omits optional fields when not provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ templateId: 1, to: "bob@x.com" }, ctx);
   const body = JSON.parse(calls[0].body!);

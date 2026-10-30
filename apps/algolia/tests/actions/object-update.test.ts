@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-update.ts";
 
 const display = { appId: "APPID" };
 
-Deno.test("object-update: POSTs to the partial path with createIfNotExists", async () => {
+test("object-update: POSTs to the partial path with createIfNotExists", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskID: 7 } }], { display });
   await action.execute!({
     indexName: "products",
@@ -20,7 +21,7 @@ Deno.test("object-update: POSTs to the partial path with createIfNotExists", asy
   assertEquals(JSON.parse(calls[0].body!), { price: 89 });
 });
 
-Deno.test("object-update: turning off create sends the string false", async () => {
+test("object-update: turning off create sends the string false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     indexName: "products",
@@ -32,11 +33,11 @@ Deno.test("object-update: turning off create sends the string false", async () =
 });
 
 /** Increment/Decrement compound on a retry, so this cannot claim idempotency. */
-Deno.test("object-update: is honestly non-idempotent", () => {
+test("object-update: is honestly non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("object-update: attributes are required", async () => {
+test("object-update: attributes are required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ indexName: "p", objectID: "1" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionCreate from "../../actions/subscription-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-create: posts amount/interval/description to /customers/{id}/subscriptions", async () => {
+test("subscription-create: posts amount/interval/description to /customers/{id}/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "sub_1", status: "active" } }]);
   const out = await subscriptionCreate.execute(
     {
@@ -25,6 +26,6 @@ Deno.test("subscription-create: posts amount/interval/description to /customers/
   assertEquals(out, { id: "sub_1", status: "active" });
 });
 
-Deno.test("subscription-create: is not idempotent", () => {
+test("subscription-create: is not idempotent", () => {
   assertEquals(subscriptionCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/project-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("project-create: calls POST /projects", async () => {
+test("project-create: calls POST /projects", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: { id: "x1" } } }]);
   const out = await action.execute!(
     { "folderId": "folderId-1", "content": "Buy milk" },
@@ -15,7 +16,7 @@ Deno.test("project-create: calls POST /projects", async () => {
   assertEquals(typeof JSON.parse(calls[0].body!), "object");
 });
 
-Deno.test("project-create: a failure envelope is an error", async () => {
+test("project-create: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-get.ts";
 
-Deno.test("booking-get: GETs /bookings/{uid} with cal-api-version 2026-02-25", async () => {
+test("booking-get: GETs /bookings/{uid} with cal-api-version 2026-02-25", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { uid: "abc123" } } }]);
   const result = await action.execute({ bookingUid: "abc123" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("booking-get: GETs /bookings/{uid} with cal-api-version 2026-02-25", a
   assertEquals(result, { data: { uid: "abc123" } });
 });
 
-Deno.test("booking-get: URL-encodes the booking UID", async () => {
+test("booking-get: URL-encodes the booking UID", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ bookingUid: "a/b c" }, ctx);
   const url = new URL(calls[0].url);

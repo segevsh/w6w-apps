@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerGet from "../../actions/customer-get.ts";
 import { errorBody, formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-get: calls POST /customer with the email in the form body", async () => {
+test("customer-get: calls POST /customer with the email in the form body", async () => {
   const { ctx, calls } = mockCtx([
     { body: { customer: { name: "Jane" }, purchases: [], subscriptions: [], lifetime_value: {} } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("customer-get: calls POST /customer with the email in the form body", 
   assertEquals(out.customer.name, "Jane");
 });
 
-Deno.test("customer-get: a 404 surfaces the vendor's not-found text", async () => {
+test("customer-get: a 404 surfaces the vendor's not-found text", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("There are no orders associated with this customer.") },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentCreate from "../../actions/payment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-create: posts description/amount as {currency,value} to /payments", async () => {
+test("payment-create: posts description/amount as {currency,value} to /payments", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "tr_1", status: "open" } }]);
   const out = await paymentCreate.execute(
     {
@@ -24,6 +25,6 @@ Deno.test("payment-create: posts description/amount as {currency,value} to /paym
   assertEquals(out, { id: "tr_1", status: "open" });
 });
 
-Deno.test("payment-create: is not idempotent — every call starts a separate payment", () => {
+test("payment-create: is not idempotent — every call starts a separate payment", () => {
   assertEquals(paymentCreate.idempotent, false);
 });

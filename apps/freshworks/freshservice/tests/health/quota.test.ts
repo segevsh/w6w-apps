@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, mockFreshserviceCtx } from "../_helpers.ts";
 import check from "../../health/quota.ts";
 
-Deno.test("quota: is a signed, connection-scoped, informational check", () => {
+test("quota: is a signed, connection-scoped, informational check", () => {
   assertEquals(check.kind, "quota");
   assertEquals(check.severity, "informational");
   // A signed check must not widen egress — the probe stays on the app's own
@@ -10,7 +11,7 @@ Deno.test("quota: is a signed, connection-scoped, informational check", () => {
   assertEquals(check.network, undefined);
 });
 
-Deno.test("quota: reads the X-Ratelimit-* headers off a one-row ticket read", async () => {
+test("quota: reads the X-Ratelimit-* headers off a one-row ticket read", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{
     body: { tickets: [] },
     headers: { "x-ratelimit-total": "500", "x-ratelimit-remaining": "480" },
@@ -21,7 +22,7 @@ Deno.test("quota: reads the X-Ratelimit-* headers off a one-row ticket read", as
   assertEquals(out.quota, [{ id: "account", limit: 500, remaining: 480, unit: "requests" }]);
 });
 
-Deno.test("quota: tolerates the decimal header values some accounts return", async () => {
+test("quota: tolerates the decimal header values some accounts return", async () => {
   const { ctx } = mockFreshserviceCtx([{
     body: { tickets: [] },
     headers: { "x-ratelimit-total": "7000.0", "x-ratelimit-remaining": "6952.0" },
@@ -30,7 +31,7 @@ Deno.test("quota: tolerates the decimal header values some accounts return", asy
   assertEquals(out.quota, [{ id: "account", limit: 7000, remaining: 6952, unit: "requests" }]);
 });
 
-Deno.test("quota: degrades under 10% headroom and reports down at zero", async () => {
+test("quota: degrades under 10% headroom and reports down at zero", async () => {
   const low = mockFreshserviceCtx([{
     body: { tickets: [] },
     headers: { "x-ratelimit-total": "500", "x-ratelimit-remaining": "20" },
@@ -44,7 +45,7 @@ Deno.test("quota: degrades under 10% headroom and reports down at zero", async (
   assertEquals((await check.check!({}, out.ctx)).state, "down");
 });
 
-Deno.test("quota: unknown when the headers are missing or the probe fails", async () => {
+test("quota: unknown when the headers are missing or the probe fails", async () => {
   const bare = mockFreshserviceCtx([{ body: { tickets: [] }, headers: {} }]);
   assertEquals((await check.check!({}, bare.ctx)).state, "unknown");
 
@@ -52,7 +53,7 @@ Deno.test("quota: unknown when the headers are missing or the probe fails", asyn
   assertEquals((await check.check!({}, failed.ctx)).state, "unknown");
 });
 
-Deno.test("quota: unknown, without a request, when the connection records no domain", async () => {
+test("quota: unknown, without a request, when the connection records no domain", async () => {
   const { ctx, calls } = mockCtx();
   const out = await check.check!({}, ctx);
   assertEquals(out, { state: "unknown", message: "connection records no domain" });

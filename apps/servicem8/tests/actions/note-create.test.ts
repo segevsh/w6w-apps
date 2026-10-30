@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import noteCreate from "../../actions/note-create.ts";
 import { bodyOf, mockCtx, pathOf, result } from "../_helpers.ts";
 
-Deno.test("note-create: POSTs to /note.json", async () => {
+test("note-create: POSTs to /note.json", async () => {
   const { ctx, calls } = mockCtx([{ body: result(), headers: { "x-record-uuid": "n1" } }]);
   const out = await noteCreate.execute({
     relatedObject: "job",

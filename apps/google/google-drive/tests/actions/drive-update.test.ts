@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/drive-update.ts";
 
-Deno.test("drive-update: PATCHes /drives/{id} with supplied fields only", async () => {
+test("drive-update: PATCHes /drives/{id} with supplied fields only", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "drv-1", name: "Renamed" } }]);
   await action.execute!({ driveId: "drv-1", name: "Renamed" }, ctx);
 

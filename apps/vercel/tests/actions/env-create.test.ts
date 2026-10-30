@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/env-create.ts";
 
-Deno.test("env-create: sends key, value, type and target, defaulting type to encrypted", async () => {
+test("env-create: sends key, value, type and target, defaulting type to encrypted", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { created: {} } }], { display: {} });
   await action.execute!({
     projectId: "my-app",
@@ -20,7 +21,7 @@ Deno.test("env-create: sends key, value, type and target, defaulting type to enc
   });
 });
 
-Deno.test("env-create: upsert goes as Vercel's string flag", async () => {
+test("env-create: upsert goes as Vercel's string flag", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await action.execute!({
     projectId: "my-app",
@@ -32,7 +33,7 @@ Deno.test("env-create: upsert goes as Vercel's string flag", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("upsert"), "true");
 });
 
-Deno.test("env-create: a branch-scoped variable without the preview target is caught here", async () => {
+test("env-create: a branch-scoped variable without the preview target is caught here", async () => {
   // Vercel rejects this combination; failing locally names the actual problem.
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(
@@ -50,7 +51,7 @@ Deno.test("env-create: a branch-scoped variable without the preview target is ca
   assertEquals(calls.length, 0);
 });
 
-Deno.test("env-create: key and value are both required", async () => {
+test("env-create: key and value are both required", async () => {
   const noKey = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ projectId: "my-app", value: "v" }, noKey.ctx),

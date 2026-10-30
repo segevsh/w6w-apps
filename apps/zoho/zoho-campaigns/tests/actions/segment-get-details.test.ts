@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/segment-get-details.ts";
 
-Deno.test("segment-get-details: GETs getsegmentdetails with the list key and cvid", async () => {
+test("segment-get-details: GETs getsegmentdetails with the list key and cvid", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { status: "success", code: "0", segment_details: { criteria: [] } } },
   ]);

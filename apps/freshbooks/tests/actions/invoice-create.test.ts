@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshBooksCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
 const LINES = [{ name: "Consulting", qty: 1, unit_cost: { amount: "100", code: "USD" } }];
 
-Deno.test("invoice-create: POSTs /invoices/invoices with customerid and lines", async () => {
+test("invoice-create: POSTs /invoices/invoices with customerid and lines", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{
     body: { response: { result: { invoice: { id: 1 } } } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("invoice-create: POSTs /invoices/invoices with customerid and lines", 
   });
 });
 
-Deno.test("invoice-create: merges additionalFields and accepts lines as a JSON string", async () => {
+test("invoice-create: merges additionalFields and accepts lines as a JSON string", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: {} }]);
   await action.execute({
     customerId: "806",

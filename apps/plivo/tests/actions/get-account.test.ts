@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-account.ts";
 
-Deno.test("get-account: GETs  with the trailing slash", async () => {
+test("get-account: GETs  with the trailing slash", async () => {
   const body = { api_id: "a1" };
   const { ctx, calls } = mockCtx([{ body }], CONN);
   const out = await action.execute!({}, ctx);
@@ -14,12 +15,12 @@ Deno.test("get-account: GETs  with the trailing slash", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("get-account: a vendor error surfaces status and body", async () => {
+test("get-account: a vendor error surfaces status and body", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "not found" }], CONN);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "Plivo 404");
 });
 
-Deno.test("get-account: a missing connection Auth ID is rejected before any request", async () => {
+test("get-account: a missing connection Auth ID is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "Auth ID missing");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import generativeJobCreate from "../../actions/generative-job-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("generative-job-create: always sends jobType=thumbnail, no envelope on the response", async () => {
+test("generative-job-create: always sends jobType=thumbnail, no envelope on the response", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { jobId: "thumb1" } }]);
   const out = await generativeJobCreate.execute({ sourceUri: "https://youtube.com/x" }, ctx) as {
     jobId: string;
@@ -16,7 +17,7 @@ Deno.test("generative-job-create: always sends jobType=thumbnail, no envelope on
   assertEquals(out.jobId, "thumb1");
 });
 
-Deno.test("generative-job-create: includes reference/mask/prompt only when given", async () => {
+test("generative-job-create: includes reference/mask/prompt only when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { jobId: "thumb2" } }]);
   await generativeJobCreate.execute({
     sourceUri: "https://youtube.com/x",
@@ -34,6 +35,6 @@ Deno.test("generative-job-create: includes reference/mask/prompt only when given
   });
 });
 
-Deno.test("generative-job-create: is declared non-idempotent", () => {
+test("generative-job-create: is declared non-idempotent", () => {
   assertEquals(generativeJobCreate.idempotent, false);
 });

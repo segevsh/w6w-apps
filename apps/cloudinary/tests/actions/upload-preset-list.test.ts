@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upload-preset-list.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("upload-preset-list: reads the stored upload settings", async () => {
+test("upload-preset-list: reads the stored upload settings", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { presets: [{ name: "signed_products" }] },

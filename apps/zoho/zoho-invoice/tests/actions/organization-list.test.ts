@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, mockInvoiceCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: GETs /organizations and never sends an org id header", async () => {
+test("organization-list: GETs /organizations and never sends an org id header", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "success", organizations: [{ organization_id: "1" }] } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("organization-list: GETs /organizations and never sends an org id head
   assertEquals(out, { organizations: [{ organization_id: "1" }] });
 });
 
-Deno.test("organization-list: works even with no connection recorded yet (defaults to the US host)", async () => {
+test("organization-list: works even with no connection recorded yet (defaults to the US host)", async () => {
   const { ctx, calls } = mockCtx([
     { body: { code: 0, message: "success", organizations: [] } },
   ]);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import messageCreate from "../../actions/message-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-create: POST /api/v3/conversation_messages/add with every documented parameter", async () => {
+test("message-create: POST /api/v3/conversation_messages/add with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await messageCreate.execute({
     "conversationId": 100,
@@ -28,7 +29,7 @@ Deno.test("message-create: POST /api/v3/conversation_messages/add with every doc
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("message-create: sends a form body, never a query string", async () => {
+test("message-create: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await messageCreate.execute({
     "conversationId": 100,
@@ -43,18 +44,18 @@ Deno.test("message-create: sends a form body, never a query string", async () =>
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("message-create: omits optional parameters that are not set", async () => {
+test("message-create: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await messageCreate.execute({ "conversationId": 100, "content": "sample content" }, ctx);
 
   assertEquals(formOf(calls[0].body), { "conversation_id": "100", "content": "sample content" });
 });
 
-Deno.test("message-create: is declared non-idempotent", () => {
+test("message-create: is declared non-idempotent", () => {
   assertEquals(messageCreate.idempotent, false);
 });
 
-Deno.test("message-create: sends no credential of its own", async () => {
+test("message-create: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await messageCreate.execute({
     "conversationId": 100,
@@ -68,7 +69,7 @@ Deno.test("message-create: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("message-create: surfaces Twist's error body", async () => {
+test("message-create: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

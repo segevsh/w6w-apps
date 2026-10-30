@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/update-exclusion-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("update-exclusion-list: PUTs the new name", async () => {
+test("update-exclusion-list: PUTs the new name", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "list": { "id": 3, "name": "New" } },

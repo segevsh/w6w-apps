@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-list.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("message-list: defaults to /message with no applicationId", async () => {
+test("message-list: defaults to /message with no applicationId", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { messages: [], paging: { size: 0, since: 0, limit: 100 } },
@@ -14,7 +15,7 @@ Deno.test("message-list: defaults to /message with no applicationId", async () =
   assertEquals(url.pathname, "/message");
 });
 
-Deno.test("message-list: scopes to /application/{id}/message when applicationId is set", async () => {
+test("message-list: scopes to /application/{id}/message when applicationId is set", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { messages: [], paging: { size: 0, since: 0, limit: 100 } },
@@ -26,7 +27,7 @@ Deno.test("message-list: scopes to /application/{id}/message when applicationId 
   assertEquals(url.searchParams.get("since"), "100");
 });
 
-Deno.test("message-list: returns the whole PagedMessages envelope, not just the array", async () => {
+test("message-list: returns the whole PagedMessages envelope, not just the array", async () => {
   const paging = { size: 1, since: 5, limit: 100, next: "" };
   const { ctx } = mockCtx([{ status: 200, body: { messages: [{ id: 5 }], paging } }], conn);
   const result = await action.execute!({}, ctx) as { messages: unknown[]; paging: unknown };

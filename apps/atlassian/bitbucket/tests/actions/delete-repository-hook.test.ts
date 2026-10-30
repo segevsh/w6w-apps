@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-repository-hook.ts";
 
-Deno.test("delete-repository-hook: DELETEs the target and reports deletion", async () => {
+test("delete-repository-hook: DELETEs the target and reports deletion", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute(
     { workspace: "acme", repoSlug: "backend", uid: "abc-123" },
@@ -16,6 +17,6 @@ Deno.test("delete-repository-hook: DELETEs the target and reports deletion", asy
   assertEquals(result, { deleted: true, uid: "abc-123" });
 });
 
-Deno.test("delete-repository-hook: is marked idempotent", () => {
+test("delete-repository-hook: is marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });

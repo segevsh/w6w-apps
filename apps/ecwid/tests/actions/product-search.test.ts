@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import productSearch from "../../actions/product-search.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("product-search: calls GET /products and returns the documented page", async () => {
+test("product-search: calls GET /products and returns the documented page", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ id: 692730761 }], { total: 42 }) }]);
   const out = await productSearch.execute({ limit: 50 }, ctx) as {
     items: unknown[];
@@ -16,7 +17,7 @@ Deno.test("product-search: calls GET /products and returns the documented page",
   assertEquals(out.items, [{ id: 692730761 }]);
 });
 
-Deno.test("product-search: the filters are passed through verbatim", async () => {
+test("product-search: the filters are passed through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([]) }]);
   await productSearch.execute(
     {
@@ -48,7 +49,7 @@ Deno.test("product-search: the filters are passed through verbatim", async () =>
   });
 });
 
-Deno.test("product-search: the prefilled limit stays below Ecwid's own maximum", () => {
+test("product-search: the prefilled limit stays below Ecwid's own maximum", () => {
   const limit = productSearch.params?.find((p) => p.key === "limit");
   assertEquals(limit?.default, 50);
   assert(JSON.stringify(limit?.validation ?? {}).includes("100"), "no vendor maximum declared");

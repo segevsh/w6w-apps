@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-upload.ts";
 
-Deno.test("file-upload: POSTs a multipart body to /files", async () => {
+test("file-upload: POSTs a multipart body to /files", async () => {
   const { ctx, calls } = mockCtx([
     { body: { Id: "F-1", Name: "hi.txt", ContentType: "application/octet-stream", Size: 2 } },
   ]);
@@ -23,13 +24,13 @@ Deno.test("file-upload: POSTs a multipart body to /files", async () => {
   });
 });
 
-Deno.test("file-upload: defaults the file name when not given", async () => {
+test("file-upload: defaults the file name when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "F-2" } }]);
   await action.execute({ file: btoa("x") }, ctx);
   const file = (calls[0].rawBody as FormData).get("File") as File;
   assertEquals(file.name, "upload.bin");
 });
 
-Deno.test("file-upload: is not idempotent", () => {
+test("file-upload: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

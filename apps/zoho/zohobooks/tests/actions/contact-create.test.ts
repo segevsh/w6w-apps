@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooksCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs the fields as the body, not wrapped", async () => {
+test("contact-create: POSTs the fields as the body, not wrapped", async () => {
   const { ctx, calls } = mockBooksCtx([
     { body: { code: 0, message: "success", contact: { contact_id: "1" } } },
   ]);

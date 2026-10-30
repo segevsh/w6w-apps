@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import recipientGet from "../../actions/recipient-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recipient-get: calls GET /api/v2/recipients/99 and shapes the output", async () => {
+test("recipient-get: calls GET /api/v2/recipients/99 and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 99, "name": "Ada" } }]);
   const out = await recipientGet.execute({ "recipientId": "99" } as never, ctx) as Record<
     string,
@@ -19,7 +20,7 @@ Deno.test("recipient-get: calls GET /api/v2/recipients/99 and shapes the output"
   assert((out.recipient as Record<string, number>).id === 99, JSON.stringify(out));
 });
 
-Deno.test("recipient-get: a vendor error surfaces the HTTP status and message", async () => {
+test("recipient-get: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { "message": "Not Found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(recipientGet.execute({ "recipientId": "99" } as never, ctx)),

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import scheduleGroup from "../../actions/schedule-group.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => scheduleGroup.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("schedule-group: declares a perform action with a description, params and output", () => {
+test("schedule-group: declares a perform action with a description, params and output", () => {
   assertEquals(scheduleGroup.key, "schedule-group");
   assertEquals(scheduleGroup.type, "perform");
   assert((scheduleGroup.description ?? "").length > 0);
@@ -19,7 +20,7 @@ Deno.test("schedule-group: declares a perform action with a description, params 
   assertEquals(scheduleGroup.idempotent, false);
 });
 
-Deno.test("schedule-group: sends the documented request and returns the documented shape", async () => {
+test("schedule-group: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "groupId": "G4V1",
@@ -50,7 +51,7 @@ Deno.test("schedule-group: sends the documented request and returns the document
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("schedule-group: a SOLAPI error body is thrown with its code and message", async () => {
+test("schedule-group: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

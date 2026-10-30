@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import hostList from "../../actions/host-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("host-list: calls GET /api/v1/hosts with Datadog's parameter names", async () => {
+test("host-list: calls GET /api/v1/hosts with Datadog's parameter names", async () => {
   const { ctx, calls } = mockCtx([{
     body: { host_list: [{ name: "web-01" }], total_matching: 1, total_returned: 1 },
   }]);
@@ -22,7 +23,7 @@ Deno.test("host-list: calls GET /api/v1/hosts with Datadog's parameter names", a
   assertEquals(out.host_list.length, 1);
 });
 
-Deno.test("host-list: the two include flags are sent only when true", async () => {
+test("host-list: the two include flags are sent only when true", async () => {
   const on = mockCtx([{ body: {} }]);
   await hostList.execute({ includeMutedHostsData: true, includeHostsMetadata: true }, on.ctx);
   assertEquals(queryOf(on.calls[0].url), {
@@ -40,7 +41,7 @@ Deno.test("host-list: the two include flags are sent only when true", async () =
  * the default window is three hours, and EC2 hosts carry `aws_id` where
  * everything else carries `id`.
  */
-Deno.test("host-list: the window and the EC2 id substitution are both stated", () => {
+test("host-list: the window and the EC2 id substitution are both stated", () => {
   const hint = hostList.params?.find((p) => p.key === "from")?.hint ?? "";
   assert(hint.includes("3 hours"), hint);
   const field = (hostList.output as Array<{ key: string; label: string }>)

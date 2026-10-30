@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/server-to-server.ts";
 
-Deno.test("server-to-server: collects three secret fields and no browser flow", () => {
+test("server-to-server: collects three secret fields and no browser flow", () => {
   assertEquals(auth.key, "server-to-server");
   // `custom`: the account_credentials grant is not the OAuth code flow the
   // `oauth2` type models.
@@ -14,7 +15,7 @@ Deno.test("server-to-server: collects three secret fields and no browser flow", 
   }
 });
 
-Deno.test("server-to-server: exchange mints a token with the account_credentials grant", async () => {
+test("server-to-server: exchange mints a token with the account_credentials grant", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok", expires_in: 3600 } }]);
   const cred = await auth.exchange!(
     { fields: { accountId: "acc", clientId: "cid", clientSecret: "sec" } },
@@ -34,7 +35,7 @@ Deno.test("server-to-server: exchange mints a token with the account_credentials
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("server-to-server: the recorded expiry leaves headroom before Zoom's", async () => {
+test("server-to-server: the recorded expiry leaves headroom before Zoom's", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "tok", expires_in: 3600 } }]);
   const cred = await auth.exchange!(
     { fields: { accountId: "a", clientId: "c", clientSecret: "s" } },
@@ -46,13 +47,13 @@ Deno.test("server-to-server: the recorded expiry leaves headroom before Zoom's",
   assert(ttlMs > 3500_000, "but not so early that it churns");
 });
 
-Deno.test("server-to-server: exchange refuses an incomplete form without a request", () => {
+test("server-to-server: exchange refuses an incomplete form without a request", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(() => auth.exchange!({ fields: { accountId: "a" } }, ctx), Error, "all required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("server-to-server: exchange surfaces Zoom's rejection reason", async () => {
+test("server-to-server: exchange surfaces Zoom's rejection reason", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { reason: "Invalid client_id or client_secret" },
@@ -67,7 +68,7 @@ Deno.test("server-to-server: exchange surfaces Zoom's rejection reason", async (
   );
 });
 
-Deno.test("server-to-server: refresh re-mints from the stored account credentials", async () => {
+test("server-to-server: refresh re-mints from the stored account credentials", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok2", expires_in: 3600 } }]);
   const cred = await auth.refresh!(
     { credential: { accountId: "acc", clientId: "cid", clientSecret: "sec", accessToken: "old" } },
@@ -77,7 +78,7 @@ Deno.test("server-to-server: refresh re-mints from the stored account credential
   assertEquals(cred.accessToken, "tok2");
 });
 
-Deno.test("server-to-server: sign stamps the current token", async () => {
+test("server-to-server: sign stamps the current token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.zoom.us/v2/users/me",
@@ -88,7 +89,7 @@ Deno.test("server-to-server: sign stamps the current token", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("server-to-server: test tells the user to reconnect when there is no token", async () => {
+test("server-to-server: test tells the user to reconnect when there is no token", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -97,7 +98,7 @@ Deno.test("server-to-server: test tells the user to reconnect when there is no t
   assertEquals(calls.length, 0);
 });
 
-Deno.test("server-to-server: afterConnect labels with the user and account", async () => {
+test("server-to-server: afterConnect labels with the user and account", async () => {
   const { ctx } = mockCtx([{
     body: { id: "u1", email: "jo@acme.test", first_name: "Jo", account_id: "acc" },
   }]);

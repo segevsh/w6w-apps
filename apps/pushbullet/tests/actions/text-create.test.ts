@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import textCreate from "../../actions/text-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("text-create: POSTs a nested data object to /v2/texts", async () => {
+test("text-create: POSTs a nested data object to /v2/texts", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "t1" } }]);
   await textCreate.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("text-create: POSTs a nested data object to /v2/texts", async () => {
   });
 });
 
-Deno.test("text-create: attaches a file via file_url alongside data", async () => {
+test("text-create: attaches a file via file_url alongside data", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "t2" } }]);
   await textCreate.execute(
     {
@@ -42,6 +43,6 @@ Deno.test("text-create: attaches a file via file_url alongside data", async () =
   assertEquals(body.data.file_type, "image/jpeg");
 });
 
-Deno.test("text-create: is declared non-idempotent — guid is optional", () => {
+test("text-create: is declared non-idempotent — guid is optional", () => {
   assertEquals(textCreate.idempotent, false);
 });

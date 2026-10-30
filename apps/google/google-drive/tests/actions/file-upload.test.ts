@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-upload.ts";
 
-Deno.test("file-upload: multipart POST with base64-decoded content", async () => {
+test("file-upload: multipart POST with base64-decoded content", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "f-new" } }]);
   const contentBase64 = btoa("payload");
   await action.execute!(

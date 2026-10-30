@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import highlightCreate from "../../actions/highlight-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const CREATED = [
   },
 ];
 
-Deno.test("highlight-create: posts a single-element highlights array", async () => {
+test("highlight-create: posts a single-element highlights array", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await highlightCreate.execute({ text: "Call me Ishmael", title: "Moby Dick" }, ctx);
 
@@ -24,14 +25,14 @@ Deno.test("highlight-create: posts a single-element highlights array", async () 
   assertEquals(body.highlights[0], { text: "Call me Ishmael", title: "Moby Dick" });
 });
 
-Deno.test("highlight-create: omits unset optional fields from the wire payload", async () => {
+test("highlight-create: omits unset optional fields from the wire payload", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await highlightCreate.execute({ text: "just text" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(body.highlights[0], { text: "just text" });
 });
 
-Deno.test("highlight-create: lifts the first modified_highlights id for chaining", async () => {
+test("highlight-create: lifts the first modified_highlights id for chaining", async () => {
   const { ctx } = mockCtx([{ body: CREATED }]);
   const out = await highlightCreate.execute({ text: "hi" }, ctx) as {
     highlightId?: number;
@@ -41,7 +42,7 @@ Deno.test("highlight-create: lifts the first modified_highlights id for chaining
   assertEquals(out.books, CREATED);
 });
 
-Deno.test("highlight-create: maps camelCase input to the vendor's snake_case fields", async () => {
+test("highlight-create: maps camelCase input to the vendor's snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ body: CREATED }]);
   await highlightCreate.execute({
     text: "hi",
@@ -61,6 +62,6 @@ Deno.test("highlight-create: maps camelCase input to the vendor's snake_case fie
   assertEquals(body.location_type, "page");
 });
 
-Deno.test("highlight-create: is idempotent, per the vendor's own de-dupe rule", () => {
+test("highlight-create: is idempotent, per the vendor's own de-dupe rule", () => {
   assertEquals(highlightCreate.idempotent, true);
 });

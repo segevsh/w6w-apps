@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { healthCredential, healthScope, healthSeverity } from "@w6w/types";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -7,7 +8,7 @@ import { mockCtx } from "../_helpers.ts";
 
 // ------------------------------------------------------------------ service --
 
-Deno.test("service: is declared absent rather than backed by a guessed probe", () => {
+test("service: is declared absent rather than backed by a guessed probe", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assert(service.unavailable?.reason, "must record why no probe exists");
@@ -17,7 +18,7 @@ Deno.test("service: is declared absent rather than backed by a guessed probe", (
   assertEquals(service.feed, undefined);
 });
 
-Deno.test("service: the reason names the surfaces that were ruled out, with what they answered", () => {
+test("service: the reason names the surfaces that were ruled out, with what they answered", () => {
   const reason = service.unavailable!.reason;
   assert(reason.includes("ServiceHealth.Read.All"), reason);
   assert(reason.includes("status.cloud.microsoft"), reason);
@@ -29,7 +30,7 @@ Deno.test("service: the reason names the surfaces that were ruled out, with what
   assert(reason.includes("2,058-byte"), reason);
 });
 
-Deno.test("service: informational, so a permanent `unknown` cannot pin the verdict", () => {
+test("service: informational, so a permanent `unknown` cannot pin the verdict", () => {
   assertEquals(healthSeverity(service), "informational");
   assertEquals(healthScope(service), "app");
   assertEquals(healthCredential(service), "none");
@@ -37,7 +38,7 @@ Deno.test("service: informational, so a permanent `unknown` cannot pin the verdi
 
 // ------------------------------------------------------------- request-rate --
 
-Deno.test("request-rate: declared absent, because SharePoint publishes no RateLimit headers", () => {
+test("request-rate: declared absent, because SharePoint publishes no RateLimit headers", () => {
   assertEquals(requestRate.kind, "quota");
   assertEquals(requestRate.check, undefined);
   const reason = requestRate.unavailable!.reason;
@@ -46,34 +47,34 @@ Deno.test("request-rate: declared absent, because SharePoint publishes no RateLi
   assert(reason.includes("1,250 RU/min"), reason);
 });
 
-Deno.test("request-rate: informational, like every declared absence", () => {
+test("request-rate: informational, like every declared absence", () => {
   assertEquals(healthSeverity(requestRate), "informational");
 });
 
 // -------------------------------------------------------------------- quota --
 
-Deno.test("quota: is a real probe against the root site's default library", () => {
+test("quota: is a real probe against the root site's default library", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(typeof quota.check, "function");
   assertEquals(quota.unavailable, undefined);
 });
 
-Deno.test("quota: signed posture, so it declares no egress widening of its own", () => {
+test("quota: signed posture, so it declares no egress widening of its own", () => {
   assertEquals(healthCredential(quota), "signed");
   assertEquals(healthScope(quota), "connection");
   assertEquals(healthSeverity(quota), "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: probes GET /sites/root/drive — the connection's default, config-free resource", async () => {
+test("quota: probes GET /sites/root/drive — the connection's default, config-free resource", async () => {
   const { ctx, calls } = mockCtx([{ body: { quota: { state: "normal" } } }]);
   await quota.check!({} as never, ctx);
   assertEquals(calls[0].url, "https://graph.microsoft.com/v1.0/sites/root/drive");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("quota: reads the vendor's own state rather than re-deriving one", async () => {
+test("quota: reads the vendor's own state rather than re-deriving one", async () => {
   const { ctx } = mockCtx([{
     body: { quota: { total: 1000, used: 200, remaining: 800, deleted: 5, state: "normal" } },
   }]);
@@ -82,7 +83,7 @@ Deno.test("quota: reads the vendor's own state rather than re-deriving one", asy
   assertEquals(out.quota?.[0], { id: "storage", limit: 1000, remaining: 800, unit: "bytes" });
 });
 
-Deno.test("quota: `nearing` and `critical` are degraded, `exceeded` is down", async () => {
+test("quota: `nearing` and `critical` are degraded, `exceeded` is down", async () => {
   for (
     const [state, expected] of [["nearing", "degraded"], ["critical", "degraded"], [
       "exceeded",
@@ -94,7 +95,7 @@ Deno.test("quota: `nearing` and `critical` are degraded, `exceeded` is down", as
   }
 });
 
-Deno.test("quota: falls back to the byte counts when a library reports no state", async () => {
+test("quota: falls back to the byte counts when a library reports no state", async () => {
   // A document library on an unlimited tenant plan does this.
   const { ctx } = mockCtx([{ body: { quota: { total: 1000, remaining: 50 } } }]);
   const out = await quota.check!({} as never, ctx);
@@ -102,24 +103,24 @@ Deno.test("quota: falls back to the byte counts when a library reports no state"
   assert(out.message?.includes("no storage state"), out.message);
 });
 
-Deno.test("quota: a full library with no state is down", async () => {
+test("quota: a full library with no state is down", async () => {
   const { ctx } = mockCtx([{ body: { quota: { total: 1000, remaining: 0 } } }]);
   assertEquals((await quota.check!({} as never, ctx)).state, "down");
 });
 
-Deno.test("quota: an unrecognised vendor state falls through to the counts", async () => {
+test("quota: an unrecognised vendor state falls through to the counts", async () => {
   const { ctx } = mockCtx([{ body: { quota: { total: 1000, remaining: 900, state: "martian" } } }]);
   assertEquals((await quota.check!({} as never, ctx)).state, "ok");
 });
 
-Deno.test("quota: no quota facet at all is unknown, not a verdict", async () => {
+test("quota: no quota facet at all is unknown, not a verdict", async () => {
   const { ctx } = mockCtx([{ body: { id: "d1" } }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message?.includes("quota"), out.message);
 });
 
-Deno.test("quota: a 429 answers the question rather than giving up on it", async () => {
+test("quota: a 429 answers the question rather than giving up on it", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: {},
@@ -130,7 +131,7 @@ Deno.test("quota: a 429 answers the question rather than giving up on it", async
   assert(out.message?.includes("31"), out.message);
 });
 
-Deno.test("quota: any other failure is unknown, not a verdict", async () => {
+test("quota: any other failure is unknown, not a verdict", async () => {
   const { ctx } = mockCtx([{ status: 503, body: {} }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.state, "unknown");

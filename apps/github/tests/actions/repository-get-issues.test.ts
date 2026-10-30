@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/repository-get-issues.ts";
 
-Deno.test("repository-get-issues: maps the filters onto GitHub's query names", async () => {
+test("repository-get-issues: maps the filters onto GitHub's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute(
     { owner: "acme", repository: "api", state: "all", labels: "bug", perPage: 50, page: 2 },
@@ -15,6 +16,6 @@ Deno.test("repository-get-issues: maps the filters onto GitHub's query names", a
   assertEquals(q.get("page"), "2");
 });
 
-Deno.test("repository-get-issues: is a search action", () => {
+test("repository-get-issues: is a search action", () => {
   assertEquals(action.type, "search");
 });

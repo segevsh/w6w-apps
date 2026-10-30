@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/chat-complete.ts";
 
@@ -14,7 +15,7 @@ const reply = {
 const messages = [{ role: "user", content: "hi" }];
 
 /** OpenAI-compatible, which is the point — the same body and the same reply. */
-Deno.test("chat-complete: posts an OpenAI-shaped body to the router", async () => {
+test("chat-complete: posts an OpenAI-shaped body to the router", async () => {
   const { ctx, calls } = mockCtx([reply]);
   const result = await action.execute(
     { model: "meta-llama/Llama-3.3-70B-Instruct", messages },
@@ -32,7 +33,7 @@ Deno.test("chat-complete: posts an OpenAI-shaped body to the router", async () =
 });
 
 /** A router extension on an otherwise OpenAI-shaped body. */
-Deno.test("chat-complete: a provider is pinned by suffixing the model", async () => {
+test("chat-complete: a provider is pinned by suffixing the model", async () => {
   const { ctx, calls } = mockCtx([reply]);
   await action.execute({
     model: "meta-llama/Llama-3.3-70B-Instruct",
@@ -43,7 +44,7 @@ Deno.test("chat-complete: a provider is pinned by suffixing the model", async ()
 });
 
 /** Zero means unset here, not deterministic. */
-Deno.test("chat-complete: temperature and max tokens are omitted when left at zero", async () => {
+test("chat-complete: temperature and max tokens are omitted when left at zero", async () => {
   const unset = mockCtx([reply]);
   await action.execute({ model: "m", messages, temperature: 0, maxTokens: 0 }, unset.ctx);
   const omitted = JSON.parse(unset.calls[0].body!);
@@ -57,7 +58,7 @@ Deno.test("chat-complete: temperature and max tokens are omitted when left at ze
   assertEquals(sent.max_tokens, 256);
 });
 
-Deno.test("chat-complete: extra parameters are merged, and cannot displace the model", async () => {
+test("chat-complete: extra parameters are merged, and cannot displace the model", async () => {
   const { ctx, calls } = mockCtx([reply]);
   await action.execute(
     { model: "m", messages, extra: { top_p: 0.9, model: "sneaky" } },
@@ -68,7 +69,7 @@ Deno.test("chat-complete: extra parameters are merged, and cannot displace the m
   assertEquals(body.model, "m");
 });
 
-Deno.test("chat-complete: messages must be a non-empty array", async () => {
+test("chat-complete: messages must be a non-empty array", async () => {
   for (const bad of [undefined, "", "[]", '{"role":"user"}']) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -82,7 +83,7 @@ Deno.test("chat-complete: messages must be a non-empty array", async () => {
   }
 });
 
-Deno.test("chat-complete: a model is required", async () => {
+test("chat-complete: a model is required", async () => {
   const { ctx } = mockCtx([]);
   let message = "";
   try {
@@ -97,7 +98,7 @@ Deno.test("chat-complete: a model is required", async () => {
  * A model that is not loaded answers 503 with an `estimated_time`; treating it
  * as an outage gives up on a model that would have answered.
  */
-Deno.test("chat-complete: a cold start explains itself as a wait, not a failure", async () => {
+test("chat-complete: a cold start explains itself as a wait, not a failure", async () => {
   const { ctx } = mockCtx([{
     status: 503,
     body: { error: "Model is loading", estimated_time: 20 },
@@ -112,7 +113,7 @@ Deno.test("chat-complete: a cold start explains itself as a wait, not a failure"
 });
 
 /** What answered may name the provider the router chose. */
-Deno.test("chat-complete: reports the model that actually answered", async () => {
+test("chat-complete: reports the model that actually answered", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -128,7 +129,7 @@ Deno.test("chat-complete: reports the model that actually answered", async () =>
 });
 
 /** Token counts are fine to log; the prompt and the reply are not. */
-Deno.test("chat-complete: logs counts, never the prompt or the reply", async () => {
+test("chat-complete: logs counts, never the prompt or the reply", async () => {
   const { ctx, logs } = mockCtx([reply]);
   await action.execute({ model: "m", messages: [{ role: "user", content: "a secret" }] }, ctx);
   const data = JSON.stringify(logs[0].data);
@@ -137,7 +138,7 @@ Deno.test("chat-complete: logs counts, never the prompt or the reply", async () 
   assert(/completionTokens/.test(data), data);
 });
 
-Deno.test("chat-complete: is not idempotent and says the router dispatches", () => {
+test("chat-complete: is not idempotent and says the router dispatches", () => {
   assertEquals(action.idempotent, false);
   assert(/DISPATCHES to a provider/.test(action.description!), action.description);
 });

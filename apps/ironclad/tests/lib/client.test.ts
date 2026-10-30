@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   apiBase,
   asJson,
@@ -16,7 +17,7 @@ import {
 import { asUserHeaders, displayFrom } from "../../auth/credential.ts";
 import { mockCtx, mockCtxWithRegion } from "../_helpers.ts";
 
-Deno.test("regions: unknown or missing values mean US production", () => {
+test("regions: unknown or missing values mean US production", () => {
   assertEquals(normalizeRegion("eu1"), "eu1");
   assertEquals(normalizeRegion("na1"), "us");
   assertEquals(normalizeRegion(undefined), "us");
@@ -25,7 +26,7 @@ Deno.test("regions: unknown or missing values mean US production", () => {
   assertEquals(regionFromConnection(undefined), "us");
 });
 
-Deno.test("compact: keeps false and 0, drops unset, empty and empty arrays", () => {
+test("compact: keeps false and 0, drops unset, empty and empty arrays", () => {
   assertEquals(compact({ a: false, b: 0, c: undefined, d: null, e: "", f: [], g: [1] }), {
     a: false,
     b: 0,
@@ -33,7 +34,7 @@ Deno.test("compact: keeps false and 0, drops unset, empty and empty arrays", () 
   });
 });
 
-Deno.test("json helpers: parse strings, pass objects, reject bad JSON", () => {
+test("json helpers: parse strings, pass objects, reject bad JSON", () => {
   assertEquals(asOptionalJson("", "x"), undefined);
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asJson('{"a":1}', "x"), { a: 1 });
@@ -41,7 +42,7 @@ Deno.test("json helpers: parse strings, pass objects, reject bad JSON", () => {
   assertThrows(() => asOptionalJson("{", "x"), Error, "x is not valid JSON");
 });
 
-Deno.test("toList and encodeId", () => {
+test("toList and encodeId", () => {
   assertEquals(toList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(toList([]), undefined);
   assertEquals(encodeId(" a/b "), "a%2Fb");
@@ -49,7 +50,7 @@ Deno.test("toList and encodeId", () => {
   assert(truncate("x".repeat(700)).length < 700);
 });
 
-Deno.test("formatIroncladError: keeps code, param and message; 429 mentions Retry-After", () => {
+test("formatIroncladError: keeps code, param and message; 429 mentions Retry-After", () => {
   const msg = formatIroncladError(
     429,
     "GET",
@@ -61,7 +62,7 @@ Deno.test("formatIroncladError: keeps code, param and message; 429 mentions Retr
   assert(formatIroncladError(500, "GET", "/x", "<html>boom</html>").includes("boom"));
 });
 
-Deno.test("client: sends JSON bodies with a content type and comma-joins array queries", async () => {
+test("client: sends JSON bodies with a content type and comma-joins array queries", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   await new IroncladClient(ctx).json("/x", {
     method: "POST",
@@ -73,19 +74,19 @@ Deno.test("client: sends JSON bodies with a content type and comma-joins array q
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("client: never adds credentials itself — that is sign's job", async () => {
+test("client: never adds credentials itself — that is sign's job", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new IroncladClient(ctx).json("/x");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: follows the connection's region", async () => {
+test("client: follows the connection's region", async () => {
   const { ctx, calls } = mockCtxWithRegion("demo", [{ body: {} }]);
   await new IroncladClient(ctx).json("/x");
   assert(calls[0].url.startsWith("https://demo.ironcladapp.com/public/api/v1/x"));
 });
 
-Deno.test("client: 204 resolves to undefined and an error status throws a coded message", async () => {
+test("client: 204 resolves to undefined and an error status throws a coded message", async () => {
   const a = mockCtx([{ status: 204 }]);
   assertEquals(await new IroncladClient(a.ctx).json("/x", { method: "DELETE" }), undefined);
   const b = mockCtx([{
@@ -99,7 +100,7 @@ Deno.test("client: 204 resolves to undefined and an error status throws a coded 
   );
 });
 
-Deno.test("credential helpers", () => {
+test("credential helpers", () => {
   assertEquals(asUserHeaders(" a@b.co "), { "x-as-user-email": "a@b.co" });
   assertEquals(asUserHeaders("u1"), { "x-as-user-id": "u1" });
   assertEquals(asUserHeaders(undefined), {});

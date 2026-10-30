@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-membership.ts";
 
-Deno.test("get-membership: GETs /memberships/{membershipId}", async () => {
+test("get-membership: GETs /memberships/{membershipId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "mb1" } }]);
   const result = await action.execute({ membershipId: "mb1" }, ctx);
   assertEquals(calls[0].url, "https://webexapis.com/v1/memberships/mb1");

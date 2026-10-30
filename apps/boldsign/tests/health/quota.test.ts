@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: ok with healthy remaining count", async () => {
+test("quota: ok with healthy remaining count", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -20,7 +21,7 @@ Deno.test("quota: ok with healthy remaining count", async () => {
   assertEquals(report.quota?.[0].resetAt, "2026-09-15T20:35:17.712Z");
 });
 
-Deno.test("quota: degraded when remaining is low", async () => {
+test("quota: degraded when remaining is low", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: {}, headers: { "x-rate-limit-remaining": "3" } },
   ]);
@@ -28,13 +29,13 @@ Deno.test("quota: degraded when remaining is low", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: unknown, not down, when the response carries no rate-limit header", async () => {
+test("quota: unknown, not down, when the response carries no rate-limit header", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: reads the credential's own apiHost", async () => {
+test("quota: reads the credential's own apiHost", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: {}, headers: { "x-rate-limit-remaining": "10" } }],
     { display: { apiHost: "api-au.boldsign.com" } },
@@ -43,6 +44,6 @@ Deno.test("quota: reads the credential's own apiHost", async () => {
   assertEquals(new URL(calls[0].url).hostname, "api-au.boldsign.com");
 });
 
-Deno.test("quota: declared informational severity", () => {
+test("quota: declared informational severity", () => {
   assertEquals(quota.severity, "informational");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceSubmissionList from "../../actions/workspace-submission-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("workspace-submission-list: GET /workspaces/{id}/submissions", async () => {
+test("workspace-submission-list: GET /workspaces/{id}/submissions", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "s" }]) }]);
   const out = await workspaceSubmissionList.execute(
     { workspaceId: "w1", search: "refund" },

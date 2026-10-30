@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/environment-list.ts";
 
@@ -8,7 +9,7 @@ const page = (data: unknown[], total = data.length) => ({
   body: { data, extra: { pagination: { count: data.length, total_count: total } } },
 });
 
-Deno.test("environment-list: reads a project's environments from v3", async () => {
+test("environment-list: reads a project's environments from v3", async () => {
   const { ctx, calls } = mockCtx([page([{ id: 5, deployment_type: "production" }])], { display });
   const result = await action.execute!({ projectId: "3" }, ctx) as { count: number };
   assertEquals(
@@ -19,24 +20,24 @@ Deno.test("environment-list: reads a project's environments from v3", async () =
 });
 
 /** "Did anything fail in production" is a different question from "did anything fail". */
-Deno.test("environment-list: filters by deployment type when asked", async () => {
+test("environment-list: filters by deployment type when asked", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ projectId: "3", deploymentType: "production" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("deployment_type"), "production");
 });
 
-Deno.test("environment-list: an unset deployment type sends no filter", async () => {
+test("environment-list: an unset deployment type sends no filter", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ projectId: "3", deploymentType: "" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("deployment_type"), null);
 });
 
-Deno.test("environment-list: needs a project id", async () => {
+test("environment-list: needs a project id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "projectId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("environment-list: says why the deployment type matters", () => {
+test("environment-list: says why the deployment type matters", () => {
   assert(/alarming/.test(action.description!), action.description);
 });

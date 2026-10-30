@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/pull-request-get.ts";
@@ -13,7 +14,7 @@ const pr = (votes: number[]) =>
   });
 
 /** Votes are an enum wearing a number's clothes: -10 is a rejection. */
-Deno.test("pull-request-get: counts the votes rather than summing them", async () => {
+test("pull-request-get: counts the votes rather than summing them", async () => {
   const { ctx, calls } = mockCtx([pr([10, 10, -10, 0])], { display });
   const result = await action.execute!({ project: "P", pullRequestId: "42" }, ctx) as {
     voteCounts: Record<string, number>;
@@ -28,7 +29,7 @@ Deno.test("pull-request-get: counts the votes rather than summing them", async (
   assertEquals(result.rejected, true);
 });
 
-Deno.test("pull-request-get: approval with suggestions is its own outcome", async () => {
+test("pull-request-get: approval with suggestions is its own outcome", async () => {
   const { ctx } = mockCtx([pr([5])], { display });
   const result = await action.execute!({ project: "P", pullRequestId: "42" }, ctx) as {
     voteCounts: Record<string, number>;
@@ -38,7 +39,7 @@ Deno.test("pull-request-get: approval with suggestions is its own outcome", asyn
   assertEquals(result.rejected, false);
 });
 
-Deno.test("pull-request-get: a pull request with no reviewers counts nothing", async () => {
+test("pull-request-get: a pull request with no reviewers counts nothing", async () => {
   const { ctx } = mockCtx([pr([])], { display });
   const result = await action.execute!({ project: "P", pullRequestId: "42" }, ctx) as {
     voteCounts: Record<string, number>;
@@ -46,7 +47,7 @@ Deno.test("pull-request-get: a pull request with no reviewers counts nothing", a
   assertEquals(result.voteCounts, {});
 });
 
-Deno.test("pull-request-get: needs a project and a pull request id", async () => {
+test("pull-request-get: needs a project and a pull request id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ project: "P" }, ctx),
@@ -57,7 +58,7 @@ Deno.test("pull-request-get: needs a project and a pull request id", async () =>
 });
 
 /** Approved and unmergeable are different fields that never mention each other. */
-Deno.test("pull-request-get: separates mergeability from approval", () => {
+test("pull-request-get: separates mergeability from approval", () => {
   assert(/separate from approval/.test(
     (action.output as Array<{ key: string; label: string }>)
       .find((o) => o.key === "mergeStatus")!.label,

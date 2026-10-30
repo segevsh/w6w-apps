@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT,
   mapComponentStatus,
@@ -25,14 +26,14 @@ function summary(overrides: Record<string, string> = {}, extra: Record<string, u
   };
 }
 
-Deno.test("service: probes the status host, unauthenticated", () => {
+test("service: probes the status host, unauthenticated", () => {
   assertEquals(STATUS_URL, "https://status.cleverreach.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.cleverreach.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: maps Statuspage's vocabularies", () => {
+test("service: maps Statuspage's vocabularies", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -43,7 +44,7 @@ Deno.test("service: maps Statuspage's vocabularies", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: all operational is ok and reports every component", async () => {
+test("service: all operational is ok and reports every component", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const out = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -51,14 +52,14 @@ Deno.test("service: all operational is ok and reports every component", async ()
   assertEquals(Object.keys(out.components!).length, NAMES.length);
 });
 
-Deno.test("service: the Rest-API component decides the verdict", async () => {
+test("service: the Rest-API component decides the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary({ [API_COMPONENT]: "major_outage" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "down");
   assert(out.message!.includes("Rest-API (major_outage)"));
 });
 
-Deno.test("service: an unrelated component never moves the verdict", async () => {
+test("service: an unrelated component never moves the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary({ Forms: "major_outage" }) }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -66,14 +67,14 @@ Deno.test("service: an unrelated component never moves the verdict", async () =>
   assert(out.message!.includes("Forms (major_outage)"));
 });
 
-Deno.test("service: without a Rest-API component the page indicator decides", async () => {
+test("service: without a Rest-API component the page indicator decides", async () => {
   const body = summary({}, { status: { indicator: "major" } });
   body.components = body.components.filter((c) => c.name !== API_COMPONENT);
   const { ctx } = mockCtx([{ body }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a page that is not CleverReach's, or is broken, is unknown, never down", async () => {
+test("service: a page that is not CleverReach's, or is broken, is unknown, never down", async () => {
   for (
     const r of [
       { status: 503, body: "x" },

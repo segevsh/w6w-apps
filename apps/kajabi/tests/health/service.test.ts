@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   AVAILABILITY_COMPONENT,
   componentState,
@@ -51,12 +52,12 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the canonical Kajabi status page", () => {
+test("service: probes the canonical Kajabi status page", () => {
   assertEquals(STATUS_URL, "https://status.kajabi.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.kajabi.com"]);
 });
 
-Deno.test("service: reports ok when App Availability is operational", async () => {
+test("service: reports ok when App Availability is operational", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const res = await service.check!({}, ctx);
   assertEquals(res.state, "ok");
@@ -64,7 +65,7 @@ Deno.test("service: reports ok when App Availability is operational", async () =
   assert(res.components!["app-availability"]);
 });
 
-Deno.test("service: an outage on App Availability is reported as down", async () => {
+test("service: an outage on App Availability is reported as down", async () => {
   const s = summary();
   s.components[0].status = "major_outage";
   const { ctx } = mockCtx([{ body: s }]);
@@ -72,7 +73,7 @@ Deno.test("service: an outage on App Availability is reported as down", async ()
   assertEquals(res.state, "down");
 });
 
-Deno.test("service: degraded performance maps to degraded", async () => {
+test("service: degraded performance maps to degraded", async () => {
   const s = summary();
   s.components[0].status = "degraded_performance";
   const { ctx } = mockCtx([{ body: s }]);
@@ -91,7 +92,7 @@ Deno.test("service: degraded performance maps to degraded", async () => {
  *
  * This pins that an Inbound Webhooks outage does NOT move the verdict.
  */
-Deno.test("service: an Inbound Webhooks outage does not move the verdict", async () => {
+test("service: an Inbound Webhooks outage does not move the verdict", async () => {
   const s = summary();
   // The leaf inside the `API` group, and the group header itself.
   s.components[1].status = "major_outage";
@@ -105,7 +106,7 @@ Deno.test("service: an Inbound Webhooks outage does not move the verdict", async
 });
 
 /** Surfaces this app never touches must not drive the verdict either. */
-Deno.test("service: a page-rendering outage does not move the verdict", async () => {
+test("service: a page-rendering outage does not move the verdict", async () => {
   const s = summary();
   s.components[6].status = "major_outage";
   const { ctx } = mockCtx([{ body: s }]);
@@ -114,7 +115,7 @@ Deno.test("service: a page-rendering outage does not move the verdict", async ()
   assertEquals(res.components!["page-rendering"].state, "down");
 });
 
-Deno.test("service: group headers are excluded from the component report", async () => {
+test("service: group headers are excluded from the component report", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const res = await service.check!({}, ctx);
   // `API`, `Checkout` and `Sites` are groups — they restate their children.
@@ -127,7 +128,7 @@ Deno.test("service: group headers are excluded from the component report", async
  * A renamed or removed component must fail loudly. A silent fallback would mean
  * the check quietly stops meaning what it says it means.
  */
-Deno.test("service: falls back loudly when App Availability disappears", async () => {
+test("service: falls back loudly when App Availability disappears", async () => {
   const s = summary({ status: { indicator: "minor", description: "Partial degradation" } });
   s.components = s.components.filter((c) => c.name !== "App Availability");
   const { ctx } = mockCtx([{ body: s }]);
@@ -136,7 +137,7 @@ Deno.test("service: falls back loudly when App Availability disappears", async (
   assert(res.message!.includes("no `App Availability` component"));
 });
 
-Deno.test("service: open incidents and maintenance windows are surfaced in the message", async () => {
+test("service: open incidents and maintenance windows are surfaced in the message", async () => {
   const { ctx } = mockCtx([{
     body: summary({ incidents: [{}, {}], scheduled_maintenances: [{}] }),
   }]);
@@ -146,7 +147,7 @@ Deno.test("service: open incidents and maintenance windows are surfaced in the m
 });
 
 /** A status page that itself fails says nothing about Kajabi. */
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "nope" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -154,7 +155,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, ctx2)).state, "unknown");
 });
 
-Deno.test("service: a summary with no named components is unknown", async () => {
+test("service: a summary with no named components is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const res = await service.check!({}, ctx);
   assertEquals(res.state, "unknown");
@@ -162,12 +163,12 @@ Deno.test("service: a summary with no named components is unknown", async () => 
 
 // ------------------------------------------------------------- primitives --
 
-Deno.test("slug: stable component selectors", () => {
+test("slug: stable component selectors", () => {
   assertEquals(slug("App Availability"), "app-availability");
   assertEquals(slug("Custom Email Domain Setup (CEDS)"), "custom-email-domain-setup-ceds");
 });
 
-Deno.test("componentState / indicatorState: the Statuspage vocabularies", () => {
+test("componentState / indicatorState: the Statuspage vocabularies", () => {
   assertEquals(componentState("operational"), "ok");
   assertEquals(componentState("partial_outage"), "degraded");
   assertEquals(componentState("major_outage"), "down");
@@ -177,7 +178,7 @@ Deno.test("componentState / indicatorState: the Statuspage vocabularies", () => 
   assertEquals(indicatorState(undefined), "unknown");
 });
 
-Deno.test("findComponent: matches case-insensitively and never matches a group", () => {
+test("findComponent: matches case-insensitively and never matches a group", () => {
   const all = summary().components;
   assertEquals(findComponent(all, "app availability")?.id, "sh9xbcyzjks9");
   // `API` is a group header — it must not be matchable as a leaf.

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-search: POST /v3/contacts/search", async () => {
+test("contact-search: POST /v3/contacts/search", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await action.execute!(
     { "contacts": [{ "email": "a@b.co" }], "includePartialProfiles": true } as never,

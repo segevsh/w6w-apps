@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-channels.ts";
 
-Deno.test("list-channels: metadata", () => {
+test("list-channels: metadata", () => {
   assertEquals(action.key, "list-channels");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), []);
 });
 
-Deno.test("list-channels: calls GET /channels on the US host", async () => {
+test("list-channels: calls GET /channels on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "channels": [{ "id": 1, "name": "Email" }] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("list-channels: calls GET /channels on the US host", async () => {
   assertEquals(out, { "channels": [{ "id": 1, "name": "Email" }] });
 });
 
-Deno.test("list-channels: uses the EU host when the connection region is eu", async () => {
+test("list-channels: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "channels": [{ "id": 1, "name": "Email" }] } }], {
     connection: { display: { region: "eu" } },
   });
@@ -27,7 +28,7 @@ Deno.test("list-channels: uses the EU host when the connection region is eu", as
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/channels");
 });
 
-Deno.test("list-channels: surfaces an HTTP error with Iterable's own code", async () => {
+test("list-channels: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -38,7 +39,7 @@ Deno.test("list-channels: surfaces an HTTP error with Iterable's own code", asyn
   );
 });
 
-Deno.test("list-channels: treats a 200 carrying a non-Success code as a failure", async () => {
+test("list-channels: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

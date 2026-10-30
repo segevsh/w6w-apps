@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-text-overrides.ts";
 
-Deno.test("get-text-overrides: sends text_codes and filters", async () => {
+test("get-text-overrides: sends text_codes and filters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     organizationId: "5",

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { base64ToBytes } from "../../lib/client.ts";
 import action from "../../actions/audio-speech.ts";
 
-Deno.test("audio-speech: POSTs JSON to /audio/speech and returns base64 audio", async () => {
+test("audio-speech: POSTs JSON to /audio/speech and returns base64 audio", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: "fake-wav-bytes",
@@ -25,7 +26,7 @@ Deno.test("audio-speech: POSTs JSON to /audio/speech and returns base64 audio", 
   assertEquals(new TextDecoder().decode(base64ToBytes(result.base64)), "fake-wav-bytes");
 });
 
-Deno.test("audio-speech: forwards response_format, sample_rate, and speed", async () => {
+test("audio-speech: forwards response_format, sample_rate, and speed", async () => {
   const { ctx, calls } = mockCtx([{ body: "x", headers: { "content-type": "audio/wav" } }]);
   await action.execute!(
     {

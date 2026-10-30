@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { API, data, gqlOf, mockCtx } from "../_helpers.ts";
 import organizationList from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: POSTs the account query with no variables", async () => {
+test("organization-list: POSTs the account query with no variables", async () => {
   const { ctx, calls } = mockCtx([
     data({ account: { id: "a1", organizations: [{ id: "o1", name: "Acme" }] } }),
   ]);
@@ -13,7 +14,7 @@ Deno.test("organization-list: POSTs the account query with no variables", async 
   assertEquals((out as { account: { organizations: unknown[] } }).account.organizations.length, 1);
 });
 
-Deno.test("organization-list: reaches organizations through account — there is no root query", async () => {
+test("organization-list: reaches organizations through account — there is no root query", async () => {
   const { ctx, calls } = mockCtx([data({ account: { id: "a1", organizations: [] } })]);
   await organizationList.execute({}, ctx);
   const { query } = gqlOf(calls[0]);
@@ -21,7 +22,7 @@ Deno.test("organization-list: reaches organizations through account — there is
   assert(/organizations\s*\{/.test(query), query);
 });
 
-Deno.test("organization-list: does not pull Organization.limits", async () => {
+test("organization-list: does not pull Organization.limits", async () => {
   const { ctx, calls } = mockCtx([data({ account: { id: "a1", organizations: [] } })]);
   await organizationList.execute({}, ctx);
   // A nested plan-ceiling object on every call, to answer a question this
@@ -29,7 +30,7 @@ Deno.test("organization-list: does not pull Organization.limits", async () => {
   assert(!/\blimits\b/.test(gqlOf(calls[0]).query));
 });
 
-Deno.test("organization-list: takes no params — it is the prerequisite for everything else", () => {
+test("organization-list: takes no params — it is the prerequisite for everything else", () => {
   assertEquals(organizationList.params, []);
   assertEquals(organizationList.type, "read");
 });

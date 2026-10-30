@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingResendConfirmation from "../../actions/booking-resend-confirmation.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("booking-resend-confirmation: POST /api/external/v1/bookings/resend-confirmation-email/", async () => {
+test("booking-resend-confirmation: POST /api/external/v1/bookings/resend-confirmation-email/", async () => {
   const body = { message: "ok" };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(
@@ -24,7 +25,7 @@ Deno.test("booking-resend-confirmation: POST /api/external/v1/bookings/resend-co
   assertEquals(calls[0].headers["x-fareharbor-api-app"], undefined);
 });
 
-Deno.test("booking-resend-confirmation: a vendor error surfaces its code and sentence", async () => {
+test("booking-resend-confirmation: a vendor error surfaces its code and sentence", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody(404, "company-shortname-invalid", "nope is not a valid company shortname"),

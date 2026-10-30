@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/list-custom-fields.ts";
 
-Deno.test("list-custom-fields: GETs the recommended schema endpoint", async () => {
+test("list-custom-fields: GETs the recommended schema endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { fields: [] } }]);
   await action.execute({ objectType: "lead" }, ctx);
   // The schema endpoint is the one Close recommends: it includes SHARED fields,
@@ -10,7 +11,7 @@ Deno.test("list-custom-fields: GETs the recommended schema endpoint", async () =
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/custom_field_schema/lead/");
 });
 
-Deno.test("list-custom-fields: accepts every documented object type, including compound ones", async () => {
+test("list-custom-fields: accepts every documented object type, including compound ones", async () => {
   for (
     const objectType of [
       "lead",
@@ -26,7 +27,7 @@ Deno.test("list-custom-fields: accepts every documented object type, including c
   }
 });
 
-Deno.test("list-custom-fields: rejects anything outside the documented grammar", async () => {
+test("list-custom-fields: rejects anything outside the documented grammar", async () => {
   for (
     const bad of ["../lead", "lead/../..", "leads", "activity", "activity/", "custom_object/a b"]
   ) {
@@ -41,7 +42,7 @@ Deno.test("list-custom-fields: rejects anything outside the documented grammar",
   }
 });
 
-Deno.test("list-custom-fields: validates at the form as well as in execute", () => {
+test("list-custom-fields: validates at the form as well as in execute", () => {
   const p = param(action, "objectType");
   assertEquals(p.required, true);
   assert(typeof p.validation?.pattern === "string");

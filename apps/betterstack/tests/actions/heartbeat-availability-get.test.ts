@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import heartbeatAvailabilityGet from "../../actions/heartbeat-availability-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("heartbeat-availability-get: GET /api/v2/heartbeats/{heartbeat_id}/availability", async () => {
+test("heartbeat-availability-get: GET /api/v2/heartbeats/{heartbeat_id}/availability", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -27,7 +28,7 @@ Deno.test("heartbeat-availability-get: GET /api/v2/heartbeats/{heartbeat_id}/ava
   assertEquals(out.availability, 99.9);
 });
 
-Deno.test("heartbeat-availability-get: puts no credential on the request (sign owns that)", async () => {
+test("heartbeat-availability-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -42,7 +43,7 @@ Deno.test("heartbeat-availability-get: puts no credential on the request (sign o
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("heartbeat-availability-get: a vendor error surfaces its own message", async () => {
+test("heartbeat-availability-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await heartbeatAvailabilityGet.execute({ "heartbeat_id": "9", "from": "2026-09-01" }, ctx)

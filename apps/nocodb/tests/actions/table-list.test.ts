@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/table-list.ts";
 
@@ -14,7 +15,7 @@ const tables = {
 };
 
 /** Every record action takes the id; nothing takes the title. */
-Deno.test("table-list: returns a title-to-id lookup", async () => {
+test("table-list: returns a title-to-id lookup", async () => {
   const { ctx, calls } = mockCtx([tables], D);
   const result = await action.execute({ baseId: "p1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/meta/bases/p1/tables");
@@ -22,19 +23,19 @@ Deno.test("table-list: returns a title-to-id lookup", async () => {
   assertEquals(result.ids, ["mtbl1", "mtbl2"]);
 });
 
-Deno.test("table-list: an empty base is an empty list, not an error", async () => {
+test("table-list: an empty base is an empty list, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { list: [] } }], D);
   const result = await action.execute({ baseId: "p1" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
   assertEquals(result.byTitle, {});
 });
 
-Deno.test("table-list: requires a base id", async () => {
+test("table-list: requires a base id", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`baseId` is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("table-list: says ids survive a rename", () => {
+test("table-list: says ids survive a rename", () => {
   assert(/survive a rename/.test(action.description!), action.description);
 });

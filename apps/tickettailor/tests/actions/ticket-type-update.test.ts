@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketTypeUpdate from "../../actions/ticket-type-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-type-update: POSTs modify_quantity as a signed delta string", async () => {
+test("ticket-type-update: POSTs modify_quantity as a signed delta string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "tt_1" } }]);
   await ticketTypeUpdate.execute(
     { eventSeriesId: "es_1", ticketTypeId: "tt_1", modifyQuantity: "+10" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cancel from "../../actions/timeoff-request-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("timeoff-request-cancel: DELETEs the request and reports the status", async () => {
+test("timeoff-request-cancel: DELETEs the request and reports the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await cancel.execute({ employeeId: "11", requestId: 3 }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("timeoff-request-cancel: DELETEs the request and reports the status", 
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("timeoff-request-cancel: a 404 explains the possible missing module", async () => {
+test("timeoff-request-cancel: a 404 explains the possible missing module", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "request not found" } }]);
   let message = "";
   try {

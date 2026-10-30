@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/user-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-search: one email becomes an equals filter on email", async () => {
+test("user-search: one email becomes an equals filter on email", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "u1" }] } }]);
   const out = await action.execute!({ email: "a@b.com" }, ctx);
   assertEquals(calls[0].url, "https://api.usepylon.com/users/search");
@@ -13,7 +14,7 @@ Deno.test("user-search: one email becomes an equals filter on email", async () =
   assertEquals(out, { users: [{ id: "u1" }], hasNextPage: false });
 });
 
-Deno.test("user-search: several emails become an `in` filter with values", async () => {
+test("user-search: several emails become an `in` filter with values", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ emails: "a@b.com, c@d.com", limit: 5 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {
@@ -22,7 +23,7 @@ Deno.test("user-search: several emails become an `in` filter with values", async
   });
 });
 
-Deno.test("user-search: no email sends no filter", async () => {
+test("user-search: no email sends no filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

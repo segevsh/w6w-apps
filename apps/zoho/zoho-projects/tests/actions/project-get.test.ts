@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectGet from "../../actions/project-get.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("project-get: GET /api/v3/portal/1/projects/10", async () => {
+test("project-get: GET /api/v3/portal/1/projects/10", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: { "id": "10", "name": "Site" } }]);
   const res = await projectGet.execute(
     { "portalId": "1", "projectId": "10" } as never,

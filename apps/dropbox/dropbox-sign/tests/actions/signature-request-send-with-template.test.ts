@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/signature-request-send-with-template.ts";
 
 const SIGNERS = '[{"role":"Client","email_address":"ada@example.com","name":"Ada"}]';
 
-Deno.test("send-with-template: POSTs template ids and role-bearing signers", async () => {
+test("send-with-template: POSTs template ids and role-bearing signers", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { signature_request: {} } }]);
   await action.execute!({ templateIds: "t1, t2", signers: SIGNERS }, ctx);
   assertEquals(
@@ -21,7 +22,7 @@ Deno.test("send-with-template: POSTs template ids and role-bearing signers", asy
  * happen — it is a request that can land on the wrong role — so it is refused
  * locally.
  */
-Deno.test("send-with-template: a signer without a role never reaches the wire", async () => {
+test("send-with-template: a signer without a role never reaches the wire", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -35,7 +36,7 @@ Deno.test("send-with-template: a signer without a role never reaches the wire", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-with-template: test_mode is sent explicitly either way", async () => {
+test("send-with-template: test_mode is sent explicitly either way", async () => {
   const off = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ templateIds: "t1", signers: SIGNERS }, off.ctx);
   assertEquals(JSON.parse(off.calls[0].body!).test_mode, false);
@@ -45,7 +46,7 @@ Deno.test("send-with-template: test_mode is sent explicitly either way", async (
   assertEquals(JSON.parse(on.calls[0].body!).test_mode, true);
 });
 
-Deno.test("send-with-template: CC roles and custom fields pass through as given", async () => {
+test("send-with-template: CC roles and custom fields pass through as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     templateIds: "t1",
@@ -58,7 +59,7 @@ Deno.test("send-with-template: CC roles and custom fields pass through as given"
   assertEquals(body.custom_fields[0].name, "Cost");
 });
 
-Deno.test("send-with-template: a template id is required", async () => {
+test("send-with-template: a template id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ signers: SIGNERS }, ctx),

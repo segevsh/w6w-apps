@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationUsersAdd from "../../actions/conversation-users-add.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-users-add: POST /api/v3/conversations/add_users with every documented parameter", async () => {
+test("conversation-users-add: POST /api/v3/conversations/add_users with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await conversationUsersAdd.execute(
     { "conversationId": 100, "userIds": "1, 2" },
@@ -17,7 +18,7 @@ Deno.test("conversation-users-add: POST /api/v3/conversations/add_users with eve
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("conversation-users-add: sends a form body, never a query string", async () => {
+test("conversation-users-add: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await conversationUsersAdd.execute({ "conversationId": 100, "userIds": "1, 2" }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("conversation-users-add: sends a form body, never a query string", asy
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("conversation-users-add: is declared idempotent", () => {
+test("conversation-users-add: is declared idempotent", () => {
   assertEquals(conversationUsersAdd.idempotent, true);
 });
 
-Deno.test("conversation-users-add: sends no credential of its own", async () => {
+test("conversation-users-add: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await conversationUsersAdd.execute({ "conversationId": 100, "userIds": "1, 2" }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("conversation-users-add: surfaces Twist's error body", async () => {
+test("conversation-users-add: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

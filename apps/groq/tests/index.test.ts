@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exposes exactly one auth method (api-key, bearer)", () => {
+test("index: exposes exactly one auth method (api-key, bearer)", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
   assertEquals(app.auth?.[0].type, "bearer");
 });
 
-Deno.test("index: every action has a unique kebab-case key", () => {
+test("index: every action has a unique kebab-case key", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
   for (const key of keys) {
@@ -15,7 +16,7 @@ Deno.test("index: every action has a unique kebab-case key", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type and a title", () => {
+test("index: every action declares a valid type and a title", () => {
   for (const action of app.actions) {
     assert(["read", "search", "perform"].includes(action.type), `${action.key} has bad type`);
     assert(action.title && action.title.length > 0, `${action.key} needs a title`);
@@ -23,13 +24,13 @@ Deno.test("index: every action declares a valid type and a title", () => {
   }
 });
 
-Deno.test("index: declares both a service and a quota health check", () => {
+test("index: declares both a service and a quota health check", () => {
   const keys = app.healthChecks?.map((h) => h.key) ?? [];
   assertEquals(keys.includes("service"), true);
   assertEquals(keys.includes("quota"), true);
 });
 
-Deno.test("index: delete/cancel actions are explicitly marked idempotent", () => {
+test("index: delete/cancel actions are explicitly marked idempotent", () => {
   // Retrying a delete or a cancel is safe (same end state); retrying a chat
   // completion, an upload, or a batch-create is not, so only these opt in.
   for (const key of ["files-delete", "batch-cancel"]) {

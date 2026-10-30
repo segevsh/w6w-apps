@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/oauth2.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("oauth2: declares GoTo's shared OAuth endpoints with PKCE off", () => {
+test("oauth2: declares GoTo's shared OAuth endpoints with PKCE off", () => {
   assertEquals(
     auth.oauth2?.authorizationUrl,
     "https://authentication.logmeininc.com/oauth/authorize",
@@ -12,7 +13,7 @@ Deno.test("oauth2: declares GoTo's shared OAuth endpoints with PKCE off", () => 
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: sign sets the Bearer header and nothing else", () => {
+test("oauth2: sign sets the Bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.getgo.com/G2W/rest/v2/organizers/1/webinars",
@@ -24,7 +25,7 @@ Deno.test("oauth2: sign sets the Bearer header and nothing else", () => {
   assertEquals(signed.headers.authorization, "Bearer tok");
 });
 
-Deno.test("oauth2: test passes when the identity whoami answers 200", async () => {
+test("oauth2: test passes when the identity whoami answers 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "123", userName: "a@b.com" } }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result, { ok: true });
@@ -32,7 +33,7 @@ Deno.test("oauth2: test passes when the identity whoami answers 200", async () =
   assertEquals(calls[0].headers.authorization, "Bearer tok");
 });
 
-Deno.test("oauth2: test fails with no accessToken, without making a request", async () => {
+test("oauth2: test fails with no accessToken, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -45,7 +46,7 @@ Deno.test("oauth2: test fails with no accessToken, without making a request", as
  * only `result.ok === false` would pass even if this fell back to a bare status-code message —
  * it must actually surface the challenge's `error`/`error_description`.
  */
-Deno.test("oauth2: test classifies an empty-body failure from the WWW-Authenticate header", async () => {
+test("oauth2: test classifies an empty-body failure from the WWW-Authenticate header", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -61,14 +62,14 @@ Deno.test("oauth2: test classifies an empty-body failure from the WWW-Authentica
   assert(/access token is invalid/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2: test falls back to a plain HTTP-status message with no body and no challenge", async () => {
+test("oauth2: test falls back to a plain HTTP-status message with no body and no challenge", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result.ok, false);
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("oauth2: afterConnect captures organizerKey (the identity user's id) and display name", async () => {
+test("oauth2: afterConnect captures organizerKey (the identity user's id) and display name", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "42", userName: "a@b.com", displayName: "Ada", name: { givenName: "Ada" } } },
   ]);
@@ -77,7 +78,7 @@ Deno.test("oauth2: afterConnect captures organizerKey (the identity user's id) a
   assertEquals(display, { organizerKey: "42", user: { name: "Ada", email: "a@b.com" } });
 });
 
-Deno.test("oauth2: afterConnect stays silent when the whoami fails or carries no id", async () => {
+test("oauth2: afterConnect stays silent when the whoami fails or carries no id", async () => {
   const { ctx: failCtx } = mockCtx([{ status: 401 }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "tok" } }, failCtx), {});
 

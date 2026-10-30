@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/account-create.ts";
 
-Deno.test("account-create: POSTs the required fields plus the flattened bill-to contact", async () => {
+test("account-create: POSTs the required fields plus the flattened bill-to contact", async () => {
   const { ctx, calls } = mockCtx([one({ id: "acc1", accountNumber: "A00000001" })], { display });
   await action.execute!(
     {
@@ -22,7 +23,7 @@ Deno.test("account-create: POSTs the required fields plus the flattened bill-to 
   assertEquals(body.billToContact, { firstName: "Amy", lastName: "Lawrence" });
 });
 
-Deno.test("account-create: omits unset optional fields rather than sending them empty", async () => {
+test("account-create: omits unset optional fields rather than sending them empty", async () => {
   const { ctx, calls } = mockCtx([one({ id: "acc1" })], { display });
   await action.execute!(
     { name: "Acme", currency: "USD", billToFirstName: "Amy", billToLastName: "Lawrence" },
@@ -33,7 +34,7 @@ Deno.test("account-create: omits unset optional fields rather than sending them 
   assert(!("accountNumber" in body));
 });
 
-Deno.test("account-create: sets Idempotency-Key from the invocation id", async () => {
+test("account-create: sets Idempotency-Key from the invocation id", async () => {
   const { ctx, calls } = mockCtx([one({ id: "acc1" })], {
     display,
     invocationId: "inv-123",
@@ -45,7 +46,7 @@ Deno.test("account-create: sets Idempotency-Key from the invocation id", async (
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("account-create: never sends an authorization header — sign's job, not this action's", async () => {
+test("account-create: never sends an authorization header — sign's job, not this action's", async () => {
   const { ctx, calls } = mockCtx([one({ id: "acc1" })], { display });
   await action.execute!(
     { name: "Acme", currency: "USD", billToFirstName: "Amy", billToLastName: "Lawrence" },

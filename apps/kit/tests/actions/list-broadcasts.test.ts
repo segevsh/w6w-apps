@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-broadcasts.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-broadcasts: GETs /v4/broadcasts with no params by default", async () => {
+test("list-broadcasts: GETs /v4/broadcasts with no params by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { broadcasts: [], pagination: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-broadcasts: GETs /v4/broadcasts with no params by default", asyn
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-broadcasts: forwards status, sent window, slim and pagination", async () => {
+test("list-broadcasts: forwards status, sent window, slim and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { broadcasts: [] } }]);
   await action.execute!({
     status: "completed",
@@ -27,7 +28,7 @@ Deno.test("list-broadcasts: forwards status, sent window, slim and pagination", 
   assertEquals(p.get("per_page"), "5");
 });
 
-Deno.test("list-broadcasts: returns rows plus the pagination envelope", async () => {
+test("list-broadcasts: returns rows plus the pagination envelope", async () => {
   const body = { broadcasts: [{ id: 9, subject: "Hi" }], pagination: { has_next_page: false } };
   const { ctx } = mockCtx([{ body }]);
   assertEquals(await action.execute!({}, ctx), body);

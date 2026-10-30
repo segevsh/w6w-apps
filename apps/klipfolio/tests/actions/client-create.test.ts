@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/client-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const RESPONSE = {
   "data": {},
 };
 
-Deno.test("client-create: sends POST /clients with the mapped input", async () => {
+test("client-create: sends POST /clients with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute!(INPUT, ctx);
   const url = new URL(calls[0].url);
@@ -37,7 +38,7 @@ Deno.test("client-create: sends POST /clients with the mapped input", async () =
   assertEquals(JSON.parse(JSON.stringify(out)), { "id": "new123", "location": "/clients/new123" });
 });
 
-Deno.test("client-create: sends no optional field when only required input is given", async () => {
+test("client-create: sends no optional field when only required input is given", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "name": "Example" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -45,13 +46,13 @@ Deno.test("client-create: sends no optional field when only required input is gi
   assertEquals(JSON.parse(calls[0].body!), { "name": "Example" });
 });
 
-Deno.test("client-create: sends no credential header of its own", async () => {
+test("client-create: sends no credential header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(INPUT, ctx);
   assert(!("authorization" in calls[0].headers) && !("kf-api-key" in calls[0].headers));
 });
 
-Deno.test("client-create: surfaces Klipfolio's error envelope as a thrown error", async () => {
+test("client-create: surfaces Klipfolio's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -65,7 +66,7 @@ Deno.test("client-create: surfaces Klipfolio's error envelope as a thrown error"
   );
 });
 
-Deno.test("client-create: declares type, idempotency and output", () => {
+test("client-create: declares type, idempotency and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assert(Array.isArray(action.output) && action.output.length > 0);

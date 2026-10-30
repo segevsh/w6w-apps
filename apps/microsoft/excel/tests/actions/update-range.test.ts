@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-range.ts";
 
-Deno.test("update-range: PATCHes the range function path with the values grid", async () => {
+test("update-range: PATCHes the range function path with the values grid", async () => {
   const { ctx, calls } = mockCtx([{ body: { address: "Sheet1!A1:B2" } }]);
   await action.execute({
     itemId: "ITEM1",
@@ -21,7 +22,7 @@ Deno.test("update-range: PATCHes the range function path with the values grid", 
   });
 });
 
-Deno.test("update-range: combines values, formulas and number formats in one call", async () => {
+test("update-range: combines values, formulas and number formats in one call", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemId: "ITEM1",
@@ -39,7 +40,7 @@ Deno.test("update-range: combines values, formulas and number formats in one cal
   assertEquals(body.numberFormat[1][0], "m-ddd");
 });
 
-Deno.test("update-range: preserves a single-cell grid, which Excel fills across the range", async () => {
+test("update-range: preserves a single-cell grid, which Excel fills across the range", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemId: "ITEM1",
@@ -50,7 +51,7 @@ Deno.test("update-range: preserves a single-cell grid, which Excel fills across 
   assertEquals(JSON.parse(calls[0].body!), { values: [["Sample text"]] });
 });
 
-Deno.test("update-range: refuses a PATCH with nothing to write", async () => {
+test("update-range: refuses a PATCH with nothing to write", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "A1" }, ctx),
@@ -60,7 +61,7 @@ Deno.test("update-range: refuses a PATCH with nothing to write", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-range: works under the path form and forwards the session", async () => {
+test("update-range: works under the path form and forwards the session", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemPath: "Reports/Q3.xlsx",
@@ -76,6 +77,6 @@ Deno.test("update-range: works under the path form and forwards the session", as
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("update-range: declares the address required — unbounded writes are rejected by Graph", () => {
+test("update-range: declares the address required — unbounded writes are rejected by Graph", () => {
   assertEquals(action.params?.find((p) => p.key === "address")?.required, true);
 });

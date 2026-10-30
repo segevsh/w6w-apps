@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import languageListSystem from "../../actions/language-list-system.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("language-list-system: lists the global language catalog, no project scoping", async () => {
+test("language-list-system: lists the global language catalog, no project scoping", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { languages: [{ lang_iso: "en" }] },
@@ -18,6 +19,6 @@ Deno.test("language-list-system: lists the global language catalog, no project s
   assertEquals(out.totalCount, 180);
 });
 
-Deno.test("language-list-system: has no cursor param — this endpoint only supports limit/page", () => {
+test("language-list-system: has no cursor param — this endpoint only supports limit/page", () => {
   assertEquals(languageListSystem.params?.some((p) => p.key === "cursor"), false);
 });

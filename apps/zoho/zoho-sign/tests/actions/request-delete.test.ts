@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/request-delete.ts";
 
-Deno.test("request-delete: PUT /requests/{id}/delete with flat multipart fields, no data envelope", async () => {
+test("request-delete: PUT /requests/{id}/delete with flat multipart fields, no data envelope", async () => {
   const { ctx, calls } = mockSignCtx([
     { body: { code: 0, status: "success", message: "Document deleted successfully" } },
   ]);

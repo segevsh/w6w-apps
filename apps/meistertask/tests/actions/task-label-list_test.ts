@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskLabelList from "../../actions/task-label-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-label-list: GET /tasks/:task_id/task_labels — the join rows", async () => {
+test("task-label-list: GET /tasks/:task_id/task_labels — the join rows", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ id: 364, label_id: 25, task_id: 123 }],

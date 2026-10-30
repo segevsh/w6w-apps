@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import complete from "../../actions/task-complete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-complete: POSTs /v1/tasks/{id}/complete with no body", async () => {
+test("task-complete: POSTs /v1/tasks/{id}/complete with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { toDosUpdated: 1 } }]);
   const out = await complete.execute({ taskId: 77 }, ctx) as { toDosUpdated: number };
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("task-complete: POSTs /v1/tasks/{id}/complete with no body", async () 
   assertEquals(out.toDosUpdated, 1);
 });
 
-Deno.test("task-complete: requires a task id", async () => {
+test("task-complete: requires a task id", async () => {
   const { ctx } = mockCtx();
   await assertRejects(() => Promise.resolve(complete.execute({ taskId: "" }, ctx)));
 });

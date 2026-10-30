@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import animationTemplateList from "../../actions/animation-template-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("animation-template-list: GET /animation_templates", async () => {
+test("animation-template-list: GET /animation_templates", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "at1", frame_rate: 30 }] }]);
   const out = await animationTemplateList.execute({}, ctx) as unknown[];
 

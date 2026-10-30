@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-list-add.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ interface Out {
   nextCursor?: string;
 }
 
-Deno.test("contact-list-add: sends POST to the documented path", async () => {
+test("contact-list-add: sends POST to the documented path", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: "x1" }],
@@ -28,7 +29,7 @@ Deno.test("contact-list-add: sends POST to the documented path", async () => {
   assertEquals(out.meta.request_id, "r1");
 });
 
-Deno.test("contact-list-add: a vendor error surfaces its code", async () => {
+test("contact-list-add: a vendor error surfaces its code", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {

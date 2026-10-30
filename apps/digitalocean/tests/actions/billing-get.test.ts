@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/billing-get.ts";
 
@@ -12,7 +13,7 @@ const balance = (accountBalance: string) => ({
   },
 });
 
-Deno.test("billing-get: reads the balance endpoint", async () => {
+test("billing-get: reads the balance endpoint", async () => {
   const { ctx, calls } = mockCtx([balance("-10.00")]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v2/customers/my/balance");
@@ -21,7 +22,7 @@ Deno.test("billing-get: reads the balance endpoint", async () => {
 });
 
 /** The sign convention is the opposite of what "balance" suggests. */
-Deno.test("billing-get: a negative balance is reported as credit", async () => {
+test("billing-get: a negative balance is reported as credit", async () => {
   const credit = mockCtx([balance("-10.00")]);
   const inCredit = await action.execute({}, credit.ctx) as Record<string, unknown>;
   assertEquals(inCredit.inCredit, true);
@@ -36,7 +37,7 @@ Deno.test("billing-get: a negative balance is reported as credit", async () => {
 });
 
 /** There is no per-resource cost breakdown in the API. */
-Deno.test("billing-get: says where waste is actually found", () => {
+test("billing-get: says where waste is actually found", () => {
   assert(
     /NEGATIVE balance means the account is in credit/.test(action.description!),
     action.description,
@@ -45,7 +46,7 @@ Deno.test("billing-get: says where waste is actually found", () => {
   assertEquals(action.params, []);
 });
 
-Deno.test("billing-get: logs the usage figure only", async () => {
+test("billing-get: logs the usage figure only", async () => {
   const { ctx, logs } = mockCtx([balance("-10.00")]);
   await action.execute({}, ctx);
   assertEquals(logs[0].data, { monthToDateUsage: "23.44" });

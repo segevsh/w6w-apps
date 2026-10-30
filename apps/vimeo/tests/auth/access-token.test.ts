@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import accessToken, { authHeaders, probeHeaders } from "../../auth/access-token.ts";
 import { ACCEPT, USER_AGENT } from "../../lib/client.ts";
@@ -12,7 +13,7 @@ function signWith(request: SignableRequest): SignableRequest {
   return accessToken.sign!({ request, credential: cred }, ctx) as SignableRequest;
 }
 
-Deno.test("auth: declares a bearer method with a single secret field", () => {
+test("auth: declares a bearer method with a single secret field", () => {
   assertEquals(accessToken.key, "access-token");
   assertEquals(accessToken.type, "bearer");
   assertEquals(accessToken.fields?.length, 1);
@@ -22,7 +23,7 @@ Deno.test("auth: declares a bearer method with a single secret field", () => {
   assertEquals(field.required, true);
 });
 
-Deno.test("auth: sign stamps the bearer header and nothing else", () => {
+test("auth: sign stamps the bearer header and nothing else", () => {
   const signed = signWith({
     url: "https://api.vimeo.com/me?fields=uri",
     method: "GET",
@@ -34,7 +35,7 @@ Deno.test("auth: sign stamps the bearer header and nothing else", () => {
   assertEquals(signed.url, "https://api.vimeo.com/me?fields=uri");
 });
 
-Deno.test("auth: sign overwrites an existing authorization header rather than appending", () => {
+test("auth: sign overwrites an existing authorization header rather than appending", () => {
   const signed = signWith({
     url: "https://api.vimeo.com/me",
     method: "GET",
@@ -45,19 +46,19 @@ Deno.test("auth: sign overwrites an existing authorization header rather than ap
   assertEquals(signed.headers.accept, ACCEPT);
 });
 
-Deno.test("auth: a missing token never yields a header with an empty bearer on the wire", () => {
+test("auth: a missing token never yields a header with an empty bearer on the wire", () => {
   // `authHeaders` tolerates the shape, but `test` refuses before it can be sent.
   assertEquals(authHeaders({}).authorization, "Bearer ");
 });
 
-Deno.test("auth: probeHeaders match what VimeoClient sends, plus the credential", () => {
+test("auth: probeHeaders match what VimeoClient sends, plus the credential", () => {
   const headers = probeHeaders(cred);
   assertEquals(headers.accept, ACCEPT);
   assertEquals(headers["user-agent"], USER_AGENT);
   assertEquals(headers.authorization, `Bearer ${TEST_TOKEN}`);
 });
 
-Deno.test("auth: test refuses an empty credential without touching the network", async () => {
+test("auth: test refuses an empty credential without touching the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await accessToken.test({ credential: {} } as never, ctx);
   assertEquals(result.ok, false);
@@ -68,7 +69,7 @@ Deno.test("auth: test refuses an empty credential without touching the network",
  * The probe must be the FILTERED /me. An unfiltered one would return
  * `preferences.videos.password` in cleartext into a health report.
  */
-Deno.test("auth: test probes /me with fields=uri,name and the versioned Accept", async () => {
+test("auth: test probes /me with fields=uri,name and the versioned Accept", async () => {
   const { ctx, calls } = mockCtx([{ body: { uri: "/users/152184", name: "Test" } }]);
   const result = await accessToken.test({ credential: cred } as never, ctx);
   assertEquals(result.ok, true);
@@ -79,7 +80,7 @@ Deno.test("auth: test probes /me with fields=uri,name and the versioned Accept",
   assertEquals(calls[0].headers.authorization, `Bearer ${TEST_TOKEN}`);
 });
 
-Deno.test("auth: a 200 that is not a user representation is not a pass", async () => {
+test("auth: a 200 that is not a user representation is not a pass", async () => {
   const { ctx } = mockCtx([{ body: { something: "else" } }]);
   const result = await accessToken.test({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -91,7 +92,7 @@ Deno.test("auth: a 200 that is not a user representation is not a pass", async (
  * the token is real but not bound to a user (a client-credentials token), so
  * re-pasting it will never help.
  */
-Deno.test("auth: error 8002 is reported as an unauthenticated-token problem", async () => {
+test("auth: error 8002 is reported as an unauthenticated-token problem", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody(8002, "No user is associated with the access token.") },
   ]);
@@ -101,7 +102,7 @@ Deno.test("auth: error 8002 is reported as an unauthenticated-token problem", as
   assert(result.message?.includes("8002"), result.message);
 });
 
-Deno.test("auth: a plain 401 is reported as a rejected token", async () => {
+test("auth: a plain 401 is reported as a rejected token", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody(8003, "The app didn't receive the user's credentials.") },
   ]);
@@ -111,21 +112,21 @@ Deno.test("auth: a plain 401 is reported as a rejected token", async () => {
   assert(result.message?.includes("8003"), result.message);
 });
 
-Deno.test("auth: a 403 is reported as a scope problem, not a bad token", async () => {
+test("auth: a 403 is reported as a scope problem, not a bad token", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(3200, "Forbidden.") }]);
   const result = await accessToken.test({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("scopes"), result.message);
 });
 
-Deno.test("auth: an unexpected status falls back to the formatted Vimeo error", async () => {
+test("auth: an unexpected status falls back to the formatted Vimeo error", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "upstream down" }]);
   const result = await accessToken.test({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("503"), result.message);
 });
 
-Deno.test("auth: no failure message ever echoes the token", async () => {
+test("auth: no failure message ever echoes the token", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody(8003, "nope") },
     { status: 403, body: errorBody(3200, "nope") },
@@ -139,19 +140,19 @@ Deno.test("auth: no failure message ever echoes the token", async () => {
   }
 });
 
-Deno.test("auth: afterConnect publishes only the filtered name and uri", async () => {
+test("auth: afterConnect publishes only the filtered name and uri", async () => {
   const { ctx, calls } = mockCtx([{ body: { uri: "/users/152184", name: "Test Account" } }]);
   const display = await accessToken.afterConnect!({ credential: cred } as never, ctx);
   assertEquals(display, { name: "Test Account", uri: "/users/152184" });
   assertEquals(q(calls[0], "fields"), "uri,name");
 });
 
-Deno.test("auth: afterConnect publishes nothing when the probe fails", async () => {
+test("auth: afterConnect publishes nothing when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody(8003, "nope") }]);
   assertEquals(await accessToken.afterConnect!({ credential: cred } as never, ctx), {});
 });
 
-Deno.test("auth: afterConnect makes no request without a credential", async () => {
+test("auth: afterConnect makes no request without a credential", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await accessToken.afterConnect!({ credential: {} } as never, ctx), {});
   assertEquals(calls.length, 0);
@@ -162,7 +163,7 @@ Deno.test("auth: afterConnect makes no request without a credential", async () =
  * rendered in a UI. Because the probe is filtered to two scalar fields, a
  * password cannot reach it even if Vimeo returned one.
  */
-Deno.test("auth: afterConnect cannot publish a password even if the API sends one", async () => {
+test("auth: afterConnect cannot publish a password even if the API sends one", async () => {
   const { ctx } = mockCtx([{
     body: { uri: "/users/152184", name: "Test", preferences: { videos: { password: "hunter1" } } },
   }]);

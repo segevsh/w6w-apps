@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderList from "../../actions/folder-list.ts";
 import { linkHeader, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 type ListResult = { items: unknown[]; nextToken?: string };
 
-Deno.test("folder-list: lists folders, strips tokens, and pages via the Link header", async () => {
+test("folder-list: lists folders, strips tokens, and pages via the Link header", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: [{ id: "f1", collection: { id: "co1", token: "t" } }],

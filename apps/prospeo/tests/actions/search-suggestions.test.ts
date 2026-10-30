@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action, { SUGGESTION_FIELDS } from "../../actions/search-suggestions.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("search-suggestions: sends the single field and reads <field>_suggestions", async () => {
+test("search-suggestions: sends the single field and reads <field>_suggestions", async () => {
   const { ctx, calls } = mockCtx([{
     body: { error: false, location_suggestions: [{ name: "France", type: "COUNTRY" }] },
   }]);
@@ -12,7 +13,7 @@ Deno.test("search-suggestions: sends the single field and reads <field>_suggesti
   assertEquals(out.suggestions, [{ name: "France", type: "COUNTRY" }]);
 });
 
-Deno.test("search-suggestions: company-field responses map the same way", async () => {
+test("search-suggestions: company-field responses map the same way", async () => {
   const { ctx } = mockCtx([{
     body: { error: false, company_integrations_suggestions: ["Salesforce"] },
   }]);
@@ -20,7 +21,7 @@ Deno.test("search-suggestions: company-field responses map the same way", async 
   assertEquals(out.suggestions, ["Salesforce"]);
 });
 
-Deno.test("search-suggestions: short query and unknown field are refused; all fields are selectable", async () => {
+test("search-suggestions: short query and unknown field are refused; all fields are selectable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => exec(action, { field: "sic_search", query: "a" }, ctx), Error, "2");
   await assertRejects(() => exec(action, { field: "nope", query: "abc" }, ctx), Error, "unknown");

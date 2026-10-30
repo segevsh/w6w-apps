@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import keywordList from "../../actions/keyword-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("keyword-list: calls GET /keywords and returns the documented shape", async () => {
+test("keyword-list: calls GET /keywords and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, keyword: "JOIN" }]) }]);
   const result = await keywordList.execute({} as never, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("keyword-list: calls GET /keywords and returns the documented shape", 
   });
 });
 
-Deno.test("keyword-list: carries no credential — auth is the sign hook's job", async () => {
+test("keyword-list: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, keyword: "JOIN" }]) }]);
   await keywordList.execute({} as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

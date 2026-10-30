@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/leave-apply.ts";
 
@@ -6,7 +7,7 @@ const ok = {
   response: { result: { pkId: "3000000248001", message: "Successfully Added" }, status: 0 },
 };
 
-Deno.test("leave-apply: POSTs a leave record with the documented field names", async () => {
+test("leave-apply: POSTs a leave record with the documented field names", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: ok }]);
   const out = await action.execute({
     employeeId: "3000000020481",
@@ -29,7 +30,7 @@ Deno.test("leave-apply: POSTs a leave record with the documented field names", a
   assertEquals(out.pkId, "3000000248001");
 });
 
-Deno.test("leave-apply: extraFields cannot override the required fields", async () => {
+test("leave-apply: extraFields cannot override the required fields", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: ok }]);
   await action.execute({
     employeeId: "1",
@@ -41,7 +42,7 @@ Deno.test("leave-apply: extraFields cannot override the required fields", async 
   assertEquals(JSON.parse(new URLSearchParams(calls[0].body!).get("inputData")!).Employee_ID, "1");
 });
 
-Deno.test("leave-apply: requires employee, type and dates; not idempotent", async () => {
+test("leave-apply: requires employee, type and dates; not idempotent", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(
     () =>

@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 25 uniquely-keyed kebab-case actions", () => {
+test("index: exports 25 uniquely-keyed kebab-case actions", () => {
   assertEquals(app.actions.length, 25);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const k of keys) assert(/^[a-z]+(-[a-z]+)+$/.test(k), k);
 });
 
-Deno.test("index: every action is complete and creates are not idempotent", () => {
+test("index: every action is complete and creates are not idempotent", () => {
   for (const a of app.actions) {
     assert(a.type, `${a.key} type`);
     assert(a.description, `${a.key} description`);
@@ -20,7 +21,7 @@ Deno.test("index: every action is complete and creates are not idempotent", () =
   }
 });
 
-Deno.test("index: no action carries a credential param", () => {
+test("index: no action carries a credential param", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(!/token|password|secret|authorization|apikey/i.test(p.key), `${a.key}.${p.key}`);
@@ -28,7 +29,7 @@ Deno.test("index: no action carries a credential param", () => {
   }
 });
 
-Deno.test("index: one apiKey auth and the three health checks", () => {
+test("index: one apiKey auth and the three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-key"]);
   assertEquals(app.auth![0].type, "apiKey");
   assertEquals((app.healthChecks ?? []).map((h) => h.key), ["service", "api", "quota"]);

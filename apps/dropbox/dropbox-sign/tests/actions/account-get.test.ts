@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
-Deno.test("account-get: reads the account and its quotas", async () => {
+test("account-get: reads the account and its quotas", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { account: { account_id: "a1", quotas: { documents_left: 5 } } },
@@ -12,7 +13,7 @@ Deno.test("account-get: reads the account and its quotas", async () => {
   assertEquals(result.quotas, { documents_left: 5 });
 });
 
-Deno.test("account-get: can look up someone else by id or email", async () => {
+test("account-get: can look up someone else by id or email", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { account: {} } }]);
   await action.execute!({ accountId: "a2", emailAddress: "ada@example.com" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -21,7 +22,7 @@ Deno.test("account-get: can look up someone else by id or email", async () => {
 });
 
 /** A free plan can only ever create test-mode requests. */
-Deno.test("account-get: the plan flag is surfaced and says what it means", () => {
+test("account-get: the plan flag is surfaced and says what it means", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "is_paid_hs")!.label.includes("test-mode only"));
 });

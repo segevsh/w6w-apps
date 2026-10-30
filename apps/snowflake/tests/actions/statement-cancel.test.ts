@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSnowflakeCtx } from "../_helpers.ts";
 import action from "../../actions/statement-cancel.ts";
 
-Deno.test("statement-cancel: POSTs /api/v2/statements/{handle}/cancel", async () => {
+test("statement-cancel: POSTs /api/v2/statements/{handle}/cancel", async () => {
   const { ctx, calls } = mockSnowflakeCtx([{
     status: 200,
     body: { success: true, message: "ok" },
@@ -13,6 +14,6 @@ Deno.test("statement-cancel: POSTs /api/v2/statements/{handle}/cancel", async ()
   assertEquals(out, { success: true, message: "ok" });
 });
 
-Deno.test("statement-cancel: is idempotent", () => {
+test("statement-cancel: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import videoUpdate from "../../actions/video-update.ts";
 import { jsonBody, mockCtx, q, url, video } from "../_helpers.ts";
 
-Deno.test("video-update: PATCHes /videos/{id}", async () => {
+test("video-update: PATCHes /videos/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: video(1) }]);
   await videoUpdate.execute({ videoId: "/videos/1", name: "New title" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -15,7 +16,7 @@ Deno.test("video-update: PATCHes /videos/{id}", async () => {
  * nested JSON. Sending the literal key `"privacy.view"` is a different request
  * Vimeo will not apply — this is the assertion that pins the translation.
  */
-Deno.test("video-update: privacy fields are nested, not sent as dotted keys", async () => {
+test("video-update: privacy fields are nested, not sent as dotted keys", async () => {
   const { ctx, calls } = mockCtx([{ body: video(1) }]);
   await videoUpdate.execute({
     videoId: "1",
@@ -43,20 +44,20 @@ Deno.test("video-update: privacy fields are nested, not sent as dotted keys", as
 });
 
 /** Only the fields present are applied, so an unset param must not appear. */
-Deno.test("video-update: unset params are absent from the body", async () => {
+test("video-update: unset params are absent from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: video(1) }]);
   await videoUpdate.execute({ videoId: "1", name: "Just the title" }, ctx);
   assertEquals(Object.keys(jsonBody(calls[0])), ["name"]);
 });
 
-Deno.test("video-update: an unset privacy leaf never creates an empty privacy object", async () => {
+test("video-update: an unset privacy leaf never creates an empty privacy object", async () => {
   const { ctx, calls } = mockCtx([{ body: video(1) }]);
   await videoUpdate.execute({ videoId: "1", description: "x" }, ctx);
   assertEquals(jsonBody(calls[0]).privacy, undefined);
 });
 
 /** `embed_domains: []` clears the allowlist; a blank param must never become one. */
-Deno.test("video-update: a blank embed allowlist is omitted, not sent as an empty array", async () => {
+test("video-update: a blank embed allowlist is omitted, not sent as an empty array", async () => {
   const { ctx, calls } = mockCtx([{ body: video(1) }, { body: video(1) }]);
   await videoUpdate.execute({ videoId: "1", embedDomains: "" }, ctx);
   assertEquals(jsonBody(calls[0]).embed_domains, undefined);
@@ -73,19 +74,19 @@ Deno.test("video-update: a blank embed allowlist is omitted, not sent as an empt
   assertEquals(body.embed_domains_delete, ["gone.example"]);
 });
 
-Deno.test("video-update: fields goes on the query, never in the body", async () => {
+test("video-update: fields goes on the query, never in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: video(1) }]);
   await videoUpdate.execute({ videoId: "1", name: "x", fields: "uri,name" }, ctx);
   assertEquals(q(calls[0], "fields"), "uri,name");
   assertEquals(jsonBody(calls[0]).fields, undefined);
 });
 
-Deno.test("video-update: the password param is a masked secret", () => {
+test("video-update: the password param is a masked secret", () => {
   const password = (videoUpdate.params ?? []).find((p) => p.key === "password");
   assertEquals(password?.type, "secret");
 });
 
-Deno.test("video-update: is a convergent perform", () => {
+test("video-update: is a convergent perform", () => {
   assertEquals(videoUpdate.type, "perform");
   assertEquals(videoUpdate.idempotent, true);
 });

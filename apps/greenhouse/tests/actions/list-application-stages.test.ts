@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listApplicationStages from "../../actions/list-application-stages.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-application-stages: calls GET /v3/application_stages", async () => {
+test("list-application-stages: calls GET /v3/application_stages", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 1 }])]);
   await listApplicationStages.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/application_stages");
 });
 
-Deno.test("list-application-stages: maps the application and stage-definition filters", async () => {
+test("list-application-stages: maps the application and stage-definition filters", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listApplicationStages.execute({
     applicationIds: "1,2",
@@ -26,12 +27,12 @@ Deno.test("list-application-stages: maps the application and stage-definition fi
  * This is the lookup `move-application` depends on: `from_stage_id` must be the
  * stage the application occupies right now, and `current` is how you get it.
  */
-Deno.test("list-application-stages: the current filter is documented as the move lookup", () => {
+test("list-application-stages: the current filter is documented as the move lookup", () => {
   const param = (listApplicationStages.params ?? []).find((p) => p.key === "current");
   assert(param?.hint?.includes("sitting in now"), param?.hint);
 });
 
-Deno.test("list-application-stages: a cursor rejects the current filter it already carries", () => {
+test("list-application-stages: a cursor rejects the current filter it already carries", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(
     () => listApplicationStages.execute({ cursor: "N", current: true }, ctx),

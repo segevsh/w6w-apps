@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import dealCreate from "../../actions/deal-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("deal-create: POST /deals sends a JSON:API document of attributes", async () => {
+test("deal-create: POST /deals sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "deals", "attributes": { "name": "x" } } },
@@ -54,7 +55,7 @@ Deno.test("deal-create: POST /deals sends a JSON:API document of attributes", as
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("deal-create: a vendor error surfaces its status, title and detail", async () => {
+test("deal-create: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -67,7 +68,7 @@ Deno.test("deal-create: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("deal-create: declares perform and idempotent=false", () => {
+test("deal-create: declares perform and idempotent=false", () => {
   assertEquals(dealCreate.type, "perform");
   assertEquals(dealCreate.idempotent, false);
   assertEquals(dealCreate.key, "deal-create");

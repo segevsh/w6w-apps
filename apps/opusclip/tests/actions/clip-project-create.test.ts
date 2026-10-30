@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import clipProjectCreate from "../../actions/clip-project-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("clip-project-create: POSTs the minimal body for a bare videoUrl", async () => {
+test("clip-project-create: POSTs the minimal body for a bare videoUrl", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "P1", stage: "QUEUED", model: "ClipBasic" } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("clip-project-create: POSTs the minimal body for a bare videoUrl", asy
   assertEquals(body, { videoUrl: "https://youtube.com/watch?v=x" });
 });
 
-Deno.test("clip-project-create: assembles nested curationPref/renderPref/conclusionActions", async () => {
+test("clip-project-create: assembles nested curationPref/renderPref/conclusionActions", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "P2" } }]);
   await clipProjectCreate.execute({
     videoUrl: "https://youtube.com/watch?v=x",
@@ -55,7 +56,7 @@ Deno.test("clip-project-create: assembles nested curationPref/renderPref/conclus
   ]);
 });
 
-Deno.test("clip-project-create: omits clipDurations/range unless both bounds are given", async () => {
+test("clip-project-create: omits clipDurations/range unless both bounds are given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "P3" } }]);
   await clipProjectCreate.execute({
     videoUrl: "https://youtube.com/watch?v=x",
@@ -67,6 +68,6 @@ Deno.test("clip-project-create: omits clipDurations/range unless both bounds are
   assert(!("curationPref" in body), "an incomplete pair must not produce a curationPref at all");
 });
 
-Deno.test("clip-project-create: is declared non-idempotent", () => {
+test("clip-project-create: is declared non-idempotent", () => {
   assertEquals(clipProjectCreate.idempotent, false);
 });

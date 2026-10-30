@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-section.ts";
 
-Deno.test("create-section: under a notebook", async () => {
+test("create-section: under a notebook", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "sec1" } }]);
   await action.execute({ notebookId: "n1", displayName: "New section" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/onenote/notebooks/n1/sections");
@@ -10,13 +11,13 @@ Deno.test("create-section: under a notebook", async () => {
   assertEquals(JSON.parse(calls[0].body!), { displayName: "New section" });
 });
 
-Deno.test("create-section: under a section group", async () => {
+test("create-section: under a section group", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "sec1" } }]);
   await action.execute({ sectionGroupId: "sg1", displayName: "New section" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/onenote/sectionGroups/sg1/sections");
 });
 
-Deno.test("create-section: neither parent set is rejected before any request", async () => {
+test("create-section: neither parent set is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   try {
     await action.execute({ displayName: "orphan" }, ctx);
@@ -27,7 +28,7 @@ Deno.test("create-section: neither parent set is rejected before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-section: both parents set is rejected before any request", async () => {
+test("create-section: both parents set is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   try {
     await action.execute({ notebookId: "n1", sectionGroupId: "sg1", displayName: "x" }, ctx);
@@ -38,6 +39,6 @@ Deno.test("create-section: both parents set is rejected before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-section: mints a new resource each call — not idempotent", () => {
+test("create-section: mints a new resource each call — not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

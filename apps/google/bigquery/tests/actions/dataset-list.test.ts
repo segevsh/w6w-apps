@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dataset-list.ts";
 
 const display = { projectId: "p1" };
 
-Deno.test("dataset-list: lists a project's datasets and asks for only what it wants", async () => {
+test("dataset-list: lists a project's datasets and asks for only what it wants", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { datasets: [{ id: "p1:d1" }] } }], {
     display,
   });
@@ -15,7 +16,7 @@ Deno.test("dataset-list: lists a project's datasets and asks for only what it wa
 });
 
 /** Hidden datasets are the anonymous ones query caching creates — noise by default. */
-Deno.test("dataset-list: hidden datasets are opt-in, and the label filter passes through", async () => {
+test("dataset-list: hidden datasets are opt-in, and the label filter passes through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { datasets: [] } }], { display });
   await action.execute!({ all: true, filter: "labels.team:analytics" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -23,7 +24,7 @@ Deno.test("dataset-list: hidden datasets are opt-in, and the label filter passes
   assertEquals(q.get("filter"), "labels.team:analytics");
 });
 
-Deno.test("dataset-list: returnAll follows the page token past the limit", async () => {
+test("dataset-list: returnAll follows the page token past the limit", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { datasets: [{ id: "a" }], nextPageToken: "t2" } },
     { status: 200, body: { datasets: [{ id: "b" }] } },
@@ -33,7 +34,7 @@ Deno.test("dataset-list: returnAll follows the page token past the limit", async
   assertEquals(new URL(calls[1].url).searchParams.get("pageToken"), "t2");
 });
 
-Deno.test("dataset-list: the project override beats the connection's default", async () => {
+test("dataset-list: the project override beats the connection's default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { datasets: [] } }], { display });
   await action.execute!({ projectId: "other" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/bigquery/v2/projects/other/datasets");

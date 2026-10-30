@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ function summary(components: Array<Record<string, unknown>>, extra: Record<strin
   };
 }
 
-Deno.test("service: reports ok when the Recharge API component is operational", async () => {
+test("service: reports ok when the Recharge API component is operational", async () => {
   const { ctx } = mockCtx([
     {
       body: summary([
@@ -25,7 +26,7 @@ Deno.test("service: reports ok when the Recharge API component is operational", 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: a Shopify-only degradation does not degrade this check", async () => {
+test("service: a Shopify-only degradation does not degrade this check", async () => {
   const { ctx } = mockCtx([
     {
       body: summary([
@@ -38,7 +39,7 @@ Deno.test("service: a Shopify-only degradation does not degrade this check", asy
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: reports down when the Recharge API component itself is down", async () => {
+test("service: reports down when the Recharge API component itself is down", async () => {
   const { ctx } = mockCtx([
     {
       body: summary([
@@ -51,7 +52,7 @@ Deno.test("service: reports down when the Recharge API component itself is down"
   assert(report.message?.includes("Recharge API"));
 });
 
-Deno.test("service: reports degraded on partial_outage / degraded_performance", async () => {
+test("service: reports degraded on partial_outage / degraded_performance", async () => {
   const { ctx } = mockCtx([
     { body: summary([{ id: API_COMPONENT_ID, name: "Recharge API", status: "partial_outage" }]) },
   ]);
@@ -59,13 +60,13 @@ Deno.test("service: reports degraded on partial_outage / degraded_performance", 
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: unknown, not down, when the status API itself errors", async () => {
+test("service: unknown, not down, when the status API itself errors", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when the page no longer self-identifies as Recharge's", async () => {
+test("service: unknown when the page no longer self-identifies as Recharge's", async () => {
   const { ctx } = mockCtx([
     {
       body: summary([{ id: API_COMPONENT_ID, name: "Recharge API", status: "operational" }], {
@@ -77,7 +78,7 @@ Deno.test("service: unknown when the page no longer self-identifies as Recharge'
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when the Recharge API component disappears from the page", async () => {
+test("service: unknown when the Recharge API component disappears from the page", async () => {
   const { ctx } = mockCtx([
     { body: summary([{ id: "other", name: "Shopify Admin", status: "operational" }]) },
   ]);
@@ -85,7 +86,7 @@ Deno.test("service: unknown when the Recharge API component disappears from the 
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("mapComponentStatus: covers the full Statuspage vocabulary", () => {
+test("mapComponentStatus: covers the full Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -94,7 +95,7 @@ Deno.test("mapComponentStatus: covers the full Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: declares no credential and widens egress only to the status host", () => {
+test("service: declares no credential and widens egress only to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.getrecharge.com"]);
 });

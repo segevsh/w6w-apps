@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import mailingListGet from "../../actions/mailing-list-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailing-list-get: calls GET /api/v2/mailing-lists/7 and shapes the output", async () => {
+test("mailing-list-get: calls GET /api/v2/mailing-lists/7 and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 7, "description": "List", "total_recipients": 4 },
   }]);
@@ -21,7 +22,7 @@ Deno.test("mailing-list-get: calls GET /api/v2/mailing-lists/7 and shapes the ou
   assert((out.mailingList as Record<string, number>).total_recipients === 4, JSON.stringify(out));
 });
 
-Deno.test("mailing-list-get: a vendor error surfaces the HTTP status and message", async () => {
+test("mailing-list-get: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { "message": "Mailing List Does Not Exist" } }]);
   const err = await assertRejects(
     () => Promise.resolve(mailingListGet.execute({ "mailingListId": "7" } as never, ctx)),

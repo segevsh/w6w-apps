@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import prodAuth, { createDocusignOAuth } from "../../auth/oauth2.ts";
 import demoAuth from "../../auth/oauth2-demo.ts";
@@ -32,7 +33,7 @@ const req = (): SignableRequest => ({
 
 // ------------------------------------------------------------- declarations --
 
-Deno.test("production auth declares Docusign's confidential authorization-code endpoints", () => {
+test("production auth declares Docusign's confidential authorization-code endpoints", () => {
   assertEquals(prodAuth.key, "oauth2");
   assertEquals(prodAuth.type, "oauth2");
   assertEquals(prodAuth.oauth2?.authorizationUrl, "https://account.docusign.com/oauth/auth");
@@ -43,19 +44,19 @@ Deno.test("production auth declares Docusign's confidential authorization-code e
   assertEquals(prodAuth.oauth2?.pkce, true);
 });
 
-Deno.test("demo auth is the same flow against the developer environment", () => {
+test("demo auth is the same flow against the developer environment", () => {
   assertEquals(demoAuth.key, "oauth2-demo");
   assertEquals(demoAuth.oauth2?.authorizationUrl, "https://account-d.docusign.com/oauth/auth");
   assertEquals(demoAuth.oauth2?.tokenUrl, "https://account-d.docusign.com/oauth/token");
   assertEquals(demoAuth.oauth2?.scopes, prodAuth.oauth2?.scopes);
 });
 
-Deno.test("no revokeUrl is claimed — Docusign's /logout is a browser SSO logout", () => {
+test("no revokeUrl is claimed — Docusign's /logout is a browser SSO logout", () => {
   assertEquals(prodAuth.oauth2?.revokeUrl, undefined);
   assertEquals(demoAuth.oauth2?.revokeUrl, undefined);
 });
 
-Deno.test("the only connect-time field is an optional account id", () => {
+test("the only connect-time field is an optional account id", () => {
   assertEquals(prodAuth.fields?.length, 1);
   assertEquals(prodAuth.fields?.[0].key, "accountId");
   assertEquals(prodAuth.fields?.[0].required, undefined);
@@ -64,7 +65,7 @@ Deno.test("the only connect-time field is an optional account id", () => {
 
 // --------------------------------------------------------------------- sign --
 
-Deno.test("sign stamps the bearer token and touches nothing else", () => {
+test("sign stamps the bearer token and touches nothing else", () => {
   const request = req();
   const out = prodAuth.sign!({ request, credential: { accessToken: "tok-123" } }, mockCtx().ctx);
   assertEquals((out as SignableRequest).headers["authorization"], "Bearer tok-123");
@@ -74,20 +75,20 @@ Deno.test("sign stamps the bearer token and touches nothing else", () => {
 
 // --------------------------------------------------------------------- test --
 
-Deno.test("test calls the production userinfo endpoint", async () => {
+test("test calls the production userinfo endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: USERINFO }]);
   assertEquals(await prodAuth.test({ credential: { accessToken: "t" } }, ctx), { ok: true });
   assertEquals(calls[0].url, "https://account.docusign.com/oauth/userinfo");
   assertEquals(calls[0].headers["authorization"], "Bearer t");
 });
 
-Deno.test("test calls the demo userinfo endpoint for a demo connection", async () => {
+test("test calls the demo userinfo endpoint for a demo connection", async () => {
   const { ctx, calls } = mockCtx([{ body: USERINFO }]);
   await demoAuth.test({ credential: { accessToken: "t" } }, ctx);
   assertEquals(calls[0].url, "https://account-d.docusign.com/oauth/userinfo");
 });
 
-Deno.test("test reports a missing token without touching the network", async () => {
+test("test reports a missing token without touching the network", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await prodAuth.test({ credential: {} }, ctx), {
     ok: false,
@@ -96,14 +97,14 @@ Deno.test("test reports a missing token without touching the network", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test reports a rejected token", async () => {
+test("test reports a rejected token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "invalid_token" } }]);
   const out = await prodAuth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(out.ok, false);
   assertEquals(out.message?.includes("401"), true);
 });
 
-Deno.test("test reports a valid token that reaches no account", async () => {
+test("test reports a valid token that reaches no account", async () => {
   const { ctx } = mockCtx([{ body: { sub: "u", accounts: [] } }]);
   const out = await prodAuth.test({ credential: { accessToken: "t" } }, ctx);
   assertEquals(out.ok, false);
@@ -112,7 +113,7 @@ Deno.test("test reports a valid token that reaches no account", async () => {
 
 // ------------------------------------------------------------- afterConnect --
 
-Deno.test("afterConnect records the default account's base URI and id", async () => {
+test("afterConnect records the default account's base URI and id", async () => {
   const { ctx, calls } = mockCtx([{ body: USERINFO }]);
   const display = await prodAuth.afterConnect!({ credential: { accessToken: "t" } }, ctx);
   assertEquals(calls[0].url, "https://account.docusign.com/oauth/userinfo");
@@ -127,7 +128,7 @@ Deno.test("afterConnect records the default account's base URI and id", async ()
   });
 });
 
-Deno.test("afterConnect honours the connect-time account id and its region", async () => {
+test("afterConnect honours the connect-time account id and its region", async () => {
   const { ctx } = mockCtx([{ body: USERINFO }]);
   const display = await prodAuth.afterConnect!(
     { credential: { accessToken: "t", accountId: "eu-acct" } },
@@ -138,7 +139,7 @@ Deno.test("afterConnect honours the connect-time account id and its region", asy
   assertEquals(display.isDefaultAccount, false);
 });
 
-Deno.test("afterConnect stamps the demo environment and its host", async () => {
+test("afterConnect stamps the demo environment and its host", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       sub: "u",
@@ -156,7 +157,7 @@ Deno.test("afterConnect stamps the demo environment and its host", async () => {
   assertEquals(display.baseUri, "https://demo.docusign.net");
 });
 
-Deno.test("afterConnect normalises a trailing slash on base_uri", async () => {
+test("afterConnect normalises a trailing slash on base_uri", async () => {
   const { ctx } = mockCtx([{
     body: {
       accounts: [{ account_id: "a", base_uri: "https://au.docusign.net/", is_default: true }],
@@ -166,7 +167,7 @@ Deno.test("afterConnect normalises a trailing slash on base_uri", async () => {
   assertEquals(display.baseUri, "https://au.docusign.net");
 });
 
-Deno.test("afterConnect fails loudly when userinfo cannot be read", async () => {
+test("afterConnect fails loudly when userinfo cannot be read", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const err = await assertRejects(
     () => Promise.resolve(prodAuth.afterConnect!({ credential: { accessToken: "t" } }, ctx)),
@@ -175,7 +176,7 @@ Deno.test("afterConnect fails loudly when userinfo cannot be read", async () => 
   assertEquals(err.message.includes("base URI"), true);
 });
 
-Deno.test("afterConnect rejects a base_uri outside the egress allowlist", async () => {
+test("afterConnect rejects a base_uri outside the egress allowlist", async () => {
   const { ctx } = mockCtx([{
     body: {
       accounts: [{ account_id: "a", base_uri: "https://evil.example.com", is_default: true }],
@@ -186,7 +187,7 @@ Deno.test("afterConnect rejects a base_uri outside the egress allowlist", async 
   );
 });
 
-Deno.test("afterConnect with no token records only the environment", async () => {
+test("afterConnect with no token records only the environment", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await prodAuth.afterConnect!({ credential: {} }, ctx), {
     environment: "production",
@@ -196,7 +197,7 @@ Deno.test("afterConnect with no token records only the environment", async () =>
 
 // ------------------------------------------------------------- the  factory --
 
-Deno.test("the factory produces two distinct methods from one implementation", () => {
+test("the factory produces two distinct methods from one implementation", () => {
   const a = createDocusignOAuth("production");
   const b = createDocusignOAuth("demo");
   assertEquals(a.key, "oauth2");
@@ -205,7 +206,7 @@ Deno.test("the factory produces two distinct methods from one implementation", (
   assertEquals(a.oauth2?.authorizationUrl === b.oauth2?.authorizationUrl, false);
 });
 
-Deno.test("oauth2: setup guidance names Docusign's own labels on both methods", () => {
+test("oauth2: setup guidance names Docusign's own labels on both methods", () => {
   for (const a of [prodAuth, demoAuth]) {
     const s = a.oauth2?.setup;
     assert(/integration key/i.test(s?.clientIdHint ?? ""));

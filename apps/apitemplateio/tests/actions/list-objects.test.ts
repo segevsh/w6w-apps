@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-objects.ts";
 
-Deno.test("list-objects: GETs /v2/list-objects and returns the response verbatim", async () => {
+test("list-objects: GETs /v2/list-objects and returns the response verbatim", async () => {
   const body = { status: "success", objects: [{ transaction_ref: "t1" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -13,7 +14,7 @@ Deno.test("list-objects: GETs /v2/list-objects and returns the response verbatim
   assertEquals(result, body);
 });
 
-Deno.test("list-objects: forwards templateId, transactionType, limit, and offset", async () => {
+test("list-objects: forwards templateId, transactionType, limit, and offset", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", objects: [] } }]);
   await action.execute!(
     { templateId: "tpl-1", transactionType: "PDF", limit: 5, offset: 10 },

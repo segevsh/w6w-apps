@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commissionDisapprove from "../../actions/commission-disapprove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("commission-disapprove: DELETEs the approved sub-resource", async () => {
+test("commission-disapprove: DELETEs the approved sub-resource", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, approved: false } }]);
   const out = await commissionDisapprove.execute({ commissionId: 1 }, ctx) as Record<
     string,

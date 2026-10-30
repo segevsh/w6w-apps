@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-booking.ts";
 
-Deno.test("update-booking: PATCHes a reschedule", async () => {
+test("update-booking: PATCHes a reschedule", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "book-1" } }]);
   await action.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("update-booking: PATCHes a reschedule", async () => {
   );
 });
 
-Deno.test("update-booking: PATCHes a cancellation", async () => {
+test("update-booking: PATCHes a cancellation", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "book-1" } }]);
   await action.execute(
     {
@@ -40,7 +41,7 @@ Deno.test("update-booking: PATCHes a cancellation", async () => {
   assertEquals(body.cancellationReason, "client requested");
 });
 
-Deno.test("update-booking: defaults response fields to id", async () => {
+test("update-booking: defaults response fields to id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "book-1" } }]);
   await action.execute({ accountId: "acc-1", profileId: "prof-1", bookingId: "book-1" }, ctx);
   const url = new URL(calls[0].url);

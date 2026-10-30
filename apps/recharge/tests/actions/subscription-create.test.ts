@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionCreate from "../../actions/subscription-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-create: POSTs to /subscriptions with a nested external_variant_id", async () => {
+test("subscription-create: POSTs to /subscriptions with a nested external_variant_id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope("subscription", { id: 1 }) }]);
   await subscriptionCreate.execute(
     {
@@ -24,6 +25,6 @@ Deno.test("subscription-create: POSTs to /subscriptions with a nested external_v
   assertEquals(body.order_interval_unit, "day");
 });
 
-Deno.test("subscription-create: is a non-idempotent perform action", () => {
+test("subscription-create: is a non-idempotent perform action", () => {
   assertEquals(subscriptionCreate.idempotent, false);
 });

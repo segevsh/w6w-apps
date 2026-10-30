@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import propertyCalendarUpdate from "../../actions/property-calendar-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("property-calendar-update: PUT .../calendar sends dates, parsing JSON text; 202 body passes through", async () => {
+test("property-calendar-update: PUT .../calendar sends dates, parsing JSON text; 202 body passes through", async () => {
   const dates = [{ date: "2026-11-01", price: { amount: 15000 }, available: true, min_stay: 2 }];
   const { ctx, calls } = mockCtx([{ status: 202, body: { status: "accepted" } }]);
   const out = await propertyCalendarUpdate.execute(

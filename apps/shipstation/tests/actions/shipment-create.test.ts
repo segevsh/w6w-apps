@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-create.ts";
 
@@ -10,7 +11,7 @@ const created = {
   body: { shipments: [{ shipment_id: "se-1", shipment_status: "pending" }] },
 };
 
-Deno.test("shipment-create: posts to /v2/shipments wrapped in a shipments array", async () => {
+test("shipment-create: posts to /v2/shipments wrapped in a shipments array", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute!(
     {
@@ -30,7 +31,7 @@ Deno.test("shipment-create: posts to /v2/shipments wrapped in a shipments array"
   assertEquals(body.shipments[0].ship_to.postal_code, "95128");
 });
 
-Deno.test("shipment-create: returns shipmentId and shipmentStatus from the first shipment", async () => {
+test("shipment-create: returns shipmentId and shipmentStatus from the first shipment", async () => {
   const { ctx } = mockCtx([created]);
   const result = await action.execute!(
     {
@@ -46,7 +47,7 @@ Deno.test("shipment-create: returns shipmentId and shipmentStatus from the first
   assertEquals(result.shipmentStatus, "pending");
 });
 
-Deno.test("shipment-create: requires shipTo", async () => {
+test("shipment-create: requires shipTo", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -60,7 +61,7 @@ Deno.test("shipment-create: requires shipTo", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("shipment-create: requires either shipFrom or warehouseId", async () => {
+test("shipment-create: requires either shipFrom or warehouseId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -74,7 +75,7 @@ Deno.test("shipment-create: requires either shipFrom or warehouseId", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("shipment-create: warehouseId substitutes for shipFrom", async () => {
+test("shipment-create: warehouseId substitutes for shipFrom", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute!(
     { carrierId: "c", serviceCode: "s", shipTo, warehouseId: "se-wh-1", packages },
@@ -85,7 +86,7 @@ Deno.test("shipment-create: warehouseId substitutes for shipFrom", async () => {
   assertEquals(body.shipments[0].ship_from, undefined);
 });
 
-Deno.test("shipment-create: requires a non-empty packages array", async () => {
+test("shipment-create: requires a non-empty packages array", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -99,7 +100,7 @@ Deno.test("shipment-create: requires a non-empty packages array", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("shipment-create: confirmation of 'none' is omitted rather than sent literally", async () => {
+test("shipment-create: confirmation of 'none' is omitted rather than sent literally", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute!(
     {
@@ -116,7 +117,7 @@ Deno.test("shipment-create: confirmation of 'none' is omitted rather than sent l
   assertEquals(body.shipments[0].confirmation, undefined);
 });
 
-Deno.test("shipment-create: logs the shipment id and status, not the addresses", async () => {
+test("shipment-create: logs the shipment id and status, not the addresses", async () => {
   const { ctx, logs } = mockCtx([created]);
   await action.execute!(
     { carrierId: "c", serviceCode: "s", shipTo, shipFrom: shipTo, packages },

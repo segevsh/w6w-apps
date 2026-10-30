@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pageFormFieldList from "../../actions/page-form-field-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("page-form-field-list: calls GET /pages/{id}/form_fields with no offset/limit", async () => {
+test("page-form-field-list: calls GET /pages/{id}/form_fields with no offset/limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { form_fields: [] } }]);
   await pageFormFieldList.execute({ pageId: "p1", includeSubPages: true }, ctx);
 

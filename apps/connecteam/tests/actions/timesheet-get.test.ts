@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timesheetGet from "../../actions/timesheet-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timesheet-get: GETs the timesheet with the required date range and optional filters", async () => {
+test("timesheet-get: GETs the timesheet with the required date range and optional filters", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ startDate: "2026-01-01", endDate: "2026-01-31", users: [] }) },
   ]);

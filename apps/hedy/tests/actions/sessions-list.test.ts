@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import sessionsList from "../../actions/sessions-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sessions-list: calls GET /sessions and unwraps items + pagination", async () => {
+test("sessions-list: calls GET /sessions and unwraps items + pagination", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: listEnvelope(
@@ -23,19 +24,19 @@ Deno.test("sessions-list: calls GET /sessions and unwraps items + pagination", a
   assertEquals(out.total, 150);
 });
 
-Deno.test("sessions-list: omitting limit sends no limit query param", async () => {
+test("sessions-list: omitting limit sends no limit query param", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await sessionsList.execute({}, ctx);
   assert(!("limit" in queryOf(calls[0].url)));
 });
 
-Deno.test("sessions-list: an empty data array is reported as an empty list, not undefined", async () => {
+test("sessions-list: an empty data array is reported as an empty list, not undefined", async () => {
   const { ctx } = mockCtx([{ body: { success: true, data: null, pagination: { total: 0 } } }]);
   const out = await sessionsList.execute({}, ctx) as { items: unknown[] };
   assertEquals(out.items, []);
 });
 
-Deno.test("sessions-list: an authentication failure throws with the vendor's error code", async () => {
+test("sessions-list: an authentication failure throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

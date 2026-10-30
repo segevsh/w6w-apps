@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerCreate from "../../actions/customer-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-create: sends POST /customers", async () => {
+test("customer-create: sends POST /customers", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 1, "email": "a@b.co" } }]);
   const out = await customerCreate.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("customer-create: sends POST /customers", async () => {
   assertEquals(out, { "id": 1, "email": "a@b.co" });
 });
 
-Deno.test("customer-create: a 422 surfaces the vendor's message", async () => {
+test("customer-create: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

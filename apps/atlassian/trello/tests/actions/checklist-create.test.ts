@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/checklist-create.ts";
 
-Deno.test("checklist-create: POSTs /cards/{id}/checklists", async () => {
+test("checklist-create: POSTs /cards/{id}/checklists", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cl1" } }]);
   await action.execute({ cardId: "c1", name: "Steps" }, ctx);
   assertEquals(calls[0].method, "POST");

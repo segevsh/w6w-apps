@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, paged, STATUS } from "./_shared.ts";
 import action from "../../actions/notification-list.ts";
@@ -11,7 +12,7 @@ const feed = paged([
 ]);
 
 /** A follow carries no status at all, which is what breaks a naive walk. */
-Deno.test("notification-list: counts the ones with no status separately", async () => {
+test("notification-list: counts the ones with no status separately", async () => {
   const { ctx } = mockCtx([feed], { display });
   const result = await action.execute!({}, ctx) as {
     count: number;
@@ -25,7 +26,7 @@ Deno.test("notification-list: counts the ones with no status separately", async 
   assertEquals(result.texts, ["hello #tag", "hello #tag"], "only the ones that have a status");
 });
 
-Deno.test("notification-list: type filters reach the wire", async () => {
+test("notification-list: type filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   await action.execute!({ types: "mention, follow", excludeTypes: "favourite" }, ctx);
   const url = new URL(calls[0].url);
@@ -34,7 +35,7 @@ Deno.test("notification-list: type filters reach the wire", async () => {
 });
 
 /** There is no read flag, so "what is new" is a paging question. */
-Deno.test("notification-list: returns the high-water mark rather than marking anything", async () => {
+test("notification-list: returns the high-water mark rather than marking anything", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   const result = await action.execute!({}, ctx) as { newestId: string; nextMinId: string };
   assertEquals(result.newestId, "n1");
@@ -42,7 +43,7 @@ Deno.test("notification-list: returns the high-water mark rather than marking an
   assertEquals(calls.length, 1, "nothing was marked read");
 });
 
-Deno.test("notification-list: the limit is clamped and paging ids passed", async () => {
+test("notification-list: the limit is clamped and paging ids passed", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   await action.execute!({ limit: 500, minId: "10" }, ctx);
   const url = new URL(calls[0].url);
@@ -50,13 +51,13 @@ Deno.test("notification-list: the limit is clamped and paging ids passed", async
   assertEquals(url.searchParams.get("min_id"), "10");
 });
 
-Deno.test("notification-list: logs counts, never the content", async () => {
+test("notification-list: logs counts, never the content", async () => {
   const { ctx, logs } = mockCtx([feed], { display });
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("hello"), JSON.stringify(logs));
   assertEquals(logs[0].data, { count: 4, byType: { mention: 1, follow: 2, favourite: 1 } });
 });
 
-Deno.test("notification-list: says Mastodon has no read flag", () => {
+test("notification-list: says Mastodon has no read flag", () => {
   assert(/NO read flag/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/sync-product-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sync-product-create: POST /store/products and unwraps the envelope", async () => {
+test("sync-product-create: POST /store/products and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": 200, "result": { "id": 9, "name": "Tee" } } }]);
   const out = await action.execute!({
     "name": "Tee",
@@ -18,7 +19,7 @@ Deno.test("sync-product-create: POST /store/products and unwraps the envelope", 
   });
 });
 
-Deno.test("sync-product-create: a Printful error is surfaced with its reason and message", async () => {
+test("sync-product-create: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

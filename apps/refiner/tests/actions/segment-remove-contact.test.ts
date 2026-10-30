@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import segmentRemoveContact from "../../actions/segment-remove-contact.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("segment-remove-contact: DELETEs /v1/sync-segment with query params", async () => {
+test("segment-remove-contact: DELETEs /v1/sync-segment with query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await segmentRemoveContact.execute({ id: "u1", segmentUuid: "s1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("segment-remove-contact: DELETEs /v1/sync-segment with query params", 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("segment-remove-contact: refuses a call with no user identifier", async () => {
+test("segment-remove-contact: refuses a call with no user identifier", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(segmentRemoveContact.execute({ segmentUuid: "s1" }, ctx)),
@@ -21,7 +22,7 @@ Deno.test("segment-remove-contact: refuses a call with no user identifier", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("segment-remove-contact: a vendor error surfaces its own message", async () => {
+test("segment-remove-contact: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(segmentRemoveContact.execute({ id: "u1", segmentUuid: "s1" }, ctx)),

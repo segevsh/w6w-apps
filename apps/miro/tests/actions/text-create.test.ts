@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/text-create.ts";
 
 /** A text item's geometry has width and rotation but no height. */
-Deno.test("text-create: sends a width but never a height", async () => {
+test("text-create: sends a width but never a height", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "i1" } }], { display: {} });
   await action.execute!({ boardId: "b1", content: "Title", width: 300, rotation: 0 }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -14,7 +15,7 @@ Deno.test("text-create: sends a width but never a height", async () => {
   assertEquals(body.geometry.height, undefined);
 });
 
-Deno.test("text-create: content is required", async () => {
+test("text-create: content is required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ boardId: "b1" }, ctx),

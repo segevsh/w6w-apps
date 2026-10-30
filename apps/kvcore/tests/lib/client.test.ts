@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { compact, flattenKvCoreErrors, formatKvCoreError, KvCoreClient } from "../../lib/client.ts";
 import { errorsBody, mockCtx, pathOf, queryOf, validationErrorsBody } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined, null and empty-string values only", () => {
+test("compact: drops undefined, null and empty-string values only", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: 0, f: false }), {
     a: 1,
     e: 0,
@@ -10,11 +11,11 @@ Deno.test("compact: drops undefined, null and empty-string values only", () => {
   });
 });
 
-Deno.test("flattenKvCoreErrors: a flat array passes through", () => {
+test("flattenKvCoreErrors: a flat array passes through", () => {
   assertEquals(flattenKvCoreErrors(["Authentication Failed"]), ["Authentication Failed"]);
 });
 
-Deno.test("flattenKvCoreErrors: a Laravel-style validation map is field-prefixed", () => {
+test("flattenKvCoreErrors: a Laravel-style validation map is field-prefixed", () => {
   assertEquals(
     flattenKvCoreErrors({
       email: ["The email has already been taken."],
@@ -24,11 +25,11 @@ Deno.test("flattenKvCoreErrors: a Laravel-style validation map is field-prefixed
   );
 });
 
-Deno.test("flattenKvCoreErrors: undefined is an empty list", () => {
+test("flattenKvCoreErrors: undefined is an empty list", () => {
   assertEquals(flattenKvCoreErrors(undefined), []);
 });
 
-Deno.test("formatKvCoreError: renders the flat-array shape", () => {
+test("formatKvCoreError: renders the flat-array shape", () => {
   const msg = formatKvCoreError(
     401,
     "GET",
@@ -38,7 +39,7 @@ Deno.test("formatKvCoreError: renders the flat-array shape", () => {
   assertEquals(msg, "kvCORE 401 for GET /v2/public/contacts: Authentication Failed");
 });
 
-Deno.test("formatKvCoreError: renders the validation-map shape", () => {
+test("formatKvCoreError: renders the validation-map shape", () => {
   const msg = formatKvCoreError(
     422,
     "POST",
@@ -48,12 +49,12 @@ Deno.test("formatKvCoreError: renders the validation-map shape", () => {
   assert(msg.includes("email: The email has already been taken."), msg);
 });
 
-Deno.test("formatKvCoreError: a non-JSON body is truncated, not thrown on", () => {
+test("formatKvCoreError: a non-JSON body is truncated, not thrown on", () => {
   const msg = formatKvCoreError(500, "GET", "/v2/public/users", "<html>upstream error</html>");
   assert(msg.includes("<html>upstream error</html>"), msg);
 });
 
-Deno.test("KvCoreClient: sends the required Content-Type header and JSON-encodes the body", async () => {
+test("KvCoreClient: sends the required Content-Type header and JSON-encodes the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await new KvCoreClient(ctx).json("/contact", { method: "POST", body: { first_name: "A" } });
 
@@ -69,7 +70,7 @@ Deno.test("KvCoreClient: sends the required Content-Type header and JSON-encodes
  * opposite convention from this pack's Apify app. Getting this wrong
  * silently returns zero matches rather than an error.
  */
-Deno.test("KvCoreClient: array query values are sent as a repeated key", async () => {
+test("KvCoreClient: array query values are sent as a repeated key", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new KvCoreClient(ctx).json("/contacts", {
     query: { "filter[status][]": ["0", "7"] },
@@ -78,7 +79,7 @@ Deno.test("KvCoreClient: array query values are sent as a repeated key", async (
   assertEquals(queryOf(calls[0].url), { "filter[status][]": ["0", "7"] });
 });
 
-Deno.test("KvCoreClient: a non-ok response throws with the formatted message", async () => {
+test("KvCoreClient: a non-ok response throws with the formatted message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorsBody("Authentication Failed") }]);
   await assertRejects(
     () => new KvCoreClient(ctx).json("/contacts"),
@@ -87,7 +88,7 @@ Deno.test("KvCoreClient: a non-ok response throws with the formatted message", a
   );
 });
 
-Deno.test("KvCoreClient: a 204 response with no body resolves to undefined", async () => {
+test("KvCoreClient: a 204 response with no body resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   assertEquals(await new KvCoreClient(ctx).json("/office/1"), undefined);
 });

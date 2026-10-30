@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-user.ts";
 
@@ -9,7 +10,7 @@ const base = {
   password: "xWwvJ]6NMw+bWH-d",
 };
 
-Deno.test("create-user: POSTs /users with the five documented required properties", async () => {
+test("create-user: POSTs /users with the five documented required properties", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "u1" } }]);
   const out = await action.execute(base, ctx);
   assertEquals(calls[0].method, "POST");
@@ -25,7 +26,7 @@ Deno.test("create-user: POSTs /users with the five documented required propertie
   assertEquals(out.id, "u1");
 });
 
-Deno.test("create-user: optional fields and additionalProperties are merged in", async () => {
+test("create-user: optional fields and additionalProperties are merged in", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     ...base,
@@ -43,7 +44,7 @@ Deno.test("create-user: optional fields and additionalProperties are merged in",
   assertEquals(body.passwordProfile.forceChangePasswordNextSignIn, false);
 });
 
-Deno.test("create-user: refuses a missing required field without calling Graph", async () => {
+test("create-user: refuses a missing required field without calling Graph", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ ...base, mailNickname: " " }, ctx),
@@ -53,13 +54,13 @@ Deno.test("create-user: refuses a missing required field without calling Graph",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-user: never logs the password", async () => {
+test("create-user: never logs the password", async () => {
   const { ctx, logs } = mockCtx([{ status: 201, body: {} }]);
   await action.execute(base, ctx);
   assert(!JSON.stringify(logs).includes(base.password));
 });
 
-Deno.test("create-user: password is a secret param and the action is not idempotent", () => {
+test("create-user: password is a secret param and the action is not idempotent", () => {
   assertEquals(action.params!.find((p) => p.key === "password")!.type, "secret");
   assertEquals(action.idempotent, false);
 });

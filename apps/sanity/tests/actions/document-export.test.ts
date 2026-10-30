@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-export.ts";
 
 const conn = { display: { projectId: "abc123", dataset: "production", useCdn: true } };
 
 /** NDJSON, and always from the live host. */
-Deno.test("document-export: parses NDJSON from the live host", async () => {
+test("document-export: parses NDJSON from the live host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: '{"_id":"a","_type":"article"}\n{"_id":"drafts.a","_type":"article"}',
@@ -18,7 +19,7 @@ Deno.test("document-export: parses NDJSON from the live host", async () => {
 });
 
 /** The export includes drafts, which surprises anything treating it as content. */
-Deno.test("document-export: drafts can be filtered out after the fact", async () => {
+test("document-export: drafts can be filtered out after the fact", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: '{"_id":"a"}\n{"_id":"drafts.a"}',
@@ -32,12 +33,12 @@ Deno.test("document-export: drafts can be filtered out after the fact", async ()
   assertEquals(out.documents[0]._id, "a");
 });
 
-Deno.test("document-export: a type filter reaches the query string", async () => {
+test("document-export: a type filter reaches the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }], conn);
   await action.execute!({ types: "article, author" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("types"), "article,author");
 });
 
-Deno.test("document-export: says it includes drafts", () => {
+test("document-export: says it includes drafts", () => {
   assert(/drafts included/i.test(action.description!), action.description);
 });

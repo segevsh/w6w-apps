@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { mockCtx, pathOf, problem } from "../_helpers.ts";
 
-Deno.test("contact-delete: DELETEs /v3/contacts/{id} and reports deleted:true on 204", async () => {
+test("contact-delete: DELETEs /v3/contacts/{id} and reports deleted:true on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await contactDelete.execute({ id: 42 }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("contact-delete: DELETEs /v3/contacts/{id} and reports deleted:true on
 });
 
 /** Idempotent: an already-deleted contact (404) is the same end state as success. */
-Deno.test("contact-delete: a 404 (already gone) is treated as success, not an error", async () => {
+test("contact-delete: a 404 (already gone) is treated as success, not an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -23,7 +24,7 @@ Deno.test("contact-delete: a 404 (already gone) is treated as success, not an er
   assertEquals(out, { id: 42, deleted: true });
 });
 
-Deno.test("contact-delete: any other failure still throws", async () => {
+test("contact-delete: any other failure still throws", async () => {
   const { ctx } = mockCtx([{ status: 500, body: problem(500, "Internal Server Error", "boom") }]);
   try {
     await contactDelete.execute({ id: 42 }, ctx);
@@ -33,6 +34,6 @@ Deno.test("contact-delete: any other failure still throws", async () => {
   }
 });
 
-Deno.test("contact-delete: is idempotent", () => {
+test("contact-delete: is idempotent", () => {
   assertEquals(contactDelete.idempotent, true);
 });

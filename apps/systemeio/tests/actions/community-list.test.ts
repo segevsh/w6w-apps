@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import communityList from "../../actions/community-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("community-list: hits /api/community/communities", async () => {
+test("community-list: hits /api/community/communities", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, name: "Members" }]) }]);
   await communityList.execute({ query: "Members" }, ctx);
 

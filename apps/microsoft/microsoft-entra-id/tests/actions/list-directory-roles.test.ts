@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-directory-roles.ts";
 
-Deno.test("list-directory-roles: GETs /directoryRoles", async () => {
+test("list-directory-roles: GETs /directoryRoles", async () => {
   const { ctx, calls } = mockCtx([{
     body: { value: [{ id: "r1", displayName: "User Administrator" }] },
   }]);
@@ -11,7 +12,7 @@ Deno.test("list-directory-roles: GETs /directoryRoles", async () => {
   assertEquals(out.value.length, 1);
 });
 
-Deno.test("list-directory-roles: passes $filter (eq) and $select; offers no $top", async () => {
+test("list-directory-roles: passes $filter (eq) and $select; offers no $top", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ filter: "displayName eq 'User Administrator'", select: ["id"] }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -20,14 +21,14 @@ Deno.test("list-directory-roles: passes $filter (eq) and $select; offers no $top
   assert(!action.params!.some((p) => p.key === "top"));
 });
 
-Deno.test("list-directory-roles: replays a nextLink verbatim", async () => {
+test("list-directory-roles: replays a nextLink verbatim", async () => {
   const link = "https://graph.microsoft.com/v1.0/directoryRoles?$skiptoken=1";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ nextLink: link, filter: "ignored" }, ctx);
   assertEquals(calls[0].url, link);
 });
 
-Deno.test("list-directory-roles: all=true walks pages", async () => {
+test("list-directory-roles: all=true walks pages", async () => {
   const next = "https://graph.microsoft.com/v1.0/directoryRoles?$skiptoken=1";
   const { ctx } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": next } },

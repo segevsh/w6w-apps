@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import type { SignableRequest } from "@w6w/types";
 import auth from "../../auth/client-credentials.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const TOKEN_PATH = "/v1/oauth/oauth-business-users-for-applications/accesstoken";
 
-Deno.test("client-credentials: exchange() mints a token via Basic auth + grant_type=client_credentials", async () => {
+test("client-credentials: exchange() mints a token via Basic auth + grant_type=client_credentials", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { access_token: "tok-123", expires_in: "359999" } },
   ]);
@@ -24,7 +25,7 @@ Deno.test("client-credentials: exchange() mints a token via Basic auth + grant_t
   assertEquals((cred as { businessUserId: string }).businessUserId, "user-1");
 });
 
-Deno.test("client-credentials: exchange() requires both clientId and clientSecret", async () => {
+test("client-credentials: exchange() requires both clientId and clientSecret", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await auth.exchange!({ fields: { clientId: "id-1" } }, ctx),
@@ -33,7 +34,7 @@ Deno.test("client-credentials: exchange() requires both clientId and clientSecre
   );
 });
 
-Deno.test("client-credentials: exchange() surfaces Trustpilot's own error detail on failure", async () => {
+test("client-credentials: exchange() surfaces Trustpilot's own error detail on failure", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error: "invalid_client", error_description: "bad credentials" } },
   ]);
@@ -44,7 +45,7 @@ Deno.test("client-credentials: exchange() surfaces Trustpilot's own error detail
   );
 });
 
-Deno.test("client-credentials: refresh() re-mints — the grant issues no refresh token", async () => {
+test("client-credentials: refresh() re-mints — the grant issues no refresh token", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { access_token: "tok-456", expires_in: 100 } },
   ]);
@@ -56,7 +57,7 @@ Deno.test("client-credentials: refresh() re-mints — the grant issues no refres
   assertEquals((cred as { accessToken: string }).accessToken, "tok-456");
 });
 
-Deno.test("client-credentials: refresh() fails loudly with no stored id/secret", async () => {
+test("client-credentials: refresh() fails loudly with no stored id/secret", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await auth.refresh!({ credential: { accessToken: "tok-123" } }, ctx),
@@ -65,7 +66,7 @@ Deno.test("client-credentials: refresh() fails loudly with no stored id/secret",
   );
 });
 
-Deno.test("client-credentials: sign() stamps Authorization Bearer and, when set, x-business-user-id", () => {
+test("client-credentials: sign() stamps Authorization Bearer and, when set, x-business-user-id", () => {
   const request: SignableRequest = { url: "https://x", method: "GET", headers: {} };
   const signed = auth.sign!(
     { request, credential: { accessToken: "tok-123", businessUserId: "user-1" } },
@@ -75,25 +76,25 @@ Deno.test("client-credentials: sign() stamps Authorization Bearer and, when set,
   assertEquals((signed as SignableRequest).headers["x-business-user-id"], "user-1");
 });
 
-Deno.test("client-credentials: sign() omits x-business-user-id when none is configured", () => {
+test("client-credentials: sign() omits x-business-user-id when none is configured", () => {
   const request: SignableRequest = { url: "https://x", method: "GET", headers: {} };
   const signed = auth.sign!({ request, credential: { accessToken: "tok-123" } }, mockCtx().ctx);
   assertEquals((signed as SignableRequest).headers["x-business-user-id"], undefined);
 });
 
-Deno.test("client-credentials: test() re-mints and reports ok on success", async () => {
+test("client-credentials: test() re-mints and reports ok on success", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { access_token: "tok-789", expires_in: 100 } }]);
   const out = await auth.test({ credential: { clientId: "id-1", clientSecret: "secret-1" } }, ctx);
   assertEquals(out.ok, true);
 });
 
-Deno.test("client-credentials: test() reports failure without a stored id/secret", async () => {
+test("client-credentials: test() reports failure without a stored id/secret", async () => {
   const { ctx } = mockCtx([]);
   const out = await auth.test({ credential: {} }, ctx);
   assertEquals(out.ok, false);
 });
 
-Deno.test("client-credentials: fields carrying the secret are declared secret", () => {
+test("client-credentials: fields carrying the secret are declared secret", () => {
   const secretFields = ["clientId", "clientSecret"];
   for (const f of auth.fields ?? []) {
     if (secretFields.includes(f.key)) {

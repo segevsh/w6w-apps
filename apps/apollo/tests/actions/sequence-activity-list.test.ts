@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceActivityList from "../../actions/sequence-activity-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sequence-activity-list: POSTs a JSON body to /emailer_campaigns/activity_feed", async () => {
+test("sequence-activity-list: POSTs a JSON body to /emailer_campaigns/activity_feed", async () => {
   const { ctx, calls } = mockCtx([{
     body: { contact_id: "c1", events: [{ type: "email_sent" }] },
   }]);

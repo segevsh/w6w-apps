@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import customObjectRecordGet from "../../actions/custom-object-record-get.ts";
 
-Deno.test("custom-object-record-get: GETs .../records/external_id/<id>/ and returns the record bare", async () => {
+test("custom-object-record-get: GETs .../records/external_id/<id>/ and returns the record bare", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "r1", name: "Laptop", external_id: "asset 17" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("custom-object-record-get: GETs .../records/external_id/<id>/ and retu
   assertEquals(out.id, "r1");
 });
 
-Deno.test("custom-object-record-get: requires both identifiers before any request", async () => {
+test("custom-object-record-get: requires both identifiers before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

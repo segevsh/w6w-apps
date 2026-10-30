@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/container-get.ts";
 
@@ -11,7 +12,7 @@ const properties = (headers: Record<string, string>) => ({
 });
 
 /** The whole answer is in the headers; the body is empty by design. */
-Deno.test("container-get: HEADs the container and reads the headers", async () => {
+test("container-get: HEADs the container and reads the headers", async () => {
   const { ctx, calls } = mockCtx([properties({ "x-ms-lease-state": "available" })], D);
   const result = await action.execute({ container: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "HEAD");
@@ -20,7 +21,7 @@ Deno.test("container-get: HEADs the container and reads the headers", async () =
   assertEquals(result.lastModified, "Tue, 19 Aug 2026 10:00:00 GMT");
 });
 
-Deno.test("container-get: absent public access means private", async () => {
+test("container-get: absent public access means private", async () => {
   const { ctx, logs } = mockCtx([properties({})], D);
   const result = await action.execute({ container: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(result.publicAccess, undefined);
@@ -28,7 +29,7 @@ Deno.test("container-get: absent public access means private", async () => {
   assertEquals(logs.length, 0);
 });
 
-Deno.test("container-get: a public container is flagged and warned about", async () => {
+test("container-get: a public container is flagged and warned about", async () => {
   const { ctx, logs } = mockCtx([properties({ "x-ms-blob-public-access": "container" })], D);
   const result = await action.execute({ container: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(result.isPublic, true);
@@ -36,7 +37,7 @@ Deno.test("container-get: a public container is flagged and warned about", async
 });
 
 /** The only thing in Azure Storage the account key cannot override. */
-Deno.test("container-get: immutability and legal hold are surfaced", async () => {
+test("container-get: immutability and legal hold are surfaced", async () => {
   const { ctx, logs } = mockCtx([properties({
     "x-ms-has-immutability-policy": "true",
     "x-ms-has-legal-hold": "true",
@@ -49,13 +50,13 @@ Deno.test("container-get: immutability and legal hold are surfaced", async () =>
 });
 
 /** HTTP header names are case-insensitive; Azure lowercases them. */
-Deno.test("container-get: metadata comes back with the prefix stripped", async () => {
+test("container-get: metadata comes back with the prefix stripped", async () => {
   const { ctx } = mockCtx([properties({ "x-ms-meta-owner": "platform" })], D);
   const result = await action.execute({ container: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(result.metadata, { owner: "platform" });
 });
 
-Deno.test("container-get: a name with capitals is refused before the request", async () => {
+test("container-get: a name with capitals is refused before the request", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {

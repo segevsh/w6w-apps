@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { alegraError, assertRejects, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POST /contacts nests address and sends types as an array", async () => {
+test("contact-create: POST /contacts nests address and sends types as an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "8", name: "Acrecer" } }]);
   const out = await contactCreate.execute({
     name: "Acrecer",
@@ -28,13 +29,13 @@ Deno.test("contact-create: POST /contacts nests address and sends types as an ar
   assertEquals(out, { id: "8", name: "Acrecer" });
 });
 
-Deno.test("contact-create: only the name is sent when nothing else is given", async () => {
+test("contact-create: only the name is sent when nothing else is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "8" } }]);
   await contactCreate.execute({ name: "Solo" }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "Solo" });
 });
 
-Deno.test("contact-create: additionalFields merge in, and a non-object is rejected", async () => {
+test("contact-create: additionalFields merge in, and a non-object is rejected", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "8" } }]);
   await contactCreate.execute({ name: "N", additionalFields: '{"giro":"retail"}' }, ctx);
   assertEquals(bodyOf(calls[0]).giro, "retail");
@@ -45,7 +46,7 @@ Deno.test("contact-create: additionalFields merge in, and a non-object is reject
   );
 });
 
-Deno.test("contact-create: a 400 surfaces the vendor message", async () => {
+test("contact-create: a 400 surfaces the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: alegraError(400, "ya existe") }]);
   await assertRejects(() => contactCreate.execute({ name: "N" }, ctx), Error, "ya existe");
 });

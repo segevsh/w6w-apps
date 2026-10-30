@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
 const conn = { display: { baseUrl: "https://search.example.com", indexUid: "movies" } };
 
-Deno.test("search: POSTs to the index's search endpoint", async () => {
+test("search: POSTs to the index's search endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { hits: [] } }], conn);
   await action.execute!({ q: "dune" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -20,7 +21,7 @@ Deno.test("search: POSTs to the index's search endpoint", async () => {
  * The spec names the body's fields in snake_case while naming the same fields
  * camelCase on the GET form. camelCase is what the engine takes.
  */
-Deno.test("search: sends camelCase field names, not the spec's snake_case", async () => {
+test("search: sends camelCase field names, not the spec's snake_case", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({
     q: "dune",
@@ -36,7 +37,7 @@ Deno.test("search: sends camelCase field names, not the spec's snake_case", asyn
   assertEquals(body.matching_strategy, undefined);
 });
 
-Deno.test("search: filters, sorts and facets reach the wire in their own shapes", async () => {
+test("search: filters, sorts and facets reach the wire in their own shapes", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({
     filter: "genres = horror AND rating > 8",
@@ -50,7 +51,7 @@ Deno.test("search: filters, sorts and facets reach the wire in their own shapes"
 });
 
 /** Exact counting switches Meilisearch to page-based paging. */
-Deno.test("search: Count Every Match swaps offset paging for page paging", async () => {
+test("search: Count Every Match swaps offset paging for page paging", async () => {
   const estimate = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ q: "x", limit: 10, offset: 20 }, estimate.ctx);
   const a = JSON.parse(estimate.calls[0].body!);
@@ -62,13 +63,13 @@ Deno.test("search: Count Every Match swaps offset paging for page paging", async
   assertEquals([b.hitsPerPage, b.page, b.limit, b.offset], [10, 3, undefined, undefined]);
 });
 
-Deno.test("search: additional parameters are merged into the body", async () => {
+test("search: additional parameters are merged into the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ q: "x", extra: '{"cropLength":40}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).cropLength, 40);
 });
 
-Deno.test("search: a non-object `extra` is refused before any request", async () => {
+test("search: a non-object `extra` is refused before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ q: "x", extra: "[1,2]" }, ctx),
@@ -78,13 +79,13 @@ Deno.test("search: a non-object `extra` is refused before any request", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("search: the index override beats the connection's default", async () => {
+test("search: the index override beats the connection's default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ q: "x", indexUid: "books" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/indexes/books/search");
 });
 
-Deno.test("search: with no index anywhere it says so before calling", async () => {
+test("search: with no index anywhere it says so before calling", async () => {
   const { ctx, calls } = mockCtx([], { display: { baseUrl: "https://x.com" } });
   await assertRejects(async () => await action.execute!({ q: "x" }, ctx), Error, "no index");
   assertEquals(calls.length, 0);

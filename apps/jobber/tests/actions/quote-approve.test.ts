@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/quote-approve.ts";
 
-Deno.test("quote-approve: the argument is plain `id`, not `quoteId`", async () => {
+test("quote-approve: the argument is plain `id`, not `quoteId`", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: { quoteApprove: { quote: { id: "q1", quoteStatus: "approved" }, userErrors: [] } },
@@ -14,7 +15,7 @@ Deno.test("quote-approve: the argument is plain `id`, not `quoteId`", async () =
   assertEquals(sent.variables, { id: "q1" });
 });
 
-Deno.test("quote-approve: does not convert the quote into a job", async () => {
+test("quote-approve: does not convert the quote into a job", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { quoteApprove: { quote: { id: "q1" }, userErrors: [] } } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("quote-approve: does not convert the quote into a job", async () => {
   assert(!JSON.parse(calls[0].body!).query.includes("jobCreate"));
 });
 
-Deno.test("quote-approve: an illegal transition throws", async () => {
+test("quote-approve: an illegal transition throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/take-screenshot.ts";
 
-Deno.test("take-screenshot: GETs /screenshot with the url query param", async () => {
+test("take-screenshot: GETs /screenshot with the url query param", async () => {
   const body = { url: "https://cdn.opq.to/x.png", width: 1280, height: 800 };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ url: "https://example.com" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("take-screenshot: GETs /screenshot with the url query param", async ()
   assertEquals(result, body);
 });
 
-Deno.test("take-screenshot: forwards screen/full/background/force as yes/no strings", async () => {
+test("take-screenshot: forwards screen/full/background/force as yes/no strings", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "x" } }]);
   await action.execute!(
     { url: "https://example.com", screen: "retina", full: true, background: false, force: true },
@@ -28,7 +29,7 @@ Deno.test("take-screenshot: forwards screen/full/background/force as yes/no stri
   assertEquals(url.searchParams.get("force"), "yes");
 });
 
-Deno.test("take-screenshot: omits force when false", async () => {
+test("take-screenshot: omits force when false", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "x" } }]);
   await action.execute!({ url: "https://example.com", force: false }, ctx);
   const url = new URL(calls[0].url);

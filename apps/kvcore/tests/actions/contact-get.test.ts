@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-get: fetches /contact/{id}", async () => {
+test("contact-get: fetches /contact/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 123, email: "test@test.com" } }]);
   const out = await contactGet.execute({ contact_id: "123" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("contact-get: fetches /contact/{id}", async () => {
   assertEquals(out, { id: 123, email: "test@test.com" });
 });
 
-Deno.test("contact-get: URL-encodes the contact id", async () => {
+test("contact-get: URL-encodes the contact id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await contactGet.execute({ contact_id: "abc/def" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/public/contact/abc%2Fdef");

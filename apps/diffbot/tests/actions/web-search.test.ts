@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/web-search.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("web-search: POSTs text as a one-element array to llm.diffbot.com", async () => {
+test("web-search: POSTs text as a one-element array to llm.diffbot.com", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       query: ["diffbot"],
@@ -23,7 +24,7 @@ Deno.test("web-search: POSTs text as a one-element array to llm.diffbot.com", as
   assertEquals(out.query, ["diffbot"]);
 });
 
-Deno.test("web-search: no results is count 0; the vendor's errors array is surfaced on 400/401", async () => {
+test("web-search: no results is count 0; the vendor's errors array is surfaced on 400/401", async () => {
   const none = mockCtx([{ body: { query: ["x"], search_results: [], timeMs: 3 } }]);
   assertEquals((await run(action, { text: "x" }, none.ctx)).count, 0);
 

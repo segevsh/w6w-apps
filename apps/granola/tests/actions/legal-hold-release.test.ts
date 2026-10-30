@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import legalHoldRelease from "../../actions/legal-hold-release.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("legal-hold-release: DELETEs and returns released_at", async () => {
+test("legal-hold-release: DELETEs and returns released_at", async () => {
   const body = {
     id: "lgh_x",
     object: "legal_hold",
@@ -15,7 +16,7 @@ Deno.test("legal-hold-release: DELETEs and returns released_at", async () => {
   assertEquals(pathOf(calls[0].url), "/v1/legal-holds/lgh_x");
 });
 
-Deno.test("legal-hold-release: is idempotent (vendor returns the original released_at)", async () => {
+test("legal-hold-release: is idempotent (vendor returns the original released_at)", async () => {
   assertEquals(legalHoldRelease.idempotent, true);
   const { ctx } = mockCtx([{ status: 404, body: { code: "NOT_FOUND", message: "none" } }]);
   await assertRejects(

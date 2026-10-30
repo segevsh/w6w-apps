@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-task-changes.ts";
 
-Deno.test("list-task-changes: opens a round at the list's tasks/delta", async () => {
+test("list-task-changes: opens a round at the list's tasks/delta", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute!({ taskList: "L=1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/todo/lists/L%3D1/tasks/delta");
   assertEquals([...new URL(calls[0].url).searchParams.keys()], []);
 });
 
-Deno.test("list-task-changes: forwards the OData params the delta function documents", async () => {
+test("list-task-changes: forwards the OData params the delta function documents", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute!({
     taskList: "L1",
@@ -29,7 +30,7 @@ Deno.test("list-task-changes: forwards the OData params the delta function docum
   assertEquals(calls[0].headers["prefer"], "odata.maxpagesize=2");
 });
 
-Deno.test("list-task-changes: a resumed link is replayed with nothing re-added", async () => {
+test("list-task-changes: a resumed link is replayed with nothing re-added", async () => {
   const delta = "https://graph.microsoft.com/v1.0/me/todo/lists/L1/tasks/delta?$deltatoken=tok";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute!({ taskList: "L1", deltaLink: delta, top: 99, maxPageSize: 3 }, ctx);
@@ -37,7 +38,7 @@ Deno.test("list-task-changes: a resumed link is replayed with nothing re-added",
   assertEquals(calls[0].headers["prefer"], undefined);
 });
 
-Deno.test("list-task-changes: nextLink takes precedence over deltaLink mid-round", async () => {
+test("list-task-changes: nextLink takes precedence over deltaLink mid-round", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/todo/lists/L1/tasks/delta?$skiptoken=s";
   const delta = "https://graph.microsoft.com/v1.0/me/todo/lists/L1/tasks/delta?$deltatoken=d";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);

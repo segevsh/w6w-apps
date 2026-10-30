@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-list.ts";
 
-Deno.test("account-list: lists accounts, trashed ones only when asked", async () => {
+test("account-list: lists accounts, trashed ones only when asked", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { accounts: [{ name: "accounts/1" }] } },
     { status: 200, body: { accounts: [] } },

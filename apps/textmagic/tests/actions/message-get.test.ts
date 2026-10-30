@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageGet from "../../actions/message-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-get: GETs /messages/{id}", async () => {
+test("message-get: GETs /messages/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 4991, status: "d", text: "I love Textmagic!" } }]);
   const out = await messageGet.execute({ id: 4991 }, ctx);
 

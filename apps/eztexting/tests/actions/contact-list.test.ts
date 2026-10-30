@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: calls GET /contacts and returns the documented shape", async () => {
+test("contact-list: calls GET /contacts and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ phoneNumber: "2125551234" }]) }]);
   const result = await contactList.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("contact-list: calls GET /contacts and returns the documented shape", 
   });
 });
 
-Deno.test("contact-list: carries no credential — auth is the sign hook's job", async () => {
+test("contact-list: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ phoneNumber: "2125551234" }]) }]);
   await contactList.execute(
     {

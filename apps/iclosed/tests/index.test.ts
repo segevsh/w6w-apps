@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 36;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 3);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,14 +32,14 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
 /** iClosed accepts no idempotency key, so a retried create writes twice. */
-Deno.test("index: no creating action is marked idempotent", () => {
+test("index: no creating action is marked idempotent", () => {
   for (
     const key of [
       "contact-create",
@@ -53,22 +55,22 @@ Deno.test("index: no creating action is marked idempotent", () => {
   }
 });
 
-Deno.test("index: no action carries credentials or the global fetch", async () => {
+test("index: no action carries credentials or the global fetch", async () => {
   for (const a of app.actions) {
-    const src = await Deno.readTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${a.key}.ts`, import.meta.url));
     assert(!/authorization/i.test(src), `${a.key}: mentions authorization`);
     assert(!/(^|[^.\w])fetch\(/.test(src), `${a.key}: global fetch`);
   }
 });
 
-Deno.test("index: the manifest allows exactly the API host", async () => {
+test("index: the manifest allows exactly the API host", async () => {
   const pkg = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   );
   assertEquals(pkg.w6w.network.allow, ["public.api.iclosed.io"]);
 });
 
-Deno.test("index: the quota check is a declared absence at informational severity", () => {
+test("index: the quota check is a declared absence at informational severity", () => {
   const quota = app.healthChecks.find((h) => h.key === "quota");
   assertEquals(quota?.severity, "informational");
   assert(quota?.unavailable?.reason);

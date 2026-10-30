@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/job-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("job-search: sends the mapped query and shapes the output", async () => {
+test("job-search: sends the mapped query and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "job": [{ "job_title": "Engineer" }],
@@ -27,13 +28,13 @@ Deno.test("job-search: sends the mapped query and shapes the output", async () =
   assertEquals(out, { "jobs": [{ "job_title": "Engineer" }], "nextPagination": "tok=" });
 });
 
-Deno.test("job-search: unset fields are not sent", async () => {
+test("job-search: unset fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({} as never, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("job-search: a rejected key surfaces the vendor description", async () => {
+test("job-search: a rejected key surfaces the vendor description", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: 401, description: "Invalid API key", name: "Unauthorized" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/extract-text.ts";
 
-Deno.test("extract-text: POSTs /v1/ocr with defaults (document_url, mistral-ocr-latest)", async () => {
+test("extract-text: POSTs /v1/ocr with defaults (document_url, mistral-ocr-latest)", async () => {
   const { ctx, calls } = mockCtx([
     { body: { pages: [{ index: 0, markdown: "hello", images: [] }] } },
   ]);
@@ -24,7 +25,7 @@ Deno.test("extract-text: POSTs /v1/ocr with defaults (document_url, mistral-ocr-
   assertEquals(out.pageCount, 1);
 });
 
-Deno.test("extract-text: image_url mode omits document_name and uses image_url key", async () => {
+test("extract-text: image_url mode omits document_name and uses image_url key", async () => {
   const { ctx, calls } = mockCtx([{ body: { pages: [] } }]);
   await action.execute!(
     {
@@ -40,7 +41,7 @@ Deno.test("extract-text: image_url mode omits document_name and uses image_url k
   });
 });
 
-Deno.test("extract-text: document_url mode includes document_name when provided", async () => {
+test("extract-text: document_url mode includes document_name when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { pages: [] } }]);
   await action.execute!(
     {
@@ -60,7 +61,7 @@ Deno.test("extract-text: document_url mode includes document_name when provided"
   });
 });
 
-Deno.test("extract-text: joins page markdown with double newlines", async () => {
+test("extract-text: joins page markdown with double newlines", async () => {
   const { ctx } = mockCtx([
     {
       body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-delete.ts";
 
-Deno.test("message-delete: POSTs deleteMessage and returns the boolean result", async () => {
+test("message-delete: POSTs deleteMessage and returns the boolean result", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, result: true } }]);
   const out = await action.execute({ chatId: "1", messageId: 11 }, ctx);
   assertEquals(out, true);

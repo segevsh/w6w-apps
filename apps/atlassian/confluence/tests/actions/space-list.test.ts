@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/space-list.ts";
 
 const display = { site: "acme" };
 
-Deno.test("space-list: filters by the human-facing space keys", async () => {
+test("space-list: filters by the human-facing space keys", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { results: [{ id: "101", key: "ENG" }], _links: {} },
@@ -17,7 +18,7 @@ Deno.test("space-list: filters by the human-facing space keys", async () => {
   assertEquals(result, [{ id: "101", key: "ENG" }]);
 });
 
-Deno.test("space-list: returnAll walks every page", async () => {
+test("space-list: returnAll walks every page", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

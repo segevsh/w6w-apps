@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pageEnvelope } from "../_helpers.ts";
 import action from "../../actions/customers-list.ts";
 
 const sample = pageEnvelope([{ id: 12, object: "customer" }], 1);
 
-Deno.test("customers-list: reads /customers and passes its filters through", async () => {
+test("customers-list: reads /customers and passes its filters through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({
     status: "active",
@@ -39,7 +40,7 @@ Deno.test("customers-list: reads /customers and passes its filters through", asy
   assertEquals(result.results.length, 1);
 });
 
-Deno.test("customers-list: unset filters are not sent", async () => {
+test("customers-list: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -47,7 +48,7 @@ Deno.test("customers-list: unset filters are not sent", async () => {
 });
 
 /** TeamUp's page_size default is also its ceiling. */
-Deno.test("customers-list: declares the documented page size ceiling", () => {
+test("customers-list: declares the documented page size ceiling", () => {
   const pageSize = action.params!.find((p) => p.key === "page_size")!;
   assertEquals(pageSize.default, 100);
   assertEquals(pageSize.validation?.max, 100);

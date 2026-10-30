@@ -1,9 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import lyroDataSourceList from "../../actions/lyro-data-source-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("lyro-data-source-list: GET /lyro/data-sources", async () => {
+test("lyro-data-source-list: GET /lyro/data-sources", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -40,7 +41,7 @@ Deno.test("lyro-data-source-list: GET /lyro/data-sources", async () => {
   assertEquals(items[0].id, "s1");
 });
 
-Deno.test("lyro-data-source-list: a vendor error surfaces its code and message", async () => {
+test("lyro-data-source-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ code: "not_found", message: "Nope" }] },

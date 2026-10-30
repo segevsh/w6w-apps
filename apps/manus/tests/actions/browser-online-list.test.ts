@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import browserOnlineList from "../../actions/browser-online-list.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("browser-online-list: gets /v2/browser.onlineList and returns the array unwrapped", async () => {
+test("browser-online-list: gets /v2/browser.onlineList and returns the array unwrapped", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({ data: [{ client_id: "c1", client_name: "Chrome" }] }),
   }]);

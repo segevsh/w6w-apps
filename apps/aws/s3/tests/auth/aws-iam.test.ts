@@ -1,4 +1,5 @@
-import { assertEquals, assertMatch } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/aws-iam.ts";
 
@@ -8,7 +9,7 @@ const CREDENTIAL = {
   region: "us-east-1",
 };
 
-Deno.test("aws-iam: sign() adds a well-formed SigV4 Authorization header", async () => {
+test("aws-iam: sign() adds a well-formed SigV4 Authorization header", async () => {
   const request = { url: "https://s3.us-east-1.amazonaws.com/", method: "GET", headers: {} };
   const signed = await auth.sign!({ request, credential: CREDENTIAL }, mockCtx().ctx);
 
@@ -24,14 +25,14 @@ Deno.test("aws-iam: sign() adds a well-formed SigV4 Authorization header", async
   assertMatch(signed.headers["x-amz-date"], /^\d{8}T\d{6}Z$/);
 });
 
-Deno.test("aws-iam: sign() never touches the network (no ctx.fetch call recorded)", async () => {
+test("aws-iam: sign() never touches the network (no ctx.fetch call recorded)", async () => {
   const { ctx, calls } = mockCtx([]);
   const request = { url: "https://s3.us-east-1.amazonaws.com/", method: "GET", headers: {} };
   await auth.sign!({ request, credential: CREDENTIAL }, ctx);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("aws-iam: test() calls ListBuckets on the credential's region host", async () => {
+test("aws-iam: test() calls ListBuckets on the credential's region host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: "<ListAllMyBucketsResult></ListAllMyBucketsResult>",
@@ -42,7 +43,7 @@ Deno.test("aws-iam: test() calls ListBuckets on the credential's region host", a
   assertEquals(result, { ok: true });
 });
 
-Deno.test("aws-iam: test() surfaces the S3 error message on failure", async () => {
+test("aws-iam: test() surfaces the S3 error message on failure", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,
@@ -54,7 +55,7 @@ Deno.test("aws-iam: test() surfaces the S3 error message on failure", async () =
   assertMatch(result.message ?? "", /bad key/);
 });
 
-Deno.test("aws-iam: afterConnect echoes the region for actions to read", () => {
+test("aws-iam: afterConnect echoes the region for actions to read", () => {
   const display = auth.afterConnect!({ credential: CREDENTIAL }, mockCtx().ctx);
   assertEquals(display, { region: "us-east-1" });
 });

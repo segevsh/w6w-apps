@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("service: declares the status-page ABSENCE rather than probing an invented URL", () => {
+test("service: declares the status-page ABSENCE rather than probing an invented URL", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined, "a declared absence must not carry a probe");
@@ -12,7 +13,7 @@ Deno.test("service: declares the status-page ABSENCE rather than probing an inve
   assertEquals(service.covers, ["*"]);
 });
 
-Deno.test("service: the reason records both dead status hosts by name", () => {
+test("service: the reason records both dead status hosts by name", () => {
   const reason = service.unavailable!.reason;
   assert(reason.includes("status.hostaway.com"), "must name the non-resolving host");
   assert(reason.includes("hostaway.statuspage.io"), "must name the unclaimed subdomain");
@@ -20,7 +21,7 @@ Deno.test("service: the reason records both dead status hosts by name", () => {
   assert(/informational|users\?limit=1/i.test(reason), "must point at what does answer");
 });
 
-Deno.test("quota: declares that Hostaway publishes headroom only on a 429", () => {
+test("quota: declares that Hostaway publishes headroom only on a 429", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);

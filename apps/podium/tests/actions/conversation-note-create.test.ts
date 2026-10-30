@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import conversationNoteCreate from "../../actions/conversation-note-create.ts";
 
-Deno.test("conversation-note-create: sends every documented field in its documented place", async () => {
+test("conversation-note-create: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -23,7 +24,7 @@ Deno.test("conversation-note-create: sends every documented field in its documen
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("conversation-note-create: declares its params and kind", () => {
+test("conversation-note-create: declares its params and kind", () => {
   assertEquals((conversationNoteCreate.params ?? []).map((p) => p.key), [
     "uid",
     "body",

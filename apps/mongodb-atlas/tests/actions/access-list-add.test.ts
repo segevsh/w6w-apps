@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/access-list-add.ts";
 
 const added = { status: 201, body: { results: [{ cidrBlock: "203.0.113.0/24" }] } };
 
 /** The request body is the array itself, not an object wrapping it. */
-Deno.test("access-list-add: posts a bare array of entries", async () => {
+test("access-list-add: posts a bare array of entries", async () => {
   const { ctx, calls } = mockCtx([added]);
   await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", value: "203.0.113.0/24", comment: "office" },
@@ -18,7 +19,7 @@ Deno.test("access-list-add: posts a bare array of entries", async () => {
 });
 
 /** A CIDR block and a bare address go in different fields. */
-Deno.test("access-list-add: a bare address uses ipAddress, a block uses cidrBlock", async () => {
+test("access-list-add: a bare address uses ipAddress, a block uses cidrBlock", async () => {
   const single = mockCtx([added]);
   await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", value: "198.51.100.7", comment: "ci" },
@@ -30,7 +31,7 @@ Deno.test("access-list-add: a bare address uses ipAddress, a block uses cidrBloc
 });
 
 /** One character's difference from adding a single office IP. */
-Deno.test("access-list-add: 0.0.0.0/0 needs an explicit acknowledgement", async () => {
+test("access-list-add: 0.0.0.0/0 needs an explicit acknowledgement", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -46,7 +47,7 @@ Deno.test("access-list-add: 0.0.0.0/0 needs an explicit acknowledgement", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-list-add: an acknowledged 0.0.0.0/0 goes through and warns", async () => {
+test("access-list-add: an acknowledged 0.0.0.0/0 goes through and warns", async () => {
   const { ctx, logs } = mockCtx([added]);
   const result = await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -60,7 +61,7 @@ Deno.test("access-list-add: an acknowledged 0.0.0.0/0 goes through and warns", a
 });
 
 /** Nothing else will remember to remove what a workflow added. */
-Deno.test("access-list-add: an entry with no expiry is warned about", async () => {
+test("access-list-add: an entry with no expiry is warned about", async () => {
   const forever = mockCtx([added]);
   await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", value: "203.0.113.0/24", comment: "office" },
@@ -82,7 +83,7 @@ Deno.test("access-list-add: an entry with no expiry is warned about", async () =
 });
 
 /** An access list of unexplained CIDR blocks can never be pruned. */
-Deno.test("access-list-add: a comment is required", async () => {
+test("access-list-add: a comment is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -95,7 +96,7 @@ Deno.test("access-list-add: a comment is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-list-add: a value is required", async () => {
+test("access-list-add: a value is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -108,7 +109,7 @@ Deno.test("access-list-add: a value is required", async () => {
 });
 
 /** There is no per-cluster access list. */
-Deno.test("access-list-add: says the entry covers every cluster in the project", () => {
+test("access-list-add: says the entry covers every cluster in the project", () => {
   assert(/ALL of them, present and\s+future/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

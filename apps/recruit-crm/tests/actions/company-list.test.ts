@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/company-list.ts";
 import { mockCtx, paginator, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("company-list: GETs /companies with page and limit and folds the paginator", async () => {
+test("company-list: GETs /companies with page and limit and folds the paginator", async () => {
   const { ctx, calls } = mockCtx([{
     body: paginator([{ slug: "1" }, { slug: "2" }], "https://x/next"),
   }]);
@@ -15,7 +16,7 @@ Deno.test("company-list: GETs /companies with page and limit and folds the pagin
   assertEquals(out.currentPage, 1);
 });
 
-Deno.test("company-list: last page reports hasMore false and unset params are not sent", async () => {
+test("company-list: last page reports hasMore false and unset params are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([]) }]);
   const out = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://api.recruitcrm.io/v1/companies");
@@ -23,7 +24,7 @@ Deno.test("company-list: last page reports hasMore false and unset params are no
   assertEquals(out.items, []);
 });
 
-Deno.test("company-list: a vendor error surfaces with its own text", async () => {
+test("company-list: a vendor error surfaces with its own text", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Unauthorized" } }]);
   let msg = "";
   try {

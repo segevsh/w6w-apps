@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import searchGammas from "../../actions/search-gammas.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search-gammas: calls GET /gammas/search with the query", async () => {
+test("search-gammas: calls GET /gammas/search with the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { hits: [] } }]);
   await searchGammas.execute({ q: "roadmap", limit: 10 }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("search-gammas: calls GET /gammas/search with the query", async () => 
  * access hasn't been enabled for you yet" — a genuinely different problem
  * from a bad key, and the body carries the vendor's own explanation.
  */
-Deno.test("search-gammas: a 403 surfaces the vendor's not-enabled message, not a generic string", async () => {
+test("search-gammas: a 403 surfaces the vendor's not-enabled message, not a generic string", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody("Search is not enabled for this workspace yet.", 403) },
   ]);

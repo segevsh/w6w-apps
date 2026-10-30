@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -10,30 +11,30 @@ const summary = (indicator: string, components: unknown[] = []) => ({
   },
 });
 
-Deno.test("service: declared as an unsigned, app-scoped vendor check", () => {
+test("service: declared as an unsigned, app-scoped vendor check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
   // No credential posture declared => `none`, so it reports before anyone connects.
   assertEquals(service.credential, undefined);
 });
 
-Deno.test("service: widens egress for the status host only", () => {
+test("service: widens egress for the status host only", () => {
   assertEquals(service.network?.allow, ["status.mailjet.com"]);
 });
 
-Deno.test("service: probes summary.json for the per-component breakdown", async () => {
+test("service: probes summary.json for the per-component breakdown", async () => {
   const { ctx, calls } = mockCtx([summary("none")]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.mailjet.com/api/v2/summary.json");
 });
 
-Deno.test("service: sends no Authorization to a third-party status host", async () => {
+test("service: sends no Authorization to a third-party status host", async () => {
   const { ctx, calls } = mockCtx([summary("none")]);
   await service.check!({}, ctx);
   assert(!("authorization" in calls[0].headers), "status probe must stay unsigned");
 });
 
-Deno.test("service: maps the four Statuspage indicators", async () => {
+test("service: maps the four Statuspage indicators", async () => {
   for (
     const [indicator, expected] of Object.entries({
       none: "ok",
@@ -48,12 +49,12 @@ Deno.test("service: maps the four Statuspage indicators", async () => {
   }
 });
 
-Deno.test("service: an unrecognised indicator is unknown, not ok", async () => {
+test("service: an unrecognised indicator is unknown, not ok", async () => {
   const { ctx } = mockCtx([summary("something-new")]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: reports each component under a slugged id", async () => {
+test("service: reports each component under a slugged id", async () => {
   const { ctx } = mockCtx([summary("minor", [
     { name: "Mailjet App", status: "operational" },
     { name: "Send API", status: "degraded_performance" },
@@ -67,7 +68,7 @@ Deno.test("service: reports each component under a slugged id", async () => {
   });
 });
 
-Deno.test("service: skips group headers, which only restate their children", async () => {
+test("service: skips group headers, which only restate their children", async () => {
   const { ctx } = mockCtx([summary("none", [
     { name: "APIs", status: "operational", group: true },
     { name: "Send API", status: "operational" },
@@ -76,7 +77,7 @@ Deno.test("service: skips group headers, which only restate their children", asy
   assertEquals(Object.keys(report.components ?? {}), ["send-api"]);
 });
 
-Deno.test("service: a failing status page is unknown, never down", async () => {
+test("service: a failing status page is unknown, never down", async () => {
   // A status page that itself 500s tells us nothing about Mailjet; calling that
   // an outage would be a lie.
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
@@ -85,7 +86,7 @@ Deno.test("service: a failing status page is unknown, never down", async () => {
   assert(report.message?.includes("503"), report.message);
 });
 
-Deno.test("service: a 200 with unparseable JSON degrades to unknown rather than throwing", async () => {
+test("service: a 200 with unparseable JSON degrades to unknown rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>oh no</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

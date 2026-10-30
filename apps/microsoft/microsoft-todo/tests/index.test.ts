@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import { API_URL } from "../lib/client.ts";
 
-Deno.test("index: exports the full action set with unique kebab-case keys", () => {
+test("index: exports the full action set with unique kebab-case keys", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys, [
     "list-task-lists",
@@ -29,7 +30,7 @@ Deno.test("index: exports the full action set with unique kebab-case keys", () =
   for (const k of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(k), `${k} is not kebab-case`);
 });
 
-Deno.test("index: every action declares a valid type, description, params and output", () => {
+test("index: every action declares a valid type, description, params and output", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key} has type ${a.type}`);
     assert(a.title, `${a.key} has no title`);
@@ -40,7 +41,7 @@ Deno.test("index: every action declares a valid type, description, params and ou
   }
 });
 
-Deno.test("index: every param has a unique key and a label", () => {
+test("index: every param has a unique key and a label", () => {
   for (const a of app.actions) {
     const keys = a.params!.map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${a.key} has duplicate param keys`);
@@ -48,7 +49,7 @@ Deno.test("index: every param has a unique key and a label", () => {
   }
 });
 
-Deno.test("index: every action is grouped under one of the four To Do resources", () => {
+test("index: every action is grouped under one of the four To Do resources", () => {
   const resources = new Set(app.actions.map((a) => a.resource));
   assertEquals([...resources].sort(), [
     "checklist-item",
@@ -58,7 +59,7 @@ Deno.test("index: every action is grouped under one of the four To Do resources"
   ]);
 });
 
-Deno.test("index: every perform action declares idempotent honestly", () => {
+test("index: every perform action declares idempotent honestly", () => {
   for (const a of app.actions.filter((x) => x.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -74,7 +75,7 @@ Deno.test("index: every perform action declares idempotent honestly", () => {
   ]);
 });
 
-Deno.test("index: every task-scoped action requires a task list id", () => {
+test("index: every task-scoped action requires a task list id", () => {
   const listless = new Set(["list-task-lists", "create-task-list", "list-task-list-changes"]);
   for (const a of app.actions) {
     if (listless.has(a.key)) continue;
@@ -83,7 +84,7 @@ Deno.test("index: every task-scoped action requires a task list id", () => {
   }
 });
 
-Deno.test("index: exports oauth2 as the only auth method, with sign and test", () => {
+test("index: exports oauth2 as the only auth method, with sign and test", () => {
   assertEquals(app.auth.map((a) => a.key), ["oauth2"]);
   assertEquals(app.auth[0].type, "oauth2");
   assertEquals(typeof app.auth[0].test, "function");
@@ -92,11 +93,11 @@ Deno.test("index: exports oauth2 as the only auth method, with sign and test", (
   assertEquals(app.auth[0].fields, undefined);
 });
 
-Deno.test("index: exports the service and quota health checks", () => {
+test("index: exports the service and quota health checks", () => {
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: the base is Graph v1.0 — no action reaches for beta", () => {
+test("index: the base is Graph v1.0 — no action reaches for beta", () => {
   assertEquals(API_URL, "https://graph.microsoft.com/v1.0");
   assert(!API_URL.includes("beta"));
 });

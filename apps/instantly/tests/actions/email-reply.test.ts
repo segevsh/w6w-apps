@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import emailReply from "../../actions/email-reply.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-reply: POSTs /emails/reply with reply_to_uuid (not reyply_to_uuid)", async () => {
+test("email-reply: POSTs /emails/reply with reply_to_uuid (not reyply_to_uuid)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e2" } }]);
   const out = await emailReply.execute(
     { eaccount: "a@b.com", reply_to_uuid: "e1", subject: "Re: Hi", html: "Hello<br/>" },
@@ -18,7 +19,7 @@ Deno.test("email-reply: POSTs /emails/reply with reply_to_uuid (not reyply_to_uu
   assertEquals(out.id, "e2");
 });
 
-Deno.test("email-reply: additional_recipients accepts a comma string", async () => {
+test("email-reply: additional_recipients accepts a comma string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await emailReply.execute(
     {
@@ -32,6 +33,6 @@ Deno.test("email-reply: additional_recipients accepts a comma string", async () 
   assertEquals(JSON.parse(calls[0].body!).additional_recipients, ["x@y.com", "z@y.com"]);
 });
 
-Deno.test("email-reply: is declared non-idempotent", () => {
+test("email-reply: is declared non-idempotent", () => {
   assertEquals(emailReply.idempotent, false);
 });

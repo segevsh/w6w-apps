@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/person-custom-fields-list.ts";
 import { NETWORK_PLACEHOLDER } from "../../lib/client.ts";
 
-Deno.test("person-custom-fields-list: GETs the group's person custom fields", async () => {
+test("person-custom-fields-list: GETs the group's person custom fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{
       id: "cf1",

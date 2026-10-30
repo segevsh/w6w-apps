@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: signed, connection-scoped, informational, with no extra network.allow", () => {
+test("quota: signed, connection-scoped, informational, with no extra network.allow", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.credential, "signed");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: reports the balance as the remaining amount", async () => {
+test("quota: reports the balance as the remaining amount", async () => {
   const { ctx, calls } = mockCtx([{ body: { amount: 12.35, currency: "EUR" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/balance");
@@ -17,7 +18,7 @@ Deno.test("quota: reports the balance as the remaining amount", async () => {
   assertEquals(report.quota?.[0], { id: "balance", remaining: 12.35, unit: "EUR" });
 });
 
-Deno.test("quota: an empty balance is down; a refusal (bare 900) or odd body is unknown", async () => {
+test("quota: an empty balance is down; a refusal (bare 900) or odd body is unknown", async () => {
   const empty = await quota.check!({}, mockCtx([{ body: { amount: 0, currency: "EUR" } }]).ctx);
   assertEquals(empty.state, "down");
   assertEquals((await quota.check!({}, mockCtx([{ body: '"900"' }]).ctx)).state, "unknown");

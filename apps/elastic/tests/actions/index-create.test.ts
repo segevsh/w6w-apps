@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-create.ts";
 
 const display = { endpoint: "https://example.com:9200" };
 
-Deno.test("index-create: PUTs /<index> with no body when nothing is configured", async () => {
+test("index-create: PUTs /<index> with no body when nothing is configured", async () => {
   const { ctx, calls } = mockCtx([{ body: { acknowledged: true } }], { display });
   const result = await action.execute({ index: "my-index" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -13,7 +14,7 @@ Deno.test("index-create: PUTs /<index> with no body when nothing is configured",
   assertEquals(result, { acknowledged: true });
 });
 
-Deno.test("index-create: includes mappings/settings/aliases when given", async () => {
+test("index-create: includes mappings/settings/aliases when given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute(
     {

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import mergeTagAdd from "../../actions/merge-tag-add.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("merge-tag-add: POST /api/1/addMergeTag/ with the documented form fields", async () => {
+test("merge-tag-add: POST /api/1/addMergeTag/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const out = await mergeTagAdd.execute(
     { "list_id": 7, "field_name": "Plan", "field_type": "text" } as never,
@@ -19,7 +20,7 @@ Deno.test("merge-tag-add: POST /api/1/addMergeTag/ with the documented form fiel
   assertEquals(out, { ok: true });
 });
 
-Deno.test("merge-tag-add: a vendor error surfaces its status and body", async () => {
+test("merge-tag-add: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await mergeTagAdd.execute(
@@ -31,7 +32,7 @@ Deno.test("merge-tag-add: a vendor error surfaces its status and body", async ()
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("merge-tag-add: an empty list_id fails before any request", async () => {
+test("merge-tag-add: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

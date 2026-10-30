@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-get-sequence.ts";
 
-Deno.test("campaign-get-sequence: the campaign id is a query parameter", async () => {
+test("campaign-get-sequence: the campaign id is a query parameter", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { nodeType: "MESSAGE", actionDelay: 3, actionDelayUnit: "HOUR" },
@@ -17,7 +18,7 @@ Deno.test("campaign-get-sequence: the campaign id is a query parameter", async (
 });
 
 /** A campaign with no sequence answers an EMPTY 200, so the result is undefined. */
-Deno.test("campaign-get-sequence: an empty 200 is undefined, not an error", async () => {
+test("campaign-get-sequence: an empty 200 is undefined, not an error", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   assertEquals(await action.execute!({ campaignId: 5 }, ctx), undefined);
 });

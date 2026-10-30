@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/timeslip-list.ts";
 
-Deno.test("timeslip-list: GETs /timeslips, turning user/task/project ids into full resource URLs", async () => {
+test("timeslip-list: GETs /timeslips, turning user/task/project ids into full resource URLs", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ body: { timeslips: [] } }]);
   await action.execute({ userId: "1", taskId: "2", projectId: "3" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,5 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import { mockCtx } from "../_helpers.ts";
 import auth, { basicHeader } from "../../auth/api-key.ts";
 
@@ -22,7 +23,7 @@ const configBody = (version = "v2") => ({
  * and every curl sample in the reference writes `-u {site_api_key}:` with the
  * bare trailing colon. That colon is the whole subtlety.
  */
-Deno.test("api-key: the encoded payload is `key:` — key as username, EMPTY password", () => {
+test("api-key: the encoded payload is `key:` — key as username, EMPTY password", () => {
   const decoded = atob(basicHeader(cred.apiKey).slice("Basic ".length));
   assertEquals(decoded, "live_testkey123:");
   // The colon must be present and must be LAST: everything after it is the
@@ -31,13 +32,13 @@ Deno.test("api-key: the encoded payload is `key:` — key as username, EMPTY pas
   assertEquals(decoded.split(":")[1], "");
 });
 
-Deno.test("api-key: base64 of `key` WITHOUT the trailing colon is a different, wrong header", () => {
+test("api-key: base64 of `key` WITHOUT the trailing colon is a different, wrong header", () => {
   // Guards the single most likely regression: dropping the colon still produces
   // a syntactically valid Basic header, which Chargebee rejects with a 401.
   assert(basicHeader(cred.apiKey) !== `Basic ${encodeBase64(cred.apiKey)}`);
 });
 
-Deno.test("api-key: reproduces base64(`key:`) for a known vector", () => {
+test("api-key: reproduces base64(`key:`) for a known vector", () => {
   // `test_key:` -> dGVzdF9rZXk6
   assertEquals(basicHeader("test_key"), "Basic dGVzdF9rZXk6");
   assertEquals(atob("dGVzdF9rZXk6"), "test_key:");
@@ -45,7 +46,7 @@ Deno.test("api-key: reproduces base64(`key:`) for a known vector", () => {
 
 // ----------------------------------------------------------------- declaration --
 
-Deno.test("api-key: declares the site plus one secret field, and the basic wire type", () => {
+test("api-key: declares the site plus one secret field, and the basic wire type", () => {
   assertEquals(auth.key, "api-key");
   // Basic is genuinely what goes over the wire, even though the credential is an
   // API key — `ApiKeyConfig` cannot express base64(`key:`).
@@ -61,14 +62,14 @@ Deno.test("api-key: declares the site plus one secret field, and the basic wire 
   assertEquals(fields.length, 2);
 });
 
-Deno.test("api-key: the site field explains that a test site is a separate site", () => {
+test("api-key: the site field explains that a test site is a separate site", () => {
   const site = (auth.fields ?? []).find((f) => f.key === "site")!;
   assert(/-test/.test(site.hint ?? ""), "site hint should name the `-test` convention");
 });
 
 // ------------------------------------------------------------------------ sign --
 
-Deno.test("api-key: sign stamps the Basic header and returns the request", async () => {
+test("api-key: sign stamps the Basic header and returns the request", async () => {
   const request = {
     url: "https://x",
     method: "GET" as const,
@@ -78,7 +79,7 @@ Deno.test("api-key: sign stamps the Basic header and returns the request", async
   assertEquals(out.headers["authorization"], expected);
 });
 
-Deno.test("api-key: sign makes no network call", async () => {
+test("api-key: sign makes no network call", async () => {
   const { ctx, calls } = mockCtx();
   await auth.sign!(
     { request: { url: "https://x", method: "GET", headers: {} }, credential: cred },
@@ -89,7 +90,7 @@ Deno.test("api-key: sign makes no network call", async () => {
 
 // ------------------------------------------------------------------------ test --
 
-Deno.test("api-key: test probes GET /configurations on the connection's own site", async () => {
+test("api-key: test probes GET /configurations on the connection's own site", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: configBody() }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, true);
@@ -97,13 +98,13 @@ Deno.test("api-key: test probes GET /configurations on the connection's own site
   assertEquals(calls[0].headers["authorization"], expected);
 });
 
-Deno.test("api-key: test hits the site the credential names, not a fixed host", async () => {
+test("api-key: test hits the site the credential names, not a fixed host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: configBody() }]);
   await auth.test({ credential: { site: "other-test", apiKey: "k" } }, ctx);
   assertEquals(calls[0].url, "https://other-test.chargebee.com/api/v2/configurations");
 });
 
-Deno.test("api-key: test accepts a pasted base URL as the site", async () => {
+test("api-key: test accepts a pasted base URL as the site", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: configBody() }]);
   await auth.test(
     { credential: { site: "https://acme.chargebee.com/api/v2", apiKey: "k" } },
@@ -112,7 +113,7 @@ Deno.test("api-key: test accepts a pasted base URL as the site", async () => {
   assertEquals(calls[0].url, CONFIG_URL);
 });
 
-Deno.test("api-key: test fails without a network call when a field is missing", async () => {
+test("api-key: test fails without a network call when a field is missing", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test({ credential: {} }, ctx)).ok, false);
   assertEquals((await auth.test({ credential: { site: "acme" } }, ctx)).ok, false);
@@ -120,7 +121,7 @@ Deno.test("api-key: test fails without a network call when a field is missing", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test rejects a site name that is not a single label, without calling out", async () => {
+test("api-key: test rejects a site name that is not a single label, without calling out", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { site: "evil.example.com", apiKey: "k" } }, ctx);
   assertEquals(result.ok, false);
@@ -128,14 +129,14 @@ Deno.test("api-key: test rejects a site name that is not a single label, without
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test reports a 401 as a rejected key", async () => {
+test("api-key: test reports a 401 as a rejected key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "unauthorized" } }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: test reports a 404 as a wrong site name, not a bad key", async () => {
+test("api-key: test reports a 404 as a wrong site name, not a bad key", async () => {
   // The two failures look identical to a user and have completely different fixes.
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const result = await auth.test({ credential: { site: "nosuch", apiKey: "k" } }, ctx);
@@ -144,21 +145,21 @@ Deno.test("api-key: test reports a 404 as a wrong site name, not a bad key", asy
   assert(/site name/i.test(result.message ?? ""));
 });
 
-Deno.test("api-key: test surfaces Chargebee's own message on other failures", async () => {
+test("api-key: test surfaces Chargebee's own message on other failures", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Sorry, The request is blocked" } }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assertEquals(result.message, "Sorry, The request is blocked");
 });
 
-Deno.test("api-key: test falls back to the status when the error body is not JSON", async () => {
+test("api-key: test falls back to the status when the error body is not JSON", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "<html>oops</html>" }]);
   const result = await auth.test({ credential: cred }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("500"));
 });
 
-Deno.test("api-key: test connects a Product Catalog 1.0 site but says what will not work", async () => {
+test("api-key: test connects a Product Catalog 1.0 site but says what will not work", async () => {
   // Half this App's surface does not exist on PC 1.0; a 404 much later is a
   // worse answer than a sentence now.
   const { ctx } = mockCtx([{ status: 200, body: configBody("v1") }]);
@@ -168,14 +169,14 @@ Deno.test("api-key: test connects a Product Catalog 1.0 site but says what will 
   assert(/subscription and catalog actions/i.test(result.message ?? ""));
 });
 
-Deno.test("api-key: test says nothing extra on a Product Catalog 2.0 site", async () => {
+test("api-key: test says nothing extra on a Product Catalog 2.0 site", async () => {
   const { ctx } = mockCtx([{ status: 200, body: configBody("v2") }]);
   assertEquals(await auth.test({ credential: cred }, ctx), { ok: true });
 });
 
 // ---------------------------------------------------------------- afterConnect --
 
-Deno.test("afterConnect: publishes site, domain and catalog version — never the key", async () => {
+test("afterConnect: publishes site, domain and catalog version — never the key", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: configBody("v2") }]);
   const display = await auth.afterConnect!({ credential: cred }, ctx) as Record<string, unknown>;
 
@@ -187,7 +188,7 @@ Deno.test("afterConnect: publishes site, domain and catalog version — never th
   assertEquals(JSON.stringify(display).includes(cred.apiKey), false);
 });
 
-Deno.test("afterConnect: normalises a pasted URL down to the bare site name", async () => {
+test("afterConnect: normalises a pasted URL down to the bare site name", async () => {
   const { ctx } = mockCtx([{ status: 200, body: configBody() }]);
   const display = await auth.afterConnect!(
     { credential: { site: "https://acme-test.chargebee.com/api/v2", apiKey: "k" } },
@@ -196,7 +197,7 @@ Deno.test("afterConnect: normalises a pasted URL down to the bare site name", as
   assertEquals(display.site, "acme-test");
 });
 
-Deno.test("afterConnect: still records the site when the probe fails", async () => {
+test("afterConnect: still records the site when the probe fails", async () => {
   // The site is what `lib/client.ts` needs; losing it would break every action.
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const display = await auth.afterConnect!({ credential: cred }, ctx) as Record<string, unknown>;
@@ -204,7 +205,7 @@ Deno.test("afterConnect: still records the site when the probe fails", async () 
   assertEquals(display.productCatalogVersion, undefined);
 });
 
-Deno.test("afterConnect: degrades without a network call on a malformed site", async () => {
+test("afterConnect: degrades without a network call on a malformed site", async () => {
   const { ctx, calls } = mockCtx();
   const display = await auth.afterConnect!(
     { credential: { site: "evil.example.com", apiKey: "k" } },

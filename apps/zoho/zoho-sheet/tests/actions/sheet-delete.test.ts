@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockSheetCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-delete.ts";
 
-Deno.test("sheet-delete: POSTs worksheet.delete with worksheet_name", async () => {
+test("sheet-delete: POSTs worksheet.delete with worksheet_name", async () => {
   const { ctx, calls } = mockSheetCtx([
     {
       body: {
@@ -19,7 +20,7 @@ Deno.test("sheet-delete: POSTs worksheet.delete with worksheet_name", async () =
   assertEquals(out.worksheets, [{ worksheet_name: "Sheet1", worksheet_id: "0#" }]);
 });
 
-Deno.test("sheet-delete: rejects with neither worksheetName nor worksheetId, no request made", async () => {
+test("sheet-delete: rejects with neither worksheetName nor worksheetId, no request made", async () => {
   const { ctx, calls } = mockSheetCtx([]);
   await assertRejects(
     async () => await action.execute({ resourceId: "abc123" }, ctx),

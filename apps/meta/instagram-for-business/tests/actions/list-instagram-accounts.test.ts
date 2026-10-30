@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-instagram-accounts.ts";
 
-Deno.test("list-instagram-accounts: GET /me/accounts with the documented query params", async () => {
+test("list-instagram-accounts: GET /me/accounts with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ limit: 5, cursor: "c" }, ctx);
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("list-instagram-accounts: GET /me/accounts with the documented query p
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("list-instagram-accounts: surfaces a Graph error body", async () => {
+test("list-instagram-accounts: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

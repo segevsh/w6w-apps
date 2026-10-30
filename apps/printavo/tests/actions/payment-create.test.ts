@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/payment-create.ts";
 
-Deno.test("payment-create: sends the transactionPaymentCreate operation and returns the result", async () => {
+test("payment-create: sends the transactionPaymentCreate operation and returns the result", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { transactionPaymentCreate: { id: "p1", amount: 50 } } },
   }]);
@@ -17,7 +18,7 @@ Deno.test("payment-create: sends the transactionPaymentCreate operation and retu
   assertEquals(sent.variables, { input: { order: { id: "3" }, amount: 50, category: "CASH" } });
 });
 
-Deno.test("payment-create: surfaces a GraphQL error returned with HTTP 200", async () => {
+test("payment-create: surfaces a GraphQL error returned with HTTP 200", async () => {
   const { ctx } = mockCtx([{ body: { errors: [{ message: "Unauthorized" }], data: null } }]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-members.ts";
 
-Deno.test("list-members: applies defaults (count=500, offset=0)", async () => {
+test("list-members: applies defaults (count=500, offset=0)", async () => {
   const { ctx, calls } = mockCtx([{ body: { members: [], total_items: 0 } }]);
   await action.execute!({ listId: "abc" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-members: applies defaults (count=500, offset=0)", async () => {
   assertEquals(url.searchParams.get("offset"), "0");
 });
 
-Deno.test("list-members: forwards all optional filters when provided", async () => {
+test("list-members: forwards all optional filters when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { members: [] } }]);
   await action.execute!(
     {

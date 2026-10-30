@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listFind from "../../actions/list-find.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-find: searches lists by name with ws.op=find", async () => {
+test("list-find: searches lists by name with ws.op=find", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ id: 2, name: "Newsletter" }]) }]);
   await listFind.execute({ accountId: "1", name: "News" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("list-find: searches lists by name with ws.op=find", async () => {
   assertEquals(queryOf(calls[0].url).name, "News");
 });
 
-Deno.test("list-find: name is optional — matches every list when omitted", async () => {
+test("list-find: name is optional — matches every list when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([]) }]);
   await listFind.execute({ accountId: "1" }, ctx);
   assertEquals(queryOf(calls[0].url).name, undefined);

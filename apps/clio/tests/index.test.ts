@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadFile, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 25;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 4);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,27 +32,27 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
 /** Creates always start a new, distinct record — a retry must not be assumed safe. */
-Deno.test("index: every *-create action is marked non-idempotent", () => {
+test("index: every *-create action is marked non-idempotent", () => {
   for (const a of app.actions.filter((a) => a.key.endsWith("-create"))) {
     assertEquals(a.idempotent, false, a.key);
   }
 });
 
 /** Updates by id are full-or-partial overwrites — re-applying the same body is safe. */
-Deno.test("index: every *-update action is marked idempotent", () => {
+test("index: every *-update action is marked idempotent", () => {
   for (const a of app.actions.filter((a) => a.key.endsWith("-update"))) {
     assertEquals(a.idempotent, true, a.key);
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -66,7 +68,7 @@ Deno.test("index: every param has a key and a label", () => {
  * own near-empty one in place — derived from every action's own params
  * rather than hand-listed, so a new action that forgets this is caught here.
  */
-Deno.test("index: every fields param carries a non-trivial default", () => {
+test("index: every fields param carries a non-trivial default", () => {
   const withFields = app.actions.filter((a) => (a.params ?? []).some((p) => p.key === "fields"));
   assert(withFields.length > 0, "no action declares a fields param — this test would be vacuous");
   for (const a of withFields) {
@@ -84,9 +86,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -95,7 +97,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -108,7 +110,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * that hard-coded a host could be pointed somewhere the manifest never
  * allowlisted, or ignore the Connection's own region.
  */
-Deno.test("index: no action hard-codes a Clio host", async () => {
+test("index: no action hard-codes a Clio host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/clio\.com/.test(src), `${a.key}: contains a Clio host literal`);
@@ -116,7 +118,7 @@ Deno.test("index: no action hard-codes a Clio host", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|region|access_?token)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -127,7 +129,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
 
 // --- auth --------------------------------------------------------------------
 
-Deno.test("index: four regional oauth2 auth methods, each with a unique key", () => {
+test("index: four regional oauth2 auth methods, each with a unique key", () => {
   const keys = app.auth.map((a) => a.key);
   assertEquals(new Set(keys).size, 4);
   assert(keys.includes("oauth2"));
@@ -142,13 +144,13 @@ Deno.test("index: four regional oauth2 auth methods, each with a unique key", ()
 });
 
 /** No app in this pack has ever needed a scope on an oauth2 method here — see auth/oauth2.ts. */
-Deno.test("index: no auth method declares OAuth scopes Clio's own authorize URL ignores", () => {
+test("index: no auth method declares OAuth scopes Clio's own authorize URL ignores", () => {
   for (const a of app.auth) {
     assertEquals(a.oauth2?.scopes, [], a.key);
   }
 });
 
-Deno.test("index: every auth method's authorizationUrl and tokenUrl share the same host", () => {
+test("index: every auth method's authorizationUrl and tokenUrl share the same host", () => {
   for (const a of app.auth) {
     const authHost = new URL(a.oauth2!.authorizationUrl).host;
     const tokenHost = new URL(a.oauth2!.tokenUrl).host;
@@ -158,7 +160,7 @@ Deno.test("index: every auth method's authorizationUrl and tokenUrl share the sa
 
 // --- health ------------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -168,7 +170,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the access token. */
-Deno.test("index: any health check declaring extra egress is unsigned", () => {
+test("index: any health check declaring extra egress is unsigned", () => {
   const widening = app.healthChecks.filter((h) => h.network?.allow?.length);
   assert(widening.length > 0, "no check widens egress — this test would pass vacuously");
   for (const h of widening) {
@@ -181,9 +183,9 @@ Deno.test("index: any health check declaring extra egress is unsigned", () => {
 
 // --- manifest ------------------------------------------------------------------
 
-Deno.test("index: the manifest allows all four regional API hosts and not the status host", async () => {
+test("index: the manifest allows all four regional API hosts and not the status host", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] }; appearance: { icon: { url: string } } } };
   assertEquals(manifest.w6w.id, "io.w6w.clio");
   for (const host of ["app.clio.com", "eu.app.clio.com", "ca.app.clio.com", "au.app.clio.com"]) {
@@ -193,8 +195,8 @@ Deno.test("index: the manifest allows all four regional API hosts and not the st
   assertEquals(manifest.w6w.appearance.icon.url, "./assets/icon.png");
 });
 
-Deno.test("index: the icon is Clio's own mark, downloaded verbatim", async () => {
-  const bytes = await Deno.readFile(new URL("../assets/icon.png", import.meta.url));
+test("index: the icon is Clio's own mark, downloaded verbatim", async () => {
+  const bytes = await denoReadFile(new URL("../assets/icon.png", import.meta.url));
   // Downloaded verbatim from docs.developers.clio.com/img/favicon.png on
   // 2026-08-24: 1,895 bytes, 64x64 PNG, md5 92de47b9702a9c7cfc3b9e2289cf1119.
   assertEquals(bytes.length, 1895);
@@ -206,7 +208,7 @@ Deno.test("index: the icon is Clio's own mark, downloaded verbatim", async () =>
   assertEquals(height, 64);
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

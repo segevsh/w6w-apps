@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import nodeCreate from "../../actions/node-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("node-create: POSTs the body and returns the new id", async () => {
+test("node-create: POSTs the body and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ body: { item_id: "n1" } }]);
   const out = await nodeCreate.execute(
     { name: "**Hi**", parent_id: "inbox", position: "bottom", note: "", layoutMode: "todo" },
@@ -20,7 +21,7 @@ Deno.test("node-create: POSTs the body and returns the new id", async () => {
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("node-create: omits unset optionals; a vendor error is thrown", async () => {
+test("node-create: omits unset optionals; a vendor error is thrown", async () => {
   const a = mockCtx([{ body: { item_id: "n2" } }]);
   await nodeCreate.execute({ name: "x" }, a.ctx);
   assertEquals(JSON.parse(a.calls[0].body!), { name: "x" });

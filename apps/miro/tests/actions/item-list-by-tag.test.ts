@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/item-list-by-tag.ts";
 
@@ -6,7 +7,7 @@ import action from "../../actions/item-list-by-tag.ts";
  * The by-tag variant of the items endpoint takes `offset`, not `cursor` — the
  * spec is explicit, and using the wrong pager would silently return one page.
  */
-Deno.test("item-list-by-tag: uses the offset pager, unlike the bare items list", async () => {
+test("item-list-by-tag: uses the offset pager, unlike the bare items list", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "i1" }], total: 2, size: 1 } },
     { status: 200, body: { data: [{ id: "i2" }], total: 2, size: 1 } },
@@ -19,7 +20,7 @@ Deno.test("item-list-by-tag: uses the offset pager, unlike the bare items list",
   assertEquals(result, [{ id: "i1" }, { id: "i2" }]);
 });
 
-Deno.test("item-list-by-tag: a tag is required", async () => {
+test("item-list-by-tag: a tag is required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({ boardId: "b1" }, ctx), Error, "`tagId`");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assistantList from "../../actions/assistant-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("assistant-list: calls GET /assistant with limit and date filters", async () => {
+test("assistant-list: calls GET /assistant with limit and date filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a1" }] }]);
   const out = await assistantList.execute({ limit: 50, createdAtGt: "2026-01-01T00:00:00Z" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("assistant-list: calls GET /assistant with limit and date filters", as
   assertEquals(out, { items: [{ id: "a1" }] });
 });
 
-Deno.test("assistant-list: strips apiKey out of a nested credentials array", async () => {
+test("assistant-list: strips apiKey out of a nested credentials array", async () => {
   const { ctx } = mockCtx([
     { body: [{ id: "a1", credentials: [{ provider: "anthropic", apiKey: "sk-live-x" }] }] },
   ]);
@@ -23,7 +24,7 @@ Deno.test("assistant-list: strips apiKey out of a nested credentials array", asy
   assertEquals(creds[0].provider, "anthropic");
 });
 
-Deno.test("assistant-list: unset filters are omitted from the query", async () => {
+test("assistant-list: unset filters are omitted from the query", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await assistantList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

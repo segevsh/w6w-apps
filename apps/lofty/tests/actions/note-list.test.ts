@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-list.ts";
 
-Deno.test("note-list: filters by lead and passes includeSystemNote", async () => {
+test("note-list: filters by lead and passes includeSystemNote", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { notes: [{ id: 111, noteId: 400000012345, content: "Called" }] },
@@ -19,7 +20,7 @@ Deno.test("note-list: filters by lead and passes includeSystemNote", async () =>
 });
 
 /** The two ids are not interchangeable, and the hint has to say so. */
-Deno.test("note-list: the note id is available alongside the timeline id", async () => {
+test("note-list: the note id is available alongside the timeline id", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { notes: [{ id: 111, noteId: 400000012345, content: "Called" }] },

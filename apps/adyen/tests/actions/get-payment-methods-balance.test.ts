@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getPaymentMethodsBalance from "../../actions/get-payment-methods-balance.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const INPUT = {
   "value": 100,
 } as Parameters<typeof getPaymentMethodsBalance.execute>[0];
 
-Deno.test("get-payment-methods-balance: sends POST to the documented path and returns the response", async () => {
+test("get-payment-methods-balance: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Success", "balance": { "currency": "EUR", "value": 500 } },
@@ -25,7 +26,7 @@ Deno.test("get-payment-methods-balance: sends POST to the documented path and re
   assertEquals(out, { "resultCode": "Success", "balance": { "currency": "EUR", "value": 500 } });
 });
 
-Deno.test("get-payment-methods-balance: targets the connection's base URL and carries no credential", async () => {
+test("get-payment-methods-balance: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Success", "balance": { "currency": "EUR", "value": 500 } },
@@ -40,7 +41,7 @@ Deno.test("get-payment-methods-balance: targets the connection's base URL and ca
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-payment-methods-balance: surfaces Adyen's error code, type and message", async () => {
+test("get-payment-methods-balance: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -58,7 +59,7 @@ Deno.test("get-payment-methods-balance: surfaces Adyen's error code, type and me
   );
 });
 
-Deno.test("get-payment-methods-balance: sends the invocation id as Idempotency-Key", async () => {
+test("get-payment-methods-balance: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Success", "balance": { "currency": "EUR", "value": 500 } },
@@ -68,11 +69,11 @@ Deno.test("get-payment-methods-balance: sends the invocation id as Idempotency-K
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("get-payment-methods-balance: is a read-only action", () => {
+test("get-payment-methods-balance: is a read-only action", () => {
   assertEquals(getPaymentMethodsBalance.type, "read");
 });
 
-Deno.test("get-payment-methods-balance: an explicit merchantAccount beats the connection's", async () => {
+test("get-payment-methods-balance: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "resultCode": "Success", "balance": { "currency": "EUR", "value": 500 } },

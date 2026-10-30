@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-event-list.ts";
 
-Deno.test("webhook-event-list: reads the event names webhook-create accepts", async () => {
+test("webhook-event-list: reads the event names webhook-create accepts", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: ["contract.created"] } }], {
     display: {},
   });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import responseTag from "../../actions/response-tag.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("response-tag: POSTs uuid and a tags array to /v1/responses/tags", async () => {
+test("response-tag: POSTs uuid and a tags array to /v1/responses/tags", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await responseTag.execute({ uuid: "r1", tags: "first, second" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("response-tag: POSTs uuid and a tags array to /v1/responses/tags", asy
   assertEquals(JSON.parse(calls[0].body!), { uuid: "r1", tags: ["first", "second"] });
 });
 
-Deno.test("response-tag: accepts an array and rejects empty and over-20 lists", async () => {
+test("response-tag: accepts an array and rejects empty and over-20 lists", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await responseTag.execute({ uuid: "r1", tags: ["x"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).tags, ["x"]);
@@ -33,7 +34,7 @@ Deno.test("response-tag: accepts an array and rejects empty and over-20 lists", 
   assertEquals(calls.length, 1);
 });
 
-Deno.test("response-tag: a vendor error surfaces its own message", async () => {
+test("response-tag: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(responseTag.execute({ uuid: "r1", tags: "a" }, ctx)),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: is an oauth2 method with Acuity's documented endpoints", () => {
+test("oauth2: is an oauth2 method with Acuity's documented endpoints", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://acuityscheduling.com/oauth2/authorize");
@@ -10,7 +11,7 @@ Deno.test("oauth2: is an oauth2 method with Acuity's documented endpoints", () =
   assertEquals(auth.oauth2?.scopes, ["api-v1"]);
 });
 
-Deno.test("oauth2: sign sets Bearer using credential.accessToken", async () => {
+test("oauth2: sign sets Bearer using credential.accessToken", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -21,7 +22,7 @@ Deno.test("oauth2: sign sets Bearer using credential.accessToken", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok-abc");
 });
 
-Deno.test("oauth2: test hits /me and reports ok", async () => {
+test("oauth2: test hits /me and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "Acme", email: "a@acme.com" } }]);
   const result = await auth.test({ credential: { accessToken: "tok-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -30,14 +31,14 @@ Deno.test("oauth2: test hits /me and reports ok", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok-abc");
 });
 
-Deno.test("oauth2: test reports failure when credential missing", async () => {
+test("oauth2: test reports failure when credential missing", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("missing"));
 });
 
-Deno.test("oauth2: test reports failure with status code when API rejects", async () => {
+test("oauth2: test reports failure with status code when API rejects", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Unauthorized" } }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);

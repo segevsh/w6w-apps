@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 import { NOTION_VERSION } from "../../lib/client.ts";
 
-Deno.test("oauth2: declares Notion authorize/token endpoints and no PKCE", () => {
+test("oauth2: declares Notion authorize/token endpoints and no PKCE", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://api.notion.com/v1/oauth/authorize");
@@ -11,7 +12,7 @@ Deno.test("oauth2: declares Notion authorize/token endpoints and no PKCE", () =>
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: sign appends Bearer access token and Notion-Version", async () => {
+test("oauth2: sign appends Bearer access token and Notion-Version", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -23,7 +24,7 @@ Deno.test("oauth2: sign appends Bearer access token and Notion-Version", async (
   assertEquals(out.headers["Notion-Version"], NOTION_VERSION);
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
+test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -31,7 +32,7 @@ Deno.test("oauth2: test with missing accessToken reports the failure without a n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test issues GET /users/me with Bearer token", async () => {
+test("oauth2: test issues GET /users/me with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { object: "user" } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-page-info.ts";
 
-Deno.test("get-page-info: GETs /page_info with the url query param", async () => {
+test("get-page-info: GETs /page_info with the url query param", async () => {
   const body = { general: { title: "Example" }, twitter: {}, og: {}, elapsed: 0.1 };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ url: "https://example.com" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("get-page-info: GETs /page_info with the url query param", async () =>
   assertEquals(result, body);
 });
 
-Deno.test("get-page-info: sets headers=yes only when requested", async () => {
+test("get-page-info: sets headers=yes only when requested", async () => {
   const { ctx, calls } = mockCtx([{ body: { general: {} } }]);
   await action.execute!({ url: "https://example.com", headers: true }, ctx);
   const url = new URL(calls[0].url);

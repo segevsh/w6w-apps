@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/document-send.ts";
 
-Deno.test("document-send: POSTs /documents/{id}/send with the mapped body", async () => {
+test("document-send: POSTs /documents/{id}/send with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "d1", status: "document.sent" } }]);
   await action.execute({
     documentId: "d1",
@@ -26,13 +27,13 @@ Deno.test("document-send: POSTs /documents/{id}/send with the mapped body", asyn
   });
 });
 
-Deno.test("document-send: sends an empty body when only the id is given", async () => {
+test("document-send: sends an empty body when only the id is given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ documentId: "d1" }, ctx);
   assertEquals(bodyOf(calls[0]), {});
 });
 
-Deno.test("document-send: returns recipients with their shared links", async () => {
+test("document-send: returns recipients with their shared links", async () => {
   const { ctx } = mockCtx([{
     body: {
       id: "d1",
@@ -48,7 +49,7 @@ Deno.test("document-send: returns recipients with their shared links", async () 
   assert(out.recipients[0].shared_link.length > 0);
 });
 
-Deno.test("document-send: a document still uploading fails loudly, not silently", async () => {
+test("document-send: a document still uploading fails loudly, not silently", async () => {
   // The realistic failure of a create-then-send workflow with no poll between.
   const { ctx } = mockCtx([{
     status: 400,
@@ -60,11 +61,11 @@ Deno.test("document-send: a document still uploading fails loudly, not silently"
   assert(err.message.includes("not in draft status"), err.message);
 });
 
-Deno.test("document-send: is a non-idempotent perform — resending re-emails", () => {
+test("document-send: is a non-idempotent perform — resending re-emails", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-send: states the draft precondition in its description", () => {
+test("document-send: states the draft precondition in its description", () => {
   assert(/document.draft/.test(action.description ?? ""), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postGet from "../../actions/post-get.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-get: retrieves by id", async () => {
+test("post-get: retrieves by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", title: "Dark mode" } }]);
   await postGet.execute({ id: "p1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("post-get: retrieves by id", async () => {
   assertEquals(bodyOf(calls[0]), { id: "p1" });
 });
 
-Deno.test("post-get: retrieves by boardID + urlName", async () => {
+test("post-get: retrieves by boardID + urlName", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1" } }]);
   await postGet.execute({ boardID: "b1", urlName: "dark-mode" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-custom-question.ts";
 
-Deno.test("create-custom-question: POST wrapped question", async () => {
+test("create-custom-question: POST wrapped question", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "9" } }]);
   await action.execute!(
     {

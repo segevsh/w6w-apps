@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-uncomplete.ts";
 
-Deno.test("task-uncomplete: is idempotent per the spec's own PUT rule", () => {
+test("task-uncomplete: is idempotent per the spec's own PUT rule", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("task-uncomplete: PUTs status NotCompleted", async () => {
+test("task-uncomplete: PUTs status NotCompleted", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await action.execute({ workflowRunId: "run1", taskId: "t1" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -14,7 +15,7 @@ Deno.test("task-uncomplete: PUTs status NotCompleted", async () => {
   assertEquals(out, { completed: false });
 });
 
-Deno.test("task-uncomplete: omitting dueDate leaves it out of the body (clears it)", async () => {
+test("task-uncomplete: omitting dueDate leaves it out of the body (clears it)", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await action.execute({ workflowRunId: "run1", taskId: "t1" }, ctx);
   assertEquals("dueDate" in JSON.parse(calls[0].body!), false);

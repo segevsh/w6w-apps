@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInvoiceCtx } from "../_helpers.ts";
 import action from "../../actions/estimate-list.ts";
 
-Deno.test("estimate-list: GETs /estimates and passes zcrm_potential_id through", async () => {
+test("estimate-list: GETs /estimates and passes zcrm_potential_id through", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "success", estimates: [{ estimate_id: "1" }] } },
   ]);
@@ -19,7 +20,7 @@ Deno.test("estimate-list: GETs /estimates and passes zcrm_potential_id through",
  * https://www.zoho.com/invoice/api/v3/estimates/. This test pins that this
  * action never sends either.
  */
-Deno.test("estimate-list: never sends a customer_id or status query parameter", async () => {
+test("estimate-list: never sends a customer_id or status query parameter", async () => {
   const { ctx, calls } = mockInvoiceCtx([
     { body: { code: 0, message: "success", estimates: [] } },
   ]);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-list.ts";
 
@@ -33,7 +34,7 @@ const assets = {
   headers: { total: "3" },
 };
 
-Deno.test("asset-list: returns the URLs and totals the storage", async () => {
+test("asset-list: returns the URLs and totals the storage", async () => {
   const { ctx, calls } = mockCtx([assets], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/123/assets");
@@ -42,20 +43,20 @@ Deno.test("asset-list: returns the URLs and totals the storage", async () => {
 });
 
 /** A public token gives a broken image for exactly these. */
-Deno.test("asset-list: counts the private assets", async () => {
+test("asset-list: counts the private assets", async () => {
   const { ctx } = mockCtx([assets], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.privateCount, 1);
 });
 
 /** Whitespace is not alt text. */
-Deno.test("asset-list: names images with no alt text, and ignores non-images", async () => {
+test("asset-list: names images with no alt text, and ignores non-images", async () => {
   const { ctx } = mockCtx([assets], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.withoutAltText, ["https://a.storyblok.com/f/1/naked.png"]);
 });
 
-Deno.test("asset-list: search and folder reach the query", async () => {
+test("asset-list: search and folder reach the query", async () => {
   const { ctx, calls } = mockCtx([assets], M);
   await action.execute({ search: "hero", folderId: "7" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -64,7 +65,7 @@ Deno.test("asset-list: search and folder reach the query", async () => {
 });
 
 /** The Image Service resizes by URL suffix. */
-Deno.test("asset-list: says an asset URL outlives the record", () => {
+test("asset-list: says an asset URL outlives the record", () => {
   assert(/outlives the record/.test(action.description!), action.description);
   assert(/URL SUFFIX/.test(action.description!), action.description);
 });

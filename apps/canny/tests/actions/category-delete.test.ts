@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryDelete from "../../actions/category-delete.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("category-delete: posts categoryID and unwraps the confirmation string", async () => {
+test("category-delete: posts categoryID and unwraps the confirmation string", async () => {
   const { ctx, calls } = mockCtx([{ body: '"success"' }]);
   const out = await categoryDelete.execute({ categoryID: "c1" }, ctx) as { message: string };
 
@@ -11,6 +12,6 @@ Deno.test("category-delete: posts categoryID and unwraps the confirmation string
   assertEquals(out.message, "success");
 });
 
-Deno.test("category-delete: is idempotent", () => {
+test("category-delete: is idempotent", () => {
   assertEquals(categoryDelete.idempotent, true);
 });

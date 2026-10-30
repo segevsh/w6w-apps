@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import scrape from "../../actions/web-scrape.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("web-scrape: GETs /web/scrape with url, and noLinks/lang only when set", async () => {
+test("web-scrape: GETs /web/scrape with url, and noLinks/lang only when set", async () => {
   const body = { url: "https://e.test", content: "# Hi", countCharacters: 4, urls: [] };
   const { ctx, calls } = mockCtx([{ body }, { body }]);
   assertEquals(await scrape.execute({ url: "https://e.test" }, ctx), body);
@@ -13,7 +14,7 @@ Deno.test("web-scrape: GETs /web/scrape with url, and noLinks/lang only when set
   assertEquals(q.get("lang"), "de");
 });
 
-Deno.test("web-scrape: an HTML error body is surfaced by its title; a blank url makes no call", async () => {
+test("web-scrape: an HTML error body is surfaced by its title; a blank url makes no call", async () => {
   const { ctx } = mockCtx([{
     status: 502,
     headers: { "content-type": "text/html" },

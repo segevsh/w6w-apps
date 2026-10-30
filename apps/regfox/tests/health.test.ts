@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import api, { API_URL } from "../health/api.ts";
 import quota, { headroom } from "../health/quota.ts";
 import service from "../health/service.ts";
@@ -6,7 +7,7 @@ import { mockCtx } from "./_helpers.ts";
 
 const PING = { responseCode: 200, data: "Some nights I always win, I always win..." };
 
-Deno.test("health/api: the documented ping envelope is ok, sent unsigned", async () => {
+test("health/api: the documented ping envelope is ok, sent unsigned", async () => {
   const { ctx, calls } = mockCtx([{ body: PING }]);
   assertEquals((await api.check!({}, ctx)).state, "ok");
   assertEquals(calls[0].url, API_URL);
@@ -14,7 +15,7 @@ Deno.test("health/api: the documented ping envelope is ok, sent unsigned", async
   assertEquals(api.credential, "none");
 });
 
-Deno.test("health/api: 5xx is down; a 200 HTML shell or other JSON is unknown", async () => {
+test("health/api: 5xx is down; a 200 HTML shell or other JSON is unknown", async () => {
   const html = { "content-type": "text/html" };
   assertEquals(
     (await api.check!({}, mockCtx([{ status: 502, body: "<html>bad</html>", headers: html }]).ctx))
@@ -31,7 +32,7 @@ Deno.test("health/api: 5xx is down; a 200 HTML shell or other JSON is unknown", 
   );
 });
 
-Deno.test("health/quota: reads daily and burst headroom from a signed response", async () => {
+test("health/quota: reads daily and burst headroom from a signed response", async () => {
   const { ctx, calls } = mockCtx([{
     body: { responseCode: 200, data: [] },
     headers: {
@@ -54,7 +55,7 @@ Deno.test("health/quota: reads daily and burst headroom from a signed response",
   assertEquals(quota.credential, "signed");
 });
 
-Deno.test("health/quota: exhausted burst is down, low daily is degraded, no header is unknown", async () => {
+test("health/quota: exhausted burst is down, low daily is degraded, no header is unknown", async () => {
   const mk = (h: Record<string, string>) =>
     mockCtx([{
       body: { responseCode: 200, data: [] },
@@ -80,14 +81,14 @@ Deno.test("health/quota: exhausted burst is down, low daily is degraded, no head
   assertEquals(headroom(undefined, 10), "unknown");
 });
 
-Deno.test("health: service is an informational declared absence", () => {
+test("health: service is an informational declared absence", () => {
   assertEquals(service.severity, "informational");
   assert(service.unavailable?.reason.includes("status page"));
   assertEquals(service.check, undefined);
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("lib/client: a 5xx non-JSON body surfaces its text, not a parse error", async () => {
+test("lib/client: a 5xx non-JSON body surfaces its text, not a parse error", async () => {
   const { RegfoxClient } = await import("../lib/client.ts");
   const { ctx } = mockCtx([{
     status: 502,

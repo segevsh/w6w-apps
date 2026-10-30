@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/domain-record-create.ts";
 
@@ -9,7 +10,7 @@ const created = (attributes: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("domain-record-create: posts the record and returns the qualified name", async () => {
+test("domain-record-create: posts the record and returns the qualified name", async () => {
   const { ctx, calls } = mockCtx([created()]);
   const result = await action.execute({
     domain: "example.com",
@@ -23,7 +24,7 @@ Deno.test("domain-record-create: posts the record and returns the qualified name
 });
 
 /** The commonest DNS mistake, and the API accepts it silently. */
-Deno.test("domain-record-create: a fully-qualified name is refused, with the fix", async () => {
+test("domain-record-create: a fully-qualified name is refused, with the fix", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -41,7 +42,7 @@ Deno.test("domain-record-create: a fully-qualified name is refused, with the fix
   assertEquals(calls.length, 0);
 });
 
-Deno.test("domain-record-create: the domain itself as a name is refused, pointing at @", async () => {
+test("domain-record-create: the domain itself as a name is refused, pointing at @", async () => {
   const { ctx } = mockCtx([]);
   let message = "";
   try {
@@ -57,7 +58,7 @@ Deno.test("domain-record-create: the domain itself as a name is refused, pointin
   assert(/Use "@" instead/.test(message), message);
 });
 
-Deno.test("domain-record-create: @ itself is accepted", async () => {
+test("domain-record-create: @ itself is accepted", async () => {
   const { ctx, calls } = mockCtx([created({ name: "@" })]);
   const result = await action.execute({
     domain: "example.com",
@@ -70,7 +71,7 @@ Deno.test("domain-record-create: @ itself is accepted", async () => {
 });
 
 /** Without the dot the target is read relative to the domain. */
-Deno.test("domain-record-create: a trailing dot is added to CNAME, MX and NS data", async () => {
+test("domain-record-create: a trailing dot is added to CNAME, MX and NS data", async () => {
   for (const type of ["CNAME", "MX", "NS"]) {
     const { ctx, calls } = mockCtx([created()]);
     await action.execute({
@@ -95,7 +96,7 @@ Deno.test("domain-record-create: a trailing dot is added to CNAME, MX and NS dat
 });
 
 /** Start low and raise it once the record is proven. */
-Deno.test("domain-record-create: the TTL defaults to 300, not DigitalOcean's 1800", async () => {
+test("domain-record-create: the TTL defaults to 300, not DigitalOcean's 1800", async () => {
   const { ctx, calls } = mockCtx([created()]);
   await action.execute({
     domain: "example.com",
@@ -108,7 +109,7 @@ Deno.test("domain-record-create: the TTL defaults to 300, not DigitalOcean's 180
 });
 
 /** A TXT record carries verification tokens. */
-Deno.test("domain-record-create: logs the name and type, never the data", async () => {
+test("domain-record-create: logs the name and type, never the data", async () => {
   const { ctx, logs } = mockCtx([created()]);
   await action.execute({
     domain: "example.com",
@@ -119,7 +120,7 @@ Deno.test("domain-record-create: logs the name and type, never the data", async 
   assertEquals(JSON.stringify(logs).includes("secret-validation-token"), false);
 });
 
-Deno.test("domain-record-create: the required fields are checked", async () => {
+test("domain-record-create: the required fields are checked", async () => {
   for (const field of ["domain", "name", "data"]) {
     const { ctx, calls } = mockCtx([]);
     const input: Record<string, unknown> = {

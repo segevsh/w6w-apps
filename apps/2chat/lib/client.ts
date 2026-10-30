@@ -118,7 +118,10 @@ export interface RequestOptions {
  * hook, and that hook is the only code in this app that sees the key.
  */
 export class TwoChatClient {
-  constructor(private ctx: HookContext) {}
+  private ctx: HookContext;
+  constructor(ctx: HookContext) {
+    this.ctx = ctx;
+  }
 
   async request<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
     const url = new URL(`${API_URL}${path}`);

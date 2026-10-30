@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/content-extract.ts";
 import { bodyOf, envelope, errorBody, mockCtx, obj, pathOf } from "../_helpers.ts";
 
-Deno.test("content-extract: POSTs /extract and returns the reader-mode fields", async () => {
+test("content-extract: POSTs /extract and returns the reader-mode fields", async () => {
   const data = {
     url: "https://e.com/p",
     format: "markdown",
@@ -31,7 +32,7 @@ Deno.test("content-extract: POSTs /extract and returns the reader-mode fields", 
   assertEquals(out.content, "# T");
 });
 
-Deno.test("content-extract: requires a url; surfaces EXTRACTION_FAILED", async () => {
+test("content-extract: requires a url; surfaces EXTRACTION_FAILED", async () => {
   const none = mockCtx();
   await assertRejects(
     async () => await action.execute({ url: "" }, none.ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-publishing-limit.ts";
 
-Deno.test("get-publishing-limit: GET /17/content_publishing_limit with the documented query params", async () => {
+test("get-publishing-limit: GET /17/content_publishing_limit with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ igUserId: "17", since: 100 }, ctx);
   assertEquals(calls.length, 1);
@@ -18,7 +19,7 @@ Deno.test("get-publishing-limit: GET /17/content_publishing_limit with the docum
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("get-publishing-limit: surfaces a Graph error body", async () => {
+test("get-publishing-limit: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

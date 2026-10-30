@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/release-list.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("release-list: lists releases with project and query filters", async () => {
+test("release-list: lists releases with project and query filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ version: "1.0.0" }] }], { display });
   const result = await action.execute!({ projects: "web,api", query: "1.0" }, ctx);
   const url = new URL(calls[0].url);

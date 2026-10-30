@@ -1,9 +1,10 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
-import { decodeBase64Url } from "@std/encoding/base64url";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
+const decodeBase64Url = ((s: string) => new Uint8Array(Buffer.from(s, "base64url")));
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/reply-thread.ts";
 
-Deno.test("reply-thread: replies to the last message and posts to messages/send with threadId", async () => {
+test("reply-thread: replies to the last message and posts to messages/send with threadId", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

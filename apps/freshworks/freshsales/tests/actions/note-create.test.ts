@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/note-create.ts";
 
-Deno.test("note-create: POSTs to /notes, targetable pair carried verbatim", async () => {
+test("note-create: POSTs to /notes, targetable pair carried verbatim", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { note: { id: 1, description: "hi" } } }]);
   const out = await action.execute(
     { description: "hi", targetableType: "Contact", targetableId: 1 },
@@ -17,7 +18,7 @@ Deno.test("note-create: POSTs to /notes, targetable pair carried verbatim", asyn
   assertEquals(out, { id: 1, description: "hi" });
 });
 
-Deno.test("note-create: also attaches to an Account or a Deal", async () => {
+test("note-create: also attaches to an Account or a Deal", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { note: {} } }]);
   await action.execute({ description: "hi", targetableType: "SalesAccount", targetableId: 5 }, ctx);
   assertEquals(

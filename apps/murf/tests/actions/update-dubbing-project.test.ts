@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/update-dubbing-project.ts";
 import { bodyOf, exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("update-dubbing-project: PUTs target_locales to the project's update path", async () => {
+test("update-dubbing-project: PUTs target_locales to the project's update path", async () => {
   const reply = {
     project_id: "p/1",
     dubbing_type: "AUTOMATED",
@@ -16,7 +17,7 @@ Deno.test("update-dubbing-project: PUTs target_locales to the project's update p
   assertEquals(out, reply);
 });
 
-Deno.test("update-dubbing-project: validates input before calling", async () => {
+test("update-dubbing-project: validates input before calling", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     (await failure(action, { projectId: "", targetLocales: "a" }, ctx)).includes("projectId"),

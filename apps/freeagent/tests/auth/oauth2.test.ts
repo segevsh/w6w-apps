@@ -1,21 +1,22 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: config points at FreeAgent's approve_app / token_endpoint", () => {
+test("oauth2: config points at FreeAgent's approve_app / token_endpoint", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://api.freeagent.com/v2/approve_app");
   assertEquals(auth.oauth2?.tokenUrl, "https://api.freeagent.com/v2/token_endpoint");
   assertEquals(auth.oauth2?.refreshUrl, "https://api.freeagent.com/v2/token_endpoint");
 });
 
-Deno.test("sign: stamps Authorization from the credential's accessToken", async () => {
+test("sign: stamps Authorization from the credential's accessToken", async () => {
   const { ctx } = mockCtx();
   const request = { url: "https://api.freeagent.com/v2/users/me", method: "GET", headers: {} };
   const signed = await auth.sign!({ request, credential: { accessToken: "tok" } }, ctx);
   assertEquals(signed.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test rejects a response missing accessToken", async () => {
+test("oauth2: test rejects a response missing accessToken", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -23,7 +24,7 @@ Deno.test("oauth2: test rejects a response missing accessToken", async () => {
   });
 });
 
-Deno.test("oauth2: test rejects a non-ok response from /users/me", async () => {
+test("oauth2: test rejects a non-ok response from /users/me", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: { error: "invalid_token" } }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result.ok, false);
@@ -31,7 +32,7 @@ Deno.test("oauth2: test rejects a non-ok response from /users/me", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test rejects a response carrying no user", async () => {
+test("oauth2: test rejects a response carrying no user", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), {
     ok: false,
@@ -39,12 +40,12 @@ Deno.test("oauth2: test rejects a response carrying no user", async () => {
   });
 });
 
-Deno.test("oauth2: test accepts a live token", async () => {
+test("oauth2: test accepts a live token", async () => {
   const { ctx } = mockCtx([{ body: { user: { email: "dev@example.com" } } }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), { ok: true });
 });
 
-Deno.test("oauth2: afterConnect records the connected user's email and name", async () => {
+test("oauth2: afterConnect records the connected user's email and name", async () => {
   const { ctx } = mockCtx([{
     body: { user: { email: "dev@example.com", first_name: "Dev", last_name: "Team" } },
   }]);
@@ -53,7 +54,7 @@ Deno.test("oauth2: afterConnect records the connected user's email and name", as
   assertEquals(out.userName, "Dev Team");
 });
 
-Deno.test("oauth2: afterConnect degrades to {} when the probe fails", async () => {
+test("oauth2: afterConnect degrades to {} when the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 401 }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "tok" } }, ctx), {});
 });
@@ -66,6 +67,6 @@ Deno.test("oauth2: afterConnect degrades to {} when the probe fails", async () =
  * absence — a future custom `refresh` that discards the new token would be
  * the actual bug this guards against reintroducing.
  */
-Deno.test("oauth2: declares no custom refresh hook, deferring entirely to the host default", () => {
+test("oauth2: declares no custom refresh hook, deferring entirely to the host default", () => {
   assertEquals(auth.refresh, undefined);
 });

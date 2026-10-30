@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
 const conn = { display: { domain: "acme.us.auth0.com" } };
 
-Deno.test("user-create: posts the user into a named connection", async () => {
+test("user-create: posts the user into a named connection", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { user_id: "auth0|1" } }], conn);
   await action.execute!({
     connection: "Username-Password-Authentication",
@@ -18,7 +19,7 @@ Deno.test("user-create: posts the user into a named connection", async () => {
 });
 
 /** A user exists in a connection, not in a tenant. */
-Deno.test("user-create: a missing connection is refused with the reason", async () => {
+test("user-create: a missing connection is refused with the reason", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const err = await assertRejects(
     async () => await action.execute!({ email: "ada@example.com" }, ctx),
@@ -28,7 +29,7 @@ Deno.test("user-create: a missing connection is refused with the reason", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-create: a missing email is refused", async () => {
+test("user-create: a missing email is refused", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ connection: "db" }, ctx),
@@ -38,7 +39,7 @@ Deno.test("user-create: a missing email is refused", async () => {
 });
 
 /** The metadata split is the thing worth getting right. */
-Deno.test("user-create: the metadata hints distinguish who can edit what", () => {
+test("user-create: the metadata hints distinguish who can edit what", () => {
   const params = action.params as Array<{ key: string; hint?: string }>;
   assert(/USER may change/.test(params.find((p) => p.key === "userMetadata")!.hint!));
   assert(/user cannot edit/.test(params.find((p) => p.key === "appMetadata")!.hint!));

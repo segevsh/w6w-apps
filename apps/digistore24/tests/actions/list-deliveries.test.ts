@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import listDeliveries from "../../actions/list-deliveries.ts";
 import { envelope, errorEnvelope, fieldsOf, fnOf, mockCtx } from "../_helpers.ts";
 
 const FN = "listDeliveries";
 const DATA = { "ok": "Y" };
 
-Deno.test("list-deliveries: calls listDeliveries with GET and returns the data payload", async () => {
+test("list-deliveries: calls listDeliveries with GET and returns the data payload", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   const out = await listDeliveries.execute({}, ctx);
   assertEquals(fnOf(calls[0].url), FN);
@@ -14,7 +15,7 @@ Deno.test("list-deliveries: calls listDeliveries with GET and returns the data p
   assertEquals(out, DATA);
 });
 
-Deno.test("list-deliveries: sends every optional field under the vendor's wire name", async () => {
+test("list-deliveries: sends every optional field under the vendor's wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await listDeliveries.execute({
     "purchase_id": "X26QE8GN",
@@ -36,7 +37,7 @@ Deno.test("list-deliveries: sends every optional field under the vendor's wire n
   });
 });
 
-Deno.test("list-deliveries: surfaces the vendor error envelope even on HTTP 200", async () => {
+test("list-deliveries: surfaces the vendor error envelope even on HTTP 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorEnvelope("The API key is invalid.", 2) }]);
   await assertRejects(
     async () => await listDeliveries.execute({}, ctx),

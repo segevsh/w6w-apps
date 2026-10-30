@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadCreate from "../../actions/lead-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const REQUIRED = {
   stageId: 2,
 };
 
-Deno.test("lead-create: POSTs required fields to /leads/create", async () => {
+test("lead-create: POSTs required fields to /leads/create", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok", id: 99, result: true } }]);
   const result = await leadCreate.execute(REQUIRED, ctx);
 
@@ -22,7 +23,7 @@ Deno.test("lead-create: POSTs required fields to /leads/create", async () => {
   assertEquals(result, { message: "ok", id: 99, result: true });
 });
 
-Deno.test("lead-create: optional fields left unset are omitted, not sent as null", async () => {
+test("lead-create: optional fields left unset are omitted, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await leadCreate.execute(REQUIRED, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -30,6 +31,6 @@ Deno.test("lead-create: optional fields left unset are omitted, not sent as null
   assertEquals("notes" in body, false);
 });
 
-Deno.test("lead-create: is declared non-idempotent", () => {
+test("lead-create: is declared non-idempotent", () => {
   assertEquals(leadCreate.idempotent, false);
 });

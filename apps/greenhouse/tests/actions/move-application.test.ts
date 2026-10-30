@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import moveApplication from "../../actions/move-application.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("move-application: POSTs the guard and the destination, and reports the 204", async () => {
+test("move-application: POSTs the guard and the destination, and reports the 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await moveApplication.execute(
     { applicationId: 5, fromStageId: 1, toStageId: 2 },
@@ -16,7 +17,7 @@ Deno.test("move-application: POSTs the guard and the destination, and reports th
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("move-application: a transfer sends to_job_id instead of to_stage_id", async () => {
+test("move-application: a transfer sends to_job_id instead of to_stage_id", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await moveApplication.execute(
     { applicationId: 5, fromStageId: 1, toJobId: 99, emailFromUserId: 7 },
@@ -29,7 +30,7 @@ Deno.test("move-application: a transfer sends to_job_id instead of to_stage_id",
  * Two destinations is the mistake that puts a candidate on the wrong job, so it
  * is refused here rather than left to the server's interpretation.
  */
-Deno.test("move-application: both destinations at once is refused locally", async () => {
+test("move-application: both destinations at once is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -45,7 +46,7 @@ Deno.test("move-application: both destinations at once is refused locally", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("move-application: no destination at all is refused locally", async () => {
+test("move-application: no destination at all is refused locally", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(moveApplication.execute({ applicationId: 5, fromStageId: 1 }, ctx)),
@@ -59,7 +60,7 @@ Deno.test("move-application: no destination at all is refused locally", async ()
  * application is no longer in it, so a retry fails validation. Marking this
  * idempotent would turn one dropped connection into a confusing 422.
  */
-Deno.test("move-application: is non-idempotent, and the guard field says why", () => {
+test("move-application: is non-idempotent, and the guard field says why", () => {
   assertEquals(moveApplication.idempotent, false);
   const guard = (moveApplication.params ?? []).find((p) => p.key === "fromStageId");
   assertEquals(guard?.required, true);
@@ -67,7 +68,7 @@ Deno.test("move-application: is non-idempotent, and the guard field says why", (
 });
 
 /** A move fires stage-transition rules, which can e-mail the candidate. */
-Deno.test("move-application: the e-mail side effect is stated on the sender field", () => {
+test("move-application: the e-mail side effect is stated on the sender field", () => {
   const param = (moveApplication.params ?? []).find((p) => p.key === "emailFromUserId");
   assert(param?.hint?.includes("stage-transition rules"), param?.hint);
 });

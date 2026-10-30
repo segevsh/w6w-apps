@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountMarkFixed from "../../actions/account-mark-fixed.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-mark-fixed: POSTs /accounts/{email}/mark-fixed", async () => {
+test("account-mark-fixed: POSTs /accounts/{email}/mark-fixed", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com", status: 1 } }]);
   const out = await accountMarkFixed.execute({ email: "a@b.com" }, ctx) as { status: number };
 

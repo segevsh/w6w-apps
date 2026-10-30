@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import organizationEnrich from "../../actions/organization-enrich.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("organization-enrich: GETs /organizations/enrich with filters as query params", async () => {
+test("organization-enrich: GETs /organizations/enrich with filters as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { organization: { id: "o1", name: "Apollo" } } }]);
   const out = await organizationEnrich.execute({ domain: "apollo.io" }, ctx) as {
     organization: { name: string };
@@ -13,7 +14,7 @@ Deno.test("organization-enrich: GETs /organizations/enrich with filters as query
   assertEquals(out.organization.name, "Apollo");
 });
 
-Deno.test("organization-enrich: no match returns null", async () => {
+test("organization-enrich: no match returns null", async () => {
   const { ctx } = mockCtx([{ body: { organization: null } }]);
   const out = await organizationEnrich.execute({ name: "Nonexistent Co" }, ctx) as {
     organization: unknown;

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   isPublicApi,
   mapResourceStatus,
@@ -33,7 +34,7 @@ const page = (apiStatus: string, other = "operational") => ({
   ],
 });
 
-Deno.test("service: Public API operational is ok and the URL is the Better Stack JSON", async () => {
+test("service: Public API operational is ok and the URL is the Better Stack JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational") }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -41,7 +42,7 @@ Deno.test("service: Public API operational is ok and the URL is the Better Stack
   assertEquals(Object.keys(r.components ?? {}).sort(), ["airbnb-api", "public-api"]);
 });
 
-Deno.test("service: only the Public API component drives the verdict", async () => {
+test("service: only the Public API component drives the verdict", async () => {
   const other = mockCtx([{ body: page("operational", "downtime") }]);
   const r1 = await service.check!({}, other.ctx);
   assertEquals(r1.state, "ok");
@@ -56,7 +57,7 @@ Deno.test("service: only the Public API component drives the verdict", async () 
   assertEquals((await service.check!({}, deg.ctx)).state, "degraded");
 });
 
-Deno.test("service: unknown, never ok, when the page is not Hospitable's or lacks the component", async () => {
+test("service: unknown, never ok, when the page is not Hospitable's or lacks the component", async () => {
   const html = mockCtx([{ body: "<html></html>" }]);
   assertEquals((await service.check!({}, html.ctx)).state, "unknown");
   const foreign = page("operational");
@@ -72,7 +73,7 @@ Deno.test("service: unknown, never ok, when the page is not Hospitable's or lack
   assertEquals((await service.check!({}, err.ctx)).state, "unknown");
 });
 
-Deno.test("service: status mapping and component matching", () => {
+test("service: status mapping and component matching", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
   assertEquals(mapResourceStatus("downtime"), "down");
@@ -82,7 +83,7 @@ Deno.test("service: status mapping and component matching", () => {
   assertEquals(isPublicApi({ attributes: { public_name: "Public API v1" } }), false);
 });
 
-Deno.test("api: a JSON 401 auth error passes, from the body not the status", async () => {
+test("api: a JSON 401 auth error passes, from the body not the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: { message: "Unauthenticated." } }]);
   const r = await api.check!({}, ctx);
   assertEquals(r.state, "ok");
@@ -90,7 +91,7 @@ Deno.test("api: a JSON 401 auth error passes, from the body not the status", asy
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("api: HTML, 5xx and foreign JSON are not ok", async () => {
+test("api: HTML, 5xx and foreign JSON are not ok", async () => {
   const html = mockCtx([{ status: 401, body: "<html>edge</html>" }]);
   assertEquals((await api.check!({}, html.ctx)).state, "down");
   const five = mockCtx([{ status: 503, body: { message: "x" } }]);
@@ -101,7 +102,7 @@ Deno.test("api: HTML, 5xx and foreign JSON are not ok", async () => {
   assertEquals((await api.check!({}, doc.ctx)).state, "ok");
 });
 
-Deno.test("quota: declared unavailable at informational severity", () => {
+test("quota: declared unavailable at informational severity", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable?.reason.includes("rate-limit header"));

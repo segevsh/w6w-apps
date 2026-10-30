@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
-Deno.test("account-get: takes no parameters and asks one cheap question", async () => {
+test("account-get: takes no parameters and asks one cheap question", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { account: { id: "a1", name: "Acme" } } } }]);
   const out = await action.execute({}, ctx);
   assertEquals(action.params, []);
@@ -10,12 +11,12 @@ Deno.test("account-get: takes no parameters and asks one cheap question", async 
   assertEquals(out, { account: { id: "a1", name: "Acme" } });
 });
 
-Deno.test("account-get: is promoted into the health surface as a credential probe", () => {
+test("account-get: is promoted into the health surface as a credential probe", () => {
   assertEquals(action.healthCheck?.kind, "credential");
   assertEquals(action.type, "read");
 });
 
-Deno.test("account-get: an unauthenticated 200 still fails", async () => {
+test("account-get: an unauthenticated 200 still fails", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

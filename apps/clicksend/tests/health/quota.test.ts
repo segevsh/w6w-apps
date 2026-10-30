@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reports ok with plenty of headroom", async () => {
+test("quota: reports ok with plenty of headroom", async () => {
   const { ctx, calls } = mockCtx([
     {
       headers: {
@@ -22,7 +23,7 @@ Deno.test("quota: reports ok with plenty of headroom", async () => {
   assertEquals(calls[0].url.endsWith("/subaccount"), true);
 });
 
-Deno.test("quota: degrades once remaining drops to the warn threshold", async () => {
+test("quota: degrades once remaining drops to the warn threshold", async () => {
   const { ctx } = mockCtx([
     {
       headers: { "x-ratelimit-limit": "100", "x-ratelimit-remaining": "5" },
@@ -34,7 +35,7 @@ Deno.test("quota: degrades once remaining drops to the warn threshold", async ()
   assertEquals(report.message?.includes("5/100"), true);
 });
 
-Deno.test("quota: reports down when the window is exhausted", async () => {
+test("quota: reports down when the window is exhausted", async () => {
   const { ctx } = mockCtx([
     { headers: { "x-ratelimit-limit": "100", "x-ratelimit-remaining": "0" }, body: {} },
   ]);
@@ -42,7 +43,7 @@ Deno.test("quota: reports down when the window is exhausted", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: unknown when the headers are absent", async () => {
+test("quota: unknown when the headers are absent", async () => {
   const { ctx } = mockCtx([{ headers: { "content-type": "application/json" }, body: {} }]);
   const report = await quota.check!({} as never, ctx);
   assertEquals(report.state, "unknown");

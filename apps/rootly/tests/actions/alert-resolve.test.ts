@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/alert-resolve.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("alert-resolve: full input maps to POST /v1/alerts/{id}/resolve", async () => {
+test("alert-resolve: full input maps to POST /v1/alerts/{id}/resolve", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -45,7 +46,7 @@ Deno.test("alert-resolve: full input maps to POST /v1/alerts/{id}/resolve", asyn
   });
 });
 
-Deno.test("alert-resolve: required input only maps to POST /v1/alerts/{id}/resolve", async () => {
+test("alert-resolve: required input only maps to POST /v1/alerts/{id}/resolve", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": {
@@ -83,7 +84,7 @@ Deno.test("alert-resolve: required input only maps to POST /v1/alerts/{id}/resol
   });
 });
 
-Deno.test("alert-resolve: an API error rejects with the vendor's title and detail", async () => {
+test("alert-resolve: an API error rejects with the vendor's title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ title: "Resource not found", status: "404", detail: "no such id" }] },

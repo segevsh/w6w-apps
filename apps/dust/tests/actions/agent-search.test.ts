@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentSearch from "../../actions/agent-search.ts";
 import { mockCtxWithConnection, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agent-search: hits the search endpoint with q", async () => {
+test("agent-search: hits the search endpoint with q", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { body: { agentConfigurations: [{ sId: "a1", name: "Support Agent" }] } },
   ]);

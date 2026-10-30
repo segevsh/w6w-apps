@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
@@ -6,7 +7,7 @@ import auth from "../../auth/oauth2.ts";
  * The spec puts /oauth/token under `https://api.hellosign.com/v3`, which 404s.
  * Both halves of the flow are on app.hellosign.com, measured 2026-08-18.
  */
-Deno.test("oauth2: points at the endpoints that exist, not the ones the spec implies", () => {
+test("oauth2: points at the endpoints that exist, not the ones the spec implies", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2!.authorizationUrl, "https://app.hellosign.com/oauth/authorize");
   assertEquals(auth.oauth2!.tokenUrl, "https://app.hellosign.com/oauth/token");
@@ -17,7 +18,7 @@ Deno.test("oauth2: points at the endpoints that exist, not the ones the spec imp
   }
 });
 
-Deno.test("oauth2: asks for the scopes the actions use and not the admin one", () => {
+test("oauth2: asks for the scopes the actions use and not the admin one", () => {
   const scopes = auth.oauth2!.scopes!;
   for (const needed of ["request_signature", "signature_request_access", "template_access"]) {
     assert(scopes.includes(needed), `missing ${needed}`);
@@ -26,7 +27,7 @@ Deno.test("oauth2: asks for the scopes the actions use and not the admin one", (
   assert(!scopes.includes("api_app_access"), "api_app_access is not this app's business");
 });
 
-Deno.test("oauth2: signs with the access token", async () => {
+test("oauth2: signs with the access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.hellosign.com/v3/account",
@@ -37,13 +38,13 @@ Deno.test("oauth2: signs with the access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer at");
 });
 
-Deno.test("oauth2: test calls the account endpoint on the API host", async () => {
+test("oauth2: test calls the account endpoint on the API host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { account: {} } }]);
   assertEquals(await auth.test!({ credential: { accessToken: "at" } } as never, ctx), { ok: true });
   assertEquals(calls[0].url, "https://api.hellosign.com/v3/account");
 });
 
-Deno.test("oauth2: a rejected token says so, another status reports itself", async () => {
+test("oauth2: a rejected token says so, another status reports itself", async () => {
   const rejected = mockCtx([{ status: 401, body: "" }]);
   assertEquals(await auth.test!({ credential: { accessToken: "at" } } as never, rejected.ctx), {
     ok: false,
@@ -56,7 +57,7 @@ Deno.test("oauth2: a rejected token says so, another status reports itself", asy
   });
 });
 
-Deno.test("oauth2: a missing token fails before any network call", async () => {
+test("oauth2: a missing token fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -65,7 +66,7 @@ Deno.test("oauth2: a missing token fails before any network call", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect publishes the account, never the token", async () => {
+test("oauth2: afterConnect publishes the account, never the token", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { account: { email_address: "ada@example.com", account_id: "a1", is_paid_hs: false } },

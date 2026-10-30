@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import userCallStart from "../../actions/user-call-start.ts";
 import { appErrorBody, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-call-start: POSTs /v1/users/{id}/calls with number_id and to", async () => {
+test("user-call-start: POSTs /v1/users/{id}/calls with number_id and to", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await userCallStart.execute(
     { userId: "456", numberId: "1234", to: "+18001231234" },
@@ -21,7 +22,7 @@ Deno.test("user-call-start: POSTs /v1/users/{id}/calls with number_id and to", a
  * 405 here means "User not available", not "wrong verb" — the single most
  * misread status on this endpoint.
  */
-Deno.test("user-call-start: a 405 is explained as user-unavailable, not wrong-verb", async () => {
+test("user-call-start: a 405 is explained as user-unavailable, not wrong-verb", async () => {
   const { ctx } = mockCtx([
     { status: 405, body: appErrorBody("Method Not Allowed", "User not available") },
   ]);

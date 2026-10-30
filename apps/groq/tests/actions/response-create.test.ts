@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/response-create.ts";
 
-Deno.test("response-create: POSTs to /openai/v1/responses with model + input", async () => {
+test("response-create: POSTs to /openai/v1/responses with model + input", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "resp_1" } }]);
   await action.execute!({ model: "llama-3.3-70b-versatile", input: "Say hi" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("response-create: POSTs to /openai/v1/responses with model + input", a
   assertEquals(body.input, "Say hi");
 });
 
-Deno.test("response-create: never sends `store` or `previous_response_id` — this API is stateless", async () => {
+test("response-create: never sends `store` or `previous_response_id` — this API is stateless", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "llama-3.3-70b-versatile", input: "hi" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -20,7 +21,7 @@ Deno.test("response-create: never sends `store` or `previous_response_id` — th
   assertEquals("previous_response_id" in body, false);
 });
 
-Deno.test("response-create: forwards optional params using snake_case names", async () => {
+test("response-create: forwards optional params using snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -56,7 +57,7 @@ Deno.test("response-create: forwards optional params using snake_case names", as
   assertEquals(body.user, "u1");
 });
 
-Deno.test("response-create: omits optional params when not provided", async () => {
+test("response-create: omits optional params when not provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "llama-3.3-70b-versatile", input: "hi" }, ctx);
   const body = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/merge.ts";
 
-Deno.test("merge: posts primary/secondary keyed by their id types", async () => {
+test("merge: posts primary/secondary keyed by their id types", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute!(
     {
@@ -22,7 +23,7 @@ Deno.test("merge: posts primary/secondary keyed by their id types", async () => 
   assertEquals(result, { success: true });
 });
 
-Deno.test("merge: falls back to id type for an unrecognized idType value", async () => {
+test("merge: falls back to id type for an unrecognized idType value", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     { primaryIdType: "bogus", primaryId: "p1", secondaryIdType: "bogus", secondaryId: "s1" },
@@ -34,7 +35,7 @@ Deno.test("merge: falls back to id type for an unrecognized idType value", async
   });
 });
 
-Deno.test("merge: rejects a blank primaryId or secondaryId", async () => {
+test("merge: rejects a blank primaryId or secondaryId", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () =>
@@ -57,7 +58,7 @@ Deno.test("merge: rejects a blank primaryId or secondaryId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("merge: uses the eu host when the connection's region is eu", async () => {
+test("merge: uses the eu host when the connection's region is eu", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     connection: { display: { region: "eu" } },
   });

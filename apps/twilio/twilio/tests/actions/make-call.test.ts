@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/make-call.ts";
 
-Deno.test("make-call: wraps plain message in TwiML <Say> and POSTs to /Calls.json", async () => {
+test("make-call: wraps plain message in TwiML <Say> and POSTs to /Calls.json", async () => {
   const body = { sid: "CA123", status: "queued" };
   const { ctx, calls } = mockCtx([{ body }], {
     connection: { display: { accountSid: "AC_test" } },
@@ -30,7 +31,7 @@ Deno.test("make-call: wraps plain message in TwiML <Say> and POSTs to /Calls.jso
   assertEquals(result, body);
 });
 
-Deno.test("make-call: passes raw message through when twiml is true", async () => {
+test("make-call: passes raw message through when twiml is true", async () => {
   const { ctx, calls } = mockCtx([{ body: { sid: "CA456" } }], {
     connection: { display: { accountSid: "AC_test" } },
   });

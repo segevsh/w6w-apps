@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search.ts";
 
-Deno.test("search: calls the documented path with the mapped query", async () => {
+test("search: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { coins: [] } }]);
   const out = await action.execute!({ query: "solana" }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("search: calls the documented path with the mapped query", async () =>
   assert(out !== undefined);
 });
 
-Deno.test("search: a vendor error body becomes a readable error", async () => {
+test("search: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },
@@ -24,7 +25,7 @@ Deno.test("search: a vendor error body becomes a readable error", async () => {
   );
 });
 
-Deno.test("search: required input is validated before any request", async () => {
+test("search: required input is validated before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "required");
   assertEquals(calls.length, 0);

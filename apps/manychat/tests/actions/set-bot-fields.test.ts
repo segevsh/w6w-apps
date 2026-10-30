@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import setBotFields from "../../actions/set-bot-fields.ts";
 
-Deno.test("set-bot-fields: POSTs the fields array to the batch endpoint", async () => {
+test("set-bot-fields: POSTs the fields array to the batch endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setBotFields.execute!({
     fields: [{ field_id: 1, field_name: "promo", field_value: "SUMMER" }],
@@ -13,7 +14,7 @@ Deno.test("set-bot-fields: POSTs the fields array to the batch endpoint", async 
   });
 });
 
-Deno.test("set-bot-fields: forwards elements verbatim — neither identifier is inferred", async () => {
+test("set-bot-fields: forwards elements verbatim — neither identifier is inferred", async () => {
   // Manychat's schema marks all three required; a name cannot be turned into an
   // id without a lookup that could bind the write to the wrong field.
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
@@ -24,7 +25,7 @@ Deno.test("set-bot-fields: forwards elements verbatim — neither identifier is 
   });
 });
 
-Deno.test("set-bot-fields: coerces each element's value", async () => {
+test("set-bot-fields: coerces each element's value", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setBotFields.execute!({
     fields: [
@@ -39,7 +40,7 @@ Deno.test("set-bot-fields: coerces each element's value", async () => {
   assertEquals(sent[2].field_value, "2026-08-03");
 });
 
-Deno.test("set-bot-fields: an absent array degrades to an empty batch, not a crash", async () => {
+test("set-bot-fields: an absent array degrades to an empty batch, not a crash", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await setBotFields.execute!({} as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { fields: [] });

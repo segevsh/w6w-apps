@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/subscriber-subscribe.ts";
 
 const conn = { display: { baseUrl: "https://example.com/sendy" } };
 
-Deno.test("subscriber-subscribe: posts to /subscribe with boolean=true forced", async () => {
+test("subscriber-subscribe: posts to /subscribe with boolean=true forced", async () => {
   const { ctx, calls } = mockCtx([{ body: "true" }], conn);
   const result = await action.execute(
     { email: "ada@example.com", listId: "abc123", name: "Ada" },
@@ -20,7 +21,7 @@ Deno.test("subscriber-subscribe: posts to /subscribe with boolean=true forced", 
   assertEquals(result, { subscribed: true });
 });
 
-Deno.test("subscriber-subscribe: merges custom fields verbatim into the form", async () => {
+test("subscriber-subscribe: merges custom fields verbatim into the form", async () => {
   const { ctx, calls } = mockCtx([{ body: "true" }], conn);
   await action.execute(
     {
@@ -34,7 +35,7 @@ Deno.test("subscriber-subscribe: merges custom fields verbatim into the form", a
   assertEquals(body.get("Birthday"), "1990-01-01");
 });
 
-Deno.test("subscriber-subscribe: a documented error becomes a thrown error", async () => {
+test("subscriber-subscribe: a documented error becomes a thrown error", async () => {
   const { ctx } = mockCtx([{ body: "Already subscribed." }], conn);
   await assertRejects(
     async () => await action.execute({ email: "ada@example.com", listId: "abc123" }, ctx),
@@ -43,6 +44,6 @@ Deno.test("subscriber-subscribe: a documented error becomes a thrown error", asy
   );
 });
 
-Deno.test("subscriber-subscribe: is marked idempotent", () => {
+test("subscriber-subscribe: is marked idempotent", () => {
   assert(action.idempotent === true);
 });

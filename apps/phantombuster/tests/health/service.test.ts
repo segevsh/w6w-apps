@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, mapIndicator, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -10,13 +11,13 @@ const SUMMARY = (indicator: string, components: Array<{ name: string; status: st
   status: { indicator, description: indicator === "none" ? "All Systems Operational" : "Incident" },
 });
 
-Deno.test("service: fetches the real status URL", async () => {
+test("service: fetches the real status URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: SUMMARY("none", []) }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: all-operational maps to ok", async () => {
+test("service: all-operational maps to ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: SUMMARY("none", [{ name: "Phantoms", status: "operational" }]),
@@ -25,7 +26,7 @@ Deno.test("service: all-operational maps to ok", async () => {
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: a major outage maps to down", async () => {
+test("service: a major outage maps to down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: SUMMARY("critical", [{ name: "API", status: "major_outage" }]),
@@ -34,13 +35,13 @@ Deno.test("service: a major outage maps to down", async () => {
   assertEquals(out.state, "down");
 });
 
-Deno.test("service: an unreachable status page is unknown, never down", async () => {
+test("service: an unreachable status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as PhantomBuster's is unknown", async () => {
+test("service: a page that no longer self-identifies as PhantomBuster's is unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -52,7 +53,7 @@ Deno.test("service: a page that no longer self-identifies as PhantomBuster's is 
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("mapComponentStatus: covers the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: covers the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -61,7 +62,7 @@ Deno.test("mapComponentStatus: covers the documented Statuspage vocabulary", () 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: covers the documented page-level vocabulary", () => {
+test("mapIndicator: covers the documented page-level vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -70,7 +71,7 @@ Deno.test("mapIndicator: covers the documented page-level vocabulary", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: is unsigned and widens egress only to the status host", () => {
+test("service: is unsigned and widens egress only to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.phantombuster.com"]);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import queueGet from "../../actions/queue-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("queue-get: calls GET /v1/queues/11111111-2222-3333-4444-555555555555", async () => {
+test("queue-get: calls GET /v1/queues/11111111-2222-3333-4444-555555555555", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "11111111-2222-3333-4444-555555555555" } },
@@ -23,7 +24,7 @@ Deno.test("queue-get: calls GET /v1/queues/11111111-2222-3333-4444-555555555555"
   assertEquals(out, { "data": { "id": "11111111-2222-3333-4444-555555555555" } });
 });
 
-Deno.test("queue-get: surfaces a Dixa error message with the status", async () => {
+test("queue-get: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -35,7 +36,7 @@ Deno.test("queue-get: surfaces a Dixa error message with the status", async () =
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("queue-get: rejects bad input before any request", async () => {
+test("queue-get: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

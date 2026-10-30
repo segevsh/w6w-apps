@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/repo-delete.ts";
 
 /** A wrong value here destroys the wrong repository, for somebody else. */
-Deno.test("repo-delete: refuses unless the id is typed again exactly", async () => {
+test("repo-delete: refuses unless the id is typed again exactly", async () => {
   for (const confirm of [undefined, "", "acme/score", "ACME/SCORES"]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -17,7 +18,7 @@ Deno.test("repo-delete: refuses unless the id is typed again exactly", async () 
   }
 });
 
-Deno.test("repo-delete: sends the name and namespace separately", async () => {
+test("repo-delete: sends the name and namespace separately", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute(
     { id: "acme/scores", type: "dataset", confirmId: "acme/scores" },
@@ -35,7 +36,7 @@ Deno.test("repo-delete: sends the name and namespace separately", async () => {
   assertEquals(result.id, "acme/scores");
 });
 
-Deno.test("repo-delete: a bare id deletes under the token's own user", async () => {
+test("repo-delete: a bare id deletes under the token's own user", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ id: "scores", type: "model", confirmId: "scores" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -44,14 +45,14 @@ Deno.test("repo-delete: a bare id deletes under the token's own user", async () 
 });
 
 /** There is no archive and no undo. */
-Deno.test("repo-delete: warns that it is permanent, without naming the repository", async () => {
+test("repo-delete: warns that it is permanent, without naming the repository", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ id: "acme/scores", type: "model", confirmId: "acme/scores" }, ctx);
   assertEquals(logs[0].level, "warn");
   assert(/permanently, with all its history/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("repo-delete: a repository that is already gone surfaces the 404", async () => {
+test("repo-delete: a repository that is already gone surfaces the 404", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "Repo not found" } }]);
   let message = "";
   try {
@@ -66,7 +67,7 @@ Deno.test("repo-delete: a repository that is already gone surfaces the 404", asy
  * Deleting is the right response to a mistake, not a way to un-publish — the
  * copies that already exist are the reality.
  */
-Deno.test("repo-delete: says what deleting does not undo", () => {
+test("repo-delete: says what deleting does not undo", () => {
   assert(
     /already downloaded or forked is unaffected/.test(action.description!),
     action.description,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is an apiKey auth stamping the X-cb-user-key header", async () => {
+test("api-key: is an apiKey auth stamping the X-cb-user-key header", async () => {
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "X-cb-user-key" });
   const request = {
@@ -14,13 +15,13 @@ Deno.test("api-key: is an apiKey auth stamping the X-cb-user-key header", async 
   assertEquals(out.headers["x-cb-user-key"], "secret-key");
 });
 
-Deno.test("api-key: the field is a secret", () => {
+test("api-key: the field is a secret", () => {
   const field = auth.fields!.find((f) => f.key === "apiKey")!;
   assertEquals(field.type, "secret");
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: test probes autocomplete, the endpoint every package includes", async () => {
+test("api-key: test probes autocomplete, the endpoint every package includes", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { entities: [] } }]);
   const result = await auth.test({ credential: { apiKey: "sk" } }, ctx);
   assertEquals(result, { ok: true });
@@ -31,7 +32,7 @@ Deno.test("api-key: test probes autocomplete, the endpoint every package include
   assertEquals(calls[0].headers["x-cb-user-key"], "sk");
 });
 
-Deno.test("api-key: a 401 reports the vendor's own error code, not the key", async () => {
+test("api-key: a 401 reports the vendor's own error code, not the key", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -42,7 +43,7 @@ Deno.test("api-key: a 401 reports the vendor's own error code, not the key", asy
   assertEquals(result.message, "Crunchbase rejected the credential (Unauthorized user_key LA401)");
 });
 
-Deno.test("api-key: a 403 is reported as an access problem, distinct from a bad key", async () => {
+test("api-key: a 403 is reported as an access problem, distinct from a bad key", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: [{ status: 403, code: "LA403", message: "Insufficient package access" }],
@@ -55,7 +56,7 @@ Deno.test("api-key: a 403 is reported as an access problem, distinct from a bad 
   );
 });
 
-Deno.test("api-key: a missing credential fails before any network call", async () => {
+test("api-key: a missing credential fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -64,7 +65,7 @@ Deno.test("api-key: a missing credential fails before any network call", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: the error body's key is never echoed back", async () => {
+test("api-key: the error body's key is never echoed back", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: [{ status: 401, code: "LA401", message: "Unauthorized user_key" }],

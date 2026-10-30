@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import goalList from "../../actions/goal-list.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("goal-list: GETs goal/lists.json with the documented parameters", async () => {
+test("goal-list: GETs goal/lists.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "goals": { "count": 0, "items": [] } }) }]);
   const out = await goalList.execute({} as never, ctx);
 
@@ -14,14 +15,14 @@ Deno.test("goal-list: GETs goal/lists.json with the documented parameters", asyn
   assertEquals(out, { "goals": { "count": 0, "items": [] } });
 });
 
-Deno.test("goal-list: is a read with no request body", async () => {
+test("goal-list: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "goals": { "count": 0, "items": [] } }) }]);
   await goalList.execute({} as never, ctx);
   assertEquals(calls[0].body, null);
   assertEquals(goalList.type, "read");
 });
 
-Deno.test("goal-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("goal-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () => await goalList.execute({} as never, ctx));

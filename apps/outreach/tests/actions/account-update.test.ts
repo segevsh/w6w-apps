@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountUpdate from "../../actions/account-update.ts";
 import { bodyOf, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("account-update: PATCHes /accounts/{id}", async () => {
+test("account-update: PATCHes /accounts/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: single("account", 4, { industry: "SaaS" }) }]);
   await accountUpdate.execute({ id: 4, industry: "SaaS" }, ctx);
 
@@ -13,6 +14,6 @@ Deno.test("account-update: PATCHes /accounts/{id}", async () => {
   });
 });
 
-Deno.test("account-update: only the id is required", () => {
+test("account-update: only the id is required", () => {
   assertEquals(accountUpdate.params!.filter((p) => p.required).map((p) => p.key), ["id"]);
 });

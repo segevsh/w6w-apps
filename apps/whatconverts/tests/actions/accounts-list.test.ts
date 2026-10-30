@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountsList from "../../actions/accounts-list.ts";
 import { API_ROOT, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("accounts-list defaults accounts_per_page to 25", async () => {
+test("accounts-list defaults accounts_per_page to 25", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { accounts: [] } }]);
   await accountsList.execute({}, ctx);
   assertEquals(calls[0].url, `${API_ROOT}/accounts?accounts_per_page=25`);
 });
 
-Deno.test("accounts-list forwards pagination and ordering filters", async () => {
+test("accounts-list forwards pagination and ordering filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { accounts: [] } }]);
   await accountsList.execute({
     accountsPerPage: 100,

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/identity-create.ts";
 
-Deno.test("identity-create: POST /v2/email/identities and maps the response", async () => {
+test("identity-create: POST /v2/email/identities and maps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -46,7 +47,7 @@ Deno.test("identity-create: POST /v2/email/identities and maps the response", as
   });
 });
 
-Deno.test("identity-create: uses the connection's region for the host", async () => {
+test("identity-create: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -70,7 +71,7 @@ Deno.test("identity-create: uses the connection's region for the host", async ()
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("identity-create: surfaces the vendor's error type and message", async () => {
+test("identity-create: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

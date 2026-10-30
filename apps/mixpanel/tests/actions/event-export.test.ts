@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-export.ts";
 
 const conn = { display: { projectId: "123", region: "us" } };
 
 /** Its own host family, its own rate budget, and JSONL rather than JSON. */
-Deno.test("event-export: reads JSONL from the export host", async () => {
+test("event-export: reads JSONL from the export host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: '{"event":"a","properties":{"time":1}}\n{"event":"b","properties":{"time":2}}',
@@ -21,7 +22,7 @@ Deno.test("event-export: reads JSONL from the export host", async () => {
   assertEquals(url.pathname, "/api/2.0/export");
 });
 
-Deno.test("event-export: an event filter is encoded as a JSON array", async () => {
+test("event-export: an event filter is encoded as a JSON array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }], conn);
   await action.execute!({
     fromDate: "2026-08-01",
@@ -34,7 +35,7 @@ Deno.test("event-export: an event filter is encoded as a JSON array", async () =
   );
 });
 
-Deno.test("event-export: a limit above Mixpanel's ceiling is refused", async () => {
+test("event-export: a limit above Mixpanel's ceiling is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () =>
@@ -46,6 +47,6 @@ Deno.test("event-export: a limit above Mixpanel's ceiling is refused", async () 
 });
 
 /** UTC here, project-local in the query API. */
-Deno.test("event-export: the description warns the timezone differs", () => {
+test("event-export: the description warns the timezone differs", () => {
   assert(/UTC/.test(action.description!), action.description);
 });

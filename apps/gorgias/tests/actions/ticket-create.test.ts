@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-create.ts";
 
-Deno.test("ticket-create: POSTs /tickets with the ticket and opening message", async () => {
+test("ticket-create: POSTs /tickets with the ticket and opening message", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { id: 1 } }]);
   await action.execute(
     { subject: "Where is my order?", channel: "email", fromAgent: false, bodyText: "Hi!" },
@@ -20,7 +21,7 @@ Deno.test("ticket-create: POSTs /tickets with the ticket and opening message", a
   }]);
 });
 
-Deno.test("ticket-create: maps a customer id or email/name to the customer object", async () => {
+test("ticket-create: maps a customer id or email/name to the customer object", async () => {
   const withId = mockGorgiasCtx([{ body: {} }]);
   await action.execute(
     { channel: "email", fromAgent: false, bodyText: "hi", customerId: 42 },
@@ -40,7 +41,7 @@ Deno.test("ticket-create: maps a customer id or email/name to the customer objec
   assertEquals(JSON.parse(withNeither.calls[0].body!).customer, undefined);
 });
 
-Deno.test("ticket-create: splits tags into the tag-object array Gorgias expects", async () => {
+test("ticket-create: splits tags into the tag-object array Gorgias expects", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: {} }]);
   await action.execute(
     { channel: "email", fromAgent: false, bodyText: "hi", tags: "vip, urgent" },

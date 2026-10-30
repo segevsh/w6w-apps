@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usersCreate from "../../actions/users-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("users-create: POSTs /users with office id coerced to a number", async () => {
+test("users-create: POSTs /users with office id coerced to a number", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "1" } }]);
   await usersCreate.execute({ email: "a@b.com", officeId: "42", license: "talk" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -14,6 +15,6 @@ Deno.test("users-create: POSTs /users with office id coerced to a number", async
   });
 });
 
-Deno.test("users-create: declared non-idempotent", () => {
+test("users-create: declared non-idempotent", () => {
   assertEquals(usersCreate.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/state-list.ts";
@@ -11,7 +12,7 @@ const states = ok([
   { entity_id: "binary_sensor.door", state: "off", attributes: {} },
 ]);
 
-Deno.test("state-list: returns everything with a domain breakdown", async () => {
+test("state-list: returns everything with a domain breakdown", async () => {
   const { ctx, calls } = mockCtx([states], { display });
   const result = await action.execute!({}, ctx) as {
     count: number;
@@ -25,7 +26,7 @@ Deno.test("state-list: returns everything with a domain breakdown", async () => 
 });
 
 /** There is no server-side filter, so this narrows the result, not the transfer. */
-Deno.test("state-list: filters by domain after fetching, and says total separately", async () => {
+test("state-list: filters by domain after fetching, and says total separately", async () => {
   const { ctx } = mockCtx([states], { display });
   const result = await action.execute!({ domains: "light" }, ctx) as {
     count: number;
@@ -35,13 +36,13 @@ Deno.test("state-list: filters by domain after fetching, and says total separate
   assertEquals(result.total, 5, "the instance still returned everything");
 });
 
-Deno.test("state-list: filters by a substring of the entity id", async () => {
+test("state-list: filters by a substring of the entity id", async () => {
   const { ctx } = mockCtx([states], { display });
   const result = await action.execute!({ entityPrefix: "kitchen" }, ctx) as { count: number };
   assertEquals(result.count, 2);
 });
 
-Deno.test("state-list: counts the entities that are not working, before filtering them", async () => {
+test("state-list: counts the entities that are not working, before filtering them", async () => {
   const kept = mockCtx([states], { display });
   const withAll = await kept.ctx && await action.execute!({}, kept.ctx) as {
     unavailable: number;
@@ -60,7 +61,7 @@ Deno.test("state-list: counts the entities that are not working, before filterin
 });
 
 /** Attributes are most of the bytes on a large install. */
-Deno.test("state-list: attributes can be dropped, leaving ids and states", async () => {
+test("state-list: attributes can be dropped, leaving ids and states", async () => {
   const { ctx } = mockCtx([states], { display });
   const result = await action.execute!({ includeAttributes: false }, ctx) as {
     states: Array<Record<string, unknown>>;
@@ -68,20 +69,20 @@ Deno.test("state-list: attributes can be dropped, leaving ids and states", async
   assertEquals(Object.keys(result.states[0]).sort(), ["entity_id", "last_changed", "state"]);
 });
 
-Deno.test("state-list: an empty instance is a count of zero, not an error", async () => {
+test("state-list: an empty instance is a count of zero, not an error", async () => {
   const { ctx } = mockCtx([ok([])], { display });
   const result = await action.execute!({}, ctx) as { count: number; domains: unknown[] };
   assertEquals(result.count, 0);
   assertEquals(result.domains, []);
 });
 
-Deno.test("state-list: logs counts, never the entities", async () => {
+test("state-list: logs counts, never the entities", async () => {
   const { ctx, logs } = mockCtx([states], { display });
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("Kitchen"), JSON.stringify(logs));
   assertEquals(logs[0].data, { total: 5, count: 5, unavailable: 2 });
 });
 
-Deno.test("state-list: says there is no server-side filter", () => {
+test("state-list: says there is no server-side filter", () => {
   assert(/NO server-side filter/.test(action.description!), action.description);
 });

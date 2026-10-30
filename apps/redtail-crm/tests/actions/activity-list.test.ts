@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import activityList from "../../actions/activity-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("activity-list: fetches GET /activities?start_date=&end_date=", async () => {
+test("activity-list: fetches GET /activities?start_date=&end_date=", async () => {
   const { ctx, calls } = mockCtx([{ body: { activities: [{ id: 231, subject: "Lunch" }] } }]);
   const out = await activityList.execute(
     { startDate: "2019-05-26", endDate: "2020-07-05" },
@@ -15,7 +16,7 @@ Deno.test("activity-list: fetches GET /activities?start_date=&end_date=", async 
   assertEquals(out.activities[0].subject, "Lunch");
 });
 
-Deno.test("activity-list: omits unset filters entirely", async () => {
+test("activity-list: omits unset filters entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { activities: [] } }]);
   await activityList.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

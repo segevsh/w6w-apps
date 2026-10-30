@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-member.ts";
 
-Deno.test("get-member: GETs /members/{id} (UUID) with default include", async () => {
+test("get-member: GETs /members/{id} (UUID) with default include", async () => {
   const body = { data: { id: "03ca69c3-ebea-4b9a-8fac-e4a837873254", type: "member" } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({ memberId: "03ca69c3-ebea-4b9a-8fac-e4a837873254" }, ctx);

@@ -1,12 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import { ZONES } from "../lib/client.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as { w6w: { id: string; network: { allow: string[] }; categories: string[] } };
 
-Deno.test("index: exports 21 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 21 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 21);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -18,7 +20,7 @@ Deno.test("index: exports 21 actions with unique kebab-case keys and valid types
   }
 });
 
-Deno.test("index: every perform action declares idempotent, and every create is not", () => {
+test("index: every perform action declares idempotent, and every create is not", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -35,13 +37,13 @@ Deno.test("index: every perform action declares idempotent, and every create is 
   ]);
 });
 
-Deno.test("index: one auth method and three health checks", () => {
+test("index: one auth method and three health checks", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-user"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "api", "quota"]);
 });
 
 /** The zone list and the manifest's allowlist are two copies of one fact; they must agree. */
-Deno.test("manifest: network.allow is exactly the discovery host plus every zone host", () => {
+test("manifest: network.allow is exactly the discovery host plus every zone host", () => {
   const expected = [
     "webservices.autotask.net",
     ...ZONES.map((z) => `webservices${z}.autotask.net`),
@@ -49,7 +51,7 @@ Deno.test("manifest: network.allow is exactly the discovery host plus every zone
   assertEquals([...manifest.w6w.network.allow].sort(), [...expected].sort());
 });
 
-Deno.test("manifest: id and 1-3 categories", () => {
+test("manifest: id and 1-3 categories", () => {
   assertEquals(manifest.w6w.id, "io.w6w.autotask");
   assert(manifest.w6w.categories.length >= 1 && manifest.w6w.categories.length <= 3);
 });

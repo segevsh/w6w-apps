@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-get-many.ts";
 
-Deno.test("invoice-get-many: GETs /v2/invoices with the required location_id", async () => {
+test("invoice-get-many: GETs /v2/invoices with the required location_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { invoices: [] } }]);
   await action.execute({ locationId: "L1", limit: 50, cursor: "c" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("invoice-get-many: GETs /v2/invoices with the required location_id", a
   assertEquals(url.searchParams.get("cursor"), "c");
 });
 
-Deno.test("invoice-get-many: marks the location id required — Square's endpoint demands it", () => {
+test("invoice-get-many: marks the location id required — Square's endpoint demands it", () => {
   const p = action.params?.find((p) => p.key === "locationId");
   assertEquals(p?.required, true);
   assert(/required/i.test(p?.hint ?? ""), p?.hint);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import discountCouponCreate from "../../actions/discount-coupon-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("discount-coupon-create: POSTs to /discount_coupons and returns id and code", async () => {
+test("discount-coupon-create: POSTs to /discount_coupons and returns id and code", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 358845013, code: "MOXQ3YCWXRXA" } },
   ]);
@@ -33,7 +34,7 @@ Deno.test("discount-coupon-create: POSTs to /discount_coupons and returns id and
   assertEquals(out, { id: 358845013, code: "MOXQ3YCWXRXA" });
 });
 
-Deno.test("discount-coupon-create: the four fields that make a coupon usable are required here", () => {
+test("discount-coupon-create: the four fields that make a coupon usable are required here", () => {
   for (const key of ["name", "code", "discountType", "status"]) {
     assertEquals(
       discountCouponCreate.params?.find((p) => p.key === key)?.required,
@@ -43,7 +44,7 @@ Deno.test("discount-coupon-create: the four fields that make a coupon usable are
   }
 });
 
-Deno.test("discount-coupon-create: launch and expiration dates keep the vendor's format", async () => {
+test("discount-coupon-create: launch and expiration dates keep the vendor's format", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, code: "X" } }]);
   await discountCouponCreate.execute(
     {

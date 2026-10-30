@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueGet from "../../actions/issue-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("issue-get: GETs /issue/{key} and omits blank fields/expand", async () => {
+test("issue-get: GETs /issue/{key} and omits blank fields/expand", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", key: "ENG-1" } }]);
   await issueGet.execute({ issueKey: "ENG-1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("issue-get: GETs /issue/{key} and omits blank fields/expand", async ()
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("issue-get: forwards fields and expand when given", async () => {
+test("issue-get: forwards fields and expand when given", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1", key: "ENG-1" } }]);
   await issueGet.execute({ issueKey: "ENG-1", fields: "summary,status", expand: "changelog" }, ctx);
   assertEquals(queryOf(calls[0].url), { fields: "summary,status", expand: "changelog" });

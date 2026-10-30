@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import folderVideoRemove from "../../actions/folder-video-remove.ts";
 import { jsonBody, mockCtx, url } from "../_helpers.ts";
 
-Deno.test("folder-video-remove: one video uses the path endpoint", async () => {
+test("folder-video-remove: one video uses the path endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await folderVideoRemove.execute({ folderId: "12345", videoIds: "1" }, ctx);
   assertEquals(calls.length, 1);
@@ -11,7 +12,7 @@ Deno.test("folder-video-remove: one video uses the path endpoint", async () => {
   assertEquals(out.deletedVideos, false);
 });
 
-Deno.test("folder-video-remove: several videos use the bulk endpoint", async () => {
+test("folder-video-remove: several videos use the bulk endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await folderVideoRemove.execute({ folderId: "12345", videoIds: "1,2" }, ctx);
   assertEquals(calls.length, 1);
@@ -25,7 +26,7 @@ Deno.test("folder-video-remove: several videos use the bulk endpoint", async () 
  * says to delete must not be routed to the endpoint that would silently drop
  * the flag and leave the videos alive.
  */
-Deno.test("folder-video-remove: deleting one video still uses the bulk endpoint", async () => {
+test("folder-video-remove: deleting one video still uses the bulk endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await folderVideoRemove.execute(
     { folderId: "12345", videoIds: "1", shouldDeleteClips: true },
@@ -36,7 +37,7 @@ Deno.test("folder-video-remove: deleting one video still uses the bulk endpoint"
   assertEquals(out.deletedVideos, true);
 });
 
-Deno.test("folder-video-remove: recently-deleted is never sent without the delete flag", async () => {
+test("folder-video-remove: recently-deleted is never sent without the delete flag", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }, { status: 204 }]);
   await folderVideoRemove.execute(
     { folderId: "1", videoIds: "1,2", sendToRecentlyDeleted: true },
@@ -51,7 +52,7 @@ Deno.test("folder-video-remove: recently-deleted is never sent without the delet
   assertEquals(jsonBody(calls[1]).send_to_recently_deleted, true);
 });
 
-Deno.test("folder-video-remove: a blank video list is refused before any request", async () => {
+test("folder-video-remove: a blank video list is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await folderVideoRemove.execute({ folderId: "1", videoIds: "" }, ctx),
@@ -61,7 +62,7 @@ Deno.test("folder-video-remove: a blank video list is refused before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("folder-video-remove: is a retry-safe perform", () => {
+test("folder-video-remove: is a retry-safe perform", () => {
   assertEquals(folderVideoRemove.type, "perform");
   assertEquals(folderVideoRemove.idempotent, true);
 });

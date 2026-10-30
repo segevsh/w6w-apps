@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-delete.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("lead-delete: POSTs to /rest/v1/leads/delete.json with an input array", async () => {
+test("lead-delete: POSTs to /rest/v1/leads/delete.json with an input array", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { success: true, result: [{ id: 1, status: "deleted" }, { id: 2, status: "deleted" }] },
@@ -17,7 +18,7 @@ Deno.test("lead-delete: POSTs to /rest/v1/leads/delete.json with an input array"
   assertEquals(out, [{ id: 1, status: "deleted" }, { id: 2, status: "deleted" }]);
 });
 
-Deno.test("lead-delete: refuses without confirm", async () => {
+test("lead-delete: refuses without confirm", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -28,7 +29,7 @@ Deno.test("lead-delete: refuses without confirm", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("lead-delete: requires at least one numeric lead ID", async () => {
+test("lead-delete: requires at least one numeric lead ID", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -39,13 +40,13 @@ Deno.test("lead-delete: requires at least one numeric lead ID", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("lead-delete: is gated behind an explicit confirmation", () => {
+test("lead-delete: is gated behind an explicit confirmation", () => {
   const confirm = (action.params as Array<{ key: string; required?: boolean; default?: unknown }>)
     .find((p) => p.key === "confirm");
   assertEquals(confirm?.required, true);
   assertEquals(confirm?.default, false);
 });
 
-Deno.test("lead-delete: idempotent is true — re-deleting an already-deleted lead is a no-op", () => {
+test("lead-delete: idempotent is true — re-deleting an already-deleted lead is a no-op", () => {
   assertEquals(action.idempotent, true);
 });

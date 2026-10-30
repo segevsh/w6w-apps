@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/destination-list.ts";
 
@@ -13,7 +14,7 @@ const destinations = {
   },
 };
 
-Deno.test("destination-list: returns the ids and counts the types", async () => {
+test("destination-list: returns the ids and counts the types", async () => {
   const { ctx, calls } = mockCtx([destinations], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v1/destinations");
@@ -21,7 +22,7 @@ Deno.test("destination-list: returns the ids and counts the types", async () => 
   assertEquals(result.byType, { snowflake: 1, s3: 1 });
 });
 
-Deno.test("destination-list: the type filter is applied here", async () => {
+test("destination-list: the type filter is applied here", async () => {
   const { ctx } = mockCtx([destinations], D);
   const result = await action.execute({ destinationType: "snowflake" }, ctx) as Record<
     string,
@@ -32,6 +33,6 @@ Deno.test("destination-list: the type filter is applied here", async () => {
 });
 
 /** Several connections usually share one destination. */
-Deno.test("destination-list: says a destination is the blast radius", () => {
+test("destination-list: says a destination is the blast radius", () => {
   assert(/blast radius of any change/.test(action.description!), action.description);
 });

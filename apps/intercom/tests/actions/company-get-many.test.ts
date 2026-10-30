@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/company-get-many.ts";
 
-Deno.test("company-get-many: GETs /companies with filters and pagination", async () => {
+test("company-get-many: GETs /companies with filters and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], pages: {} } }]);
   await action.execute!({ name: "Acme", page: 2, perPage: 30 }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("company-get-many: GETs /companies with filters and pagination", async
   assertEquals(url.searchParams.get("per_page"), "30");
 });
 
-Deno.test("company-get-many: defaults per_page to 15 and omits blank filters", async () => {
+test("company-get-many: defaults per_page to 15 and omits blank filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sequenceStateResume from "../../actions/sequence-state-resume.ts";
 import { errorsBody, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("sequence-state-resume: POST /sequenceStates/{id}/actions/resume with no body", async () => {
+test("sequence-state-resume: POST /sequenceStates/{id}/actions/resume with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: single("sequenceState", 3, { state: "x" }) }]);
   const out = await sequenceStateResume.execute({ id: 3 }, ctx) as { data: { id: number } };
 
@@ -13,7 +14,7 @@ Deno.test("sequence-state-resume: POST /sequenceStates/{id}/actions/resume with 
   assertEquals(out.data.id, 3);
 });
 
-Deno.test("sequence-state-resume: a 422 is reported", async () => {
+test("sequence-state-resume: a 422 is reported", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorsBody("validationError", "Validation Error", "Not in a valid state."),

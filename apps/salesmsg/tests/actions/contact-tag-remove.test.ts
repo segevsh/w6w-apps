@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactTagRemove from "../../actions/contact-tag-remove.ts";
 import { API_ROOT, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-tag-remove: sends the documented request and returns the answer", async () => {
+test("contact-tag-remove: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await contactTagRemove.execute({ "contact": 42, "tag": 5 }, ctx) as { id: number };
 
@@ -13,12 +14,12 @@ Deno.test("contact-tag-remove: sends the documented request and returns the answ
   assertEquals(result.id, 1);
 });
 
-Deno.test("contact-tag-remove: declares idempotent = true", () => {
+test("contact-tag-remove: declares idempotent = true", () => {
   assertEquals(contactTagRemove.idempotent, true);
   assertEquals(contactTagRemove.type, "perform");
 });
 
-Deno.test("contact-tag-remove: a refused token surfaces the vendor message", async () => {
+test("contact-tag-remove: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

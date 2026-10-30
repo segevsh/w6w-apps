@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastSchedule from "../../actions/broadcast-schedule.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("broadcast-schedule: posts scheduled_for to /schedule", async () => {
+test("broadcast-schedule: posts scheduled_for to /schedule", async () => {
   const { ctx, calls } = mockCtx([
     { body: { self_link: "https://api.aweber.com/1.0/accounts/1/lists/2/broadcasts/1" } },
   ]);

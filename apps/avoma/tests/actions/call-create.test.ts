@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import callCreate from "../../actions/call-create.ts";
 import { detail, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -14,7 +15,7 @@ const BASE = {
   participants: [{ email: "lead@x.com", name: "Lead" }],
 };
 
-Deno.test("call-create: POSTs the snake_case body and drops unset optionals", async () => {
+test("call-create: POSTs the snake_case body and drops unset optionals", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { external_id: "e1" } }]);
   const out = await callCreate.execute({ ...BASE, answered: true }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -35,13 +36,13 @@ Deno.test("call-create: POSTs the snake_case body and drops unset optionals", as
   assertEquals(out, { external_id: "e1" });
 });
 
-Deno.test("call-create: participants may arrive as a JSON string", async () => {
+test("call-create: participants may arrive as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await callCreate.execute({ ...BASE, participants: '[{"email":"a@b.com"}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).participants, [{ email: "a@b.com" }]);
 });
 
-Deno.test("call-create: empty or malformed participants are refused before any request", async () => {
+test("call-create: empty or malformed participants are refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await callCreate.execute({ ...BASE, participants: [] }, ctx),
@@ -56,7 +57,7 @@ Deno.test("call-create: empty or malformed participants are refused before any r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("call-create: a 400 is reported and the action is not marked idempotent", async () => {
+test("call-create: a 400 is reported and the action is not marked idempotent", async () => {
   const { ctx } = mockCtx([{ status: 400, body: detail("external_id already exists") }]);
   await assertRejects(
     async () => await callCreate.execute(BASE, ctx),

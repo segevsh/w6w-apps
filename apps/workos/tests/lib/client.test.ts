@@ -1,21 +1,22 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, csv, describeError, json, WorkOSClient } from "../../lib/client.ts";
 
-Deno.test("compact: drops unset keys so an update does not clear untouched fields", () => {
+test("compact: drops unset keys so an update does not clear untouched fields", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: [], f: false }), {
     a: 1,
     f: false,
   });
 });
 
-Deno.test("csv: splits, trims and drops empties; blank means unset", () => {
+test("csv: splits, trims and drops empties; blank means unset", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv([" x ", ""]), ["x"]);
 });
 
-Deno.test("json: passes live values through and rejects malformed text by name", () => {
+test("json: passes live values through and rejects malformed text by name", () => {
   assertEquals(json({ a: 1 }, "metadata"), { a: 1 });
   assertEquals(json('{"a":1}', "metadata"), { a: 1 });
   assertEquals(json("", "metadata"), undefined);
@@ -27,7 +28,7 @@ Deno.test("json: passes live values through and rejects malformed text by name",
   }
 });
 
-Deno.test("client: builds the URL, drops empty query values and sets no authorization", async () => {
+test("client: builds the URL, drops empty query values and sets no authorization", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await new WorkOSClient(ctx).request("/organizations", { query: { order: "desc", blank: "" } });
   assertEquals(calls[0].url, "https://api.workos.com/organizations?order=desc");
@@ -36,13 +37,13 @@ Deno.test("client: builds the URL, drops empty query values and sets no authoriz
 });
 
 /** WorkOS takes repeated keys for list parameters, not a joined string. */
-Deno.test("client: an array query parameter becomes repeated keys", async () => {
+test("client: an array query parameter becomes repeated keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new WorkOSClient(ctx).request("/events", { query: { events: ["a.b", "c.d"] } });
   assertEquals(new URL(calls[0].url).searchParams.getAll("events"), ["a.b", "c.d"]);
 });
 
-Deno.test("client: a 204 answers undefined rather than failing to parse", async () => {
+test("client: a 204 answers undefined rather than failing to parse", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new WorkOSClient(ctx).request("/organizations/org_1", { method: "DELETE" }),
@@ -50,7 +51,7 @@ Deno.test("client: a 204 answers undefined rather than failing to parse", async 
   );
 });
 
-Deno.test("client: an error carries the method, the path and WorkOS's own message", async () => {
+test("client: an error carries the method, the path and WorkOS's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Organization not found" } }]);
   await assertRejects(
     async () => await new WorkOSClient(ctx).request("/organizations/org_x"),
@@ -60,7 +61,7 @@ Deno.test("client: an error carries the method, the path and WorkOS's own messag
 });
 
 /** The `errors` array names the field, which is the half worth surfacing. */
-Deno.test("describeError: a 422 surfaces the offending field names", () => {
+test("describeError: a 422 surfaces the offending field names", () => {
   const text = JSON.stringify({
     code: "validation_error",
     message: "Validation failed",
@@ -75,18 +76,18 @@ Deno.test("describeError: a 422 surfaces the offending field names", () => {
  * The environment mistake is the expensive one — a staging key sees an entirely
  * different world rather than failing — so the 401 says so.
  */
-Deno.test("describeError: a 401 points at the sk_test / sk_live distinction", () => {
+test("describeError: a 401 points at the sk_test / sk_live distinction", () => {
   const out = describeError(401, JSON.stringify({ message: "Unauthorized" }));
   assert(out.includes("sk_test_"), out);
   assert(out.includes("sk_live_"), out);
 });
 
-Deno.test("describeError: a non-JSON body still produces something readable", () => {
+test("describeError: a non-JSON body still produces something readable", () => {
   assertEquals(describeError(502, "<html>bad gateway</html>"), "<html>bad gateway</html>");
 });
 
 /** The cursor is an object id and a null `after` is the end of the list. */
-Deno.test("client: requestAll follows the after cursor and stops on a null", async () => {
+test("client: requestAll follows the after cursor and stops on a null", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "a" }], list_metadata: { after: "a" } } },
     { status: 200, body: { data: [{ id: "b" }], list_metadata: { after: null } } },
@@ -98,7 +99,7 @@ Deno.test("client: requestAll follows the after cursor and stops on a null", asy
   assertEquals(new URL(calls[1].url).searchParams.get("after"), "a");
 });
 
-Deno.test("client: requestAll never asks for more than WorkOS's page cap of 100", async () => {
+test("client: requestAll never asks for more than WorkOS's page cap of 100", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -112,7 +113,7 @@ Deno.test("client: requestAll never asks for more than WorkOS's page cap of 100"
   assertEquals(items.length, 101);
 });
 
-Deno.test("client: requestAll trims to the requested total", async () => {
+test("client: requestAll trims to the requested total", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { data: [{ i: 1 }, { i: 2 }, { i: 3 }], list_metadata: { after: null } } },
   ]);

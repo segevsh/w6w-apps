@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cropResultGet from "../../actions/crop-result-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("crop-result-get: fetches the crop results route by id", async () => {
+test("crop-result-get: fetches the crop results route by id", async () => {
   const { ctx, calls } = mockCtx([
     { body: { inference: { result: { crops: [{ object_type: "photo" }] } } } },
   ]);

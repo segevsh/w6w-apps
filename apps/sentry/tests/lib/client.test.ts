@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   compact,
@@ -10,7 +11,7 @@ import {
   SentryClient,
 } from "../../lib/client.ts";
 
-Deno.test("resolveBaseUrl: falls back to the US region host and trims trailing slashes", () => {
+test("resolveBaseUrl: falls back to the US region host and trims trailing slashes", () => {
   assertEquals(resolveBaseUrl(undefined), DEFAULT_ENDPOINT);
   assertEquals(resolveBaseUrl({}), DEFAULT_ENDPOINT);
   assertEquals(resolveBaseUrl({ endpoint: "https://de.sentry.io/" }), "https://de.sentry.io");
@@ -20,14 +21,14 @@ Deno.test("resolveBaseUrl: falls back to the US region host and trims trailing s
   );
 });
 
-Deno.test("resolveOrg: the action's override wins over the connection's slug", () => {
+test("resolveOrg: the action's override wins over the connection's slug", () => {
   assertEquals(resolveOrg({ organizationSlug: "acme" }), "acme");
   assertEquals(resolveOrg({ organizationSlug: "acme" }, "other"), "other");
   // A blank override is not an override.
   assertEquals(resolveOrg({ organizationSlug: "acme" }, "   "), "acme");
 });
 
-Deno.test("resolveOrg: throws a directive error when neither side supplies one", () => {
+test("resolveOrg: throws a directive error when neither side supplies one", () => {
   let message = "";
   try {
     resolveOrg({});
@@ -37,7 +38,7 @@ Deno.test("resolveOrg: throws a directive error when neither side supplies one",
   assert(message.includes("organizationSlug"), `unhelpful message: ${message}`);
 });
 
-Deno.test("compact: drops unset keys but keeps false and zero", () => {
+test("compact: drops unset keys but keeps false and zero", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -45,14 +46,14 @@ Deno.test("compact: drops unset keys but keeps false and zero", () => {
   });
 });
 
-Deno.test("csv: splits, trims and drops blanks; blank input stays unset", () => {
+test("csv: splits, trims and drops blanks; blank input stays unset", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv("   "), undefined);
   assertEquals(csv(42), undefined);
 });
 
-Deno.test("nextCursor: follows rel=next only when results=true", () => {
+test("nextCursor: follows rel=next only when results=true", () => {
   const link = '<https://us.sentry.io/api/0/organizations/?&cursor=0:0:1>; rel="previous"; ' +
     'results="false"; cursor="0:0:1", ' +
     '<https://us.sentry.io/api/0/organizations/?&cursor=0:100:0>; rel="next"; ' +
@@ -60,7 +61,7 @@ Deno.test("nextCursor: follows rel=next only when results=true", () => {
   assertEquals(nextCursor(link), "0:100:0");
 });
 
-Deno.test("nextCursor: results=false on the next link ends pagination", () => {
+test("nextCursor: results=false on the next link ends pagination", () => {
   // Sentry ALWAYS emits a next cursor; `results` is the only thing that says
   // whether following it would return anything.
   const link = '<https://us.sentry.io/api/0/organizations/?&cursor=0:100:0>; rel="next"; ' +
@@ -70,13 +71,13 @@ Deno.test("nextCursor: results=false on the next link ends pagination", () => {
   assertEquals(nextCursor(""), undefined);
 });
 
-Deno.test("nextCursor: falls back to the cursor inside the URL", () => {
+test("nextCursor: falls back to the cursor inside the URL", () => {
   const link = '<https://us.sentry.io/api/0/organizations/?&cursor=1:2:3>; rel="next"; ' +
     'results="true"';
   assertEquals(nextCursor(link), "1:2:3");
 });
 
-Deno.test("client: array query values repeat the key, and blanks are dropped", async () => {
+test("client: array query values repeat the key, and blanks are dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], {
     display: { endpoint: "https://us.sentry.io", organizationSlug: "acme" },
   });
@@ -90,7 +91,7 @@ Deno.test("client: array query values repeat the key, and blanks are dropped", a
   assertEquals(url.searchParams.get("statsPeriod"), "24h");
 });
 
-Deno.test("client: never sends an Authorization header — signing is the host's job", async () => {
+test("client: never sends an Authorization header — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], {
     display: { organizationSlug: "acme" },
   });
@@ -99,7 +100,7 @@ Deno.test("client: never sends an Authorization header — signing is the host's
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: a failure surfaces the status and Sentry's own body", async () => {
+test("client: a failure surfaces the status and Sentry's own body", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "You do not have permission" } }], {
     display: { organizationSlug: "acme" },
   });
@@ -109,7 +110,7 @@ Deno.test("client: a failure surfaces the status and Sentry's own body", async (
   assert(err.message.includes("You do not have permission"), err.message);
 });
 
-Deno.test("client: 204 and an empty body both come back as undefined", async () => {
+test("client: 204 and an empty body both come back as undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }], {
     display: { organizationSlug: "acme" },
   });
@@ -121,7 +122,7 @@ Deno.test("client: 204 and an empty body both come back as undefined", async () 
   assertEquals(await client.request("/organizations/acme/"), undefined);
 });
 
-Deno.test("client: requestAll follows the Link cursor until results=false", async () => {
+test("client: requestAll follows the Link cursor until results=false", async () => {
   const next = (cursor: string) =>
     `<https://us.sentry.io/api/0/organizations/acme/issues/?cursor=${cursor}>; rel="next"; ` +
     `results="true"; cursor="${cursor}"`;
@@ -139,7 +140,7 @@ Deno.test("client: requestAll follows the Link cursor until results=false", asyn
   assertEquals(new URL(calls[1].url).searchParams.get("cursor"), "0:100:0");
 });
 
-Deno.test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
+test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import addGroupMessages from "../../actions/add-group-messages.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => addGroupMessages.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("add-group-messages: declares a perform action with a description, params and output", () => {
+test("add-group-messages: declares a perform action with a description, params and output", () => {
   assertEquals(addGroupMessages.key, "add-group-messages");
   assertEquals(addGroupMessages.type, "perform");
   assert((addGroupMessages.description ?? "").length > 0);
@@ -25,7 +26,7 @@ Deno.test("add-group-messages: declares a perform action with a description, par
   assertEquals(addGroupMessages.idempotent, false);
 });
 
-Deno.test("add-group-messages: sends the documented request and returns the documented shape", async () => {
+test("add-group-messages: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "errorCount": 0,
@@ -66,7 +67,7 @@ Deno.test("add-group-messages: sends the documented request and returns the docu
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("add-group-messages: a SOLAPI error body is thrown with its code and message", async () => {
+test("add-group-messages: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

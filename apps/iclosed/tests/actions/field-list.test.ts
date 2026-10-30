@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fieldList from "../../actions/field-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("field-list: sends every input as query", async () => {
+test("field-list: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await fieldList.execute(
     {
@@ -35,7 +36,7 @@ Deno.test("field-list: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("field-list: omits every unset optional", async () => {
+test("field-list: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await fieldList.execute({ "objectType": "CONTACT" } as never, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("field-list: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("field-list: declares a read-only shape", () => {
+test("field-list: declares a read-only shape", () => {
   assertEquals(fieldList.type, "read");
   assertEquals(fieldList.idempotent, undefined);
   assertEquals(fieldList.params!.filter((p) => p.required).map((p) => p.key), ["objectType"]);

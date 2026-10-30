@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateExpense from "../../actions/update-expense.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const UPDATED = { expenses: [{ id: 51023, cost: "30.00" }], errors: {} };
 
-Deno.test("update-expense: sends only the fields that changed", async () => {
+test("update-expense: sends only the fields that changed", async () => {
   const { ctx, calls } = mockCtx([{ body: UPDATED }]);
   const out = await updateExpense.execute({ expenseId: 51023, description: "Dinner" }, ctx) as {
     id: number;
@@ -22,7 +23,7 @@ Deno.test("update-expense: sends only the fields that changed", async () => {
  * entry replaces the whole split, silently dropping every other participant —
  * so the action warns loudly.
  */
-Deno.test("update-expense: replacing shares warns that omitted participants are removed", async () => {
+test("update-expense: replacing shares warns that omitted participants are removed", async () => {
   const { ctx, calls, logs } = mockCtx([{ body: UPDATED }]);
   await updateExpense.execute({
     expenseId: 51023,
@@ -44,7 +45,7 @@ Deno.test("update-expense: replacing shares warns that omitted participants are 
  * race an edit made between the read and this write. So it is refused, with the
  * two ways out named.
  */
-Deno.test("update-expense: shares without a cost are refused, and the error says why", async () => {
+test("update-expense: shares without a cost are refused, and the error says why", async () => {
   const { ctx, calls } = mockCtx([]);
   const error = await assertRejects(
     async () =>
@@ -59,7 +60,7 @@ Deno.test("update-expense: shares without a cost are refused, and the error says
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-expense: shares without a cost go through with the override", async () => {
+test("update-expense: shares without a cost go through with the override", async () => {
   const { ctx, calls } = mockCtx([{ body: UPDATED }]);
   await updateExpense.execute({
     expenseId: 1,
@@ -69,7 +70,7 @@ Deno.test("update-expense: shares without a cost go through with the override", 
   assertEquals(bodyOf(calls[0]).users__0__user_id, 1);
 });
 
-Deno.test("update-expense: unbalanced shares with a cost are refused", async () => {
+test("update-expense: unbalanced shares with a cost are refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -84,20 +85,20 @@ Deno.test("update-expense: unbalanced shares with a cost are refused", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-expense: an empty share list is not a replacement", async () => {
+test("update-expense: an empty share list is not a replacement", async () => {
   const { ctx, calls, logs } = mockCtx([{ body: UPDATED }]);
   await updateExpense.execute({ expenseId: 1, description: "d", users: [] }, ctx);
   assertEquals(bodyOf(calls[0]), { description: "d" });
   assertEquals(logs.filter((l) => l.level === "warn").length, 0);
 });
 
-Deno.test("update-expense: group_id 0 moves the expense out of every group", async () => {
+test("update-expense: group_id 0 moves the expense out of every group", async () => {
   const { ctx, calls } = mockCtx([{ body: UPDATED }]);
   await updateExpense.execute({ expenseId: 1, group_id: 0 }, ctx);
   assertEquals(bodyOf(calls[0]), { group_id: 0 });
 });
 
-Deno.test("update-expense: an empty update is refused rather than sent", async () => {
+test("update-expense: an empty update is refused rather than sent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await updateExpense.execute({ expenseId: 1 }, ctx),
@@ -108,6 +109,6 @@ Deno.test("update-expense: an empty update is refused rather than sent", async (
 });
 
 /** Applying the same values twice leaves the same expense. */
-Deno.test("update-expense: is idempotent, unlike create", () => {
+test("update-expense: is idempotent, unlike create", () => {
   assertEquals(updateExpense.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/payout-create.ts";
 
-Deno.test("payout-create: posts the sender batch header and mapped items", async () => {
+test("payout-create: posts the sender batch header and mapped items", async () => {
   const { ctx, calls } = mockCtx([{ body: { batch_header: { payout_batch_id: "B-1" } } }]);
   const result = await action.execute!(
     {
@@ -23,7 +24,7 @@ Deno.test("payout-create: posts the sender batch header and mapped items", async
   assertEquals(result, { batch_header: { payout_batch_id: "B-1" } });
 });
 
-Deno.test("payout-create: additionalFields populate the sender batch header", async () => {
+test("payout-create: additionalFields populate the sender batch header", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -42,7 +43,7 @@ Deno.test("payout-create: additionalFields populate the sender batch header", as
   });
 });
 
-Deno.test("payout-create: items also accepts a JSON string", async () => {
+test("payout-create: items also accepts a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -55,7 +56,7 @@ Deno.test("payout-create: items also accepts a JSON string", async () => {
   assertEquals(body.items.length, 1);
 });
 
-Deno.test("payout-create: senderBatchId is required", async () => {
+test("payout-create: senderBatchId is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () =>
@@ -74,7 +75,7 @@ Deno.test("payout-create: senderBatchId is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("payout-create: items must be a non-empty array", async () => {
+test("payout-create: items must be a non-empty array", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!({ senderBatchId: "b-1", items: [] }, ctx)),
@@ -84,7 +85,7 @@ Deno.test("payout-create: items must be a non-empty array", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("payout-create: each item needs a receiver and amount", async () => {
+test("payout-create: each item needs a receiver and amount", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () =>

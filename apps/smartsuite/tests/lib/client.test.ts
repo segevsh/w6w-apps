@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_URL, encodeSegment, SmartSuiteClient } from "../../lib/client.ts";
 
-Deno.test("client: joins paths onto the SmartSuite v1 base URL", async () => {
+test("client: joins paths onto the SmartSuite v1 base URL", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new SmartSuiteClient(ctx).request("solutions/");
   assertEquals(calls[0].url.startsWith(API_URL), true);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/solutions/");
 });
 
-Deno.test("client: skips null/undefined/empty query values but keeps false and 0", async () => {
+test("client: skips null/undefined/empty query values but keeps false and 0", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new SmartSuiteClient(ctx).request("applications/t/records/list/", {
     query: { offset: 0, limit: 100, all: false, skipMe: undefined, alsoSkip: "" },
@@ -21,7 +22,7 @@ Deno.test("client: skips null/undefined/empty query values but keeps false and 0
   assertEquals(url.searchParams.has("alsoSkip"), false);
 });
 
-Deno.test("client: throws with the plain-text body on a non-2xx", async () => {
+test("client: throws with the plain-text body on a non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Account ID is not specified" }]);
   let message = "";
   try {
@@ -33,7 +34,7 @@ Deno.test("client: throws with the plain-text body on a non-2xx", async () => {
   assertEquals(message.includes("Account ID is not specified"), true);
 });
 
-Deno.test("client: a 204 with no body resolves to undefined", async () => {
+test("client: a 204 with no body resolves to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new SmartSuiteClient(ctx).request("applications/t/records/r/", {
@@ -43,6 +44,6 @@ Deno.test("client: a 204 with no body resolves to undefined", async () => {
   );
 });
 
-Deno.test("encodeSegment: escapes a slash so a path segment cannot break out", () => {
+test("encodeSegment: escapes a slash so a path segment cannot break out", () => {
   assertEquals(encodeSegment("a/b c"), "a%2Fb%20c");
 });

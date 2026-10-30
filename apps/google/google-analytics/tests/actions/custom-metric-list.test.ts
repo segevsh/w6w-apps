@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/custom-metric-list.ts";
 
-Deno.test("custom-metric-list: lists the property's custom metrics", async () => {
+test("custom-metric-list: lists the property's custom metrics", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { customMetrics: [{ parameterName: "mrr" }] },

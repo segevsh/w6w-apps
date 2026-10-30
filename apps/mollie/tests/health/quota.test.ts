@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota, { parseRateLimitHeader } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("parseRateLimitHeader: parses the quoted policy name and key=number fields", () => {
+test("parseRateLimitHeader: parses the quoted policy name and key=number fields", () => {
   assertEquals(
     parseRateLimitHeader('"get-v2-payments";r=15;t=2;mollie-burst=60'),
     { policy: "get-v2-payments", fields: { r: 15, t: 2, "mollie-burst": 60 } },
@@ -13,13 +14,13 @@ Deno.test("parseRateLimitHeader: parses the quoted policy name and key=number fi
   );
 });
 
-Deno.test("check: no RateLimit header reports unknown, not down — the rollout may not have reached this account", async () => {
+test("check: no RateLimit header reports unknown, not down — the rollout may not have reached this account", async () => {
   const { ctx } = mockCtx([{ body: { id: "pfl_1" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: plenty of remaining budget reports ok with a quota reading", async () => {
+test("check: plenty of remaining budget reports ok with a quota reading", async () => {
   const { ctx } = mockCtx([{
     body: { id: "pfl_1" },
     headers: {
@@ -38,7 +39,7 @@ Deno.test("check: plenty of remaining budget reports ok with a quota reading", a
   });
 });
 
-Deno.test("check: an exhausted bucket reports degraded, never down (it recovers on its own)", async () => {
+test("check: an exhausted bucket reports degraded, never down (it recovers on its own)", async () => {
   const { ctx } = mockCtx([{
     body: { id: "pfl_1" },
     headers: {

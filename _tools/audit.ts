@@ -549,7 +549,15 @@ async function auditApp(name: string): Promise<Issue[]> {
   const keys = new Set<string>();
   for (const a of def.actions) {
     const where = `actions/${a?.key ?? "?"}`;
-    for (const err of validateAction(a).errors) {
+    // The validator consumes serialized metadata, while this audit imports live
+    // definitions. Match the sandbox's hook-to-capability projection.
+    const config = a && typeof a === "object"
+      ? {
+        ...a,
+        resolveFields: typeof a.resolveFields === "function" ? true : undefined,
+      }
+      : a;
+    for (const err of validateAction(config).errors) {
       add(
         "error",
         "action/spec",
@@ -695,9 +703,7 @@ async function auditApp(name: string): Promise<Issue[]> {
 
 const args = Deno.args.filter((a) => !a.startsWith("--"));
 const asJson = Deno.args.includes("--json");
-const names = args.length
-  ? args
-  : appPaths();
+const names = args.length ? args : appPaths();
 
 const report: Record<string, Issue[]> = {};
 let errors = 0, warns = 0;

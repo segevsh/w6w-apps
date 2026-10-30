@@ -1,18 +1,19 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-delete.ts";
 
 const conn = { display: { baseUrl: "https://search.example.com", indexUid: "movies" } };
 const base = "https://search.example.com/indexes/movies/documents";
 
-Deno.test("document-delete: by id is a DELETE on the document path", async () => {
+test("document-delete: by id is a DELETE on the document path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskUid: 1 } }], conn);
   await action.execute!({ by: "id", documentId: "42" }, ctx);
   assertEquals(calls[0].method, "DELETE");
   assertEquals(calls[0].url, `${base}/42`);
 });
 
-Deno.test("document-delete: by ids POSTs the array to delete-batch", async () => {
+test("document-delete: by ids POSTs the array to delete-batch", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ by: "ids", documentIds: "1, 2, 3" }, ctx);
   assertEquals(calls[0].url, `${base}/delete-batch`);
@@ -20,7 +21,7 @@ Deno.test("document-delete: by ids POSTs the array to delete-batch", async () =>
 });
 
 /** Nothing reports how many documents a filter matches before it runs. */
-Deno.test("document-delete: by filter POSTs the filter and logs at warn", async () => {
+test("document-delete: by filter POSTs the filter and logs at warn", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ by: "filter", filter: "year < 2000" }, ctx);
   assertEquals(calls[0].url, `${base}/delete`);
@@ -29,7 +30,7 @@ Deno.test("document-delete: by filter POSTs the filter and logs at warn", async 
 });
 
 /** A blank filter must not become "delete everything". */
-Deno.test("document-delete: each mode requires its own field, before any request", async () => {
+test("document-delete: each mode requires its own field, before any request", async () => {
   for (
     const [input, needle] of [
       [{ by: "id" }, "`documentId` is required"],
@@ -45,13 +46,13 @@ Deno.test("document-delete: each mode requires its own field, before any request
 });
 
 /** A filter is an expression, not JSON — but the array form must still parse. */
-Deno.test("document-delete: an array filter is parsed, a string expression is not", async () => {
+test("document-delete: an array filter is parsed, a string expression is not", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ by: "filter", filter: '[["genres = horror"]]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { filter: [["genres = horror"]] });
 });
 
-Deno.test("document-delete: the empty-filter error points at the right action", async () => {
+test("document-delete: the empty-filter error points at the right action", async () => {
   const { ctx } = mockCtx([], conn);
   const err = await assertRejects(
     async () => await action.execute!({ by: "filter" }, ctx),

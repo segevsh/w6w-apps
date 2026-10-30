@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import a from "../../actions/list-users.ts";
 import { BASE, run } from "../_helpers.ts";
 
-Deno.test("list-users: GET users.list with email filter and paging", async () => {
+test("list-users: GET users.list with email filter and paging", async () => {
   const { call, query } = await run(a, {
     email: "a@b.io",
     count: 10,
@@ -15,7 +16,7 @@ Deno.test("list-users: GET users.list with email filter and paging", async () =>
   assertEquals(query.get("sort"), '{"username":1}');
 });
 
-Deno.test("list-users: never sends the deprecated query/fields params", async () => {
+test("list-users: never sends the deprecated query/fields params", async () => {
   const { query } = await run(a, {});
   assertEquals(query.has("query") || query.has("fields"), false);
 });

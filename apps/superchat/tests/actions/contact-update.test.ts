@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-update.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("contact-update: reads the contact, then PATCHes with unchanged names re-sent", async () => {
+test("contact-update: reads the contact, then PATCHes with unchanged names re-sent", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "id": "c_1", "first_name": "Ada", "last_name": "Byron", "gender": "female" },
   }, { "body": { "id": "c_1" } }]);
@@ -36,7 +37,7 @@ Deno.test("contact-update: reads the contact, then PATCHes with unchanged names 
   assertEquals(result, { "id": "c_1" });
 });
 
-Deno.test("contact-update: sends handles and custom attributes only when given", async () => {
+test("contact-update: sends handles and custom attributes only when given", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "id": "c_1", "first_name": null, "last_name": null, "gender": null },
   }, { "body": { "id": "c_1" } }]);

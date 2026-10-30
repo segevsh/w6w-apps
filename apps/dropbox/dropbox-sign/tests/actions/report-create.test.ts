@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/report-create.ts";
 
 /** MM/DD/YYYY, not ISO — an ISO date is a plausible string that means nothing here. */
-Deno.test("report-create: an ISO date is refused locally", async () => {
+test("report-create: an ISO date is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -18,7 +19,7 @@ Deno.test("report-create: an ISO date is refused locally", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("report-create: posts the dates and types as given", async () => {
+test("report-create: posts the dates and types as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: "queued" } }]);
   await action.execute!({
     startDate: "01/31/2026",
@@ -33,7 +34,7 @@ Deno.test("report-create: posts the dates and types as given", async () => {
   });
 });
 
-Deno.test("report-create: at most two report types", async () => {
+test("report-create: at most two report types", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -49,7 +50,7 @@ Deno.test("report-create: at most two report types", async () => {
 });
 
 /** The report arrives by email; nothing comes back on the wire. */
-Deno.test("report-create: the output says the result arrives by email", () => {
+test("report-create: the output says the result arrives by email", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs[0].label.includes("email"), outputs[0].label);
   assert(action.description!.includes("emails it"), action.description);

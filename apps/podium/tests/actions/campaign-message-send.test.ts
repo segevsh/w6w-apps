@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import campaignMessageSend from "../../actions/campaign-message-send.ts";
 
-Deno.test("campaign-message-send: sends every documented field in its documented place", async () => {
+test("campaign-message-send: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("campaign-message-send: sends every documented field in its documented
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("campaign-message-send: declares its params and kind", () => {
+test("campaign-message-send: declares its params and kind", () => {
   assertEquals((campaignMessageSend.params ?? []).map((p) => p.key), ["uid", "channelIdentifier"]);
   assertEquals((campaignMessageSend.params ?? []).filter((p) => p.required).map((p) => p.key), [
     "uid",

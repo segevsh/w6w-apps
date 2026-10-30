@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSupabaseCtx } from "../_helpers.ts";
 import action from "../../actions/rows-count.ts";
 
-Deno.test("rows-count: issues a HEAD with Prefer: count=exact and reads Content-Range", async () => {
+test("rows-count: issues a HEAD with Prefer: count=exact and reads Content-Range", async () => {
   const { ctx, calls } = mockSupabaseCtx([{
     headers: { "content-range": "0-0/42" },
   }]);
@@ -14,7 +15,7 @@ Deno.test("rows-count: issues a HEAD with Prefer: count=exact and reads Content-
   assertEquals(out, { count: 42 });
 });
 
-Deno.test("rows-count: a `*` total (count not requested/known) reports null, not NaN", async () => {
+test("rows-count: a `*` total (count not requested/known) reports null, not NaN", async () => {
   const { ctx } = mockSupabaseCtx([{ headers: { "content-range": "0-9/*" } }]);
   const out = await action.execute({ table: "todos" }, ctx);
   assertEquals(out, { count: null });

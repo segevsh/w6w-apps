@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-worksheets.ts";
 
-Deno.test("list-worksheets: GETs the worksheets collection under the item-id form", async () => {
+test("list-worksheets: GETs the worksheets collection under the item-id form", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [{ id: "{S1}", name: "Sheet1" }] } }]);
   const out = await action.execute({ itemId: "ITEM1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("list-worksheets: GETs the worksheets collection under the item-id for
   assertEquals(out.pages, 1);
 });
 
-Deno.test("list-worksheets: GETs the worksheets collection under the path form", async () => {
+test("list-worksheets: GETs the worksheets collection under the path form", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemPath: "Reports/Q3 Summary.xlsx" }, ctx);
   assertEquals(
@@ -20,7 +21,7 @@ Deno.test("list-worksheets: GETs the worksheets collection under the path form",
   );
 });
 
-Deno.test("list-worksheets: pages with $top and $skip — Excel collections have no cursor", async () => {
+test("list-worksheets: pages with $top and $skip — Excel collections have no cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1", top: 10, skip: 20, select: ["id", "name"] }, ctx);
   const url = new URL(calls[0].url);
@@ -29,19 +30,19 @@ Deno.test("list-worksheets: pages with $top and $skip — Excel collections have
   assertEquals(url.searchParams.get("$select"), "id,name");
 });
 
-Deno.test("list-worksheets: forwards the session header when one is supplied", async () => {
+test("list-worksheets: forwards the session header when one is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1", sessionId: "sess-9" }, ctx);
   assertEquals(calls[0].headers["workbook-session-id"], "sess-9");
 });
 
-Deno.test("list-worksheets: sends no session header when running sessionless", async () => {
+test("list-worksheets: sends no session header when running sessionless", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1" }, ctx);
   assertEquals(calls[0].headers["workbook-session-id"], undefined);
 });
 
-Deno.test("list-worksheets: refuses an unaddressed workbook", async () => {
+test("list-worksheets: refuses an unaddressed workbook", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "must be addressed");
 });

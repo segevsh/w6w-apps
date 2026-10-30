@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: GET /webhooks with the page query param", async () => {
+test("webhook-list: GET /webhooks with the page query param", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "w1" }] }]);
   const out = await webhookList.execute({ page: 1 }, ctx) as unknown[];
 

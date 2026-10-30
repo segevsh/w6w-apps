@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import count from "../../actions/count-tokens.ts";
 
 const display = { projectId: "p1", location: "europe-west4" };
 const BASE = "https://europe-west4-aiplatform.googleapis.com/v1/projects/p1/locations/europe-west4";
 
-Deno.test("count-tokens: POSTs contents to :countTokens", async () => {
+test("count-tokens: POSTs contents to :countTokens", async () => {
   const { ctx, calls } = mockCtx([{ body: { totalTokens: 3, totalBillableCharacters: 7 } }], {
     display,
   });

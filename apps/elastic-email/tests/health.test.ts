@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import service, { findApiComponent, mapComponentStatus } from "../health/service.ts";
 import api from "../health/api.ts";
 import quota from "../health/quota.ts";
@@ -12,13 +13,13 @@ const comps = (apiStatus: string) => [
 const run = (responses: Parameters<typeof mockCtx>[0]) =>
   service.check!({} as never, mockCtx(responses).ctx);
 
-Deno.test("service: operational API component is ok", async () => {
+test("service: operational API component is ok", async () => {
   const r = await run([{ body: { page, components: comps("operational"), incidents: [] } }]);
   assertEquals(r.state, "ok");
   assertEquals(Object.keys(r.components ?? {}).length, 2);
 });
 
-Deno.test("service: API outage is down; other-component trouble never drives the verdict", async () => {
+test("service: API outage is down; other-component trouble never drives the verdict", async () => {
   assertEquals((await run([{ body: { page, components: comps("major_outage") } }])).state, "down");
   const other = [
     { id: "nfj1bq4byr9f", name: "API.ELASTICEMAIL.COM", status: "operational" },
@@ -29,7 +30,7 @@ Deno.test("service: API outage is down; other-component trouble never drives the
   assertEquals(r.message?.includes("affected"), true);
 });
 
-Deno.test("service: wrong page, missing component or HTTP failure is unknown, never down", async () => {
+test("service: wrong page, missing component or HTTP failure is unknown, never down", async () => {
   assertEquals(
     (await run([{ body: { page: { id: "zzz" }, components: comps("operational") } }])).state,
     "unknown",
@@ -45,7 +46,7 @@ Deno.test("service: wrong page, missing component or HTTP failure is unknown, ne
   assertEquals((await run([{ body: { page, components: [] } }])).state, "unknown");
 });
 
-Deno.test("service: status mapping, name fallback and open incidents", async () => {
+test("service: status mapping, name fallback and open incidents", async () => {
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("nonsense"), "unknown");
   assertEquals(findApiComponent([{ id: "new", name: "api.elasticemail.com" }])?.id, "new");
@@ -56,14 +57,14 @@ Deno.test("service: status mapping, name fallback and open incidents", async () 
   assertEquals(r.message?.includes("1 open incident"), true);
 });
 
-Deno.test("api: a schema-correct auth error (HTTP 400 {Error}) is a pass", async () => {
+test("api: a schema-correct auth error (HTTP 400 {Error}) is a pass", async () => {
   const { ctx, calls } = mockCtx([{ status: 400, body: errorBody("APIKey Expired") }]);
   const r = await api.check!({} as never, ctx);
   assertEquals(r.state, "ok");
   assertEquals(calls[0].headers["x-elasticemail-apikey"], undefined);
 });
 
-Deno.test("api: 5xx and non-JSON are down; an unrelated JSON body is unknown", async () => {
+test("api: 5xx and non-JSON are down; an unrelated JSON body is unknown", async () => {
   assertEquals(
     (await api.check!({} as never, mockCtx([{ status: 503, body: { x: 1 } }]).ctx)).state,
     "down",
@@ -79,7 +80,7 @@ Deno.test("api: 5xx and non-JSON are down; an unrelated JSON body is unknown", a
   );
 });
 
-Deno.test("quota: a declared absence with informational severity", () => {
+test("quota: a declared absence with informational severity", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.unavailable?.reason, "string");
 });

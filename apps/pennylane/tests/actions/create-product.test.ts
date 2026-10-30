@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-product.ts";
 
-Deno.test("create-product: POSTs /products with the three required fields as strings", async () => {
+test("create-product: POSTs /products with the three required fields as strings", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute({ label: "Product 1", price_before_tax: "100.00", vat_rate: "FR_200" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("create-product: POSTs /products with the three required fields as str
   assertEquals(typeof sent.price_before_tax, "string", "a JSON number is a documented 400");
 });
 
-Deno.test("create-product: forwards custom_fields and substance untouched", async () => {
+test("create-product: forwards custom_fields and substance untouched", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute({
     label: "Product 1",

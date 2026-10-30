@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-search-and-enrich.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-search-and-enrich: POST /v3/contacts/search-and-enrich", async () => {
+test("contact-search-and-enrich: POST /v3/contacts/search-and-enrich", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await action.execute!(
     { "contacts": '[{"email":"a@b.co"}]', "reveal": ["phones"] } as never,

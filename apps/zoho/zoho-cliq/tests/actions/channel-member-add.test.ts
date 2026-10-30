@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-member-add.ts";
 
-Deno.test("channel-member-add: adds by email (204)", async () => {
+test("channel-member-add: adds by email (204)", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute({ "channelId": "O1", "emailIds": "a@b.c,d@e.f" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -16,7 +17,7 @@ Deno.test("channel-member-add: adds by email (204)", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("channel-member-add: adds by user id", async () => {
+test("channel-member-add: adds by user id", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute({ "channelId": "O1", "userIds": ["1", "2"] } as never, ctx);
   assertEquals(calls.length, 1);
@@ -30,7 +31,7 @@ Deno.test("channel-member-add: adds by user id", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("channel-member-add: needs at least one id", async () => {
+test("channel-member-add: needs at least one id", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "channelId": "O1" } as never, ctx)),
@@ -40,7 +41,7 @@ Deno.test("channel-member-add: needs at least one id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("channel-member-add: caps a request at 100 users", async () => {
+test("channel-member-add: caps a request at 100 users", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () =>
@@ -55,7 +56,7 @@ Deno.test("channel-member-add: caps a request at 100 users", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("channel-member-add: idempotent is declared as true", () => {
+test("channel-member-add: idempotent is declared as true", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

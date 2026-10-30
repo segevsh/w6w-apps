@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-image.ts";
 
-Deno.test("create-image: POSTs /v2/create-image with template_id in the query and data in the body", async () => {
+test("create-image: POSTs /v2/create-image with template_id in the query and data in the body", async () => {
   const body = { status: "success", download_url: "https://x/y.jpg", transaction_ref: "t1" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -18,7 +19,7 @@ Deno.test("create-image: POSTs /v2/create-image with template_id in the query an
   assertEquals(result, body);
 });
 
-Deno.test("create-image: forwards optional query params, omitting unset ones", async () => {
+test("create-image: forwards optional query params, omitting unset ones", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await action.execute!(
     {
@@ -36,7 +37,7 @@ Deno.test("create-image: forwards optional query params, omitting unset ones", a
   assertEquals(url.searchParams.get("meta"), "order-42");
 });
 
-Deno.test("create-image: throws when the API reports status: error", async () => {
+test("create-image: throws when the API reports status: error", async () => {
   const { ctx } = mockCtx([{ body: { status: "error", message: "invalid template" } }]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ templateId: "bad", data: {} }, ctx)),

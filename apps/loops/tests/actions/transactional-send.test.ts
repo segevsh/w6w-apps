@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/transactional-send.ts";
 
-Deno.test("transactional-send: POSTs the template id, address and variables", async () => {
+test("transactional-send: POSTs the template id, address and variables", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true } }]);
   await action.execute!({
     transactionalId: "t1",
@@ -19,7 +20,7 @@ Deno.test("transactional-send: POSTs the template id, address and variables", as
 });
 
 /** Off by default: a transactional send should not silently grow the audience. */
-Deno.test("transactional-send: addToAudience is opt-in", async () => {
+test("transactional-send: addToAudience is opt-in", async () => {
   const off = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ transactionalId: "t1", email: "a@x.com" }, off.ctx);
   assertEquals(JSON.parse(off.calls[0].body!).addToAudience, undefined);
@@ -30,7 +31,7 @@ Deno.test("transactional-send: addToAudience is opt-in", async () => {
 });
 
 /** The key is what makes a retry safe; without it two calls send two emails. */
-Deno.test("transactional-send: the idempotency key is opt-in and derived from the step", async () => {
+test("transactional-send: the idempotency key is opt-in and derived from the step", async () => {
   const off = mockCtx([{ status: 200, body: {} }]);
   (off.ctx as { invocation?: unknown }).invocation = { invocationId: "inv1" };
   await action.execute!({ transactionalId: "t1", email: "a@x.com" }, off.ctx);
@@ -46,11 +47,11 @@ Deno.test("transactional-send: the idempotency key is opt-in and derived from th
   assertEquals(on.calls[0].headers["idempotency-key"], "w6w-inv1");
 });
 
-Deno.test("transactional-send: is honestly non-idempotent without the key", () => {
+test("transactional-send: is honestly non-idempotent without the key", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("transactional-send: the id and address are both required, before any request", async () => {
+test("transactional-send: the id and address are both required, before any request", async () => {
   const noId = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ email: "a@x.com" }, noId.ctx),
@@ -67,7 +68,7 @@ Deno.test("transactional-send: the id and address are both required, before any 
 });
 
 /** An unpublished template 404s on send, which reads like a wrong id. */
-Deno.test("transactional-send: the hint warns that the template must be published", () => {
+test("transactional-send: the hint warns that the template must be published", () => {
   const param = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "transactionalId")!;
   assert(param.hint!.includes("PUBLISHED"), param.hint);

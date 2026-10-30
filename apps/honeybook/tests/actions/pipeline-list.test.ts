@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import pipelineList from "../../actions/pipeline-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const INPUT = {
   "sort": "-name",
 };
 
-Deno.test("pipeline-list: sends GET /pipeline with the mapped fields", async () => {
+test("pipeline-list: sends GET /pipeline with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   const out = await pipelineList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -46,13 +47,13 @@ Deno.test("pipeline-list: sends GET /pipeline with the mapped fields", async () 
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("pipeline-list: sends only what was supplied", async () => {
+test("pipeline-list: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await pipelineList.execute({} as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("pipeline-list: surfaces the API error type and message", async () => {
+test("pipeline-list: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await pipelineList.execute(INPUT, ctx),

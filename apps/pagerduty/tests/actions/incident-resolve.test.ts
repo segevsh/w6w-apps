@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-resolve.ts";
 
-Deno.test("incident-resolve: PUTs status=resolved with the From header", async () => {
+test("incident-resolve: PUTs status=resolved with the From header", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { incident: { id: "P1", status: "resolved" } },
@@ -17,7 +18,7 @@ Deno.test("incident-resolve: PUTs status=resolved with the From header", async (
   assertEquals(result, { id: "P1", status: "resolved" });
 });
 
-Deno.test("incident-resolve: includes resolution note when provided", async () => {
+test("incident-resolve: includes resolution note when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { incident: {} } }]);
   await action.execute!(
     { incidentId: "P1", from: "user@example.com", resolution: "fixed the disk" },
@@ -27,7 +28,7 @@ Deno.test("incident-resolve: includes resolution note when provided", async () =
   assertEquals(body.incident.resolution, "fixed the disk");
 });
 
-Deno.test("incident-resolve: missing incidentId or from rejects", async () => {
+test("incident-resolve: missing incidentId or from rejects", async () => {
   for (const patch of [{ incidentId: "" }, { from: "" }]) {
     const { ctx } = mockCtx();
     await assertRejects(

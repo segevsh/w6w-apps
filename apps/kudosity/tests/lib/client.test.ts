@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { compact, encodeId, formatError, KudosityClient } from "../../lib/client.ts";
 import { API_ROOT, mockCtx, problem, queryOf } from "../_helpers.ts";
 
-Deno.test("formatError: reads all three error shapes", () => {
+test("formatError: reads all three error shapes", () => {
   assertEquals(formatError(404, { error: "not found" }), "HTTP 404: not found");
   assertEquals(formatError(401, { status: "Unauthorized" }), "HTTP 401: Unauthorized");
   assertEquals(
@@ -18,7 +19,7 @@ Deno.test("formatError: reads all three error shapes", () => {
   assertEquals(formatError(502, null), "HTTP 502");
 });
 
-Deno.test("compact / encodeId", () => {
+test("compact / encodeId", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: null, e: [], f: false }), {
     a: 1,
     f: false,
@@ -26,14 +27,14 @@ Deno.test("compact / encodeId", () => {
   assertEquals(encodeId(" a/b "), "a%2Fb");
 });
 
-Deno.test("client: url repeats array query keys and skips empty values", () => {
+test("client: url repeats array query keys and skips empty values", () => {
   const { ctx } = mockCtx();
   const url = new KudosityClient(ctx).url("/sms", { a: ["x", "y"], b: "", c: undefined, d: 3 });
   assertEquals(url, `${API_ROOT}/sms?a=x&a=y&d=3`);
   assertEquals(queryOf(url).getAll("a"), ["x", "y"]);
 });
 
-Deno.test("client: a non-2xx throws with the vendor message", async () => {
+test("client: a non-2xx throws with the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "SMS not found" } }]);
   await assertRejects(
     () => new KudosityClient(ctx).json("/sms/x"),
@@ -42,12 +43,12 @@ Deno.test("client: a non-2xx throws with the vendor message", async () => {
   );
 });
 
-Deno.test("client: data() unwraps the envelope and returns meta", async () => {
+test("client: data() unwraps the envelope and returns meta", async () => {
   const { ctx } = mockCtx([{ body: { data: { a: 1 }, meta: { m: 2 } } }]);
   assertEquals(await new KudosityClient(ctx).data("/x"), { data: { a: 1 }, meta: { m: 2 } });
 });
 
-Deno.test("client: never sends credentials itself", async () => {
+test("client: never sends credentials itself", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new KudosityClient(ctx).json("/sms");
   assertEquals("x-api-key" in calls[0].headers, false);

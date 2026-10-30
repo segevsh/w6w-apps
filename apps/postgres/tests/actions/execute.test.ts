@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import executeAction from "../../actions/execute.ts";
 import { encodeQuery } from "../../lib/wire.ts";
@@ -13,7 +14,7 @@ import {
   rowDescription,
 } from "../_helpers.ts";
 
-Deno.test("execute: sends exactly the caller's SQL bytes, unmodified, as a Simple Query", async () => {
+test("execute: sends exactly the caller's SQL bytes, unmodified, as a Simple Query", async () => {
   const sql = "UPDATE users SET name = 'bob' WHERE id = 1; -- not a $1 in sight";
   const { ctx, mock } = mockCtx([
     concatBytes(commandComplete("UPDATE 1"), readyForQuery()),
@@ -25,7 +26,7 @@ Deno.test("execute: sends exactly the caller's SQL bytes, unmodified, as a Simpl
   assertEquals(mock.writes[0], encodeQuery(sql));
 });
 
-Deno.test("execute: returns rowCount + command from CommandComplete, never a row set", async () => {
+test("execute: returns rowCount + command from CommandComplete, never a row set", async () => {
   const { ctx } = mockCtx([
     concatBytes(commandComplete("INSERT 0 2"), readyForQuery()),
   ]);
@@ -34,7 +35,7 @@ Deno.test("execute: returns rowCount + command from CommandComplete, never a row
   assert(!("rows" in result), "execute's Output must not carry a row set");
 });
 
-Deno.test("execute: a command tag with no trailing integer (CREATE TABLE) reports rowCount 0", async () => {
+test("execute: a command tag with no trailing integer (CREATE TABLE) reports rowCount 0", async () => {
   const { ctx } = mockCtx([
     concatBytes(commandComplete("CREATE TABLE"), readyForQuery()),
   ]);
@@ -42,7 +43,7 @@ Deno.test("execute: a command tag with no trailing integer (CREATE TABLE) report
   assertEquals(result, { rowCount: 0, command: "CREATE TABLE" });
 });
 
-Deno.test("execute: a multi-statement sql keeps only the LAST CommandComplete's tag/count", async () => {
+test("execute: a multi-statement sql keeps only the LAST CommandComplete's tag/count", async () => {
   const { ctx } = mockCtx([
     concatBytes(
       commandComplete("CREATE TABLE"),
@@ -60,31 +61,31 @@ Deno.test("execute: a multi-statement sql keeps only the LAST CommandComplete's 
   assertEquals(result, { rowCount: 2, command: "SELECT 2" });
 });
 
-Deno.test("execute: reassembles a reply that arrives byte-at-a-time across many socket.read() calls", async () => {
+test("execute: reassembles a reply that arrives byte-at-a-time across many socket.read() calls", async () => {
   const whole = concatBytes(commandComplete("DELETE 3"), readyForQuery());
   const { ctx } = mockCtx(chunk(whole, 3));
   const result = await executeAction.execute({ sql: "DELETE FROM t" }, ctx);
   assertEquals(result, { rowCount: 3, command: "DELETE 3" });
 });
 
-Deno.test("execute: a server ErrorResponse rejects with its M field", async () => {
+test("execute: a server ErrorResponse rejects with its M field", async () => {
   const { ctx } = mockCtx([
     errorResponse({ S: "ERROR", C: "42P01", M: 'relation "nope" does not exist' }),
   ]);
   await assertExecuteRejects(ctx, "DELETE FROM nope", 'relation "nope" does not exist');
 });
 
-Deno.test("execute: throws if the connection closes before ReadyForQuery arrives", async () => {
+test("execute: throws if the connection closes before ReadyForQuery arrives", async () => {
   const { ctx } = mockCtx([commandComplete("DELETE 0")]);
   await assertExecuteRejects(ctx, "DELETE FROM t", "connection closed");
 });
 
-Deno.test("execute: throws a clear error when ctx.socket is unavailable", async () => {
+test("execute: throws a clear error when ctx.socket is unavailable", async () => {
   const ctx: HookContext = { fetch: (() => {}) as unknown as typeof fetch, log: () => {} };
   await assertExecuteRejects(ctx, "DELETE FROM t", "ctx.socket is unavailable");
 });
 
-Deno.test("execute: declares perform/idempotent:false, never claims arbitrary SQL is safe to retry", () => {
+test("execute: declares perform/idempotent:false, never claims arbitrary SQL is safe to retry", () => {
   assertEquals(executeAction.type, "perform");
   assertEquals(executeAction.idempotent, false);
 });

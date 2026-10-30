@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobMaterialCreate from "../../actions/jobmaterial-create.ts";
 import { bodyOf, mockCtx, pathOf, result } from "../_helpers.ts";
 
-Deno.test("jobmaterial-create: POSTs to /jobmaterial.json", async () => {
+test("jobmaterial-create: POSTs to /jobmaterial.json", async () => {
   const { ctx, calls } = mockCtx([{ body: result(), headers: { "x-record-uuid": "m1" } }]);
   const out = await jobMaterialCreate.execute({
     jobUuid: "j1",
@@ -21,7 +22,7 @@ Deno.test("jobmaterial-create: POSTs to /jobmaterial.json", async () => {
   assertEquals(out, { uuid: "m1" });
 });
 
-Deno.test("jobmaterial-create: quantity is required, matching JobMaterialCreate's schema", () => {
+test("jobmaterial-create: quantity is required, matching JobMaterialCreate's schema", () => {
   const quantity = jobMaterialCreate.params?.find((p) => p.key === "quantity");
   assertEquals(quantity?.required, true);
 });

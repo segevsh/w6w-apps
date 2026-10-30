@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/contact-fields-list.ts";
 
-Deno.test("contact-fields-list: GETs contact/allfields with type=json (not resfmt) and unwraps the nested response", async () => {
+test("contact-fields-list: GETs contact/allfields with type=json (not resfmt) and unwraps the nested response", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     {
       body: {

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-update.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("page-update: POSTs /pages/{id} with the parsed numeric id in the body", async () => {
+test("page-update: POSTs /pages/{id} with the parsed numeric id in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ pageId: "5", title: "New" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,13 +13,13 @@ Deno.test("page-update: POSTs /pages/{id} with the parsed numeric id in the body
   assertEquals(JSON.parse(calls[0].body!), { id: 5, title: "New" });
 });
 
-Deno.test("page-update: only sends the fields the caller supplied", async () => {
+test("page-update: only sends the fields the caller supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ pageId: "5", status: "draft" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: 5, status: "draft" });
 });
 
-Deno.test("page-update: maps optional camelCase fields to snake_case", async () => {
+test("page-update: maps optional camelCase fields to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!(
     {

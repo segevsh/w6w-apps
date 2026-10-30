@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-archive.ts";
 
-Deno.test("template-archive: DELETEs the template by id", async () => {
+test("template-archive: DELETEs the template by id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 1, archived_at: "2026-09-29T00:00:00Z" },

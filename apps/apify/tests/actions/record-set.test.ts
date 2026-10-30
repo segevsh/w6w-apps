@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordSet from "../../actions/record-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("record-set: PUTs the value as JSON under the default content type", async () => {
+test("record-set: PUTs the value as JSON under the default content type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   const out = await recordSet.execute(
     { storeId: "s1", recordKey: "OUTPUT", value: { total: 7 } },
@@ -22,7 +23,7 @@ Deno.test("record-set: PUTs the value as JSON under the default content type", a
  * serves it back under — a JSON string written as text/plain reads back as a
  * string forever.
  */
-Deno.test("record-set: a textual content type stores the value verbatim", async () => {
+test("record-set: a textual content type stores the value verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await recordSet.execute(
     { storeId: "s1", recordKey: "note", value: "hello", contentType: "text/plain" },
@@ -32,13 +33,13 @@ Deno.test("record-set: a textual content type stores the value verbatim", async 
   assertEquals(calls[0].body, "hello");
 });
 
-Deno.test("record-set: a JSON string value is parsed before being re-serialized", async () => {
+test("record-set: a JSON string value is parsed before being re-serialized", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await recordSet.execute({ storeId: "s1", recordKey: "k", value: '{"a":1}' }, ctx);
   assertEquals(calls[0].body, '{"a":1}');
 });
 
 /** A PUT is a full overwrite, so writing the same value twice is a no-op. */
-Deno.test("record-set: is declared idempotent", () => {
+test("record-set: is declared idempotent", () => {
   assertEquals(recordSet.idempotent, true);
 });

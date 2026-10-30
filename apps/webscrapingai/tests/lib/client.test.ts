@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   compact,
   errorText,
@@ -12,7 +13,7 @@ import {
 import { pageQuery } from "../../lib/params.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: false, e: [], f: 0 }), {
     a: 1,
     d: false,
@@ -28,7 +29,7 @@ Deno.test("client: helpers", () => {
   assertThrows(() => toMap("[1]", "H"), Error, "JSON object");
 });
 
-Deno.test("client: errorText reads the vendor envelope, HTML titles and plain text", () => {
+test("client: errorText reads the vendor envelope, HTML titles and plain text", () => {
   assertEquals(errorText('{"message":"Wrong API key."}'), "Wrong API key.");
   assertEquals(
     errorText('{"message":"m","error_code":"timeout","status_code":504}'),
@@ -41,7 +42,7 @@ Deno.test("client: errorText reads the vendor envelope, HTML titles and plain te
   assertEquals(formatError(504, "/html", "{}").includes("raise Timeout"), true);
 });
 
-Deno.test("client: raw puts the query on the wire — nested keys bracketed, arrays repeated, empties dropped", async () => {
+test("client: raw puts the query on the wire — nested keys bracketed, arrays repeated, empties dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: "ok" }]);
   const res = await new WsaiClient(ctx).raw("/x", {
     a: "1",
@@ -60,14 +61,14 @@ Deno.test("client: raw puts the query on the wire — nested keys bracketed, arr
   assertEquals(q.get("f"), "false");
 });
 
-Deno.test("client: pageQuery drops unset fields and lowercases the country", () => {
+test("client: pageQuery drops unset fields and lowercases the country", () => {
   assertEquals(pageQuery({ url: " https://e.test ", country: "FR" }), {
     url: "https://e.test",
     country: "fr",
   });
 });
 
-Deno.test("client: a non-JSON body from a JSON endpoint is an error", async () => {
+test("client: a non-JSON body from a JSON endpoint is an error", async () => {
   const { ctx } = mockCtx([{ body: "<html>" }]);
   await assertRejects(
     async () => await new WsaiClient(ctx).json("/account"),

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import formGet from "../../actions/form-get.ts";
 import { errorBody, mockCtx, pathOf, US_ROOT } from "../_helpers.ts";
 
-Deno.test("form-get: calls GET /v1/api/forms/{formId} and returns the body unchanged", async () => {
+test("form-get: calls GET /v1/api/forms/{formId} and returns the body unchanged", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "aB1",
@@ -24,7 +25,7 @@ Deno.test("form-get: calls GET /v1/api/forms/{formId} and returns the body uncha
  * app must therefore not map or filter `type` — an unknown one has to survive
  * intact so the caller can make that decision.
  */
-Deno.test("form-get: an undocumented question type passes through untouched", async () => {
+test("form-get: an undocumented question type passes through untouched", async () => {
   const { ctx } = mockCtx([{
     body: {
       id: "aB1",
@@ -38,13 +39,13 @@ Deno.test("form-get: an undocumented question type passes through untouched", as
   assertEquals(out.questions[0].type, "SomethingNewIn2027");
 });
 
-Deno.test("form-get: a slash pasted into the id cannot escape the path segment", async () => {
+test("form-get: a slash pasted into the id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await formGet.execute({ formId: "aB1/../../forms" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/api/forms/aB1%2F..%2F..%2Fforms");
 });
 
-Deno.test("form-get: a 404 keeps the vendor's own message", async () => {
+test("form-get: a 404 keeps the vendor's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not Found", "Not Found") }]);
   const err = await assertRejects(
     () => Promise.resolve(formGet.execute({ formId: "nope" }, ctx)),

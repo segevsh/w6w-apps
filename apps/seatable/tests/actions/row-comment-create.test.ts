@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rowCommentCreate from "../../actions/row-comment-create.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("row-comment-create: POSTs the comment with table_id and row_id in the query", async () => {
+test("row-comment-create: POSTs the comment with table_id and row_id in the query", async () => {
   // The vendor answers with the bare JSON string "success:true".
   const { ctx, calls } = mockCtx([{ body: '"success:true"' }]);
   const out = await rowCommentCreate.execute(
@@ -16,6 +17,6 @@ Deno.test("row-comment-create: POSTs the comment with table_id and row_id in the
   assertEquals(out.success, true);
 });
 
-Deno.test("row-comment-create: is not idempotent", () => {
+test("row-comment-create: is not idempotent", () => {
   assertEquals(rowCommentCreate.idempotent, false);
 });

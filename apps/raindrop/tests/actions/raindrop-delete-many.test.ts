@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import raindropDeleteMany from "../../actions/raindrop-delete-many.ts";
 import { bodyOf, mockCtx, okBody, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("raindrop-delete-many: DELETEs the plural path with ids in the body", async () => {
+test("raindrop-delete-many: DELETEs the plural path with ids in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody({ modified: 330 }) }]);
   const out = await raindropDeleteMany.execute({ collectionId: 8492393, ids: "1, 2" }, ctx) as {
     modified: number;
@@ -16,7 +17,7 @@ Deno.test("raindrop-delete-many: DELETEs the plural path with ids in the body", 
 });
 
 /** Same vendor warning as the batch update: 0 is not supported here. */
-Deno.test("raindrop-delete-many: refuses collection 0 without making a request", async () => {
+test("raindrop-delete-many: refuses collection 0 without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(raindropDeleteMany.execute({ collectionId: 0 }, ctx)),
@@ -31,7 +32,7 @@ Deno.test("raindrop-delete-many: refuses collection 0 without making a request",
  * that is a real operation the API offers — but it must be reachable only by
  * typing the id, and the hint must say what happens.
  */
-Deno.test("raindrop-delete-many: -99 is allowed and the hint says it is permanent", async () => {
+test("raindrop-delete-many: -99 is allowed and the hint says it is permanent", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   await raindropDeleteMany.execute({ collectionId: -99 }, ctx);
   assertEquals(pathOf(calls[0].url), "/rest/v1/raindrops/-99");
@@ -41,7 +42,7 @@ Deno.test("raindrop-delete-many: -99 is allowed and the hint says it is permanen
 });
 
 /** `search` is a query parameter and `ids` a body field — the vendor's asymmetry. */
-Deno.test("raindrop-delete-many: search goes in the query string", async () => {
+test("raindrop-delete-many: search goes in the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   await raindropDeleteMany.execute({ collectionId: 1, search: "type:image", nested: true }, ctx);
 
@@ -49,11 +50,11 @@ Deno.test("raindrop-delete-many: search goes in the query string", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("raindrop-delete-many: the ids hint warns that empty means the whole collection", () => {
+test("raindrop-delete-many: the ids hint warns that empty means the whole collection", () => {
   const hint = raindropDeleteMany.params?.find((p) => p.key === "ids")?.hint ?? "";
   assert(/WHOLE COLLECTION/i.test(hint), hint);
 });
 
-Deno.test("raindrop-delete-many: is idempotent", () => {
+test("raindrop-delete-many: is idempotent", () => {
   assertEquals(raindropDeleteMany.idempotent, true);
 });

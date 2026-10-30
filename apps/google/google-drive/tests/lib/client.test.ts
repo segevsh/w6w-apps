@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { GoogleDriveClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing", async () => {
+test("client: 204 returns undefined without parsing", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new GoogleDriveClient(ctx);
   const result = await client.request("/files/x", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"error":"NOT_FOUND"}' },
   ]);
@@ -21,7 +22,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   );
 });
 
-Deno.test("client: multipartUpload sends multipart/related with metadata + content", async () => {
+test("client: multipartUpload sends multipart/related with metadata + content", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "up-1" } }]);
   const client = new GoogleDriveClient(ctx);
   await client.multipartUpload(
@@ -42,7 +43,7 @@ Deno.test("client: multipartUpload sends multipart/related with metadata + conte
   assertEquals(decoded.includes("hello"), true);
 });
 
-Deno.test("client: simpleUpload posts with uploadType=media and the raw content type", async () => {
+test("client: simpleUpload posts with uploadType=media and the raw content type", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "up-2" } }]);
   const client = new GoogleDriveClient(ctx);
   await client.simpleUpload("plain text", "text/plain");

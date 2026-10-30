@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-create.ts";
 
@@ -25,7 +26,7 @@ function baseInput(overrides: Partial<Input> = {}): Input {
   };
 }
 
-Deno.test("campaign-create: base64-encodes the HTML body", async () => {
+test("campaign-create: base64-encodes the HTML body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, status: 13, count: 1 } }]);
   await action.execute!(baseInput(), ctx);
   assertEquals(calls[0].url, "https://api.sendpulse.com/campaigns");
@@ -36,7 +37,7 @@ Deno.test("campaign-create: base64-encodes the HTML body", async () => {
   assertEquals(body.list_id, 1);
 });
 
-Deno.test("campaign-create: base64 handles non-Latin1 characters unlike a bare btoa", async () => {
+test("campaign-create: base64 handles non-Latin1 characters unlike a bare btoa", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   const html = "<p>café — naïve</p>"; // é, em dash, ï — outside btoa's Latin1 range
   await action.execute!(baseInput({ body: html }), ctx);
@@ -47,7 +48,7 @@ Deno.test("campaign-create: base64 handles non-Latin1 characters unlike a bare b
   assertEquals(decoded, html);
 });
 
-Deno.test("campaign-create: templateId is sent as template_id, without a body field", async () => {
+test("campaign-create: templateId is sent as template_id, without a body field", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute!(baseInput({ body: undefined, templateId: "775667" }), ctx);
   const body = JSON.parse(calls[0].body ?? "");
@@ -55,7 +56,7 @@ Deno.test("campaign-create: templateId is sent as template_id, without a body fi
   assert(!("body" in body));
 });
 
-Deno.test("campaign-create: refuses when neither body nor templateId is given", async () => {
+test("campaign-create: refuses when neither body nor templateId is given", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!(baseInput({ body: undefined }), ctx)),
@@ -65,6 +66,6 @@ Deno.test("campaign-create: refuses when neither body nor templateId is given", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-create: is not idempotent — no idempotency key on this endpoint", () => {
+test("campaign-create: is not idempotent — no idempotency key on this endpoint", () => {
   assertEquals(action.idempotent, false);
 });

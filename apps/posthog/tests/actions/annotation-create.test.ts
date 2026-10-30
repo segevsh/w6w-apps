@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/annotation-create.ts";
 
 const conn = { display: { region: "us", projectId: "999" } };
 
-Deno.test("annotation-create: POSTs /api/projects/{id}/annotations/ with content", async () => {
+test("annotation-create: POSTs /api/projects/{id}/annotations/ with content", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 201, body: { id: 1, content: "Deployed v2" } }],
     { connection: conn },
@@ -17,7 +18,7 @@ Deno.test("annotation-create: POSTs /api/projects/{id}/annotations/ with content
   assertEquals(result, { id: 1, content: "Deployed v2" });
 });
 
-Deno.test("annotation-create: scope and additionalFields map to snake_case body fields", async () => {
+test("annotation-create: scope and additionalFields map to snake_case body fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], { connection: conn });
   await action.execute!(
     {
@@ -42,7 +43,7 @@ Deno.test("annotation-create: scope and additionalFields map to snake_case body 
   assertEquals(body.hidden_in_user_interface, true);
 });
 
-Deno.test("annotation-create: requires content", async () => {
+test("annotation-create: requires content", async () => {
   const { ctx, calls } = mockCtx([], { connection: conn });
   await assertRejects(async () => await action.execute!({ content: "" }, ctx), Error, "content");
   assertEquals(calls.length, 0);

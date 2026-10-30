@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/timeslip-update.ts";
 
-Deno.test("timeslip-update: PUTs /timeslips/:id with the given fields", async () => {
+test("timeslip-update: PUTs /timeslips/:id with the given fields", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ body: { timeslip: { url: "x" } } }]);
   await action.execute({ timeslipId: "25", fields: { hours: "2.0" } }, ctx);
   assertEquals(calls[0].method, "PUT");

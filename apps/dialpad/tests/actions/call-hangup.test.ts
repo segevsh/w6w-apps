@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callHangup from "../../actions/call-hangup.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-hangup: PUTs /call/{id}/actions/hangup", async () => {
+test("call-hangup: PUTs /call/{id}/actions/hangup", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await callHangup.execute({ callId: "5" }, ctx) as { status: number };
   assertEquals(calls[0].method, "PUT");
@@ -10,6 +11,6 @@ Deno.test("call-hangup: PUTs /call/{id}/actions/hangup", async () => {
   assertEquals(out.status, 200);
 });
 
-Deno.test("call-hangup: declared non-idempotent", () => {
+test("call-hangup: declared non-idempotent", () => {
   assertEquals(callHangup.idempotent, false);
 });

@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/variable-list.ts";
 
-Deno.test("variable-list: reads the bare-array collection", async () => {
+test("variable-list: reads the bare-array collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "x1" }] }]);
   assertEquals(await action.execute!({}, ctx), [{ id: "x1" }]);
   assertEquals(new URL(calls[0].url).pathname, "/v1/variables");
 });
 
-Deno.test("variable-list: returnAll walks pages until a short one", async () => {
+test("variable-list: returnAll walks pages until a short one", async () => {
   const full = Array.from({ length: 100 }, (_, i) => ({ id: `x${i}` }));
   const { ctx, calls } = mockCtx([
     { status: 200, body: full },

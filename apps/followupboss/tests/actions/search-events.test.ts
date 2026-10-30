@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import searchEvents from "../../actions/search-events.ts";
 
-Deno.test("search-events: joins a multiselect of types into one comma-separated param", async () => {
+test("search-events: joins a multiselect of types into one comma-separated param", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "events" }, events: [] },
@@ -17,13 +18,13 @@ Deno.test("search-events: joins a multiselect of types into one comma-separated 
   assertEquals(url.searchParams.get("personId"), "12264");
 });
 
-Deno.test("search-events: a single string type still works", async () => {
+test("search-events: a single string type still works", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { events: [] } }]);
   await searchEvents.execute({ type: "Registration" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("type"), "Registration");
 });
 
-Deno.test("search-events: unwraps the envelope and carries the cursor", async () => {
+test("search-events: unwraps the envelope and carries the cursor", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -43,6 +44,6 @@ Deno.test("search-events: unwraps the envelope and carries the cursor", async ()
 /** Not an audit log — some events never reach the API at all. */
 
 /** Not an audit log — some events never reach the API at all. */
-Deno.test("search-events: says some events are UI-only", () => {
+test("search-events: says some events are UI-only", () => {
   assert(/only in the Follow Up Boss UI|visible only/i.test(searchEvents.description!));
 });

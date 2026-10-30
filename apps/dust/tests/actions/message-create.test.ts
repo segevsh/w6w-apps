@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageCreate from "../../actions/message-create.ts";
 import { mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("message-create: posts into the conversation's messages endpoint", async () => {
+test("message-create: posts into the conversation's messages endpoint", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { sId: "m1" } }]);
   await messageCreate.execute(
     { cId: "c1", content: "follow up", username: "workflow", timezone: "UTC" },
@@ -22,7 +23,7 @@ Deno.test("message-create: posts into the conversation's messages endpoint", asy
   });
 });
 
-Deno.test("message-create: mentions an agent when agentIds is given", async () => {
+test("message-create: mentions an agent when agentIds is given", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { sId: "m1" } }]);
   await messageCreate.execute(
     { cId: "c1", content: "hi", agentIds: "agent_1", username: "workflow", timezone: "UTC" },
@@ -33,6 +34,6 @@ Deno.test("message-create: mentions an agent when agentIds is given", async () =
   assertEquals(body.mentions, [{ configurationId: "agent_1" }]);
 });
 
-Deno.test("message-create: is declared non-idempotent", () => {
+test("message-create: is declared non-idempotent", () => {
   assertEquals(messageCreate.idempotent, false);
 });

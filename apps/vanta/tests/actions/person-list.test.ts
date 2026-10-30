@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, page } from "./_shared.ts";
 import action from "../../actions/person-list.ts";
 
 /** FORMER people still appear; an unfiltered report counts everybody ever. */
-Deno.test("person-list: defaults to current employees", async () => {
+test("person-list: defaults to current employees", async () => {
   const { ctx, calls } = mockCtx([page([{ id: "p1" }])], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(calls[0].url.split("?")[0], "https://api.vanta.com/v1/people");
@@ -12,7 +13,7 @@ Deno.test("person-list: defaults to current employees", async () => {
   assertEquals(result.count, 1);
 });
 
-Deno.test("person-list: any employment status sends no filter", async () => {
+test("person-list: any employment status sends no filter", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ employmentStatus: "" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("employmentStatus"), null);
@@ -22,7 +23,7 @@ Deno.test("person-list: any employment status sends no filter", async () => {
  * Vanta ignores either task filter on its own, which produces a report that
  * looks filtered and is not.
  */
-Deno.test("person-list: refuses one task filter without the other", async () => {
+test("person-list: refuses one task filter without the other", async () => {
   const onlyStatus = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ taskStatuses: "OVERDUE" }, onlyStatus.ctx),
@@ -39,7 +40,7 @@ Deno.test("person-list: refuses one task filter without the other", async () => 
   );
 });
 
-Deno.test("person-list: the task pair reaches the wire together", async () => {
+test("person-list: the task pair reaches the wire together", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ taskStatuses: "OVERDUE", taskTypes: "SECURITY_TRAINING" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -47,7 +48,7 @@ Deno.test("person-list: the task pair reaches the wire together", async () => {
   assertEquals(q.getAll("taskTypeMatchesAny"), ["SECURITY_TRAINING"]);
 });
 
-Deno.test("person-list: the rolled-up task filter works on its own", async () => {
+test("person-list: the rolled-up task filter works on its own", async () => {
   const { ctx, calls } = mockCtx([page([])], { display });
   await action.execute!({ tasksSummaryStatuses: "OVERDUE" }, ctx);
   assertEquals(
@@ -57,7 +58,7 @@ Deno.test("person-list: the rolled-up task filter works on its own", async () =>
 });
 
 /** A run log is not the place for a staff roster. */
-Deno.test("person-list: logs a count, not the people", async () => {
+test("person-list: logs a count, not the people", async () => {
   const { ctx, logs } = mockCtx([page([{ id: "p1", email: "ada@acme.com" }])], { display });
   await action.execute!({}, ctx);
   assert(!JSON.stringify(logs).includes("ada@acme.com"), JSON.stringify(logs));
@@ -65,6 +66,6 @@ Deno.test("person-list: logs a count, not the people", async () => {
 });
 
 /** The distinction that runs through the whole app. */
-Deno.test("person-list: says a person is not a user", () => {
+test("person-list: says a person is not a user", () => {
   assert(/NOT the same as Vanta users/.test(action.description!), action.description);
 });

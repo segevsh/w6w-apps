@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import resultGet from "../../actions/result-get.ts";
 import { mockCtx, pathOf, queryOf, queryValuesOf } from "../_helpers.ts";
 
-Deno.test("result-get: reads the documented single-result path", async () => {
+test("result-get: reads the documented single-result path", async () => {
   const body = { data: { id: "2756c677", status: "finished" } };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -13,7 +14,7 @@ Deno.test("result-get: reads the documented single-result path", async () => {
   assertEquals(result, body as never);
 });
 
-Deno.test("result-get: both ids are passed through uncoerced", async () => {
+test("result-get: both ids are passed through uncoerced", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
 
   await resultGet.execute(
@@ -31,7 +32,7 @@ Deno.test("result-get: both ids are passed through uncoerced", async () => {
  * `include[]` is a repeated key, the vendor's own documented form
  * (`?include[]=answers&include[]=scores`) — never one comma-joined value.
  */
-Deno.test("result-get: includes are sent as repeated include[] keys", async () => {
+test("result-get: includes are sent as repeated include[] keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
 
   await resultGet.execute({ scorecard: "1", result: "123", include: ["answers", "scores"] }, ctx);
@@ -40,7 +41,7 @@ Deno.test("result-get: includes are sent as repeated include[] keys", async () =
   assertEquals(calls[0].url.includes("answers,scores"), false, calls[0].url);
 });
 
-Deno.test("result-get: an empty include list sends no include parameter at all", async () => {
+test("result-get: an empty include list sends no include parameter at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
 
   await resultGet.execute({ scorecard: "1", result: "123", include: [] }, ctx);
@@ -49,7 +50,7 @@ Deno.test("result-get: an empty include list sends no include parameter at all",
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("result-get: the include options are exactly the five the article documents", () => {
+test("result-get: the include options are exactly the five the article documents", () => {
   const include = resultGet.params?.find((p) => p.key === "include");
 
   assertEquals(include?.type, "multiselect");
@@ -64,7 +65,7 @@ Deno.test("result-get: the include options are exactly the five the article docu
   assert(/Pro plan/.test(additional?.description ?? ""), additional?.description);
 });
 
-Deno.test("result-get: both path ids are required string params", () => {
+test("result-get: both path ids are required string params", () => {
   for (const key of ["scorecard", "result"]) {
     const param = resultGet.params?.find((p) => p.key === key);
     assertEquals(param?.type, "string", key);

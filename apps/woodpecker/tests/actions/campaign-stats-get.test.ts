@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import campaignStatsGet from "../../actions/campaign-stats-get.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-stats-get: fetches the single campaign with stats", async () => {
+test("campaign-stats-get: fetches the single campaign with stats", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{
@@ -27,7 +28,7 @@ Deno.test("campaign-stats-get: fetches the single campaign with stats", async ()
   assertEquals((out.stats as { replied: number }).replied, 74);
 });
 
-Deno.test("campaign-stats-get: an empty answer is an error", async () => {
+test("campaign-stats-get: an empty answer is an error", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "message": "There are no campaigns" } }]);
   await assertRejects(
     async () => await campaignStatsGet.execute({ "campaign_id": "9" } as never, ctx),

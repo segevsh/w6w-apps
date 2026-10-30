@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import performance from "../../actions/performance.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("performance: posts url, config and budgets and wraps the report", async () => {
+test("performance: posts url, config and budgets and wraps the report", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { audits: {} } } }]);
   const out = await performance.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("performance: posts url, config and budgets and wraps the report", asy
   });
 });
 
-Deno.test("performance: validates url and budgets", async () => {
+test("performance: validates url and budgets", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await performance.execute({ url: "" }, ctx),

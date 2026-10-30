@@ -1,54 +1,56 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDirSync, denoReadTextFileSync, denoStatSync } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import apiToken, { classifyTokenAnswer } from "../auth/api-token.ts";
 import api from "../health/api.ts";
 import service from "../health/service.ts";
 import { mockCtx } from "./_helpers.ts";
 
-const pkg = JSON.parse(Deno.readTextFileSync(new URL("../package.json", import.meta.url)));
+const pkg = JSON.parse(denoReadTextFileSync(new URL("../package.json", import.meta.url)));
 
-Deno.test("index: exposes 36 uniquely-keyed kebab-case actions", () => {
+test("index: exposes 36 uniquely-keyed kebab-case actions", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.length, 36);
   assertEquals(new Set(keys).size, keys.length);
   for (const k of keys) assert(/^[a-z]+(-[a-z]+)*$/.test(k), k);
 });
 
-Deno.test("index: every action has a test file", () => {
+test("index: every action has a test file", () => {
   for (const a of app.actions) {
-    Deno.statSync(new URL(`./actions/${a.key}.test.ts`, import.meta.url));
+    denoStatSync(new URL(`./actions/${a.key}.test.ts`, import.meta.url));
   }
 });
 
-Deno.test("index: perform actions state their idempotency, reads do not", () => {
+test("index: perform actions state their idempotency, reads do not", () => {
   for (const a of app.actions) {
     if (a.type === "perform") assertEquals(typeof a.idempotent, "boolean", a.key);
     else assertEquals(a.idempotent, undefined, a.key);
   }
 });
 
-Deno.test("index: one bearer auth method, two health checks", () => {
+test("index: one bearer auth method, two health checks", () => {
   assertEquals(app.auth?.map((a) => a.key), ["api-token"]);
   assertEquals(app.healthChecks?.map((h) => h.key).sort(), ["api", "service"]);
 });
 
-Deno.test("index: package.json declares only app.documerge.ai and a valid identity", () => {
+test("index: package.json declares only app.documerge.ai and a valid identity", () => {
   assertEquals(pkg.w6w.network.allow, ["app.documerge.ai"]);
   assert(/^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(pkg.w6w.id));
   assert(pkg.w6w.categories.length >= 1 && pkg.w6w.categories.length <= 3);
 });
 
-Deno.test("index: no action or lib file reads a credential or calls global fetch", () => {
+test("index: no action or lib file reads a credential or calls global fetch", () => {
   for (const dir of ["actions", "lib", "health"]) {
-    for (const f of Deno.readDirSync(new URL(`../${dir}/`, import.meta.url))) {
-      const src = Deno.readTextFileSync(new URL(`../${dir}/${f.name}`, import.meta.url));
+    for (const f of denoReadDirSync(new URL(`../${dir}/`, import.meta.url))) {
+      const src = denoReadTextFileSync(new URL(`../${dir}/${f.name}`, import.meta.url));
       assert(!/\bauthorization\b/i.test(src.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "")), f.name);
       assert(!/(^|[^.\w])fetch\(/.test(src), `${f.name} calls global fetch`);
     }
   }
 });
 
-Deno.test("auth: sign stamps the bearer token", async () => {
+test("auth: sign stamps the bearer token", async () => {
   const req = {
     url: "https://app.documerge.ai/api/documents",
     method: "GET",
@@ -61,7 +63,7 @@ Deno.test("auth: sign stamps the bearer token", async () => {
   assertEquals((out as { headers: Record<string, string> }).headers["authorization"], "Bearer tok");
 });
 
-Deno.test("auth: test accepts a documented success body", async () => {
+test("auth: test accepts a documented success body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   assertEquals(await apiToken.test!({ credential: { apiToken: "tok" } } as never, ctx), {
     ok: true,
@@ -70,7 +72,7 @@ Deno.test("auth: test accepts a documented success body", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/api/documents");
 });
 
-Deno.test("auth: test rejects Unauthenticated. from the body, whatever the status", async () => {
+test("auth: test rejects Unauthenticated. from the body, whatever the status", async () => {
   for (const status of [401, 403, 500]) {
     const { ctx } = mockCtx([{ status, body: { message: "Unauthenticated." } }]);
     const r = await apiToken.test!({ credential: { apiToken: "bad" } } as never, ctx);
@@ -79,7 +81,7 @@ Deno.test("auth: test rejects Unauthenticated. from the body, whatever the statu
   }
 });
 
-Deno.test("auth: a 200 without the data envelope is not a pass", async () => {
+test("auth: a 200 without the data envelope is not a pass", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -88,19 +90,19 @@ Deno.test("auth: a 200 without the data envelope is not a pass", async () => {
   assertEquals(r.ok, false);
 });
 
-Deno.test("auth: test with no token makes no request", async () => {
+test("auth: test with no token makes no request", async () => {
   const { ctx, calls } = mockCtx([]);
   const r = await apiToken.test!({ credential: {} } as never, ctx);
   assertEquals(r.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth: classify reads 429 and other answers", () => {
+test("auth: classify reads 429 and other answers", () => {
   assertEquals(classifyTokenAnswer(429, "{}").kind, "rate-limited");
   assertEquals(classifyTokenAnswer(500, "boom").kind, "other");
 });
 
-Deno.test("health api: sends no credential and passes on the documented 401", async () => {
+test("health api: sends no credential and passes on the documented 401", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: { message: "Unauthenticated." } }]);
   const r = await api.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -108,7 +110,7 @@ Deno.test("health api: sends no credential and passes on the documented 401", as
   assertEquals(api.credential, "none");
 });
 
-Deno.test("health api: 5xx is down, HTML is degraded, 429 is degraded, odd body is unknown", async () => {
+test("health api: 5xx is down, HTML is degraded, 429 is degraded, odd body is unknown", async () => {
   assertEquals(
     (await api.check!({} as never, mockCtx([{ status: 503, body: "x" }]).ctx)).state,
     "down",
@@ -127,12 +129,12 @@ Deno.test("health api: 5xx is down, HTML is degraded, 429 is degraded, odd body 
   );
 });
 
-Deno.test("health api: a transport failure is down", async () => {
+test("health api: a transport failure is down", async () => {
   const ctx = { fetch: () => Promise.reject(new Error("dns")), log: () => {} } as never;
   assertEquals((await api.check!({} as never, ctx)).state, "down");
 });
 
-Deno.test("health service: declared unavailable at informational severity", () => {
+test("health service: declared unavailable at informational severity", () => {
   assertEquals(service.severity, "informational");
   assert(service.unavailable?.reason);
 });

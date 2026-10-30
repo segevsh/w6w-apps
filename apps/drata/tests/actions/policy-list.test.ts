@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import policyList from "../../actions/policy-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
 const BASE = {};
 
-Deno.test("policy-list: GET /policies sends only the page defaults and flattens the envelope", async () => {
+test("policy-list: GET /policies sends only the page defaults and flattens the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }, { id: 2 }], "next-abc", 2) }]);
   const out = await policyList.execute({ ...BASE, size: 25, includeTotalCount: true }, ctx) as {
     items: unknown[];
@@ -24,7 +25,7 @@ Deno.test("policy-list: GET /policies sends only the page defaults and flattens 
   assertEquals(out.totalCount, 2);
 });
 
-Deno.test("policy-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
+test("policy-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   const out = await policyList.execute(
     { ...BASE, ...{ "statuses": ["ACTIVE"] }, cursor: "c1" },
@@ -44,7 +45,7 @@ Deno.test("policy-list: filters and expand go out under their wire names; a curs
   assertEquals(out.nextCursor, null);
 });
 
-Deno.test("policy-list: a 403 names the permission problem and keeps Drata's message", async () => {
+test("policy-list: a 403 names the permission problem and keeps Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden resource", 5) }]);
   const err = await assertRejects(
     () => Promise.resolve(policyList.execute({ ...BASE }, ctx)),

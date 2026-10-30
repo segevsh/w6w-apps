@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import oauth, {
   AUTHORIZATION_URL,
   BASECAMP_PRODUCT,
@@ -28,7 +29,7 @@ const BC = (over: Record<string, unknown> = {}) => ({
 });
 
 /** Basecamp has no API keys — OAuth against 37signals' Launchpad is the only way in. */
-Deno.test("auth: is oauth2 against Launchpad, with no scopes to request", () => {
+test("auth: is oauth2 against Launchpad, with no scopes to request", () => {
   assertEquals(oauth.key, "oauth");
   assertEquals(oauth.type, "oauth2");
   assertEquals(oauth.oauth2?.authorizationUrl, `${LAUNCHPAD}/authorization/new`);
@@ -40,25 +41,25 @@ Deno.test("auth: is oauth2 against Launchpad, with no scopes to request", () => 
 });
 
 /** The label comes from the account the authorization resolved to, not from a typed field. */
-Deno.test("auth: labels the connection with the discovered account name", () => {
+test("auth: labels the connection with the discovered account name", () => {
   assertEquals(oauth.connectionLabel, "{{account.name}}");
 });
 
 /** Hosts differ on the casing they store the token under; both have to work. */
-Deno.test("bearerFrom: accepts either camelCase or snake_case storage", () => {
+test("bearerFrom: accepts either camelCase or snake_case storage", () => {
   assertEquals(bearerFrom({ accessToken: TOKEN }), TOKEN);
   assertEquals(bearerFrom({ access_token: TOKEN }), TOKEN);
   assertEquals(bearerFrom({}), "");
 });
 
-Deno.test("sign: sends the bearer and Basecamp's required User-Agent", () => {
+test("sign: sends the bearer and Basecamp's required User-Agent", () => {
   const signed = signWith({ url: `${LAUNCHPAD}/x`, headers: {} }, { accessToken: TOKEN });
   assertEquals(signed.headers["authorization"], `Bearer ${TOKEN}`);
   // Basecamp may refuse a request that does not identify the application.
   assertEquals(signed.headers["user-agent"], USER_AGENT);
 });
 
-Deno.test("sign: leaves the URL untouched", () => {
+test("sign: leaves the URL untouched", () => {
   const url = "https://3.basecampapi.com/1/projects.json";
   assertEquals(signWith({ url, headers: {} }, { access_token: TOKEN }).url, url);
 });
@@ -68,7 +69,7 @@ Deno.test("sign: leaves the URL untouched", () => {
  * `bc3` is Basecamp 5's product code, and filtering on it is what stops the app
  * from connecting to an account whose API it cannot speak.
  */
-Deno.test("basecampAccounts: keeps only bc3 accounts that carry an id", () => {
+test("basecampAccounts: keeps only bc3 accounts that carry an id", () => {
   const accounts = basecampAccounts({
     accounts: [
       BC(),
@@ -80,13 +81,13 @@ Deno.test("basecampAccounts: keeps only bc3 accounts that carry an id", () => {
   assertEquals(accounts.map((a) => a.id), [999999999]);
 });
 
-Deno.test("basecampAccounts: an absent or empty list is empty, not a throw", () => {
+test("basecampAccounts: an absent or empty list is empty, not a throw", () => {
   assertEquals(basecampAccounts(null), []);
   assertEquals(basecampAccounts({} as never), []);
   assertEquals(basecampAccounts({ accounts: [] } as never), []);
 });
 
-Deno.test("test: probes Launchpad's identity endpoint with the bearer", async () => {
+test("test: probes Launchpad's identity endpoint with the bearer", async () => {
   const { ctx, calls } = mockCtx([{ body: identity([BC()]) }]);
   const result = await oauth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
 
@@ -96,7 +97,7 @@ Deno.test("test: probes Launchpad's identity endpoint with the bearer", async ()
   assertEquals(calls[0].headers["user-agent"], USER_AGENT);
 });
 
-Deno.test("test: reports a missing token without making a request", async () => {
+test("test: reports a missing token without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await oauth.test!({ credential: {} } as never, ctx);
   assertEquals(result.ok, false);
@@ -108,7 +109,7 @@ Deno.test("test: reports a missing token without making a request", async () => 
  * Basecamp's access tokens expire, so a 401 here is routine and the fix is to
  * reconnect — the message says so rather than leaving "rejected" to be decoded.
  */
-Deno.test("test: a 401 says the token expires and to reconnect", async () => {
+test("test: a 401 says the token expires and to reconnect", async () => {
   for (const status of [401, 403]) {
     const { ctx } = mockCtx([{ status, body: { error: "nope" } }]);
     const result = await oauth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
@@ -118,14 +119,14 @@ Deno.test("test: a 401 says the token expires and to reconnect", async () => {
   }
 });
 
-Deno.test("test: any other non-2xx reports the status", async () => {
+test("test: any other non-2xx reports the status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await oauth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("500"), result.message);
 });
 
-Deno.test("test: a 200 that carries no identity is rejected", async () => {
+test("test: a 200 that carries no identity is rejected", async () => {
   const { ctx } = mockCtx([{ body: { accounts: [BC()] } }]);
   const result = await oauth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
   assertEquals(result.ok, false);
@@ -137,7 +138,7 @@ Deno.test("test: a 200 that carries no identity is rejected", async () => {
  * simply has no Basecamp 5 account. Naming the products it *can* reach is what
  * turns "it failed" into "you signed in with the wrong account".
  */
-Deno.test("test: no bc3 account names the products the ID can reach", async () => {
+test("test: no bc3 account names the products the ID can reach", async () => {
   const { ctx } = mockCtx([{
     body: identity([
       { id: 2, product: "highrise", name: "CRM" },
@@ -152,7 +153,7 @@ Deno.test("test: no bc3 account names the products the ID can reach", async () =
   assertEquals(result.message!.match(/highrise/g)?.length, 1, result.message);
 });
 
-Deno.test("test: an ID with no accounts at all says so plainly", async () => {
+test("test: an ID with no accounts at all says so plainly", async () => {
   const { ctx } = mockCtx([{ body: identity([]) }]);
   const result = await oauth.test!({ credential: { accessToken: TOKEN } } as never, ctx);
   assertEquals(result.ok, false);
@@ -163,7 +164,7 @@ Deno.test("test: an ID with no accounts at all says so plainly", async () => {
  * The account id is what every Basecamp URL embeds, and it is not derivable from
  * the token — this is where it gets published onto the Connection.
  */
-Deno.test("afterConnect: publishes the account id the client will need", async () => {
+test("afterConnect: publishes the account id the client will need", async () => {
   const { ctx } = mockCtx([{ body: identity([BC()]) }]);
   const display = await oauth.afterConnect!(
     { credential: { accessToken: TOKEN } } as never,
@@ -176,7 +177,7 @@ Deno.test("afterConnect: publishes the account id the client will need", async (
 });
 
 /** With several Basecamp accounts the first is chosen, and the rest are recorded. */
-Deno.test("afterConnect: records every account when there is more than one", async () => {
+test("afterConnect: records every account when there is more than one", async () => {
   const { ctx } = mockCtx([{
     body: identity([BC(), BC({ id: 111, name: "Beta" })]),
   }]);
@@ -191,14 +192,14 @@ Deno.test("afterConnect: records every account when there is more than one", asy
   ]);
 });
 
-Deno.test("afterConnect: never republishes the token", async () => {
+test("afterConnect: never republishes the token", async () => {
   const { ctx } = mockCtx([{ body: identity([BC()]) }]);
   const display = await oauth.afterConnect!({ credential: { accessToken: TOKEN } } as never, ctx);
   assert(!JSON.stringify(display).includes(TOKEN));
 });
 
 /** A failed lookup must not block the connection — it just publishes nothing. */
-Deno.test("afterConnect: a failure, or no bc3 account, yields empty metadata", async () => {
+test("afterConnect: a failure, or no bc3 account, yields empty metadata", async () => {
   for (
     const response of [
       { status: 401, body: {} },
@@ -213,7 +214,7 @@ Deno.test("afterConnect: a failure, or no bc3 account, yields empty metadata", a
   }
 });
 
-Deno.test("afterConnect: a missing token makes no request", async () => {
+test("afterConnect: a missing token makes no request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await oauth.afterConnect!({ credential: {} } as never, ctx), {});
   assertEquals(calls.length, 0);

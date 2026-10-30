@@ -1,8 +1,9 @@
-import { assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertRejects } from "../_assert.ts";
 import rewindFetch from "../../actions/rewind-fetch.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("rewind-fetch: a 404 is an error naming the exact-URL rule's endpoint", async () => {
+test("rewind-fetch: a 404 is an error naming the exact-URL rule's endpoint", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: { code: "NOT_FOUND", message: "no page" } },

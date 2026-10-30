@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invitee-get.ts";
 
-Deno.test("invitee-get: addresses a nested invitee, extracting both UUIDs", async () => {
+test("invitee-get: addresses a nested invitee, extracting both UUIDs", async () => {
   const { ctx, calls } = mockCtx([{ body: { resource: {} } }]);
   await action.execute(
     {

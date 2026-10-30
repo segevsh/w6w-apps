@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberList from "../../actions/subscriber-list.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-list: lists subscribers with sort order and pagination", async () => {
+test("subscriber-list: lists subscribers with sort order and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ id: 1 }]) }]);
   await subscriberList.execute(
     { accountId: "1", listId: "2", sortOrder: "desc", start: 0, size: 100 },

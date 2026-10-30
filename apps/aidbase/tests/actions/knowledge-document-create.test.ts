@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import knowledgeDocumentCreate from "../../actions/knowledge-document-create.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => knowledgeDocumentCreate.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("knowledge-document-create: declares a perform action with a description, params and output", () => {
+test("knowledge-document-create: declares a perform action with a description, params and output", () => {
   assertEquals(knowledgeDocumentCreate.key, "knowledge-document-create");
   assertEquals(knowledgeDocumentCreate.type, "perform");
   assert((knowledgeDocumentCreate.description ?? "").length > 0);
@@ -18,7 +19,7 @@ Deno.test("knowledge-document-create: declares a perform action with a descripti
   assertEquals(knowledgeDocumentCreate.idempotent, false);
 });
 
-Deno.test("knowledge-document-create: sends the documented request and returns the documented shape", async () => {
+test("knowledge-document-create: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -39,7 +40,7 @@ Deno.test("knowledge-document-create: sends the documented request and returns t
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("knowledge-document-create: an Aidbase failure body is thrown with its message", async () => {
+test("knowledge-document-create: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });

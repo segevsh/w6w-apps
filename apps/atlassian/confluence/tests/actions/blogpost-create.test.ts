@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blogpost-create.ts";
 
 const display = { site: "acme" };
 
-Deno.test("blogpost-create: POSTs the body as a {representation, value} object", async () => {
+test("blogpost-create: POSTs the body as a {representation, value} object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "b1" } }], { display });
   await action.execute!({ spaceId: "101", title: "Launch", body: "<p>ship</p>" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -17,7 +18,7 @@ Deno.test("blogpost-create: POSTs the body as a {representation, value} object",
   });
 });
 
-Deno.test("blogpost-create: a title is required unless the post is a draft", async () => {
+test("blogpost-create: a title is required unless the post is a draft", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ spaceId: "101" }, ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import keyUpdate from "../../actions/key-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("key-update: sends PATCH /v2/projects/project%201%2Fx/keys/key%201%2Fx", async () => {
+test("key-update: sends PATCH /v2/projects/project%201%2Fx/keys/key%201%2Fx", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {
     "projectId": "project 1/x",
@@ -36,7 +37,7 @@ Deno.test("key-update: sends PATCH /v2/projects/project%201%2Fx/keys/key%201%2Fx
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("key-update: surfaces Phrase's validation message on a 422", async () => {
+test("key-update: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await keyUpdate.execute({
@@ -56,7 +57,7 @@ Deno.test("key-update: surfaces Phrase's validation message on a 422", async () 
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("key-update: declares key, type and every param it reads", () => {
+test("key-update: declares key, type and every param it reads", () => {
   assertEquals(keyUpdate.key, "key-update");
   assertEquals(keyUpdate.type, "perform");
   const declared = new Set((keyUpdate.params ?? []).map((p) => p.key));

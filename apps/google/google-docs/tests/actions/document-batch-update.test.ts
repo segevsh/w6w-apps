@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-batch-update.ts";
 
-Deno.test("document-batch-update: POSTs the raw requests array", async () => {
+test("document-batch-update: POSTs the raw requests array", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   const requests = [{ insertText: { text: "hi", endOfSegmentLocation: { segmentId: "" } } }];
   await action.execute!({ documentURL: "d-1", requests }, ctx);
@@ -13,7 +14,7 @@ Deno.test("document-batch-update: POSTs the raw requests array", async () => {
   assertEquals(JSON.parse(calls[0].body ?? "{}"), { requests });
 });
 
-Deno.test("document-batch-update: wraps writeControl into { control: value }", async () => {
+test("document-batch-update: wraps writeControl into { control: value }", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     documentURL: "d-1",

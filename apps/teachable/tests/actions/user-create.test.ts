@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userCreate from "../../actions/user-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-create: posts only the fields given, dropping unset ones", async () => {
+test("user-create: posts only the fields given, dropping unset ones", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -16,6 +17,6 @@ Deno.test("user-create: posts only the fields given, dropping unset ones", async
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.com" });
 });
 
-Deno.test("user-create: is declared not idempotent", () => {
+test("user-create: is declared not idempotent", () => {
   assertEquals(userCreate.idempotent, false);
 });

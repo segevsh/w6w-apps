@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionRuleCreate from "../../actions/conversion-rule-create.ts";
 import { createdResponse, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversion-rule-create: a plain single POST, account URN built from accountId, conversionMethod pinned", async () => {
+test("conversion-rule-create: a plain single POST, account URN built from accountId, conversionMethod pinned", async () => {
   const { ctx, calls } = mockCtx([createdResponse("104012")]);
   const result = await conversionRuleCreate.execute(
     { accountId: "5123456", name: "Conversion API Segment 1", type: "LEAD" },
@@ -20,7 +21,7 @@ Deno.test("conversion-rule-create: a plain single POST, account URN built from a
   assertEquals(result, { id: "104012" });
 });
 
-Deno.test("conversion-rule-create: includes optional attribution/window/valueType fields when set", async () => {
+test("conversion-rule-create: includes optional attribution/window/valueType fields when set", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await conversionRuleCreate.execute(
     {
@@ -43,7 +44,7 @@ Deno.test("conversion-rule-create: includes optional attribution/window/valueTyp
   assertEquals(body.valueType, "FIXED");
 });
 
-Deno.test("conversion-rule-create: passes autoAssociationType through as a query parameter", async () => {
+test("conversion-rule-create: passes autoAssociationType through as a query parameter", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await conversionRuleCreate.execute(
     { accountId: "1", name: "N", type: "LEAD", autoAssociationType: "ALL_CAMPAIGNS" },
@@ -52,12 +53,12 @@ Deno.test("conversion-rule-create: passes autoAssociationType through as a query
   assertEquals(queryOf(calls[0].url).autoAssociationType, "ALL_CAMPAIGNS");
 });
 
-Deno.test("conversion-rule-create: omits autoAssociationType from the query when unset", async () => {
+test("conversion-rule-create: omits autoAssociationType from the query when unset", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await conversionRuleCreate.execute({ accountId: "1", name: "N", type: "LEAD" }, ctx);
   assertEquals("autoAssociationType" in queryOf(calls[0].url), false);
 });
 
-Deno.test("conversion-rule-create: is not idempotent", () => {
+test("conversion-rule-create: is not idempotent", () => {
   assertEquals(conversionRuleCreate.idempotent, false);
 });

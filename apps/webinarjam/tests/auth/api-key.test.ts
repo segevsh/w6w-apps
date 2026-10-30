@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { mergeApiKey, PROBE_PATH } from "../../auth/api-key.ts";
 import { API_KEY, failure, mockCtx, ok } from "../_helpers.ts";
 
@@ -18,7 +19,7 @@ function signWith(request: SignableRequest): SignableRequest {
   ) as SignableRequest;
 }
 
-Deno.test("auth: a single secret field, since WebinarJam issues one account-wide key", () => {
+test("auth: a single secret field, since WebinarJam issues one account-wide key", () => {
   assertEquals(apiKey.key, "api-key");
   // `custom`, not `apiKey`: the credential rides in the form BODY, which no
   // header/query-placement block describes.
@@ -28,24 +29,24 @@ Deno.test("auth: a single secret field, since WebinarJam issues one account-wide
   assert(fields[0].type === "secret", "the key must be a secret field");
 });
 
-Deno.test("mergeApiKey: adds api_key to an empty body", () => {
+test("mergeApiKey: adds api_key to an empty body", () => {
   const out = mergeApiKey("", API_KEY);
   assertEquals(new URLSearchParams(out).get("api_key"), API_KEY);
 });
 
-Deno.test("mergeApiKey: adds api_key alongside fields an action already set", () => {
+test("mergeApiKey: adds api_key alongside fields an action already set", () => {
   const out = mergeApiKey("webinar_id=5", API_KEY);
   const params = new URLSearchParams(out);
   assertEquals(params.get("webinar_id"), "5");
   assertEquals(params.get("api_key"), API_KEY);
 });
 
-Deno.test("mergeApiKey: the Connection's key overwrites anything an action somehow set", () => {
+test("mergeApiKey: the Connection's key overwrites anything an action somehow set", () => {
   const out = mergeApiKey("api_key=SNEAKY", API_KEY);
   assertEquals(new URLSearchParams(out).get("api_key"), API_KEY);
 });
 
-Deno.test("sign: rewrites the request BODY and sets the form content-type", () => {
+test("sign: rewrites the request BODY and sets the form content-type", () => {
   const signed = signWith({
     url: "https://api.webinarjam.com/webinarjam/webinars",
     method: "POST",
@@ -56,7 +57,7 @@ Deno.test("sign: rewrites the request BODY and sets the form content-type", () =
   assertEquals(signed.headers["content-type"], "application/x-www-form-urlencoded");
 });
 
-Deno.test("sign: an action's other fields survive alongside the credential", () => {
+test("sign: an action's other fields survive alongside the credential", () => {
   const signed = signWith({
     url: "https://api.webinarjam.com/webinarjam/webinar",
     method: "POST",
@@ -68,11 +69,11 @@ Deno.test("sign: an action's other fields survive alongside the credential", () 
   assertEquals(params.get("api_key"), API_KEY);
 });
 
-Deno.test("test: PROBE_PATH is /webinarjam/webinars, the zero-parameter-besides-key endpoint", () => {
+test("test: PROBE_PATH is /webinarjam/webinars, the zero-parameter-besides-key endpoint", () => {
   assertEquals(PROBE_PATH, "/webinarjam/webinars");
 });
 
-Deno.test("test: a live key returns ok", async () => {
+test("test: a live key returns ok", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ webinars: [] }) }]);
   const result = await apiKey.test!({ credential: { apiKey: API_KEY } } as never, ctx);
   assertEquals(result, { ok: true });
@@ -81,7 +82,7 @@ Deno.test("test: a live key returns ok", async () => {
   assertEquals(new URLSearchParams(calls[0].body!).get("api_key"), API_KEY);
 });
 
-Deno.test("test: rejects a missing key without making a request", async () => {
+test("test: rejects a missing key without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test!({ credential: { apiKey: "" } } as never, ctx);
   assertEquals(result.ok, false);
@@ -94,7 +95,7 @@ Deno.test("test: rejects a missing key without making a request", async () => {
  * — must classify from the BODY, not the status code alone, and must not
  * merely say "unauthorized".
  */
-Deno.test("test: classifies a rejected key from the response body, not the status code", async () => {
+test("test: classifies a rejected key from the response body, not the status code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: failure({ api_key: "You must specify a valid API key" }),
@@ -104,7 +105,7 @@ Deno.test("test: classifies a rejected key from the response body, not the statu
   assert(result.message!.includes("You must specify a valid API key"), result.message);
 });
 
-Deno.test("test: the array-shaped errors.api_key value (400, missing field) is also readable", async () => {
+test("test: the array-shaped errors.api_key value (400, missing field) is also readable", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: failure({ api_key: ["The api key field is required."] }),
@@ -114,7 +115,7 @@ Deno.test("test: the array-shaped errors.api_key value (400, missing field) is a
   assert(result.message!.includes("The api key field is required."), result.message);
 });
 
-Deno.test("test: never echoes the credential back in its message", async () => {
+test("test: never echoes the credential back in its message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: failure({ api_key: "You must specify a valid API key" }),
@@ -123,7 +124,7 @@ Deno.test("test: never echoes the credential back in its message", async () => {
   assert(!result.message!.includes(API_KEY), "the probe echoed the credential back");
 });
 
-Deno.test("test: an unreadable body is a clear failure, not a throw", async () => {
+test("test: an unreadable body is a clear failure, not a throw", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "not json" }]);
   const result = await apiKey.test!({ credential: { apiKey: API_KEY } } as never, ctx);
   assertEquals(result.ok, false);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/customer-update.ts";
 
-Deno.test("customer-update: POSTs /customer with Id, SyncToken, sparse and merged fields", async () => {
+test("customer-update: POSTs /customer with Id, SyncToken, sparse and merged fields", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { Customer: { Id: "1" } } }]);
   await action.execute({
     customerId: "1",

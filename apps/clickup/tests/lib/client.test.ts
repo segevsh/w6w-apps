@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { ClickUpClient, compact } from "../../lib/client.ts";
 
-Deno.test("client: builds URL against the v2 base and drops empty query values", async () => {
+test("client: builds URL against the v2 base and drops empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new ClickUpClient(ctx).request("/task/abc", {
     query: { archived: true, page: 0, order_by: undefined, blank: "" },
@@ -16,13 +17,13 @@ Deno.test("client: builds URL against the v2 base and drops empty query values",
   assertEquals(url.searchParams.has("blank"), false);
 });
 
-Deno.test("client: never sets an Authorization header (sign does that)", async () => {
+test("client: never sets an Authorization header (sign does that)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new ClickUpClient(ctx).request("/user");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: JSON-encodes the body and compacts empty fields", async () => {
+test("client: JSON-encodes the body and compacts empty fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new ClickUpClient(ctx).request("/list/1/task", {
     method: "POST",
@@ -33,7 +34,7 @@ Deno.test("client: JSON-encodes the body and compacts empty fields", async () =>
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("client: throws a descriptive error on non-2xx", async () => {
+test("client: throws a descriptive error on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, statusText: "Unauthorized", body: { err: "no" } }]);
   await assertRejects(
     () => new ClickUpClient(ctx).request("/user"),
@@ -42,6 +43,6 @@ Deno.test("client: throws a descriptive error on non-2xx", async () => {
   );
 });
 
-Deno.test("compact: strips undefined, null and empty-string values", () => {
+test("compact: strips undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: "x" }), { a: 1, e: "x" });
 });

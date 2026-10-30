@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, BANNED_PATH, PROBE_PATH } from "../../auth/api-key.ts";
 import { IGNORED_PASSWORD } from "../../lib/client.ts";
 import { API_KEY, BASE, envelope, mockCtx, SUBDOMAIN } from "../_helpers.ts";
@@ -14,7 +15,7 @@ function signWith(request: SignableRequest, credential: Record<string, unknown>)
   return apiKey.sign!({ request, credential } as never, ctx) as SignableRequest;
 }
 
-Deno.test("auth: declares HTTP Basic carrying the subdomain and the key", () => {
+test("auth: declares HTTP Basic carrying the subdomain and the key", () => {
   assertEquals(apiKey.key, "api-key");
   // `basic`, not `apiKey`: the key rides in the username position, which no
   // apiKey placement block describes.
@@ -26,13 +27,13 @@ Deno.test("auth: declares HTTP Basic carrying the subdomain and the key", () => 
 });
 
 /** The key is the USERNAME and the password is the vendor's ignored placeholder. */
-Deno.test("authHeaders: puts the key in the username position", () => {
+test("authHeaders: puts the key in the username position", () => {
   const header = authHeaders({ apiKey: API_KEY }).authorization;
   assert(header.startsWith("Basic "));
   assertEquals(atob(header.slice("Basic ".length)), `${API_KEY}:${IGNORED_PASSWORD}`);
 });
 
-Deno.test("sign: stamps the Basic header and leaves the URL alone", () => {
+test("sign: stamps the Basic header and leaves the URL alone", () => {
   const request = { url: `${BASE}/forms.json`, headers: {} as Record<string, string> };
   const signed = signWith(request, { subdomain: SUBDOMAIN, apiKey: API_KEY });
   assertEquals(atob(signed.headers["authorization"].slice(6)), `${API_KEY}:${IGNORED_PASSWORD}`);
@@ -44,7 +45,7 @@ Deno.test("sign: stamps the Basic header and leaves the URL alone", () => {
  * field for every user on the account — other people's credentials, not just
  * the caller's. The probe must be `forms.json`.
  */
-Deno.test("test: probes forms.json, never the key-leaking users.json", async () => {
+test("test: probes forms.json, never the key-leaking users.json", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("Forms", [{ Hash: "h1" }]) }]);
   const result = await apiKey.test!(
     { credential: { subdomain: SUBDOMAIN, apiKey: API_KEY } } as never,
@@ -56,7 +57,7 @@ Deno.test("test: probes forms.json, never the key-leaking users.json", async () 
   assert(!calls[0].url.includes(BANNED_PATH), "the probe must never touch users.json");
 });
 
-Deno.test("test: a full URL in the subdomain field is normalised before probing", async () => {
+test("test: a full URL in the subdomain field is normalised before probing", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("Forms", []) }]);
   await apiKey.test!(
     { credential: { subdomain: "https://fishbowl.wufoo.com/", apiKey: API_KEY } } as never,
@@ -66,7 +67,7 @@ Deno.test("test: a full URL in the subdomain field is normalised before probing"
 });
 
 /** A key of the wrong shape cannot be valid, so it is never put on the wire. */
-Deno.test("test: rejects a malformed key without making a request", async () => {
+test("test: rejects a malformed key without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test!(
     { credential: { subdomain: SUBDOMAIN, apiKey: "not-a-key" } } as never,
@@ -77,7 +78,7 @@ Deno.test("test: rejects a malformed key without making a request", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test: reports a missing half of the credential without making a request", async () => {
+test("test: reports a missing half of the credential without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await apiKey.test!({ credential: { apiKey: API_KEY } } as never, ctx)).ok, false);
   assertEquals(
@@ -88,7 +89,7 @@ Deno.test("test: reports a missing half of the credential without making a reque
 });
 
 /** A valid key on the wrong account fails, and the message says exactly that. */
-Deno.test("test: a 401 blames the account/key pairing, which is the usual cause", async () => {
+test("test: a 401 blames the account/key pairing, which is the usual cause", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "<html>Unauthorized</html>" }]);
   const result = await apiKey.test!(
     { credential: { subdomain: SUBDOMAIN, apiKey: API_KEY } } as never,
@@ -99,7 +100,7 @@ Deno.test("test: a 401 blames the account/key pairing, which is the usual cause"
   assert(result.message!.includes("another account"), result.message);
 });
 
-Deno.test("test: a 404 means there is no such account", async () => {
+test("test: a 404 means there is no such account", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   const result = await apiKey.test!(
     { credential: { subdomain: SUBDOMAIN, apiKey: API_KEY } } as never,
@@ -109,7 +110,7 @@ Deno.test("test: a 404 means there is no such account", async () => {
   assert(result.message!.includes("No Wufoo account"), result.message);
 });
 
-Deno.test("test: a 200 that is not a form list is rejected", async () => {
+test("test: a 200 that is not a form list is rejected", async () => {
   const { ctx } = mockCtx([{ body: { message: "sign in" } }]);
   const result = await apiKey.test!(
     { credential: { subdomain: SUBDOMAIN, apiKey: API_KEY } } as never,
@@ -123,7 +124,7 @@ Deno.test("test: a 200 that is not a form list is rejected", async () => {
  * `afterConnect` makes no request at all — the obvious enrichment is the user
  * record, and that is exactly the response carrying every user's API key.
  */
-Deno.test("afterConnect: records the subdomain and fetches nothing", () => {
+test("afterConnect: records the subdomain and fetches nothing", () => {
   const { ctx, calls } = mockCtx([]);
   const display = apiKey.afterConnect!(
     { credential: { subdomain: "https://fishbowl.wufoo.com", apiKey: API_KEY } } as never,
@@ -133,7 +134,7 @@ Deno.test("afterConnect: records the subdomain and fetches nothing", () => {
   assertEquals(calls.length, 0, "must not call users.json for a nicer label");
 });
 
-Deno.test("afterConnect: never republishes the key, and survives a bad subdomain", () => {
+test("afterConnect: never republishes the key, and survives a bad subdomain", () => {
   const { ctx } = mockCtx([]);
   const display = apiKey.afterConnect!(
     { credential: { subdomain: SUBDOMAIN, apiKey: API_KEY } } as never,

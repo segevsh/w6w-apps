@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/voice-message-send.ts";
 
-Deno.test("voice-message-send: POSTs a JSON body to /voicemessages with stripped recipients", async () => {
+test("voice-message-send: POSTs a JSON body to /voicemessages with stripped recipients", async () => {
   const body = { id: "e8077d803532c0b5937c639b60216938", href: "https://x", body: "hi there" };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -19,7 +20,7 @@ Deno.test("voice-message-send: POSTs a JSON body to /voicemessages with stripped
   assertEquals(result, body);
 });
 
-Deno.test("voice-message-send: passes voice, language, repeat, ifMachine, machineTimeout, reference", async () => {
+test("voice-message-send: passes voice, language, repeat, ifMachine, machineTimeout, reference", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -45,11 +46,11 @@ Deno.test("voice-message-send: passes voice, language, repeat, ifMachine, machin
   assertEquals(sent.reference, "ref-1");
 });
 
-Deno.test("voice-message-send: idempotent is explicitly false — a retry must not double-call", () => {
+test("voice-message-send: idempotent is explicitly false — a retry must not double-call", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("voice-message-send: unset optional fields are omitted from the payload", async () => {
+test("voice-message-send: unset optional fields are omitted from the payload", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ recipients: ["1"], message: "x" }, ctx);
   const sent = JSON.parse(calls[0].body ?? "{}");

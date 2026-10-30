@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import recordUpdate from "../../actions/record-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("record-update: PATCH /records/{id} sends only the named changes", async () => {
+test("record-update: PATCH /records/{id} sends only the named changes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", name: "New" } }]);
   const out = await recordUpdate.execute(
     {
@@ -23,13 +24,13 @@ Deno.test("record-update: PATCH /records/{id} sends only the named changes", asy
   assertEquals(out.name, "New");
 });
 
-Deno.test("record-update: with no change named, nothing is sent", async () => {
+test("record-update: with no change named, nothing is sent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await recordUpdate.execute({ recordId: "r1" }, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-update: removeParent is sent only when true", async () => {
+test("record-update: removeParent is sent only when true", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await recordUpdate.execute({ recordId: "r1", removeParent: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { removeParent: true });

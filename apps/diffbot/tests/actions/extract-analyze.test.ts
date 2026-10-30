@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/extract-analyze.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { ARTICLE_DOC } from "../_fixtures.ts";
 
-Deno.test("extract-analyze: GETs /v3/analyze with the url and shapes the objects", async () => {
+test("extract-analyze: GETs /v3/analyze with the url and shapes the objects", async () => {
   const { ctx, calls } = mockCtx([{ body: ARTICLE_DOC }]);
   const out = await run(action, { url: "https://example.com/x", fields: "links, meta" }, ctx);
   const u = new URL(calls[0].url);
@@ -17,7 +18,7 @@ Deno.test("extract-analyze: GETs /v3/analyze with the url and shapes the objects
   assertEquals(out.humanLanguage, "en");
 });
 
-Deno.test("extract-analyze: no objects gives a null object; an error body or a 4xx throws", async () => {
+test("extract-analyze: no objects gives a null object; an error body or a 4xx throws", async () => {
   const empty = mockCtx([{ body: { request: {}, objects: [] } }]);
   const out = await run(action, { url: "https://e.com" }, empty.ctx);
   assertEquals(out.count, 0);
@@ -42,7 +43,7 @@ Deno.test("extract-analyze: no objects gives a null object; an error body or a 4
   assert(err.message.includes("Incorrect token"));
 });
 
-Deno.test("extract-analyze: mode and fallback are sent; top-level optional fields pass through", async () => {
+test("extract-analyze: mode and fallback are sent; top-level optional fields pass through", async () => {
   const { ctx, calls } = mockCtx([{
     body: { ...ARTICLE_DOC, links: ["https://a.com"], meta: { title: "t" } },
   }]);

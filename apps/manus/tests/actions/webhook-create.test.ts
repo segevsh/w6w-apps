@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: posts url, returns the webhook unwrapped", async () => {
+test("webhook-create: posts url, returns the webhook unwrapped", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({
       webhook: { id: "w1", url: "https://example.com/hook", status: "active", created_at: 1 },
@@ -14,6 +15,6 @@ Deno.test("webhook-create: posts url, returns the webhook unwrapped", async () =
   assertEquals(out.status, "active");
 });
 
-Deno.test("webhook-create: is not idempotent — no uniqueness constraint on the URL", () => {
+test("webhook-create: is not idempotent — no uniqueness constraint on the URL", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

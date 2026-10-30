@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeslotList from "../../actions/timeslot-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timeslot-list: calls GET /api/booking-types/{id}/timeslots with both bounds", async () => {
+test("timeslot-list: calls GET /api/booking-types/{id}/timeslots with both bounds", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{
       starts_at: "2026-03-20T10:00:00Z",
@@ -28,7 +29,7 @@ Deno.test("timeslot-list: calls GET /api/booking-types/{id}/timeslots with both 
  * Both bounds are the only parameters in the whole document declared
  * `"in": "query"`, `required: true` — the window is not optional.
  */
-Deno.test("timeslot-list: both window bounds are declared required params", () => {
+test("timeslot-list: both window bounds are declared required params", () => {
   const required = (timeslotList.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), ["bookingType", "ends_at", "starts_at"]);
 });

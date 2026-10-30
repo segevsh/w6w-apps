@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { rpc } from "./_shared.ts";
 import action from "../../actions/place-autocomplete.ts";
@@ -15,7 +16,7 @@ const mixed = rpc({
  * Two kinds live in one array. A caller reading `suggestions[0].placePrediction`
  * gets undefined for the query kind.
  */
-Deno.test("place-autocomplete: splits place predictions from query predictions", async () => {
+test("place-autocomplete: splits place predictions from query predictions", async () => {
   const { ctx } = mockCtx([mixed]);
   const result = await action.execute!({ input: "piz", sessionToken: "s1" }, ctx) as {
     count: number;
@@ -28,7 +29,7 @@ Deno.test("place-autocomplete: splits place predictions from query predictions",
 });
 
 /** Without a shared token every keystroke is a separately-billed request. */
-Deno.test("place-autocomplete: the session token is sent, and returned for the closing call", async () => {
+test("place-autocomplete: the session token is sent, and returned for the closing call", async () => {
   const { ctx, calls } = mockCtx([mixed]);
   const result = await action.execute!({ input: "piz", sessionToken: "s1" }, ctx) as {
     sessionToken: string;
@@ -37,7 +38,7 @@ Deno.test("place-autocomplete: the session token is sent, and returned for the c
   assertEquals(result.sessionToken, "s1");
 });
 
-Deno.test("place-autocomplete: omitting the token warns, because it costs real money", async () => {
+test("place-autocomplete: omitting the token warns, because it costs real money", async () => {
   const { ctx, logs } = mockCtx([mixed]);
   await action.execute!({ input: "piz" }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -48,14 +49,14 @@ Deno.test("place-autocomplete: omitting the token warns, because it costs real m
  * Deliberately not invented here: a token this action made up would be
  * discarded before the next keystroke and would achieve nothing.
  */
-Deno.test("place-autocomplete: does not invent a session token", async () => {
+test("place-autocomplete: does not invent a session token", async () => {
   const { ctx, calls } = mockCtx([mixed]);
   const result = await action.execute!({ input: "piz" }, ctx) as { sessionToken?: string };
   assertEquals(JSON.parse(calls[0].body!).sessionToken, undefined);
   assertEquals(result.sessionToken, undefined);
 });
 
-Deno.test("place-autocomplete: a bias becomes a circle", async () => {
+test("place-autocomplete: a bias becomes a circle", async () => {
   const { ctx, calls } = mockCtx([mixed]);
   await action.execute!({ input: "piz", locationBias: "51.5,-0.12", biasRadius: 3000 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).locationBias, {
@@ -63,7 +64,7 @@ Deno.test("place-autocomplete: a bias becomes a circle", async () => {
   });
 });
 
-Deno.test("place-autocomplete: type and country lists are split", async () => {
+test("place-autocomplete: type and country lists are split", async () => {
   const { ctx, calls } = mockCtx([mixed]);
   await action.execute!({
     input: "piz",
@@ -75,7 +76,7 @@ Deno.test("place-autocomplete: type and country lists are split", async () => {
   assertEquals(body.includedRegionCodes, ["gb", "ie"]);
 });
 
-Deno.test("place-autocomplete: query predictions are opt-in", async () => {
+test("place-autocomplete: query predictions are opt-in", async () => {
   const off = mockCtx([mixed]);
   await action.execute!({ input: "piz" }, off.ctx);
   assertEquals(JSON.parse(off.calls[0].body!).includeQueryPredictions, undefined);
@@ -85,7 +86,7 @@ Deno.test("place-autocomplete: query predictions are opt-in", async () => {
   assertEquals(JSON.parse(on.calls[0].body!).includeQueryPredictions, true);
 });
 
-Deno.test("place-autocomplete: needs an input", async () => {
+test("place-autocomplete: needs an input", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`input` is required");
   assertEquals(calls.length, 0);

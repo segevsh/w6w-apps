@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, rejection } from "../_helpers.ts";
 import action from "../../actions/list-customers.ts";
 
@@ -8,7 +9,7 @@ const PAGE = {
   next_cursor: "dXBkYXRlZF9hdDoxNjc0MTIzNDU2",
 };
 
-Deno.test("list-customers: GETs /customers and returns the vendor's cursor envelope whole", async () => {
+test("list-customers: GETs /customers and returns the vendor's cursor envelope whole", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const res = await action.execute({}, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("list-customers: GETs /customers and returns the vendor's cursor envel
   assertEquals(res, PAGE);
 });
 
-Deno.test("list-customers: serializes cursor, limit and sort", async () => {
+test("list-customers: serializes cursor, limit and sort", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({ cursor: "abc", limit: 50, sort: "-id" }, ctx);
 
@@ -29,7 +30,7 @@ Deno.test("list-customers: serializes cursor, limit and sort", async () => {
   assertEquals(url.searchParams.get("sort"), "-id");
 });
 
-Deno.test("list-customers: JSON-encodes a structured filter and passes a string through", async () => {
+test("list-customers: JSON-encodes a structured filter and passes a string through", async () => {
   const structured = mockCtx([{ body: PAGE }]);
   await action.execute({
     filter: [{ field: "name", operator: "eq", value: "Acme" }],
@@ -47,7 +48,7 @@ Deno.test("list-customers: JSON-encodes a structured filter and passes a string 
   );
 });
 
-Deno.test("list-customers: a 403 surfaces the vendor's own error code and message", async () => {
+test("list-customers: a 403 surfaces the vendor's own error code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: "forbidden", message: "Missing scope: customers:readonly" },

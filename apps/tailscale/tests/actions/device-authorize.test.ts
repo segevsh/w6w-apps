@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-authorize.ts";
 
@@ -7,7 +8,7 @@ const already = { status: 200, body: { authorized: true, hostname: "web-01" } };
 const ok = { status: 200, body: {} };
 
 /** Tailscale answers a bare 200 either way, so the read is what makes this legible. */
-Deno.test("device-authorize: approves a waiting device and reports the change", async () => {
+test("device-authorize: approves a waiting device and reports the change", async () => {
   const { ctx, calls } = mockCtx([waiting, ok]);
   const result = await action.execute({ deviceId: "n3" }, ctx) as Record<string, unknown>;
 
@@ -18,7 +19,7 @@ Deno.test("device-authorize: approves a waiting device and reports the change", 
   assertEquals(result.hostname, "new-box");
 });
 
-Deno.test("device-authorize: authorizing an already-authorized device changes nothing", async () => {
+test("device-authorize: authorizing an already-authorized device changes nothing", async () => {
   const { ctx } = mockCtx([already, ok]);
   const result = await action.execute({ deviceId: "n1" }, ctx) as Record<string, unknown>;
   assertEquals(result.changed, false);
@@ -26,7 +27,7 @@ Deno.test("device-authorize: authorizing an already-authorized device changes no
 });
 
 /** The reversible half of device-delete. */
-Deno.test("device-authorize: de-authorizing warns that the registration survives", async () => {
+test("device-authorize: de-authorizing warns that the registration survives", async () => {
   const { ctx, calls, logs } = mockCtx([already, ok]);
   const result = await action.execute({ deviceId: "n1", authorized: false }, ctx) as Record<
     string,
@@ -40,14 +41,14 @@ Deno.test("device-authorize: de-authorizing warns that the registration survives
   );
 });
 
-Deno.test("device-authorize: requires an id", async () => {
+test("device-authorize: requires an id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`deviceId` is required");
   assertEquals(calls.length, 0);
 });
 
 /** With approval off, this succeeds and does nothing. */
-Deno.test("device-authorize: says it only means something when approval is enabled", () => {
+test("device-authorize: says it only means something when approval is enabled", () => {
   assert(/DEVICE APPROVAL/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

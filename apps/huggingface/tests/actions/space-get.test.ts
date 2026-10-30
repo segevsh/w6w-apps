@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/space-get.ts";
 
-Deno.test("space-get: reads one Space", async () => {
+test("space-get: reads one Space", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "a/demo", runtime: { stage: "RUNNING" }, sdk: "gradio" },
@@ -13,7 +14,7 @@ Deno.test("space-get: reads one Space", async () => {
 });
 
 /** A Space that "does not work" is usually one that is merely asleep. */
-Deno.test("space-get: the runtime stage distinguishes asleep from broken", async () => {
+test("space-get: the runtime stage distinguishes asleep from broken", async () => {
   for (const stage of ["RUNNING", "SLEEPING", "BUILDING", "RUNTIME_ERROR"]) {
     const { ctx } = mockCtx([{ status: 200, body: { id: "a/demo", runtime: { stage } } }]);
     const result = await action.execute({ id: "a/demo" }, ctx) as Record<string, unknown>;
@@ -23,13 +24,13 @@ Deno.test("space-get: the runtime stage distinguishes asleep from broken", async
   assert(/SLEEPING/.test(action.description!), action.description);
 });
 
-Deno.test("space-get: a private Space is reported as private", async () => {
+test("space-get: a private Space is reported as private", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "a/demo", private: true } }]);
   const result = await action.execute({ id: "a/demo" }, ctx) as Record<string, unknown>;
   assertEquals(result.private, true);
 });
 
-Deno.test("space-get: an id is required", async () => {
+test("space-get: an id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -41,7 +42,7 @@ Deno.test("space-get: an id is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("space-get: the output is keyed by its kind", () => {
+test("space-get: the output is keyed by its kind", () => {
   const outputs = action.output as Array<{ key: string }>;
   assertEquals(outputs.some((entry) => entry.key === "space"), true);
 });

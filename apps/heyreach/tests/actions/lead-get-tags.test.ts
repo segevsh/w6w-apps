@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-get-tags.ts";
 
@@ -7,7 +8,7 @@ import action from "../../actions/lead-get-tags.ts";
  * contract is "return whatever the API returned" — including an array, which is
  * the shape its prose implies ("the tags are alphabetically sorted").
  */
-Deno.test("lead-get-tags: POSTs the profile URL and returns the body verbatim", async () => {
+test("lead-get-tags: POSTs the profile URL and returns the body verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ["alpha", "zeta"] }]);
   const result = await action.execute!(
     { profileUrl: "https://www.linkedin.com/in/john-doe/" },
@@ -19,7 +20,7 @@ Deno.test("lead-get-tags: POSTs the profile URL and returns the body verbatim", 
   assertEquals(result, ["alpha", "zeta"]);
 });
 
-Deno.test("lead-get-tags: an object body is passed through unchanged", async () => {
+test("lead-get-tags: an object body is passed through unchanged", async () => {
   const body = { tags: ["alpha"] };
   const { ctx } = mockCtx([{ status: 200, body }]);
   assertEquals(await action.execute!({ profileUrl: "https://x" }, ctx), body);

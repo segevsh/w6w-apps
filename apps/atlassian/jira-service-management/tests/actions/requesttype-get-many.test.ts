@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/requesttype-get-many.ts";
 
-Deno.test("requesttype-get-many: GETs request types under the service desk", async () => {
+test("requesttype-get-many: GETs request types under the service desk", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [] } }]);
   await action.execute({ serviceDeskId: "10" }, ctx);
   assertEquals(
@@ -11,7 +12,7 @@ Deno.test("requesttype-get-many: GETs request types under the service desk", asy
   );
 });
 
-Deno.test("requesttype-get-many: forwards searchQuery and groupId when set", async () => {
+test("requesttype-get-many: forwards searchQuery and groupId when set", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: {} }]);
   await action.execute({ serviceDeskId: "10", searchQuery: "printer", groupId: "3" }, ctx);
   const url = new URL(calls[0].url);

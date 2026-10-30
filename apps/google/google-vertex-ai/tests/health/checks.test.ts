@@ -1,21 +1,22 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 import service from "../../health/service.ts";
 
-Deno.test("quota: declared unavailable, informational", () => {
+test("quota: declared unavailable, informational", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable!.reason.length > 0);
 });
 
-Deno.test("service: probes the Google CLOUD dashboard from its own allowlist", () => {
+test("service: probes the Google CLOUD dashboard from its own allowlist", () => {
   assertEquals(service.network?.allow, ["status.cloud.google.com"]);
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: no open Vertex incident is ok; closed and other-product ones are ignored", async () => {
+test("service: no open Vertex incident is ok; closed and other-product ones are ignored", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [
@@ -36,7 +37,7 @@ Deno.test("service: no open Vertex incident is ok; closed and other-product ones
   ]);
 });
 
-Deno.test("service: an open Gemini outage is down; the renamed title matches too", async () => {
+test("service: an open Gemini outage is down; the renamed title matches too", async () => {
   for (const name of ["Vertex Gemini API", "Gemini on Agent Platform"]) {
     const { ctx } = mockCtx([{
       status: 200,
@@ -58,7 +59,7 @@ Deno.test("service: an open Gemini outage is down; the renamed title matches too
   }
 });
 
-Deno.test("service: a multi-product incident is caught via affected_products (either title)", async () => {
+test("service: a multi-product incident is caught via affected_products (either title)", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{
@@ -77,7 +78,7 @@ Deno.test("service: a multi-product incident is caught via affected_products (ei
   assertEquals(r.components!["vertex-ai-batch-prediction"], { state: "degraded" });
 });
 
-Deno.test("service: a failing or malformed dashboard is unknown, never down", async () => {
+test("service: a failing or malformed dashboard is unknown, never down", async () => {
   assertEquals(
     (await service.check!({} as never, mockCtx([{ status: 503, body: {} }]).ctx)).state,
     "unknown",

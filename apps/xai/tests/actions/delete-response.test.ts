@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-response.ts";
 
-Deno.test("delete-response: calls DELETE /v1/responses/resp_1 on api.x.ai and returns the body", async () => {
+test("delete-response: calls DELETE /v1/responses/resp_1 on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({ responseId: "resp_1" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("delete-response: calls DELETE /v1/responses/resp_1 on api.x.ai and re
   assertEquals(result, reply);
 });
 
-Deno.test("delete-response: surfaces the vendor error code on failure", async () => {
+test("delete-response: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {

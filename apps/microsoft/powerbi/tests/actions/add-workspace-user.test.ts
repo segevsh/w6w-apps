@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-workspace-user.ts";
 
-Deno.test("add-workspace-user: POSTs /groups/{id}/users with the required fields", async () => {
+test("add-workspace-user: POSTs /groups/{id}/users with the required fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await action.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("add-workspace-user: POSTs /groups/{id}/users with the required fields
   });
 });
 
-Deno.test("add-workspace-user: optional displayName/emailAddress are included only when set", async () => {
+test("add-workspace-user: optional displayName/emailAddress are included only when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await action.execute(
     {
@@ -39,6 +40,6 @@ Deno.test("add-workspace-user: optional displayName/emailAddress are included on
   assertEquals("emailAddress" in body, false);
 });
 
-Deno.test("add-workspace-user: re-granting the same access right converges — idempotent", () => {
+test("add-workspace-user: re-granting the same access right converges — idempotent", () => {
   assertEquals(action.idempotent, true);
 });

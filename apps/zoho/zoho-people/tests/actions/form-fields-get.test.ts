@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/form-fields-get.ts";
 
-Deno.test("form-fields-get: GETs the form's components", async () => {
+test("form-fields-get: GETs the form's components", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ displayname: "Email" }], status: 0 } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("form-fields-get: GETs the form's components", async () => {
   assertEquals(out.result, [{ displayname: "Email" }]);
 });
 
-Deno.test("form-fields-get: refuses a form name that would escape the path", async () => {
+test("form-fields-get: refuses a form name that would escape the path", async () => {
   const { ctx, calls } = mockPeopleCtx([]);
   await assertRejects(
     () => action.execute({ formLinkName: "../x" }, ctx) as Promise<unknown>,

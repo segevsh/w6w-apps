@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/link-set.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { host: "https://nocodb.internal" } };
 const ok = { status: 200, body: {} };
 const base = { tableId: "mtbl1", linkFieldId: "cl1", recordId: "3" };
 
-Deno.test("link-set: add posts the ids and leaves the rest alone", async () => {
+test("link-set: add posts the ids and leaves the rest alone", async () => {
   const { ctx, calls, logs } = mockCtx([ok], D);
   const result = await action.execute({ ...base, linkedIds: "5, 6" }, ctx) as Record<
     string,
@@ -23,7 +24,7 @@ Deno.test("link-set: add posts the ids and leaves the rest alone", async () => {
   );
 });
 
-Deno.test("link-set: remove deletes exactly the ids named", async () => {
+test("link-set: remove deletes exactly the ids named", async () => {
   const { ctx, calls } = mockCtx([ok], D);
   const result = await action.execute({ ...base, linkedIds: "5", mode: "remove" }, ctx) as Record<
     string,
@@ -34,7 +35,7 @@ Deno.test("link-set: remove deletes exactly the ids named", async () => {
 });
 
 /** NocoDB has no replace, so this is read, remove, add — three requests. */
-Deno.test("link-set: replace reconciles, and reports what it cost", async () => {
+test("link-set: replace reconciles, and reports what it cost", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { list: [{ Id: 5 }, { Id: 9 }] } },
     ok,
@@ -56,7 +57,7 @@ Deno.test("link-set: replace reconciles, and reports what it cost", async () => 
 });
 
 /** A replace that changes nothing should cost one request, not three. */
-Deno.test("link-set: replace with the same set writes nothing", async () => {
+test("link-set: replace with the same set writes nothing", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { list: [{ Id: 5 }] } }], D);
   const result = await action.execute({ ...base, linkedIds: "5", mode: "replace" }, ctx) as Record<
     string,
@@ -67,7 +68,7 @@ Deno.test("link-set: replace with the same set writes nothing", async () => {
   assertEquals(result.requests, 1);
 });
 
-Deno.test("link-set: requires the ids and the field", async () => {
+test("link-set: requires the ids and the field", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ ...base, linkedIds: "" }, ctx),
@@ -83,6 +84,6 @@ Deno.test("link-set: requires the ids and the field", async () => {
 });
 
 /** record-update cannot do this. */
-Deno.test("link-set: says links have their own endpoint", () => {
+test("link-set: says links have their own endpoint", () => {
   assert(/`record-update` CANNOT do/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailboxUpdate from "../../actions/mailbox-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("mailbox-update: PATCHes the footer", async () => {
+test("mailbox-update: PATCHes the footer", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await mailboxUpdate.execute(
     { "mailbox_id": "9", "footer": "<div>Best,</div>" } as never,
@@ -19,7 +20,7 @@ Deno.test("mailbox-update: PATCHes the footer", async () => {
   assertEquals(out.updated, true);
 });
 
-Deno.test("mailbox-update: an empty footer is sent to clear it", async () => {
+test("mailbox-update: an empty footer is sent to clear it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   await mailboxUpdate.execute({ "mailbox_id": "9", "footer": "" } as never, ctx);
   assertEquals(calls.length, 1);

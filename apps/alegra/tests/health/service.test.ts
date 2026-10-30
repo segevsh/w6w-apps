@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { API_RESOURCE_ID, mapStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -29,14 +30,14 @@ function page(apiStatus: string, appStatus = "operational", extra: Record<string
   };
 }
 
-Deno.test("service: is an unsigned app-scoped check allowlisting only the status host", () => {
+test("service: is an unsigned app-scoped check allowlisting only the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
   assertEquals(service.network, { allow: ["status.alegra.com"] });
   assertEquals(STATUS_URL, "https://status.alegra.com/index.json");
 });
 
-Deno.test("service: the API resource alone decides — other products down do not drive the verdict", async () => {
+test("service: the API resource alone decides — other products down do not drive the verdict", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational") }]);
   const r = await run(ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -46,24 +47,24 @@ Deno.test("service: the API resource alone decides — other products down do no
   assertEquals(r.components!["api-alegra-contabilidad"].state, "ok");
 });
 
-Deno.test("service: a degraded or down API resource maps to degraded / down", async () => {
+test("service: a degraded or down API resource maps to degraded / down", async () => {
   assertEquals((await run(mockCtx([{ body: page("degraded") }]).ctx)).state, "degraded");
   const down = await run(mockCtx([{ body: page("downtime") }]).ctx);
   assertEquals(down.state, "down");
   assertEquals(down.message, "API Alegra Contabilidad: downtime");
 });
 
-Deno.test("service: the web app being down does not make the API down", async () => {
+test("service: the web app being down does not make the API down", async () => {
   assertEquals((await run(mockCtx([{ body: page("operational", "downtime") }]).ctx)).state, "ok");
 });
 
-Deno.test("service: the API resource is found by name when its id changes", async () => {
+test("service: the API resource is found by name when its id changes", async () => {
   const body = page("degraded");
   body.included[2].id = "999";
   assertEquals((await run(mockCtx([{ body }]).ctx)).state, "degraded");
 });
 
-Deno.test("service: a missing API resource, foreign page, bad HTTP or HTML shell is unknown", async () => {
+test("service: a missing API resource, foreign page, bad HTTP or HTML shell is unknown", async () => {
   const noApi = page("operational");
   noApi.included.splice(2, 1);
   assertEquals((await run(mockCtx([{ body: noApi }]).ctx)).state, "unknown");
@@ -80,7 +81,7 @@ Deno.test("service: a missing API resource, foreign page, bad HTTP or HTML shell
   );
 });
 
-Deno.test("mapStatus: covers the Better Stack vocabulary", () => {
+test("mapStatus: covers the Better Stack vocabulary", () => {
   assertEquals(mapStatus("operational"), "ok");
   assertEquals(mapStatus("resolved"), "ok");
   assertEquals(mapStatus("maintenance"), "degraded");

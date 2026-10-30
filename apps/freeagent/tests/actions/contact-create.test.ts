@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs a root `contact` object with only the fields given", async () => {
+test("contact-create: POSTs a root `contact` object with only the fields given", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 201, body: { contact: { url: "x" } } }]);
   await action.execute({ organisationName: "Acme Ltd" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("contact-create: POSTs a root `contact` object with only the fields gi
   assertEquals(body, { contact: { organisation_name: "Acme Ltd" } });
 });
 
-Deno.test("contact-create: merges additionalFields using FreeAgent's own field names", async () => {
+test("contact-create: merges additionalFields using FreeAgent's own field names", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 201, body: { contact: { url: "x" } } }]);
   await action.execute({
     firstName: "Ada",

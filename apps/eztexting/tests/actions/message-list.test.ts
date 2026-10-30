@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageList from "../../actions/message-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("message-list: calls GET /messages and returns the documented shape", async () => {
+test("message-list: calls GET /messages and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: page([{ id: "1", message: "hi" }], { totalPages: 3, totalElements: 41 }),
   }]);
@@ -41,7 +42,7 @@ Deno.test("message-list: calls GET /messages and returns the documented shape", 
   });
 });
 
-Deno.test("message-list: carries no credential — auth is the sign hook's job", async () => {
+test("message-list: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{
     body: page([{ id: "1", message: "hi" }], { totalPages: 3, totalElements: 41 }),
   }]);

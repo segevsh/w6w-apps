@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/selected-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("selected-get: GETs /selected with the selector and returns the inner HTML", async () => {
+test("selected-get: GETs /selected with the selector and returns the inner HTML", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "text/html", "wsai-request-id": "r2" },
     body: "Example Domain",
@@ -14,7 +15,7 @@ Deno.test("selected-get: GETs /selected with the selector and returns the inner 
   assertEquals(u.searchParams.get("selector"), "h1");
 });
 
-Deno.test("selected-get: a vendor 400 'Element not found' is surfaced; a blank selector makes no call", async () => {
+test("selected-get: a vendor 400 'Element not found' is surfaced; a blank selector makes no call", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Element not found" } }]);
   await assertRejects(
     async () => await action.execute({ url: "https://e.test", selector: ".nope" }, ctx),

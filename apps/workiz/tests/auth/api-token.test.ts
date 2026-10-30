@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, { PROBE_PATH, signedUrl, signRequest } from "../../auth/api-token.ts";
 import { API_ROOT, forbiddenBody, mockCtx } from "../_helpers.ts";
 
 const TOKEN = "ax7f9c2unitTestFixtureNotARealToken";
 
-Deno.test("api-token: sign splices the token into the path and touches nothing else", () => {
+test("api-token: sign splices the token into the path and touches nothing else", () => {
   const request = {
     method: "GET",
     url: `${API_ROOT}/team/all/`,
@@ -23,7 +24,7 @@ Deno.test("api-token: sign splices the token into the path and touches nothing e
   assertEquals(Object.keys(signed.headers).length, 1);
 });
 
-Deno.test("api-token: signedUrl is the single source of the wire path", () => {
+test("api-token: signedUrl is the single source of the wire path", () => {
   assertEquals(
     signedUrl(`${API_ROOT}/lead/all/`, TOKEN),
     `https://api.workiz.com/api/v1/${TOKEN}/lead/all/`,
@@ -36,7 +37,7 @@ Deno.test("api-token: signedUrl is the single source of the wire path", () => {
 });
 
 /** An empty credential must fail loudly rather than build `/api/v1//…`. */
-Deno.test("api-token: signing without a token throws", () => {
+test("api-token: signing without a token throws", () => {
   let threw = false;
   try {
     signedUrl(`${API_ROOT}/team/all/`, "");
@@ -47,7 +48,7 @@ Deno.test("api-token: signing without a token throws", () => {
 });
 
 /** Signing twice would produce `/api/v1/<tok>/api/v1/<tok>/…`, which is a 403. */
-Deno.test("api-token: signing an already-signed path throws", () => {
+test("api-token: signing an already-signed path throws", () => {
   const signed = signedUrl(`${API_ROOT}/team/all/`, TOKEN);
   let threw = false;
   try {
@@ -58,7 +59,7 @@ Deno.test("api-token: signing an already-signed path throws", () => {
   assert(threw, "a double-signed path was accepted");
 });
 
-Deno.test("api-token: the credential's token is trimmed, never echoed", () => {
+test("api-token: the credential's token is trimmed, never echoed", () => {
   const request = {
     method: "GET",
     url: `${API_ROOT}/team/all/`,
@@ -70,11 +71,11 @@ Deno.test("api-token: the credential's token is trimmed, never echoed", () => {
   assertEquals(signed.headers, {});
 });
 
-Deno.test("api-token: the probe is /team/all/, the one parameterless read", () => {
+test("api-token: the probe is /team/all/, the one parameterless read", () => {
   assertEquals(PROBE_PATH, "/team/all/");
 });
 
-Deno.test("api-token: test passes when the team list answers an array", async () => {
+test("api-token: test passes when the team list answers an array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "u1", name: "Dana", role: "Admin" }] }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -88,7 +89,7 @@ Deno.test("api-token: test passes when the team list answers an array", async ()
  * generic enough that `{success:false, error:"Forbidden"}` is the reliable
  * signal. Nor may the token itself ever appear in a message.
  */
-Deno.test("api-token: the Forbidden body is reported as a rejected token", async () => {
+test("api-token: the Forbidden body is reported as a rejected token", async () => {
   const { ctx } = mockCtx([{ status: 403, body: forbiddenBody() }]);
   const result = await apiToken.test({ credential: { apiToken: "garbage" } }, ctx);
 
@@ -102,14 +103,14 @@ Deno.test("api-token: the Forbidden body is reported as a rejected token", async
 });
 
 /** A 200 carrying the Forbidden shape is still a rejection — status is not the signal. */
-Deno.test("api-token: a 200 carrying the Forbidden body is still a rejection", async () => {
+test("api-token: a 200 carrying the Forbidden body is still a rejection", async () => {
   const { ctx } = mockCtx([{ status: 200, body: forbiddenBody("Invalid API path.") }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
   assertEquals(result.ok, false);
   assert(/Invalid API path\./.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a 5xx is an HTTP failure, not a credential problem", async () => {
+test("api-token: a 5xx is an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
   assertEquals(result.ok, false);
@@ -118,7 +119,7 @@ Deno.test("api-token: a 5xx is an HTTP failure, not a credential problem", async
 });
 
 /** A valid token whose account has no team rows must not be called invalid. */
-Deno.test("api-token: a non-array success body is reported as unexpected, not invalid", async () => {
+test("api-token: a non-array success body is reported as unexpected, not invalid", async () => {
   const { ctx } = mockCtx([{ body: { unexpected: true } }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
   assertEquals(result.ok, false);
@@ -126,14 +127,14 @@ Deno.test("api-token: a non-array success body is reported as unexpected, not in
   assert(!/rejected/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: test fails with no token, without making a request", async () => {
+test("api-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect publishes only the first member's name and role", async () => {
+test("api-token: afterConnect publishes only the first member's name and role", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: [
@@ -150,17 +151,17 @@ Deno.test("api-token: afterConnect publishes only the first member's name and ro
   assert(!JSON.stringify(display).includes("u1"), "vendor id leaked into the label");
 });
 
-Deno.test("api-token: afterConnect stays silent when the read fails", async () => {
+test("api-token: afterConnect stays silent when the read fails", async () => {
   const { ctx } = mockCtx([{ status: 403, body: forbiddenBody() }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx), {});
 });
 
-Deno.test("api-token: afterConnect stays silent when the team list is empty", async () => {
+test("api-token: afterConnect stays silent when the team list is empty", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: "tok" } }, ctx), {});
 });
 
-Deno.test("api-token: afterConnect makes no request without a token", async () => {
+test("api-token: afterConnect makes no request without a token", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await apiToken.afterConnect!({ credential: {} }, ctx), {});
   assertEquals(calls.length, 0);

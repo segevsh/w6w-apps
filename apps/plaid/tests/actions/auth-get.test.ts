@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/auth-get.ts";
 
 const conn = { display: { environment: "sandbox" } };
 
-Deno.test("auth-get: reads the account numbers", async () => {
+test("auth-get: reads the account numbers", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { numbers: { ach: [{ account: "1111", routing: "2222" }] }, accounts: [{ id: "a1" }] },
@@ -14,7 +15,7 @@ Deno.test("auth-get: reads the account numbers", async () => {
 });
 
 /** Bank details must never reach a log. */
-Deno.test("auth-get: logs a count and nothing else", async () => {
+test("auth-get: logs a count and nothing else", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { numbers: { ach: [{ account: "1111", routing: "2222" }] }, accounts: [{ id: "a1" }] },
@@ -26,6 +27,6 @@ Deno.test("auth-get: logs a count and nothing else", async () => {
   assert(!logged.includes("tok"), logged);
 });
 
-Deno.test("auth-get: says it is the most sensitive call here", () => {
+test("auth-get: says it is the most sensitive call here", () => {
   assert(/sensitive/.test(action.description!), action.description);
 });

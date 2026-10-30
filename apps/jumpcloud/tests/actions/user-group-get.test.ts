@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-group-get.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("user-group-get: reads one group on the V2 base", async () => {
+test("user-group-get: reads one group on the V2 base", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { id: "g1", name: "Engineering" } }],
     display,
@@ -15,12 +16,12 @@ Deno.test("user-group-get: reads one group on the V2 base", async () => {
 });
 
 /** A memberQuery means the group computes its own membership. */
-Deno.test("user-group-get: the output explains what memberQuery implies", () => {
+test("user-group-get: the output explains what memberQuery implies", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "memberQuery")!.label.includes("DYNAMIC"));
 });
 
-Deno.test("user-group-get: a blank id fails before any request", async () => {
+test("user-group-get: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`groupId`");
   assertEquals(calls.length, 0);

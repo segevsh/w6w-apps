@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: reports ok with per-component detail on a clean summary", async () => {
+test("service: reports ok with per-component detail on a clean summary", async () => {
   const summary = {
     status: { indicator: "none", description: "All Systems Operational" },
     components: [
@@ -22,7 +23,7 @@ Deno.test("service: reports ok with per-component detail on a clean summary", as
   });
 });
 
-Deno.test("service: maps a major incident to down and surfaces the description", async () => {
+test("service: maps a major incident to down and surfaces the description", async () => {
   const summary = {
     status: { indicator: "major", description: "Partial API Outage" },
     components: [{ name: "API", status: "major_outage" }],
@@ -35,7 +36,7 @@ Deno.test("service: maps a major incident to down and surfaces the description",
   assertEquals(report.components, { api: { state: "down" } });
 });
 
-Deno.test("service: reports unknown, never down, when the status API itself fails", async () => {
+test("service: reports unknown, never down, when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, statusText: "Internal Server Error", body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

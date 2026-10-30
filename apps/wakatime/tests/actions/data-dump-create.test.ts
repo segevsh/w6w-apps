@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/data-dump-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("data-dump-create: POSTs the documented path", async () => {
+test("data-dump-create: POSTs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "d1" } } }]);
   const out = await action.execute!({ type: "daily", emailWhenFinished: false }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("data-dump-create: POSTs the documented path", async () => {
   assertEquals(out, { data: { id: "d1" } });
 });
 
-Deno.test("data-dump-create: a vendor error reports status and message", async () => {
+test("data-dump-create: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () => await action.execute!({ type: "daily", emailWhenFinished: false }, ctx),

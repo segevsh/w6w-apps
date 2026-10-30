@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import boardList from "../../actions/board-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("board-list: calls GET /boards and returns the bookmark page", async () => {
+test("board-list: calls GET /boards and returns the bookmark page", async () => {
   const { ctx, calls } = mockCtx([
     { body: { items: [{ id: "1" }, { id: "2" }], bookmark: "cursor-1" } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("board-list: calls GET /boards and returns the bookmark page", async (
   assertEquals(out.bookmark, "cursor-1");
 });
 
-Deno.test("board-list: forwards privacy, page_size and bookmark", async () => {
+test("board-list: forwards privacy, page_size and bookmark", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await boardList.execute({ privacy: "SECRET", pageSize: 50, bookmark: "abc" }, ctx);
   const q = queryOf(calls[0].url);

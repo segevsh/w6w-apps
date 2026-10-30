@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-create.ts";
 
@@ -9,7 +10,7 @@ const created = {
 };
 
 /** Too narrow fails immediately; too wide fails silently for months. */
-Deno.test("key-create: defaults to search-only", async () => {
+test("key-create: defaults to search-only", async () => {
   const { ctx, calls } = mockCtx([created], D);
   await action.execute({ description: "front end", collections: "products" }, ctx);
   const body = JSON.parse(calls[0].body!) as Record<string, unknown>;
@@ -19,7 +20,7 @@ Deno.test("key-create: defaults to search-only", async () => {
 });
 
 /** The value is returned once and never again. */
-Deno.test("key-create: returns the value and never logs it", async () => {
+test("key-create: returns the value and never logs it", async () => {
   const { ctx, logs } = mockCtx([created], D);
   const result = await action.execute({ description: "front end" }, ctx) as Record<string, unknown>;
   assertEquals(result.value, "SUPERSECRETKEY");
@@ -29,7 +30,7 @@ Deno.test("key-create: returns the value and never logs it", async () => {
   assert(/"id":9/.test(logged), logged);
 });
 
-Deno.test("key-create: warns about an unrestricted key", async () => {
+test("key-create: warns about an unrestricted key", async () => {
   const { ctx, logs } = mockCtx([created], D);
   const result = await action.execute(
     { description: "admin", actions: "*", collections: "*" },
@@ -43,7 +44,7 @@ Deno.test("key-create: warns about an unrestricted key", async () => {
 });
 
 /** A duration lands in 1970 and 401s with no mention of expiry. */
-Deno.test("key-create: converts days to an absolute timestamp", async () => {
+test("key-create: converts days to an absolute timestamp", async () => {
   const { ctx, calls } = mockCtx([created], D);
   await action.execute({ description: "temporary", expiresInDays: 7 }, ctx);
   const expiresAt = Number((JSON.parse(calls[0].body!) as { expires_at: number }).expires_at);
@@ -51,7 +52,7 @@ Deno.test("key-create: converts days to an absolute timestamp", async () => {
   assert(days > 6.9 && days < 7.1, `expiry is ${days} days away`);
 });
 
-Deno.test("key-create: requires a description and a sane expiry", async () => {
+test("key-create: requires a description and a sane expiry", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(async () => await action.execute({}, ctx), Error);
   assert(/only label anyone auditing/.test(err.message), err.message);
@@ -63,7 +64,7 @@ Deno.test("key-create: requires a description and a sane expiry", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("key-create: is not idempotent", () => {
+test("key-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
   assert(/VALUE IS RETURNED ONCE/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import crawlStatusGet from "../../actions/crawl-status-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("crawl-status-get: GETs /crawl/{id} and returns the body verbatim (no success envelope)", async () => {
+test("crawl-status-get: GETs /crawl/{id} and returns the body verbatim (no success envelope)", async () => {
   const statusBody = {
     status: "completed",
     total: 3,
@@ -17,12 +18,12 @@ Deno.test("crawl-status-get: GETs /crawl/{id} and returns the body verbatim (no 
   assertEquals(out, statusBody);
 });
 
-Deno.test("crawl-status-get: URL-encodes the id", async () => {
+test("crawl-status-get: URL-encodes the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "scraping" } }]);
   await crawlStatusGet.execute({ id: "has space" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/crawl/has%20space");
 });
 
-Deno.test("crawl-status-get: is a read", () => {
+test("crawl-status-get: is a read", () => {
   assertEquals(crawlStatusGet.type, "read");
 });

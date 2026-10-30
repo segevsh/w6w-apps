@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoSearch from "../../actions/video-search.ts";
 import { collection, mockCtx, q, url, video } from "../_helpers.ts";
 
-Deno.test("video-search: hits the public /videos endpoint", async () => {
+test("video-search: hits the public /videos endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([video(1)]) }]);
   await videoSearch.execute({ query: "staff picks" }, ctx);
   assertEquals(url(calls[0]).pathname, "/videos");
   assertEquals(q(calls[0], "query"), "staff picks");
 });
 
-Deno.test("video-search: forwards the Creative Commons filter, sort and pagination", async () => {
+test("video-search: forwards the Creative Commons filter, sort and pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await videoSearch.execute({
     query: "x",
@@ -32,7 +33,7 @@ Deno.test("video-search: forwards the Creative Commons filter, sort and paginati
  * Vimeo rejects the combination outright (400, error code 2101): "Querying,
  * filtering, and sorting aren't supported when using this field."
  */
-Deno.test("video-search: uris suppresses query, filter and sort rather than 400ing", async () => {
+test("video-search: uris suppresses query, filter and sort rather than 400ing", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await videoSearch.execute({
     uris: "/videos/1, /videos/2",
@@ -51,7 +52,7 @@ Deno.test("video-search: uris suppresses query, filter and sort rather than 400i
   assertEquals(q(calls[0], "page"), "2");
 });
 
-Deno.test("video-search: links suppresses the same parameters as uris", async () => {
+test("video-search: links suppresses the same parameters as uris", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await videoSearch.execute({ links: "https://vimeo.com/1", query: "ignored", sort: "date" }, ctx);
   assertEquals(q(calls[0], "links"), "https://vimeo.com/1");
@@ -59,6 +60,6 @@ Deno.test("video-search: links suppresses the same parameters as uris", async ()
   assertEquals(q(calls[0], "sort"), null);
 });
 
-Deno.test("video-search: is a search action", () => {
+test("video-search: is a search action", () => {
   assertEquals(videoSearch.type, "search");
 });

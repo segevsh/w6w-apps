@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionTransition from "../../actions/transaction-transition.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-transition: POST /transactions/transition with id/transition/params", async () => {
+test("transaction-transition: POST /transactions/transition with id/transition/params", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -24,7 +25,7 @@ Deno.test("transaction-transition: POST /transactions/transition with id/transit
   assertEquals(body, { id: "t1", transition: "transition/accept", params: { foo: "bar" } });
 });
 
-Deno.test("transaction-transition: defaults params to {} when not given, not idempotent", async () => {
+test("transaction-transition: defaults params to {} when not given, not idempotent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "t1" } } }]);
   await transactionTransition.execute({ id: "t1", transition: "transition/accept" }, ctx);
   const body = JSON.parse(calls[0].body ?? "{}");

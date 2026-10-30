@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageQuotaConsumptionGet from "../../actions/message-quota-consumption-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-quota-consumption-get: GETs /v2/bot/message/quota/consumption", async () => {
+test("message-quota-consumption-get: GETs /v2/bot/message/quota/consumption", async () => {
   const { ctx, calls } = mockCtx([{ body: { totalUsage: 500 } }]);
   const out = await messageQuotaConsumptionGet.execute({}, ctx) as { totalUsage: number };
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileList from "../../actions/file-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-list: lists a project's files, including the __unassigned__ pseudo-file", async () => {
+test("file-list: lists a project's files, including the __unassigned__ pseudo-file", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

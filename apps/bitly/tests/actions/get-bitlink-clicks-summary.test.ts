@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-bitlink-clicks-summary.ts";
 
-Deno.test("get-bitlink-clicks-summary: GETs /bitlinks/{bitlink}/clicks/summary with defaults", async () => {
+test("get-bitlink-clicks-summary: GETs /bitlinks/{bitlink}/clicks/summary with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { total_clicks: 42, unit: "day", units: -1 } }]);
   const out = await action.execute({ bitlink: "bit.ly/abc123" }, ctx);
   const url = new URL(calls[0].url);

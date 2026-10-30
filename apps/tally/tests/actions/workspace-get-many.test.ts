@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { listBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-get-many.ts";
 
-Deno.test("workspace-get-many: GETs /workspaces and unwraps the envelope", async () => {
+test("workspace-get-many: GETs /workspaces and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: listBody([{ id: "w1" }], { total: 1, hasMore: true, page: 2 }) },
   ]);
@@ -16,13 +17,13 @@ Deno.test("workspace-get-many: GETs /workspaces and unwraps the envelope", async
   assertEquals(result.hasMore, true);
 });
 
-Deno.test("workspace-get-many: omits unset params and tolerates a missing items array", async () => {
+test("workspace-get-many: omits unset params and tolerates a missing items array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const result = await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
   assertEquals(result.items, []);
 });
 
-Deno.test("workspace-get-many: offers no limit param — Tally documents none here", () => {
+test("workspace-get-many: offers no limit param — Tally documents none here", () => {
   assertEquals(action.params?.map((p) => p.key), ["page"]);
 });

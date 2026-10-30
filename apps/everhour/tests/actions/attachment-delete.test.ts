@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import attachmentDelete from "../../actions/attachment-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("attachment-delete: DELETE /attachments/{attachmentId} with the documented query and body", async () => {
+test("attachment-delete: DELETE /attachments/{attachmentId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await attachmentDelete.execute({ "attachmentId": 3905 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("attachment-delete: DELETE /attachments/{attachmentId} with the docume
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("attachment-delete: an Everhour error surfaces its message and status", async () => {
+test("attachment-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(attachmentDelete.execute({ "attachmentId": 3905 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("attachment-delete: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("attachment-delete: declares perform and idempotent=true", () => {
+test("attachment-delete: declares perform and idempotent=true", () => {
   assertEquals(attachmentDelete.type, "perform");
   assertEquals(attachmentDelete.idempotent, true);
 });

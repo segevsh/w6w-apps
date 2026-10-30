@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rowLinkList from "../../actions/row-link-list.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("row-link-list: POSTs /query-links/ with one entry per row", async () => {
+test("row-link-list: POSTs /query-links/ with one entry per row", async () => {
   const links = { r1: [{ row_id: "x", display_value: "Orson" }] };
   const { ctx, calls } = mockCtx([{ body: links }]);
   const out = await rowLinkList.execute(
@@ -19,7 +20,7 @@ Deno.test("row-link-list: POSTs /query-links/ with one entry per row", async () 
   assertEquals(out.links, links);
 });
 
-Deno.test("row-link-list: offset and limit apply to every row", async () => {
+test("row-link-list: offset and limit apply to every row", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await rowLinkList.execute(
     { tableName: "T", linkColumnName: "L", rowIds: '["r1"]', offset: 0, limit: 50 },
@@ -28,7 +29,7 @@ Deno.test("row-link-list: offset and limit apply to every row", async () => {
   assertEquals(bodyOf(calls[0]).rows, [{ row_id: "r1", offset: 0, limit: 50 }]);
 });
 
-Deno.test("row-link-list: an empty row list is refused", async () => {
+test("row-link-list: an empty row list is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {

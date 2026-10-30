@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import downtimeSchedule from "../../actions/downtime-schedule.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ interface Body {
   data: { type: string; attributes: Record<string, unknown> };
 }
 
-Deno.test("downtime-schedule: POSTs a JSON:API document to /api/v2/downtime", async () => {
+test("downtime-schedule: POSTs a JSON:API document to /api/v2/downtime", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "d-1" } } }]);
   const out = await downtimeSchedule.execute(
     {
@@ -36,7 +37,7 @@ Deno.test("downtime-schedule: POSTs a JSON:API document to /api/v2/downtime", as
  * the action always sends one — and Datadog's documented spelling for "every
  * monitor in this scope" is `monitor_tags: ["*"]`.
  */
-Deno.test("downtime-schedule: a monitor identifier is always sent, defaulting to all", async () => {
+test("downtime-schedule: a monitor identifier is always sent, defaulting to all", async () => {
   const bare = mockCtx([{ body: { data: {} } }]);
   await downtimeSchedule.execute({ scope: "env:staging" }, bare.ctx);
   assertEquals(
@@ -56,7 +57,7 @@ Deno.test("downtime-schedule: a monitor identifier is always sent, defaulting to
 });
 
 /** A specific monitor wins over tags — they are alternatives, not a union. */
-Deno.test("downtime-schedule: a monitor id overrides monitor tags", async () => {
+test("downtime-schedule: a monitor id overrides monitor tags", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await downtimeSchedule.execute({ scope: "*", monitorId: 7, monitorTags: "a:b" }, ctx);
   assertEquals(
@@ -65,13 +66,13 @@ Deno.test("downtime-schedule: a monitor id overrides monitor tags", async () => 
   );
 });
 
-Deno.test("downtime-schedule: no schedule is sent when neither start nor end is given", async () => {
+test("downtime-schedule: no schedule is sent when neither start nor end is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await downtimeSchedule.execute({ scope: "*" }, ctx);
   assertEquals("schedule" in (bodyOf(calls[0]) as unknown as Body).data.attributes, false);
 });
 
-Deno.test("downtime-schedule: a start with no end is sent as an open-ended window", async () => {
+test("downtime-schedule: a start with no end is sent as an open-ended window", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await downtimeSchedule.execute({ scope: "*", start: "2026-08-11T07:00:00Z" }, ctx);
   assertEquals(
@@ -80,7 +81,7 @@ Deno.test("downtime-schedule: a start with no end is sent as an open-ended windo
   );
 });
 
-Deno.test("downtime-schedule: a non-integer monitor id is refused before anything is sent", async () => {
+test("downtime-schedule: a non-integer monitor id is refused before anything is sent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(downtimeSchedule.execute({ scope: "*", monitorId: "abc" }, ctx)),
@@ -94,14 +95,14 @@ Deno.test("downtime-schedule: a non-integer monitor id is refused before anythin
  * Two hints carry facts that are otherwise invisible until production is quiet:
  * Datadog rejects a non-zero UTC offset, and an empty End means forever.
  */
-Deno.test("downtime-schedule: the window hints state the UTC-offset and forever rules", () => {
+test("downtime-schedule: the window hints state the UTC-offset and forever rules", () => {
   const start = downtimeSchedule.params?.find((p) => p.key === "start")?.hint ?? "";
   const end = downtimeSchedule.params?.find((p) => p.key === "end")?.hint ?? "";
   assert(start.includes("zero UTC offset"), start);
   assert(end.includes("never ends"), end);
 });
 
-Deno.test("downtime-schedule: it is a non-idempotent perform", () => {
+test("downtime-schedule: it is a non-idempotent perform", () => {
   assertEquals(downtimeSchedule.type, "perform");
   assertEquals(downtimeSchedule.idempotent, false);
 });

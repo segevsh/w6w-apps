@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sim-list.ts";
 
@@ -14,7 +15,7 @@ const sims = {
   },
 };
 
-Deno.test("sim-list: reads the SIMs endpoint with paging", async () => {
+test("sim-list: reads the SIMs endpoint with paging", async () => {
   const { ctx, calls } = mockCtx([sims]);
   const result = await action.execute({ perPage: 50, page: 2 }, ctx) as Record<string, unknown>;
   const url = new URL(calls[0].url);
@@ -25,7 +26,7 @@ Deno.test("sim-list: reads the SIMs endpoint with paging", async () => {
 });
 
 /** The only visibility into running cost before the invoice. */
-Deno.test("sim-list: totals data used and names the heaviest", async () => {
+test("sim-list: totals data used and names the heaviest", async () => {
   const { ctx } = mockCtx([sims]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.totalMbUsed, 1516.5);
@@ -33,7 +34,7 @@ Deno.test("sim-list: totals data used and names the heaviest", async () => {
 });
 
 /** A SIM past its limit silences its device and looks like an outage. */
-Deno.test("sim-list: counts the over-limit SIMs and warns", async () => {
+test("sim-list: counts the over-limit SIMs and warns", async () => {
   const { ctx, logs } = mockCtx([sims]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.overLimitCount, 1);
@@ -42,7 +43,7 @@ Deno.test("sim-list: counts the over-limit SIMs and warns", async () => {
   assert(/devices on them will look offline/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("sim-list: a healthy fleet does not warn", async () => {
+test("sim-list: a healthy fleet does not warn", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { sims: [{ iccid: "89011", status: "active", mb_used: 1 }] },
@@ -52,7 +53,7 @@ Deno.test("sim-list: a healthy fleet does not warn", async () => {
   assertEquals(logs.length, 0);
 });
 
-Deno.test("sim-list: a bare array body is handled too", async () => {
+test("sim-list: a bare array body is handled too", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{ iccid: "89011", status: "active", mb_used: 3 }],

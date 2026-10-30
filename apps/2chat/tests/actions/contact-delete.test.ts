@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { mockCtx } from "../_helpers.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 
-Deno.test("contact-delete: deletes by uuid", async () => {
+test("contact-delete: deletes by uuid", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true } }]);
   await contactDelete.execute!({ "contactUuid": "CON9" } as never, ctx);
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "DELETE");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/contacts/CON9");
-  assertEquals(calls[0].body, null);
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "DELETE");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/contacts/CON9");
+  assert.deepStrictEqual(calls[0].body, null);
 });

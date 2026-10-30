@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, {
   DOCUMENTED_LIMIT_PER_SECOND,
   judgeHeadroom,
@@ -8,7 +9,7 @@ import { errorBody, mockCtx } from "../_helpers.ts";
 
 const JSON_HEADERS = { "content-type": "application/json" };
 
-Deno.test("health/quota: the probe is signed and stays on the app's own host", async () => {
+test("health/quota: the probe is signed and stays on the app's own host", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] }, headers: JSON_HEADERS }]);
   await quota.check!({}, ctx);
   assertEquals(quota.credential, "signed");
@@ -25,7 +26,7 @@ Deno.test("health/quota: the probe is signed and stays on the app's own host", a
  * such headers). So absence must report `unknown`, and the check is
  * `informational` so that `unknown` cannot pin the app's verdict.
  */
-Deno.test("health/quota: absent headers report unknown, never ok", async () => {
+test("health/quota: absent headers report unknown, never ok", async () => {
   const { ctx } = mockCtx([{ body: { data: [] }, headers: JSON_HEADERS }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "unknown");
@@ -33,11 +34,11 @@ Deno.test("health/quota: absent headers report unknown, never ok", async () => {
   assertEquals(out.quota, []);
 });
 
-Deno.test("health/quota: the check is informational so an expected unknown cannot pin the verdict", () => {
+test("health/quota: the check is informational so an expected unknown cannot pin the verdict", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("health/quota: present headers produce a reading and an ok verdict", async () => {
+test("health/quota: present headers produce a reading and an ok verdict", async () => {
   const { ctx } = mockCtx([{
     body: { data: [] },
     headers: { ...JSON_HEADERS, "x-ratelimit-limit": "50", "x-ratelimit-remaining": "40" },
@@ -47,7 +48,7 @@ Deno.test("health/quota: present headers produce a reading and an ok verdict", a
   assertEquals(out.quota, [{ id: "requests", limit: 50, remaining: 40, unit: "requests" }]);
 });
 
-Deno.test("health/quota: a 429 is down and reports zero remaining with the retry delay", async () => {
+test("health/quota: a 429 is down and reports zero remaining with the retry delay", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { ...JSON_HEADERS, "retry-after": "2" },
@@ -59,14 +60,14 @@ Deno.test("health/quota: a 429 is down and reports zero remaining with the retry
   assertEquals(out.quota, [{ id: "requests", remaining: 0, unit: "requests" }]);
 });
 
-Deno.test("health/quota: a refused read is unknown — headroom is not the credential check's answer", async () => {
+test("health/quota: a refused read is unknown — headroom is not the credential check's answer", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("auth.accessDenied", "Denied", "no") }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message!.includes("403"), out.message);
 });
 
-Deno.test("health/quota: judgeHeadroom bands are explicit and monotonic", () => {
+test("health/quota: judgeHeadroom bands are explicit and monotonic", () => {
   assertEquals(judgeHeadroom(50, 40).state, "ok");
   assertEquals(judgeHeadroom(50, 13).state, "ok");
   assertEquals(judgeHeadroom(50, 12).state, "degraded");
@@ -77,7 +78,7 @@ Deno.test("health/quota: judgeHeadroom bands are explicit and monotonic", () => 
   assertEquals(judgeHeadroom(0, 0).state, "unknown");
 });
 
-Deno.test("health/quota: readNumericHeader tolerates absence and rubbish", () => {
+test("health/quota: readNumericHeader tolerates absence and rubbish", () => {
   const res = new Response(null, {
     headers: { "x-ratelimit-limit": "50", "x-ratelimit-remaining": "not a number", empty: "" },
   });

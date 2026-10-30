@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectInvitationCreate from "../../actions/project-invitation-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-invitation-create: POSTs with no body and returns the invite URL", async () => {
+test("project-invitation-create: POSTs with no body and returns the invite URL", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "3", invite_url: "https://app.companycam.com/i/abc", status: "pending" },
@@ -17,7 +18,7 @@ Deno.test("project-invitation-create: POSTs with no body and returns the invite 
   assertEquals(projectInvitationCreate.idempotent, false);
 });
 
-Deno.test("project-invitation-create: takes no recipient — CompanyCam sends nothing", () => {
+test("project-invitation-create: takes no recipient — CompanyCam sends nothing", () => {
   const keys = projectInvitationCreate.params!.map((p) => p.key);
   assertEquals(keys, ["projectId", "actAs"]);
 });

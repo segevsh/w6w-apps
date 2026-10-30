@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-find-status.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("bulk-find-status: GETs /email_finder/bulk/progress_status with list_id and maps the progress", async () => {
+test("bulk-find-status: GETs /email_finder/bulk/progress_status with list_id and maps the progress", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", data: { progress_status: "processing", percentage: 42 } },
   }]);
@@ -15,7 +16,7 @@ Deno.test("bulk-find-status: GETs /email_finder/bulk/progress_status with list_i
   assertEquals(out, { progressStatus: "processing", percent: 42 });
 });
 
-Deno.test("bulk-find-status: a blank list ID throws before any request; a vendor failure throws", async () => {
+test("bulk-find-status: a blank list ID throws before any request; a vendor failure throws", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, { listId: " " }, none.ctx), Error, "listId is required");
   assertEquals(none.calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/entity-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("entity-list: GETs /v2/entities and unwraps the page", async () => {
+test("entity-list: GETs /v2/entities and unwraps the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "1" }, { id: "2" }], "cur-2") }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("entity-list: GETs /v2/entities and unwraps the page", async () => {
   assertEquals(out.hasMore, true);
 });
 
-Deno.test("entity-list: bracketed filters are sent as literal bracketed keys", async () => {
+test("entity-list: bracketed filters are sent as literal bracketed keys", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({
     ownerEmail: "jane@example.com",
@@ -32,14 +33,14 @@ Deno.test("entity-list: bracketed filters are sent as literal bracketed keys", a
   });
 });
 
-Deno.test("entity-list: types are repeated keys and fields uses the bracketed spelling", async () => {
+test("entity-list: types are repeated keys and fields uses the bracketed spelling", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({ types: ["feature", "subfeature"], fields: "name,status" }, ctx);
   assertEquals(queryAll(calls[0].url, "type[]"), ["feature", "subfeature"]);
   assertEquals(queryAll(calls[0].url, "fields[]"), ["name", "status"]);
 });
 
-Deno.test("entity-list: archived=false survives, because it is a meaningful filter", async () => {
+test("entity-list: archived=false survives, because it is a meaningful filter", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await action.execute({ archived: false }, ctx);
   assertEquals(queryOf(calls[0].url), { archived: "false" });

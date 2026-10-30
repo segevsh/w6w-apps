@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import animationGet from "../../actions/animation-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("animation-get: GET /animations/{uid}, carries progress", async () => {
+test("animation-get: GET /animations/{uid}, carries progress", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "a1", status: "rendering", progress: 40 } }]);
   const out = await animationGet.execute({ uid: "a1" }, ctx) as unknown as Record<string, unknown>;
 
@@ -10,7 +11,7 @@ Deno.test("animation-get: GET /animations/{uid}, carries progress", async () => 
   assertEquals(out.progress, 40);
 });
 
-Deno.test("animation-get: requires uid", async () => {
+test("animation-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => animationGet.execute({ uid: "" }, ctx));
 });

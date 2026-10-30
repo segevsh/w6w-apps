@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   apiHostFromConnection,
   campaignsPath,
@@ -10,18 +11,18 @@ import {
 } from "../../lib/client.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 
-Deno.test("apiHostFromConnection: reads the recorded region host", () => {
+test("apiHostFromConnection: reads the recorded region host", () => {
   assertEquals(
     apiHostFromConnection({ display: { apiHost: "campaigns.zoho.eu" } } as never),
     "campaigns.zoho.eu",
   );
 });
 
-Deno.test("apiHostFromConnection: falls back to the US host when unrecorded", () => {
+test("apiHostFromConnection: falls back to the US host when unrecorded", () => {
   assertEquals(apiHostFromConnection(undefined), "campaigns.zoho.com");
 });
 
-Deno.test("campaignsPath: prefixes json/ only for the four format-in-path endpoints", () => {
+test("campaignsPath: prefixes json/ only for the four format-in-path endpoints", () => {
   assertEquals(campaignsPath("listsubscribe"), "json/listsubscribe");
   assertEquals(campaignsPath("listunsubscribe"), "json/listunsubscribe");
   assertEquals(campaignsPath("contactdonotmail"), "json/contactdonotmail");
@@ -30,7 +31,7 @@ Deno.test("campaignsPath: prefixes json/ only for the four format-in-path endpoi
   assertEquals(campaignsPath("deletecampaign"), "deletecampaign");
 });
 
-Deno.test("formatCampaignsError: reads the lowercase code on a success-shaped envelope", () => {
+test("formatCampaignsError: reads the lowercase code on a success-shaped envelope", () => {
   const msg = formatCampaignsError(
     400,
     "POST",
@@ -43,7 +44,7 @@ Deno.test("formatCampaignsError: reads the lowercase code on a success-shaped en
   );
 });
 
-Deno.test("formatCampaignsError: reads the capitalized Code on the vendor's own error shape", () => {
+test("formatCampaignsError: reads the capitalized Code on the vendor's own error shape", () => {
   const msg = formatCampaignsError(
     401,
     "GET",
@@ -56,12 +57,12 @@ Deno.test("formatCampaignsError: reads the capitalized Code on the vendor's own 
   );
 });
 
-Deno.test("formatCampaignsError: falls back to the raw body when it is not JSON", () => {
+test("formatCampaignsError: falls back to the raw body when it is not JSON", () => {
   const msg = formatCampaignsError(500, "GET", "/api/v1.1/getmailinglists", "<html>oops</html>");
   assertEquals(msg, "Zoho Campaigns 500 for GET /api/v1.1/getmailinglists: <html>oops</html>");
 });
 
-Deno.test("unwrapEnvelope: passes a flat body through unchanged", () => {
+test("unwrapEnvelope: passes a flat body through unchanged", () => {
   assertEquals(unwrapEnvelope({ status: "success", code: "0", listkey: "abc" }), {
     status: "success",
     code: "0",
@@ -69,21 +70,21 @@ Deno.test("unwrapEnvelope: passes a flat body through unchanged", () => {
   });
 });
 
-Deno.test("unwrapEnvelope: unwraps a nested response body", () => {
+test("unwrapEnvelope: unwraps a nested response body", () => {
   assertEquals(unwrapEnvelope({ response: { message: "Success", code: "200" } }), {
     message: "Success",
     code: "200",
   });
 });
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("parseJsonParam: parses a JSON string and rejects non-objects", () => {
+test("parseJsonParam: parses a JSON string and rejects non-objects", () => {
   assertEquals(parseJsonParam('{"Contact Email":"a@b.com"}', "contactInfo"), {
     "Contact Email": "a@b.com",
   });
@@ -91,7 +92,7 @@ Deno.test("parseJsonParam: parses a JSON string and rejects non-objects", () => 
   assertThrows(() => parseJsonParam("[1,2]", "contactInfo"), Error, "JSON object");
 });
 
-Deno.test("ZohoCampaignsClient: builds the request against the connection's region host, resfmt=JSON in the query, no body", async () => {
+test("ZohoCampaignsClient: builds the request against the connection's region host, resfmt=JSON in the query, no body", async () => {
   const { ctx, calls } = mockCampaignsCtx(
     [{ body: { status: "success", code: "0", list_of_details: [] } }],
     "campaigns.zoho.eu",
@@ -110,7 +111,7 @@ Deno.test("ZohoCampaignsClient: builds the request against the connection's regi
   assertEquals(body, { status: "success", code: "0", list_of_details: [] });
 });
 
-Deno.test("ZohoCampaignsClient: uses type=json instead of resfmt=JSON when formatParam is 'type'", async () => {
+test("ZohoCampaignsClient: uses type=json instead of resfmt=JSON when formatParam is 'type'", async () => {
   const { ctx, calls } = mockCampaignsCtx([{ body: { response: { code: "0" } } }]);
   await new ZohoCampaignsClient(ctx).request("contact/allfields", { formatParam: "type" });
   const url = new URL(calls[0].url);
@@ -118,7 +119,7 @@ Deno.test("ZohoCampaignsClient: uses type=json instead of resfmt=JSON when forma
   assertEquals(url.searchParams.has("resfmt"), false);
 });
 
-Deno.test("ZohoCampaignsClient: even a documented POST sends parameters as a query string, no body", async () => {
+test("ZohoCampaignsClient: even a documented POST sends parameters as a query string, no body", async () => {
   const { ctx, calls } = mockCampaignsCtx([{ body: { status: "success", code: "0" } }]);
   await new ZohoCampaignsClient(ctx).request("updatelistdetails", {
     method: "POST",
@@ -131,7 +132,7 @@ Deno.test("ZohoCampaignsClient: even a documented POST sends parameters as a que
   assertEquals(url.searchParams.get("newlistname"), "New name");
 });
 
-Deno.test("ZohoCampaignsClient: throws a formatted error on a non-ok response", async () => {
+test("ZohoCampaignsClient: throws a formatted error on a non-ok response", async () => {
   const { ctx } = mockCampaignsCtx([
     { status: 401, body: { status: "error", Code: "1007", message: "Unauthorized request." } },
   ]);
@@ -141,7 +142,7 @@ Deno.test("ZohoCampaignsClient: throws a formatted error on a non-ok response", 
   );
 });
 
-Deno.test("ZohoCampaignsClient: throws when the HTTP status is 200 but the envelope says status:error", async () => {
+test("ZohoCampaignsClient: throws when the HTTP status is 200 but the envelope says status:error", async () => {
   const { ctx } = mockCampaignsCtx([
     {
       status: 200,

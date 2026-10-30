@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-update.ts";
 
-Deno.test("ticket-update: PUTs /tickets/{id} with only the fields set", async () => {
+test("ticket-update: PUTs /tickets/{id} with only the fields set", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { id: 1 } }]);
   await action.execute({ ticketId: 1, status: "closed" }, ctx);
   assertEquals(calls[0].url, "https://acme.gorgias.com/api/tickets/1");
@@ -13,7 +14,7 @@ Deno.test("ticket-update: PUTs /tickets/{id} with only the fields set", async ()
   assertEquals(body.priority, undefined);
 });
 
-Deno.test("ticket-update: maps isUnread to is_unread", async () => {
+test("ticket-update: maps isUnread to is_unread", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: {} }]);
   await action.execute({ ticketId: 1, isUnread: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).is_unread, true);

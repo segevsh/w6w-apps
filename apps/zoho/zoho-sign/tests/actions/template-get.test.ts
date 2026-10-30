@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/template-get.ts";
 
-Deno.test("template-get: GET /templates/{id} with no query params", async () => {
+test("template-get: GET /templates/{id} with no query params", async () => {
   const { ctx, calls } = mockSignCtx([
     {
       body: { code: 0, status: "success", templates: { template_id: "t1", template_name: "NDA" } },

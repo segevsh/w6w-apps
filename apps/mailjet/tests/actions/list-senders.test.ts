@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listSenders from "../../actions/list-senders.ts";
 
@@ -6,7 +7,7 @@ const ENVELOPE = { body: { Count: 1, Data: [{ ID: 1 }], Total: 1 } };
 
 // ----------------------------------------------------------------- list-senders
 
-Deno.test("list-senders: GETs /v3/REST/sender with its filters", async () => {
+test("list-senders: GETs /v3/REST/sender with its filters", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listSenders.execute!({ email: "a@x.com", isDefaultSender: true, status: "Active" }, ctx);
   const url = new URL(calls[0].url);

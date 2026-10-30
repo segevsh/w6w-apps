@@ -1,16 +1,17 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, formObject, mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/pause-subscription.ts";
 
 const ok = { status: 200, body: { subscription: { id: "sub_1", status: "paused" } } };
 
-Deno.test("pause-subscription: is an idempotent perform action", () => {
+test("pause-subscription: is an idempotent perform action", () => {
   assertEquals(action.key, "pause-subscription");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("pause-subscription: POSTs to /pause — NO `_for_items` suffix here", async () => {
+test("pause-subscription: POSTs to /pause — NO `_for_items` suffix here", async () => {
   // Cancel and update carry the suffix; pause and resume do not. Assuming
   // symmetry would 404.
   const { ctx, calls } = mockCtx([ok]);
@@ -19,7 +20,7 @@ Deno.test("pause-subscription: POSTs to /pause — NO `_for_items` suffix here",
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/subscriptions/sub_1/pause");
 });
 
-Deno.test("pause-subscription: reproduces Chargebee's billing-cycles sample", async () => {
+test("pause-subscription: reproduces Chargebee's billing-cycles sample", async () => {
   // -d pause_option="BILLING_CYCLES" -d skip_billing_cycles=1
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
@@ -33,7 +34,7 @@ Deno.test("pause-subscription: reproduces Chargebee's billing-cycles sample", as
   });
 });
 
-Deno.test("pause-subscription: maps every documented option", async () => {
+test("pause-subscription: maps every documented option", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     subscriptionId: "sub_1",
@@ -52,7 +53,7 @@ Deno.test("pause-subscription: maps every documented option", async () => {
   });
 });
 
-Deno.test("pause-subscription: offers the four documented pause options, lowercase", () => {
+test("pause-subscription: offers the four documented pause options, lowercase", () => {
   assertEquals(optionValues(action, "pauseOption"), [
     "immediately",
     "end_of_term",

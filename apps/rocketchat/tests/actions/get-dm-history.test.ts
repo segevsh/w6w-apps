@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import a from "../../actions/get-dm-history.ts";
 import { BASE, run } from "../_helpers.ts";
 
-Deno.test("get-dm-history: GET dm.history with roomId and the range", async () => {
+test("get-dm-history: GET dm.history with roomId and the range", async () => {
   const { call, query } = await run(a, {
     roomId: "D",
     latest: "2026-10-02T00:00:00.000Z",
@@ -15,7 +16,7 @@ Deno.test("get-dm-history: GET dm.history with roomId and the range", async () =
   assertEquals(query.get("inclusive"), "false");
 });
 
-Deno.test("get-dm-history: returns the response untouched", async () => {
+test("get-dm-history: returns the response untouched", async () => {
   const { result } = await run(a, { roomId: "D" }, { messages: [{ _id: "1" }, { _id: "2" }] });
   assertEquals((result as { messages: unknown[] }).messages.length, 2);
 });

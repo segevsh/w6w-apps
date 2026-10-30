@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import listRecordEntries from "../../actions/list-record-entries.ts";
 
-Deno.test("list-record-entries: GETs …/entries with query-string paging", async () => {
+test("list-record-entries: GETs …/entries with query-string paging", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await listRecordEntries.execute({ object: "companies", recordId: "r1", limit: 100 }, ctx);
   const url = new URL(calls[0].url);
@@ -11,6 +12,6 @@ Deno.test("list-record-entries: GETs …/entries with query-string paging", asyn
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("list-record-entries: enforces the documented 1000 maximum", () => {
+test("list-record-entries: enforces the documented 1000 maximum", () => {
   assertEquals(param(listRecordEntries, "limit").validation?.max, 1000);
 });

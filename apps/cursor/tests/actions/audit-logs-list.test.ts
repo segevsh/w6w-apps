@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import auditLogsList from "../../actions/audit-logs-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("audit-logs-list: joins eventTypes and users as comma-separated query values", async () => {
+test("audit-logs-list: joins eventTypes and users as comma-separated query values", async () => {
   const { ctx, calls } = mockCtx([
     { body: { events: [], pagination: {} } },
   ]);
@@ -26,7 +27,7 @@ Deno.test("audit-logs-list: joins eventTypes and users as comma-separated query 
   });
 });
 
-Deno.test("audit-logs-list: omits filters that were left unset", async () => {
+test("audit-logs-list: omits filters that were left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
   await auditLogsList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

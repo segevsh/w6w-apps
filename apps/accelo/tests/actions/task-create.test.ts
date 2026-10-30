@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAcceloCtx } from "../_helpers.ts";
 import action from "../../actions/task-create.ts";
 
-Deno.test("task-create: POSTs a form to /tasks using Accelo's wire names", async () => {
+test("task-create: POSTs a form to /tasks using Accelo's wire names", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "55" } },
   }]);
@@ -28,7 +29,7 @@ Deno.test("task-create: POSTs a form to /tasks using Accelo's wire names", async
   });
 });
 
-Deno.test("task-create: drops unset fields and forwards _fields", async () => {
+test("task-create: drops unset fields and forwards _fields", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "56" } },
   }]);
@@ -38,7 +39,7 @@ Deno.test("task-create: drops unset fields and forwards _fields", async () => {
   assertEquals("comments" in sent, false);
 });
 
-Deno.test("task-create: declares itself non-idempotent and requires title", () => {
+test("task-create: declares itself non-idempotent and requires title", () => {
   assertEquals(action.idempotent, false);
   const required = (action.params ?? []).filter((p) => "required" in p && p.required).map((p) =>
     p.key

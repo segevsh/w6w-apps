@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/delete-suppressions.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-suppressions: DELETEs the list with ids in a JSON body", async () => {
+test("delete-suppressions: DELETEs the list with ids in a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await exec(action, { type: "hard-bounces", ids: ["a1", "b2"], domainId: "d1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -12,14 +13,14 @@ Deno.test("delete-suppressions: DELETEs the list with ids in a JSON body", async
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("delete-suppressions: all:true empties the list and sends no ids", async () => {
+test("delete-suppressions: all:true empties the list and sends no ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   await exec(action, { type: "on-hold-list", all: true }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/suppressions/on-hold-list");
   assertEquals(bodyOf(calls[0]), { all: true });
 });
 
-Deno.test("delete-suppressions: needs ids or all, not both, and a known list", async () => {
+test("delete-suppressions: needs ids or all, not both, and a known list", async () => {
   const { ctx, calls } = mockCtx([]);
   const run = (i: Record<string, unknown>) =>
     Promise.resolve().then(() => exec(action, i as never, ctx));
@@ -29,7 +30,7 @@ Deno.test("delete-suppressions: needs ids or all, not both, and a known list", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("delete-suppressions: a 422 on a bad id is surfaced", async () => {
+test("delete-suppressions: a 422 on a bad id is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-transcript-entries.ts";
 
-Deno.test("list-transcript-entries: GETs entries under a transcript", async () => {
+test("list-transcript-entries: GETs entries under a transcript", async () => {
   const { ctx, calls } = mockCtx([{ body: { transcriptEntries: [], nextPageToken: "t" } }]);
   const result = await action.execute!({
     parent: "conferenceRecords/cr1/transcripts/t1",
@@ -15,7 +16,7 @@ Deno.test("list-transcript-entries: GETs entries under a transcript", async () =
   );
 });
 
-Deno.test("list-transcript-entries: forwards pageSize and pageToken", async () => {
+test("list-transcript-entries: forwards pageSize and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: { transcriptEntries: [] } }]);
   await action.execute!({
     parent: "conferenceRecords/cr1/transcripts/t1",

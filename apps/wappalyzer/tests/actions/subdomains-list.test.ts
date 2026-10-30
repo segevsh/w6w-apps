@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subdomainsList from "../../actions/subdomains-list.ts";
 import { mockCtx, pathOf, queryOf, withCredits } from "../_helpers.ts";
 
-Deno.test("subdomains-list: builds the request against /v2/subdomains/", async () => {
+test("subdomains-list: builds the request against /v2/subdomains/", async () => {
   const results = [
     {
       domain: "example.com",
@@ -30,7 +31,7 @@ Deno.test("subdomains-list: builds the request against /v2/subdomains/", async (
   assertEquals(out.creditsRemaining, 999);
 });
 
-Deno.test("subdomains-list: domains is required, limit must be a multiple of 10", () => {
+test("subdomains-list: domains is required, limit must be a multiple of 10", () => {
   const domainsParam = subdomainsList.params?.find((p) => p.key === "domains");
   const limitParam = subdomainsList.params?.find((p) => p.key === "limit");
   assertEquals(domainsParam?.required, true);

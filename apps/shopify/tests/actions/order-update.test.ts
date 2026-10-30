@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockShopifyCtx } from "../_helpers.ts";
 import action from "../../actions/order-update.ts";
 
-Deno.test("order-update: PUTs the id plus the supplied fields", async () => {
+test("order-update: PUTs the id plus the supplied fields", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { order: {} } }]);
   await action.execute({ orderId: 9, note: "gift wrap" }, ctx);
   assertEquals(calls[0].method, "PUT");

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import expirePaymentLink from "../../actions/expire-payment-link.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
 const INPUT = { "linkId": "PL1" } as Parameters<typeof expirePaymentLink.execute>[0];
 
-Deno.test("expire-payment-link: sends PATCH to the documented path and returns the response", async () => {
+test("expire-payment-link: sends PATCH to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "id": "PL1", "status": "expired" },
@@ -17,7 +18,7 @@ Deno.test("expire-payment-link: sends PATCH to the documented path and returns t
   assertEquals(out, { "id": "PL1", "status": "expired" });
 });
 
-Deno.test("expire-payment-link: targets the connection's base URL and carries no credential", async () => {
+test("expire-payment-link: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "id": "PL1", "status": "expired" },
@@ -32,7 +33,7 @@ Deno.test("expire-payment-link: targets the connection's base URL and carries no
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("expire-payment-link: surfaces Adyen's error code, type and message", async () => {
+test("expire-payment-link: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -50,6 +51,6 @@ Deno.test("expire-payment-link: surfaces Adyen's error code, type and message", 
   );
 });
 
-Deno.test("expire-payment-link: declares idempotency as true", () => {
+test("expire-payment-link: declares idempotency as true", () => {
   assertEquals(expirePaymentLink.idempotent, true);
 });

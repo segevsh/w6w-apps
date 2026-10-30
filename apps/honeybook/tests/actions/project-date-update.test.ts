@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectDateUpdate from "../../actions/project-date-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const INPUT = {
   "availabilityType": "busy",
 };
 
-Deno.test("project-date-update: sends PATCH /projects/{id}/dates/{date_id} with the mapped fields", async () => {
+test("project-date-update: sends PATCH /projects/{id}/dates/{date_id} with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   const out = await projectDateUpdate.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -36,7 +37,7 @@ Deno.test("project-date-update: sends PATCH /projects/{id}/dates/{date_id} with 
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("project-date-update: sends only what was supplied", async () => {
+test("project-date-update: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await projectDateUpdate.execute(
     { "projectId": "x-projectId", "dateId": "x-dateId" } as never,
@@ -46,14 +47,14 @@ Deno.test("project-date-update: sends only what was supplied", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("project-date-update: percent-encodes path ids", async () => {
+test("project-date-update: percent-encodes path ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await projectDateUpdate.execute({ ...INPUT, ...{ "projectId": "a/b", "dateId": "a/b" } }, ctx);
   const segs = pathOf(calls[0].url).split("/");
   assertEquals(segs.includes("a%2Fb"), true);
 });
 
-Deno.test("project-date-update: surfaces the API error type and message", async () => {
+test("project-date-update: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await projectDateUpdate.execute(INPUT, ctx),

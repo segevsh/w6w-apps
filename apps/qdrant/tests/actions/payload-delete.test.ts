@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/payload-delete.ts";
@@ -6,7 +7,7 @@ import action from "../../actions/payload-delete.ts";
 const done = ok({ operation_id: 12, status: "completed" });
 
 /** The shape a retention rule takes: remove the field, keep the vector. */
-Deno.test("payload-delete: removes named fields from the named points", async () => {
+test("payload-delete: removes named fields from the named points", async () => {
   const { ctx, calls } = mockCtx([done], { display });
   const result = await action.execute!({
     collection: "docs",
@@ -23,7 +24,7 @@ Deno.test("payload-delete: removes named fields from the named points", async ()
   assertEquals(result.removed, ["email", "phone"]);
 });
 
-Deno.test("payload-delete: a filter reaches every matching point", async () => {
+test("payload-delete: a filter reaches every matching point", async () => {
   const { ctx, calls } = mockCtx([done], { display });
   await action.execute!({
     collection: "docs",
@@ -35,7 +36,7 @@ Deno.test("payload-delete: a filter reaches every matching point", async () => {
   assertEquals(body.filter.must.length, 1);
 });
 
-Deno.test("payload-delete: an empty filter object is refused", async () => {
+test("payload-delete: an empty filter object is refused", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", keys: "email", filter: "{}" }, ctx),
@@ -45,7 +46,7 @@ Deno.test("payload-delete: an empty filter object is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("payload-delete: needs fields to remove", async () => {
+test("payload-delete: needs fields to remove", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", ids: "1" }, ctx),
@@ -55,7 +56,7 @@ Deno.test("payload-delete: needs fields to remove", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("payload-delete: needs some way to choose the points", async () => {
+test("payload-delete: needs some way to choose the points", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", keys: "email" }, ctx),
@@ -64,13 +65,13 @@ Deno.test("payload-delete: needs some way to choose the points", async () => {
   );
 });
 
-Deno.test("payload-delete: logs the field names it removed", async () => {
+test("payload-delete: logs the field names it removed", async () => {
   const { ctx, logs } = mockCtx([done], { display });
   await action.execute!({ collection: "docs", keys: "email", ids: "1" }, ctx);
   assertEquals(logs[0].data, { collection: "docs", fields: ["email"] });
 });
 
 /** Setting a field to null leaves the key present; a filter on it still matches. */
-Deno.test("payload-delete: says removing is not the same as nulling", () => {
+test("payload-delete: says removing is not the same as nulling", () => {
   assert(/null is not the same as removing/.test(action.description!), action.description);
 });

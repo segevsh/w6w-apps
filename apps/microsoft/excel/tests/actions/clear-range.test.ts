@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/clear-range.ts";
 
-Deno.test("clear-range: POSTs to range(address='…')/clear", async () => {
+test("clear-range: POSTs to range(address='…')/clear", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({
     itemId: "ITEM1",
@@ -18,13 +19,13 @@ Deno.test("clear-range: POSTs to range(address='…')/clear", async () => {
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("clear-range: defaults to clearing contents, not formatting", async () => {
+test("clear-range: defaults to clearing contents, not formatting", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "A1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { applyTo: "Contents" });
 });
 
-Deno.test("clear-range: passes the documented applyTo values through", async () => {
+test("clear-range: passes the documented applyTo values through", async () => {
   for (const applyTo of ["All", "Formats", "Contents"]) {
     const { ctx, calls } = mockCtx([{ status: 204 }]);
     await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "A1", applyTo }, ctx);
@@ -32,13 +33,13 @@ Deno.test("clear-range: passes the documented applyTo values through", async () 
   }
 });
 
-Deno.test("clear-range: accepts the 200 the reference's prose describes as well as its 204", async () => {
+test("clear-range: accepts the 200 the reference's prose describes as well as its 204", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "A1" }, ctx);
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("clear-range: forwards the session header", async () => {
+test("clear-range: forwards the session header", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({
     itemId: "ITEM1",

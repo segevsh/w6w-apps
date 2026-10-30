@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/download-file.ts";
 
-Deno.test("download-file: POSTs to content endpoint and returns text + parsed metadata header", async () => {
+test("download-file: POSTs to content endpoint and returns text + parsed metadata header", async () => {
   const meta = { id: "id:abc", name: "hello.txt", path_display: "/hello.txt" };
   const { ctx, calls } = mockCtx([
     {
@@ -29,7 +30,7 @@ Deno.test("download-file: POSTs to content endpoint and returns text + parsed me
   assertEquals(result.metadata, meta);
 });
 
-Deno.test("download-file: base64-encodes body when asText=false", async () => {
+test("download-file: base64-encodes body when asText=false", async () => {
   const { ctx } = mockCtx([
     {
       body: "AB",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listTransactions from "../../actions/list-transactions.ts";
 import { API_ROOT, errorBody, mockCtx, pagination, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-transactions: GET /1.0/commerce/transactions by orderId", async () => {
+test("list-transactions: GET /1.0/commerce/transactions by orderId", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       pagination: pagination(),
@@ -17,7 +18,7 @@ Deno.test("list-transactions: GET /1.0/commerce/transactions by orderId", async 
   assertEquals(out.documents?.[0].salesOrderId, "O1");
 });
 
-Deno.test("list-transactions: the modified window and cursor pass through", async () => {
+test("list-transactions: the modified window and cursor pass through", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), documents: [] } }]);
   await listTransactions.execute!({
     cursor: "CUR1",
@@ -32,7 +33,7 @@ Deno.test("list-transactions: the modified window and cursor pass through", asyn
   );
 });
 
-Deno.test("list-transactions: the vendor's own misspelled gateway-error values are kept", async () => {
+test("list-transactions: the vendor's own misspelled gateway-error values are kept", async () => {
   const { ctx } = mockCtx([{
     body: {
       pagination: pagination(),
@@ -52,7 +53,7 @@ Deno.test("list-transactions: the vendor's own misspelled gateway-error values a
   ]);
 });
 
-Deno.test("list-transactions: a vendor 400 is surfaced with its subtype", async () => {
+test("list-transactions: a vendor 400 is surfaced with its subtype", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

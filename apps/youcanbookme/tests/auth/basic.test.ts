@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
-Deno.test("basic: is a basic method exposing accountId and apiKey fields", () => {
+test("basic: is a basic method exposing accountId and apiKey fields", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const accountId = auth.fields?.find((f) => f.key === "accountId");
@@ -14,7 +15,7 @@ Deno.test("basic: is a basic method exposing accountId and apiKey fields", () =>
   assertEquals(apiKey.required, true);
 });
 
-Deno.test("basic: sign sets Basic base64(accountId:apiKey)", async () => {
+test("basic: sign sets Basic base64(accountId:apiKey)", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -28,7 +29,7 @@ Deno.test("basic: sign sets Basic base64(accountId:apiKey)", async () => {
   assertEquals(out.headers["authorization"], `Basic ${btoa("acc-1:ak_abc123")}`);
 });
 
-Deno.test("basic: test hits GET /{accountId}?fields=id,email and reports ok", async () => {
+test("basic: test hits GET /{accountId}?fields=id,email and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "acc-1", email: "a@acme.com" } }]);
   const result = await auth.test({ credential: { accountId: "acc-1", apiKey: "ak_abc123" } }, ctx);
   assertEquals(result.ok, true);
@@ -39,14 +40,14 @@ Deno.test("basic: test hits GET /{accountId}?fields=id,email and reports ok", as
   assertEquals(calls[0].headers["authorization"], `Basic ${btoa("acc-1:ak_abc123")}`);
 });
 
-Deno.test("basic: test reports failure when credential missing", async () => {
+test("basic: test reports failure when credential missing", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("missing"));
 });
 
-Deno.test("basic: test reports failure with vendor message when API rejects", async () => {
+test("basic: test reports failure with vendor message when API rejects", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -61,14 +62,14 @@ Deno.test("basic: test reports failure with vendor message when API rejects", as
   assertEquals(result.message, "Please use Basic authentication");
 });
 
-Deno.test("basic: test reports failure on an unexpected (id-less) response shape", async () => {
+test("basic: test reports failure on an unexpected (id-less) response shape", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const result = await auth.test({ credential: { accountId: "acc-1", apiKey: "ak_abc123" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("unexpected"));
 });
 
-Deno.test("basic: afterConnect fetches the account and returns nested email label data", async () => {
+test("basic: afterConnect fetches the account and returns nested email label data", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "acc-1", email: "a@acme.com" } }]);
   const result = await auth.afterConnect!({ credential: { accountId: "acc-1" } }, ctx);
   assertEquals(result, { account: { email: "a@acme.com" } });
@@ -76,7 +77,7 @@ Deno.test("basic: afterConnect fetches the account and returns nested email labe
   assertEquals(url.pathname, "/v1/acc-1");
 });
 
-Deno.test("basic: afterConnect returns nothing without an accountId", async () => {
+test("basic: afterConnect returns nothing without an accountId", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.afterConnect!({ credential: {} }, ctx);
   assertEquals(result, {});

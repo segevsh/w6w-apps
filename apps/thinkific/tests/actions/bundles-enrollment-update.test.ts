@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bundlesEnrollmentUpdate from "../../actions/bundles-enrollment-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bundles-enrollment-update: PUTs to /bundles/{id}/enrollments with user_id in the body, not the path", async () => {
+test("bundles-enrollment-update: PUTs to /bundles/{id}/enrollments with user_id in the body, not the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await bundlesEnrollmentUpdate.execute(
     { id: "9", userId: 1, expiryDate: "2027-01-01T00:00:00Z" },
@@ -16,6 +17,6 @@ Deno.test("bundles-enrollment-update: PUTs to /bundles/{id}/enrollments with use
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("bundles-enrollment-update: is idempotent", () => {
+test("bundles-enrollment-update: is idempotent", () => {
   assertEquals(bundlesEnrollmentUpdate.idempotent, true);
 });

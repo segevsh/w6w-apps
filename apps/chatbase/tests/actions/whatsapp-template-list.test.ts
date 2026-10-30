@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import whatsappTemplateList from "../../actions/whatsapp-template-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-template-list: GET .../whatsapp/templates, {templates,complete}, not {data}", async () => {
+test("whatsapp-template-list: GET .../whatsapp/templates, {templates,complete}, not {data}", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

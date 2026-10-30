@@ -1,16 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 import service from "../../health/service.ts";
 
 const status = (clusters: Record<string, string>) => ({ status: clusters });
 
-Deno.test("service: probes Algolia's own status API, not the decoy Statuspage paths", () => {
+test("service: probes Algolia's own status API, not the decoy Statuspage paths", () => {
   assertEquals(service.network?.allow, ["status.algolia.com"]);
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: all clusters operational is ok, and says how many", async () => {
+test("service: all clusters operational is ok, and says how many", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: status({ "c1-br": "operational", "c1-de": "operational" }),
@@ -22,7 +23,7 @@ Deno.test("service: all clusters operational is ok, and says how many", async ()
   assertEquals(result.message, "all 2 clusters operational");
 });
 
-Deno.test("service: a major outage on any cluster is down, and names it", async () => {
+test("service: a major outage on any cluster is down, and names it", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: status({ "c1-br": "operational", "c23-usw": "major_outage" }),
@@ -34,7 +35,7 @@ Deno.test("service: a major outage on any cluster is down, and names it", async 
 });
 
 /** The vocabulary came from live data; anything else is reported, not ignored. */
-Deno.test("service: an unrecognised cluster state degrades rather than passing", async () => {
+test("service: an unrecognised cluster state degrades rather than passing", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: status({ "c1-br": "operational", "c2-eu": "some_new_state" }),
@@ -44,7 +45,7 @@ Deno.test("service: an unrecognised cluster state degrades rather than passing",
   assert(result.message.includes("some_new_state"), result.message);
 });
 
-Deno.test("service: many affected clusters are summarised, not dumped", async () => {
+test("service: many affected clusters are summarised, not dumped", async () => {
   const clusters: Record<string, string> = {};
   for (let i = 0; i < 12; i++) clusters[`c${i}-x`] = "major_outage";
   const { ctx } = mockCtx([{ status: 200, body: status(clusters) }]);
@@ -52,7 +53,7 @@ Deno.test("service: many affected clusters are summarised, not dumped", async ()
   assert(result.message.includes("+7 more"), result.message);
 });
 
-Deno.test("service: a broken or misshaped status API is unknown, never down", async () => {
+test("service: a broken or misshaped status API is unknown, never down", async () => {
   const failed = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({} as never, failed.ctx)).state, "unknown");
   const weird = mockCtx([{ status: 200, body: { nope: true } }]);
@@ -61,7 +62,7 @@ Deno.test("service: a broken or misshaped status API is unknown, never down", as
   assertEquals((await service.check!({} as never, empty.ctx)).state, "unknown");
 });
 
-Deno.test("quota: is a declared absence — plan quota lives on the dashboard", () => {
+test("quota: is a declared absence — plan quota lives on the dashboard", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   assert(quota.unavailable?.reason.includes("no response headers"));

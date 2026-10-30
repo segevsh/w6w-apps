@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import set from "../../actions/stream-preferences-set.ts";
 import { mockCtx, pathOf, queryOf, text } from "../_helpers.ts";
 
-Deno.test("stream-preferences-set: POSTs s, k=subscription-ordering and v", async () => {
+test("stream-preferences-set: POSTs s, k=subscription-ordering and v", async () => {
   const { ctx, calls } = mockCtx([text("OK")]);
   const out = await set.execute({
     streamId: "user/-/label/MIT",
@@ -18,7 +19,7 @@ Deno.test("stream-preferences-set: POSTs s, k=subscription-ordering and v", asyn
   assertEquals(out, { ok: true });
 });
 
-Deno.test("stream-preferences-set: rejects malformed ordering and an empty stream", async () => {
+test("stream-preferences-set: rejects malformed ordering and an empty stream", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await set.execute({ streamId: "s", value: "XYZ" }, ctx),

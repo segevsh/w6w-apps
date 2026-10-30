@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import inboxUnarchiveThread from "../../actions/inbox-unarchive-thread.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("inbox-unarchive-thread: POST /api/v3/inbox/unarchive with every documented parameter", async () => {
+test("inbox-unarchive-thread: POST /api/v3/inbox/unarchive with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await inboxUnarchiveThread.execute({ "threadId": 100 }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("inbox-unarchive-thread: POST /api/v3/inbox/unarchive with every docum
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("inbox-unarchive-thread: sends a form body, never a query string", async () => {
+test("inbox-unarchive-thread: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxUnarchiveThread.execute({ "threadId": 100 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("inbox-unarchive-thread: sends a form body, never a query string", asy
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("inbox-unarchive-thread: is declared idempotent", () => {
+test("inbox-unarchive-thread: is declared idempotent", () => {
   assertEquals(inboxUnarchiveThread.idempotent, true);
 });
 
-Deno.test("inbox-unarchive-thread: sends no credential of its own", async () => {
+test("inbox-unarchive-thread: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxUnarchiveThread.execute({ "threadId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("inbox-unarchive-thread: surfaces Twist's error body", async () => {
+test("inbox-unarchive-thread: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

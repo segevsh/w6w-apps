@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pdfRotate from "../../actions/pdf-rotate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pdf-rotate: posts to /v1/pdf/edit/rotate", async () => {
+test("pdf-rotate: posts to /v1/pdf/edit/rotate", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "https://x/out.pdf", pageCount: 1 } }]);
   const out = await pdfRotate.execute({ url: "https://example.com/a.pdf", angle: 90 }, ctx);
 

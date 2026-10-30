@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskWait from "../../actions/task-wait.ts";
 import { envelope, hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-wait: GETs /v2/tasks/{id} on the SYNC host", async () => {
+test("task-wait: GETs /v2/tasks/{id} on the SYNC host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "t1", status: "finished" }),

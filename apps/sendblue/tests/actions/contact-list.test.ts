@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: GETs /api/v2/contacts and returns the bare array untouched", async () => {
+test("contact-list: GETs /api/v2/contacts and returns the bare array untouched", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ phone: "+1" }] }]);
   const out = await contactList.execute({}, ctx);
 

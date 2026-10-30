@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
 const conn = { display: { domain: "acme.us.auth0.com" } };
 
-Deno.test("organization-list: reads the tenant's organizations", async () => {
+test("organization-list: reads the tenant's organizations", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { organizations: [{ id: "org_1" }], total: 1 },
@@ -14,6 +15,6 @@ Deno.test("organization-list: reads the tenant's organizations", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/organizations");
 });
 
-Deno.test("organization-list: describes them as the B2B unit", () => {
+test("organization-list: describes them as the B2B unit", () => {
   assert(/B2B/.test(action.description!), action.description);
 });

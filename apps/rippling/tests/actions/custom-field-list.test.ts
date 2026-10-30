@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { API_ROOT, errorBody, listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import customFieldList from "../../actions/custom-field-list.ts";
 
 const NEXT = `${API_ROOT}/custom-fields/?cursor=abc%3D&limit=2`;
 
-Deno.test("custom-field-list: GETs /custom-fields/ with every query parameter and shapes the page", async () => {
+test("custom-field-list: GETs /custom-fields/ with every query parameter and shapes the page", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -38,7 +39,7 @@ Deno.test("custom-field-list: GETs /custom-fields/ with every query parameter an
   }]);
 });
 
-Deno.test("custom-field-list: last page has a null cursor and sends no stray parameters", async () => {
+test("custom-field-list: last page has a null cursor and sends no stray parameters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   const out = await customFieldList.execute({}, ctx) as Record<string, unknown>;
 
@@ -48,7 +49,7 @@ Deno.test("custom-field-list: last page has a null cursor and sends no stray par
   assertEquals(out.redactedFields, []);
 });
 
-Deno.test("custom-field-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
+test("custom-field-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await customFieldList.execute({ cursor: NEXT }, ctx);
 
@@ -57,7 +58,7 @@ Deno.test("custom-field-list: a pasted next_link URL is reduced to its cursor, n
   assertEquals(queryOf(calls[0].url), { cursor: "abc=" });
 });
 
-Deno.test("custom-field-list: sends no credential (sign owns it) and declares its scope", async () => {
+test("custom-field-list: sends no credential (sign owns it) and declares its scope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await customFieldList.execute({}, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);
@@ -67,7 +68,7 @@ Deno.test("custom-field-list: sends no credential (sign owns it) and declares it
   assert(customFieldList.params!.some((p) => p.key === "limit" && p.validation?.max === 100));
 });
 
-Deno.test("custom-field-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
+test("custom-field-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-list.ts";
 
-Deno.test("invoice-list: applies default pagination", async () => {
+test("invoice-list: applies default pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("invoice-list: applies default pagination", async () => {
   assertEquals(url.searchParams.get("total_required"), "false");
 });
 
-Deno.test("invoice-list: honours page/pageSize/totalRequired overrides", async () => {
+test("invoice-list: honours page/pageSize/totalRequired overrides", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ page: 3, pageSize: 50, totalRequired: true }, ctx);
   const url = new URL(calls[0].url);

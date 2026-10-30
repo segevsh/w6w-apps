@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mandateCreate from "../../actions/mandate-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mandate-create: posts method/consumerName/consumerAccount to /customers/{id}/mandates", async () => {
+test("mandate-create: posts method/consumerName/consumerAccount to /customers/{id}/mandates", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "mdt_1", status: "valid" } }]);
   const out = await mandateCreate.execute(
     {
@@ -24,6 +25,6 @@ Deno.test("mandate-create: posts method/consumerName/consumerAccount to /custome
   assertEquals(out, { id: "mdt_1", status: "valid" });
 });
 
-Deno.test("mandate-create: is not idempotent", () => {
+test("mandate-create: is not idempotent", () => {
   assertEquals(mandateCreate.idempotent, false);
 });

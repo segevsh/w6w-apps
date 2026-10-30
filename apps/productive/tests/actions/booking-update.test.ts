@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingUpdate from "../../actions/booking-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("booking-update: PATCH /bookings/{id} sends a JSON:API document of attributes", async () => {
+test("booking-update: PATCH /bookings/{id} sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "bookings", "attributes": { "name": "x" } } },
@@ -49,7 +50,7 @@ Deno.test("booking-update: PATCH /bookings/{id} sends a JSON:API document of att
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("booking-update: only the fields set are sent", async () => {
+test("booking-update: only the fields set are sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "bookings", "attributes": { "name": "x" } } },
@@ -60,7 +61,7 @@ Deno.test("booking-update: only the fields set are sent", async () => {
   });
 });
 
-Deno.test("booking-update: naming no field to change fails before any request", async () => {
+test("booking-update: naming no field to change fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(bookingUpdate.execute({ id: "42" }, ctx)),
@@ -70,7 +71,7 @@ Deno.test("booking-update: naming no field to change fails before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("booking-update: a vendor error surfaces its status, title and detail", async () => {
+test("booking-update: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -83,7 +84,7 @@ Deno.test("booking-update: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("booking-update: declares perform and idempotent=true", () => {
+test("booking-update: declares perform and idempotent=true", () => {
   assertEquals(bookingUpdate.type, "perform");
   assertEquals(bookingUpdate.idempotent, true);
   assertEquals(bookingUpdate.key, "booking-update");

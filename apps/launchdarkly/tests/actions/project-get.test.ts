@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-get.ts";
 
-Deno.test("project-get: reads one project", async () => {
+test("project-get: reads one project", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { key: "default" } }], {
     display: { projectKey: "default" },
   });
@@ -11,7 +12,7 @@ Deno.test("project-get: reads one project", async () => {
   assertEquals(result.key, "default");
 });
 
-Deno.test("project-get: with no project anywhere it says so before calling", async () => {
+test("project-get: with no project anywhere it says so before calling", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "no project");
   assertEquals(calls.length, 0);

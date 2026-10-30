@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-booking.ts";
 
-Deno.test("get-booking: GETs /{accountId}/profiles/{profileId}/bookings/{bookingId}", async () => {
+test("get-booking: GETs /{accountId}/profiles/{profileId}/bookings/{bookingId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "book-1" } }]);
   const result = await action.execute(
     { accountId: "acc-1", profileId: "prof-1", bookingId: "book-1", displayTimeZone: "UTC" },
@@ -14,7 +15,7 @@ Deno.test("get-booking: GETs /{accountId}/profiles/{profileId}/bookings/{booking
   assertEquals(result, { id: "book-1" });
 });
 
-Deno.test("get-booking: defaults response fields", async () => {
+test("get-booking: defaults response fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ accountId: "acc-1", profileId: "prof-1", bookingId: "book-1" }, ctx);
   const url = new URL(calls[0].url);

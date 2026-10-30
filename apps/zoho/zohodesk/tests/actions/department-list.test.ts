@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/department-list.ts";
 
-Deno.test("department-list: GETs /departments with isEnabled filter", async () => {
+test("department-list: GETs /departments with isEnabled filter", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { data: [{ id: "1" }] } }]);
   const out = await action.execute({ isEnabled: true }, ctx);
   const url = new URL(calls[0].url);

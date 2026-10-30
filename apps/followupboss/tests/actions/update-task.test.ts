@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updateTask from "../../actions/update-task.ts";
 
-Deno.test("update-task: PUTs /tasks/{id} and omits untouched fields", async () => {
+test("update-task: PUTs /tasks/{id} and omits untouched fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 4066 } }]);
   await updateTask.execute({ id: 4066, isCompleted: true }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -13,7 +14,7 @@ Deno.test("update-task: PUTs /tasks/{id} and omits untouched fields", async () =
 /** The PUT schema declares no due-date fields; offering them would invent surface. */
 
 /** The PUT schema declares no due-date fields; offering them would invent surface. */
-Deno.test("update-task: does not offer undocumented due-date fields", () => {
+test("update-task: does not offer undocumented due-date fields", () => {
   const keys = (updateTask.params ?? []).map((p) => p.key);
   for (const absent of ["dueDate", "dueDateTime", "remindSecondsBefore"]) {
     assert(!keys.includes(absent), `${absent} is not in the PUT schema and must not be offered`);

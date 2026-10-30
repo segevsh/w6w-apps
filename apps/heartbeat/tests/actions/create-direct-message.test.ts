@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createDirectMessage from "../../actions/create-direct-message.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-direct-message: PUT /directMessages, 204 No Content handled cleanly", async () => {
+test("create-direct-message: PUT /directMessages, 204 No Content handled cleanly", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await createDirectMessage.execute({ to: "u2", text: "<p>Hi</p>" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,6 +12,6 @@ Deno.test("create-direct-message: PUT /directMessages, 204 No Content handled cl
   assertEquals(out, {});
 });
 
-Deno.test("create-direct-message: is not idempotent", () => {
+test("create-direct-message: is not idempotent", () => {
   assertEquals(createDirectMessage.idempotent, false);
 });

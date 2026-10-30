@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import estimateOrder from "../../actions/estimate-order.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("estimate-order: calls POST /api/v2/estimate/notecard and shapes the output", async () => {
+test("estimate-order: calls POST /api/v2/estimate/notecard and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "message": "Estimate",
@@ -26,7 +27,7 @@ Deno.test("estimate-order: calls POST /api/v2/estimate/notecard and shapes the o
   );
 });
 
-Deno.test("estimate-order: a vendor error surfaces the HTTP status and message", async () => {
+test("estimate-order: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { "message": "x", "errors": { "a": ["bad"] } } }]);
   const err = await assertRejects(
     () =>
@@ -41,7 +42,7 @@ Deno.test("estimate-order: a vendor error surfaces the HTTP status and message",
   assert(err.message.includes("HTTP 422") && err.message.includes("a: bad"), err.message);
 });
 
-Deno.test("estimate-order: refuses an order with no audience before any network call", async () => {
+test("estimate-order: refuses an order with no audience before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const bad = { "mailerType": "notecard", "imageTemplateId": 4 };
   await assertRejects(
@@ -52,7 +53,7 @@ Deno.test("estimate-order: refuses an order with no audience before any network 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("estimate-order: rejects an unknown mailer type before any network call", async () => {
+test("estimate-order: rejects an unknown mailer type before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -65,7 +66,7 @@ Deno.test("estimate-order: rejects an unknown mailer type before any network cal
   assertEquals(calls.length, 0);
 });
 
-Deno.test("estimate-order: is a free read, not a perform", () => {
+test("estimate-order: is a free read, not a perform", () => {
   assertEquals(estimateOrder.type, "read");
   assert(/nothing is charged/i.test(estimateOrder.description ?? ""));
 });

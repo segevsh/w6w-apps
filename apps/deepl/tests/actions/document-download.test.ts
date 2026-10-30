@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-download.ts";
 import { base64ToBytes } from "../../lib/client.ts";
 
-Deno.test("document-download: POSTs document_key and base64-encodes the binary body", async () => {
+test("document-download: POSTs document_key and base64-encodes the binary body", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

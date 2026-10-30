@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota, { DOCUMENTED_LIMIT, readHeadroom } from "../../health/quota.ts";
 
-Deno.test("quota: probes GET /v2/user for the rate-limit headers", async () => {
+test("quota: probes GET /v2/user for the rate-limit headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { users: [{ email: "john@acme.com" }] },
     headers: {
@@ -15,7 +16,7 @@ Deno.test("quota: probes GET /v2/user for the rate-limit headers", async () => {
   assertEquals(calls[0].url, "https://api.getdrip.com/v2/user");
 });
 
-Deno.test("quota: reports ok with plenty of headroom", async () => {
+test("quota: reports ok with plenty of headroom", async () => {
   const { ctx } = mockCtx([{
     body: {},
     headers: { "x-ratelimit-limit": "3600", "x-ratelimit-remaining": "3000" },
@@ -30,7 +31,7 @@ Deno.test("quota: reports ok with plenty of headroom", async () => {
   }]);
 });
 
-Deno.test("quota: reports degraded within 10% of the ceiling", async () => {
+test("quota: reports degraded within 10% of the ceiling", async () => {
   const { ctx } = mockCtx([{
     body: {},
     headers: { "x-ratelimit-limit": "3600", "x-ratelimit-remaining": "300" },
@@ -39,7 +40,7 @@ Deno.test("quota: reports degraded within 10% of the ceiling", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: reports degraded, never down, when fully exhausted (self-healing hourly window)", async () => {
+test("quota: reports degraded, never down, when fully exhausted (self-healing hourly window)", async () => {
   const { ctx } = mockCtx([{
     body: {},
     headers: { "x-ratelimit-limit": "3600", "x-ratelimit-remaining": "0" },
@@ -48,19 +49,19 @@ Deno.test("quota: reports degraded, never down, when fully exhausted (self-heali
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: reports unknown when Drip sends no remaining header", async () => {
+test("quota: reports unknown when Drip sends no remaining header", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: { "content-type": "application/json" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: reports unknown (not degraded) when the probe itself fails", async () => {
+test("quota: reports unknown (not degraded) when the probe itself fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("readHeadroom: falls back to the documented ceiling when Drip omits the limit header", () => {
+test("readHeadroom: falls back to the documented ceiling when Drip omits the limit header", () => {
   const headers = new Headers({ "x-ratelimit-remaining": "10" });
   const reading = readHeadroom(headers);
   assertEquals(reading.quota?.[0].limit, DOCUMENTED_LIMIT);

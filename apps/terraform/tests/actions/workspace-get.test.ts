@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-get.ts";
 
@@ -7,7 +8,7 @@ const workspace = (attributes: Record<string, unknown>) => ({
   body: { data: { type: "workspaces", id: "ws-1", attributes: { name: "prod", ...attributes } } },
 });
 
-Deno.test("workspace-get: reads by id without a lookup", async () => {
+test("workspace-get: reads by id without a lookup", async () => {
   const { ctx, calls } = mockCtx([workspace({ "auto-apply": false })]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls.length, 1);
@@ -16,7 +17,7 @@ Deno.test("workspace-get: reads by id without a lookup", async () => {
 });
 
 /** Resolving by name already fetched the record; asking twice is a waste. */
-Deno.test("workspace-get: reads by organisation and name in a single request", async () => {
+test("workspace-get: reads by organisation and name in a single request", async () => {
   const { ctx, calls } = mockCtx([workspace({ "auto-apply": false })]);
   await action.execute({ organization: "acme", workspace: "prod" }, ctx);
   assertEquals(calls.length, 1);
@@ -24,7 +25,7 @@ Deno.test("workspace-get: reads by organisation and name in a single request", a
 });
 
 /** Every other decision in a workflow depends on this one. */
-Deno.test("workspace-get: an auto-apply workspace is warned about", async () => {
+test("workspace-get: an auto-apply workspace is warned about", async () => {
   const { ctx, logs } = mockCtx([workspace({ "auto-apply": true })]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.autoApply, true);
@@ -37,7 +38,7 @@ Deno.test("workspace-get: an auto-apply workspace is warned about", async () => 
 });
 
 /** A run on a `local` workspace sits in pending waiting for nothing. */
-Deno.test("workspace-get: surfaces the three attributes that decide whether a run runs", async () => {
+test("workspace-get: surfaces the three attributes that decide whether a run runs", async () => {
   const { ctx } = mockCtx([workspace({
     "auto-apply": false,
     locked: true,
@@ -52,7 +53,7 @@ Deno.test("workspace-get: surfaces the three attributes that decide whether a ru
   assertEquals(result.resourceCount, 42);
 });
 
-Deno.test("workspace-get: an id in the wrong shape is refused before any request", async () => {
+test("workspace-get: an id in the wrong shape is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -64,7 +65,7 @@ Deno.test("workspace-get: an id in the wrong shape is refused before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("workspace-get: the description names the three attributes", () => {
+test("workspace-get: the description names the three attributes", () => {
   assert(
     /`auto-apply`, `locked` and `execution-mode`/.test(action.description!),
     action.description,

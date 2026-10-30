@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voiceList from "../../actions/voice-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("voice-list: filters by engine to find Starfish-compatible voices", async () => {
+test("voice-list: filters by engine to find Starfish-compatible voices", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ voice_id: "v1", name: "Sara", type: "public" }]) },
   ]);

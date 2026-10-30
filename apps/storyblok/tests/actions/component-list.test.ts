@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/component-list.ts";
 
@@ -26,7 +27,7 @@ const components = {
 };
 
 /** This is what story-create has to satisfy. */
-Deno.test("component-list: separates content types from nestable blocks", async () => {
+test("component-list: separates content types from nestable blocks", async () => {
   const { ctx, calls } = mockCtx([components], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v1/spaces/123/components");
@@ -34,14 +35,14 @@ Deno.test("component-list: separates content types from nestable blocks", async 
   assertEquals(result.nestable, ["hero"]);
 });
 
-Deno.test("component-list: maps each component to its field names", async () => {
+test("component-list: maps each component to its field names", async () => {
   const { ctx } = mockCtx([components], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.fieldsByComponent, { page: ["title", "body"], hero: ["headline"] });
 });
 
 /** Required is a convention for the editor, not an API constraint. */
-Deno.test("component-list: reports required fields, which the API does not enforce", async () => {
+test("component-list: reports required fields, which the API does not enforce", async () => {
   const { ctx } = mockCtx([components], M);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.requiredFields, { page: ["title"] });
@@ -51,7 +52,7 @@ Deno.test("component-list: reports required fields, which the API does not enfor
   ));
 });
 
-Deno.test("component-list: rootOnly and name filters apply here", async () => {
+test("component-list: rootOnly and name filters apply here", async () => {
   const { ctx } = mockCtx([components], M);
   const result = await action.execute({ rootOnly: true }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
@@ -64,13 +65,13 @@ Deno.test("component-list: rootOnly and name filters apply here", async () => {
   assertEquals(filtered.names, ["hero"]);
 });
 
-Deno.test("component-list: refuses a delivery connection", async () => {
+test("component-list: refuses a delivery connection", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "MANAGEMENT connection");
   assertEquals(calls.length, 0);
 });
 
 /** Unknown fields are stored and never rendered. */
-Deno.test("component-list: says Storyblok stores unknown fields silently", () => {
+test("component-list: says Storyblok stores unknown fields silently", () => {
   assert(/UNKNOWN FIELDS silently/.test(action.description!), action.description);
 });

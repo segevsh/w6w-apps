@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transfer-chat.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transfer-chat: group targets are sent as integers", async () => {
+test("transfer-chat: group targets are sent as integers", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await action.execute({
     chatId: "C1",
@@ -19,19 +20,19 @@ Deno.test("transfer-chat: group targets are sent as integers", async () => {
   assertEquals(out, { transferred: true });
 });
 
-Deno.test("transfer-chat: agent targets stay strings", async () => {
+test("transfer-chat: agent targets stay strings", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ chatId: "C1", targetType: "agent", targetIds: "a@x.co" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).target, { type: "agent", ids: ["a@x.co"] });
 });
 
-Deno.test("transfer-chat: no target transfers within the group", async () => {
+test("transfer-chat: no target transfers within the group", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ chatId: "C1", ignoreRequesterPresence: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: "C1", ignore_requester_presence: false });
 });
 
-Deno.test("transfer-chat: type and ids must come together", async () => {
+test("transfer-chat: type and ids must come together", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ chatId: "C", targetType: "group" }, ctx),

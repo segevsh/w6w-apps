@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-note-create.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-note-create: sends POST /contacts/c1/notes and returns the vendor body", async () => {
+test("contact-note-create: sends POST /contacts/c1/notes and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201 }]);
   const out = await action.execute(
     { contactId: "c1", note: "Called, left voicemail" } as never,
@@ -17,7 +18,7 @@ Deno.test("contact-note-create: sends POST /contacts/c1/notes and returns the ve
   assertEquals(out, { success: true });
 });
 
-Deno.test("contact-note-create: a vendor error surfaces its title and status", async () => {
+test("contact-note-create: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>

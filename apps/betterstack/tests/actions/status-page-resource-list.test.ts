@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import statusPageResourceList from "../../actions/status-page-resource-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("status-page-resource-list: GET /api/v2/status-pages/{status_page_id}/resources", async () => {
+test("status-page-resource-list: GET /api/v2/status-pages/{status_page_id}/resources", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -38,7 +39,7 @@ Deno.test("status-page-resource-list: GET /api/v2/status-pages/{status_page_id}/
   assertEquals((out.items as Array<Record<string, unknown>>)[0].status, "operational");
 });
 
-Deno.test("status-page-resource-list: puts no credential on the request (sign owns that)", async () => {
+test("status-page-resource-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -63,7 +64,7 @@ Deno.test("status-page-resource-list: puts no credential on the request (sign ow
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("status-page-resource-list: a vendor error surfaces its own message", async () => {
+test("status-page-resource-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await statusPageResourceList.execute({ "status_page_id": "123456", "per_page": 50 }, ctx)

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: POSTs to the list's tasks collection with just the title", async () => {
+test("create-task: POSTs to the list's tasks collection with just the title", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "T1" } }]);
   await action.execute!({ taskList: "L=1", title: "Ship it" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("create-task: POSTs to the list's tasks collection with just the title
   assertEquals(JSON.parse(calls[0].body!), { title: "Ship it" });
 });
 
-Deno.test("create-task: nests body, dates and categories the way Graph wants", async () => {
+test("create-task: nests body, dates and categories the way Graph wants", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({
     taskList: "L1",
@@ -38,13 +39,13 @@ Deno.test("create-task: nests body, dates and categories the way Graph wants", a
   });
 });
 
-Deno.test("create-task: `timeZone` is a helper, never a body field of its own", async () => {
+test("create-task: `timeZone` is a helper, never a body field of its own", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ taskList: "L1", title: "t", timeZone: "UTC" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { title: "t" });
 });
 
-Deno.test("create-task: passes a patternedRecurrence through verbatim", async () => {
+test("create-task: passes a patternedRecurrence through verbatim", async () => {
   const recurrence = {
     pattern: { type: "weekly", interval: 1, daysOfWeek: ["monday"] },
     range: { type: "noEnd", startDate: "2026-08-03" },
@@ -54,7 +55,7 @@ Deno.test("create-task: passes a patternedRecurrence through verbatim", async ()
   assertEquals(JSON.parse(calls[0].body!).recurrence, recurrence);
 });
 
-Deno.test("create-task: declares title required and is honestly non-idempotent", () => {
+test("create-task: declares title required and is honestly non-idempotent", () => {
   assertEquals(action.idempotent, false);
   assert(action.params!.find((p) => p.key === "title")?.required);
   // Read-only / server-stamped properties are never offered as inputs.

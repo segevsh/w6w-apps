@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardVerify from "../../actions/card-verify.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-verify: PUTs /verify and reports success on the documented 204", async () => {
+test("card-verify: PUTs /verify and reports success on the documented 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const result = await cardVerify.execute({ cardId: "c1" }, ctx);
 

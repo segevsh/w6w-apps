@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: maps every documented Statuspage component status", () => {
+test("service: maps every documented Statuspage component status", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -12,7 +13,7 @@ Deno.test("service: maps every documented Statuspage component status", () => {
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("service: ok when the Donorbox API component is operational", async () => {
+test("service: ok when the Donorbox API component is operational", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { url: "https://status.donorbox.org" },
@@ -24,7 +25,7 @@ Deno.test("service: ok when the Donorbox API component is operational", async ()
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: degraded when the Donorbox API component reports partial_outage", async () => {
+test("service: degraded when the Donorbox API component reports partial_outage", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { url: "https://status.donorbox.org" },
@@ -37,19 +38,19 @@ Deno.test("service: degraded when the Donorbox API component reports partial_out
   assertEquals(report.components?.[API_COMPONENT_ID].state, "degraded");
 });
 
-Deno.test("service: unknown when the status page itself fails", async () => {
+test("service: unknown when the status page itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unknown when the Donorbox API component disappears from the page", async () => {
+test("service: unknown when the Donorbox API component disappears from the page", async () => {
   const { ctx } = mockCtx([{ body: { components: [{ id: "other", status: "operational" }] } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: is app-scoped, unsigned, and allows only the status host", () => {
+test("service: is app-scoped, unsigned, and allows only the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

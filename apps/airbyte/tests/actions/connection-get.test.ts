@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connection-get.ts";
 
@@ -18,7 +19,7 @@ const connection = (streams: unknown[]) => ({
 });
 
 /** The sync mode decides whether a table is replaced, appended or deduplicated. */
-Deno.test("connection-get: returns each stream's sync mode", async () => {
+test("connection-get: returns each stream's sync mode", async () => {
   const { ctx, calls } = mockCtx([connection([
     { name: "orders", syncMode: "incremental_deduped_history", primaryKey: [["id"]] },
     { name: "events", syncMode: "incremental_append", cursorField: ["created_at"] },
@@ -34,7 +35,7 @@ Deno.test("connection-get: returns each stream's sync mode", async () => {
 });
 
 /** Append modes accumulate: a re-sync of the same rows doubles the table. */
-Deno.test("connection-get: names the append-only streams, and notes what that means", async () => {
+test("connection-get: names the append-only streams, and notes what that means", async () => {
   const { ctx, logs } = mockCtx([connection([
     { name: "orders", syncMode: "incremental_deduped_history" },
     { name: "events", syncMode: "incremental_append" },
@@ -48,7 +49,7 @@ Deno.test("connection-get: names the append-only streams, and notes what that me
   );
 });
 
-Deno.test("connection-get: an overwrite-only connection says nothing", async () => {
+test("connection-get: an overwrite-only connection says nothing", async () => {
   const { ctx, logs } = mockCtx([connection([
     { name: "orders", syncMode: "full_refresh_overwrite" },
   ])], D);
@@ -57,13 +58,13 @@ Deno.test("connection-get: an overwrite-only connection says nothing", async () 
   assertEquals(logs.length, 0);
 });
 
-Deno.test("connection-get: reports where in the destination the data lands", async () => {
+test("connection-get: reports where in the destination the data lands", async () => {
   const { ctx } = mockCtx([connection([])], D);
   const result = await action.execute({ connectionId: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.namespace, "raw_${SOURCE_NAMESPACE}");
 });
 
-Deno.test("connection-get: refuses anything that is not a UUID", async () => {
+test("connection-get: refuses anything that is not a UUID", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ connectionId: "12345" }, ctx),

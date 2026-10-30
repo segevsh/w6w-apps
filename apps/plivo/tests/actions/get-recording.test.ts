@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { BASE, CONN, mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-recording.ts";
 
-Deno.test("get-recording: GETs Recording/r-1/ with the trailing slash", async () => {
+test("get-recording: GETs Recording/r-1/ with the trailing slash", async () => {
   const body = { api_id: "a1" };
   const { ctx, calls } = mockCtx([{ body }], CONN);
   const out = await action.execute!({ recordingId: "r-1" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("get-recording: GETs Recording/r-1/ with the trailing slash", async ()
   assertEquals(out, body);
 });
 
-Deno.test("get-recording: a vendor error surfaces status and body", async () => {
+test("get-recording: a vendor error surfaces status and body", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "not found" }], CONN);
   await assertRejects(
     async () => await action.execute!({ recordingId: "r-1" }, ctx),
@@ -23,7 +24,7 @@ Deno.test("get-recording: a vendor error surfaces status and body", async () => 
   );
 });
 
-Deno.test("get-recording: a missing connection Auth ID is rejected before any request", async () => {
+test("get-recording: a missing connection Auth ID is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ recordingId: "r-1" }, ctx),

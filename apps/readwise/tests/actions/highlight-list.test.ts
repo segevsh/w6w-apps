@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import highlightList from "../../actions/highlight-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("highlight-list: GETs the highlights collection", async () => {
+test("highlight-list: GETs the highlights collection", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, text: "x" }]) }]);
   const out = await highlightList.execute({}, ctx) as { count: number };
 
@@ -11,7 +12,7 @@ Deno.test("highlight-list: GETs the highlights collection", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("highlight-list: forwards book_id and the date-range filters", async () => {
+test("highlight-list: forwards book_id and the date-range filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await highlightList.execute({
     bookId: "1337",
@@ -27,7 +28,7 @@ Deno.test("highlight-list: forwards book_id and the date-range filters", async (
   assertEquals(q.page_size, "10");
 });
 
-Deno.test("highlight-list: unset filters are not sent on the wire", async () => {
+test("highlight-list: unset filters are not sent on the wire", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await highlightList.execute({}, ctx);
   const q = queryOf(calls[0].url);

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-create.ts";
 
 const conn = { display: { baseUrl: "https://git.example.com", owner: "acme" } };
 
-Deno.test("issue-create: POSTs to the repository's issues", async () => {
+test("issue-create: POSTs to the repository's issues", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { number: 7 } }], conn);
   await action.execute!({ repo: "web", title: "A bug", body: "It broke" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("issue-create: POSTs to the repository's issues", async () => {
 });
 
 /** Gitea takes label IDS on write; names are a validation error, not a lookup. */
-Deno.test("issue-create: labels must be numeric ids, and a name is caught locally", async () => {
+test("issue-create: labels must be numeric ids, and a name is caught locally", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!({ repo: "web", title: "x", labels: "3, 7" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).labels, [3, 7]);
@@ -27,19 +28,19 @@ Deno.test("issue-create: labels must be numeric ids, and a name is caught locall
   assertEquals(bad.calls.length, 0);
 });
 
-Deno.test("issue-create: a milestone of 0 means none and is not sent", async () => {
+test("issue-create: a milestone of 0 means none and is not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!({ repo: "web", title: "x", milestone: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).milestone, undefined);
 });
 
-Deno.test("issue-create: `owner/name` overrides the connection's owner", async () => {
+test("issue-create: `owner/name` overrides the connection's owner", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!({ repo: "them/web", title: "x" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/repos/them/web/issues");
 });
 
-Deno.test("issue-create: a title is required, before any request", async () => {
+test("issue-create: a title is required, before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({ repo: "web" }, ctx), Error, "`title`");
   assertEquals(calls.length, 0);

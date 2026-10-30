@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   componentKey,
@@ -14,12 +15,12 @@ function summary(components: Array<Record<string, unknown>>, extra: Record<strin
 const API = { id: API_COMPONENT_ID, name: "API", status: "operational" };
 const STUDIO = { id: "fg0rh1gqsgx7", name: "Studio", status: "operational" };
 
-Deno.test("service: allowlists only the status host, on the check itself", () => {
+test("service: allowlists only the status host, on the check itself", () => {
   assertEquals(service.network, { allow: ["murf.statuspage.io"] });
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: operational API is ok and the fetch hits the summary URL", async () => {
+test("service: operational API is ok and the fetch hits the summary URL", async () => {
   const { ctx, calls } = mockCtx([{ body: summary([API, STUDIO]) }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -27,7 +28,7 @@ Deno.test("service: operational API is ok and the fetch hits the summary URL", a
   assertEquals(Object.keys(r.components ?? {}).length, 2);
 });
 
-Deno.test("service: the API component drives state, Studio only decorates", async () => {
+test("service: the API component drives state, Studio only decorates", async () => {
   const studioDown = mockCtx([{ body: summary([API, { ...STUDIO, status: "major_outage" }]) }]);
   const a = await service.check!({} as never, studioDown.ctx);
   assertEquals(a.state, "ok");
@@ -38,7 +39,7 @@ Deno.test("service: the API component drives state, Studio only decorates", asyn
   assertEquals((await service.check!({} as never, apiOut.ctx)).state, "down");
 });
 
-Deno.test("service: a foreign page, a missing API component, no components and a non-200 are unknown", async () => {
+test("service: a foreign page, a missing API component, no components and a non-200 are unknown", async () => {
   const foreign = mockCtx([{ body: { ...summary([API]), page: { id: "other" } } }]);
   assertEquals((await service.check!({} as never, foreign.ctx)).state, "unknown");
   const noApi = mockCtx([{ body: summary([STUDIO]) }]);
@@ -57,7 +58,7 @@ Deno.test("service: a foreign page, a missing API component, no components and a
   );
 });
 
-Deno.test("service: open incidents are noted; helpers map statuses and key components", async () => {
+test("service: open incidents are noted; helpers map statuses and key components", async () => {
   const r = await service.check!(
     {} as never,
     mockCtx([{ body: summary([API], { incidents: [{ name: "x" }] }) }]).ctx,

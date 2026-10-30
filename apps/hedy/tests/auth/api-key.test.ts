@@ -1,12 +1,13 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders } from "../../auth/api-key.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("api-key: authHeaders builds the documented Bearer form", () => {
+test("api-key: authHeaders builds the documented Bearer form", () => {
   assertEquals(authHeaders({ apiKey: "sk-test-123" }), { authorization: "Bearer sk-test-123" });
 });
 
-Deno.test("api-key: sign stamps the Authorization header and nothing else", () => {
+test("api-key: sign stamps the Authorization header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.hedy.bot/sessions",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign stamps the Authorization header and nothing else", () =
   assert(!signed.url.includes("sk-test-123"));
 });
 
-Deno.test("api-key: test() succeeds on a schema-correct success body", async () => {
+test("api-key: test() succeeds on a schema-correct success body", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, data: [{ id: "sess_1" }], pagination: { total: 1 } } },
   ]);
@@ -33,14 +34,14 @@ Deno.test("api-key: test() succeeds on a schema-correct success body", async () 
   assertEquals(calls[0].headers.authorization, "Bearer sk-live-good");
 });
 
-Deno.test("api-key: test() reports a missing credential without ever reaching the network", async () => {
+test("api-key: test() reports a missing credential without ever reaching the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await apiKey.test({ credential: { apiKey: "" } } as never, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0, "an empty credential must not be sent to Hedy at all");
 });
 
-Deno.test("api-key: test() distinguishes missing_api_key from invalid_api_key", async () => {
+test("api-key: test() distinguishes missing_api_key from invalid_api_key", async () => {
   const { ctx: ctxMissing } = mockCtx([
     {
       status: 401,
@@ -70,7 +71,7 @@ Deno.test("api-key: test() distinguishes missing_api_key from invalid_api_key", 
  * plain HTML, not this API's JSON error shape. `test()` must not crash trying
  * to parse it, and must not report it as a credential problem.
  */
-Deno.test("api-key: test() survives a non-JSON 404 body without crashing", async () => {
+test("api-key: test() survives a non-JSON 404 body without crashing", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -82,7 +83,7 @@ Deno.test("api-key: test() survives a non-JSON 404 body without crashing", async
   assert(out.message?.includes("404"));
 });
 
-Deno.test("api-key: test() reports a 429 as inconclusive, not as a bad key", async () => {
+test("api-key: test() reports a 429 as inconclusive, not as a bad key", async () => {
   const { ctx } = mockCtx([
     {
       status: 429,
@@ -97,13 +98,13 @@ Deno.test("api-key: test() reports a 429 as inconclusive, not as a bad key", asy
   assert(out.message?.toLowerCase().includes("rate-limiting"));
 });
 
-Deno.test("api-key: the credential field is declared secret", () => {
+test("api-key: the credential field is declared secret", () => {
   for (const f of apiKey.fields ?? []) {
     assertEquals(f.type, "secret", `${f.key}: credential field is not type "secret"`);
   }
 });
 
-Deno.test("api-key: uses the apiKey auth type with the documented header + prefix", () => {
+test("api-key: uses the apiKey auth type with the documented header + prefix", () => {
   assertEquals(apiKey.type, "apiKey");
   assertEquals(apiKey.apiKey, { in: "header", name: "Authorization", prefix: "Bearer " });
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/timesheet-get.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("timesheet-get: GETs /resource/Timesheet/{id}", async () => {
+test("timesheet-get: GETs /resource/Timesheet/{id}", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { Id: 7, TotalTime: 8.5 } }],
     { display: { baseUrl: BASE_URL } },

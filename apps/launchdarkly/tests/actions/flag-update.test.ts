@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { SEMANTIC_PATCH_CONTENT_TYPE } from "../../lib/client.ts";
 import action from "../../actions/flag-update.ts";
 
 const conn = { display: { projectKey: "default", environmentKey: "production" } };
 
-Deno.test("flag-update: passes instructions through as a semantic patch", async () => {
+test("flag-update: passes instructions through as a semantic patch", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { key: "f" } }], conn);
   await action.execute!({
     flagKey: "f",
@@ -18,7 +19,7 @@ Deno.test("flag-update: passes instructions through as a semantic patch", async 
 });
 
 /** The environment is only sent when the caller names one. */
-Deno.test("flag-update: the environment is optional here, unlike on toggle", async () => {
+test("flag-update: the environment is optional here, unlike on toggle", async () => {
   const without = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!(
     { flagKey: "f", instructions: '[{"kind":"addTags","values":["x"]}]' },
@@ -35,7 +36,7 @@ Deno.test("flag-update: the environment is optional here, unlike on toggle", asy
   assertEquals(JSON.parse(with_.calls[0].body!).environmentKey, "staging");
 });
 
-Deno.test("flag-update: every instruction must carry a kind", async () => {
+test("flag-update: every instruction must carry a kind", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ flagKey: "f", instructions: '[{"values":["x"]}]' }, ctx),
@@ -45,7 +46,7 @@ Deno.test("flag-update: every instruction must carry a kind", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("flag-update: an empty or non-array instruction list is refused", async () => {
+test("flag-update: an empty or non-array instruction list is refused", async () => {
   for (const instructions of ["[]", '{"kind":"addTags"}']) {
     const { ctx, calls } = mockCtx([], conn);
     await assertRejects(

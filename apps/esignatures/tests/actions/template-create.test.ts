@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import templateCreate from "../../actions/template-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-create: calls POST /api/templates with the documented body", async () => {
+test("template-create: calls POST /api/templates with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ template_id: "t9" }] } }]);
   const out = await templateCreate.execute(
     { title: "NDA", markdown: "# x", labels: "a" } as never,
@@ -18,7 +19,7 @@ Deno.test("template-create: calls POST /api/templates with the documented body",
   assert(out.templateId === "t9", JSON.stringify(out));
 });
 
-Deno.test("template-create: a vendor error surfaces its error_code and message", async () => {
+test("template-create: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),

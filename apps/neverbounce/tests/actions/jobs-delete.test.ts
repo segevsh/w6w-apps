@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsDelete from "../../actions/jobs-delete.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-delete: posts job_id and returns the success envelope", async () => {
+test("jobs-delete: posts job_id and returns the success envelope", async () => {
   const body = { status: "success", execution_time: 57 };
   const { ctx, calls } = mockCtx([{ body }]);
 

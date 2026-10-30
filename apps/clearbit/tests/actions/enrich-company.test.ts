@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/enrich-company.ts";
 
-Deno.test("enrich-company: GETs company-stream.clearbit.com/v2/companies/find?domain=...", async () => {
+test("enrich-company: GETs company-stream.clearbit.com/v2/companies/find?domain=...", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", name: "Uber", domain: "uber.com" } }]);
   const result = await action.execute!({ domain: "uber.com" }, ctx);
   assertEquals(
@@ -12,7 +13,7 @@ Deno.test("enrich-company: GETs company-stream.clearbit.com/v2/companies/find?do
   assertEquals(result, { id: "c1", name: "Uber", domain: "uber.com" });
 });
 
-Deno.test("enrich-company: optional fields map to snake_case/verbatim query params", async () => {
+test("enrich-company: optional fields map to snake_case/verbatim query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -31,7 +32,7 @@ Deno.test("enrich-company: optional fields map to snake_case/verbatim query para
   assertEquals(url.searchParams.get("facebook"), "uber");
 });
 
-Deno.test("enrich-company: requires domain", async () => {
+test("enrich-company: requires domain", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ domain: "" }, ctx), Error, "domain");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/post-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("post-create: posts notification + text, returns conversation/id", async () => {
+test("post-create: posts notification + text, returns conversation/id", async () => {
   const { ctx, calls } = mockCtx([{ body: { posts: { conversation: "c1", id: "p1" } } }]);
   const out = await action.execute(
     {
@@ -23,14 +24,14 @@ Deno.test("post-create: posts notification + text, returns conversation/id", asy
   assertEquals(out, { conversation: "c1", id: "p1" });
 });
 
-Deno.test("post-create: requires notification title and body", async () => {
+test("post-create: requires notification title and body", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() =>
     action.execute({ notificationTitle: "", notificationBody: "", text: "x" }, ctx)
   );
 });
 
-Deno.test("post-create: requires text, markdown, or attachments", async () => {
+test("post-create: requires text, markdown, or attachments", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() =>
     action.execute({ notificationTitle: "t", notificationBody: "b" }, ctx)

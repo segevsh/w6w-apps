@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import automationList from "../../actions/automation-list.ts";
 import { mockCtx, page } from "../_helpers.ts";
 
-Deno.test("automation-list: GETs /automations with no parameters", async () => {
+test("automation-list: GETs /automations with no parameters", async () => {
   const { ctx, calls } = mockCtx([
     { body: page([{ id: 1, title: "Welcome", automation_triggers: [], automation_items: [] }]) },
   ]);

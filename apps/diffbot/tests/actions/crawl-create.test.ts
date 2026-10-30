@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/crawl-create.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { CRAWL_JOB } from "../_fixtures.ts";
 
-Deno.test("crawl-create: POSTs a form-encoded body, never JSON", async () => {
+test("crawl-create: POSTs a form-encoded body, never JSON", async () => {
   const { ctx, calls } = mockCtx([{
     body: { response: "Successfully added urls for spidering.", jobs: [CRAWL_JOB] },
   }]);
@@ -33,7 +34,7 @@ Deno.test("crawl-create: POSTs a form-encoded body, never JSON", async () => {
   assertEquals(out.statusMessage, "Job in progress");
 });
 
-Deno.test("crawl-create: token-bearing download URLs are stripped from the returned job", async () => {
+test("crawl-create: token-bearing download URLs are stripped from the returned job", async () => {
   const { ctx } = mockCtx([{ body: { response: "ok", jobs: [CRAWL_JOB] } }]);
   const out = await run(action, {
     name: "test-crawl",
@@ -45,7 +46,7 @@ Deno.test("crawl-create: token-bearing download URLs are stripped from the retur
   assertEquals("downloadUrls" in (out.job as object), false);
 });
 
-Deno.test("crawl-create: a vendor error is thrown", async () => {
+test("crawl-create: a vendor error is thrown", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { errorCode: 401, error: "Not authorized API token." },

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import lookupFormat from "../../actions/lookup-format.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "number": "4917612345678" } as Parameters<typeof lookupFormat.execute>[0];
 
-Deno.test("lookup-format: GET /api/lookup/format with the documented fields", async () => {
+test("lookup-format: GET /api/lookup/format with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "international": "+4917612345678", "carrier": "O2" },
   }]);
@@ -20,14 +21,14 @@ Deno.test("lookup-format: GET /api/lookup/format with the documented fields", as
   assertEquals(out.carrier, "O2");
 });
 
-Deno.test("lookup-format: declares type read-or-search and every required param", () => {
+test("lookup-format: declares type read-or-search and every required param", () => {
   const required = (lookupFormat.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["number"]);
   assert(["read", "search", "perform"].includes(lookupFormat.type));
   assertEquals(lookupFormat.type === "perform", false);
 });
 
-Deno.test("lookup-format: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("lookup-format: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

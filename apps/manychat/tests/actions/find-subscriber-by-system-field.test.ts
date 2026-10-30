@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import findSubscriberBySystemField from "../../actions/find-subscriber-by-system-field.ts";
 
-Deno.test("find-subscriber-by-system-field: by email sends only email", async () => {
+test("find-subscriber-by-system-field: by email sends only email", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: { id: "1" } } }]);
   await findSubscriberBySystemField.execute!({ email: "a@x.com" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("find-subscriber-by-system-field: by email sends only email", async ()
   assert(!url.searchParams.has("phone"));
 });
 
-Deno.test("find-subscriber-by-system-field: by phone sends only phone", async () => {
+test("find-subscriber-by-system-field: by phone sends only phone", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: { id: "1" } } }]);
   await findSubscriberBySystemField.execute!({ phone: "+15551234567" }, ctx);
   const url = new URL(calls[0].url);
@@ -19,7 +20,7 @@ Deno.test("find-subscriber-by-system-field: by phone sends only phone", async ()
   assert(!url.searchParams.has("email"));
 });
 
-Deno.test("find-subscriber-by-system-field: refuses both — Manychat says set ONE", async () => {
+test("find-subscriber-by-system-field: refuses both — Manychat says set ONE", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => {
@@ -31,7 +32,7 @@ Deno.test("find-subscriber-by-system-field: refuses both — Manychat says set O
   assertEquals(calls.length, 0);
 });
 
-Deno.test("find-subscriber-by-system-field: refuses neither", async () => {
+test("find-subscriber-by-system-field: refuses neither", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -42,7 +43,7 @@ Deno.test("find-subscriber-by-system-field: refuses neither", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("find-subscriber-by-system-field: returns a single object, not a list", async () => {
+test("find-subscriber-by-system-field: returns a single object, not a list", async () => {
   const { ctx } = mockCtx([
     { body: { status: "success", data: { id: "1", email: "a@x.com" } } },
   ]);

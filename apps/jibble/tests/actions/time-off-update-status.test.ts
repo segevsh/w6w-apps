@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeOffUpdateStatus from "../../actions/time-off-update-status.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("time-off-update-status: PATCHes TimeOffIntervals(id) with the vendor's status field", async () => {
+test("time-off-update-status: PATCHes TimeOffIntervals(id) with the vendor's status field", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await timeOffUpdateStatus.execute({ timeOffId: "to1", status: "Approved" }, ctx) as {
     ok: boolean;
@@ -12,7 +13,7 @@ Deno.test("time-off-update-status: PATCHes TimeOffIntervals(id) with the vendor'
   assertEquals(out.ok, true);
 });
 
-Deno.test("time-off-update-status: requires status", async () => {
+test("time-off-update-status: requires status", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>

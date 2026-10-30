@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-rows.ts";
 
-Deno.test("delete-rows: DELETEs the table's rows endpoint with a rowIds body", async () => {
+test("delete-rows: DELETEs the table's rows endpoint with a rowIds body", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { requestId: "req-1" } }]);
   const out = await action.execute({
     docId: "doc-1",

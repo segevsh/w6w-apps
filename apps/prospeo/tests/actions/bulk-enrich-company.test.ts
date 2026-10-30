@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-enrich-company.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("bulk-enrich-company: posts records to /bulk-enrich-company", async () => {
+test("bulk-enrich-company: posts records to /bulk-enrich-company", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       error: false,
@@ -21,7 +22,7 @@ Deno.test("bulk-enrich-company: posts records to /bulk-enrich-company", async ()
   assertEquals(out.matched[0].company.name, "I");
 });
 
-Deno.test("bulk-enrich-company: more than 50 records is refused locally", async () => {
+test("bulk-enrich-company: more than 50 records is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   const records = Array.from({ length: 51 }, (_, i) => ({ identifier: String(i) }));
   await assertRejects(() => exec(action, { records }, ctx), Error, "limit is 50");

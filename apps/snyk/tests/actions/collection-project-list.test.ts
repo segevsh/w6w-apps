@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collection-project-list.ts";
 
 /** JSON:API reads membership through a relationships path. */
-Deno.test("collection-project-list: uses the relationships path", async () => {
+test("collection-project-list: uses the relationships path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], links: {} } }], {
     display: { orgId: "org-1" },
   });
@@ -14,7 +15,7 @@ Deno.test("collection-project-list: uses the relationships path", async () => {
   );
 });
 
-Deno.test("collection-project-list: a blank collection fails before any request", async () => {
+test("collection-project-list: a blank collection fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: { orgId: "org-1" } });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`collectionId`");
   assertEquals(calls.length, 0);

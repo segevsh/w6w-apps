@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action, { AWAITING_DECISION, FINISHED } from "../../actions/run-get.ts";
 
@@ -18,7 +19,7 @@ const run = (status: string, plan?: Record<string, unknown>) => ({
   },
 });
 
-Deno.test("run-get: sideloads the plan, apply and workspace", async () => {
+test("run-get: sideloads the plan, apply and workspace", async () => {
   const { ctx, calls } = mockCtx([run("planned", { "resource-additions": 2 })]);
   await action.execute({ runId: "run-1" }, ctx);
   const url = new URL(calls[0].url);
@@ -27,7 +28,7 @@ Deno.test("run-get: sideloads the plan, apply and workspace", async () => {
 });
 
 /** `?include=plan` appends a sibling; `run.plan.x` on the raw body is undefined. */
-Deno.test("run-get: joins the sideloaded plan back onto the run", async () => {
+test("run-get: joins the sideloaded plan back onto the run", async () => {
   const { ctx } = mockCtx([run("planned", {
     "resource-additions": 3,
     "resource-changes": 1,
@@ -45,7 +46,7 @@ Deno.test("run-get: joins the sideloaded plan back onto the run", async () => {
  * The most common way a wait-for-completion loop hangs: a plan with no
  * changes is a success that never becomes `applied`.
  */
-Deno.test("run-get: planned_and_finished is finished, not pending", async () => {
+test("run-get: planned_and_finished is finished, not pending", async () => {
   const { ctx } = mockCtx([run("planned_and_finished")]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.finished, true);
@@ -53,7 +54,7 @@ Deno.test("run-get: planned_and_finished is finished, not pending", async () => 
   assert(/SUCCESS with no/.test(action.description!), action.description);
 });
 
-Deno.test("run-get: the statuses that wait for a person are separated from the terminal ones", () => {
+test("run-get: the statuses that wait for a person are separated from the terminal ones", () => {
   for (const status of ["planned", "policy_override", "post_plan_awaiting_decision"]) {
     assert(AWAITING_DECISION.has(status), status);
   }
@@ -64,7 +65,7 @@ Deno.test("run-get: the statuses that wait for a person are separated from the t
   assert(!AWAITING_DECISION.has("applied"), "an applied run is not waiting for anyone");
 });
 
-Deno.test("run-get: a run waiting for confirmation reports both flags", async () => {
+test("run-get: a run waiting for confirmation reports both flags", async () => {
   const { ctx } = mockCtx([run("planned", { "resource-additions": 1 })]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.awaitingDecision, true);
@@ -72,7 +73,7 @@ Deno.test("run-get: a run waiting for confirmation reports both flags", async ()
   assertEquals(result.hasChanges, true);
 });
 
-Deno.test("run-get: a destructive plan is warned about", async () => {
+test("run-get: a destructive plan is warned about", async () => {
   const { ctx, logs } = mockCtx([run("planned", { "resource-destructions": 4 })]);
   await action.execute({ runId: "run-1" }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -83,7 +84,7 @@ Deno.test("run-get: a destructive plan is warned about", async () => {
   assertEquals(quiet.logs.length, 0);
 });
 
-Deno.test("run-get: a run with no plan yet reports zeroes rather than undefined", async () => {
+test("run-get: a run with no plan yet reports zeroes rather than undefined", async () => {
   const { ctx } = mockCtx([run("pending")]);
   const result = await action.execute({ runId: "run-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.adds, 0);
@@ -91,7 +92,7 @@ Deno.test("run-get: a run with no plan yet reports zeroes rather than undefined"
   assertEquals(result.plan, undefined);
 });
 
-Deno.test("run-get: a run id is required", async () => {
+test("run-get: a run id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

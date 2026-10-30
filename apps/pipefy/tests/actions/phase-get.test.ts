@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import phaseGet from "../../actions/phase-get.ts";
 
-Deno.test("phase-get: fetches a phase with its fields", async () => {
+test("phase-get: fetches a phase with its fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { phase: { id: "1", name: "New", fields: [{ id: "f1", label: "Name" }] } } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("phase-get: fetches a phase with its fields", async () => {
   assert(q.includes("fields { id label }"));
 });
 
-Deno.test("phase-get: type/resource metadata", () => {
+test("phase-get: type/resource metadata", () => {
   assertEquals(phaseGet.type, "read");
   assertEquals(phaseGet.resource, "phase");
 });

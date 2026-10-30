@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileUpload from "../../actions/file-upload.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("file-upload: posts filename to /v2/file.upload and returns the presigned URL", async () => {
+test("file-upload: posts filename to /v2/file.upload and returns the presigned URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({
       file: { id: "f1", filename: "report.pdf", status: "pending", created_at: 1 },
@@ -17,6 +18,6 @@ Deno.test("file-upload: posts filename to /v2/file.upload and returns the presig
   assertEquals(out.file.id, "f1");
 });
 
-Deno.test("file-upload: is not idempotent — every call creates a new file record", () => {
+test("file-upload: is not idempotent — every call creates a new file record", () => {
   assertEquals(fileUpload.idempotent, false);
 });

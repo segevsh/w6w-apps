@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { encodeBase64 } from "../../lib/client.ts";
 import auth from "../../auth/basic.ts";
 
-Deno.test("basic: declares endpoint / username / apiToken fields", () => {
+test("basic: declares endpoint / username / apiToken fields", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const keys = (auth.fields ?? []).map((f) => f.key);
@@ -15,7 +16,7 @@ Deno.test("basic: declares endpoint / username / apiToken fields", () => {
   assertEquals(token?.required, true);
 });
 
-Deno.test("basic: sign injects a Basic Authorization header from username+apiToken", async () => {
+test("basic: sign injects a Basic Authorization header from username+apiToken", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -29,7 +30,7 @@ Deno.test("basic: sign injects a Basic Authorization header from username+apiTok
   assertEquals(out.headers["authorization"], `Basic ${encodeBase64("alice:11aabbccddeeff")}`);
 });
 
-Deno.test("basic: test hits <endpoint>/api/json with Basic auth", async () => {
+test("basic: test hits <endpoint>/api/json with Basic auth", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { jobs: [] } }]);
   const result = await auth.test(
     {
@@ -49,14 +50,14 @@ Deno.test("basic: test hits <endpoint>/api/json with Basic auth", async () => {
   );
 });
 
-Deno.test("basic: test reports failure without a network call when fields are missing", async () => {
+test("basic: test reports failure without a network call when fields are missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { username: "alice" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: test surfaces upstream status on failure", async () => {
+test("basic: test surfaces upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test(
     {
@@ -72,7 +73,7 @@ Deno.test("basic: test surfaces upstream status on failure", async () => {
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("basic: afterConnect republishes endpoint and username onto the connection display", () => {
+test("basic: afterConnect republishes endpoint and username onto the connection display", () => {
   const out = auth.afterConnect!(
     {
       credential: { endpoint: "https://ci.example.com", username: "alice", apiToken: "t" },

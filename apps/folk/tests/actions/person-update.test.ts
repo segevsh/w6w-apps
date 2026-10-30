@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/person-update.ts";
 import { NETWORK_PLACEHOLDER } from "../../lib/client.ts";
 
-Deno.test("person-update: PUTs to the person's endpoint with only the set fields", async () => {
+test("person-update: PUTs to the person's endpoint with only the set fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1" } }]);
   const out = await action.execute({ groupId: "g1", personId: "p1", jobTitle: "CTO" }, ctx);
   assertEquals(

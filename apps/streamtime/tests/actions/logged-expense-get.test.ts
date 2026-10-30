@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import loggedExpenseGet from "../../actions/logged-expense-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("logged-expense-get: reads GET /v2/logged_expenses/{id}", async () => {
+test("logged-expense-get: reads GET /v2/logged_expenses/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 77, loggedExpenseStatus: "Approved", loggedExpenseStatusId: 2 } },
   ]);

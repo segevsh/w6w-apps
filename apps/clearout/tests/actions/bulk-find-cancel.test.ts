@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-find-cancel.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("bulk-find-cancel: POSTs list_id to /email_finder/list/cancel and maps the list", async () => {
+test("bulk-find-cancel: POSTs list_id to /email_finder/list/cancel and maps the list", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -15,7 +16,7 @@ Deno.test("bulk-find-cancel: POSTs list_id to /email_finder/list/cancel and maps
   assertEquals(out, { name: "n.csv", source: "upload", createdOn: "2026-10-01" });
 });
 
-Deno.test("bulk-find-cancel: blank list ID throws without a request", async () => {
+test("bulk-find-cancel: blank list ID throws without a request", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, { listId: "" }, none.ctx), Error, "listId is required");
   assertEquals(none.calls.length, 0);

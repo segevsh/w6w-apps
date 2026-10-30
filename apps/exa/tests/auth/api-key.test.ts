@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is an apiKey method exposing an `apiKey` secret field", () => {
+test("api-key: is an apiKey method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey, { in: "header", name: "x-api-key" });
@@ -12,7 +13,7 @@ Deno.test("api-key: is an apiKey method exposing an `apiKey` secret field", () =
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign sets x-api-key using credential.apiKey, no prefix", async () => {
+test("api-key: sign sets x-api-key using credential.apiKey, no prefix", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -23,7 +24,7 @@ Deno.test("api-key: sign sets x-api-key using credential.apiKey, no prefix", asy
   assertEquals(out.headers["x-api-key"], "key-abc");
 });
 
-Deno.test("api-key: test hits GET /v0/teams/me (never a billed search/answer/contents call)", async () => {
+test("api-key: test hits GET /v0/teams/me (never a billed search/answer/contents call)", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { object: "team", id: "t_1", name: "Acme", concurrency: {}, limits: {} } },
   ]);
@@ -35,7 +36,7 @@ Deno.test("api-key: test hits GET /v0/teams/me (never a billed search/answer/con
   assertEquals(calls[0].headers["x-api-key"], "key-abc");
 });
 
-Deno.test("api-key: test never echoes the credential back in its response body", async () => {
+test("api-key: test never echoes the credential back in its response body", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { object: "team", id: "t_1", name: "Acme", concurrency: {}, limits: {} } },
   ]);
@@ -45,7 +46,7 @@ Deno.test("api-key: test never echoes the credential back in its response body",
   assertEquals(JSON.stringify(result).includes("super-secret-key"), false);
 });
 
-Deno.test("api-key: test classifies failure from the response body's tag, not the status alone", async () => {
+test("api-key: test classifies failure from the response body's tag, not the status alone", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { requestId: "r1", error: "Invalid API key", tag: "INVALID_API_KEY" } },
   ]);

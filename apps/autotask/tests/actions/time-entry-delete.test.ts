@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import timeEntryDelete from "../../actions/time-entry-delete.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const display = { display: { zone: "2" } };
 const run = (a: { execute?: unknown }, input: unknown, ctx: unknown) =>
   (a.execute as (i: unknown, c: unknown) => Promise<Record<string, unknown>>)(input, ctx);
 
-Deno.test("time-entry-delete: DELETEs /TimeEntries/{id}; an API refusal surfaces", async () => {
+test("time-entry-delete: DELETEs /TimeEntries/{id}; an API refusal surfaces", async () => {
   const ok = mockCtx([{ body: { itemId: 9 } }], display);
   assertEquals(await run(timeEntryDelete, { id: 9 }, ok.ctx), { deleted: true, id: 9 });
   assertEquals(ok.calls[0].method, "DELETE");

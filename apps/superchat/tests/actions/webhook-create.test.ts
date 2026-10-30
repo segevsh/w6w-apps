@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-create.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("webhook-create: POSTs target and events, and returns the secret unredacted", async () => {
+test("webhook-create: POSTs target and events, and returns the secret unredacted", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "w_1", "secret": "s3cret" } }]);
   const result = await action.execute!(
     {
@@ -44,7 +45,7 @@ Deno.test("webhook-create: POSTs target and events, and returns the secret unred
   assertEquals(result, { "id": "w_1", "secret": "s3cret" });
 });
 
-Deno.test("webhook-create: omits events when none are selected", async () => {
+test("webhook-create: omits events when none are selected", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "w_2" } }]);
   const result = await action.execute!({ "targetUrl": "https://x.test/hook" } as never, ctx);
   const expected: Array<

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/look-list.ts";
 
@@ -11,7 +12,7 @@ const looks = [
 ];
 
 /** Looker soft-deletes and keeps returning them. */
-Deno.test("look-list: excludes soft-deleted Looks and still counts them", async () => {
+test("look-list: excludes soft-deleted Looks and still counts them", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: looks }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/4.0/looks");
@@ -20,14 +21,14 @@ Deno.test("look-list: excludes soft-deleted Looks and still counts them", async 
   assertEquals(result.deletedCount, 1);
 });
 
-Deno.test("look-list: includeDeleted returns them", async () => {
+test("look-list: includeDeleted returns them", async () => {
   const { ctx } = mockCtx([{ status: 200, body: looks }], D);
   const result = await action.execute({ includeDeleted: true }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 3);
 });
 
 /** A public Look serves business data with no login. */
-Deno.test("look-list: counts public Looks and warns about them", async () => {
+test("look-list: counts public Looks and warns about them", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: looks }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.publicCount, 1);
@@ -38,14 +39,14 @@ Deno.test("look-list: counts public Looks and warns about them", async () => {
   );
 });
 
-Deno.test("look-list: no warning when nothing is public", async () => {
+test("look-list: no warning when nothing is public", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: [looks[1]] }], D);
   await action.execute({}, ctx);
   assertEquals(logs.filter((l) => l.level === "warn").length, 0);
 });
 
 /** Title matching happens here, case-insensitively. */
-Deno.test("look-list: filters on the title without asking Looker to", async () => {
+test("look-list: filters on the title without asking Looker to", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: looks }], D);
   const result = await action.execute({ title: "REVENUE" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
@@ -53,6 +54,6 @@ Deno.test("look-list: filters on the title without asking Looker to", async () =
   assertEquals(new URL(calls[0].url).searchParams.get("title"), null);
 });
 
-Deno.test("look-list: says the visible set depends on the credential's user", () => {
+test("look-list: says the visible set depends on the credential's user", () => {
   assert(/different sets/.test(action.description!), action.description);
 });

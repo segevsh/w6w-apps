@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/list-fields.ts";
 
-Deno.test("list-fields: GETs /fields with tableId as a query param", async () => {
+test("list-fields: GETs /fields with tableId as a query param", async () => {
   const { ctx, calls } = mockQbCtx([{ body: [] }]);
   await action.execute({ tableId: "bck1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("list-fields: GETs /fields with tableId as a query param", async () =>
   assertEquals(url.searchParams.get("tableId"), "bck1");
 });
 
-Deno.test("list-fields: omits includeFieldPerms unless asked, then sends it", async () => {
+test("list-fields: omits includeFieldPerms unless asked, then sends it", async () => {
   const off = mockQbCtx([{ body: [] }]);
   await action.execute({ tableId: "bck1" }, off.ctx);
   assert(!new URL(off.calls[0].url).searchParams.has("includeFieldPerms"));
@@ -21,7 +22,7 @@ Deno.test("list-fields: omits includeFieldPerms unless asked, then sends it", as
   assertEquals(new URL(on.calls[0].url).searchParams.get("includeFieldPerms"), "true");
 });
 
-Deno.test("list-fields: returns the id/label/type map record actions need", async () => {
+test("list-fields: returns the id/label/type map record actions need", async () => {
   const { ctx } = mockQbCtx([{
     body: [
       { id: 3, label: "Record ID#", fieldType: "recordid", mode: "" },

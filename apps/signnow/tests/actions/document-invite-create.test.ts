@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentInviteCreate from "../../actions/document-invite-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-invite-create: free-form invite sends `to` as a plain email string", async () => {
+test("document-invite-create: free-form invite sends `to` as a plain email string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   await documentInviteCreate.execute(
     { documentId: "doc-1", to: "signer@example.com", from: "sender@example.com" },
@@ -12,7 +13,7 @@ Deno.test("document-invite-create: free-form invite sends `to` as a plain email 
   assertEquals(bodyOf(calls[0]), { to: "signer@example.com", from: "sender@example.com" });
 });
 
-Deno.test("document-invite-create: a `[`-prefixed value sends `to` as a parsed recipient array (role-based)", async () => {
+test("document-invite-create: a `[`-prefixed value sends `to` as a parsed recipient array (role-based)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   const to = JSON.stringify([{ email: "signer@example.com", role_id: "r-1", role: "Signer 1" }]);
   await documentInviteCreate.execute({ documentId: "doc-1", to }, ctx);
@@ -20,7 +21,7 @@ Deno.test("document-invite-create: a `[`-prefixed value sends `to` as a parsed r
   assertEquals(body.to, [{ email: "signer@example.com", role_id: "r-1", role: "Signer 1" }]);
 });
 
-Deno.test("document-invite-create: rejects a `[`-prefixed value that isn't a JSON array", () => {
+test("document-invite-create: rejects a `[`-prefixed value that isn't a JSON array", () => {
   const { ctx } = mockCtx([]);
   let threw = false;
   try {
@@ -31,7 +32,7 @@ Deno.test("document-invite-create: rejects a `[`-prefixed value that isn't a JSO
   assertEquals(threw, true);
 });
 
-Deno.test("document-invite-create: splits comma-separated CC addresses", async () => {
+test("document-invite-create: splits comma-separated CC addresses", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "success" } }]);
   await documentInviteCreate.execute(
     { documentId: "doc-1", to: "signer@example.com", cc: "a@x.com, b@x.com" },
@@ -41,6 +42,6 @@ Deno.test("document-invite-create: splits comma-separated CC addresses", async (
   assertEquals(body.cc, ["a@x.com", "b@x.com"]);
 });
 
-Deno.test("document-invite-create: is declared not idempotent", () => {
+test("document-invite-create: is declared not idempotent", () => {
   assertEquals(documentInviteCreate.idempotent, false);
 });

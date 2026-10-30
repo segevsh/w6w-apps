@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: builds the query from every filter", async () => {
+test("tag-list: builds the query from every filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { tags: [], meta: {} } }]);
   await tagList.execute({ query: "dev", sortBy: "taggings_count", sortOrder: "desc" }, ctx);
 

@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: default-exports actions, auth and health checks", () => {
+test("index: default-exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 14);
   assertEquals(app.auth?.length, 1);
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: action keys are unique and kebab-case", () => {
+test("index: action keys are unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const k of keys) {
@@ -16,7 +17,7 @@ Deno.test("index: action keys are unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: exposes the expected action set", () => {
+test("index: exposes the expected action set", () => {
   assertEquals(
     app.actions.map((a) => a.key).sort(),
     [
@@ -38,7 +39,7 @@ Deno.test("index: exposes the expected action set", () => {
   );
 });
 
-Deno.test("index: every action declares a type, title and output", () => {
+test("index: every action declares a type, title and output", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(a.title, `${a.key}: missing title`);
@@ -47,7 +48,7 @@ Deno.test("index: every action declares a type, title and output", () => {
   }
 });
 
-Deno.test("index: every `perform` action declares idempotency honestly", () => {
+test("index: every `perform` action declares idempotency honestly", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   assertEquals(performs.length, 4);
   for (const a of performs) {
@@ -67,7 +68,7 @@ Deno.test("index: every `perform` action declares idempotency honestly", () => {
  * param. It must not be one — no action may ask for it, and no param may be
  * marked secret, because actions never receive credentials at all.
  */
-Deno.test("index: no action asks for a credential as a param", () => {
+test("index: no action asks for a credential as a param", () => {
   const forbidden =
     /^(developer|access|refresh|bearer)?_?token$|secret|password|credential|apiKey/i;
   for (const a of app.actions) {
@@ -84,7 +85,7 @@ Deno.test("index: no action asks for a credential as a param", () => {
   }
 });
 
-Deno.test("index: only the auth method declares the developer token", () => {
+test("index: only the auth method declares the developer token", () => {
   const fields = app.auth?.[0].fields ?? [];
   const developerToken = fields.find((f) => f.key === "developerToken");
   assert(developerToken, "auth is missing the developerToken field");

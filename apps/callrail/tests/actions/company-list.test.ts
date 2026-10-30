@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyList from "../../actions/company-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("company-list: hits companies.json and forwards status + search", async () => {
+test("company-list: hits companies.json and forwards status + search", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("companies", [{ id: "COM1" }]) }]);
   const out = await companyList.execute(
     { accountId: "ACC1", status: "active", search: "Widget" },

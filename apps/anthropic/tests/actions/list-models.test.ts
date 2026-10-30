@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-models.ts";
 
-Deno.test("list-models: GETs /v1/models with version header", async () => {
+test("list-models: GETs /v1/models with version header", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "claude-opus-4-1" }], has_more: false },
   }]);
@@ -13,7 +14,7 @@ Deno.test("list-models: GETs /v1/models with version header", async () => {
   assertEquals(calls[0].headers["anthropic-version"], "2023-06-01");
 });
 
-Deno.test("list-models: forwards pagination params", async () => {
+test("list-models: forwards pagination params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ limit: 50, after_id: "m_a", before_id: "m_b" }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -22,7 +23,7 @@ Deno.test("list-models: forwards pagination params", async () => {
   assertEquals(params.get("before_id"), "m_b");
 });
 
-Deno.test("list-models: omits pagination params when undefined", async () => {
+test("list-models: omits pagination params when undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({}, ctx);
   const params = new URL(calls[0].url).searchParams;

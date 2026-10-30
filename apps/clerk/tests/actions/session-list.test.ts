@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/session-list.ts";
 
-Deno.test("session-list: passes userId through and wraps the bare array", async () => {
+test("session-list: passes userId through and wraps the bare array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "sess_1" }] }]);
   const out = await action.execute!({ userId: "user_1" }, ctx) as { data: unknown[] };
   assertEquals(new URL(calls[0].url).pathname, "/v1/sessions");
@@ -11,7 +12,7 @@ Deno.test("session-list: passes userId through and wraps the bare array", async 
 });
 
 /** Clerk deprecated an unfiltered list; this action enforces the successor requirement itself. */
-Deno.test("session-list: refuses when neither userId nor clientId is given", async () => {
+test("session-list: refuses when neither userId nor clientId is given", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => await action.execute!({}, ctx), Error);
   assert(/userId.*clientId|deprecated/.test(String(err)), String(err));

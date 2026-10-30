@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/ref-get.ts";
 
-Deno.test("ref-get: GETs the singular git/ref route for a plain branch name", async () => {
+test("ref-get: GETs the singular git/ref route for a plain branch name", async () => {
   const { ctx, calls } = mockCtx([{ body: { ref: "refs/heads/main", object: { sha: "abc" } } }]);
   await action.execute({ owner: "acme", repository: "api", branch: "main" }, ctx);
   assertEquals(calls[0].url, "https://api.github.com/repos/acme/api/git/ref/heads/main");
@@ -10,18 +11,18 @@ Deno.test("ref-get: GETs the singular git/ref route for a plain branch name", as
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("ref-get: a branch name containing a slash renders as a real segment", async () => {
+test("ref-get: a branch name containing a slash renders as a real segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { ref: "refs/heads/feat/x", object: { sha: "abc" } } }]);
   await action.execute({ owner: "acme", repository: "api", branch: "feat/x" }, ctx);
   assertEquals(calls[0].url, "https://api.github.com/repos/acme/api/git/ref/heads/feat/x");
 });
 
-Deno.test("ref-get: a dot-segment branch name is refused", () => {
+test("ref-get: a dot-segment branch name is refused", () => {
   const { ctx } = mockCtx([]);
   assertThrows(() => action.execute({ owner: "acme", repository: "api", branch: ".." }, ctx));
 });
 
-Deno.test("ref-get: returns GitHub's envelope verbatim — no top-level sha", async () => {
+test("ref-get: returns GitHub's envelope verbatim — no top-level sha", async () => {
   const { ctx } = mockCtx([{
     body: { ref: "refs/heads/main", object: { sha: "abc", type: "commit" } },
   }]);

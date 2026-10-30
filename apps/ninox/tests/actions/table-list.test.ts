@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, errorBody, listEnvelope, pathOf, queryOf, WS } from "../_helpers.ts";
 import action from "../../actions/table-list.ts";
 
-Deno.test("table-list: lists tables of a module", async () => {
+test("table-list: lists tables of a module", async () => {
   const { ctx, calls } = connCtx([{ body: listEnvelope([{ name: "contacts" }]) }]);
   const out = await action.execute({ moduleName: "crm", limit: 5 }, ctx);
   assertEquals(out, { tables: [{ name: "contacts" }], hasMore: false });
@@ -10,7 +11,7 @@ Deno.test("table-list: lists tables of a module", async () => {
   assertEquals(queryOf(calls[0].url), { limit: "5" });
 });
 
-Deno.test("table-list: an unknown module is a 404 error", async () => {
+test("table-list: an unknown module is a 404 error", async () => {
   const { ctx } = connCtx([{ status: 404, body: errorBody("Module not found") }]);
   await assertRejects(
     async () => await action.execute({ moduleName: "x" }, ctx),

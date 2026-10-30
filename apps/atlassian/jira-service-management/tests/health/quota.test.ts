@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import check from "../../health/quota.ts";
 
-Deno.test("quota: is declared unavailable and informational, so it never pins the app at unknown", () => {
+test("quota: is declared unavailable and informational, so it never pins the app at unknown", () => {
   assertEquals(check.kind, "quota");
   assertEquals(check.severity, "informational");
   assertEquals(check.check, undefined);

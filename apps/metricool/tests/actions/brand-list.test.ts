@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import brandList from "../../actions/brand-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("brand-list: GET /v2/settings/brands returns items and count, no blogId", async () => {
+test("brand-list: GET /v2/settings/brands returns items and count, no blogId", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: 1 }, { id: 2 }]) }]);
   const out = await brandList.execute({}, ctx);
   assertEquals(out, { items: [{ id: 1 }, { id: 2 }], count: 2 });
@@ -11,7 +12,7 @@ Deno.test("brand-list: GET /v2/settings/brands returns items and count, no blogI
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("brand-list: a vendor error throws with its detail", async () => {
+test("brand-list: a vendor error throws with its detail", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { status: "UNAUTHORIZED", detail: "nope" } }]);
   await assertRejects(
     () => Promise.resolve(brandList.execute({}, ctx)) as Promise<unknown>,

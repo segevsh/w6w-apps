@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import enrollmentCreate from "../../actions/enrollment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("enrollment-create: POSTs to /api/school/courses/{courseId}/enrollments", async () => {
+test("enrollment-create: POSTs to /api/school/courses/{courseId}/enrollments", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, accessType: "full_access" } }]);
   await enrollmentCreate.execute(
     { courseId: 5, contactId: 42, accessType: "full_access" },
@@ -13,7 +14,7 @@ Deno.test("enrollment-create: POSTs to /api/school/courses/{courseId}/enrollment
   assertEquals(JSON.parse(calls[0].body!), { contactId: 42, accessType: "full_access" });
 });
 
-Deno.test("enrollment-create: includes modules when partial access is requested", async () => {
+test("enrollment-create: includes modules when partial access is requested", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await enrollmentCreate.execute(
     { courseId: 5, contactId: 42, accessType: "partial_access", modules: [1, 2] },

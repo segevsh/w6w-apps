@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import registrantList from "../../actions/registrant-list.ts";
 import { formOf, mockWebinarJamCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("registrant-list: reads the Laravel-paginator shape, not the stale flat field table", async () => {
+test("registrant-list: reads the Laravel-paginator shape, not the stale flat field table", async () => {
   const row = {
     id: 841,
     lead_id: 299,
@@ -32,7 +33,7 @@ Deno.test("registrant-list: reads the Laravel-paginator shape, not the stale fla
   assertEquals(out.registrants, [row]);
 });
 
-Deno.test("registrant-list: filter fields, including the 0-valued 'all' options, reach the wire", async () => {
+test("registrant-list: filter fields, including the 0-valued 'all' options, reach the wire", async () => {
   const { ctx, calls } = mockWebinarJamCtx([{ body: ok({ registrants: { data: [] } }) }]);
   await registrantList.execute({
     product: "webinarjam",
@@ -55,7 +56,7 @@ Deno.test("registrant-list: filter fields, including the 0-valued 'all' options,
   assertEquals(sent.search, "jane");
 });
 
-Deno.test("registrant-list: an empty page returns an empty array, not undefined", async () => {
+test("registrant-list: an empty page returns an empty array, not undefined", async () => {
   const { ctx } = mockWebinarJamCtx([{ body: ok({ registrants: {} }) }]);
   const out = await registrantList.execute({ product: "webinarjam", webinarId: 1 }, ctx) as {
     registrants: unknown[];
@@ -63,6 +64,6 @@ Deno.test("registrant-list: an empty page returns an empty array, not undefined"
   assertEquals(out.registrants, []);
 });
 
-Deno.test("registrant-list: is a search, not a read or a perform", () => {
+test("registrant-list: is a search, not a read or a perform", () => {
   assertEquals(registrantList.type, "search");
 });

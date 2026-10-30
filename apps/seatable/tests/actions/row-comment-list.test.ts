@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rowCommentList from "../../actions/row-comment-list.ts";
 import { BASE_PATH, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("row-comment-list: GETs /comments/ for a row and wraps the bare array", async () => {
+test("row-comment-list: GETs /comments/ for a row and wraps the bare array", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: 1, comment: "Good" }, { id: 2, comment: "Yes" }],
   }]);
@@ -12,7 +13,7 @@ Deno.test("row-comment-list: GETs /comments/ for a row and wraps the bare array"
   assertEquals(out.comments.length, 2);
 });
 
-Deno.test("row-comment-list: a non-array answer yields an empty list, not a crash", async () => {
+test("row-comment-list: a non-array answer yields an empty list, not a crash", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await rowCommentList.execute({ rowId: "r1" }, ctx) as { comments: unknown[] };
   assertEquals(out.comments, []);

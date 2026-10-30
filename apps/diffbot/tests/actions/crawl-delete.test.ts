@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/crawl-delete.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("crawl-delete: sends delete=1 with the job name", async () => {
+test("crawl-delete: sends delete=1 with the job name", async () => {
   const { ctx, calls } = mockCtx([{ body: { response: "Successfully deleted job." } }]);
   const out = await run(action, { name: " test-crawl " }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -13,7 +14,7 @@ Deno.test("crawl-delete: sends delete=1 with the job name", async () => {
   assertEquals(out.message, "Successfully deleted job.");
 });
 
-Deno.test("crawl-delete: a vendor error is thrown, not reported as deleted", async () => {
+test("crawl-delete: a vendor error is thrown, not reported as deleted", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { errorCode: 400, error: "No collection record" },

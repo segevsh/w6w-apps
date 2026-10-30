@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-post-user.ts";
 
-Deno.test("message-post-user: DMs by email", async () => {
+test("message-post-user: DMs by email", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute({ "user": "scott@zylker.com", "text": "Hey!" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -16,7 +17,7 @@ Deno.test("message-post-user: DMs by email", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true, "response": null });
 });
 
-Deno.test("message-post-user: DMs by zuid with reply", async () => {
+test("message-post-user: DMs by zuid with reply", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute(
     { "user": "2356781", "text": "Hi!", "replyTo": "m1" } as never,
@@ -33,7 +34,7 @@ Deno.test("message-post-user: DMs by zuid with reply", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true, "response": null });
 });
 
-Deno.test("message-post-user: idempotent is declared as false", () => {
+test("message-post-user: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

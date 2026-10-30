@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs /v1/contacts nesting default fields under defaultFields", async () => {
+test("contact-create: POSTs /v1/contacts nesting default fields under defaultFields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "c1" } } }]);
   await contactCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("contact-create: POSTs /v1/contacts nesting default fields under defau
   assertEquals(body.externalId, "crm-1");
 });
 
-Deno.test("contact-create: is a non-idempotent perform action", () => {
+test("contact-create: is a non-idempotent perform action", () => {
   assertEquals(contactCreate.type, "perform");
   assertEquals(contactCreate.idempotent, false);
 });

@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCreatorCtx } from "../_helpers.ts";
 import action from "../../actions/file-upload.ts";
 
-Deno.test("file-upload: not idempotent", () => {
+test("file-upload: not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("file-upload: POSTs multipart/form-data to .../<record>/<field>/upload", async () => {
+test("file-upload: POSTs multipart/form-data to .../<record>/<field>/upload", async () => {
   const { ctx, calls } = mockCreatorCtx([
     {
       body: {

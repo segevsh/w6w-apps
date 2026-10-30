@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadStar from "../../actions/thread-star.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("thread-star: POST /api/v3/threads/star with every documented parameter", async () => {
+test("thread-star: POST /api/v3/threads/star with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await threadStar.execute({ "threadId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,7 +15,7 @@ Deno.test("thread-star: POST /api/v3/threads/star with every documented paramete
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("thread-star: sends a form body, never a query string", async () => {
+test("thread-star: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadStar.execute({ "threadId": 100 }, ctx);
 
@@ -22,18 +23,18 @@ Deno.test("thread-star: sends a form body, never a query string", async () => {
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("thread-star: is declared idempotent", () => {
+test("thread-star: is declared idempotent", () => {
   assertEquals(threadStar.idempotent, true);
 });
 
-Deno.test("thread-star: sends no credential of its own", async () => {
+test("thread-star: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadStar.execute({ "threadId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("thread-star: surfaces Twist's error body", async () => {
+test("thread-star: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

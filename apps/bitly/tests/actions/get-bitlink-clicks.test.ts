@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-bitlink-clicks.ts";
 
-Deno.test("get-bitlink-clicks: GETs /bitlinks/{bitlink}/clicks with unit/units defaults", async () => {
+test("get-bitlink-clicks: GETs /bitlinks/{bitlink}/clicks with unit/units defaults", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -20,7 +21,7 @@ Deno.test("get-bitlink-clicks: GETs /bitlinks/{bitlink}/clicks with unit/units d
   assertEquals(out.link_clicks[0].clicks, 3);
 });
 
-Deno.test("get-bitlink-clicks: passes a custom unit, units and unitReference", async () => {
+test("get-bitlink-clicks: passes a custom unit, units and unitReference", async () => {
   const { ctx, calls } = mockCtx([{ body: { link_clicks: [], unit: "week", units: 4 } }]);
   await action.execute({
     bitlink: "bit.ly/abc123",

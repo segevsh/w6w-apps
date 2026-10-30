@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-project.ts";
 
-Deno.test("delete-project: DELETEs /project/{id} and survives an empty body", async () => {
+test("delete-project: DELETEs /project/{id} and survives an empty body", async () => {
   // Documented as 200 OK with schema "No Content" — res.json() would throw.
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await action.execute!({ projectId: "P1" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("delete-project: DELETEs /project/{id} and survives an empty body", as
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("delete-project: warns that it is destructive and unrecoverable", () => {
+test("delete-project: warns that it is destructive and unrecoverable", () => {
   const text = `${action.description}`.toLowerCase();
   assert(text.includes("destructive") || text.includes("undoable"));
   assertEquals(action.idempotent, true);

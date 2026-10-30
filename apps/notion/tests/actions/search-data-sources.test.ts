@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/search-data-sources.ts";
 
-Deno.test("Search Data Sources discovers current parent IDs with a data_source filter", async () => {
+test("Search Data Sources discovers current parent IDs with a data_source filter", async () => {
   const response = {
     results: [{ id: "source", parent: { database_id: "container" } }],
     next_cursor: "next",

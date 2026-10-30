@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bulk-update-users.ts";
 
-Deno.test("bulk-update-users: metadata", () => {
+test("bulk-update-users: metadata", () => {
   assertEquals(action.key, "bulk-update-users");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assertEquals(action.params?.map((p) => p.key), ["users", "createNewFields"]);
 });
 
-Deno.test("bulk-update-users: calls POST /users/bulkUpdate on the US host", async () => {
+test("bulk-update-users: calls POST /users/bulkUpdate on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "successCount": 1, "failCount": 0 } }]);
   const out = await action.execute({ "users": [{ "x": 1 }], "createNewFields": true }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("bulk-update-users: calls POST /users/bulkUpdate on the US host", asyn
   assertEquals(out, { "successCount": 1, "failCount": 0 });
 });
 
-Deno.test("bulk-update-users: uses the EU host when the connection region is eu", async () => {
+test("bulk-update-users: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "successCount": 1, "failCount": 0 } }], {
     connection: { display: { region: "eu" } },
   });
@@ -28,7 +29,7 @@ Deno.test("bulk-update-users: uses the EU host when the connection region is eu"
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/bulkUpdate");
 });
 
-Deno.test("bulk-update-users: rejects a missing `users` without calling Iterable", async () => {
+test("bulk-update-users: rejects a missing `users` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -40,7 +41,7 @@ Deno.test("bulk-update-users: rejects a missing `users` without calling Iterable
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bulk-update-users: surfaces an HTTP error with Iterable's own code", async () => {
+test("bulk-update-users: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -51,7 +52,7 @@ Deno.test("bulk-update-users: surfaces an HTTP error with Iterable's own code", 
   );
 });
 
-Deno.test("bulk-update-users: treats a 200 carrying a non-Success code as a failure", async () => {
+test("bulk-update-users: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

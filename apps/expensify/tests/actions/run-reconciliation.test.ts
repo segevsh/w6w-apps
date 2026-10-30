@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/run-reconciliation.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
@@ -12,7 +13,7 @@ const INPUT = {
   type: "Unreported" as const,
 };
 
-Deno.test("run-reconciliation: posts the documented synchronous job and returns the file name", async () => {
+test("run-reconciliation: posts the documented synchronous job and returns the file name", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       filename: "is_reconciliation_5429137734434770049.csv",
@@ -45,14 +46,14 @@ Deno.test("run-reconciliation: posts the documented synchronous job and returns 
   assertEquals(out, { fileName: "is_reconciliation_5429137734434770049.csv" });
 });
 
-Deno.test("run-reconciliation: never sends async:true (only synchronous runs are supported)", async () => {
+test("run-reconciliation: never sends async:true (only synchronous runs are supported)", async () => {
   const { ctx, calls } = mockCtx([{ body: { filename: "f.csv", responseCode: 200 } }]);
   await action.execute!(INPUT, ctx);
   assertEquals(sent(calls[0]).job.inputSettings.async, false);
   assertEquals(sent(calls[0]).job.outputSettings, {});
 });
 
-Deno.test("run-reconciliation: validates type, dates, format and template locally", async () => {
+test("run-reconciliation: validates type, dates, format and template locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ ...INPUT, type: "Some" as never }, ctx),
@@ -82,7 +83,7 @@ Deno.test("run-reconciliation: validates type, dates, format and template locall
   assertEquals(calls.length, 0);
 });
 
-Deno.test("run-reconciliation: surfaces the vendor's write error", async () => {
+test("run-reconciliation: surfaces the vendor's write error", async () => {
   const { ctx } = mockCtx([{
     body: {
       responseMessage: "Error encountered while trying to write reconcilation report to file.",
@@ -96,6 +97,6 @@ Deno.test("run-reconciliation: surfaces the vendor's write error", async () => {
   );
 });
 
-Deno.test("run-reconciliation: declares a non-idempotent perform", () => {
+test("run-reconciliation: declares a non-idempotent perform", () => {
   assertEquals([action.type, action.idempotent], ["perform", false]);
 });

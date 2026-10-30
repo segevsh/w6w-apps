@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentFieldUpdate from "../../actions/document-field-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-field-update: PUT /api/documents/fields/{documentId}/{fieldId}", async () => {
+test("document-field-update: PUT /api/documents/fields/{documentId}/{fieldId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentFieldUpdate.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("document-field-update: PUT /api/documents/fields/{documentId}/{fieldI
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("document-field-update: a vendor error surfaces its own message", async () => {
+test("document-field-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -44,5 +45,5 @@ Deno.test("document-field-update: a vendor error surfaces its own message", asyn
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-field-update: idempotency is declared as true", () =>
+test("document-field-update: idempotency is declared as true", () =>
   assertEquals(documentFieldUpdate.idempotent, true));

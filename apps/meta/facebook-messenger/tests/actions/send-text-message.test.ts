@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx, SENT } from "../_helpers.ts";
 import action from "../../actions/send-text-message.ts";
 
-Deno.test("send-text-message: POSTs /me/messages with the documented envelope", async () => {
+test("send-text-message: POSTs /me/messages with the documented envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: SENT }]);
   const result = await action.execute!({ recipientId: "psid-1", text: "Hello, world!" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,7 +17,7 @@ Deno.test("send-text-message: POSTs /me/messages with the documented envelope", 
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("send-text-message: tag, messaging type, reply_to and pageId are carried", async () => {
+test("send-text-message: tag, messaging type, reply_to and pageId are carried", async () => {
   const { ctx, calls } = mockCtx([{ body: SENT }]);
   await action.execute!({
     recipientId: "p",
@@ -33,7 +34,7 @@ Deno.test("send-text-message: tag, messaging type, reply_to and pageId are carri
   assertEquals(body.reply_to, { mid: "mid.0" });
 });
 
-Deno.test("send-text-message: missing recipient fails before any request", async () => {
+test("send-text-message: missing recipient fails before any request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ recipientId: "", text: "x" }, ctx),
@@ -43,7 +44,7 @@ Deno.test("send-text-message: missing recipient fails before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-text-message: Graph errors surface with their code", async () => {
+test("send-text-message: Graph errors surface with their code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { message: "outside window", code: 10 } },
@@ -55,6 +56,6 @@ Deno.test("send-text-message: Graph errors surface with their code", async () =>
   );
 });
 
-Deno.test("send-text-message: declares idempotent: false", () => {
+test("send-text-message: declares idempotent: false", () => {
   assertEquals(action.idempotent, false);
 });

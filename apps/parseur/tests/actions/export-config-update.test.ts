@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import exportConfigUpdate from "../../actions/export-config-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("export-config-update: PATCHes /parser/{mailboxId}/export_config/{id}", async () => {
+test("export-config-update: PATCHes /parser/{mailboxId}/export_config/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "Renamed" } }]);
   await exportConfigUpdate.execute(
     { mailboxId: "42", exportConfigId: "1", name: "Renamed" },
@@ -14,6 +15,6 @@ Deno.test("export-config-update: PATCHes /parser/{mailboxId}/export_config/{id}"
   assertEquals(JSON.parse(calls[0].body!), { name: "Renamed" });
 });
 
-Deno.test("export-config-update: is idempotent", () => {
+test("export-config-update: is idempotent", () => {
   assertEquals(exportConfigUpdate.idempotent, true);
 });

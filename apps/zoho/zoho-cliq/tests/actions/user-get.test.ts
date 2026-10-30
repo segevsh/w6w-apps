@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/user-get.ts";
 
-Deno.test("user-get: gets by email, asks for all fields", async () => {
+test("user-get: gets by email, asks for all fields", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "data": { "id": "7", "email_id": "a@b.com" } },
@@ -21,6 +22,6 @@ Deno.test("user-get: gets by email, asks for all fields", async () => {
   });
 });
 
-Deno.test("user-get: is a read action", () => {
+test("user-get: is a read action", () => {
   assertEquals(action.type, "read");
 });

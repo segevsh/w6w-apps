@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import quota from "../../health/quota.ts";
 import service from "../../health/service.ts";
@@ -8,19 +9,19 @@ const OK = { items: [{ total_questions: 1 }], quota_max: 300, quota_remaining: 2
 // deno-lint-ignore no-explicit-any
 const run = (c: any, ctx: any) => c.check({}, ctx);
 
-Deno.test("service: declared unavailable and informational", () => {
+test("service: declared unavailable and informational", () => {
   assertEquals(service.severity, "informational");
   assert(service.unavailable?.reason);
 });
 
-Deno.test("api: schema-correct wrapper is ok; backoff degrades", async () => {
+test("api: schema-correct wrapper is ok; backoff degrades", async () => {
   const ok = await run(api, mockCtx([{ body: OK }]).ctx);
   assertEquals(ok.state, "ok");
   const slow = await run(api, mockCtx([{ body: { ...OK, backoff: 10 } }]).ctx);
   assertEquals(slow.state, "degraded");
 });
 
-Deno.test("api: 5xx is down, HTML 200 is degraded, network error is down", async () => {
+test("api: 5xx is down, HTML 200 is degraded, network error is down", async () => {
   const five = await run(
     api,
     mockCtx([{
@@ -39,7 +40,7 @@ Deno.test("api: 5xx is down, HTML 200 is degraded, network error is down", async
   assertEquals((await run(api, ctx)).state, "down");
 });
 
-Deno.test("quota: reads remaining/limit and grades headroom", async () => {
+test("quota: reads remaining/limit and grades headroom", async () => {
   const ok = await run(quota, mockCtx([{ body: OK }]).ctx);
   assertEquals(ok.state, "ok");
   assertEquals(ok.quota, [{ id: "daily", limit: 300, remaining: 296, unit: "requests" }]);

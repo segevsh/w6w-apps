@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import convertUrl from "../../actions/convert-url.ts";
 import { hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -40,7 +41,7 @@ const FAILED = {
   },
 };
 
-Deno.test("convert-url: builds the import/url -> convert -> export/url graph on the sync host", async () => {
+test("convert-url: builds the import/url -> convert -> export/url graph on the sync host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: FINISHED }]);
   await convertUrl.execute(
     { url: "https://example.com/in.docx", outputFormat: "pdf" },
@@ -58,7 +59,7 @@ Deno.test("convert-url: builds the import/url -> convert -> export/url graph on 
   assertEquals(body.tasks["export-1"].input, "convert-1");
 });
 
-Deno.test("convert-url: returns the export task's files on success", async () => {
+test("convert-url: returns the export task's files on success", async () => {
   const { ctx } = mockCtx([{ status: 200, body: FINISHED }]);
   const out = await convertUrl.execute(
     { url: "https://example.com/in.docx", outputFormat: "pdf" },
@@ -72,7 +73,7 @@ Deno.test("convert-url: returns the export task's files on success", async () =>
   }]);
 });
 
-Deno.test("convert-url: throws with the failing task's message and code on job status error", async () => {
+test("convert-url: throws with the failing task's message and code on job status error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: FAILED }]);
   await assertRejects(
     async () =>
@@ -82,7 +83,7 @@ Deno.test("convert-url: throws with the failing task's message and code on job s
   );
 });
 
-Deno.test("convert-url: rejects malformed 'additional options' JSON before any request", async () => {
+test("convert-url: rejects malformed 'additional options' JSON before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -96,7 +97,7 @@ Deno.test("convert-url: rejects malformed 'additional options' JSON before any r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("convert-url: merges 'additional options' without letting them override output_format", async () => {
+test("convert-url: merges 'additional options' without letting them override output_format", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: FINISHED }]);
   await convertUrl.execute(
     {
@@ -111,6 +112,6 @@ Deno.test("convert-url: merges 'additional options' without letting them overrid
   assertEquals(body.tasks["convert-1"].pages, "1-2");
 });
 
-Deno.test("convert-url: is declared non-idempotent", () => {
+test("convert-url: is declared non-idempotent", () => {
   assertEquals(convertUrl.idempotent, false);
 });

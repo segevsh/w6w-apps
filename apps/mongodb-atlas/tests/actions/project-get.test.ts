@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-get.ts";
 
@@ -13,7 +14,7 @@ const project = {
   },
 };
 
-Deno.test("project-get: reads one project by id", async () => {
+test("project-get: reads one project by id", async () => {
   const { ctx, calls } = mockCtx([project]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -29,7 +30,7 @@ Deno.test("project-get: reads one project by id", async () => {
 });
 
 /** Atlas validates ids after authorisation, so a typo would look like a 401. */
-Deno.test("project-get: a malformed id is refused before any request", async () => {
+test("project-get: a malformed id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -42,7 +43,7 @@ Deno.test("project-get: a malformed id is refused before any request", async () 
   assert(/401 rather than 400/.test(action.description!), action.description);
 });
 
-Deno.test("project-get: a missing id is required", async () => {
+test("project-get: a missing id is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -54,7 +55,7 @@ Deno.test("project-get: a missing id is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("project-get: a project outside this account's reach surfaces the error", async () => {
+test("project-get: a project outside this account's reach surfaces the error", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "not authorized", errorCode: "X" } }]);
   let message = "";
   try {
@@ -65,7 +66,7 @@ Deno.test("project-get: a project outside this account's reach surfaces the erro
   assert(/per PROJECT as well as per organisation/.test(message), message);
 });
 
-Deno.test("project-get: a sparse response does not throw", async () => {
+test("project-get: a sparse response does not throw", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,

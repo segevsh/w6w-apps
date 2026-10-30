@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
@@ -13,7 +14,7 @@ const account = {
   },
 };
 
-Deno.test("account-get: reads account details and takes no parameters", async () => {
+test("account-get: reads account details and takes no parameters", async () => {
   const { ctx, calls } = mockCtx([account]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/account/details");
@@ -23,7 +24,7 @@ Deno.test("account-get: reads account details and takes no parameters", async ()
 });
 
 /** A leaver's token disappearing takes the workflow with it. */
-Deno.test("account-get: reports whether this is a machine account", async () => {
+test("account-get: reports whether this is a machine account", async () => {
   const { ctx } = mockCtx([account]);
   const machine = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(machine.serviceAccount, true);
@@ -36,7 +37,7 @@ Deno.test("account-get: reports whether this is a machine account", async () => 
   assertEquals(human.serviceAccount, false);
 });
 
-Deno.test("account-get: a sparse response does not throw", async () => {
+test("account-get: a sparse response does not throw", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: {} } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.username, undefined);
@@ -44,13 +45,13 @@ Deno.test("account-get: a sparse response does not throw", async () => {
 });
 
 /** Nothing in a later 403 or 404 mentions token kinds. */
-Deno.test("account-get: says which failures it explains", () => {
+test("account-get: says which failures it explains", () => {
   assert(/ORGANIZATION token cannot create runs/.test(action.description!), action.description);
   assert(/TEAM token answers 404/.test(action.description!), action.description);
   assertEquals(action.type, "read");
 });
 
-Deno.test("account-get: a rejected token surfaces the 401 explanation", async () => {
+test("account-get: a rejected token surfaces the 401 explanation", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: [{ title: "unauthorized" }] } }]);
   let message = "";
   try {

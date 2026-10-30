@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-env-list.ts";
 
@@ -23,7 +24,7 @@ const serviceVars = {
 };
 
 /** No single balena endpoint shows the layering. */
-Deno.test("device-env-list: layers fleet, device and service variables", async () => {
+test("device-env-list: layers fleet, device and service variables", async () => {
   const { ctx, calls } = mockCtx([device, deviceVars, fleetVars, serviceVars]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
 
@@ -42,13 +43,13 @@ Deno.test("device-env-list: layers fleet, device and service variables", async (
 });
 
 /** A variable set once for debugging keeps overriding the fleet forever. */
-Deno.test("device-env-list: names the fleet values this device shadows", async () => {
+test("device-env-list: names the fleet values this device shadows", async () => {
   const { ctx } = mockCtx([device, deviceVars, fleetVars, serviceVars]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.overriddenFleetVariables, ["LOG_LEVEL"]);
 });
 
-Deno.test("device-env-list: filters by name substring after layering", async () => {
+test("device-env-list: filters by name substring after layering", async () => {
   const { ctx } = mockCtx([device, deviceVars, fleetVars, serviceVars]);
   const result = await action.execute({ uuid: UUID, nameContains: "mqtt" }, ctx) as Record<
     string,
@@ -59,7 +60,7 @@ Deno.test("device-env-list: filters by name substring after layering", async () 
 });
 
 /** Values are configuration and some of them are secrets. */
-Deno.test("device-env-list: logs how many names, never the values", async () => {
+test("device-env-list: logs how many names, never the values", async () => {
   const { ctx, logs } = mockCtx([device, deviceVars, fleetVars, serviceVars]);
   await action.execute({ uuid: UUID }, ctx);
   const data = JSON.stringify(logs);
@@ -67,7 +68,7 @@ Deno.test("device-env-list: logs how many names, never the values", async () => 
   assert(!/mqtt\.example\.com|debug/.test(data), data);
 });
 
-Deno.test("device-env-list: an unknown device is refused", async () => {
+test("device-env-list: an unknown device is refused", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { d: [] } }]);
   await assertRejects(async () => await action.execute({ uuid: UUID }, ctx), Error, "no device");
 });

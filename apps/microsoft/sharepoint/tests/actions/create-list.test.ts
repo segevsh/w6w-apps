@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-list.ts";
 
-Deno.test("create-list: POSTs to {site}/lists", async () => {
+test("create-list: POSTs to {site}/lists", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "L1" } }]);
   await action.execute({ displayName: "Books" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/sites/root/lists");
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("create-list: defaults to the genericList template", async () => {
+test("create-list: defaults to the genericList template", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ displayName: "Books" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {
@@ -18,7 +19,7 @@ Deno.test("create-list: defaults to the genericList template", async () => {
   });
 });
 
-Deno.test("create-list: an explicit template and custom columns ride in the body, per the reference's own example", async () => {
+test("create-list: an explicit template and custom columns ride in the body, per the reference's own example", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     displayName: "Books",
@@ -32,6 +33,6 @@ Deno.test("create-list: an explicit template and custom columns ride in the body
   });
 });
 
-Deno.test("create-list: is not idempotent — a repeat call mints a second list", () => {
+test("create-list: is not idempotent — a repeat call mints a second list", () => {
   assertEquals(action.idempotent, false);
 });

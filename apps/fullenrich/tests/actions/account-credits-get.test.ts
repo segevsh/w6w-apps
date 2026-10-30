@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/account-credits-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("account-credits-get: GETs the balance", async () => {
+test("account-credits-get: GETs the balance", async () => {
   const { ctx, calls } = mockCtx([{ body: { balance: 5000 } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(calls[0].url, "https://app.fullenrich.com/api/v2/account/credits");
@@ -11,12 +12,12 @@ Deno.test("account-credits-get: GETs the balance", async () => {
   assertEquals(out, { balance: 5000 });
 });
 
-Deno.test("account-credits-get: a missing balance is null, not zero", async () => {
+test("account-credits-get: a missing balance is null, not zero", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await action.execute!({}, ctx), { balance: null });
 });
 
-Deno.test("account-credits-get: a 401 is thrown", async () => {
+test("account-credits-get: a 401 is thrown", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "error.api.key", message: "Unknown api key" },

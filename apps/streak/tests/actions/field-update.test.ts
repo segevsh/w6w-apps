@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fieldUpdate from "../../actions/field-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("field-update: POSTs a JSON body with only the name", async () => {
+test("field-update: POSTs a JSON body with only the name", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "Renamed", key: "1001" } }]);
   await fieldUpdate.execute({ pipelineKey: "p1", fieldKey: "1001", name: "Renamed" }, ctx);
   assertEquals(calls[0].method, "POST");

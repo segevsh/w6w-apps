@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaMove from "../../actions/media-move.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("media-move: calls PUT /modern/medias/move with the version header", async () => {
+test("media-move: calls PUT /modern/medias/move with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await mediaMove.execute(
     { "hashedIds": "a,b", "folderId": "f1", "subfolderId": "s1" } as never,
@@ -25,7 +26,7 @@ Deno.test("media-move: calls PUT /modern/medias/move with the version header", a
   assert(out.ok === true);
 });
 
-Deno.test("media-move: surfaces a Wistia error with its code", async () => {
+test("media-move: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -43,7 +44,7 @@ Deno.test("media-move: surfaces a Wistia error with its code", async () => {
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("media-move: refuses more than 100 media and sends nothing", async () => {
+test("media-move: refuses more than 100 media and sends nothing", async () => {
   const { ctx, calls } = mockCtx([]);
   const ids = Array.from({ length: 101 }, (_, i) => `m${i}`);
   let message = "";
@@ -56,7 +57,7 @@ Deno.test("media-move: refuses more than 100 media and sends nothing", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("media-move: requires at least one hashed ID", async () => {
+test("media-move: requires at least one hashed ID", async () => {
   const { ctx } = mockCtx([]);
   let message = "";
   try {

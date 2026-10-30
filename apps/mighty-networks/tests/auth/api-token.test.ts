@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/api-token.ts";
 import { API, mockCtx, NET } from "../_helpers.ts";
 
 const CRED = { networkId: NET, apiToken: "tok_secret_123" };
 
-Deno.test("auth: sign stamps Authorization: Bearer <token> and returns the request", () => {
+test("auth: sign stamps Authorization: Bearer <token> and returns the request", () => {
   const request = {
     url: `${API}/networks/${NET}/me`,
     method: "GET",
@@ -15,7 +16,7 @@ Deno.test("auth: sign stamps Authorization: Bearer <token> and returns the reque
   assertEquals(signed.headers["authorization"], "Bearer tok_secret_123");
 });
 
-Deno.test("auth: the Network ID is a plain field, the token a secret", () => {
+test("auth: the Network ID is a plain field, the token a secret", () => {
   const byKey = Object.fromEntries((auth.fields ?? []).map((f) => [f.key, f]));
   assertEquals(byKey.networkId.type, "string");
   assertEquals(byKey.networkId.required, true);
@@ -26,7 +27,7 @@ Deno.test("auth: the Network ID is a plain field, the token a secret", () => {
   assert(!pattern.test("../x") && !pattern.test("Upper") && !pattern.test("a b"));
 });
 
-Deno.test("auth: test probes GET /networks/{id}/me with the bearer header", async () => {
+test("auth: test probes GET /networks/{id}/me with the bearer header", async () => {
   const { ctx, calls } = mockCtx([{ body: { user: { id: 1 }, network: { id: 12345 } } }]);
   assertEquals(await auth.test({ credential: CRED }, ctx), { ok: true });
   assertEquals(calls[0].url, `${API}/networks/${NET}/me`);
@@ -34,12 +35,12 @@ Deno.test("auth: test probes GET /networks/{id}/me with the bearer header", asyn
   assertEquals(calls[0].headers["authorization"], "Bearer tok_secret_123");
 });
 
-Deno.test("auth: the quick start's flat me payload also passes", async () => {
+test("auth: the quick start's flat me payload also passes", async () => {
   const { ctx } = mockCtx([{ body: { id: "12345", name: "John Doe" } }]);
   assertEquals(await auth.test({ credential: CRED }, ctx), { ok: true });
 });
 
-Deno.test("auth: test never reports the token back", async () => {
+test("auth: test never reports the token back", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "unauthorized", message: "Invalid API token" },
@@ -49,7 +50,7 @@ Deno.test("auth: test never reports the token back", async () => {
   assert(!JSON.stringify(r).includes("tok_secret_123"));
 });
 
-Deno.test("auth: 401 surfaces the vendor's own message", async () => {
+test("auth: 401 surfaces the vendor's own message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Missing or malformed Authorization header" },
@@ -60,21 +61,21 @@ Deno.test("auth: 401 surfaces the vendor's own message", async () => {
   assert(r.message!.includes("Missing or malformed Authorization header"));
 });
 
-Deno.test("auth: 403 points at permissions and plan, not the token", async () => {
+test("auth: 403 points at permissions and plan, not the token", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "forbidden" } }]);
   const r = await auth.test({ credential: CRED }, ctx);
   assertEquals(r.ok, false);
   assert(/plan/i.test(r.message!) && !/rejected the token/.test(r.message!));
 });
 
-Deno.test("auth: 404 means the Network was not found", async () => {
+test("auth: 404 means the Network was not found", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "not_found" } }]);
   const r = await auth.test({ credential: CRED }, ctx);
   assertEquals(r.ok, false);
   assert(r.message!.includes(`Network "${NET}" was not found`));
 });
 
-Deno.test("auth: a 200 that is not the me payload is not a pass", async () => {
+test("auth: a 200 that is not the me payload is not a pass", async () => {
   for (const body of ["<html>shell</html>", { error: "nope" }, { something: 1 }, []]) {
     const { ctx } = mockCtx([{ body }]);
     const r = await auth.test({ credential: CRED }, ctx);
@@ -82,14 +83,14 @@ Deno.test("auth: a 200 that is not the me payload is not a pass", async () => {
   }
 });
 
-Deno.test("auth: a 5xx is reported with its status", async () => {
+test("auth: a 5xx is reported with its status", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "Bad gateway" }]);
   const r = await auth.test({ credential: CRED }, ctx);
   assertEquals(r.ok, false);
   assert(r.message!.includes("502"));
 });
 
-Deno.test("auth: missing or malformed credential fields fail before any request", async () => {
+test("auth: missing or malformed credential fields fail before any request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test({ credential: { apiToken: "x" } }, ctx)).ok, false);
   assertEquals((await auth.test({ credential: { networkId: NET } }, ctx)).ok, false);

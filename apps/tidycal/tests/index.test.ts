@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 18;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 2);
   assertEquals(app.healthChecks.length, 3);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +32,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -43,7 +45,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * invitation email. Marking any of them `true` would let the runtime do that on
  * a dropped connection.
  */
-Deno.test("index: no creating action is marked idempotent", () => {
+test("index: no creating action is marked idempotent", () => {
   for (
     const key of [
       "booking-type-create",
@@ -63,13 +65,13 @@ Deno.test("index: no creating action is marked idempotent", () => {
  * already done and TidyCal says so (400 "already cancelled", 422 "user not found
  * in team") rather than doing it twice.
  */
-Deno.test("index: the two converging performs are marked idempotent", () => {
+test("index: the two converging performs are marked idempotent", () => {
   for (const key of ["booking-cancel", "team-user-remove"]) {
     assertEquals(app.actions.find((a) => a.key === key)?.idempotent, true, key);
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -91,9 +93,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -103,7 +105,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -118,7 +120,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * shares `tidycal.com` with the public site, so a stray absolute URL would look
  * plausible while hitting the marketing router.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/tidycal\.com/.test(src), `${a.key}: contains a TidyCal host literal`);
@@ -126,7 +128,7 @@ Deno.test("index: no action hard-codes a host", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -190,7 +192,7 @@ const DOCUMENTED_OPERATIONS = [
  * from a sibling app — shows up as a set difference rather than as a runtime
  * 404 nobody sees until a workflow runs.
  */
-Deno.test("index: the actions cover exactly the documented operations, one each", async () => {
+test("index: the actions cover exactly the documented operations, one each", async () => {
   const built: string[] = [];
   for (const a of app.actions) {
     const requests = requestsOf(await actionSource(a.key));
@@ -209,7 +211,7 @@ Deno.test("index: the actions cover exactly the documented operations, one each"
   );
 });
 
-Deno.test("index: the request derivation actually finds paths and verbs", () => {
+test("index: the request derivation actually finds paths and verbs", () => {
   assertEquals(requestsOf('const p = "/me";'), ["GET /me"]);
   assertEquals(
     requestsOf('method: "PATCH",\nconst p = `/bookings/${id}/cancel`;'),
@@ -231,9 +233,9 @@ Deno.test("index: the request derivation actually finds paths and verbs", () => 
  * numbers and IP addresses (`Contact`). If someone swaps it, this makes them do
  * it deliberately.
  */
-Deno.test("index: both auth methods probe /me and nothing else", async () => {
+test("index: both auth methods probe /me and nothing else", async () => {
   for (const file of ["personal-token", "oauth2"]) {
-    const src = code(await Deno.readTextFile(new URL(`../auth/${file}.ts`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../auth/${file}.ts`, import.meta.url)));
     assert(src.includes("PROBE_PATH"), `auth/${file}.ts: does not use the shared probe path`);
     for (const banned of ["/contacts", "/booking-types", "/bookings"]) {
       assert(
@@ -246,7 +248,7 @@ Deno.test("index: both auth methods probe /me and nothing else", async () => {
   assertEquals(personal.PROBE_PATH, "/me");
 });
 
-Deno.test("index: the credential field is declared secret and sign is present", () => {
+test("index: the credential field is declared secret and sign is present", () => {
   const [personal, oauth] = app.auth;
 
   assertEquals(personal.key, "personal-token");
@@ -275,7 +277,7 @@ Deno.test("index: the credential field is declared secret and sign is present", 
  * `mcp:scheduling:read`, belongs to the separate MCP connector) and does not say
  * whether its clients are public.
  */
-Deno.test("index: the OAuth config names TidyCal's documented endpoints only", () => {
+test("index: the OAuth config names TidyCal's documented endpoints only", () => {
   const oauth = app.auth.find((m) => m.key === "oauth2")!;
   assertEquals(oauth.oauth2?.authorizationUrl, "https://tidycal.com/oauth/authorize");
   assertEquals(oauth.oauth2?.tokenUrl, "https://tidycal.com/oauth/token");
@@ -286,7 +288,7 @@ Deno.test("index: the OAuth config names TidyCal's documented endpoints only", (
 
 // --- health ----------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -301,7 +303,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * the App at `unknown` forever. Both of TidyCal's absences are real: it
  * publishes no status page and no rate-limit signal.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   const unavailable = app.healthChecks.filter((h) => h.unavailable);
   assertEquals(unavailable.length, 2, "expected the service and quota absences");
   for (const h of unavailable) {
@@ -314,7 +316,7 @@ Deno.test("index: every unavailable health check is informational", () => {
  * not widen egress. TidyCal has nothing to widen to — the API and the site share
  * one host — so an empty `network.allow` is the correct answer, not an omission.
  */
-Deno.test("index: the api check is unsigned and widens no egress", () => {
+test("index: the api check is unsigned and widens no egress", () => {
   const check = app.healthChecks.find((h) => h.key === "api")!;
   assertEquals(check.credential, "none");
   assertEquals(check.scope, "app");
@@ -331,9 +333,9 @@ Deno.test("index: the api check is unsigned and widens no egress", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows exactly the one host the app calls", async () => {
+test("index: the manifest allows exactly the one host the app calls", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as {
     w6w: {
       id: string;
@@ -354,9 +356,9 @@ Deno.test("index: the manifest allows exactly the one host the app calls", async
  * No loopback, no wildcard, no placeholder. A `127.0.0.1` in a published app's
  * allowlist is a copy-paste from a starter template, not a host the app calls.
  */
-Deno.test("index: the egress allowlist contains no loopback or wildcard", async () => {
+test("index: the egress allowlist contains no loopback or wildcard", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { network: { allow: string[] } } };
   for (const host of manifest.w6w.network.allow) {
     assert(!/^127\.|localhost|^0\.0\.0\.0$|^\[?::1\]?$/.test(host), `loopback allowed: ${host}`);
@@ -364,8 +366,8 @@ Deno.test("index: the egress allowlist contains no loopback or wildcard", async 
   }
 });
 
-Deno.test("index: the icon is the vendor's mark, on the pack's canvas", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is the vendor's mark, on the pack's canvas", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   // Downloaded verbatim from https://tidycal.com/img/logo-icon.svg on
   // 2026-08-11: 2,029 bytes, md5 854fc2bca908c95fd52bc3ba228990ad, one path in
   // TidyCal's single brand blue. Nothing here was drawn by hand.
@@ -386,7 +388,7 @@ Deno.test("index: the icon is the vendor's mark, on the pack's canvas", async ()
   assert(svg.includes("#1569ef"), "the vendor brand colour is gone — the mark was redrawn");
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// bearer token\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

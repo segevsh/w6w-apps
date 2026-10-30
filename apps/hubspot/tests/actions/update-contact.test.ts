@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-contact.ts";
 
-Deno.test("update-contact: PATCHes /crm/v3/objects/contacts/{id} with a properties body", async () => {
+test("update-contact: PATCHes /crm/v3/objects/contacts/{id} with a properties body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await action.execute!({ id: "1", properties: { firstname: "Ada", age: 40 } }, ctx);
   assertEquals(calls[0].method, "PATCH");

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-get.ts";
 
 const display = { storeUrl: "https://shop.example.com" };
 
-Deno.test("order-get: GETs /orders/{id}", async () => {
+test("order-get: GETs /orders/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7 } }], { display });
   const result = await action.execute!({ orderId: "7" }, ctx);
   assertEquals(calls[0].method, "GET");

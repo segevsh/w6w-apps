@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bucket-iam-get.ts";
 
@@ -7,7 +8,7 @@ const policy = (bindings: Array<Record<string, unknown>>) => ({
   body: { bindings },
 });
 
-Deno.test("bucket-iam-get: reads the policy at version 3", async () => {
+test("bucket-iam-get: reads the policy at version 3", async () => {
   const { ctx, calls } = mockCtx([policy([
     { role: "roles/storage.objectViewer", members: ["user:a@example.com"] },
   ])]);
@@ -21,7 +22,7 @@ Deno.test("bucket-iam-get: reads the policy at version 3", async () => {
 });
 
 /** allUsers is the internet. */
-Deno.test("bucket-iam-get: flags allUsers and warns", async () => {
+test("bucket-iam-get: flags allUsers and warns", async () => {
   const { ctx, logs } = mockCtx([policy([
     { role: "roles/storage.objectViewer", members: ["allUsers"] },
   ])]);
@@ -35,7 +36,7 @@ Deno.test("bucket-iam-get: flags allUsers and warns", async () => {
  * The one granted by mistake, because "authenticated" reads as "our users"
  * and means anybody with a Google account.
  */
-Deno.test("bucket-iam-get: flags allAuthenticatedUsers separately, and says what it means", async () => {
+test("bucket-iam-get: flags allAuthenticatedUsers separately, and says what it means", async () => {
   const { ctx, logs } = mockCtx([policy([
     { role: "roles/storage.objectViewer", members: ["allAuthenticatedUsers"] },
   ])]);
@@ -45,7 +46,7 @@ Deno.test("bucket-iam-get: flags allAuthenticatedUsers separately, and says what
   assert(/not the same as anybody in your organisation/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("bucket-iam-get: an ordinary policy does not warn", async () => {
+test("bucket-iam-get: an ordinary policy does not warn", async () => {
   const { ctx, logs } = mockCtx([policy([
     { role: "roles/storage.admin", members: ["serviceAccount:x@y.iam.gserviceaccount.com"] },
   ])]);
@@ -55,7 +56,7 @@ Deno.test("bucket-iam-get: an ordinary policy does not warn", async () => {
 });
 
 /** Reading members without the condition overstates the access. */
-Deno.test("bucket-iam-get: counts conditional bindings and marks them", async () => {
+test("bucket-iam-get: counts conditional bindings and marks them", async () => {
   const { ctx } = mockCtx([policy([
     { role: "roles/storage.objectViewer", members: ["user:a@example.com"] },
     {
@@ -71,7 +72,7 @@ Deno.test("bucket-iam-get: counts conditional bindings and marks them", async ()
   assertEquals(bindings[1].conditional, true);
 });
 
-Deno.test("bucket-iam-get: members are deduplicated across bindings", async () => {
+test("bucket-iam-get: members are deduplicated across bindings", async () => {
   const { ctx } = mockCtx([policy([
     { role: "roles/storage.objectViewer", members: ["user:a@example.com"] },
     { role: "roles/storage.objectAdmin", members: ["user:a@example.com", "user:b@example.com"] },
@@ -81,14 +82,14 @@ Deno.test("bucket-iam-get: members are deduplicated across bindings", async () =
 });
 
 /** Project-level roles apply here and are not in this response. */
-Deno.test("bucket-iam-get: says this is not the whole picture", () => {
+test("bucket-iam-get: says this is not the whole picture", () => {
   assert(
     /Project-level roles apply too and are NOT in this response/.test(action.description!),
     action.description,
   );
 });
 
-Deno.test("bucket-iam-get: an empty policy is not an error", async () => {
+test("bucket-iam-get: an empty policy is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute({ bucket: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(result.memberCount, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bookTagList from "../../actions/book-tag-list.ts";
 import { mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("book-tag-list: GETs the tag collection without a trailing slash", async () => {
+test("book-tag-list: GETs the tag collection without a trailing slash", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, name: "philosophy" }]) }]);
   const out = await bookTagList.execute({ bookId: "59767830" }, ctx) as { count: number };
 

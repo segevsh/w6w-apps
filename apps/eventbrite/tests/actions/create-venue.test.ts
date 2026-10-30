@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-venue.ts";
 
-Deno.test("create-venue: POST wrapped venue with nested address", async () => {
+test("create-venue: POST wrapped venue with nested address", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "3" } }]);
   await action.execute!(
     {

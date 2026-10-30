@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voucherCodeVoid from "../../actions/voucher-code-void.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("voucher-code-void: POSTs to the nested void path", async () => {
+test("voucher-code-void: POSTs to the nested void path", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "vc_1", object: "voucher_code", voided: "true" } },
   ]);

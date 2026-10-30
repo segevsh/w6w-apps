@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-sent-messages.ts";
 
-Deno.test("get-sent-messages: metadata", () => {
+test("get-sent-messages: metadata", () => {
   assertEquals(action.key, "get-sent-messages");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -17,7 +18,7 @@ Deno.test("get-sent-messages: metadata", () => {
   ]);
 });
 
-Deno.test("get-sent-messages: calls GET /users/getSentMessages on the US host", async () => {
+test("get-sent-messages: calls GET /users/getSentMessages on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "messages": [{ "messageId": "m1" }] } }]);
   const out = await action.execute({
     "email": "abc",
@@ -40,7 +41,7 @@ Deno.test("get-sent-messages: calls GET /users/getSentMessages on the US host", 
   assertEquals(out, { "messages": [{ "messageId": "m1" }] });
 });
 
-Deno.test("get-sent-messages: uses the EU host when the connection region is eu", async () => {
+test("get-sent-messages: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "messages": [{ "messageId": "m1" }] } }], {
     connection: { display: { region: "eu" } },
   });
@@ -60,7 +61,7 @@ Deno.test("get-sent-messages: uses the EU host when the connection region is eu"
   );
 });
 
-Deno.test("get-sent-messages: rejects an input with no identifier without calling Iterable", async () => {
+test("get-sent-messages: rejects an input with no identifier without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -72,7 +73,7 @@ Deno.test("get-sent-messages: rejects an input with no identifier without callin
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-sent-messages: surfaces an HTTP error with Iterable's own code", async () => {
+test("get-sent-messages: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -92,7 +93,7 @@ Deno.test("get-sent-messages: surfaces an HTTP error with Iterable's own code", 
   );
 });
 
-Deno.test("get-sent-messages: treats a 200 carrying a non-Success code as a failure", async () => {
+test("get-sent-messages: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

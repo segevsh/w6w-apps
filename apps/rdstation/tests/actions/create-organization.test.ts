@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import createOrganization from "../../actions/create-organization.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-organization: POST /organizations with the {organization:{…}} body", async () => {
+test("create-organization: POST /organizations with the {organization:{…}} body", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "o1" } }]);
 
   await createOrganization.execute(
@@ -23,7 +24,7 @@ Deno.test("create-organization: POST /organizations with the {organization:{…}
   });
 });
 
-Deno.test("create-organization: unset fields are omitted", async () => {
+test("create-organization: unset fields are omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await createOrganization.execute({ name: "Acme" }, ctx);
@@ -31,7 +32,7 @@ Deno.test("create-organization: unset fields are omitted", async () => {
   assertEquals(bodyOf(calls[0]), { organization: { name: "Acme" } });
 });
 
-Deno.test("create-organization: only the four documented fields are exposed", () => {
+test("create-organization: only the four documented fields are exposed", () => {
   const keys = (createOrganization.params ?? []).map((p) => p.key).sort();
   assertEquals(keys, ["name", "resume", "url", "userId"]);
   assertEquals(createOrganization.idempotent, false);

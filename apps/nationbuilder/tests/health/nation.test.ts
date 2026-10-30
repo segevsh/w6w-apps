@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import nation from "../../health/nation.ts";
 
 /** An unsigned 401 from NationBuilder's documented error envelope has proved reachability. */
-Deno.test("nation: an unsigned 401 is a pass, not an outage", async () => {
+test("nation: an unsigned 401 is a pass, not an outage", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     status: 401,
     body: { code: "unauthorized", message: "You are not authorized." },
@@ -17,25 +18,25 @@ Deno.test("nation: an unsigned 401 is a pass, not an outage", async () => {
   assertEquals(nation.credential, "context");
 });
 
-Deno.test("nation: a 200 is also a pass", async () => {
+test("nation: a 200 is also a pass", async () => {
   const { ctx } = mockNationBuilderCtx([{ status: 200, body: { data: {} } }]);
   assertEquals((await nation.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("nation: a 404 is diagnosed as a missing/renamed nation", async () => {
+test("nation: a 404 is diagnosed as a missing/renamed nation", async () => {
   const { ctx } = mockNationBuilderCtx([{ status: 404, body: {} }]);
   const report = await nation.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message!.includes("not found"), report.message);
 });
 
-Deno.test("nation: a 5xx is down", async () => {
+test("nation: a 5xx is down", async () => {
   const { ctx } = mockNationBuilderCtx([{ status: 503, body: "" }]);
   const report = await nation.check!({}, ctx);
   assertEquals(report.state, "down");
 });
 
-Deno.test("nation: a connection with no slug is unknown, not down", async () => {
+test("nation: a connection with no slug is unknown, not down", async () => {
   const { ctx } = mockNationBuilderCtx([]);
   (ctx as { connection?: unknown }).connection = { display: {} };
   const report = await nation.check!({}, ctx);

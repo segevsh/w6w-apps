@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import service, {
   API_COMPONENT_ID,
   mapComponentStatus,
@@ -23,7 +24,7 @@ const summary = (apiStatus: string, storefront = "operational", indicator = "non
 // deno-lint-ignore no-explicit-any
 const run = (h: any, ctx: any) => h.check({}, ctx);
 
-Deno.test("health.service: verdict is the API V1 component's, not the page roll-up", async () => {
+test("health.service: verdict is the API V1 component's, not the page roll-up", async () => {
   const web = mockCtx([{ body: summary("operational", "major_outage", "critical") }]);
   assertEquals((await run(service, web.ctx)).state, "ok");
   assertEquals(web.calls[0].url, STATUS_URL);
@@ -34,7 +35,7 @@ Deno.test("health.service: verdict is the API V1 component's, not the page roll-
   assertEquals(r.message, "affected: API V1 (major_outage)");
 });
 
-Deno.test("health.service: wrong page id, bad status or unreadable body is unknown", async () => {
+test("health.service: wrong page id, bad status or unreadable body is unknown", async () => {
   const other = { ...summary("operational"), page: { id: "zzz", name: "Uscreen" } };
   assertEquals((await run(service, mockCtx([{ body: other }]).ctx)).state, "unknown");
   assertEquals((await run(service, mockCtx([{ status: 500, body: "x" }]).ctx)).state, "unknown");
@@ -45,7 +46,7 @@ Deno.test("health.service: wrong page id, bad status or unreadable body is unkno
   );
 });
 
-Deno.test("health.service: falls back to the indicator when API V1 is absent; vocab maps", async () => {
+test("health.service: falls back to the indicator when API V1 is absent; vocab maps", async () => {
   const noApi = {
     page: { id: PAGE_ID },
     status: { indicator: "minor" },
@@ -58,14 +59,14 @@ Deno.test("health.service: falls back to the indicator when API V1 is absent; vo
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("health.api: a schema-correct 401 from the unsigned probe is a pass", async () => {
+test("health.api: a schema-correct 401 from the unsigned probe is a pass", async () => {
   const ok = mockCtx([{ status: 401, body: { message: "Missing private API key" } }]);
   assertEquals((await run(api, ok.ctx)).state, "ok");
   assertEquals(ok.calls[0].headers["authorization"], undefined);
   assertEquals(api.credential, "none");
 });
 
-Deno.test("health.api: 5xx, HTML shells and foreign JSON are not a pass", async () => {
+test("health.api: 5xx, HTML shells and foreign JSON are not a pass", async () => {
   assertEquals(
     (await run(api, mockCtx([{ status: 503, body: { message: "x" } }]).ctx)).state,
     "down",
@@ -74,7 +75,7 @@ Deno.test("health.api: 5xx, HTML shells and foreign JSON are not a pass", async 
   assertEquals((await run(api, mockCtx([{ body: { hello: 1 } }]).ctx)).state, "unknown");
 });
 
-Deno.test("health.quota: a declared informational absence", () => {
+test("health.quota: a declared informational absence", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.unavailable?.reason, "string");
 });

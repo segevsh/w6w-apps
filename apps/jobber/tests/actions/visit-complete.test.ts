@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/visit-complete.ts";
 
-Deno.test("visit-complete: sends no input at all when the time is left to Jobber", async () => {
+test("visit-complete: sends no input at all when the time is left to Jobber", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { visitComplete: { visit: { id: "v1", isComplete: true }, userErrors: [] } } },
   }]);
@@ -10,7 +11,7 @@ Deno.test("visit-complete: sends no input at all when the time is left to Jobber
   assertEquals(JSON.parse(calls[0].body!).variables, { visitId: "v1" });
 });
 
-Deno.test("visit-complete: a backdated completion is passed through", async () => {
+test("visit-complete: a backdated completion is passed through", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { visitComplete: { visit: { id: "v1" }, userErrors: [] } } },
   }]);
@@ -21,7 +22,7 @@ Deno.test("visit-complete: a backdated completion is passed through", async () =
   });
 });
 
-Deno.test("visit-complete: never calls visitUncomplete", async () => {
+test("visit-complete: never calls visitUncomplete", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { visitComplete: { visit: { id: "v1" }, userErrors: [] } } },
   }]);

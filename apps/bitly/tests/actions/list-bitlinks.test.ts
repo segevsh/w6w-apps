@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-bitlinks.ts";
 
-Deno.test("list-bitlinks: GETs /groups/{groupGuid}/bitlinks and unwraps links + pagination", async () => {
+test("list-bitlinks: GETs /groups/{groupGuid}/bitlinks and unwraps links + pagination", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       links: [{ id: "bit.ly/a1", link: "https://bit.ly/a1", long_url: "https://a.com" }],
@@ -17,7 +18,7 @@ Deno.test("list-bitlinks: GETs /groups/{groupGuid}/bitlinks and unwraps links + 
   assertEquals(out.nextSearchAfter, "cursor-1");
 });
 
-Deno.test("list-bitlinks: passes query, archived and searchAfter through", async () => {
+test("list-bitlinks: passes query, archived and searchAfter through", async () => {
   const { ctx, calls } = mockCtx([{ body: { links: [] } }]);
   const out = await action.execute({
     groupGuid: "Ba1bc23dE4F",

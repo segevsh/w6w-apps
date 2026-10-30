@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, {
   API_COMPONENT_ID,
@@ -20,7 +21,7 @@ function summary(apiUsStatus: string) {
   };
 }
 
-Deno.test("service: maps Statuspage's component vocabulary", () => {
+test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -29,13 +30,13 @@ Deno.test("service: maps Statuspage's component vocabulary", () => {
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("service: finds API US by id, then by exact name — never matching API EU", () => {
+test("service: finds API US by id, then by exact name — never matching API EU", () => {
   assertEquals(findApiComponent([{ id: API_COMPONENT_ID, name: "renamed" }])?.id, API_COMPONENT_ID);
   assertEquals(findApiComponent([{ id: "x", name: "api us" }])?.id, "x");
   assertEquals(findApiComponent([{ id: "6ly03chn3njc", name: "API EU" }]), undefined);
 });
 
-Deno.test("service: verdict follows API US, not the page or API EU", async () => {
+test("service: verdict follows API US, not the page or API EU", async () => {
   const { ctx, calls } = mockCtx([{ body: summary("operational") }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.smartsuite.com/api/v2/summary.json");
@@ -45,7 +46,7 @@ Deno.test("service: verdict follows API US, not the page or API EU", async () =>
   assertEquals(report.components?.["6ly03chn3njc"]?.state, "down");
 });
 
-Deno.test("service: degraded and major-outage API US states come through", async () => {
+test("service: degraded and major-outage API US states come through", async () => {
   const degraded = await service.check!(
     {},
     mockCtx([{ body: summary("degraded_performance") }]).ctx,
@@ -55,24 +56,24 @@ Deno.test("service: degraded and major-outage API US states come through", async
   assertEquals(down.state, "down");
 });
 
-Deno.test("service: a missing API US component is unknown, not down", async () => {
+test("service: a missing API US component is unknown, not down", async () => {
   const { ctx } = mockCtx([{ body: { page: summary("ok").page, components: [] } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a status API failure is unknown, never down", async () => {
+test("service: a status API failure is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "nope" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as SmartSuite is unknown", async () => {
+test("service: a page that no longer self-identifies as SmartSuite is unknown", async () => {
   const body = summary("operational");
   body.page.url = "https://status.example.com";
   const { ctx } = mockCtx([{ body }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: declares the status host on its own allowlist, unsigned", () => {
+test("service: declares the status host on its own allowlist, unsigned", () => {
   assertEquals(service.network?.allow, ["status.smartsuite.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");

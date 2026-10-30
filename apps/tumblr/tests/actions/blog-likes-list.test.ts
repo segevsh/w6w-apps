@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import blogLikesList from "../../actions/blog-likes-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("blog-likes-list: calls GET /v2/blog/{id}/likes with query params", async () => {
+test("blog-likes-list: calls GET /v2/blog/{id}/likes with query params", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ liked_posts: [{ id: 1 }], liked_count: 1 }) },
   ]);
@@ -16,7 +17,7 @@ Deno.test("blog-likes-list: calls GET /v2/blog/{id}/likes with query params", as
   assertEquals(out.liked_count, 1);
 });
 
-Deno.test("blog-likes-list: omits unset offset/before/after", async () => {
+test("blog-likes-list: omits unset offset/before/after", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ liked_posts: [], liked_count: 0 }) }]);
   await blogLikesList.execute({ blogIdentifier: "staff.tumblr.com" }, ctx);
   assertEquals(queryOf(calls[0].url), {});

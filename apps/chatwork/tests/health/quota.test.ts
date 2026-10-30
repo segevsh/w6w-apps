@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: ok when comfortably under the limit", async () => {
+test("quota: ok when comfortably under the limit", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { account_id: 1 },
@@ -23,7 +24,7 @@ Deno.test("quota: ok when comfortably under the limit", async () => {
   });
 });
 
-Deno.test("quota: degraded when remaining is at or under the warn fraction", async () => {
+test("quota: degraded when remaining is at or under the warn fraction", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -33,7 +34,7 @@ Deno.test("quota: degraded when remaining is at or under the warn fraction", asy
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: down when the window is exhausted", async () => {
+test("quota: down when the window is exhausted", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -48,13 +49,13 @@ Deno.test("quota: down when the window is exhausted", async () => {
  * X-RateLimit-* headers alongside its 401. A missing header on success must
  * report unknown, never invent a reading of zero headroom.
  */
-Deno.test("quota: unknown when a 200 carries no rate-limit headers", async () => {
+test("quota: unknown when a 200 carries no rate-limit headers", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: unknown (not down) on a non-2xx — the headers say nothing about headroom", async () => {
+test("quota: unknown (not down) on a non-2xx — the headers say nothing about headroom", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Invalid API Token"] } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

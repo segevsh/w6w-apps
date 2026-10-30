@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-members.ts";
 
-Deno.test("list-members: POSTs the { sort, filter } envelope to members/list/", async () => {
+test("list-members: POSTs the { sort, filter } envelope to members/list/", async () => {
   const { ctx, calls } = mockCtx([{ body: { total: 1, offset: 0, limit: 100, items: [] } }]);
   const result = await action.execute!(
     { offset: 100, limit: 50, sort: [{ field: "last_name", direction: "asc" }] },
@@ -19,7 +20,7 @@ Deno.test("list-members: POSTs the { sort, filter } envelope to members/list/", 
   assertEquals(result, { total: 1, offset: 0, limit: 100, items: [] });
 });
 
-Deno.test("list-members: defaults limit to 100 and sends an empty body", async () => {
+test("list-members: defaults limit to 100 and sends an empty body", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "100");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-channels.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-channels: sends an empty body and returns the channels", async () => {
+test("list-channels: sends an empty body and returns the channels", async () => {
   const rows = [{
     channel_type: "code",
     channel_subtype: "",

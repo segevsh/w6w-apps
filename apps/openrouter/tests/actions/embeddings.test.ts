@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/embeddings.ts";
 
-Deno.test("embeddings: POSTs /embeddings with model and input", async () => {
+test("embeddings: POSTs /embeddings with model and input", async () => {
   const body = { data: [{ embedding: [0.1, 0.2] }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -20,7 +21,7 @@ Deno.test("embeddings: POSTs /embeddings with model and input", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("embeddings: forwards an array input for batch requests", async () => {
+test("embeddings: forwards an array input for batch requests", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { model: "openai/text-embedding-3-small", input: ["a", "b", "c"] },
@@ -30,7 +31,7 @@ Deno.test("embeddings: forwards an array input for batch requests", async () => 
   assertEquals(sent.input, ["a", "b", "c"]);
 });
 
-Deno.test("embeddings: forwards dimensions and encoding_format when set", async () => {
+test("embeddings: forwards dimensions and encoding_format when set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -46,7 +47,7 @@ Deno.test("embeddings: forwards dimensions and encoding_format when set", async 
   assertEquals(sent.encoding_format, "base64");
 });
 
-Deno.test("embeddings: omits dimensions/encoding_format when unset", async () => {
+test("embeddings: omits dimensions/encoding_format when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "m", input: "x" }, ctx);
   const sent = JSON.parse(calls[0].body!);

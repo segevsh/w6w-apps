@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import userSearch from "../../actions/user-search.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("user-search: GET /v1/users with the documented parameters", async () => {
+test("user-search: GET /v1/users with the documented parameters", async () => {
   const response = { users: [{ id: "u1" }], total: 1, hasNextPage: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await userSearch.execute(
@@ -18,7 +19,7 @@ Deno.test("user-search: GET /v1/users with the documented parameters", async () 
   assertEquals(out, response);
 });
 
-Deno.test("user-search: a vendor error surfaces its own message and id", async () => {
+test("user-search: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -31,7 +32,7 @@ Deno.test("user-search: a vendor error surfaces its own message and id", async (
   );
 });
 
-Deno.test("user-search: a blank query is refused before any request", async () => {
+test("user-search: a blank query is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await userSearch.execute({ query: " " }, ctx), Error, "query");
   assertEquals(calls.length, 0);

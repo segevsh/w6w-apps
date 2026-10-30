@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import notificationSettingUpdate from "../../actions/notification-setting-update.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("notification-setting-update: POST /api/v3/notifications_settings/update with every documented parameter", async () => {
+test("notification-setting-update: POST /api/v3/notifications_settings/update with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await notificationSettingUpdate.execute({
     "workspaceId": 100,
@@ -22,7 +23,7 @@ Deno.test("notification-setting-update: POST /api/v3/notifications_settings/upda
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("notification-setting-update: sends a form body, never a query string", async () => {
+test("notification-setting-update: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await notificationSettingUpdate.execute({
     "workspaceId": 100,
@@ -34,11 +35,11 @@ Deno.test("notification-setting-update: sends a form body, never a query string"
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("notification-setting-update: is declared idempotent", () => {
+test("notification-setting-update: is declared idempotent", () => {
   assertEquals(notificationSettingUpdate.idempotent, true);
 });
 
-Deno.test("notification-setting-update: sends no credential of its own", async () => {
+test("notification-setting-update: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await notificationSettingUpdate.execute({
     "workspaceId": 100,
@@ -49,7 +50,7 @@ Deno.test("notification-setting-update: sends no credential of its own", async (
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("notification-setting-update: surfaces Twist's error body", async () => {
+test("notification-setting-update: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

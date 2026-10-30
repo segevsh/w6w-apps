@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
 const cred = { token: "9876987698769876987698769876987698769876" };
 
-Deno.test("access-token: signs as a bearer", () => {
+test("access-token: signs as a bearer", () => {
   const request = {
     url: "https://api.particle.io/v1/devices",
     headers: {} as Record<string, string>,
@@ -17,7 +18,7 @@ Deno.test("access-token: signs as a bearer", () => {
   assertEquals(auth.type, "bearer");
 });
 
-Deno.test("access-token: the test names the account", async () => {
+test("access-token: the test names the account", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { username: "ops@example.com" } }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(calls[0].url, "https://api.particle.io/v1/user");
@@ -26,21 +27,21 @@ Deno.test("access-token: the test names the account", async () => {
 });
 
 /** A product token has no user behind it, and that is a working credential. */
-Deno.test("access-token: a 403 on /v1/user is a product token, not a failure", async () => {
+test("access-token: a 403 on /v1/user is a product token, not a failure", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "forbidden" } }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, true);
   assert(/PRODUCT token/.test(result.message!), result.message);
 });
 
-Deno.test("access-token: a rejected token names expiry as a cause", async () => {
+test("access-token: a rejected token names expiry as a cause", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "invalid_token" } }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
   assert(/90 days/.test(result.message!), result.message);
 });
 
-Deno.test("access-token: a missing token or an unreachable API fails cleanly", async () => {
+test("access-token: a missing token or an unreachable API fails cleanly", async () => {
   const none = mockCtx([]);
   assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);
@@ -52,7 +53,7 @@ Deno.test("access-token: a missing token or an unreachable API fails cleanly", a
   assertEquals((await auth.test!({ credential: cred } as never, offline)).ok, false);
 });
 
-Deno.test("access-token: afterConnect records which kind of token this is", async () => {
+test("access-token: afterConnect records which kind of token this is", async () => {
   const user = mockCtx([{ status: 200, body: { username: "ops@example.com" } }]);
   const userDisplay = await auth.afterConnect!({ credential: cred }, user.ctx) as Record<
     string,
@@ -70,13 +71,13 @@ Deno.test("access-token: afterConnect records which kind of token this is", asyn
   assertEquals(productDisplay.username, undefined);
 });
 
-Deno.test("access-token: afterConnect survives another failure", async () => {
+test("access-token: afterConnect survives another failure", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: cred }, ctx), {});
 });
 
 /** There is no per-device scoping on a user token. */
-Deno.test("access-token: says the token is the whole fleet, and that it expires", () => {
+test("access-token: says the token is the whole fleet, and that it expires", () => {
   assert(/carries the whole device fleet/.test(auth.description!), auth.description);
   assert(/EXPIRES AFTER 90 DAYS/.test(auth.description!), auth.description);
   const field = auth.fields!.find((f) => f.key === "token")!;

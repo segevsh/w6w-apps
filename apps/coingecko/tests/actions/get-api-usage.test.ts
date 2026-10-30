@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-api-usage.ts";
 
-Deno.test("get-api-usage: calls the documented path with the mapped query", async () => {
+test("get-api-usage: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { plan: "Analyst", monthly_call_credit: 500000 },
@@ -15,7 +16,7 @@ Deno.test("get-api-usage: calls the documented path with the mapped query", asyn
   assert(out !== undefined);
 });
 
-Deno.test("get-api-usage: a vendor error body becomes a readable error", async () => {
+test("get-api-usage: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-search.ts";
 
@@ -17,7 +18,7 @@ const result = (found: number) => ({
   },
 });
 
-Deno.test("document-search: sends q and query_by, and returns the documents", async () => {
+test("document-search: sends q and query_by, and returns the documents", async () => {
   const { ctx, calls } = mockCtx([result(42)], D);
   const output = await action.execute(base, ctx) as Record<string, unknown>;
   const url = new URL(calls[0].url);
@@ -32,7 +33,7 @@ Deno.test("document-search: sends q and query_by, and returns the documents", as
  * The behaviour this app exists to surface: below ten hits Typesense drops
  * query words, and nothing in the response says so.
  */
-Deno.test("document-search: strict turns off both widening thresholds", async () => {
+test("document-search: strict turns off both widening thresholds", async () => {
   const loose = mockCtx([result(42)], D);
   await action.execute(base, loose.ctx);
   const loosely = new URL(loose.calls[0].url).searchParams;
@@ -47,7 +48,7 @@ Deno.test("document-search: strict turns off both widening thresholds", async ()
   assertEquals(strictly.get("num_typos"), "0");
 });
 
-Deno.test("document-search: a thin non-strict result is flagged as possibly widened", async () => {
+test("document-search: a thin non-strict result is flagged as possibly widened", async () => {
   const thin = mockCtx([result(4)], D);
   const output = await action.execute(base, thin.ctx) as Record<string, unknown>;
   assertEquals(output.mayHaveBeenWidened, true);
@@ -61,7 +62,7 @@ Deno.test("document-search: a thin non-strict result is flagged as possibly wide
   assertEquals(many.mayHaveBeenWidened, false);
 });
 
-Deno.test("document-search: a strict thin result is not flagged", async () => {
+test("document-search: a strict thin result is not flagged", async () => {
   const { ctx, logs } = mockCtx([result(2)], D);
   const output = await action.execute({ ...base, strict: true }, ctx) as Record<string, unknown>;
   assertEquals(output.mayHaveBeenWidened, false);
@@ -69,7 +70,7 @@ Deno.test("document-search: a strict thin result is not flagged", async () => {
 });
 
 /** Only the fields named are searched. */
-Deno.test("document-search: refuses without query_by, and says what happens without it", async () => {
+test("document-search: refuses without query_by, and says what happens without it", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ ...base, queryBy: "" }, ctx),
@@ -79,7 +80,7 @@ Deno.test("document-search: refuses without query_by, and says what happens with
   assertEquals(calls.length, 0);
 });
 
-Deno.test("document-search: refuses without q, and points at the star", async () => {
+test("document-search: refuses without q, and points at the star", async () => {
   const { ctx } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ ...base, q: "" }, ctx),
@@ -88,7 +89,7 @@ Deno.test("document-search: refuses without q, and points at the star", async ()
   assert(/use `\*` to match everything/.test(err.message), err.message);
 });
 
-Deno.test("document-search: filters, sorts, facets and paging reach the query", async () => {
+test("document-search: filters, sorts, facets and paging reach the query", async () => {
   const { ctx, calls } = mockCtx([result(1)], D);
   await action.execute({
     ...base,
@@ -108,14 +109,14 @@ Deno.test("document-search: filters, sorts, facets and paging reach the query", 
   assertEquals(q.get("include_fields"), "id,name");
 });
 
-Deno.test("document-search: per_page is clamped to what Typesense accepts", async () => {
+test("document-search: per_page is clamped to what Typesense accepts", async () => {
   const { ctx, calls } = mockCtx([result(1)], D);
   await action.execute({ ...base, perPage: 9999 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("per_page"), "250");
 });
 
 /** The documents are the customer's data. */
-Deno.test("document-search: logs counts, never the documents", async () => {
+test("document-search: logs counts, never the documents", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: { found: 1, hits: [{ document: { id: "1", email: "ada@example.com" } }] },

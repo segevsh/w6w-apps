@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectList from "../../actions/project-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-list: GET /api/v1/projects, no filters sends no query", async () => {
+test("project-list: GET /api/v1/projects, no filters sends no query", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "p1" }], "cur1") }]);
   const out = await projectList.execute({}, ctx) as {
     values: unknown[];
@@ -15,7 +16,7 @@ Deno.test("project-list: GET /api/v1/projects, no filters sends no query", async
   assertEquals(out.pagination.after, "cur1");
 });
 
-Deno.test("project-list: filters, flags, lists and cursor reach the query", async () => {
+test("project-list: filters, flags, lists and cursor reach the query", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await projectList.execute({
     statuses: ["Live", "Draft"],
@@ -39,7 +40,7 @@ Deno.test("project-list: filters, flags, lists and cursor reach the query", asyn
   });
 });
 
-Deno.test("project-list: a structured error surfaces code and message", async () => {
+test("project-list: a structured error surfaces code and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("FORBIDDEN", "Insufficient access") }]);
   const err = await assertRejects(() => Promise.resolve(projectList.execute({}, ctx)), Error);
   assertEquals(

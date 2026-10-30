@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workorderUpdate from "../../actions/workorder-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workorder-update: PATCH /v1/workorders/{id} sends only set fields and unwraps", async () => {
+test("workorder-update: PATCH /v1/workorders/{id} sends only set fields and unwraps", async () => {
   const { ctx, calls } = mockCtx([{ body: { workOrder: { id: 5, title: "New" } } }]);
   const out = await workorderUpdate.execute(
     { workOrderId: 5, title: "New", dueDate: "2026-12-01T00:00:00.000Z" },
@@ -14,7 +15,7 @@ Deno.test("workorder-update: PATCH /v1/workorders/{id} sends only set fields and
   assertEquals(out, { id: 5, title: "New" });
 });
 
-Deno.test("workorder-update: status is not part of the body", async () => {
+test("workorder-update: status is not part of the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { workOrder: {} } }]);
   await workorderUpdate.execute({ workOrderId: 1, assigneeTeamIds: "2" } as never, ctx);
   assertEquals(bodyOf(calls[0]), { assignees: [{ type: "TEAM", id: 2 }] });

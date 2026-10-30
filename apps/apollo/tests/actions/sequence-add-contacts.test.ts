@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceAddContacts from "../../actions/sequence-add-contacts.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sequence-add-contacts: fills emailer_campaign_id from the path param automatically", async () => {
+test("sequence-add-contacts: fills emailer_campaign_id from the path param automatically", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [{ id: "c1" }], skipped_contact_ids: [] } }]);
   const out = await sequenceAddContacts.execute(
     { sequence_id: "seq1", contact_ids: "c1,c2", send_email_from_email_account_id: "ea1" },

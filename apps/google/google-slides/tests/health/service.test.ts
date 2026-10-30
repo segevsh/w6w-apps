@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: probes the Workspace status dashboard, not an API host", () => {
+test("service: probes the Workspace status dashboard, not an API host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["www.google.com"]);
   assertEquals(service.minIntervalSeconds, 120);
@@ -12,7 +13,7 @@ Deno.test("service: probes the Workspace status dashboard, not an API host", () 
   assertEquals(service.credential, undefined);
 });
 
-Deno.test("service: reports ok when no Google Slides incident is open", async () => {
+test("service: reports ok when no Google Slides incident is open", async () => {
   const { ctx, calls } = mockCtx([{
     body: [
       {
@@ -29,7 +30,7 @@ Deno.test("service: reports ok when no Google Slides incident is open", async ()
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an open Slides outage reports down with the vendor description", async () => {
+test("service: an open Slides outage reports down with the vendor description", async () => {
   const { ctx } = mockCtx([{
     body: [{
       service_name: "Google Slides",
@@ -42,7 +43,7 @@ Deno.test("service: an open Slides outage reports down with the vendor descripti
   assertEquals(report.message, "Users cannot open presentations");
 });
 
-Deno.test("service: a disruption is degraded, information is ok", async () => {
+test("service: a disruption is degraded, information is ok", async () => {
   const { ctx } = mockCtx([{
     body: [
       { service_name: "Google Slides", status_impact: "SERVICE_DISRUPTION", external_desc: "Slow" },
@@ -54,19 +55,19 @@ Deno.test("service: a disruption is degraded, information is ok", async () => {
   assertEquals(report.message, "Slow; FYI");
 });
 
-Deno.test("service: an unrelated Workspace outage does not drag Slides down", async () => {
+test("service: an unrelated Workspace outage does not drag Slides down", async () => {
   const { ctx } = mockCtx([{
     body: [{ service_name: "Google Meet", status_impact: "SERVICE_OUTAGE", external_desc: "Down" }],
   }]);
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: reports unknown, never down, when the dashboard itself fails", async () => {
+test("service: reports unknown, never down, when the dashboard itself fails", async () => {
   const { ctx } = mockCtx([{ status: 503, statusText: "Service Unavailable", body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: reports unknown on an unexpected payload shape", async () => {
+test("service: reports unknown on an unexpected payload shape", async () => {
   const { ctx } = mockCtx([{ body: { incidents: [] } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-verification.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-verification: maps the lifecycle record", async () => {
+test("get-verification: maps the lifecycle record", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -30,7 +31,7 @@ Deno.test("get-verification: maps the lifecycle record", async () => {
   ]);
 });
 
-Deno.test("get-verification: 404 throws", async () => {
+test("get-verification: 404 throws", async () => {
   await assertRejects(
     () =>
       run(

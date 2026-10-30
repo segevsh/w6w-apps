@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callUpdate from "../../actions/call-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-update: PUTs tags as an array and other fields verbatim", async () => {
+test("call-update: PUTs tags as an array and other fields verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "CAL1", customer_name: "James Smith" } }]);
   const out = await callUpdate.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("call-update: PUTs tags as an array and other fields verbatim", async 
   assertEquals(out, { id: "CAL1", customer_name: "James Smith" });
 });
 
-Deno.test("call-update: an unset field is omitted from the body, not sent as null", async () => {
+test("call-update: an unset field is omitted from the body, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await callUpdate.execute({ accountId: "ACC1", callId: "CAL1", note: "hi" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -39,6 +40,6 @@ Deno.test("call-update: an unset field is omitted from the body, not sent as nul
   assertEquals(body.note, "hi");
 });
 
-Deno.test("call-update: idempotent — repeating the same update converges on the same state", () => {
+test("call-update: idempotent — repeating the same update converges on the same state", () => {
   assertEquals(callUpdate.idempotent, true);
 });

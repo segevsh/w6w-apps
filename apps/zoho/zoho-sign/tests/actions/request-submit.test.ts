@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/request-submit.ts";
 
-Deno.test("request-submit: urlencoded POST to /requests/{id}/submit with a data= body", async () => {
+test("request-submit: urlencoded POST to /requests/{id}/submit with a data= body", async () => {
   const { ctx, calls } = mockSignCtx([
     {
       body: {

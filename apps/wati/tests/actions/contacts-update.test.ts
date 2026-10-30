@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-update.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("contacts-update: PUTs /contacts, passing `customParams` (camelCase) through verbatim", async () => {
+test("contacts-update: PUTs /contacts, passing `customParams` (camelCase) through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { contact_list: [] } }], conn);
   const contacts = [
     { target: "1415552671", customParams: [{ name: "age", value: "30" }] },
@@ -15,7 +16,7 @@ Deno.test("contacts-update: PUTs /contacts, passing `customParams` (camelCase) t
   assertEquals(JSON.parse(calls[0].body!), { contacts });
 });
 
-Deno.test("contacts-update: accepts `contacts` as a JSON string too", async () => {
+test("contacts-update: accepts `contacts` as a JSON string too", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { contact_list: [] } }], conn);
   await action.execute({ contacts: '[{"target":"1415552671","customParams":[]}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {
@@ -23,6 +24,6 @@ Deno.test("contacts-update: accepts `contacts` as a JSON string too", async () =
   });
 });
 
-Deno.test("contacts-update: is idempotent (a replace, not an append)", () => {
+test("contacts-update: is idempotent (a replace, not an append)", () => {
   assertEquals(action.idempotent, true);
 });

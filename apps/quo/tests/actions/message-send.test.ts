@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageSend from "../../actions/message-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("message-send: POSTs /v1/messages with content/from/to and optional fields", async () => {
+test("message-send: POSTs /v1/messages with content/from/to and optional fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 202,
     body: { data: { id: "AC1", status: "queued" } },
@@ -22,7 +23,7 @@ Deno.test("message-send: POSTs /v1/messages with content/from/to and optional fi
   assertEquals(out.data.id, "AC1");
 });
 
-Deno.test("message-send: omits optional fields when not provided", async () => {
+test("message-send: omits optional fields when not provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: { id: "AC1" } } }]);
   await messageSend.execute({ content: "hi", from: "PN1", to: ["+15555555555"] }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -30,7 +31,7 @@ Deno.test("message-send: omits optional fields when not provided", async () => {
   assertEquals("setInboxStatus" in body, false);
 });
 
-Deno.test("message-send: is a non-idempotent perform action", () => {
+test("message-send: is a non-idempotent perform action", () => {
   assertEquals(messageSend.type, "perform");
   assertEquals(messageSend.idempotent, false);
 });

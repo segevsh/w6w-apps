@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: ok with credits, down at zero, reports the figure", async () => {
+test("quota: ok with credits, down at zero, reports the figure", async () => {
   const ok = mockCtx([{ body: { credits: 40 } }]);
   const r = await quota.check!({}, ok.ctx);
   assertEquals(r.state, "ok");
@@ -12,7 +13,7 @@ Deno.test("quota: ok with credits, down at zero, reports the figure", async () =
   assertEquals((await quota.check!({}, zero.ctx)).state, "down");
 });
 
-Deno.test("quota: an error body or non-2xx is unknown, never a credit verdict", async () => {
+test("quota: an error body or non-2xx is unknown, never a credit verdict", async () => {
   const err = mockCtx([{ body: { result: "error", error: "apikey_not_found" } }]);
   const r = await quota.check!({}, err.ctx);
   assertEquals(r.state, "unknown");

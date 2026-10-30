@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   AlgoliaClient,
@@ -13,7 +14,7 @@ import {
 
 const display = { appId: "APPID" };
 
-Deno.test("hosts: reads go to the DSN host, writes to the primary", () => {
+test("hosts: reads go to the DSN host, writes to the primary", () => {
   // The builders preserve the app id's case...
   assertEquals(READ_HOST("APPID"), "https://APPID-dsn.algolia.net");
   assertEquals(WRITE_HOST("APPID"), "https://APPID.algolia.net");
@@ -24,19 +25,19 @@ Deno.test("hosts: reads go to the DSN host, writes to the primary", () => {
  * normalisation. Harmless — DNS is case-insensitive — but asserted so nobody
  * later "fixes" a lowercase host thinking it is a bug.
  */
-Deno.test("hosts: URL normalisation lowercases the host on the wire", async () => {
+test("hosts: URL normalisation lowercases the host on the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await new AlgoliaClient(ctx).request("/1/indexes", { read: true });
   assertEquals(new URL(calls[0].url).host, "appid-dsn.algolia.net");
 });
 
-Deno.test("resolveAppId: a connection with no app id is a directive error", () => {
+test("resolveAppId: a connection with no app id is a directive error", () => {
   assertEquals(resolveAppId({ display: { appId: "APPID" } } as never), "APPID");
   const err = assertThrows(() => resolveAppId({ display: {} } as never), Error);
   assert(err.message.includes("reconnect"), err.message);
 });
 
-Deno.test("compact: drops unset keys and empty arrays, keeps false and zero", () => {
+test("compact: drops unset keys and empty arrays, keeps false and zero", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, g: [] }), {
     a: 1,
     e: false,
@@ -44,13 +45,13 @@ Deno.test("compact: drops unset keys and empty arrays, keeps false and zero", ()
   });
 });
 
-Deno.test("csv: takes a comma string or a live array", () => {
+test("csv: takes a comma string or a live array", () => {
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv(["a"]), ["a"]);
   assertEquals(csv(""), undefined);
 });
 
-Deno.test("json / jsonObject: parse, and reject the wrong shape by name", () => {
+test("json / jsonObject: parse, and reject the wrong shape by name", () => {
   assertEquals(json('{"a":1}', "record"), { a: 1 });
   assertEquals(jsonObject('{"a":1}', "record"), { a: 1 });
   assertEquals(jsonObject("", "record"), undefined);
@@ -61,7 +62,7 @@ Deno.test("json / jsonObject: parse, and reject the wrong shape by name", () => 
   assert(bad.message.includes("settings"), bad.message);
 });
 
-Deno.test("client: a read goes to the DSN host and a write to the primary", async () => {
+test("client: a read goes to the DSN host and a write to the primary", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }, { status: 200, body: {} }], {
     display,
   });
@@ -72,7 +73,7 @@ Deno.test("client: a read goes to the DSN host and a write to the primary", asyn
   assertEquals(calls[1].url, "https://appid.algolia.net/1/indexes/products");
 });
 
-Deno.test("client: never sets the credential headers — signing is the host's job", async () => {
+test("client: never sets the credential headers — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await new AlgoliaClient(ctx).request("/1/indexes", { read: true });
   assertEquals(calls[0].headers["x-algolia-api-key"], undefined);
@@ -80,7 +81,7 @@ Deno.test("client: never sets the credential headers — signing is the host's j
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: a failure surfaces the status and Algolia's own message", async () => {
+test("client: a failure surfaces the status and Algolia's own message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { message: "Not enough rights to update an object near line:1 column:12", status: 403 },
@@ -93,7 +94,7 @@ Deno.test("client: a failure surfaces the status and Algolia's own message", asy
   assert(err.message.includes("Not enough rights"), err.message);
 });
 
-Deno.test("client: 204 comes back as undefined", async () => {
+test("client: 204 comes back as undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }], { display });
   assertEquals(
     await new AlgoliaClient(ctx).request("/1/indexes/x", { method: "DELETE" }),

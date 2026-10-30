@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/service-list.ts";
 
-Deno.test("service-list: falls back to the connection's recorded workspace id", async () => {
+test("service-list: falls back to the connection's recorded workspace id", async () => {
   const { ctx, calls } = mockBookingsCtx(
     [{ body: { response: { status: "success", returnvalue: { data: [] } } } }],
     "www.zohoapis.com",
@@ -14,7 +15,7 @@ Deno.test("service-list: falls back to the connection's recorded workspace id", 
   assertEquals(url.searchParams.get("workspace_id"), "3848021000000027004");
 });
 
-Deno.test("service-list: an explicit workspaceId overrides the connection default", async () => {
+test("service-list: an explicit workspaceId overrides the connection default", async () => {
   const { ctx, calls } = mockBookingsCtx([
     { body: { response: { status: "success", returnvalue: { data: [] } } } },
   ]);
@@ -25,7 +26,7 @@ Deno.test("service-list: an explicit workspaceId overrides the connection defaul
   assertEquals(url.searchParams.get("staff_id"), "6");
 });
 
-Deno.test("service-list: throws an actionable error when no workspace id is known anywhere", async () => {
+test("service-list: throws an actionable error when no workspace id is known anywhere", async () => {
   const { ctx } = mockBookingsCtx([], "www.zohoapis.com", "");
   await assertRejects(() => Promise.resolve(action.execute({}, ctx)), Error, "List Workspaces");
 });

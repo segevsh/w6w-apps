@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import responseList from "../../actions/response-list.ts";
 import { errorBody, listPage, mockCtx } from "../_helpers.ts";
 
-Deno.test("response-list: sends scalar filters, arrays and bracketed object filters", async () => {
+test("response-list: sends scalar filters, arrays and bracketed object filters", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ uuid: "r1" }], { next_page_cursor: "n" }) }]);
   const out = await responseList.execute(
     {
@@ -42,13 +43,13 @@ Deno.test("response-list: sends scalar filters, arrays and bracketed object filt
   assertEquals(out.pagination.next_page_cursor, "n");
 });
 
-Deno.test("response-list: no filters means no query string", async () => {
+test("response-list: no filters means no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([]) }]);
   await responseList.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("response-list: a malformed filter object fails before any fetch", async () => {
+test("response-list: a malformed filter object fails before any fetch", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(responseList.execute({ responseData: "{bad" }, ctx)),
@@ -58,7 +59,7 @@ Deno.test("response-list: a malformed filter object fails before any fetch", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("response-list: a vendor error surfaces its own message", async () => {
+test("response-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(responseList.execute({}, ctx)),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quoteLineItemsList from "../../actions/quote-line-items-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quote-line-items-list: reads the nested route", async () => {
+test("quote-line-items-list: reads the nested route", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: 1, name: "Design", quantity: "2", unitRate: 120 }] },
   ]);

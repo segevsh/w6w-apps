@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import userMe from "../../actions/user-me.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-me: GET /users/me with the documented query and body", async () => {
+test("user-me: GET /users/me with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await userMe.execute({}, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("user-me: GET /users/me with the documented query and body", async () 
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("user-me: an Everhour error surfaces its message and status", async () => {
+test("user-me: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(userMe.execute({}, ctx)),
@@ -30,6 +31,6 @@ Deno.test("user-me: an Everhour error surfaces its message and status", async ()
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("user-me: declares read", () => {
+test("user-me: declares read", () => {
   assertEquals(userMe.type, "read");
 });

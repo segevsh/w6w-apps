@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-get: GETs the documented path", async () => {
+test("user-get: GETs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "u1", username: "ann" } } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("user-get: GETs the documented path", async () => {
   assertEquals(out, { data: { id: "u1", username: "ann" } });
 });
 
-Deno.test("user-get: a vendor error reports status and message", async () => {
+test("user-get: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () => await action.execute!({}, ctx),

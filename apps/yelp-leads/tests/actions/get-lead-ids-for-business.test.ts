@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getLeadIdsForBusiness from "../../actions/get-lead-ids-for-business.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-lead-ids-for-business: no optional params sends no query", async () => {
+test("get-lead-ids-for-business: no optional params sends no query", async () => {
   const { ctx, calls } = mockCtx([{ body: { lead_ids: [], has_more: false } }]);
   await getLeadIdsForBusiness.execute({ businessId: "biz1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("get-lead-ids-for-business: no optional params sends no query", async 
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("get-lead-ids-for-business: forwards pagination and time-range params", async () => {
+test("get-lead-ids-for-business: forwards pagination and time-range params", async () => {
   const { ctx, calls } = mockCtx([{ body: { lead_ids: [], has_more: false } }]);
   await getLeadIdsForBusiness.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("get-lead-ids-for-business: forwards pagination and time-range params"
   });
 });
 
-Deno.test("get-lead-ids-for-business: returns lead_ids and has_more", async () => {
+test("get-lead-ids-for-business: returns lead_ids and has_more", async () => {
   const body = { lead_ids: ["18kPq7GPye-YQ3LyKyAZPw", "loPSlzp6M628rzyCRPqrv3tC"], has_more: true };
   const { ctx } = mockCtx([{ body }]);
   const result = await getLeadIdsForBusiness.execute({ businessId: "biz1" }, ctx);

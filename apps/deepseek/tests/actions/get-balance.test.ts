@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-balance.ts";
 
-Deno.test("get-balance: GETs /user/balance and returns the body verbatim", async () => {
+test("get-balance: GETs /user/balance and returns the body verbatim", async () => {
   const body = {
     is_available: true,
     balance_infos: [
@@ -24,7 +25,7 @@ Deno.test("get-balance: GETs /user/balance and returns the body verbatim", async
   assertEquals(result, body);
 });
 
-Deno.test("get-balance: is a read action with no params", () => {
+test("get-balance: is a read action with no params", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params, []);
 });

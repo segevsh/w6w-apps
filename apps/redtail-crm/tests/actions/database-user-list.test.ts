@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import databaseUserList from "../../actions/database-user-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("database-user-list: fetches GET /lists/database_users?page=N", async () => {
+test("database-user-list: fetches GET /lists/database_users?page=N", async () => {
   const { ctx, calls } = mockCtx([{
     body: { database_users: [{ id: 280717, first_name: "TWAPI", last_name: "TWAPI" }] },
   }]);

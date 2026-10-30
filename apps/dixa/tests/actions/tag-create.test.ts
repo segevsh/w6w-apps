@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-create: calls POST /v1/tags", async () => {
+test("tag-create: calls POST /v1/tags", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -25,7 +26,7 @@ Deno.test("tag-create: calls POST /v1/tags", async () => {
   });
 });
 
-Deno.test("tag-create: surfaces a Dixa error message with the status", async () => {
+test("tag-create: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -37,7 +38,7 @@ Deno.test("tag-create: surfaces a Dixa error message with the status", async () 
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("tag-create: rejects bad input before any request", async () => {
+test("tag-create: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

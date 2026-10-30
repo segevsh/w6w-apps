@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/item-group-get.ts";
 
-Deno.test("item-group-get: fetches every variation in the group", async () => {
+test("item-group-get: fetches every variation in the group", async () => {
   const { ctx, calls } = mockCtx([{
     body: { items: [{ itemId: "v1|1|1" }, { itemId: "v1|1|2" }] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("item-group-get: fetches every variation in the group", async () => {
   assertEquals(result, { items: [{ itemId: "v1|1|1" }, { itemId: "v1|1|2" }] });
 });
 
-Deno.test("item-group-get: itemGroupId is required", async () => {
+test("item-group-get: itemGroupId is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!({ itemGroupId: "" }, ctx)),

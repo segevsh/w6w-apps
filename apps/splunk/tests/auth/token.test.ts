@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/token.ts";
 
-Deno.test("token: collects the stack hostname alongside the credential", () => {
+test("token: collects the stack hostname alongside the credential", () => {
   assertEquals(auth.key, "token");
   assertEquals(auth.type, "apiKey");
   const keys = auth.fields?.map((f) => f.key);
@@ -13,7 +14,7 @@ Deno.test("token: collects the stack hostname alongside the credential", () => {
   assertEquals(auth.fields?.find((f) => f.key === "stack")?.type, "string");
 });
 
-Deno.test("token: sign stamps a Bearer Authorization header", async () => {
+test("token: sign stamps a Bearer Authorization header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.splunkcloud.com:8089/services/search/jobs",
@@ -24,7 +25,7 @@ Deno.test("token: sign stamps a Bearer Authorization header", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("token: test refuses a half-filled credential without a request", async () => {
+test("token: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { stack: "acme.splunkcloud.com" } }, ctx), {
     ok: false,
@@ -33,7 +34,7 @@ Deno.test("token: test refuses a half-filled credential without a request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("token: test probes the stack's current-context endpoint", async () => {
+test("token: test probes the stack's current-context endpoint", async () => {
   const ok = mockCtx([{ body: { entry: [{ content: { username: "admin" } }] } }]);
   assertEquals(
     await auth.test(
@@ -49,7 +50,7 @@ Deno.test("token: test probes the stack's current-context endpoint", async () =>
   assertEquals(ok.calls[0].headers["authorization"], "Bearer t");
 });
 
-Deno.test("token: afterConnect records the stack and username for the client to use", async () => {
+test("token: afterConnect records the stack and username for the client to use", async () => {
   const { ctx } = mockCtx([{
     body: { entry: [{ content: { username: "admin", realname: "Administrator" } }] },
   }]);
@@ -64,7 +65,7 @@ Deno.test("token: afterConnect records the stack and username for the client to 
   });
 });
 
-Deno.test("token: afterConnect still records the stack if the probe fails", async () => {
+test("token: afterConnect still records the stack if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { stack: "acme.splunkcloud.com", token: "t" } },

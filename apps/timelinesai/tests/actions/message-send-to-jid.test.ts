@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import messageSendToJid from "../../actions/message-send-to-jid.ts";
 
-Deno.test("message-send-to-jid: posts to the jid", async () => {
+test("message-send-to-jid: posts to the jid", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "message_uid": "m3" } } }]);
   const out = await messageSendToJid.execute!(
     { "jid": "1@g.us", "text": "yo", "replyTo": "m0" } as never,
@@ -20,7 +21,7 @@ Deno.test("message-send-to-jid: posts to the jid", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("message-send-to-jid: surfaces a vendor error envelope", async () => {
+test("message-send-to-jid: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },
@@ -34,7 +35,7 @@ Deno.test("message-send-to-jid: surfaces a vendor error envelope", async () => {
   assert(err.message.includes("not_found"), err.message);
 });
 
-Deno.test("message-send-to-jid: refuses a message with no content, before the network", async () => {
+test("message-send-to-jid: refuses a message with no content, before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await messageSendToJid.execute!({ jid: "1@g.us" } as never, ctx);

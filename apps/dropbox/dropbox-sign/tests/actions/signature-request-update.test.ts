@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/signature-request-update.ts";
 
 /** signature_id is the SIGNER's id — a different id from the request's. */
-Deno.test("update: requires the signer's id and something to change", async () => {
+test("update: requires the signer's id and something to change", async () => {
   const noSignature = mockCtx([]);
   await assertRejects(
     async () =>
@@ -25,7 +26,7 @@ Deno.test("update: requires the signer's id and something to change", async () =
   assertEquals(noSignature.calls.length + nothing.calls.length, 0);
 });
 
-Deno.test("update: sends the signature id alongside the change", async () => {
+test("update: sends the signature id alongside the change", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { signature_request: {} } }]);
   await action.execute!({
     signatureRequestId: "sr1",
@@ -39,7 +40,7 @@ Deno.test("update: sends the signature id alongside the change", async () => {
   });
 });
 
-Deno.test("update: an expiry is sent as a number", async () => {
+test("update: an expiry is sent as a number", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     signatureRequestId: "sr1",

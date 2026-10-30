@@ -1,21 +1,22 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import site from "../../health/site.ts";
 
-Deno.test("site: dependency / connection / context posture, no extra network.allow", () => {
+test("site: dependency / connection / context posture, no extra network.allow", () => {
   assertEquals(site.kind, "dependency");
   assertEquals(site.scope, "connection");
   assertEquals(site.credential, "context");
   assertEquals(site.network, undefined);
 });
 
-Deno.test("site: unknown when the connection records no siteUrl", async () => {
+test("site: unknown when the connection records no siteUrl", async () => {
   const { ctx } = mockCtx();
   const result = await site.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("site: ok on a 200 carrying a `site` object, unauthenticated", async () => {
+test("site: ok on a 200 carrying a `site` object, unauthenticated", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { site: { title: "My Blog" } } }], {
     display: { siteUrl: "https://example.com" },
   });
@@ -25,7 +26,7 @@ Deno.test("site: ok on a 200 carrying a `site` object, unauthenticated", async (
   assertEquals(result.state, "ok");
 });
 
-Deno.test("site: down on 404 (wrong path / proxy stripping) and on 5xx", async () => {
+test("site: down on 404 (wrong path / proxy stripping) and on 5xx", async () => {
   const notFound = mockCtx([{ status: 404 }], { display: { siteUrl: "https://example.com" } });
   assertEquals((await site.check!({}, notFound.ctx)).state, "down");
 
@@ -33,7 +34,7 @@ Deno.test("site: down on 404 (wrong path / proxy stripping) and on 5xx", async (
   assertEquals((await site.check!({}, serverError.ctx)).state, "down");
 });
 
-Deno.test("site: degraded on a non-404 non-2xx, or a 200 with no `site` object", async () => {
+test("site: degraded on a non-404 non-2xx, or a 200 with no `site` object", async () => {
   const forbidden = mockCtx([{ status: 403 }], { display: { siteUrl: "https://example.com" } });
   assertEquals((await site.check!({}, forbidden.ctx)).state, "degraded");
 

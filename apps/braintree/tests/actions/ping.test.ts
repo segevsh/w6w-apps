@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/ping.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const INPUT = {} as Record<string, unknown>;
 const DATA = { "ping": "pong" };
 
-Deno.test("ping: POSTs one GraphQL document to the production endpoint with the mapped variables", async () => {
+test("ping: POSTs one GraphQL document to the production endpoint with the mapped variables", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: DATA } }]);
   const out = await action.execute!(INPUT as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,20 +18,20 @@ Deno.test("ping: POSTs one GraphQL document to the production endpoint with the 
   assertEquals(out, { "ping": "pong", "environment": "production" });
 });
 
-Deno.test("ping: sends no authorization header of its own", async () => {
+test("ping: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: DATA } }]);
   await action.execute!(INPUT as never, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("ping: routes to the sandbox host when the connection says so", async () => {
+test("ping: routes to the sandbox host when the connection says so", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: DATA } }]);
   (ctx as { connection?: unknown }).connection = { display: { environment: "sandbox" } };
   await action.execute!(INPUT as never, ctx);
   assertEquals(calls[0].url, "https://payments.sandbox.braintree-api.com/graphql");
 });
 
-Deno.test("ping: an HTTP 200 carrying GraphQL errors is thrown with the error class", async () => {
+test("ping: an HTTP 200 carrying GraphQL errors is thrown with the error class", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: null,
@@ -52,7 +53,7 @@ Deno.test("ping: an HTTP 200 carrying GraphQL errors is thrown with the error cl
   );
 });
 
-Deno.test("ping: declares type, params, output and honest idempotency", () => {
+test("ping: declares type, params, output and honest idempotency", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(Array.isArray(action.output) && action.output.length > 0);
 });

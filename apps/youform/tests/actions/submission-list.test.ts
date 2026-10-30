@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import submissionList from "../../actions/submission-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("submission-list: sends the documented query parameters", async () => {
+test("submission-list: sends the documented query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { current_page: 1, data: [] } } }]);
   await submissionList.execute({
     form: "kupgh0ef",
@@ -22,7 +23,7 @@ Deno.test("submission-list: sends the documented query parameters", async () => 
   });
 });
 
-Deno.test("submission-list: is_complete is omitted when unset (free plans 400 on it)", async () => {
+test("submission-list: is_complete is omitted when unset (free plans 400 on it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { data: [] } } }, {
     body: { data: { data: [] } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("submission-list: is_complete is omitted when unset (free plans 400 on
   assertEquals(queryOf(calls[1].url), { is_complete: "1" });
 });
 
-Deno.test("submission-list: a free-plan 400 is surfaced", async () => {
+test("submission-list: a free-plan 400 is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("Upgrade to use is_complete") }]);
   const err = await assertRejects(
     () => Promise.resolve(submissionList.execute({ form: "f", is_complete: false }, ctx)),

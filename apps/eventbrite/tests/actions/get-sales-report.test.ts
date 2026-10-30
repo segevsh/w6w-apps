@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-sales-report.ts";
 
-Deno.test("get-sales-report: GETs report with joined event ids", async () => {
+test("get-sales-report: GETs report with joined event ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await action.execute!({
     eventIds: ["1", "2"],

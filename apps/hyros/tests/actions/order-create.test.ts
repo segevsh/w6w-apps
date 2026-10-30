@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, OK, pathOf } from "../_helpers.ts";
 import orderCreate from "../../actions/order-create.ts";
 
-Deno.test("order-create: POST /orders with the documented body", async () => {
+test("order-create: POST /orders with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   const out = await orderCreate.execute({
     email: "j@x.io",
@@ -21,7 +22,7 @@ Deno.test("order-create: POST /orders with the documented body", async () => {
   assertEquals(out, { requestId: "req1", result: "OK" });
 });
 
-Deno.test("order-create: items may arrive as a JSON string; empty items refused", async () => {
+test("order-create: items may arrive as a JSON string; empty items refused", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await orderCreate.execute({ email: "a@b.io", items: '[{"name":"P","price":1}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).items, [{ name: "P", price: 1 }]);

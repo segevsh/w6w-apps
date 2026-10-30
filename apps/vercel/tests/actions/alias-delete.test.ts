@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alias-delete.ts";
 
-Deno.test("alias-delete: DELETEs the alias", async () => {
+test("alias-delete: DELETEs the alias", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "SUCCESS" } }], { display: {} });
   const result = await action.execute!({ aliasId: "al_1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("alias-delete: DELETEs the alias", async () => {
   assertEquals(result, { status: "SUCCESS" });
 });
 
-Deno.test("alias-delete: a blank id fails before any request", async () => {
+test("alias-delete: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`aliasId`");
   assertEquals(calls.length, 0);

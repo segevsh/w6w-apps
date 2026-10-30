@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/voucher-list.ts";
 
-Deno.test("voucher-list: GET /3/vouchers with its query", async () => {
+test("voucher-list: GET /3/vouchers with its query", async () => {
   const reply = { "Vouchers": { "Id": 1 } };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({

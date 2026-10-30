@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/document-create-from-template.ts";
 
 const recipients = [{ email: "a@b.com", role: "Client" }];
 
-Deno.test("document-create-from-template: POSTs /documents mapping camelCase to snake_case", async () => {
+test("document-create-from-template: POSTs /documents mapping camelCase to snake_case", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "d1", status: "document.uploaded" } },
   ]);
@@ -37,13 +38,13 @@ Deno.test("document-create-from-template: POSTs /documents mapping camelCase to 
   });
 });
 
-Deno.test("document-create-from-template: omits every unset optional field", async () => {
+test("document-create-from-template: omits every unset optional field", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ name: "MSA", templateUuid: "t1", recipients }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "MSA", template_uuid: "t1", recipients });
 });
 
-Deno.test("document-create-from-template: returns document.uploaded and PandaDoc's polling notice", async () => {
+test("document-create-from-template: returns document.uploaded and PandaDoc's polling notice", async () => {
   const { ctx } = mockCtx([{
     status: 201,
     body: {
@@ -62,19 +63,19 @@ Deno.test("document-create-from-template: returns document.uploaded and PandaDoc
   assert(out.info_message.includes("document.draft"));
 });
 
-Deno.test("document-create-from-template: logs the template it is creating from", async () => {
+test("document-create-from-template: logs the template it is creating from", async () => {
   const { ctx, logs } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ name: "MSA", templateUuid: "t1", recipients }, ctx);
   assertEquals(logs[0].level, "info");
   assertEquals(logs[0].data, { templateUuid: "t1" });
 });
 
-Deno.test("document-create-from-template: is a non-idempotent perform", () => {
+test("document-create-from-template: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-create-from-template: describes the asynchronous status model", () => {
+test("document-create-from-template: describes the asynchronous status model", () => {
   assert(/document.uploaded/.test(action.description ?? ""), action.description);
   assert(/document.draft/.test(action.description ?? ""), action.description);
 });

@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/list-activities.ts";
 
-Deno.test("list-activities: GETs the unified /activity/ feed", async () => {
+test("list-activities: GETs the unified /activity/ feed", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/activity/");
 });
 
-Deno.test("list-activities: maps every filter to Close's parameter names", async () => {
+test("list-activities: maps every filter to Close's parameter names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({
     leadId: "lead_1",
@@ -29,20 +30,20 @@ Deno.test("list-activities: maps every filter to Close's parameter names", async
   assertEquals(q.get("_order_by"), "-date_created");
 });
 
-Deno.test("list-activities: warns when _type is used without lead_id, as Close ignores it", async () => {
+test("list-activities: warns when _type is used without lead_id, as Close ignores it", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({ type: "Call" }, ctx);
   assertEquals(logs[0].level, "warn");
   assert(/lead_id/.test(logs[0].message));
 });
 
-Deno.test("list-activities: does not warn when lead_id accompanies the type", async () => {
+test("list-activities: does not warn when lead_id accompanies the type", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { data: [], has_more: false } }]);
   await action.execute({ type: "Call", leadId: "lead_1" }, ctx);
   assertEquals(logs.length, 0);
 });
 
-Deno.test("list-activities: leaves _type free text, since custom activity type ids are valid", () => {
+test("list-activities: leaves _type free text, since custom activity type ids are valid", () => {
   const p = param(action, "type");
   assertEquals(p.type, "string");
   assert(/actitype_/.test(p.hint!));

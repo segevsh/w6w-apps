@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/credit-balance-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("credit-balance-get: sends the mapped query and shapes the output", async () => {
+test("credit-balance-get: sends the mapped query and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "credit_balance": 100000 } }]);
   const out = await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,13 +14,13 @@ Deno.test("credit-balance-get: sends the mapped query and shapes the output", as
   assertEquals(out, { "creditBalance": 100000 });
 });
 
-Deno.test("credit-balance-get: unset fields are not sent", async () => {
+test("credit-balance-get: unset fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({} as never, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("credit-balance-get: a rejected key surfaces the vendor description", async () => {
+test("credit-balance-get: a rejected key surfaces the vendor description", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: 401, description: "Invalid API key", name: "Unauthorized" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/comment-create.ts";
 
-Deno.test("comment-create: POSTs to /{resource}/{id}/comment", async () => {
+test("comment-create: POSTs to /{resource}/{id}/comment", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await action.execute!({
     commentOn: "task",
@@ -20,7 +21,7 @@ Deno.test("comment-create: POSTs to /{resource}/{id}/comment", async () => {
   assertEquals(body.notify_all, true);
 });
 
-Deno.test("comment-create: targets a list when commentOn is list", async () => {
+test("comment-create: targets a list when commentOn is list", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c2" } }]);
   await action.execute!({ commentOn: "list", id: "l9", commentText: "yo" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/list/l9/comment");

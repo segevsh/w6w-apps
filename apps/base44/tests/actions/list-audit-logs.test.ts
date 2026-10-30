@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-audit-logs.ts";
 import { mockConnectedCtx, mockCtx, pathOf, WORKSPACE_ID } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const PAGE = {
   pagination: { total: 1, next_cursor: null },
 };
 
-Deno.test("list-audit-logs: POSTs to /list and maps events + pagination", async () => {
+test("list-audit-logs: POSTs to /list and maps events + pagination", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   const result = await action.execute({}, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("list-audit-logs: POSTs to /list and maps events + pagination", async 
   assertEquals(result, { events: PAGE.events, total: 1, nextCursor: undefined });
 });
 
-Deno.test("list-audit-logs: sends the documented filter fields in the body", async () => {
+test("list-audit-logs: sends the documented filter fields in the body", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   await action.execute({
     eventTypes: ["auth.login", "app.entity.created"],
@@ -49,14 +50,14 @@ Deno.test("list-audit-logs: sends the documented filter fields in the body", asy
   });
 });
 
-Deno.test("list-audit-logs: an empty event-type list is omitted, not sent as []", async () => {
+test("list-audit-logs: an empty event-type list is omitted, not sent as []", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   await action.execute({ eventTypes: [] }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals("event_types" in body, false);
 });
 
-Deno.test("list-audit-logs: fails without a connected workspace", async () => {
+test("list-audit-logs: fails without a connected workspace", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "workspace id");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
-Deno.test("account-get: GETs /sales_accounts/:id and unwraps `sales_account`", async () => {
+test("account-get: GETs /sales_accounts/:id and unwraps `sales_account`", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{
     body: { sales_account: { id: 3, name: "Widgetz" } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("account-get: GETs /sales_accounts/:id and unwraps `sales_account`", a
   assertEquals(out, { id: 3, name: "Widgetz" });
 });
 
-Deno.test("account-get: joins include into a comma-separated query param", async () => {
+test("account-get: joins include into a comma-separated query param", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { sales_account: {} } }]);
   await action.execute({ accountId: 3, include: ["owner", "territory"] }, ctx);
   assertEquals(

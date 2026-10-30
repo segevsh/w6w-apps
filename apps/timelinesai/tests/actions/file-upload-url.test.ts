@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import fileUploadUrl from "../../actions/file-upload-url.ts";
 
-Deno.test("file-upload-url: posts the url", async () => {
+test("file-upload-url: posts the url", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "uid": "f1" } } }]);
   const out = await fileUploadUrl.execute!(
     { "downloadUrl": "https://x.test/a.pdf", "filename": "a.pdf" } as never,
@@ -23,7 +24,7 @@ Deno.test("file-upload-url: posts the url", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("file-upload-url: surfaces a vendor error envelope", async () => {
+test("file-upload-url: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

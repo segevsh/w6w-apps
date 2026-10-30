@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import driveFolderList from "../../actions/drive-folder-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("drive-folder-list: lists folders", async () => {
+test("drive-folder-list: lists folders", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "f1", title: "Images" }]),
@@ -25,7 +26,7 @@ Deno.test("drive-folder-list: lists folders", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("drive-folder-list: a vendor error surfaces its code and message", async () => {
+test("drive-folder-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

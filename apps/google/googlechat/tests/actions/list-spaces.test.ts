@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-spaces.ts";
 
-Deno.test("list-spaces: GETs /v1/spaces with no query when nothing is given", async () => {
+test("list-spaces: GETs /v1/spaces with no query when nothing is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { spaces: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(calls[0].method, "GET");
   assertEquals(calls[0].url, "https://chat.googleapis.com/v1/spaces");
 });
 
-Deno.test("list-spaces: passes filter, pageSize and pageToken through as query params", async () => {
+test("list-spaces: passes filter, pageSize and pageToken through as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { filter: 'space_type = "SPACE"', pageSize: 50, pageToken: "tok" },
@@ -21,7 +22,7 @@ Deno.test("list-spaces: passes filter, pageSize and pageToken through as query p
   assertEquals(p.get("pageToken"), "tok");
 });
 
-Deno.test("list-spaces: returns the response verbatim", async () => {
+test("list-spaces: returns the response verbatim", async () => {
   const body = { spaces: [{ name: "spaces/A1" }], nextPageToken: "n" };
   const { ctx } = mockCtx([{ body }]);
   assertEquals(await action.execute!({}, ctx), body);

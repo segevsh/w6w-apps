@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-delete.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("message-delete: DELETEs /message/{id} when confirmed", async () => {
+test("message-delete: DELETEs /message/{id} when confirmed", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }], conn);
   const result = await action.execute!({ id: 42, confirm: true }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -12,7 +13,7 @@ Deno.test("message-delete: DELETEs /message/{id} when confirmed", async () => {
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("message-delete: refuses without confirm=true, before any fetch", async () => {
+test("message-delete: refuses without confirm=true, before any fetch", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {

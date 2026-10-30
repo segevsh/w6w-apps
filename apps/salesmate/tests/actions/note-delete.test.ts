@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSalesmateCtx } from "../_helpers.ts";
 import del from "../../actions/note-delete.ts";
 
 const B = "https://acme.salesmate.io/apis";
 
-Deno.test("note-delete: DELETEs the note", async () => {
+test("note-delete: DELETEs the note", async () => {
   const { ctx, calls } = mockSalesmateCtx([{ body: { Status: "success" } }]);
   assertEquals(await del.execute({ module: "company", recordId: 2, noteId: 4 }, ctx), {
     deleted: true,

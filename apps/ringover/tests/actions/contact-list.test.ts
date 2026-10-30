@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-list: GETs /contacts with search and paging", async () => {
+test("contact-list: GETs /contacts with search and paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: { contact_list_count: 1, total_contact_count: 9, contact_list: [{ contact_id: 1 }] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("contact-list: GETs /contacts with search and paging", async () => {
   assertEquals(out, { contacts: [{ contact_id: 1 }], count: 1, total: 9 });
 });
 
-Deno.test("contact-list: a 204 is an empty list", async () => {
+test("contact-list: a 204 is an empty list", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({}, ctx), { contacts: [], count: 0, total: 0 });
 });

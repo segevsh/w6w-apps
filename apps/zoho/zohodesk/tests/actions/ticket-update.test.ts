@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-update.ts";
 
-Deno.test("ticket-update: PATCHes /tickets/{id} with the parsed fields body", async () => {
+test("ticket-update: PATCHes /tickets/{id} with the parsed fields body", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { id: "42", status: "Closed" } }]);
   const out = await action.execute({ recordId: "42", fields: { status: "Closed" } }, ctx);
   const url = new URL(calls[0].url);
@@ -12,6 +13,6 @@ Deno.test("ticket-update: PATCHes /tickets/{id} with the parsed fields body", as
   assertEquals(out, { id: "42", status: "Closed" });
 });
 
-Deno.test("ticket-update: is idempotent", () => {
+test("ticket-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

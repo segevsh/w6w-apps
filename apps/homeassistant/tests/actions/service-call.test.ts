@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/service-call.ts";
 
 const changed = ok([{ entity_id: "light.kitchen", state: "on" }]);
 
-Deno.test("service-call: posts to the domain and service path", async () => {
+test("service-call: posts to the domain and service path", async () => {
   const { ctx, calls } = mockCtx([changed], { display });
   const result = await action.execute!({
     domain: "light",
@@ -25,7 +26,7 @@ Deno.test("service-call: posts to the domain and service path", async () => {
  * A 200 with nothing changed is normal — the light was already on, or the
  * device is offline, or the service is asynchronous.
  */
-Deno.test("service-call: no changed states is a success, and the count says so", async () => {
+test("service-call: no changed states is a success, and the count says so", async () => {
   const { ctx } = mockCtx([ok([])], { display });
   const result = await action.execute!({ domain: "light", service: "turn_on" }, ctx) as {
     changedCount: number;
@@ -34,7 +35,7 @@ Deno.test("service-call: no changed states is a success, and the count says so",
 });
 
 /** A dotted service is the shape people naturally write. */
-Deno.test("service-call: a service given as `domain.service` is refused with the split", async () => {
+test("service-call: a service given as `domain.service` is refused with the split", async () => {
   const { ctx, calls } = mockCtx([], { display });
   const error = await assertRejects(
     async () => await action.execute!({ domain: "light", service: "light.turn_on" }, ctx),
@@ -44,7 +45,7 @@ Deno.test("service-call: a service given as `domain.service` is refused with the
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-call: several targets are sent as a list", async () => {
+test("service-call: several targets are sent as a list", async () => {
   const { ctx, calls } = mockCtx([changed], { display });
   await action.execute!({
     domain: "homeassistant",
@@ -54,7 +55,7 @@ Deno.test("service-call: several targets are sent as a list", async () => {
   assertEquals(JSON.parse(calls[0].body!).entity_id, ["light.kitchen", "light.hall"]);
 });
 
-Deno.test("service-call: a service with no target sends no entity_id at all", async () => {
+test("service-call: a service with no target sends no entity_id at all", async () => {
   const { ctx, calls } = mockCtx([changed], { display });
   await action.execute!({
     domain: "notify",
@@ -65,7 +66,7 @@ Deno.test("service-call: a service with no target sends no entity_id at all", as
 });
 
 /** Services that return data require the flag; ordinary ones reject it. */
-Deno.test("service-call: return_response is opt-in and unwraps the response", async () => {
+test("service-call: return_response is opt-in and unwraps the response", async () => {
   const off = mockCtx([changed], { display });
   await action.execute!({ domain: "light", service: "turn_on" }, off.ctx);
   assertEquals(new URL(off.calls[0].url).searchParams.has("return_response"), false);
@@ -83,7 +84,7 @@ Deno.test("service-call: return_response is opt-in and unwraps the response", as
   assertEquals(result.changedCount, 0);
 });
 
-Deno.test("service-call: a friendly name in the target is refused", async () => {
+test("service-call: a friendly name in the target is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -96,7 +97,7 @@ Deno.test("service-call: a friendly name in the target is refused", async () => 
   );
 });
 
-Deno.test("service-call: needs a domain and a service", async () => {
+test("service-call: needs a domain and a service", async () => {
   const noDomain = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ service: "turn_on" }, noDomain.ctx),
@@ -111,7 +112,7 @@ Deno.test("service-call: needs a domain and a service", async () => {
   );
 });
 
-Deno.test("service-call: logs the call shape, never the data", async () => {
+test("service-call: logs the call shape, never the data", async () => {
   const { ctx, logs } = mockCtx([changed], { display });
   await action.execute!({
     domain: "notify",
@@ -127,7 +128,7 @@ Deno.test("service-call: logs the call shape, never the data", async () => {
   });
 });
 
-Deno.test("service-call: says a 200 is not confirmation", () => {
+test("service-call: says a 200 is not confirmation", () => {
   assert(/is not confirmation/.test(action.description!), action.description);
   assertEquals(action.idempotent, false);
 });

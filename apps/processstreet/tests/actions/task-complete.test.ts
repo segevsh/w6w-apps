@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-complete.ts";
 
-Deno.test("task-complete: is idempotent per the spec's own PUT rule", () => {
+test("task-complete: is idempotent per the spec's own PUT rule", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("task-complete: PUTs status Completed", async () => {
+test("task-complete: PUTs status Completed", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await action.execute({ workflowRunId: "run1", taskId: "t1" }, ctx);
   assertEquals(
@@ -18,7 +19,7 @@ Deno.test("task-complete: PUTs status Completed", async () => {
   assertEquals(out, { completed: true });
 });
 
-Deno.test("task-complete: forwards dueDate when set", async () => {
+test("task-complete: forwards dueDate when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await action.execute(
     { workflowRunId: "run1", taskId: "t1", dueDate: "2026-09-04T00:00:00.000Z" },

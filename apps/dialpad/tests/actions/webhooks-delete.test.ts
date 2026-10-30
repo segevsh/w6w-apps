@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhooksDelete from "../../actions/webhooks-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhooks-delete: DELETEs /webhooks/{id} and strips the signing secret", async () => {
+test("webhooks-delete: DELETEs /webhooks/{id} and strips the signing secret", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "1", signature: { algo: "HS256", secret: "s" } },
@@ -15,6 +16,6 @@ Deno.test("webhooks-delete: DELETEs /webhooks/{id} and strips the signing secret
   assertEquals(out.signature.secret, undefined);
 });
 
-Deno.test("webhooks-delete: declared idempotent", () => {
+test("webhooks-delete: declared idempotent", () => {
   assertEquals(webhooksDelete.idempotent, true);
 });

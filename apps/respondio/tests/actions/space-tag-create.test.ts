@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import spaceTagCreate from "../../actions/space-tag-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("space-tag-create: POSTs /space/tag", async () => {
+test("space-tag-create: POSTs /space/tag", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 1, name: "VIP", colorCode: "#FF5733", emoji: "⭐" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("space-tag-create: POSTs /space/tag", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "VIP", colorCode: "#FF5733", emoji: "⭐" });
 });
 
-Deno.test("space-tag-create: an empty name is refused before any request", async () => {
+test("space-tag-create: an empty name is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await spaceTagCreate.execute({ name: "" }, ctx),

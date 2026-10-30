@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-playlist.ts";
 
-Deno.test("delete-playlist: DELETEs /youtube/v3/playlists?id= with no part", async () => {
+test("delete-playlist: DELETEs /youtube/v3/playlists?id= with no part", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!({ id: "PL1" }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("delete-playlist: DELETEs /youtube/v3/playlists?id= with no part", asy
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("delete-playlist: declares no part and is retry-safe", () => {
+test("delete-playlist: declares no part and is retry-safe", () => {
   assert(!action.params!.some((p) => p.key === "part"));
   assertEquals(action.idempotent, true);
 });

@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: unsigned app-scoped check, widening egress to the status host only", () => {
+test("service: unsigned app-scoped check, widening egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.kit.com"]);
   assert(!service.network?.allow?.includes("api.kit.com"));
 });
 
-Deno.test("service: maps an all-clear rollup to ok with per-component detail", async () => {
+test("service: maps an all-clear rollup to ok with per-component detail", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "none", description: "All Systems Operational" },
@@ -28,7 +29,7 @@ Deno.test("service: maps an all-clear rollup to ok with per-component detail", a
   });
 });
 
-Deno.test("service: maps minor to degraded and major/critical to down", async () => {
+test("service: maps minor to degraded and major/critical to down", async () => {
   for (
     const [indicator, state] of [["minor", "degraded"], ["major", "down"], ["critical", "down"]]
   ) {
@@ -37,7 +38,7 @@ Deno.test("service: maps minor to degraded and major/critical to down", async ()
   }
 });
 
-Deno.test("service: maps each component status onto a health state", async () => {
+test("service: maps each component status onto a health state", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "minor" },
@@ -58,7 +59,7 @@ Deno.test("service: maps each component status onto a health state", async () =>
   });
 });
 
-Deno.test("service: skips group headers, which only restate their children", async () => {
+test("service: skips group headers, which only restate their children", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "none" },
@@ -72,14 +73,14 @@ Deno.test("service: skips group headers, which only restate their children", asy
   assertEquals(Object.keys(out.components ?? {}), ["api"]);
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const out = await service.check!({} as never, ctx);
   assertEquals(out.state, "unknown");
   assert(out.message?.includes("503"));
 });
 
-Deno.test("service: an unrecognised indicator reports unknown", async () => {
+test("service: an unrecognised indicator reports unknown", async () => {
   const { ctx } = mockCtx([{ body: { status: { indicator: "wat" }, components: [] } }]);
   assertEquals((await service.check!({} as never, ctx)).state, "unknown");
 });

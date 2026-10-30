@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/servicedesk-get-many.ts";
 
-Deno.test("servicedesk-get-many: GETs /servicedesk with pagination defaults", async () => {
+test("servicedesk-get-many: GETs /servicedesk with pagination defaults", async () => {
   const { ctx, calls } = mockJsmCtx([{
     body: { values: [], size: 0, start: 0, isLastPage: true },
   }]);
@@ -14,7 +15,7 @@ Deno.test("servicedesk-get-many: GETs /servicedesk with pagination defaults", as
   );
 });
 
-Deno.test("servicedesk-get-many: honors explicit pagination", async () => {
+test("servicedesk-get-many: honors explicit pagination", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: {} }]);
   await action.execute({ start: 10, limit: 5 }, ctx);
   assertEquals(

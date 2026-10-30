@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/address-create.ts";
 
-Deno.test("address-create: posts to /addresses with a bare (unwrapped) body", async () => {
+test("address-create: posts to /addresses with a bare (unwrapped) body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { object_id: "adr_1", is_complete: true },
@@ -17,7 +18,7 @@ Deno.test("address-create: posts to /addresses with a bare (unwrapped) body", as
   assertEquals(body.street1, "215 Clayton St.");
 });
 
-Deno.test("address-create: `country` is required", async () => {
+test("address-create: `country` is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {
@@ -29,7 +30,7 @@ Deno.test("address-create: `country` is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("address-create: `validate: true` is forwarded so validation runs in the same call", async () => {
+test("address-create: `validate: true` is forwarded so validation runs in the same call", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { object_id: "adr_1", validation_results: { is_valid: false, messages: [] } },
@@ -42,7 +43,7 @@ Deno.test("address-create: `validate: true` is forwarded so validation runs in t
   assertEquals(result.validation_results?.is_valid, false);
 });
 
-Deno.test("address-create: logs the address id, not the street or name", async () => {
+test("address-create: logs the address id, not the street or name", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { object_id: "adr_1" } }]);
   await action.execute!({ name: "Shwan Ippotle", street1: "215 Clayton St.", country: "US" }, ctx);
   assert(!JSON.stringify(logs).includes("Clayton"), JSON.stringify(logs));

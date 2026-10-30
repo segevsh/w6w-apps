@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import memberDelete from "../../actions/member-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("member-delete: bare delete sends no body", async () => {
+test("member-delete: bare delete sends no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "mem_1" } } }]);
   const out = await memberDelete.execute({ memberId: "mem_1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("member-delete: bare delete sends no body", async () => {
   assertEquals(out, { id: "mem_1" });
 });
 
-Deno.test("member-delete: Stripe flags are sent only when true", async () => {
+test("member-delete: Stripe flags are sent only when true", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "mem_1" } } }]);
   await memberDelete.execute(
     { memberId: "mem_1", deleteStripeCustomer: true, cancelStripeSubscriptions: false },

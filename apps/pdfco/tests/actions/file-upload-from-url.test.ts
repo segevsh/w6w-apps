@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileUploadFromUrl from "../../actions/file-upload-from-url.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("file-upload-from-url: posts to /v1/file/upload/url", async () => {
+test("file-upload-from-url: posts to /v1/file/upload/url", async () => {
   const { ctx, calls } = mockCtx([{
     body: { url: "https://pdf-temp-files.s3.amazonaws.com/x/a.pdf" },
   }]);

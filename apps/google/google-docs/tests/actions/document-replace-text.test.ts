@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-replace-text.ts";
 
-Deno.test("document-replace-text: emits replaceAllText with matchCase=false default", async () => {
+test("document-replace-text: emits replaceAllText with matchCase=false default", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{}] } }]);
   await action.execute!(
     { documentURL: "d-1", text: "foo", replaceText: "bar" },
@@ -18,7 +19,7 @@ Deno.test("document-replace-text: emits replaceAllText with matchCase=false defa
   });
 });
 
-Deno.test("document-replace-text: matchCase=true is passed through", async () => {
+test("document-replace-text: matchCase=true is passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { documentURL: "d-1", text: "F", replaceText: "b", matchCase: true },

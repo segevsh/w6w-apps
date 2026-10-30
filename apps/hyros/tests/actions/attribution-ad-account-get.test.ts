@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/attribution-ad-account-get.ts";
 
-Deno.test("attribution-ad-account-get: GET /attribution/ad-account", async () => {
+test("attribution-ad-account-get: GET /attribution/ad-account", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: [{ id: "acct" }] } }]);
   const out = await action.execute({
     attributionModel: "scientific",

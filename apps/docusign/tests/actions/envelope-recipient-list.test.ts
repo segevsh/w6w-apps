@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/envelope-recipient-list.ts";
 
-Deno.test("envelope-recipient-list: GETs /envelopes/{id}/recipients", async () => {
+test("envelope-recipient-list: GETs /envelopes/{id}/recipients", async () => {
   const { ctx, calls } = mockCtx([{
     body: { signers: [{ status: "completed" }], recipientCount: "1" },
   }]);
@@ -15,7 +16,7 @@ Deno.test("envelope-recipient-list: GETs /envelopes/{id}/recipients", async () =
   assertEquals(out.signers[0].status, "completed");
 });
 
-Deno.test("envelope-recipient-list: maps the include flags to snake_case", async () => {
+test("envelope-recipient-list: maps the include flags to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     envelopeId: "e1",
@@ -31,13 +32,13 @@ Deno.test("envelope-recipient-list: maps the include flags to snake_case", async
   assertEquals(q.get("include_metadata"), "true");
 });
 
-Deno.test("envelope-recipient-list: sends no query when no flags are set", async () => {
+test("envelope-recipient-list: sends no query when no flags are set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ envelopeId: "e1" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("envelope-recipient-list: is a read action grouped under recipient", () => {
+test("envelope-recipient-list: is a read action grouped under recipient", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "recipient");
 });

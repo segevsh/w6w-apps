@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-custom-activity.ts";
 
-Deno.test("add-custom-activity: identity", () => {
+test("add-custom-activity: identity", () => {
   assertEquals(action.key, "add-custom-activity");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "activity");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("add-custom-activity: sends POST /api/v1/activities/customactivity", async () => {
+test("add-custom-activity: sends POST /api/v1/activities/customactivity", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     entityType: 1,
@@ -33,7 +34,7 @@ Deno.test("add-custom-activity: sends POST /api/v1/activities/customactivity", a
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("add-custom-activity: a failure names the status and the request", async () => {
+test("add-custom-activity: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

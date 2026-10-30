@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transcriptionGet from "../../actions/transcription-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transcription-get: GET /v1/transcriptions/{uuid}/", async () => {
+test("transcription-get: GET /v1/transcriptions/{uuid}/", async () => {
   const body = { uuid: "t1", transcript: [{ speaker_id: 0, transcript: "hi", timestamps: [0.1] }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await transcriptionGet.execute({ transcriptionUuid: "t1" }, ctx);
@@ -10,7 +11,7 @@ Deno.test("transcription-get: GET /v1/transcriptions/{uuid}/", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("transcription-get: a blank uuid is refused before any request", async () => {
+test("transcription-get: a blank uuid is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await transcriptionGet.execute({ transcriptionUuid: "" }, ctx),

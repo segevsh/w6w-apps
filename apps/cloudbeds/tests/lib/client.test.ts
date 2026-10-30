@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   CloudbedsClient,
   compact,
@@ -17,13 +18,13 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("client: request builds the documented base URL and path", async () => {
+test("client: request builds the documented base URL and path", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: [] } }]);
   await new CloudbedsClient(ctx).request("/getHotels");
   assertEquals(calls[0].url, `${API_ROOT}/getHotels`);
 });
 
-Deno.test("client: query params are compacted — undefined/null/empty are dropped, false and 0 survive", async () => {
+test("client: query params are compacted — undefined/null/empty are dropped, false and 0 survive", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: [] } }]);
   await new CloudbedsClient(ctx).request("/getRoomTypes", {
     query: {
@@ -49,7 +50,7 @@ Deno.test("client: query params are compacted — undefined/null/empty are dropp
  * token that does not cover the requested property. `res.ok` alone would
  * treat every one of these as success.
  */
-Deno.test("client: an HTTP-200 body with success:false throws, not returns", async () => {
+test("client: an HTTP-200 body with success:false throws, not returns", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -67,7 +68,7 @@ Deno.test("client: an HTTP-200 body with success:false throws, not returns", asy
   );
 });
 
-Deno.test("client: success:false at the string level ('false' as a string) is not mistaken for the boolean", async () => {
+test("client: success:false at the string level ('false' as a string) is not mistaken for the boolean", async () => {
   // GetMetadataResponse types `success` as a *string* per the vendor's own schema.
   // The check is `=== false`, so a truthy non-empty string must NOT be treated as a failure.
   const { ctx } = mockCtx([{ body: { success: "true", data: { api: { url: "x" } } } }]);
@@ -75,7 +76,7 @@ Deno.test("client: success:false at the string level ('false' as a string) is no
   assertEquals(body.success, "true");
 });
 
-Deno.test("client: a real 2xx with success:true passes through untouched", async () => {
+test("client: a real 2xx with success:true passes through untouched", async () => {
   const { ctx } = mockCtx([{
     body: { success: true, data: [{ propertyID: "1" }], count: 1, total: 1 },
   }]);
@@ -87,13 +88,13 @@ Deno.test("client: a real 2xx with success:true passes through untouched", async
   assertEquals(body, { success: true, data: [{ propertyID: "1" }], count: 1, total: 1 });
 });
 
-Deno.test("client: data() unwraps the envelope's data member", async () => {
+test("client: data() unwraps the envelope's data member", async () => {
   const { ctx } = mockCtx([{ body: { success: true, data: { propertyID: "1" } } }]);
   const data = await new CloudbedsClient(ctx).data("/getHotelDetails");
   assertEquals(data, { propertyID: "1" });
 });
 
-Deno.test("client: a 401 throws with the vendor's hint surfaced", async () => {
+test("client: a 401 throws with the vendor's hint surfaced", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("access_denied", { hint: 'Missing "Authorization" header' }) },
   ]);
@@ -102,7 +103,7 @@ Deno.test("client: a 401 throws with the vendor's hint surfaced", async () => {
   assert(err.message.includes('Missing "Authorization" header'), err.message);
 });
 
-Deno.test("client: a write sends a form-encoded body, never JSON", async () => {
+test("client: a write sends a form-encoded body, never JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await new CloudbedsClient(ctx).request("/postReservation", {
     method: "POST",
@@ -112,7 +113,7 @@ Deno.test("client: a write sends a form-encoded body, never JSON", async () => {
   assertEquals(formOf(calls[0].body), { propertyID: "1", guestFirstName: "Ada" });
 });
 
-Deno.test("client: encodeForm renders a list of records in PHP bracket notation", () => {
+test("client: encodeForm renders a list of records in PHP bracket notation", () => {
   const body = encodeForm({
     propertyID: "1",
     rooms: [{ roomTypeID: "rt1", quantity: 2 }, { roomTypeID: "rt2", quantity: 1 }],
@@ -124,7 +125,7 @@ Deno.test("client: encodeForm renders a list of records in PHP bracket notation"
   assertEquals(params.get("rooms[1][roomTypeID]"), "rt2");
 });
 
-Deno.test("client: compact drops undefined/null/empty but keeps false and 0", () => {
+test("client: compact drops undefined/null/empty but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -132,7 +133,7 @@ Deno.test("client: compact drops undefined/null/empty but keeps false and 0", ()
   });
 });
 
-Deno.test("client: readCloudbedsError parses the documented 4xx envelope", () => {
+test("client: readCloudbedsError parses the documented 4xx envelope", () => {
   const parsed = readCloudbedsError(
     JSON.stringify({ error: "access_denied", hint: "Access token is invalid" }),
   );
@@ -144,11 +145,11 @@ Deno.test("client: readCloudbedsError parses the documented 4xx envelope", () =>
   });
 });
 
-Deno.test("client: readCloudbedsError returns {} for a non-JSON body rather than throwing", () => {
+test("client: readCloudbedsError returns {} for a non-JSON body rather than throwing", () => {
   assertEquals(readCloudbedsError("<html>not json</html>"), {});
 });
 
-Deno.test("client: formatCloudbedsError prefers hint over error_description", () => {
+test("client: formatCloudbedsError prefers hint over error_description", () => {
   const msg = formatCloudbedsError(
     401,
     "GET",
@@ -162,19 +163,19 @@ Deno.test("client: formatCloudbedsError prefers hint over error_description", ()
   assert(msg.includes('Missing "Authorization" header'), msg);
 });
 
-Deno.test("client: formatCloudbedsFailure names the HTTP-200 quirk explicitly", () => {
+test("client: formatCloudbedsFailure names the HTTP-200 quirk explicitly", () => {
   const msg = formatCloudbedsFailure("GET", "/getReservations", "property is no longer active");
   assert(msg.includes("HTTP 200"), msg);
   assert(msg.includes("property is no longer active"), msg);
 });
 
-Deno.test("client: a non-JSON 2xx body raises a clear error instead of a JSON.parse crash", async () => {
+test("client: a non-JSON 2xx body raises a clear error instead of a JSON.parse crash", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>edge proxy page</html>" }]);
   const err = await assertRejects(() => new CloudbedsClient(ctx).request("/getHotels"), Error);
   assert(err.message.includes("did not return JSON"), err.message);
 });
 
-Deno.test("client: pathOf/queryOf test helpers parse a recorded call correctly", () => {
+test("client: pathOf/queryOf test helpers parse a recorded call correctly", () => {
   assertEquals(pathOf(`${API_ROOT}/getHotels?a=1`), "/api/v1.3/getHotels");
   assertEquals(queryOf(`${API_ROOT}/getHotels?a=1&b=2`), { a: "1", b: "2" });
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-many-messages.ts";
 
-Deno.test("get-many-messages: applies default maxResults=100 at users/me/messages", async () => {
+test("get-many-messages: applies default maxResults=100 at users/me/messages", async () => {
   const { ctx, calls } = mockCtx([{ body: { messages: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("get-many-messages: applies default maxResults=100 at users/me/message
   assertEquals(url.searchParams.get("maxResults"), "100");
 });
 
-Deno.test("get-many-messages: forwards q, labelIds (repeated), and pageToken", async () => {
+test("get-many-messages: forwards q, labelIds (repeated), and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: { messages: [] } }]);
   await action.execute!(
     { q: "is:unread", labelIds: ["INBOX", "STARRED"], pageToken: "tok" },
@@ -22,7 +23,7 @@ Deno.test("get-many-messages: forwards q, labelIds (repeated), and pageToken", a
   assertEquals(url.searchParams.get("pageToken"), "tok");
 });
 
-Deno.test("get-many-messages: omits filters that are undefined", async () => {
+test("get-many-messages: omits filters that are undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: { messages: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import spaceUserGet from "../../actions/space-user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("space-user-get: GETs /space/user/{id}", async () => {
+test("space-user-get: GETs /space/user/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7, firstName: "Ada", role: "agent" } }]);
   const out = await spaceUserGet.execute({ id: 7 }, ctx) as { id: number };
 
@@ -10,7 +11,7 @@ Deno.test("space-user-get: GETs /space/user/{id}", async () => {
   assertEquals(out.id, 7);
 });
 
-Deno.test("space-user-get: a missing id is refused before any request", async () => {
+test("space-user-get: a missing id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await spaceUserGet.execute({ id: undefined as unknown as number }, ctx),

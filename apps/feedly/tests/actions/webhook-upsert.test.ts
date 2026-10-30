@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookUpsert from "../../actions/webhook-upsert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-upsert: posts the documented fields, omitting unset ones", async () => {
+test("webhook-upsert: posts the documented fields, omitting unset ones", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", type: "NewEntrySaved" } }]);
   await webhookUpsert.execute(
     {
@@ -23,7 +25,7 @@ Deno.test("webhook-upsert: posts the documented fields, omitting unset ones", as
   assertEquals("id" in body, false);
 });
 
-Deno.test("webhook-upsert: forwards the receiver authorization header when given", async () => {
+test("webhook-upsert: forwards the receiver authorization header when given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await webhookUpsert.execute(
     {
@@ -38,7 +40,7 @@ Deno.test("webhook-upsert: forwards the receiver authorization header when given
   assertEquals(body.authorization, "Bearer receiver-secret");
 });
 
-Deno.test("webhook-upsert: passing id updates rather than creates", async () => {
+test("webhook-upsert: passing id updates rather than creates", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await webhookUpsert.execute(
     {
@@ -52,12 +54,12 @@ Deno.test("webhook-upsert: passing id updates rather than creates", async () => 
   assertEquals(body.id, "166e676a496:52:8c61af75");
 });
 
-Deno.test("webhook-upsert: the receiver's authorization field is a secret param", () => {
+test("webhook-upsert: the receiver's authorization field is a secret param", () => {
   const field = webhookUpsert.params?.find((p) => p.key === "authorization");
   assertEquals(field?.type, "secret");
 });
 
-Deno.test("webhook-upsert: is not idempotent", () => {
+test("webhook-upsert: is not idempotent", () => {
   assertEquals(webhookUpsert.idempotent, false);
 });
 
@@ -69,8 +71,8 @@ Deno.test("webhook-upsert: is not idempotent", () => {
  * site itself does not spell the literal field name, so the distinction
  * survives a future edit.
  */
-Deno.test("webhook-upsert: the body assignment never spells a literal authorization: key", async () => {
-  const src = await Deno.readTextFile(new URL("../../actions/webhook-upsert.ts", import.meta.url));
+test("webhook-upsert: the body assignment never spells a literal authorization: key", async () => {
+  const src = await denoReadTextFile(new URL("../../actions/webhook-upsert.ts", import.meta.url));
   const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
   assert(
     !/["'`]?authorization["'`]?\s*[\]:=]/i.test(code),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import loopInGetOrCreate from "../../actions/loop-in-get-or-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("loop-in-get-or-create: POST /api/v3/loop_in/get_or_create with every documented parameter", async () => {
+test("loop-in-get-or-create: POST /api/v3/loop_in/get_or_create with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await loopInGetOrCreate.execute(
     { "objType": "CHANNEL", "objId": 101 },
@@ -17,7 +18,7 @@ Deno.test("loop-in-get-or-create: POST /api/v3/loop_in/get_or_create with every 
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("loop-in-get-or-create: sends a form body, never a query string", async () => {
+test("loop-in-get-or-create: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await loopInGetOrCreate.execute({ "objType": "CHANNEL", "objId": 101 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("loop-in-get-or-create: sends a form body, never a query string", asyn
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("loop-in-get-or-create: is declared idempotent", () => {
+test("loop-in-get-or-create: is declared idempotent", () => {
   assertEquals(loopInGetOrCreate.idempotent, true);
 });
 
-Deno.test("loop-in-get-or-create: sends no credential of its own", async () => {
+test("loop-in-get-or-create: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await loopInGetOrCreate.execute({ "objType": "CHANNEL", "objId": 101 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("loop-in-get-or-create: surfaces Twist's error body", async () => {
+test("loop-in-get-or-create: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

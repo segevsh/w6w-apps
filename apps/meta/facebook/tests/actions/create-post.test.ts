@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-post.ts";
 
-Deno.test("create-post: POSTs /{pageId}/feed with message/link/published as query params", async () => {
+test("create-post: POSTs /{pageId}/feed with message/link/published as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "post-1" } }]);
   const result = await action.execute!(
     { pageId: "page-1", message: "hello", link: "https://example.com" },
@@ -19,25 +20,25 @@ Deno.test("create-post: POSTs /{pageId}/feed with message/link/published as quer
   assertEquals(result, { id: "post-1" });
 });
 
-Deno.test("create-post: defaults published to true", async () => {
+test("create-post: defaults published to true", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "post-1" } }]);
   await action.execute!({ pageId: "page-1", message: "hi" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("published"), "true");
 });
 
-Deno.test("create-post: honours published=false", async () => {
+test("create-post: honours published=false", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "post-1" } }]);
   await action.execute!({ pageId: "page-1", message: "hi", published: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("published"), "false");
 });
 
-Deno.test("create-post: throws when neither message nor link is given, without a network call", () => {
+test("create-post: throws when neither message nor link is given, without a network call", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(() => action.execute!({ pageId: "page-1" }, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-post: omits authorization (runtime injects it)", async () => {
+test("create-post: omits authorization (runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "post-1" } }]);
   await action.execute!({ pageId: "page-1", message: "hi" }, ctx);
   assert(!("authorization" in calls[0].headers));

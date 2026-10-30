@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/document-reintegrate.ts";
 import { errorOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-reintegrate: POSTs document_ids[] to /v1/document/reintegrate/<parser>", async () => {
+test("document-reintegrate: POSTs document_ids[] to /v1/document/reintegrate/<parser>", async () => {
   const resp = { total_reintegrate: 2, msg: "" };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const out = await action.execute({ parserId: "p1", documentIds: "d1, d2\nd3" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("document-reintegrate: POSTs document_ids[] to /v1/document/reintegrat
   assertEquals(new URLSearchParams(calls[0].body!).getAll("document_ids[]"), ["d1", "d2", "d3"]);
 });
 
-Deno.test("document-reintegrate: accepts an array and rejects an empty list without a request", async () => {
+test("document-reintegrate: accepts an array and rejects an empty list without a request", async () => {
   const first = mockCtx([{ body: {} }]);
   await action.execute({ parserId: "p1", documentIds: ["x"] }, first.ctx);
   assertEquals(new URLSearchParams(first.calls[0].body!).getAll("document_ids[]"), ["x"]);

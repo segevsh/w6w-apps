@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/release-get-many.ts";
 
-Deno.test("release-get-many: GETs /projects/{id}/releases with sort options", async () => {
+test("release-get-many: GETs /projects/{id}/releases with sort options", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({ projectId: "1", orderBy: "released_at", sort: "desc", perPage: 20 }, ctx);
   const url = new URL(calls[0].url);

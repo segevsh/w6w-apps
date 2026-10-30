@@ -1,21 +1,22 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pod from "../../health/pod.ts";
 import { mockCtx, mockInsightlyCtx } from "../_helpers.ts";
 
-Deno.test("pod: is an unsigned, connection-scoped dependency check", () => {
+test("pod: is an unsigned, connection-scoped dependency check", () => {
   assertEquals(pod.kind, "dependency");
   assertEquals(pod.scope, "connection");
   assertEquals(pod.credential, "context");
   assertEquals(pod.network, undefined);
 });
 
-Deno.test("pod: unknown when the connection records no pod", async () => {
+test("pod: unknown when the connection records no pod", async () => {
   const { ctx } = mockCtx();
   const r = await pod.check!({}, ctx);
   assertEquals(r.state, "unknown");
 });
 
-Deno.test("pod: a 401 passes — it proves the pod is serving", async () => {
+test("pod: a 401 passes — it proves the pod is serving", async () => {
   const { ctx, calls } = mockInsightlyCtx([{
     status: 401,
     body: { Message: "Authorization has been denied for this request." },
@@ -26,12 +27,12 @@ Deno.test("pod: a 401 passes — it proves the pod is serving", async () => {
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("pod: a 5xx is down", async () => {
+test("pod: a 5xx is down", async () => {
   const { ctx } = mockInsightlyCtx([{ status: 502, body: "" }]);
   assertEquals((await pod.check!({}, ctx)).state, "down");
 });
 
-Deno.test("pod: a thrown fetch error (DNS failure) is down, naming the pod", async () => {
+test("pod: a thrown fetch error (DNS failure) is down, naming the pod", async () => {
   const { ctx } = mockInsightlyCtx([], "totallyfakepod123");
   const r = await pod.check!({}, ctx);
   assertEquals(r.state, "down");

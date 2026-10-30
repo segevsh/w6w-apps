@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-event-schedule.ts";
 
-Deno.test("create-event-schedule: POSTs wrapped schedule", async () => {
+test("create-event-schedule: POSTs wrapped schedule", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sch" } }]);
   await action.execute!(
     {

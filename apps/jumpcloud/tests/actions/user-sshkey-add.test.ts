@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-sshkey-add.ts";
 
 const display = { display: { region: "us" } };
 const KEY = "ssh-ed25519 AAAAC3Nza… ada@laptop";
 
-Deno.test("user-sshkey-add: POSTs the name and public key", async () => {
+test("user-sshkey-add: POSTs the name and public key", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { _id: "k1" } }], display);
   await action.execute!({ userId: "u1", name: "laptop", publicKey: KEY }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -14,7 +15,7 @@ Deno.test("user-sshkey-add: POSTs the name and public key", async () => {
 });
 
 /** This is a grant of shell access to every bound device, not a note. */
-Deno.test("user-sshkey-add: logs at warn and is not idempotent", async () => {
+test("user-sshkey-add: logs at warn and is not idempotent", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: {} }], display);
   await action.execute!({ userId: "u1", name: "laptop", publicKey: KEY }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -22,7 +23,7 @@ Deno.test("user-sshkey-add: logs at warn and is not idempotent", async () => {
 });
 
 /** A private key pasted here would be distributed to the fleet. */
-Deno.test("user-sshkey-add: refuses something that looks like a private key", async () => {
+test("user-sshkey-add: refuses something that looks like a private key", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(
     async () =>
@@ -37,7 +38,7 @@ Deno.test("user-sshkey-add: refuses something that looks like a private key", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-sshkey-add: every field is required, before any request", async () => {
+test("user-sshkey-add: every field is required, before any request", async () => {
   for (
     const [input, needle] of [
       [{ name: "l", publicKey: KEY }, "`userId`"],

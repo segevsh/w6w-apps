@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-get.ts";
 
-Deno.test("project-get: accepts a project name as well as an ID", async () => {
+test("project-get: accepts a project name as well as an ID", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "prj_1", name: "my-app" } }], {
     display: {},
   });
@@ -11,7 +12,7 @@ Deno.test("project-get: accepts a project name as well as an ID", async () => {
   assertEquals(result, { id: "prj_1", name: "my-app" });
 });
 
-Deno.test("project-get: a blank project fails before any request", async () => {
+test("project-get: a blank project fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`projectId`");
   assertEquals(calls.length, 0);

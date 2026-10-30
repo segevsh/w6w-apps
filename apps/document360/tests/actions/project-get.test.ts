@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectGet from "../../actions/project-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("project-get: GETs the project", async () => {
+test("project-get: GETs the project", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: PID, name: "Docs", status: 0 }),
@@ -17,7 +18,7 @@ Deno.test("project-get: GETs the project", async () => {
   assertEquals(out.name, "Docs");
 });
 
-Deno.test("project-get: an explicit projectId wins over the Connection's", async () => {
+test("project-get: an explicit projectId wins over the Connection's", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "x" }) }]);
   const out = await projectGet.execute({ projectId: "other/id" }, ctx) as Record<string, unknown>;
 
@@ -29,7 +30,7 @@ Deno.test("project-get: an explicit projectId wins over the Connection's", async
   assertEquals(typeof out, "object");
 });
 
-Deno.test("project-get: a vendor error surfaces its code and message", async () => {
+test("project-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-account-information.ts";
 import { exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("get-account-information: GETs /account-information and unwraps response", async () => {
+test("get-account-information: GETs /account-information and unwraps response", async () => {
   const { ctx, calls } = mockCtx([{
     body: { error: false, response: { current_plan: "STARTER", remaining_credits: 99 } },
   }]);

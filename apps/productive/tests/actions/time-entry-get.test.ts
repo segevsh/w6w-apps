@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeEntryGet from "../../actions/time-entry-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-entry-get: GET /time_entries/{id} flattens the resource", async () => {
+test("time-entry-get: GET /time_entries/{id} flattens the resource", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "time_entries", "attributes": { "name": "x" } } },
@@ -23,7 +24,7 @@ Deno.test("time-entry-get: GET /time_entries/{id} flattens the resource", async 
   assertEquals(out.name, "x");
 });
 
-Deno.test("time-entry-get: an id cannot change the path", async () => {
+test("time-entry-get: an id cannot change the path", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "time_entries", "attributes": { "name": "x" } } },
@@ -33,7 +34,7 @@ Deno.test("time-entry-get: an id cannot change the path", async () => {
   assertEquals(pathOf(calls[0].url), "/api/v2/time_entries/4%2F..%2Fx");
 });
 
-Deno.test("time-entry-get: a vendor error surfaces its status, title and detail", async () => {
+test("time-entry-get: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -46,7 +47,7 @@ Deno.test("time-entry-get: a vendor error surfaces its status, title and detail"
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("time-entry-get: declares read", () => {
+test("time-entry-get: declares read", () => {
   assertEquals(timeEntryGet.type, "read");
   assertEquals(timeEntryGet.idempotent, undefined);
   assertEquals(timeEntryGet.key, "time-entry-get");

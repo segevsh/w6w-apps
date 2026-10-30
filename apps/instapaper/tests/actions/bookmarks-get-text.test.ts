@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookmarksGetText from "../../actions/bookmarks-get-text.ts";
 import { bodyOf, errorEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bookmarks-get-text: returns the raw HTML body on a 200, not a parsed envelope", async () => {
+test("bookmarks-get-text: returns the raw HTML body on a 200, not a parsed envelope", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: "<div>Article body &amp; more</div>",
@@ -15,7 +16,7 @@ Deno.test("bookmarks-get-text: returns the raw HTML body on a 200, not a parsed 
   assertEquals(result, { html: "<div>Article body &amp; more</div>" });
 });
 
-Deno.test("bookmarks-get-text: a non-200 surfaces the standard error envelope", async () => {
+test("bookmarks-get-text: a non-200 surfaces the standard error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorEnvelope(1241, "Invalid or missing bookmark_id"),

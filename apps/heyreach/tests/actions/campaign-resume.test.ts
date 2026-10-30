@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-resume.ts";
 
-Deno.test("campaign-resume: POSTs the campaign id and returns the status only", async () => {
+test("campaign-resume: POSTs the campaign id and returns the status only", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({ campaignId: 5 }, ctx);
   assertEquals(calls[0].url, "https://api.heyreach.io/api/public/campaign/Resume?campaignId=5");
@@ -11,7 +12,7 @@ Deno.test("campaign-resume: POSTs the campaign id and returns the status only", 
   assertEquals(result, { status: 200 });
 });
 
-Deno.test("campaign-resume: a 404 is thrown with HeyReach's message", async () => {
+test("campaign-resume: a 404 is thrown with HeyReach's message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { errorMessage: "Campaign not found" } }]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
-Deno.test("project-create: POSTs /projects with the contact as a full resource URL", async () => {
+test("project-create: POSTs /projects with the contact as a full resource URL", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ status: 201, body: { project: { url: "x" } } }]);
   await action.execute({
     contactId: "2",

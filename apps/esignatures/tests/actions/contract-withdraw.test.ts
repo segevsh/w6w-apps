@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contractWithdraw from "../../actions/contract-withdraw.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contract-withdraw: calls POST /api/contracts/c1/withdraw with the documented body", async () => {
+test("contract-withdraw: calls POST /api/contracts/c1/withdraw with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "withdrawn" } }]);
   const out = await contractWithdraw.execute({ contractId: "c1" } as never, ctx) as Record<
     string,
@@ -18,7 +19,7 @@ Deno.test("contract-withdraw: calls POST /api/contracts/c1/withdraw with the doc
   assert(out.status === "withdrawn", JSON.stringify(out));
 });
 
-Deno.test("contract-withdraw: a vendor error surfaces its error_code and message", async () => {
+test("contract-withdraw: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),
@@ -33,7 +34,7 @@ Deno.test("contract-withdraw: a vendor error surfaces its error_code and message
   );
 });
 
-Deno.test("contract-withdraw: a slash pasted into an id cannot escape the path segment", async () => {
+test("contract-withdraw: a slash pasted into an id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "withdrawn" } }]);
   await contractWithdraw.execute({ ...({ contractId: "c1" }), contractId: "a/../b" } as never, ctx);
   assert(!pathOf(calls[0].url).includes("/../"), calls[0].url);

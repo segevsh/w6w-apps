@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, ok } from "./_shared.ts";
 import action from "../../actions/model-list.ts";
 
-Deno.test("model-list: reads /api/tags and flattens the details", async () => {
+test("model-list: reads /api/tags and flattens the details", async () => {
   const { ctx, calls } = mockCtx([ok({
     models: [{
       name: "llama3.2:3b",
@@ -29,7 +30,7 @@ Deno.test("model-list: reads /api/tags and flattens the details", async () => {
   assertEquals(result.models[0].sizeBytes, 2019393189);
 });
 
-Deno.test("model-list: an account with no models is an empty list, not an error", async () => {
+test("model-list: an account with no models is an empty list, not an error", async () => {
   const { ctx } = mockCtx([ok({ models: [] })]);
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(result.count, 0);

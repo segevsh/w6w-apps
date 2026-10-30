@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-message-send.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("candidate-message-send: POSTs body and subject to the conversation", async () => {
+test("candidate-message-send: POSTs body and subject to the conversation", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "m1", type: "messageSent" } }]);
   const out = await action.execute!(
     { companyId: "c1", positionId: "p1", candidateId: "k1", body: "<p>Hi</p>", subject: "Hello" },
@@ -18,7 +19,7 @@ Deno.test("candidate-message-send: POSTs body and subject to the conversation", 
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("candidate-message-send: no subject is sent when unset", async () => {
+test("candidate-message-send: no subject is sent when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ companyId: "c1", positionId: "p1", candidateId: "k1", body: "x" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { body: "x" });

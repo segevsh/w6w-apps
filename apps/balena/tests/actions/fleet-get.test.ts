@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/fleet-get.ts";
 
@@ -28,7 +29,7 @@ const devices = {
 };
 
 /** The three reasons a device is not running the new build. */
-Deno.test("fleet-get: counts online, pinned and off-target devices", async () => {
+test("fleet-get: counts online, pinned and off-target devices", async () => {
   const { ctx, calls } = mockCtx([fleet, devices]);
   const result = await action.execute({ fleet: "acme/sensors" }, ctx) as Record<string, unknown>;
 
@@ -44,14 +45,14 @@ Deno.test("fleet-get: counts online, pinned and off-target devices", async () =>
   assertEquals(result.tracksLatest, true);
 });
 
-Deno.test("fleet-get: a numeric reference filters on the id", async () => {
+test("fleet-get: a numeric reference filters on the id", async () => {
   const { ctx, calls } = mockCtx([fleet, devices]);
   await action.execute({ fleet: "1" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("$filter"), "id eq 1");
 });
 
 /** balena answers an empty list, not a 404. */
-Deno.test("fleet-get: an unmatched fleet explains why it cannot say which problem it is", async () => {
+test("fleet-get: an unmatched fleet explains why it cannot say which problem it is", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { d: [] } }]);
   const err = await assertRejects(
     async () => await action.execute({ fleet: "acme/nope" }, ctx),
@@ -61,14 +62,14 @@ Deno.test("fleet-get: an unmatched fleet explains why it cannot say which proble
   assert(/indistinguishable/.test(err.message), err.message);
 });
 
-Deno.test("fleet-get: requires a reference", async () => {
+test("fleet-get: requires a reference", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`fleet` is required");
   assertEquals(calls.length, 0);
 });
 
 /** A fleet with no target has nothing for its devices to be off. */
-Deno.test("fleet-get: no target release means nothing counts as off-target", async () => {
+test("fleet-get: no target release means nothing counts as off-target", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { d: [{ id: 1, slug: "acme/new", should_be_running__release: null }] } },
     devices,

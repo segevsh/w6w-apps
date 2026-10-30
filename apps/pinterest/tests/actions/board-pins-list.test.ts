@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import boardPinsList from "../../actions/board-pins-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("board-pins-list: calls GET /boards/{id}/pins", async () => {
+test("board-pins-list: calls GET /boards/{id}/pins", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [{ id: "p1" }], bookmark: null } }]);
   const out = await boardPinsList.execute({ boardId: "7" }, ctx) as { items: unknown[] };
 

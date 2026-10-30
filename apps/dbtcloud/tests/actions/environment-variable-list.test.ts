@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/environment-variable-list.ts";
 
@@ -23,7 +24,7 @@ const matrix = {
   },
 };
 
-Deno.test("environment-variable-list: returns the per-environment matrix", async () => {
+test("environment-variable-list: returns the per-environment matrix", async () => {
   const { ctx, calls } = mockCtx([matrix], { display });
   const result = await action.execute!({ projectId: "3" }, ctx) as {
     environments: string[];
@@ -41,13 +42,13 @@ Deno.test("environment-variable-list: returns the per-environment matrix", async
  * dbt masks a secret's value, which is what makes this safe to hand to a
  * configuration audit — the NAME is the information a drift check needs.
  */
-Deno.test("environment-variable-list: names the masked variables without their values", async () => {
+test("environment-variable-list: names the masked variables without their values", async () => {
   const { ctx } = mockCtx([matrix], { display });
   const result = await action.execute!({ projectId: "3" }, ctx) as { secretNames: string[] };
   assertEquals(result.secretNames, ["DBT_ENV_SECRET_KEY"]);
 });
 
-Deno.test("environment-variable-list: a project with no variables reports empties", async () => {
+test("environment-variable-list: a project with no variables reports empties", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: {} } }], { display });
   const result = await action.execute!({ projectId: "3" }, ctx) as {
     count: number;
@@ -59,12 +60,12 @@ Deno.test("environment-variable-list: a project with no variables reports emptie
   assertEquals(result.environments, []);
 });
 
-Deno.test("environment-variable-list: needs a project id", async () => {
+test("environment-variable-list: needs a project id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "projectId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("environment-variable-list: says the values come back masked", () => {
+test("environment-variable-list: says the values come back masked", () => {
   assert(/masked/.test(action.description!), action.description);
 });

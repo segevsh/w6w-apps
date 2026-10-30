@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import lookup from "../../actions/lookup.ts";
 import { mockCtx, pathOf, queryOf, withCredits } from "../_helpers.ts";
 
-Deno.test("lookup: builds the request against /v2/lookup/ with comma-joined urls", async () => {
+test("lookup: builds the request against /v2/lookup/ with comma-joined urls", async () => {
   const { ctx, calls } = mockCtx([
     withCredits([{ url: "https://example.com", technologies: [] }], 1, 99999),
   ]);
@@ -13,7 +14,7 @@ Deno.test("lookup: builds the request against /v2/lookup/ with comma-joined urls
   assertEquals(queryOf(calls[0].url).urls, "https://example.com,https://example.org");
 });
 
-Deno.test("lookup: omits optional query params when unset", async () => {
+test("lookup: omits optional query params when unset", async () => {
   const { ctx, calls } = mockCtx([withCredits([], 1, 99999)]);
   await lookup.execute({ urls: "https://example.com" }, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("lookup: omits optional query params when unset", async () => {
   assertEquals(Object.keys(query).sort(), ["urls"]);
 });
 
-Deno.test("lookup: passes live/recursive/sets/age params through when set", async () => {
+test("lookup: passes live/recursive/sets/age params through when set", async () => {
   const { ctx, calls } = mockCtx([withCredits([], 5, 99995)]);
   await lookup.execute({
     urls: "https://example.com",
@@ -53,7 +54,7 @@ Deno.test("lookup: passes live/recursive/sets/age params through when set", asyn
  * (`crawl: true`), and per-URL error. This action passes all three through
  * unchanged rather than picking one to normalize toward.
  */
-Deno.test("lookup: passes completed, pending and error items through unchanged", async () => {
+test("lookup: passes completed, pending and error items through unchanged", async () => {
   const items = [
     { url: "https://example.com", technologies: [{ slug: "craft-cms", name: "Craft CMS" }] },
     { url: "https://example.org", technologies: [], crawl: true },
@@ -71,13 +72,13 @@ Deno.test("lookup: passes completed, pending and error items through unchanged",
   assertEquals(out.creditsRemaining, 99997);
 });
 
-Deno.test("lookup: an empty response body is reported as an empty results array", async () => {
+test("lookup: an empty response body is reported as an empty results array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: undefined }]);
   const out = await lookup.execute({ urls: "https://example.com" }, ctx) as { results: unknown[] };
   assertEquals(out.results, []);
 });
 
-Deno.test("lookup: urls is required", () => {
+test("lookup: urls is required", () => {
   const urlsParam = lookup.params?.find((p) => p.key === "urls");
   assertEquals(urlsParam?.required, true);
 });

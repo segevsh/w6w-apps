@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import userGet from "../../actions/user-get.ts";
 
-Deno.test("user-get: returns the user with no businessId required", async () => {
+test("user-get: returns the user with no businessId required", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -23,7 +24,7 @@ Deno.test("user-get: returns the user with no businessId required", async () => 
   assertEquals(calls.length, 1);
 });
 
-Deno.test("user-get: type/resource/idempotency metadata", () => {
+test("user-get: type/resource/idempotency metadata", () => {
   assertEquals(userGet.type, "read");
   assertEquals(userGet.resource, "user");
 });

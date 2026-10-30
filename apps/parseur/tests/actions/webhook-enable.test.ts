@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookEnable from "../../actions/webhook-enable.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-enable: POSTs /parser/{mailboxId}/webhook_set/{id} and returns the mailbox's webhook fields", async () => {
+test("webhook-enable: POSTs /parser/{mailboxId}/webhook_set/{id} and returns the mailbox's webhook fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -23,6 +24,6 @@ Deno.test("webhook-enable: POSTs /parser/{mailboxId}/webhook_set/{id} and return
   assertEquals(out.available_webhook_set.length, 2);
 });
 
-Deno.test("webhook-enable: is idempotent", () => {
+test("webhook-enable: is idempotent", () => {
   assertEquals(webhookEnable.idempotent, true);
 });

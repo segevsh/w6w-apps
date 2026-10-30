@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contract-terminate.ts";
 
 const display = {};
 
 /** Deel models termination as a resource you create, wrapped in `data`. */
-Deno.test("contract-terminate: POSTs a termination in the data envelope", async () => {
+test("contract-terminate: POSTs a termination in the data envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }], { display });
   await action.execute!({ contractId: "c1", endDate: "2026-09-30", reason: "project ended" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -15,7 +16,7 @@ Deno.test("contract-terminate: POSTs a termination in the data envelope", async 
   });
 });
 
-Deno.test("contract-terminate: an end date is required, and it is not idempotent", async () => {
+test("contract-terminate: an end date is required, and it is not idempotent", async () => {
   assertEquals(action.idempotent, false);
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(

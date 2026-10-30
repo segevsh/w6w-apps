@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import priceListCreate from "../../actions/price-list-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("price-list-create: POSTs /priceLists with the mapped body", async () => {
+test("price-list-create: POSTs /priceLists with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await priceListCreate.execute({
     "name": "New price list",
@@ -24,7 +25,7 @@ Deno.test("price-list-create: POSTs /priceLists with the mapped body", async () 
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("price-list-create: the free-form fields object is merged and typed params win", async () => {
+test("price-list-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await priceListCreate.execute(
     {
@@ -38,7 +39,7 @@ Deno.test("price-list-create: the free-form fields object is merged and typed pa
   assertEquals(sent["name"], "New price list");
 });
 
-Deno.test("price-list-create: fields may be a JSON string", async () => {
+test("price-list-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await priceListCreate.execute(
     { "name": "New price list", "fields": '{"extraKey":1}' } as never,
@@ -47,7 +48,7 @@ Deno.test("price-list-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("price-list-create: invalid fields JSON is refused before any request", async () => {
+test("price-list-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await priceListCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -57,12 +58,12 @@ Deno.test("price-list-create: invalid fields JSON is refused before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("price-list-create: required params are declared", () => {
+test("price-list-create: required params are declared", () => {
   const required = (priceListCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["name"]);
 });
 
-Deno.test("price-list-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("price-list-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -81,7 +82,7 @@ Deno.test("price-list-create: a rejected key surfaces Upsales' plain-text Unauth
   );
 });
 
-Deno.test("price-list-create: a JSON error envelope surfaces the vendor key", async () => {
+test("price-list-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

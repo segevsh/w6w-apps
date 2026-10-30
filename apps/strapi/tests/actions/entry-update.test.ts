@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/entry-update.ts";
 
 const display = { endpoint: "https://example.com" };
 
-Deno.test("entry-update: PUTs /api/<collection>/<id> with a { data } envelope", async () => {
+test("entry-update: PUTs /api/<collection>/<id> with a { data } envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1, title: "updated" } } }], { display });
   const result = await action.execute(
     { collection: "articles", id: "1", data: { title: "updated" } },
@@ -16,6 +17,6 @@ Deno.test("entry-update: PUTs /api/<collection>/<id> with a { data } envelope", 
   assertEquals(result, { data: { id: 1, title: "updated" } });
 });
 
-Deno.test("entry-update: is declared idempotent", () => {
+test("entry-update: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

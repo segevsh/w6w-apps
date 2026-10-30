@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createConversation from "../../actions/create-conversation.ts";
 
-Deno.test("create-conversation: POSTs an empty body and returns the new session_id", async () => {
+test("create-conversation: POSTs an empty body and returns the new session_id", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { error: false, reason: "added", data: { session_id: "session_new" } } },
   ], "site_1");
@@ -14,7 +15,7 @@ Deno.test("create-conversation: POSTs an empty body and returns the new session_
   assertEquals(url.pathname, "/v1/website/site_1/conversation");
 });
 
-Deno.test("create-conversation: perform, not idempotent — each call mints a new session", () => {
+test("create-conversation: perform, not idempotent — each call mints a new session", () => {
   assertEquals(createConversation.type, "perform");
   assertEquals(createConversation.idempotent, false);
 });

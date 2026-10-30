@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, API_COMPONENT_NAME, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -22,13 +23,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, not the API host", () => {
+test("service: probes the status host, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.insiderealestate.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.insiderealestate.com"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an operational kvCORE API component reports ok", async () => {
+test("service: an operational kvCORE API component reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -38,7 +39,7 @@ Deno.test("service: an operational kvCORE API component reports ok", async () =>
 });
 
 /** An unrelated product component going down must not affect this check. */
-Deno.test("service: an outage in a different product component does not report down", async () => {
+test("service: an outage in a different product component does not report down", async () => {
   const body = summary();
   body.components[1].status = "major_outage"; // "kvCORE CRM", not the API component
   const { ctx } = mockCtx([{ body }]);
@@ -47,7 +48,7 @@ Deno.test("service: an outage in a different product component does not report d
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an outage in the kvCORE API component itself reports down", async () => {
+test("service: an outage in the kvCORE API component itself reports down", async () => {
   const body = summary();
   const api = body.components.find((c) => c.id === API_COMPONENT_ID)!;
   api.status = "major_outage";
@@ -58,17 +59,17 @@ Deno.test("service: an outage in the kvCORE API component itself reports down", 
   assert(/kvCORE API: major_outage/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that stops self-identifying as Inside Real Estate's reports unknown", async () => {
+test("service: a page that stops self-identifying as Inside Real Estate's reports unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ page: { name: "Somebody Else" } }) }]);
   const report = await service.check!({}, ctx);
 
@@ -76,7 +77,7 @@ Deno.test("service: a page that stops self-identifying as Inside Real Estate's r
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page that drops the kvCORE API component reports unknown", async () => {
+test("service: a page that drops the kvCORE API component reports unknown", async () => {
   const body = summary();
   body.components = body.components.filter((c) => c.id !== API_COMPONENT_ID);
   const { ctx } = mockCtx([{ body }]);

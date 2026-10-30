@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/note-create.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("note-create: POSTs the data envelope", async () => {
+test("note-create: POSTs the data envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "n-1" }) }]);
   const out = await action.execute({
     type: "textNote",
@@ -21,7 +22,7 @@ Deno.test("note-create: POSTs the data envelope", async () => {
  * counter-intuitive `target.type: "link"` for a product link. Rewriting it to
  * the linked entity's type would produce a 422.
  */
-Deno.test("note-create: relationships are forwarded exactly as given", async () => {
+test("note-create: relationships are forwarded exactly as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({}) }]);
   const relationships = [
     { type: "customer", target: { type: "user", email: "u@example.com" } },
@@ -34,14 +35,14 @@ Deno.test("note-create: relationships are forwarded exactly as given", async () 
   );
 });
 
-Deno.test("note-create: metadata is omitted when unset", async () => {
+test("note-create: metadata is omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({}) }]);
   await action.execute({ type: "textNote", fields: { name: "x" } }, ctx);
   const data = (bodyOf(calls[0]) as { data: Record<string, unknown> }).data;
   assertEquals(Object.keys(data).sort(), ["fields", "type"]);
 });
 
-Deno.test("note-create: missing fields is refused before any request", async () => {
+test("note-create: missing fields is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ type: "textNote", fields: "" }, ctx)),
@@ -51,7 +52,7 @@ Deno.test("note-create: missing fields is refused before any request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("note-create: is not idempotent, and says the customer must already exist", () => {
+test("note-create: is not idempotent, and says the customer must already exist", () => {
   assertEquals(action.idempotent, false);
   assert(action.description!.includes("must already exist"), action.description!);
 });

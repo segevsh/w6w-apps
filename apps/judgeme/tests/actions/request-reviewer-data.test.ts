@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import requestReviewerData from "../../actions/request-reviewer-data.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("request-reviewer-data: posts the customer/orders_requested shape from the doc's example", async () => {
+test("request-reviewer-data: posts the customer/orders_requested shape from the doc's example", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await requestReviewerData.execute({
     email: "john@example.com",

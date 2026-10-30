@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-get.ts";
 
 const display = { accessUrl: "https://ab123.us1.dbt.com", accountId: "42" };
 
-Deno.test("project-get: fetches one project from v3", async () => {
+test("project-get: fetches one project from v3", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { data: { id: 3, name: "analytics", repository: { id: 1 } } } }],
     { display },
@@ -14,14 +15,14 @@ Deno.test("project-get: fetches one project from v3", async () => {
   assertEquals(result.name, "analytics");
 });
 
-Deno.test("project-get: needs a project id", async () => {
+test("project-get: needs a project id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "projectId");
   assertEquals(calls.length, 0);
 });
 
 /** Where the models come from and where they are built — the lineage question. */
-Deno.test("project-get: names the repository and the warehouse as the point", () => {
+test("project-get: names the repository and the warehouse as the point", () => {
   assert(/repository/.test(action.description!), action.description);
   assert(/warehouse/.test(action.description!), action.description);
 });

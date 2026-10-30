@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import participantsList from "../../actions/participants-list.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("participants-list: GET /report/{date_id}/participants, status filter, unwraps", async () => {
+test("participants-list: GET /report/{date_id}/participants, status filter, unwraps", async () => {
   const { ctx, calls } = mockCtx([
     { body: { participants: [{ email: "a@b.c", attended: true }] } },
     { body: {} },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-get.ts";
 
-Deno.test("page-get: GETs the page under the presentation", async () => {
+test("page-get: GETs the page under the presentation", async () => {
   const { ctx, calls } = mockCtx([{ body: { objectId: "g1", pageType: "SLIDE" } }]);
   await action.execute({ presentationId: "p1", pageObjectId: "g1" }, ctx);
 
@@ -11,13 +12,13 @@ Deno.test("page-get: GETs the page under the presentation", async () => {
   assertEquals(url.pathname, "/v1/presentations/p1/pages/g1");
 });
 
-Deno.test("page-get: encodes an object ID containing reserved characters", async () => {
+test("page-get: encodes an object ID containing reserved characters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ presentationId: "p1", pageObjectId: "id.g2f/3" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1/presentations/p1/pages/id.g2f%2F3");
 });
 
-Deno.test("page-get: unwraps a pasted editor URL for the presentation", async () => {
+test("page-get: unwraps a pasted editor URL for the presentation", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { presentationId: "https://docs.google.com/presentation/d/pp/edit", pageObjectId: "g1" },

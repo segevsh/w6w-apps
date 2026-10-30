@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import messageStatusHistory from "../../actions/message-status-history.ts";
 
-Deno.test("message-status-history: gets the history", async () => {
+test("message-status-history: gets the history", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": [] } }]);
   const out = await messageStatusHistory.execute!({ "messageUid": "m-1" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("message-status-history: gets the history", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("message-status-history: refuses an empty path id before the network", async () => {
+test("message-status-history: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await messageStatusHistory.execute!({ "messageUid": "" } as never, ctx);
@@ -29,7 +30,7 @@ Deno.test("message-status-history: refuses an empty path id before the network",
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("message-status-history: surfaces a vendor error envelope", async () => {
+test("message-status-history: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

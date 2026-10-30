@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import donationGet from "../../actions/donation-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("donation-get: GETs /v3/donations/d-1 and unwraps the data envelope", async () => {
+test("donation-get: GETs /v3/donations/d-1 and unwraps the data envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "d-1", name: "N" }) }]);
   const out = await donationGet.execute({ "uuid": "d-1", "private": true }, ctx);
 
@@ -12,13 +13,13 @@ Deno.test("donation-get: GETs /v3/donations/d-1 and unwraps the data envelope", 
   assertEquals(out, { uuid: "d-1", name: "N" });
 });
 
-Deno.test("donation-get: the id is percent-encoded as one path segment", async () => {
+test("donation-get: the id is percent-encoded as one path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await donationGet.execute({ uuid: "a/b c" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/donations/a%2Fb%20c");
 });
 
-Deno.test("donation-get: a user accessToken in the response is stripped", async () => {
+test("donation-get: a user accessToken in the response is stripped", async () => {
   const { ctx } = mockCtx([{
     body: envelope({ uuid: "x", user: { accessToken: "secret-token", email: "a@b.org" } }),
   }]);
@@ -27,7 +28,7 @@ Deno.test("donation-get: a user accessToken in the response is stripped", async 
   assertEquals(out.includes("a@b.org"), true);
 });
 
-Deno.test("donation-get: an HTTP error becomes a readable Raisely error", async () => {
+test("donation-get: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "not found", detail: "No such record" },

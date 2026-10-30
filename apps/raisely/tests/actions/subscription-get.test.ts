@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionGet from "../../actions/subscription-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscription-get: GETs /v3/subscriptions/s-1 and unwraps the data envelope", async () => {
+test("subscription-get: GETs /v3/subscriptions/s-1 and unwraps the data envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "s-1", name: "N" }) }]);
   const out = await subscriptionGet.execute({ "uuid": "s-1", "private": true }, ctx);
 
@@ -12,13 +13,13 @@ Deno.test("subscription-get: GETs /v3/subscriptions/s-1 and unwraps the data env
   assertEquals(out, { uuid: "s-1", name: "N" });
 });
 
-Deno.test("subscription-get: the id is percent-encoded as one path segment", async () => {
+test("subscription-get: the id is percent-encoded as one path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await subscriptionGet.execute({ uuid: "a/b c" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/subscriptions/a%2Fb%20c");
 });
 
-Deno.test("subscription-get: a user accessToken in the response is stripped", async () => {
+test("subscription-get: a user accessToken in the response is stripped", async () => {
   const { ctx } = mockCtx([{
     body: envelope({ uuid: "x", user: { accessToken: "secret-token", email: "a@b.org" } }),
   }]);
@@ -27,7 +28,7 @@ Deno.test("subscription-get: a user accessToken in the response is stripped", as
   assertEquals(out.includes("a@b.org"), true);
 });
 
-Deno.test("subscription-get: an HTTP error becomes a readable Raisely error", async () => {
+test("subscription-get: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "not found", detail: "No such record" },

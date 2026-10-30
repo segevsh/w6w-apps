@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upsert-records.ts";
 
-Deno.test("upsert-records: PATCHes with performUpsert.fieldsToMergeOn", async () => {
+test("upsert-records: PATCHes with performUpsert.fieldsToMergeOn", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     {
@@ -20,7 +21,7 @@ Deno.test("upsert-records: PATCHes with performUpsert.fieldsToMergeOn", async ()
   assertEquals(body.typecast, false);
 });
 
-Deno.test("upsert-records: replace=true switches to PUT", async () => {
+test("upsert-records: replace=true switches to PUT", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     {
@@ -35,7 +36,7 @@ Deno.test("upsert-records: replace=true switches to PUT", async () => {
   assertEquals(calls[0].method, "PUT");
 });
 
-Deno.test("upsert-records: forwards typecast=true", async () => {
+test("upsert-records: forwards typecast=true", async () => {
   const { ctx, calls } = mockCtx([{ body: { records: [] } }]);
   await action.execute!(
     {

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/work-item-get.ts";
@@ -14,7 +15,7 @@ const item = one({
 });
 
 /** Values live under namespaced keys — there is no `title`. */
-Deno.test("work-item-get: returns the raw fields and a flattened view", async () => {
+test("work-item-get: returns the raw fields and a flattened view", async () => {
   const { ctx, calls } = mockCtx([item], { display });
   const result = await action.execute!({ project: "P", workItemId: "101" }, ctx) as {
     fields: Record<string, unknown>;
@@ -30,7 +31,7 @@ Deno.test("work-item-get: returns the raw fields and a flattened view", async ()
   assertEquals(result.fields["Custom.TeamArea"], "Platform");
 });
 
-Deno.test("work-item-get: short field names are qualified before being sent", async () => {
+test("work-item-get: short field names are qualified before being sent", async () => {
   const { ctx, calls } = mockCtx([item], { display });
   await action.execute!({ project: "P", workItemId: "101", fields: "title, state" }, ctx);
   assertEquals(
@@ -40,7 +41,7 @@ Deno.test("work-item-get: short field names are qualified before being sent", as
 });
 
 /** Azure DevOps rejects `fields` and `$expand` together. */
-Deno.test("work-item-get: asking for relations drops the field list", async () => {
+test("work-item-get: asking for relations drops the field list", async () => {
   const { ctx, calls } = mockCtx([item], { display });
   await action.execute!({
     project: "P",
@@ -53,7 +54,7 @@ Deno.test("work-item-get: asking for relations drops the field list", async () =
   assertEquals(q.get("fields"), null);
 });
 
-Deno.test("work-item-get: needs a project and an id", async () => {
+test("work-item-get: needs a project and an id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ project: "P" }, ctx),
@@ -63,6 +64,6 @@ Deno.test("work-item-get: needs a project and an id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("work-item-get: says fields are namespaced", () => {
+test("work-item-get: says fields are namespaced", () => {
   assert(/`System.Title`, not `title`/.test(action.description!), action.description);
 });

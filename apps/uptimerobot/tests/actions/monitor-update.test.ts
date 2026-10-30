@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/monitor-update.ts";
 
-Deno.test("monitor-update: POSTs /editMonitor with only id + supplied fields", async () => {
+test("monitor-update: POSTs /editMonitor with only id + supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitor: { id: 777712827 } } }]);
   const out = await action.execute({ monitorId: "777712827", status: 0 }, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("monitor-update: POSTs /editMonitor with only id + supplied fields", a
   assertEquals(out, { id: 777712827 });
 });
 
-Deno.test("monitor-update: can update just the friendly name", async () => {
+test("monitor-update: can update just the friendly name", async () => {
   const { ctx, calls } = mockCtx([{ body: { stat: "ok", monitor: { id: 1 } } }]);
   await action.execute({ monitorId: "1", friendlyName: "Renamed" }, ctx);
   const body = new URLSearchParams(calls[0].body ?? "");

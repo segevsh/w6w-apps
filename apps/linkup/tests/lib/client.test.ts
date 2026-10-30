@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { compact, encodeId, errorCode, errorText, LinkupClient } from "../../lib/client.ts";
 import { dateOnly, jsonValue, list, schemaObject, schemaString } from "../../lib/params.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -8,13 +9,13 @@ const UNAUTH = {
   error: { code: "UNAUTHORIZED", details: [], message: "Unauthorized action" },
 };
 
-Deno.test("client: repeats array query keys and skips empties", async () => {
+test("client: repeats array query keys and skips empties", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new LinkupClient(ctx).get("/v1/tasks", { type: ["search", "fetch"], page: 2, x: "" });
   assertEquals(calls[0].url, "https://api.linkup.so/v1/tasks?type=search&type=fetch&page=2");
 });
 
-Deno.test("client: a failure is formatted from the vendor's error object", async () => {
+test("client: a failure is formatted from the vendor's error object", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {
@@ -33,7 +34,7 @@ Deno.test("client: a failure is formatted from the vendor's error object", async
   );
 });
 
-Deno.test("client: 429 hint names both causes; 401 hints to reconnect", async () => {
+test("client: 429 hint names both causes; 401 hints to reconnect", async () => {
   const a = mockCtx([{ status: 429, body: { error: { code: "TOO_MANY_REQUESTS" } } }]);
   const e1 = await assertRejects(() => new LinkupClient(a.ctx).get("/x"));
   assertEquals(/out of credits, or over 10 queries/.test((e1 as Error).message), true);
@@ -42,14 +43,14 @@ Deno.test("client: 429 hint names both causes; 401 hints to reconnect", async ()
   assertEquals(/reconnect/.test((e2 as Error).message), true);
 });
 
-Deno.test("client: a 200 that is not JSON is an error; an empty body is undefined", async () => {
+test("client: a 200 that is not JSON is an error; an empty body is undefined", async () => {
   const a = mockCtx([{ body: "<html>", headers: { "content-type": "text/html" } }]);
   await assertRejects(() => new LinkupClient(a.ctx).get("/x"), Error, "not JSON");
   const b = mockCtx([{ status: 200 }]);
   assertEquals(await new LinkupClient(b.ctx).get("/x"), undefined);
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: false }), { a: 1, e: false });
   assertEquals(encodeId(" a/b "), "a%2Fb");
   assertEquals(errorCode(JSON.stringify(UNAUTH)), "UNAUTHORIZED");
@@ -57,7 +58,7 @@ Deno.test("client: helpers", () => {
   assertEquals(errorText("plain"), "plain");
 });
 
-Deno.test("params: json, schema, list and date helpers", () => {
+test("params: json, schema, list and date helpers", () => {
   assertEquals(jsonValue('{"a":1}', "x"), { a: 1 });
   assertEquals(jsonValue("  ", "x"), undefined);
   assertThrows(() => jsonValue("{", "x"), Error, "not valid JSON");

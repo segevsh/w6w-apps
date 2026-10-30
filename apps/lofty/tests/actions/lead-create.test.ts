@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
-Deno.test("lead-create: posts the documented body and returns the id", async () => {
+test("lead-create: posts the documented body and returns the id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { leadId: 651095960136641 } }]);
   const result = await action.execute!({
     firstName: "Bob",
@@ -32,13 +33,13 @@ Deno.test("lead-create: posts the documented body and returns the id", async () 
   assertEquals(result.leadId, 651095960136641);
 });
 
-Deno.test("lead-create: unset fields are omitted, not sent as empty strings", async () => {
+test("lead-create: unset fields are omitted, not sent as empty strings", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { leadId: 1 } }]);
   await action.execute!({ firstName: "Bob" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { firstName: "Bob" });
 });
 
-Deno.test("lead-create: a json property object survives the body round-trip", async () => {
+test("lead-create: a json property object survives the body round-trip", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { leadId: 1 } }]);
   await action.execute!({
     firstName: "Bob",
@@ -50,7 +51,7 @@ Deno.test("lead-create: a json property object survives the body round-trip", as
   });
 });
 
-Deno.test("lead-create: not idempotent — a retry creates a second lead", () => {
+test("lead-create: not idempotent — a retry creates a second lead", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.type, "perform");
 });

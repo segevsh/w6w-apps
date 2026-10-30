@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { rpc } from "./_shared.ts";
 import action, { parseDuration } from "../../actions/route-compute.ts";
@@ -13,7 +14,7 @@ const route = rpc({
 });
 
 /** Durations arrive as strings like `"5400s"`; arithmetic on them yields NaN. */
-Deno.test("route-compute: parses the protobuf duration into seconds", async () => {
+test("route-compute: parses the protobuf duration into seconds", async () => {
   const { ctx } = mockCtx([route]);
   const result = await action.execute!({ origin: "A St", destination: "B St" }, ctx) as {
     durationSeconds: number;
@@ -25,7 +26,7 @@ Deno.test("route-compute: parses the protobuf duration into seconds", async () =
   assertEquals(result.distanceMeters, 86_400);
 });
 
-Deno.test("route-compute: parseDuration handles fractions and refuses anything else", () => {
+test("route-compute: parseDuration handles fractions and refuses anything else", () => {
   assertEquals(parseDuration("5400s"), 5400);
   assertEquals(parseDuration("12.5s"), 12.5);
   assertEquals(parseDuration("5400"), undefined);
@@ -34,7 +35,7 @@ Deno.test("route-compute: parseDuration handles fractions and refuses anything e
 });
 
 /** Each waypoint form is exact in a different way, and Routes wants a shape. */
-Deno.test("route-compute: picks the waypoint form from the input", async () => {
+test("route-compute: picks the waypoint form from the input", async () => {
   const { ctx, calls } = mockCtx([route]);
   await action.execute!({
     origin: "51.5,-0.12",
@@ -51,7 +52,7 @@ Deno.test("route-compute: picks the waypoint form from the input", async () => {
  * Google's own default is TRAFFIC_UNAWARE, which answers a different question
  * from the one a dispatcher is asking.
  */
-Deno.test("route-compute: defaults to traffic-aware, against Google's default", async () => {
+test("route-compute: defaults to traffic-aware, against Google's default", async () => {
   const { ctx, calls } = mockCtx([route]);
   await action.execute!({ origin: "A", destination: "B", routingPreference: "TRAFFIC_AWARE" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).routingPreference, "TRAFFIC_AWARE");
@@ -60,7 +61,7 @@ Deno.test("route-compute: defaults to traffic-aware, against Google's default", 
 });
 
 /** Sending a routing preference for WALK is an error, not a no-op. */
-Deno.test("route-compute: traffic preference is dropped for modes that cannot use it", async () => {
+test("route-compute: traffic preference is dropped for modes that cannot use it", async () => {
   const { ctx, calls } = mockCtx([route]);
   await action.execute!({
     origin: "A",
@@ -71,7 +72,7 @@ Deno.test("route-compute: traffic preference is dropped for modes that cannot us
   assertEquals(JSON.parse(calls[0].body!).routingPreference, undefined);
 });
 
-Deno.test("route-compute: avoidances become route modifiers, and are omitted when off", async () => {
+test("route-compute: avoidances become route modifiers, and are omitted when off", async () => {
   const on = mockCtx([route]);
   await action.execute!({ origin: "A", destination: "B", avoidTolls: true }, on.ctx);
   assertEquals(JSON.parse(on.calls[0].body!).routeModifiers, { avoidTolls: true });
@@ -81,7 +82,7 @@ Deno.test("route-compute: avoidances become route modifiers, and are omitted whe
   assertEquals(JSON.parse(off.calls[0].body!).routeModifiers, undefined);
 });
 
-Deno.test("route-compute: intermediates split on pipes and newlines, and are capped at 25", async () => {
+test("route-compute: intermediates split on pipes and newlines, and are capped at 25", async () => {
   const ok = mockCtx([route]);
   await action.execute!({ origin: "A", destination: "B", intermediates: "C|D\nE" }, ok.ctx);
   assertEquals(JSON.parse(ok.calls[0].body!).intermediates.length, 3);
@@ -98,7 +99,7 @@ Deno.test("route-compute: intermediates split on pipes and newlines, and are cap
 });
 
 /** No route between two points is an answer — an island, or a drive across an ocean. */
-Deno.test("route-compute: no route is found:false rather than an error", async () => {
+test("route-compute: no route is found:false rather than an error", async () => {
   const { ctx } = mockCtx([rpc({ routes: [] })]);
   const result = await action.execute!({ origin: "A", destination: "B" }, ctx) as {
     found: boolean;
@@ -108,7 +109,7 @@ Deno.test("route-compute: no route is found:false rather than an error", async (
   assertEquals(result.durationSeconds, undefined);
 });
 
-Deno.test("route-compute: the field mask is sent as a header", async () => {
+test("route-compute: the field mask is sent as a header", async () => {
   const { ctx, calls } = mockCtx([route]);
   await action.execute!({ origin: "A", destination: "B" }, ctx);
   assert(
@@ -118,7 +119,7 @@ Deno.test("route-compute: the field mask is sent as a header", async () => {
 });
 
 /** Addresses are places people live. */
-Deno.test("route-compute: logs which waypoint form was used, never the addresses", async () => {
+test("route-compute: logs which waypoint form was used, never the addresses", async () => {
   const { ctx, logs } = mockCtx([route]);
   await action.execute!({ origin: "221B Baker Street", destination: "51.5,-0.12" }, ctx);
   assert(!JSON.stringify(logs).includes("Baker"), JSON.stringify(logs));
@@ -130,7 +131,7 @@ Deno.test("route-compute: logs which waypoint form was used, never the addresses
   });
 });
 
-Deno.test("route-compute: needs both ends", async () => {
+test("route-compute: needs both ends", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ destination: "B" }, ctx),

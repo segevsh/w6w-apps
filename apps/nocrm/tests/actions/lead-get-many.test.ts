@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/lead-get-many.ts";
 
-Deno.test("lead-get-many: sends every documented filter and the paging pair", async () => {
+test("lead-get-many: sends every documented filter and the paging pair", async () => {
   const { ctx, calls } = mockNocrmCtx([{
     body: [{ id: 1 }],
     headers: { "content-type": "application/json", "x-total-count": "180" },
@@ -42,13 +43,13 @@ Deno.test("lead-get-many: sends every documented filter and the paging pair", as
   assertEquals(page.totalCount, 180);
 });
 
-Deno.test("lead-get-many: omits what the caller left unset", async () => {
+test("lead-get-many: omits what the caller left unset", async () => {
   const { ctx, calls } = mockNocrmCtx([{ body: [] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://acme.nocrm.io/api/v2/leads");
 });
 
-Deno.test("lead-get-many: a bad parameter format is reported with the vendor's type", async () => {
+test("lead-get-many: a bad parameter format is reported with the vendor's type", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 400,
     body: {

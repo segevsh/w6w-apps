@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/link-expand.ts";
 import { LINK, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("link-expand: GETs /links/expand with domain and path", async () => {
+test("link-expand: GETs /links/expand with domain and path", async () => {
   const { ctx, calls } = mockCtx([{ body: LINK }]);
   const out = await action.execute({ domain: "go.example.com", path: "spring" }, ctx);
   assertEquals(pathOf(calls[0].url), "/links/expand");

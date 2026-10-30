@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/job-create.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("job-create: sends POST /jobs and returns the vendor body", async () => {
+test("job-create: sends POST /jobs and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "j9", _link: "https://api.acculynx.com/api/v2/jobs/j9" },
@@ -44,7 +45,7 @@ Deno.test("job-create: sends POST /jobs and returns the vendor body", async () =
   assertEquals(out, { id: "j9", _link: "https://api.acculynx.com/api/v2/jobs/j9" });
 });
 
-Deno.test("job-create: a vendor error surfaces its title and status", async () => {
+test("job-create: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>
@@ -68,7 +69,7 @@ Deno.test("job-create: a vendor error surfaces its title and status", async () =
   );
 });
 
-Deno.test("job-create: a partial address is refused before any request", async () => {
+test("job-create: a partial address is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ contactId: "c1", street1: "1 Main" } as never, ctx),
@@ -78,7 +79,7 @@ Deno.test("job-create: a partial address is refused before any request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("job-create: contact only is a valid minimal body", async () => {
+test("job-create: contact only is a valid minimal body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "j1" } }]);
   await action.execute({ contactId: "c1" } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { contact: { id: "c1" } });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentUpdate from "../../actions/comment-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-update: PATCHes the comment's text", async () => {
+test("comment-update: PATCHes the comment's text", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "t1", comments: [{ id: "c1", text: "edited" }] },
   }]);
@@ -21,6 +22,6 @@ Deno.test("comment-update: PATCHes the comment's text", async () => {
   assertEquals(JSON.parse(calls[0].body!), { text: "edited" });
 });
 
-Deno.test("comment-update: idempotent — the same text twice leaves the same result", () => {
+test("comment-update: idempotent — the same text twice leaves the same result", () => {
   assertEquals(commentUpdate.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tag-thread.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-thread: sends chat_id, thread_id and the case-sensitive tag", async () => {
+test("tag-thread: sends chat_id, thread_id and the case-sensitive tag", async () => {
   const { ctx, calls } = mockCtx([{ body: "" }]);
   const out = await action.execute({ chatId: "C1", threadId: "T1", tag: "VIP" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v3.6/agent/action/tag_thread");
@@ -10,7 +11,7 @@ Deno.test("tag-thread: sends chat_id, thread_id and the case-sensitive tag", asy
   assertEquals(out, { tagged: true });
 });
 
-Deno.test("tag-thread: all three inputs are required", async () => {
+test("tag-thread: all three inputs are required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ threadId: "T", tag: "x" }, ctx),
@@ -30,7 +31,7 @@ Deno.test("tag-thread: all three inputs are required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("tag-thread: is idempotent and surfaces a vendor error", async () => {
+test("tag-thread: is idempotent and surfaces a vendor error", async () => {
   assertEquals(action.idempotent, true);
   const { ctx } = mockCtx([{
     status: 404,

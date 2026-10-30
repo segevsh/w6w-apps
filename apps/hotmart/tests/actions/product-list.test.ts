@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import productList from "../../actions/product-list.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("product-list - maps every filter to its wire name", async () => {
+test("product-list - maps every filter to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ id: 1, name: "A" }]) }]);
   const out = await productList.execute({
     id: 698441,
@@ -23,7 +24,7 @@ Deno.test("product-list - maps every filter to its wire name", async () => {
   assertEquals((out as { items: unknown[] }).items.length, 1);
 });
 
-Deno.test("product-list - surfaces invalid_parameter", async () => {
+test("product-list - surfaces invalid_parameter", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("invalid_parameter", "bad param") }]);
   await assertRejects(
     () => Promise.resolve(productList.execute({}, ctx)),

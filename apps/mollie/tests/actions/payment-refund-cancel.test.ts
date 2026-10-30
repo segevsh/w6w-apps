@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentRefundCancel from "../../actions/payment-refund-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-refund-cancel: sends DELETE to /payments/{id}/refunds/{refundId}", async () => {
+test("payment-refund-cancel: sends DELETE to /payments/{id}/refunds/{refundId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await paymentRefundCancel.execute({ paymentId: "tr_1", refundId: "re_1" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("payment-refund-cancel: sends DELETE to /payments/{id}/refunds/{refund
   assertEquals(out, { refundId: "re_1", canceled: true });
 });
 
-Deno.test("payment-refund-cancel: is idempotent", () => {
+test("payment-refund-cancel: is idempotent", () => {
   assertEquals(paymentRefundCancel.idempotent, true);
 });

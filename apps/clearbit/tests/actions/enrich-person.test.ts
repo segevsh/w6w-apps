@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/enrich-person.ts";
 
-Deno.test("enrich-person: GETs person-stream.clearbit.com/v2/people/find?email=...", async () => {
+test("enrich-person: GETs person-stream.clearbit.com/v2/people/find?email=...", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", email: "alex@clearbit.com" } }]);
   const result = await action.execute!({ email: "alex@clearbit.com" }, ctx);
   assertEquals(
@@ -12,7 +13,7 @@ Deno.test("enrich-person: GETs person-stream.clearbit.com/v2/people/find?email=.
   assertEquals(result, { id: "p1", email: "alex@clearbit.com" });
 });
 
-Deno.test("enrich-person: optional match-quality fields map to snake_case query params", async () => {
+test("enrich-person: optional match-quality fields map to snake_case query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -41,7 +42,7 @@ Deno.test("enrich-person: optional match-quality fields map to snake_case query 
   assertEquals(url.searchParams.get("facebook"), "amaccaw");
 });
 
-Deno.test("enrich-person: requires email", async () => {
+test("enrich-person: requires email", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ email: "" }, ctx), Error, "email");
   assertEquals(calls.length, 0);

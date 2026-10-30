@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getConversation from "../../actions/get-conversation.ts";
 
-Deno.test("get-conversation: fetches GET /conversation/{session_id}", async () => {
+test("get-conversation: fetches GET /conversation/{session_id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { error: false, data: { session_id: "session_x", state: "unresolved" } } },
   ], "site_1");
@@ -12,7 +13,7 @@ Deno.test("get-conversation: fetches GET /conversation/{session_id}", async () =
   assertEquals(url.pathname, "/v1/website/site_1/conversation/session_x");
 });
 
-Deno.test("get-conversation: URL-encodes the session id", async () => {
+test("get-conversation: URL-encodes the session id", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: {} } }], "site_1");
   await getConversation.execute({ sessionId: "a/b c" }, ctx);
   const url = new URL(calls[0].url);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/return-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const RESPONSE: unknown = {
 };
 const run = (ctx: Parameters<typeof action.execute>[1]) => action.execute(INPUT as never, ctx);
 
-Deno.test("return-list: GET /warehouse/return/list", async () => {
+test("return-list: GET /warehouse/return/list", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   const out = await run(ctx);
   assertEquals(calls.length, 1);
@@ -28,14 +29,14 @@ Deno.test("return-list: GET /warehouse/return/list", async () => {
   });
 });
 
-Deno.test("return-list: puts no credential on the request (sign owns that)", async () => {
+test("return-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: RESPONSE }]);
   await run(ctx);
   assertEquals(calls[0].headers["x-authorization"], undefined);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("return-list: an HTTP error surfaces Loop's own message", async () => {
+test("return-list: an HTTP error surfaces Loop's own message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { code: "401", http_code: "GEN-UNAUTHORIZED", message: "Unauthorized." } },
@@ -45,7 +46,7 @@ Deno.test("return-list: an HTTP error surfaces Loop's own message", async () => 
   assert(err.message.includes("GEN-UNAUTHORIZED: Unauthorized."));
 });
 
-Deno.test("return-list: defaults the page size and tolerates a bare-array response", async () => {
+test("return-list: defaults the page size and tolerates a bare-array response", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   const out = await action.execute({} as never, ctx);
   assertEquals(queryOf(calls[0].url), { paginate: "true", pageSize: "25" });

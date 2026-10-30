@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-create: POST /projects/{projectId}/tasks with the documented query and body", async () => {
+test("task-create: POST /projects/{projectId}/tasks with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await taskCreate.execute({
     "projectId": "ev:1",
@@ -33,7 +34,7 @@ Deno.test("task-create: POST /projects/{projectId}/tasks with the documented que
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("task-create: an Everhour error surfaces its message and status", async () => {
+test("task-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -53,7 +54,7 @@ Deno.test("task-create: an Everhour error surfaces its message and status", asyn
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("task-create: declares perform and idempotent=false", () => {
+test("task-create: declares perform and idempotent=false", () => {
   assertEquals(taskCreate.type, "perform");
   assertEquals(taskCreate.idempotent, false);
 });

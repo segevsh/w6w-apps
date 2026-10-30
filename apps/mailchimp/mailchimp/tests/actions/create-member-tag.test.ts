@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-member-tag.ts";
 import { subscriberHash } from "../../lib/subscriber-hash.ts";
 
-Deno.test("create-member-tag: POSTs to .../tags with each tag marked active", async () => {
+test("create-member-tag: POSTs to .../tags with each tag marked active", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!(
     { listId: "abc", email: "u@example.com", tags: ["one", "two"] },
@@ -22,7 +23,7 @@ Deno.test("create-member-tag: POSTs to .../tags with each tag marked active", as
   assertEquals(result, { success: true });
 });
 
-Deno.test("create-member-tag: forwards isSyncing when supplied", async () => {
+test("create-member-tag: forwards isSyncing when supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!(
     { listId: "abc", email: "u@example.com", tags: ["one"], isSyncing: true },

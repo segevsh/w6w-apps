@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sms-send.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sms-send: POSTs /push/sms with string numbers", async () => {
+test("sms-send: POSTs /push/sms with string numbers", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { message_id: 1, conv_id: 2 } }]);
   const out = await action.execute!({
     fromNumber: " +33140000000 ",

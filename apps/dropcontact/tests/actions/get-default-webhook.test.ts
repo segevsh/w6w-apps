@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getHook from "../../actions/get-default-webhook.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-default-webhook: GETs the webhook route and surfaces callback_url", async () => {
+test("get-default-webhook: GETs the webhook route and surfaces callback_url", async () => {
   const { ctx, calls } = mockCtx([{
     body: { error: false, success: true, callback_url: "https://h.example/cb" },
   }]);
@@ -14,7 +15,7 @@ Deno.test("get-default-webhook: GETs the webhook route and surfaces callback_url
   assertEquals(bare.callbackUrl, undefined);
 });
 
-Deno.test("get-default-webhook: 401 throws", async () => {
+test("get-default-webhook: 401 throws", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: true, reason: "Unknown account" } }]);
   await assertRejects(() => run(getHook, {}, ctx), Error, "Unknown account");
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import userMe from "../../actions/user-me.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-me - GETs /user/api/v1/me with no query and returns the profile", async () => {
+test("user-me - GETs /user/api/v1/me with no query and returns the profile", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 1, name: "Maria Silva", email: "m@x.com" },
@@ -14,7 +15,7 @@ Deno.test("user-me - GETs /user/api/v1/me with no query and returns the profile"
   assertEquals(out, { id: 1, name: "Maria Silva", email: "m@x.com" });
 });
 
-Deno.test("user-me - surfaces invalid_token", async () => {
+test("user-me - surfaces invalid_token", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("invalid_token", "Access token is missing or invalid") },
   ]);

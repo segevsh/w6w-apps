@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/lookalike-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("lookalike-search: POSTs the seed and wraps the response", async () => {
+test("lookalike-search: POSTs the seed and wraps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "companies": [{ "domain": "adyen.com" }] },
@@ -26,7 +27,7 @@ Deno.test("lookalike-search: POSTs the seed and wraps the response", async () =>
   assertEquals(out, { "result": { "companies": [{ "domain": "adyen.com" }] } });
 });
 
-Deno.test("lookalike-search: surfaces a 402 insufficient credits error", async () => {
+test("lookalike-search: surfaces a 402 insufficient credits error", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { "error": "insufficient_credits", "message": "You don't have enough credits." },

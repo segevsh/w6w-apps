@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/org-get.ts";
 
-Deno.test("org-get: reads the organization structure", async () => {
+test("org-get: reads the organization structure", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { orgType: 1, enterpriseInfo: { offices: [] } },
@@ -14,6 +15,6 @@ Deno.test("org-get: reads the organization structure", async () => {
   assertEquals(result.orgType, 1);
 });
 
-Deno.test("org-get: declares no params", () => {
+test("org-get: declares no params", () => {
   assertEquals(action.params, []);
 });

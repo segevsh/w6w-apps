@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-page.ts";
 
-Deno.test("get-page: GETs /{pageId} with default fields", async () => {
+test("get-page: GETs /{pageId} with default fields", async () => {
   const body = { id: "page-1", name: "My Page" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ pageId: "page-1" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("get-page: GETs /{pageId} with default fields", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("get-page: honours a custom fields override", async () => {
+test("get-page: honours a custom fields override", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "page-1" } }]);
   await action.execute!({ pageId: "page-1", fields: "id,name" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("fields"), "id,name");

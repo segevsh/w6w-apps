@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-formats.ts";
 
-Deno.test("list-formats: GETs /formats/ with paging", async () => {
+test("list-formats: GETs /formats/ with paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { formats: [] } }]);
   await action.execute!({ page: 2, continuation: "tok" }, ctx);
   const url = new URL(calls[0].url);

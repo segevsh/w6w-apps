@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNocrmCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-get-many.ts";
 
-Deno.test("webhook-get-many: GETs /webhooks with no parameters", async () => {
+test("webhook-get-many: GETs /webhooks with no parameters", async () => {
   const { ctx, calls } = mockNocrmCtx([{
     body: [{ id: 62, event: "lead.content_has_changed", is_disabled: true }],
   }]);
@@ -11,7 +12,7 @@ Deno.test("webhook-get-many: GETs /webhooks with no parameters", async () => {
   assertEquals(page.items, [{ id: 62, event: "lead.content_has_changed", is_disabled: true }]);
 });
 
-Deno.test("webhook-get-many: the endpoint's own not_api_key refusal is surfaced", async () => {
+test("webhook-get-many: the endpoint's own not_api_key refusal is surfaced", async () => {
   const { ctx } = mockNocrmCtx([{
     status: 401,
     body: { error: 401, message: "Not an api key", type: "not_api_key" },

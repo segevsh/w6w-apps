@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, parse, PDF_BYTES } from "../_helpers.ts";
 import action from "../../actions/document-merge.ts";
 
-Deno.test("document-merge: POSTs data to /merge/{id}/{key} with the supplied key", async () => {
+test("document-merge: POSTs data to /merge/{id}/{key} with the supplied key", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: 1 } }]);
   const out = await action.execute(
     { id: "436346", key: "firm3", data: { FirstName: "John" }, testMode: true } as never,
@@ -18,7 +19,7 @@ Deno.test("document-merge: POSTs data to /merge/{id}/{key} with the supplied key
   assert(out !== null);
 });
 
-Deno.test("document-merge: looks up the merge key when none is supplied", async () => {
+test("document-merge: looks up the merge key when none is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "436346", key: "firm3" } }, {
     body: { success: 1 },
   }]);
@@ -38,7 +39,7 @@ Deno.test("document-merge: looks up the merge key when none is supplied", async 
   assert(out !== null);
 });
 
-Deno.test("document-merge: returns a downloaded PDF base64-encoded under `file`", async () => {
+test("document-merge: returns a downloaded PDF base64-encoded under `file`", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "application/pdf" },
     body: PDF_BYTES,
@@ -60,11 +61,11 @@ Deno.test("document-merge: returns a downloaded PDF base64-encoded under `file`"
   assertEquals(atob(file.contentBase64), new TextDecoder().decode(PDF_BYTES));
 });
 
-Deno.test("document-merge: idempotent flag is false", () => {
+test("document-merge: idempotent flag is false", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("document-merge: fails clearly when the lookup returns no merge key", async () => {
+test("document-merge: fails clearly when the lookup returns no merge key", async () => {
   const { ctx } = mockCtx([{ body: { id: "1" } }]);
   let message = "";
   try {
@@ -75,7 +76,7 @@ Deno.test("document-merge: fails clearly when the lookup returns no merge key", 
   assert(message.includes("no merge key"), message);
 });
 
-Deno.test("document-merge: surfaces a rejected merge key as an error with the status", async () => {
+test("document-merge: surfaces a rejected merge key as an error with the status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   let message = "";
   try {
@@ -86,7 +87,7 @@ Deno.test("document-merge: surfaces a rejected merge key as an error with the st
   assert(message.includes("401"), message);
 });
 
-Deno.test("document-merge: declares key, type and a description", () => {
+test("document-merge: declares key, type and a description", () => {
   assertEquals(action.key, "document-merge");
   assertEquals(action.type, "perform");
   assert(action.description!.length > 10);

@@ -1,16 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 24;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 2);
   assertEquals(app.healthChecks.length, 4);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +19,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,7 +31,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -43,7 +44,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * application has already left `from_stage_id`. Marking any of them idempotent
  * would let the runtime retry a network blip into a duplicate hire.
  */
-Deno.test("index: no state-creating or lifecycle action is marked idempotent", () => {
+test("index: no state-creating or lifecycle action is marked idempotent", () => {
   for (
     const key of [
       "create-candidate",
@@ -64,11 +65,11 @@ Deno.test("index: no state-creating or lifecycle action is marked idempotent", (
  * state when repeated, and saying so is what lets the runtime recover from a
  * dropped connection instead of failing the run.
  */
-Deno.test("index: the one genuinely-retryable write is marked idempotent", () => {
+test("index: the one genuinely-retryable write is marked idempotent", () => {
   assertEquals(app.actions.find((a) => a.key === "update-candidate")?.idempotent, true);
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -77,7 +78,7 @@ Deno.test("index: every param has a key and a label", () => {
   }
 });
 
-Deno.test("index: no action declares a duplicate param key", () => {
+test("index: no action declares a duplicate param key", () => {
   for (const a of app.actions) {
     const keys = (a.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${a.key}: duplicate param key`);
@@ -90,7 +91,7 @@ Deno.test("index: no action declares a duplicate param key", () => {
  * pages, so both must be true of all of them — a list action missing either is
  * one whose page two is unreachable.
  */
-Deno.test("index: every search action offers a cursor param and a nextCursor output", () => {
+test("index: every search action offers a cursor param and a nextCursor output", () => {
   const searches = app.actions.filter((a) => a.type === "search");
   assertEquals(searches.length, 17);
   for (const a of searches) {
@@ -106,7 +107,7 @@ Deno.test("index: every search action offers a cursor param and a nextCursor out
  * two of every paged workflow — and it would do so only on the second run, which
  * is the worst time to find out.
  */
-Deno.test("index: no search action prefills a page size", () => {
+test("index: no search action prefills a page size", () => {
   for (const a of app.actions.filter((a) => a.type === "search")) {
     const perPage = (a.params ?? []).find((p) => p.key === "perPage");
     assert(perPage !== undefined, `${a.key}: no perPage param`);
@@ -114,7 +115,7 @@ Deno.test("index: no search action prefills a page size", () => {
   }
 });
 
-Deno.test("index: both auth methods expose test, sign, exchange and refresh", () => {
+test("index: both auth methods expose test, sign, exchange and refresh", () => {
   assertEquals(app.auth.map((m) => m.key).sort(), ["api-key", "oauth-client-credentials"]);
   for (const method of app.auth) {
     assertEquals(typeof method.test, "function", `${method.key}: no test`);
@@ -124,7 +125,7 @@ Deno.test("index: both auth methods expose test, sign, exchange and refresh", ()
   }
 });
 
-Deno.test("index: every auth field that holds a credential is a secret", () => {
+test("index: every auth field that holds a credential is a secret", () => {
   for (const method of app.auth) {
     for (const field of method.fields ?? []) {
       if (/token|secret|password|key|client/i.test(field.key)) {
@@ -137,7 +138,7 @@ Deno.test("index: every auth field that holds a credential is a secret", () => {
   }
 });
 
-Deno.test("index: health checks are keyed uniquely and each is a probe or a declared absence", () => {
+test("index: health checks are keyed uniquely and each is a probe or a declared absence", () => {
   const keys = app.healthChecks.map((c) => c.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const check of app.healthChecks) {
@@ -152,7 +153,7 @@ Deno.test("index: health checks are keyed uniquely and each is a probe or a decl
  * in the roll-up — so at any other severity a declared absence would pin the
  * app's verdict at `unknown` forever.
  */
-Deno.test("index: every declared absence is informational", () => {
+test("index: every declared absence is informational", () => {
   const absences = app.healthChecks.filter((c) => c.unavailable !== undefined);
   assertEquals(absences.length, 1);
   for (const check of absences) {
@@ -166,7 +167,7 @@ Deno.test("index: every declared absence is informational", () => {
  * an extra host must never be routed through `sign`, because those extra hosts
  * are exactly the third parties that must not see a credential.
  */
-Deno.test("index: no check both widens egress and carries a credential", () => {
+test("index: no check both widens egress and carries a credential", () => {
   for (const check of app.healthChecks) {
     if (check.network?.allow?.length) {
       assert(
@@ -181,7 +182,7 @@ Deno.test("index: no check both widens egress and carries a credential", () => {
  * The status host is deliberately NOT in the app-wide allowlist — it gets its
  * own per-hook grant instead, so an Action can never reach it.
  */
-Deno.test("index: the status host is granted to the service check only", () => {
+test("index: the status host is granted to the service check only", () => {
   const service = app.healthChecks.find((c) => c.key === "service");
   assertEquals(service?.network?.allow, ["status.greenhouse.io"]);
   for (const check of app.healthChecks.filter((c) => c.key !== "service")) {

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/check-email-attribute.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("check-email-attribute: each check hits /email/verify/<check> (slash, not underscore)", async () => {
+test("check-email-attribute: each check hits /email/verify/<check> (slash, not underscore)", async () => {
   for (const check of ["catchall", "disposable", "business", "free", "role", "gibberish"]) {
     const { ctx, calls } = mockCtx([{
       body: { status: "success", data: { email_address: "a@b.co", x: "yes" } },
@@ -15,7 +16,7 @@ Deno.test("check-email-attribute: each check hits /email/verify/<check> (slash, 
   }
 });
 
-Deno.test("check-email-attribute: an unknown check or blank email throws without a request", async () => {
+test("check-email-attribute: an unknown check or blank email throws without a request", async () => {
   const none = mockCtx();
   await assertRejects(
     () => run(action, { email: "a@b.co", check: "spam" }, none.ctx),
@@ -30,7 +31,7 @@ Deno.test("check-email-attribute: an unknown check or blank email throws without
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("check-email-attribute: timeout is forwarded", async () => {
+test("check-email-attribute: timeout is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: {} } }]);
   await run(action, { email: "a@b.co", check: "free", timeout: 3000 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.co", timeout: 3000 });

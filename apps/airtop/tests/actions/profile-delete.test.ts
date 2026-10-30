@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import profileDelete from "../../actions/profile-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("profile-delete: DELETEs with a comma-joined profileNames query param", async () => {
+test("profile-delete: DELETEs with a comma-joined profileNames query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await profileDelete.execute({ profileNames: "a, b" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("profile-delete: DELETEs with a comma-joined profileNames query param"
   assertEquals(out, { success: true, profileNames: ["a", "b"] });
 });
 
-Deno.test("profile-delete: is declared idempotent", () => {
+test("profile-delete: is declared idempotent", () => {
   assertEquals(profileDelete.idempotent, true);
 });

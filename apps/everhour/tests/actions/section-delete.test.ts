@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sectionDelete from "../../actions/section-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("section-delete: DELETE /sections/{sectionId} with the documented query and body", async () => {
+test("section-delete: DELETE /sections/{sectionId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await sectionDelete.execute({ "sectionId": 349235 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("section-delete: DELETE /sections/{sectionId} with the documented quer
   assertEquals(out, { "ok": true });
 });
 
-Deno.test("section-delete: an Everhour error surfaces its message and status", async () => {
+test("section-delete: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(sectionDelete.execute({ "sectionId": 349235 }, ctx)),
@@ -30,7 +31,7 @@ Deno.test("section-delete: an Everhour error surfaces its message and status", a
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("section-delete: declares perform and idempotent=true", () => {
+test("section-delete: declares perform and idempotent=true", () => {
   assertEquals(sectionDelete.type, "perform");
   assertEquals(sectionDelete.idempotent, true);
 });

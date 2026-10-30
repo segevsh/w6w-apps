@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/customer-save.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-save: maps camelCase params to snake_case wire fields", async () => {
+test("customer-save: maps camelCase params to snake_case wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1", name: "Ann" } }]);
   await action.execute({
     name: "Ann",
@@ -24,7 +25,7 @@ Deno.test("customer-save: maps camelCase params to snake_case wire fields", asyn
   });
 });
 
-Deno.test("customer-save: includes id for an update; requires name", async () => {
+test("customer-save: includes id for an update; requires name", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ id: "u1", name: "Ann" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).id, "u1");

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/synonym-search.ts";
 
 /** Searching is how you list — there is no GET collection for synonyms. */
-Deno.test("synonym-search: an empty query lists every synonym", async () => {
+test("synonym-search: an empty query lists every synonym", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { hits: [], nbHits: 0 } }], {
     display: { appId: "APPID" },
   });

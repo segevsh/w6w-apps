@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 
@@ -44,7 +45,7 @@ const allGood = page([
   { region: "US", name: "Pendo UI", status: "operational" },
 ]);
 
-Deno.test("service: reads the Statuspage summary unauthenticated", async () => {
+test("service: reads the Statuspage summary unauthenticated", async () => {
   const { ctx, calls } = mockCtx([allGood]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -52,7 +53,7 @@ Deno.test("service: reads the Statuspage summary unauthenticated", async () => {
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: ignores components this app never calls, like Pendo UI or NPS", async () => {
+test("service: ignores components this app never calls, like Pendo UI or NPS", async () => {
   const { ctx } = mockCtx([
     page([
       { region: "US", name: "API", status: "operational" },
@@ -64,7 +65,7 @@ Deno.test("service: ignores components this app never calls, like Pendo UI or NP
   assertEquals(result.state, "ok");
 });
 
-Deno.test("service: names the affected region and component", async () => {
+test("service: names the affected region and component", async () => {
   const { ctx } = mockCtx([
     page([
       { region: "EU", name: "API", status: "major_outage" },
@@ -77,19 +78,19 @@ Deno.test("service: names the affected region and component", async () => {
 });
 
 /** App-scoped: cannot know which region(s) a Connection uses, so a single region's outage never reports fully down. */
-Deno.test("service: a major outage in one region is capped at degraded", async () => {
+test("service: a major outage in one region is capped at degraded", async () => {
   const { ctx } = mockCtx([page([{ region: "JPN", name: "API", status: "major_outage" }])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("service: mapComponentStatus covers the Atlassian vocabulary", () => {
+test("service: mapComponentStatus covers the Atlassian vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");

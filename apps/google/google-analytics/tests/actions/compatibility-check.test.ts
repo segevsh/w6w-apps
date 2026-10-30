@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/compatibility-check.ts";
 
 const display = { propertyId: "123" };
 
-Deno.test("compatibility-check: asks which fields still combine", async () => {
+test("compatibility-check: asks which fields still combine", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { dimensionCompatibilities: [] } }], {
     display,
   });
@@ -19,7 +20,7 @@ Deno.test("compatibility-check: asks which fields still combine", async () => {
   assertEquals(body.compatibilityFilter, "COMPATIBLE");
 });
 
-Deno.test("compatibility-check: with neither dimensions nor metrics there is nothing to ask", async () => {
+test("compatibility-check: with neither dimensions nor metrics there is nothing to ask", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "nothing to check");
   assertEquals(calls.length, 0);

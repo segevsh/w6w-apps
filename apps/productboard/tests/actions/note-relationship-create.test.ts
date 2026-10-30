@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/note-relationship-create.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
  * string "link", NOT the type of the entity being linked. The intuitive
  * `{"type": "feature"}` is rejected.
  */
-Deno.test('note-relationship-create: a product link uses the literal target type "link"', async () => {
+test('note-relationship-create: a product link uses the literal target type "link"', async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ type: "link" }) }]);
   await action.execute({ noteId: "n-1", type: "link", targetId: "f-1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -18,7 +19,7 @@ Deno.test('note-relationship-create: a product link uses the literal target type
   });
 });
 
-Deno.test("note-relationship-create: a customer target keeps its real type", async () => {
+test("note-relationship-create: a customer target keeps its real type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({}) }]);
   await action.execute({
     noteId: "n-1",
@@ -31,7 +32,7 @@ Deno.test("note-relationship-create: a customer target keeps its real type", asy
   });
 });
 
-Deno.test("note-relationship-create: a customer may be addressed by email instead of id", async () => {
+test("note-relationship-create: a customer may be addressed by email instead of id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({}) }]);
   await action.execute({ noteId: "n-1", type: "customer", targetEmail: "u@example.com" }, ctx);
   assertEquals(bodyOf(calls[0]), {
@@ -39,7 +40,7 @@ Deno.test("note-relationship-create: a customer may be addressed by email instea
   });
 });
 
-Deno.test("note-relationship-create: neither an id nor an email is refused before the request", async () => {
+test("note-relationship-create: neither an id nor an email is refused before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ noteId: "n-1", type: "link" }, ctx)),
@@ -49,6 +50,6 @@ Deno.test("note-relationship-create: neither an id nor an email is refused befor
   assertEquals(calls.length, 0);
 });
 
-Deno.test("note-relationship-create: is idempotent — the same link twice is the same graph", () => {
+test("note-relationship-create: is idempotent — the same link twice is the same graph", () => {
   assertEquals(action.idempotent, true);
 });

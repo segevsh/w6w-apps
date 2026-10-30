@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import manageManyContacts from "../../actions/manage-many-contacts.ts";
 
 // -------------------------------------------------------- manage-many-contacts
 
-Deno.test("manage-many-contacts: POSTs to the list's managemanycontacts path", async () => {
+test("manage-many-contacts: POSTs to the list's managemanycontacts path", async () => {
   const { ctx, calls } = mockCtx([{ body: { Count: 1, Data: [{ JobID: 35800 }] } }]);
   await manageManyContacts.execute!({ listId: 42, contacts: [{ Email: "a@x.com" }] }, ctx);
   assertEquals(
@@ -13,7 +14,7 @@ Deno.test("manage-many-contacts: POSTs to the list's managemanycontacts path", a
   );
 });
 
-Deno.test("manage-many-contacts: uses the LOWERCASE top-level action key", async () => {
+test("manage-many-contacts: uses the LOWERCASE top-level action key", async () => {
   // Mailjet's bulk endpoint takes `action`, while the single-contact endpoint
   // takes a capitalised per-list `Action`. Getting this wrong is silently
   // rejected, so it is pinned here.
@@ -28,7 +29,7 @@ Deno.test("manage-many-contacts: uses the LOWERCASE top-level action key", async
   assert(!("Contacts" in body), "the bulk endpoint takes lowercase `contacts`");
 });
 
-Deno.test("manage-many-contacts: defaults to addnoforce", async () => {
+test("manage-many-contacts: defaults to addnoforce", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [{ JobID: 1 }] } }]);
   await manageManyContacts.execute!({ listId: 1, contacts: [{ Email: "a@x.com" }] }, ctx);
   assertEquals(JSON.parse(calls[0].body!).action, "addnoforce");
@@ -36,7 +37,7 @@ Deno.test("manage-many-contacts: defaults to addnoforce", async () => {
   assertEquals(param?.default, "addnoforce");
 });
 
-Deno.test("manage-many-contacts: forwards the contacts array untouched", async () => {
+test("manage-many-contacts: forwards the contacts array untouched", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [{ JobID: 1 }] } }]);
   const contacts = [
     { Email: "a@x.com", Name: "Ada", Properties: { plan: "pro" } },
@@ -46,7 +47,7 @@ Deno.test("manage-many-contacts: forwards the contacts array untouched", async (
   assertEquals(JSON.parse(calls[0].body!).contacts, contacts);
 });
 
-Deno.test("manage-many-contacts: returns the JobID envelope — the import has not run", async () => {
+test("manage-many-contacts: returns the JobID envelope — the import has not run", async () => {
   const { ctx } = mockCtx([{ body: { Count: 1, Data: [{ JobID: 35800 }], Total: 1 } }]);
   const result = await manageManyContacts.execute!(
     { listId: 1, contacts: [{ Email: "a@x.com" }] },

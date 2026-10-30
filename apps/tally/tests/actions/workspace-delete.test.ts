@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-delete.ts";
 
-Deno.test("workspace-delete: DELETEs the workspace and handles the empty 204", async () => {
+test("workspace-delete: DELETEs the workspace and handles the empty 204", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ workspaceId: "w1" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("workspace-delete: DELETEs the workspace and handles the empty 204", a
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("workspace-delete: is idempotent", () => {
+test("workspace-delete: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

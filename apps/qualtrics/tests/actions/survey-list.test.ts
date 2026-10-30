@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import surveyList from "../../actions/survey-list.ts";
 import { API_ROOT, listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("survey-list: calls GET /surveys and flattens result.elements", async () => {
+test("survey-list: calls GET /surveys and flattens result.elements", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "SV_1" }, { id: "SV_2" }]) }]);
   const out = await surveyList.execute({}, ctx) as { elements: unknown[]; count: number };
 
@@ -12,7 +13,7 @@ Deno.test("survey-list: calls GET /surveys and flattens result.elements", async 
   assertEquals(out.count, 2);
 });
 
-Deno.test("survey-list: follows result.nextPage verbatim and concatenates the pages", async () => {
+test("survey-list: follows result.nextPage verbatim and concatenates the pages", async () => {
   const page2 = "https://iad1.qualtrics.com/API/v3/surveys?offset=100&limit=100";
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "SV_1" }], page2) },
@@ -27,7 +28,7 @@ Deno.test("survey-list: follows result.nextPage verbatim and concatenates the pa
   assertEquals(out.pages, 2);
 });
 
-Deno.test("survey-list: stops at maxPages and reports the remaining nextPage", async () => {
+test("survey-list: stops at maxPages and reports the remaining nextPage", async () => {
   const page2 = "https://iad1.qualtrics.com/API/v3/surveys?offset=100&limit=100";
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "SV_1" }], page2) },
@@ -43,7 +44,7 @@ Deno.test("survey-list: stops at maxPages and reports the remaining nextPage", a
   assertEquals(out.nextPage, page2);
 });
 
-Deno.test("survey-list: one page with no nextPage costs exactly one request", async () => {
+test("survey-list: one page with no nextPage costs exactly one request", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   const out = await surveyList.execute({}, ctx) as { nextPage?: string };
 
@@ -51,12 +52,12 @@ Deno.test("survey-list: one page with no nextPage costs exactly one request", as
   assertEquals(out.nextPage, undefined);
 });
 
-Deno.test("survey-list: prefills a bounded maxPages", () => {
+test("survey-list: prefills a bounded maxPages", () => {
   const maxPages = surveyList.params?.find((p) => p.key === "maxPages");
   assertEquals(maxPages?.default, 10);
 });
 
-Deno.test("survey-list: the URL is built against the connection's datacenter", async () => {
+test("survey-list: the URL is built against the connection's datacenter", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await surveyList.execute({}, ctx);
   assertEquals(pathOf(calls[0].url), "/API/v3/surveys");

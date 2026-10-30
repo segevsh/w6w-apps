@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemSubItemCreate from "../../actions/job-item-sub-item-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-sub-item-create: POSTs the checklist line", async () => {
+test("job-item-sub-item-create: POSTs the checklist line", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 6, description: "Prepare wireframes" } }]);
   await jobItemSubItemCreate.execute({ jobItemId: 88, description: "Prepare wireframes" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("job-item-sub-item-create: POSTs the checklist line", async () => {
 });
 
 /** Completion stamps are read-only, so a new sub-item cannot arrive completed. */
-Deno.test("job-item-sub-item-create: completion cannot be set through this route", () => {
+test("job-item-sub-item-create: completion cannot be set through this route", () => {
   const keys = (jobItemSubItemCreate.params ?? []).map((p) => p.key);
   assertEquals(keys.includes("completedDatetime"), false);
   assertEquals(keys.includes("completedByUserId"), false);

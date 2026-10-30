@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-set-tier.ts";
 
@@ -10,7 +11,7 @@ const current = (tier: string) => ({
 });
 const ok = { status: 200, body: "" };
 
-Deno.test("blob-set-tier: reads the current tier, then PUTs comp=tier", async () => {
+test("blob-set-tier: reads the current tier, then PUTs comp=tier", async () => {
   const { ctx, calls } = mockCtx([current("Hot"), ok], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", tier: "Cool" },
@@ -24,7 +25,7 @@ Deno.test("blob-set-tier: reads the current tier, then PUTs comp=tier", async ()
 });
 
 /** Archive is offline, not slow. */
-Deno.test("blob-set-tier: archiving needs an acknowledgement", async () => {
+test("blob-set-tier: archiving needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -38,7 +39,7 @@ Deno.test("blob-set-tier: archiving needs an acknowledgement", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("blob-set-tier: an acknowledged archive goes through and warns", async () => {
+test("blob-set-tier: an acknowledged archive goes through and warns", async () => {
   const { ctx, logs } = mockCtx([current("Hot"), ok], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", tier: "Archive", confirmArchive: true },
@@ -50,7 +51,7 @@ Deno.test("blob-set-tier: an acknowledged archive goes through and warns", async
 });
 
 /** Whether this is a rehydration depends on where the blob is now. */
-Deno.test("blob-set-tier: coming out of Archive is reported as a rehydration", async () => {
+test("blob-set-tier: coming out of Archive is reported as a rehydration", async () => {
   const { ctx, calls, logs } = mockCtx([current("Archive"), ok], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", tier: "Hot", rehydratePriority: "High" },
@@ -62,7 +63,7 @@ Deno.test("blob-set-tier: coming out of Archive is reported as a rehydration", a
   assert(/up to an hour/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("blob-set-tier: the priority is only sent when rehydrating", async () => {
+test("blob-set-tier: the priority is only sent when rehydrating", async () => {
   const { ctx, calls } = mockCtx([current("Hot"), ok], D);
   await action.execute(
     { container: "uploads", blob: "a.log", tier: "Cool", rehydratePriority: "High" },
@@ -72,7 +73,7 @@ Deno.test("blob-set-tier: the priority is only sent when rehydrating", async () 
 });
 
 /** Every move restarts the destination tier's minimum. */
-Deno.test("blob-set-tier: Hot has no minimum and the cold tiers each have their own", async () => {
+test("blob-set-tier: Hot has no minimum and the cold tiers each have their own", async () => {
   for (const [tier, days] of [["Cool", "30"], ["Cold", "90"]] as Array<[string, string]>) {
     const { ctx } = mockCtx([current("Hot"), ok], D);
     const result = await action.execute(
@@ -90,7 +91,7 @@ Deno.test("blob-set-tier: Hot has no minimum and the cold tiers each have their 
   assertEquals(hot.minimumDurationNote, undefined);
 });
 
-Deno.test("blob-set-tier: says a tier is not only a price", () => {
+test("blob-set-tier: says a tier is not only a price", () => {
   assert(/UNREADABLE until rehydrated/.test(action.description!), action.description);
   assert(/restarts the destination tier's minimum/.test(action.description!), action.description);
 });

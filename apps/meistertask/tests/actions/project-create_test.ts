@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create: POST /projects with the name and optional fields", async () => {
+test("project-create: POST /projects with the name and optional fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 5, name: "Launch" } }]);
   const out = await projectCreate.execute(
     { name: "Launch", notes: "Q4 launch", shareMode: 1 },
@@ -14,7 +15,7 @@ Deno.test("project-create: POST /projects with the name and optional fields", as
   assertEquals(out, { id: 5, name: "Launch" });
 });
 
-Deno.test("project-create: omits unset optional fields from the body", async () => {
+test("project-create: omits unset optional fields from the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 6, name: "Bare" } }]);
   await projectCreate.execute({ name: "Bare" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Bare" });

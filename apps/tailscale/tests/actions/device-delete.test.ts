@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-delete.ts";
 
@@ -14,7 +15,7 @@ const device = {
 const ok = { status: 200, body: {} };
 
 /** After the delete there is nothing left to report, so it reads first. */
-Deno.test("device-delete: records what the device was before removing it", async () => {
+test("device-delete: records what the device was before removing it", async () => {
   const { ctx, calls } = mockCtx([device, ok]);
   const result = await action.execute({ deviceId: "n5", confirm: true }, ctx) as Record<
     string,
@@ -30,7 +31,7 @@ Deno.test("device-delete: records what the device was before removing it", async
   assertEquals(result.wasEphemeral, true);
 });
 
-Deno.test("device-delete: refuses without confirmation and names the reversible option", async () => {
+test("device-delete: refuses without confirmation and names the reversible option", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     async () => await action.execute({ deviceId: "n5" }, ctx),
@@ -42,7 +43,7 @@ Deno.test("device-delete: refuses without confirmation and names the reversible 
 });
 
 /** Deleting does not stop Tailscale on the machine. */
-Deno.test("device-delete: warns that a machine with a valid key can rejoin", async () => {
+test("device-delete: warns that a machine with a valid key can rejoin", async () => {
   const { ctx, logs } = mockCtx([device, ok]);
   await action.execute({ deviceId: "n5", confirm: true }, ctx);
   assert(
@@ -51,12 +52,12 @@ Deno.test("device-delete: warns that a machine with a valid key can rejoin", asy
   );
 });
 
-Deno.test("device-delete: is the one device action that is not idempotent", () => {
+test("device-delete: is the one device action that is not idempotent", () => {
   assertEquals(action.idempotent, false);
   assert(/GONE, not archived/.test(action.description!), action.description);
 });
 
-Deno.test("device-delete: requires an id", async () => {
+test("device-delete: requires an id", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({ confirm: true }, ctx), Error, "deviceId");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/group-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-list: GET /groups with cursor pagination", async () => {
+test("group-list: GET /groups with cursor pagination", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "x1" }], "next") }]);
   const out = await action.execute({ limit: 10, after: "c0" }, ctx) as {
     values: unknown[];

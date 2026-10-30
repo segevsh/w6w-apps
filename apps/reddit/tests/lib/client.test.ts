@@ -1,17 +1,18 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { fullname, listingItems, RedditClient } from "../../lib/client.ts";
 
-Deno.test("fullname: adds the prefix when missing", () => {
+test("fullname: adds the prefix when missing", () => {
   assertEquals(fullname("t3", "abc123"), "t3_abc123");
   assertEquals(fullname("t1", "xyz789"), "t1_xyz789");
 });
 
-Deno.test("fullname: leaves an already-prefixed id alone", () => {
+test("fullname: leaves an already-prefixed id alone", () => {
   assertEquals(fullname("t3", "t3_abc123"), "t3_abc123");
 });
 
-Deno.test("listingItems: unwraps a Listing's children into their data", () => {
+test("listingItems: unwraps a Listing's children into their data", () => {
   const listing = {
     kind: "Listing" as const,
     data: {
@@ -23,7 +24,7 @@ Deno.test("listingItems: unwraps a Listing's children into their data", () => {
   assertEquals(listingItems(listing), [{ id: "1" }, { id: "2" }]);
 });
 
-Deno.test("RedditClient: GET builds the query string and returns the parsed body", async () => {
+test("RedditClient: GET builds the query string and returns the parsed body", async () => {
   const { ctx, calls } = mockCtx([{ body: { kind: "Listing", data: { children: [] } } }]);
   const out = await new RedditClient(ctx).request("/r/test/hot.json", {
     query: { limit: 25, after: undefined },
@@ -33,7 +34,7 @@ Deno.test("RedditClient: GET builds the query string and returns the parsed body
   assertEquals(out, { kind: "Listing", data: { children: [] } });
 });
 
-Deno.test("RedditClient: POST sends a form-urlencoded body, not JSON", async () => {
+test("RedditClient: POST sends a form-urlencoded body, not JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { json: { errors: [], data: { id: "1" } } } }]);
   await new RedditClient(ctx).request("/api/submit", {
     method: "POST",
@@ -43,7 +44,7 @@ Deno.test("RedditClient: POST sends a form-urlencoded body, not JSON", async () 
   assertEquals(calls[0].body, "api_type=json&sr=test&title=hi");
 });
 
-Deno.test("RedditClient: throws with the vendor's message on a non-2xx response", async () => {
+test("RedditClient: throws with the vendor's message on a non-2xx response", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Forbidden", error: 403 } }]);
   await assertRejects(
     () => new RedditClient(ctx).request("/api/v1/me"),
@@ -52,7 +53,7 @@ Deno.test("RedditClient: throws with the vendor's message on a non-2xx response"
   );
 });
 
-Deno.test("RedditClient: throws on a 200 response carrying json.errors", async () => {
+test("RedditClient: throws on a 200 response carrying json.errors", async () => {
   const { ctx } = mockCtx([{
     body: { json: { errors: [["RATELIMIT", "you are doing that too much", "ratelimit"]] } },
   }]);

@@ -1,21 +1,22 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/schedule-campaign.ts";
 
-Deno.test("schedule-campaign: POSTs /api/campaigns/{id}/schedule", async () => {
+test("schedule-campaign: POSTs /api/campaigns/{id}/schedule", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", status: "sent" } } }]);
   await action.execute!({ campaignId: "1", delivery: "instant" }, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(new URL(calls[0].url).pathname, "/api/campaigns/1/schedule");
 });
 
-Deno.test("schedule-campaign: an instant send carries delivery only, no schedule object", async () => {
+test("schedule-campaign: an instant send carries delivery only, no schedule object", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ campaignId: "1", delivery: "instant" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { delivery: "instant" });
 });
 
-Deno.test("schedule-campaign: nests the bracketed schedule fields into a `schedule` object", async () => {
+test("schedule-campaign: nests the bracketed schedule fields into a `schedule` object", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({
     campaignId: "1",
@@ -31,7 +32,7 @@ Deno.test("schedule-campaign: nests the bracketed schedule fields into a `schedu
   });
 });
 
-Deno.test("schedule-campaign: a timezone_based send needs no date", async () => {
+test("schedule-campaign: a timezone_based send needs no date", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!(
     { campaignId: "1", delivery: "timezone_based", hours: "09", minutes: "00" },
@@ -43,11 +44,11 @@ Deno.test("schedule-campaign: a timezone_based send needs no date", async () => 
   });
 });
 
-Deno.test("schedule-campaign: is NOT idempotent — re-running an instant send sends again", () => {
+test("schedule-campaign: is NOT idempotent — re-running an instant send sends again", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("schedule-campaign: the delivery options match the documented vocabulary", () => {
+test("schedule-campaign: the delivery options match the documented vocabulary", () => {
   const options = action.params!.find((p) => p.key === "delivery")!.options as Array<
     { value: string }
   >;

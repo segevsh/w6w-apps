@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import queueGet from "../../actions/queue-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("queue-get: fetches the queue over the given date range", async () => {
+test("queue-get: fetches the queue over the given date range", async () => {
   const { ctx, calls } = mockCtx([{
     body: { social_set_id: 4, start_date: "2026-02-01", end_date: "2026-02-29", days: [] },
   }]);

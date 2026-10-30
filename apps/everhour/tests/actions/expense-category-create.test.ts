@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import expenseCategoryCreate from "../../actions/expense-category-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("expense-category-create: POST /expenses/categories with the documented query and body", async () => {
+test("expense-category-create: POST /expenses/categories with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await expenseCategoryCreate.execute({
     "name": "Mileage",
@@ -30,7 +31,7 @@ Deno.test("expense-category-create: POST /expenses/categories with the documente
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("expense-category-create: an Everhour error surfaces its message and status", async () => {
+test("expense-category-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -48,7 +49,7 @@ Deno.test("expense-category-create: an Everhour error surfaces its message and s
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("expense-category-create: declares perform and idempotent=false", () => {
+test("expense-category-create: declares perform and idempotent=false", () => {
   assertEquals(expenseCategoryCreate.type, "perform");
   assertEquals(expenseCategoryCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import metricGet from "../../actions/metric-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("metric-get: GET /v1/metrics/mrr with the documented query/body", async () => {
+test("metric-get: GET /v1/metrics/mrr with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { metrics: [] } }]);
   const out = await metricGet.execute({
     metric: "mrr",
@@ -34,13 +35,13 @@ Deno.test("metric-get: GET /v1/metrics/mrr with the documented query/body", asyn
   assert("metrics" in out);
 });
 
-Deno.test("metric-get: declares type read and every required param", () => {
+test("metric-get: declares type read and every required param", () => {
   assertEquals(metricGet.type, "read");
   const required = (metricGet.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["end_date", "metric", "start_date"]);
 });
 
-Deno.test("metric-get: surfaces a vendor error as a thrown message", async () => {
+test("metric-get: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

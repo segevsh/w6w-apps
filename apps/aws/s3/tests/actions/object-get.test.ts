@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-get.ts";
 
-Deno.test("object-get: fetches the object and returns text content by default", async () => {
+test("object-get: fetches the object and returns text content by default", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -28,7 +29,7 @@ Deno.test("object-get: fetches the object and returns text content by default", 
   });
 });
 
-Deno.test("object-get: base64-encodes bytes exactly, including bytes >= 0x80", async () => {
+test("object-get: base64-encodes bytes exactly, including bytes >= 0x80", async () => {
   const bytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x00, 0xff]); // PNG-ish, includes high bytes
   const { ctx } = mockCtx([{ status: 200, body: bytes.buffer, headers: {} }]);
   const result = await action.execute!(
@@ -40,7 +41,7 @@ Deno.test("object-get: base64-encodes bytes exactly, including bytes >= 0x80", a
   assertEquals(decoded, bytes);
 });
 
-Deno.test("object-get: encodes each path segment of the key independently", async () => {
+test("object-get: encodes each path segment of the key independently", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "x", headers: {} }]);
   await action.execute!({ bucket: "my-bucket", key: "a folder/b file.txt" }, ctx);
   assertEquals(
@@ -49,13 +50,13 @@ Deno.test("object-get: encodes each path segment of the key independently", asyn
   );
 });
 
-Deno.test("object-get: appends versionId as a query param", async () => {
+test("object-get: appends versionId as a query param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "x", headers: {} }]);
   await action.execute!({ bucket: "my-bucket", key: "a.txt", versionId: "v1" }, ctx);
   assertEquals(calls[0].url, "https://s3.us-east-1.amazonaws.com/my-bucket/a.txt?versionId=v1");
 });
 
-Deno.test("object-get: propagates NoSuchKey as an Error", async () => {
+test("object-get: propagates NoSuchKey as an Error", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: "<Error><Code>NoSuchKey</Code><Message>not found</Message></Error>" },
   ]);
@@ -66,7 +67,7 @@ Deno.test("object-get: propagates NoSuchKey as an Error", async () => {
   );
 });
 
-Deno.test("object-get: missing params reject", async () => {
+test("object-get: missing params reject", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ bucket: "", key: "a" }, ctx)),

@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-usage.ts";
 
-Deno.test("add-usage: identity", () => {
+test("add-usage: identity", () => {
   assertEquals(action.key, "add-usage");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "billing");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("add-usage: sends POST /api/v1/billing/usage", async () => {
+test("add-usage: sends POST /api/v1/billing/usage", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     subscriptionAddOnUid: "sa1",
@@ -32,7 +33,7 @@ Deno.test("add-usage: sends POST /api/v1/billing/usage", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("add-usage: a failure names the status and the request", async () => {
+test("add-usage: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

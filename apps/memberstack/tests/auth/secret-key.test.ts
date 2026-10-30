@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import secretKey, { PROBE_TOKEN } from "../../auth/secret-key.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const INVALID = errorBody("The provided secret key is invalid.", "validation/invalid-secret-key");
 
-Deno.test("sign: stamps X-API-KEY and nothing else", () => {
+test("sign: stamps X-API-KEY and nothing else", () => {
   const req = secretKey.sign!({
     request: { url: "https://admin.memberstack.com/members", method: "GET", headers: {} },
     credential: { apiKey: "sk_sb_abc" },
@@ -12,7 +13,7 @@ Deno.test("sign: stamps X-API-KEY and nothing else", () => {
   assertEquals(req.headers, { "x-api-key": "sk_sb_abc" });
 });
 
-Deno.test("test: INVALID_TOKEN (400) for the junk token means the key was accepted", async () => {
+test("test: INVALID_TOKEN (400) for the junk token means the key was accepted", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: errorBody("Invalid token", "INVALID_TOKEN"),
@@ -25,7 +26,7 @@ Deno.test("test: INVALID_TOKEN (400) for the junk token means the key was accept
   assertEquals(JSON.parse(calls[0].body!), { token: PROBE_TOKEN });
 });
 
-Deno.test("test: invalid-secret-key is a rejection at BOTH 401 and 400 (body, not status)", async () => {
+test("test: invalid-secret-key is a rejection at BOTH 401 and 400 (body, not status)", async () => {
   for (const status of [401, 400]) {
     const { ctx } = mockCtx([{ status, body: INVALID }]);
     const out = await secretKey.test({ credential: { apiKey: "sk_bad" } } as never, ctx);
@@ -34,14 +35,14 @@ Deno.test("test: invalid-secret-key is a rejection at BOTH 401 and 400 (body, no
   }
 });
 
-Deno.test("test: an unrecognised 400 is NOT treated as a pass", async () => {
+test("test: an unrecognised 400 is NOT treated as a pass", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("something else") }]);
   const out = await secretKey.test({ credential: { apiKey: "sk_x" } } as never, ctx);
   assertEquals(out.ok, false);
   assert(out.message?.includes("could not be confirmed"));
 });
 
-Deno.test("test: a missing key fails without a request, and no message echoes the key", async () => {
+test("test: a missing key fails without a request, and no message echoes the key", async () => {
   const none = mockCtx([]);
   assertEquals((await secretKey.test({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);

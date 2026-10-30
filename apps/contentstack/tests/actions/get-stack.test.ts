@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-stack.ts";
 
-Deno.test("get-stack: metadata", () => {
+test("get-stack: metadata", () => {
   assertEquals(action.key, "get-stack");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), [
@@ -12,7 +13,7 @@ Deno.test("get-stack: metadata", () => {
   ]);
 });
 
-Deno.test("get-stack: calls GET /stacks on the NA host", async () => {
+test("get-stack: calls GET /stacks on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "stack": { "name": "Site", "api_key": "blt1" } } }]);
   const out = await action.execute({ "includeCollaborators": true }, ctx);
   assertEquals(calls.length, 1);
@@ -24,7 +25,7 @@ Deno.test("get-stack: calls GET /stacks on the NA host", async () => {
   assertEquals(out, { "stack": { "name": "Site", "api_key": "blt1" } });
 });
 
-Deno.test("get-stack: uses the connection's regional host", async () => {
+test("get-stack: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "stack": { "name": "Site", "api_key": "blt1" } } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -35,7 +36,7 @@ Deno.test("get-stack: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("get-stack: surfaces Contentstack's own error body", async () => {
+test("get-stack: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, display } from "./_shared.ts";
 import action from "../../actions/model-copy.ts";
 
-Deno.test("model-copy: posts source and destination to /api/copy", async () => {
+test("model-copy: posts source and destination to /api/copy", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }], { display });
   const result = await action.execute!({ source: "llama3.2:3b", destination: "my-llama" }, ctx);
   assertEquals(calls[0].url, `${BASE}/api/copy`);
@@ -11,7 +12,7 @@ Deno.test("model-copy: posts source and destination to /api/copy", async () => {
   assertEquals(result, { copied: true, source: "llama3.2:3b", destination: "my-llama" });
 });
 
-Deno.test("model-copy: both names are required", async () => {
+test("model-copy: both names are required", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ source: "a" }, ctx),

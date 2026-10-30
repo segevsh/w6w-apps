@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import formList from "../../actions/form-list.ts";
 import { errorBody, EU_ROOT, mockCtx, US_ROOT } from "../_helpers.ts";
 
-Deno.test("form-list: calls GET /v1/api/forms and counts the bare array", async () => {
+test("form-list: calls GET /v1/api/forms and counts the bare array", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ name: "Contact", formId: "aB1" }, { name: "Survey", formId: "cD2" }],
   }]);
@@ -19,14 +20,14 @@ Deno.test("form-list: calls GET /v1/api/forms and counts the bare array", async 
  * Fillout returns a **bare array**, not `{data: […]}`. A client that unwrapped
  * an envelope would return `undefined` here, so the shape is pinned.
  */
-Deno.test("form-list: an empty account yields an empty array, not undefined", async () => {
+test("form-list: an empty account yields an empty array, not undefined", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   const out = await formList.execute({}, ctx);
   assertEquals(out.forms, []);
   assertEquals(out.formCount, 0);
 });
 
-Deno.test("form-list: an EU connection is routed to eu-api.fillout.com", async () => {
+test("form-list: an EU connection is routed to eu-api.fillout.com", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { region: "eu" });
   await formList.execute({}, ctx);
   assertEquals(calls[0].url, `${EU_ROOT}/forms`);
@@ -37,7 +38,7 @@ Deno.test("form-list: an EU connection is routed to eu-api.fillout.com", async (
  * says what went wrong. The thrown error must carry the vendor's own sentence
  * plus the advice derived from it.
  */
-Deno.test("form-list: a rejected key surfaces as an actionable 400, not a bare status", async () => {
+test("form-list: a rejected key surfaces as an actionable 400, not a bare status", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody(400, "Bad Request", "API Key invalid"),
@@ -47,7 +48,7 @@ Deno.test("form-list: a rejected key surfaces as an actionable 400, not a bare s
   assertEquals(err.message.includes("regenerated or revoked"), true, err.message);
 });
 
-Deno.test("form-list: a 429 explains the 5-requests-per-second ceiling", async () => {
+test("form-list: a 429 explains the 5-requests-per-second ceiling", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: errorBody(429, "Too Many Requests", "Too many requests. Try again soon."),

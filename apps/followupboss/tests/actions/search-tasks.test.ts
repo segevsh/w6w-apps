@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import searchTasks from "../../actions/search-tasks.ts";
 
-Deno.test("search-tasks: GETs /tasks with named due ranges and joined types", async () => {
+test("search-tasks: GETs /tasks with named due ranges and joined types", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "tasks" }, tasks: [] },
@@ -21,6 +22,6 @@ Deno.test("search-tasks: GETs /tasks with named due ranges and joined types", as
   assertEquals(url.searchParams.get("assignedUserId"), "1");
 });
 
-Deno.test("search-tasks: offers the three documented due ranges", () => {
+test("search-tasks: offers the three documented due ranges", () => {
   assertEquals(optionValues(searchTasks, "due"), ["today", "overdue", "upcoming"]);
 });

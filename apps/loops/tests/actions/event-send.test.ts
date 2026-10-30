@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-send.ts";
 
-Deno.test("event-send: POSTs the event name and the contact identity", async () => {
+test("event-send: POSTs the event name and the contact identity", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true } }]);
   await action.execute!({ eventName: "trial_ended", email: "ada@example.com" }, ctx);
   assertEquals(calls[0].url, "https://app.loops.so/api/v1/events/send");
@@ -13,7 +14,7 @@ Deno.test("event-send: POSTs the event name and the contact identity", async () 
 });
 
 /** Loops takes {listId: boolean}; an array would be ignored silently. */
-Deno.test("event-send: a comma list of mailing lists becomes an add-to-all object", async () => {
+test("event-send: a comma list of mailing lists becomes an add-to-all object", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     eventName: "signed_up",
@@ -26,7 +27,7 @@ Deno.test("event-send: a comma list of mailing lists becomes an add-to-all objec
   assertEquals(body.eventProperties, { plan: "pro" });
 });
 
-Deno.test("event-send: naming neither identity is refused before any request", async () => {
+test("event-send: naming neither identity is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ eventName: "x" }, ctx),
@@ -36,7 +37,7 @@ Deno.test("event-send: naming neither identity is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-send: an event name is required", async () => {
+test("event-send: an event name is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ email: "a@x.com" }, ctx),
@@ -47,7 +48,7 @@ Deno.test("event-send: an event name is required", async () => {
 });
 
 /** An event can send real email, so a retry needs the same protection as a send. */
-Deno.test("event-send: offers the same idempotency key as the direct send", async () => {
+test("event-send: offers the same idempotency key as the direct send", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   (ctx as { invocation?: unknown }).invocation = { invocationId: "inv2" };
   await action.execute!({

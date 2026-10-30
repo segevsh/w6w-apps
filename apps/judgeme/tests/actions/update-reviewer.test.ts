@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateReviewer from "../../actions/update-reviewer.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("update-reviewer: PUTs by path id and nests the body under `reviewer`", async () => {
+test("update-reviewer: PUTs by path id and nests the body under `reviewer`", async () => {
   const { ctx, calls } = mockCtx([{ body: { reviewer: { id: 42, email: "a@b.com" } } }]);
   const out = await updateReviewer.execute({
     id: 7,
@@ -16,7 +17,7 @@ Deno.test("update-reviewer: PUTs by path id and nests the body under `reviewer`"
   assertEquals(out, { reviewer: { id: 42, email: "a@b.com" } });
 });
 
-Deno.test("update-reviewer: the body's `id` is the EXTERNAL id, distinct from the path id", async () => {
+test("update-reviewer: the body's `id` is the EXTERNAL id, distinct from the path id", async () => {
   const { ctx, calls } = mockCtx([{ body: { reviewer: {} } }]);
   await updateReviewer.execute({
     id: -1,
@@ -35,6 +36,6 @@ Deno.test("update-reviewer: the body's `id` is the EXTERNAL id, distinct from th
   assertEquals(sent.reviewer.tags, "vip, repeat-buyer");
 });
 
-Deno.test("update-reviewer: is marked idempotent — create-or-update is a safe retry", () => {
+test("update-reviewer: is marked idempotent — create-or-update is a safe retry", () => {
   assertEquals(updateReviewer.idempotent, true);
 });

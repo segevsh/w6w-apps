@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-rename.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("asset-rename: posts both ids, invalidating the old one by default", async () => {
+test("asset-rename: posts both ids, invalidating the old one by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { public_id: "archive/hero" } }], conn);
   await action.execute!({ fromPublicId: "products/hero", toPublicId: "archive/hero" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1_1/acme/image/rename");
@@ -14,7 +15,7 @@ Deno.test("asset-rename: posts both ids, invalidating the old one by default", a
   assertEquals(sent.get("invalidate"), "true");
 });
 
-Deno.test("asset-rename: renaming to the same id is refused", async () => {
+test("asset-rename: renaming to the same id is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ fromPublicId: "a", toPublicId: "a" }, ctx),
@@ -25,6 +26,6 @@ Deno.test("asset-rename: renaming to the same id is refused", async () => {
 });
 
 /** The public id is in every delivery URL. */
-Deno.test("asset-rename: says that existing URLs break", () => {
+test("asset-rename: says that existing URLs break", () => {
   assert(/URL.*break|break/i.test(action.description!), action.description);
 });

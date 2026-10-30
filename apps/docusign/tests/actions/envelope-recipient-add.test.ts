@@ -1,10 +1,11 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { ACCOUNT_BASE, bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/envelope-recipient-add.ts";
 
 const RECIPIENTS = '{"carbonCopies":[{"email":"cc@b.com","name":"C C","recipientId":"3"}]}';
 
-Deno.test("envelope-recipient-add: POSTs the recipients object verbatim", async () => {
+test("envelope-recipient-add: POSTs the recipients object verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { recipientCount: "2" } }]);
   await action.execute({ envelopeId: "e1", recipients: RECIPIENTS }, ctx);
 
@@ -13,13 +14,13 @@ Deno.test("envelope-recipient-add: POSTs the recipients object verbatim", async 
   assertEquals(bodyOf(calls[0]), JSON.parse(RECIPIENTS));
 });
 
-Deno.test("envelope-recipient-add: passes resend_envelope through", async () => {
+test("envelope-recipient-add: passes resend_envelope through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ envelopeId: "e1", recipients: RECIPIENTS, resendEnvelope: true }, ctx);
   assertEquals(queryOf(calls[0]).get("resend_envelope"), "true");
 });
 
-Deno.test("envelope-recipient-add: rejects a non-object recipients payload", () => {
+test("envelope-recipient-add: rejects a non-object recipients payload", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => action.execute({ envelopeId: "e1", recipients: "[]" }, ctx),
@@ -28,7 +29,7 @@ Deno.test("envelope-recipient-add: rejects a non-object recipients payload", () 
   );
 });
 
-Deno.test("envelope-recipient-add: is a non-idempotent perform", () => {
+test("envelope-recipient-add: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

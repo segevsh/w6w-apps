@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listMessages from "../../actions/list-messages.ts";
 
@@ -6,13 +7,13 @@ const ENVELOPE = { body: { Count: 1, Data: [{ ID: 1 }], Total: 1 } };
 
 // ---------------------------------------------------------------- list-messages
 
-Deno.test("list-messages: GETs /v3/REST/message", async () => {
+test("list-messages: GETs /v3/REST/message", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listMessages.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/REST/message");
 });
 
-Deno.test("list-messages: the Show* flags are opt-in and off by default", async () => {
+test("list-messages: the Show* flags are opt-in and off by default", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listMessages.execute!({}, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -21,7 +22,7 @@ Deno.test("list-messages: the Show* flags are opt-in and off by default", async 
   assert(!p.has("ShowContactAlt"));
 });
 
-Deno.test("list-messages: forwards the Show* flags with Mailjet's exact casing", async () => {
+test("list-messages: forwards the Show* flags with Mailjet's exact casing", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listMessages.execute!(
     { showSubject: true, showCustomId: true, showContactAlt: true },
@@ -34,7 +35,7 @@ Deno.test("list-messages: forwards the Show* flags with Mailjet's exact casing",
   assertEquals(p.get("ShowContactAlt"), "true");
 });
 
-Deno.test("list-messages: forwards time and type filters verbatim", async () => {
+test("list-messages: forwards time and type filters verbatim", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listMessages.execute!(
     { fromTs: "2026-08-01T00:00:00Z", toTs: "1754006400", fromType: 1, customId: "order-42" },

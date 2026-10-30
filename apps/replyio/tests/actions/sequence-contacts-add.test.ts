@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceContactsAdd from "../../actions/sequence-contacts-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sequence-contacts-add: POSTs contactIds (parsed from JSON) to the bulk endpoint", async () => {
+test("sequence-contacts-add: POSTs contactIds (parsed from JSON) to the bulk endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { added: [1, 2], notProcessed: {} } }]);
   const out = await sequenceContactsAdd.execute(
     { id: 9, contactIds: "[1,2]", removeFromExisting: true },
@@ -15,6 +16,6 @@ Deno.test("sequence-contacts-add: POSTs contactIds (parsed from JSON) to the bul
   assertEquals(out, { added: [1, 2], notProcessed: {} });
 });
 
-Deno.test("sequence-contacts-add: is not idempotent — a partial success/notProcessed is expected", () => {
+test("sequence-contacts-add: is not idempotent — a partial success/notProcessed is expected", () => {
   assertEquals(sequenceContactsAdd.idempotent, false);
 });

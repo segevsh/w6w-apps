@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shift-request.ts";
 
-Deno.test("shift-request: GETs /api/bin/:binId/req/shift", async () => {
+test("shift-request: GETs /api/bin/:binId/req/shift", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -24,7 +25,7 @@ Deno.test("shift-request: GETs /api/bin/:binId/req/shift", async () => {
   assertEquals(out.binId, "YS4il4gS");
 });
 
-Deno.test("shift-request: type is perform, not idempotent (it mutates the bin's queue)", () => {
+test("shift-request: type is perform, not idempotent (it mutates the bin's queue)", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

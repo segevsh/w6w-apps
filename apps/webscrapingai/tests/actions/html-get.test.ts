@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/html-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("html-get: GETs /html and returns the HTML body with the request id", async () => {
+test("html-get: GETs /html and returns the HTML body with the request id", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "text/html", "wsai-request-id": "r9" },
     body: "<html><h1>Hi</h1></html>",
@@ -14,7 +15,7 @@ Deno.test("html-get: GETs /html and returns the HTML body with the request id", 
   assertEquals([...u.searchParams.keys()], ["url"]);
 });
 
-Deno.test("html-get: js_script and return_script_result are sent only when set; the result is returned raw", async () => {
+test("html-get: js_script and return_script_result are sent only when set; the result is returned raw", async () => {
   const { ctx, calls } = mockCtx([{ body: "42" }]);
   const out = await action.execute({
     url: "https://e.test",
@@ -39,7 +40,7 @@ Deno.test("html-get: js_script and return_script_result are sent only when set; 
   assertEquals(q.get("error_on_redirect"), "true");
 });
 
-Deno.test("html-get: 402 and 403 carry an actionable hint; an invalid proxy type makes no call", async () => {
+test("html-get: 402 and 403 carry an actionable hint; an invalid proxy type makes no call", async () => {
   const c402 = mockCtx([{ status: 402, body: { message: "Your requests quota is exceeded." } }]);
   await assertRejects(
     async () => await action.execute({ url: "https://e.test" }, c402.ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-message.ts";
 
-Deno.test("get-message: GETs /messages/{id} and unwraps the data envelope", async () => {
+test("get-message: GETs /messages/{id} and unwraps the data envelope", async () => {
   const data = { id: "msg1", type: "SMS", direction: "outbound" };
   const { ctx, calls } = mockCtx([{ body: { data } }]);
 
@@ -15,7 +16,7 @@ Deno.test("get-message: GETs /messages/{id} and unwraps the data envelope", asyn
   assertEquals(result, data);
 });
 
-Deno.test("get-message: URL-encodes the message id", async () => {
+test("get-message: URL-encodes the message id", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ id: "msg/with slash" }, ctx);
   const url = new URL(calls[0].url);

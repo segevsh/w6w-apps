@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-list.ts";
 
 const display = { site: "acme" };
 const page = (results: unknown[], next?: string) => ({ results, _links: next ? { next } : {} });
 
-Deno.test("page-list: lists /pages and stops when there is no next link", async () => {
+test("page-list: lists /pages and stops when there is no next link", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ id: "1" }]) }], { display });
   const result = await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/wiki/api/v2/pages");
@@ -13,7 +14,7 @@ Deno.test("page-list: lists /pages and stops when there is no next link", async 
   assertEquals(calls.length, 1);
 });
 
-Deno.test("page-list: space ids repeat as space-id, and statuses repeat as status", async () => {
+test("page-list: space ids repeat as space-id, and statuses repeat as status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([]) }], { display });
   await action.execute!({
     spaceId: "101, 202",
@@ -30,7 +31,7 @@ Deno.test("page-list: space ids repeat as space-id, and statuses repeat as statu
   assertEquals(q.get("body-format"), "storage");
 });
 
-Deno.test("page-list: returnAll follows the cursor out of _links.next", async () => {
+test("page-list: returnAll follows the cursor out of _links.next", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page([{ id: "1" }], "/wiki/api/v2/pages?cursor=c2") },
     { status: 200, body: page([{ id: "2" }]) },

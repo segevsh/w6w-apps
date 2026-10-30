@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -13,13 +14,13 @@ function components(overrides?: Array<{ id: string; name: string; status: string
   };
 }
 
-Deno.test("service: probes the status host, unauthenticated and unsigned", () => {
+test("service: probes the status host, unauthenticated and unsigned", () => {
   assertEquals(service.network?.allow, ["status.perplexity.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: an all-operational page reports ok, tracking the API component", async () => {
+test("service: an all-operational page reports ok, tracking the API component", async () => {
   const { ctx, calls } = mockCtx([{ body: components() }]);
   const report = await service.check!({}, ctx);
 
@@ -28,7 +29,7 @@ Deno.test("service: an all-operational page reports ok, tracking the API compone
   assertEquals(report.message, undefined);
 });
 
-Deno.test("service: reports every component for attribution, keyed by slug", async () => {
+test("service: reports every component for attribution, keyed by slug", async () => {
   const { ctx } = mockCtx([{ body: components() }]);
   const report = await service.check!({}, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("service: reports every component for attribution, keyed by slug", asy
  * A Website or Computer outage must not degrade the verdict for an app that
  * only calls the chat-completions/search/embeddings API.
  */
-Deno.test("service: an outage on Website or Computer does not affect state", async () => {
+test("service: an outage on Website or Computer does not affect state", async () => {
   const { ctx } = mockCtx([
     {
       body: components([
@@ -56,7 +57,7 @@ Deno.test("service: an outage on Website or Computer does not affect state", asy
   assertEquals(report.components?.computer.state, "down");
 });
 
-Deno.test("service: an API outage reports down and names itself", async () => {
+test("service: an API outage reports down and names itself", async () => {
   const { ctx } = mockCtx([
     { body: components([{ id: "2", name: "API", status: "MAJOROUTAGE" }]) },
   ]);
@@ -66,7 +67,7 @@ Deno.test("service: an API outage reports down and names itself", async () => {
   assert(/API is DOWN/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a degraded-performance API reports degraded", async () => {
+test("service: a degraded-performance API reports degraded", async () => {
   const { ctx } = mockCtx([
     { body: components([{ id: "2", name: "API", status: "DEGRADEDPERFORMANCE" }]) },
   ]);
@@ -74,12 +75,12 @@ Deno.test("service: a degraded-performance API reports degraded", async () => {
 });
 
 /** A broken status page says nothing about Perplexity — never `down`. */
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
@@ -88,14 +89,14 @@ Deno.test("service: an unreadable body reports unknown", async () => {
  * Guards against the `/v2/summary.json` trap: that surface answers 200 with
  * only `{"page": {"status": "UP"}}`, no `components` array at all.
  */
-Deno.test("service: a page-only payload with no components array reports unknown", async () => {
+test("service: a page-only payload with no components array reports unknown", async () => {
   const { ctx } = mockCtx([
     { body: { page: { name: "Perplexity", url: "https://status.perplexity.com", status: "UP" } } },
   ]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: if the API component disappears from the feed, reports unknown", async () => {
+test("service: if the API component disappears from the feed, reports unknown", async () => {
   const { ctx } = mockCtx([
     { body: components([{ id: "1", name: "Website", status: "OPERATIONAL" }]) },
   ]);

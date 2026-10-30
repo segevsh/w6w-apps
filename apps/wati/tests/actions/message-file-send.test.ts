@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-file-send.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("message-file-send: POSTs /conversations/messages/fileViaUrl with only the set fields", async () => {
+test("message-file-send: POSTs /conversations/messages/fileViaUrl with only the set fields", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { message: { id: "1", type: "file", status: "sent" } } }],
     conn,
@@ -25,7 +26,7 @@ Deno.test("message-file-send: POSTs /conversations/messages/fileViaUrl with only
   assertEquals(out, { message: { id: "1", type: "file", status: "sent" } });
 });
 
-Deno.test("message-file-send: includes caption and isBot when set", async () => {
+test("message-file-send: includes caption and isBot when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: {} } }], conn);
   await action.execute(
     {
@@ -44,6 +45,6 @@ Deno.test("message-file-send: includes caption and isBot when set", async () => 
   });
 });
 
-Deno.test("message-file-send: is not idempotent", () => {
+test("message-file-send: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

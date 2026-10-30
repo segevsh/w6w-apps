@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-create.ts";
 
@@ -14,7 +15,7 @@ const input = {
   "additionalFields": { "extra_field": "x" },
 } as never;
 
-Deno.test("customer-create: POST /customers", async () => {
+test("customer-create: POST /customers", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "status": 201, "success": true, "data": { "id": 1 } },
@@ -41,7 +42,7 @@ Deno.test("customer-create: POST /customers", async () => {
   assertEquals(result, { "status": 201, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("customer-create: sends only the fields that were set", async () => {
+test("customer-create: sends only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!(
     {
@@ -60,7 +61,7 @@ Deno.test("customer-create: sends only the fields that were set", async () => {
   });
 });
 
-Deno.test("customer-create: a Salla error envelope throws with its message", async () => {
+test("customer-create: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

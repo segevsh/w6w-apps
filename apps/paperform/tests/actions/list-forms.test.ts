@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listForms from "../../actions/list-forms.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-forms: GETs /v1/forms with search, search_fields (repeated) and pagination", async () => {
+test("list-forms: GETs /v1/forms with search, search_fields (repeated) and pagination", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope({ forms: [{ id: "f1" }] }, {
@@ -29,7 +30,7 @@ Deno.test("list-forms: GETs /v1/forms with search, search_fields (repeated) and 
   assertEquals(out.hasMore, false);
 });
 
-Deno.test("list-forms: an empty result set returns an empty array, not undefined", async () => {
+test("list-forms: an empty result set returns an empty array, not undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: listEnvelope({}) }]);
   const out = await listForms.execute({}, ctx) as { results: unknown[] };
   assertEquals(out.results, []);

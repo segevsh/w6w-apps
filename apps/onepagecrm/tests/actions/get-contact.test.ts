@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import getContact from "../../actions/get-contact.ts";
 import { envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-contact: GET /contacts/{id} returns the data object", async () => {
+test("get-contact: GET /contacts/{id} returns the data object", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ contact: { id: "c 1" }, next_actions: [{ id: "a1" }] }),
   }]);
@@ -13,13 +14,13 @@ Deno.test("get-contact: GET /contacts/{id} returns the data object", async () =>
   assertEquals((out.next_actions as unknown[]).length, 1);
 });
 
-Deno.test("get-contact: a blank id is refused before any request", async () => {
+test("get-contact: a blank id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => Promise.resolve(getContact.execute({ contactId: " " }, ctx)), Error);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-contact: 404 resource_not_found is reported", async () => {
+test("get-contact: 404 resource_not_found is reported", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("resource_not_found", "Not found", 404),

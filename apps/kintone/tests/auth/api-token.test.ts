@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: signs with X-Cybozu-API-Token, verbatim (supports comma-separated tokens)", async () => {
+test("api-token: signs with X-Cybozu-API-Token, verbatim (supports comma-separated tokens)", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.cybozu.com/k/v1/record.json",
@@ -13,13 +14,13 @@ Deno.test("api-token: signs with X-Cybozu-API-Token, verbatim (supports comma-se
   assertEquals(out.headers["x-cybozu-api-token"], "t1,t2");
 });
 
-Deno.test("api-token: baseUrl, apiToken and testAppId are required; guestSpaceId is not", () => {
+test("api-token: baseUrl, apiToken and testAppId are required; guestSpaceId is not", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["apiToken", "baseUrl", "testAppId"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiToken"]);
 });
 
-Deno.test("api-token: test succeeds on a 200 with an appId body", async () => {
+test("api-token: test succeeds on a 200 with an appId body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { appId: "1", name: "ToDo App" } }]);
   const out = await auth.test(
     {
@@ -32,7 +33,7 @@ Deno.test("api-token: test succeeds on a 200 with an appId body", async () => {
   assertEquals(calls[0].headers["x-cybozu-api-token"], "t1");
 });
 
-Deno.test("api-token: test routes through the Guest Space path when configured", async () => {
+test("api-token: test routes through the Guest Space path when configured", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { appId: "1" } }]);
   await auth.test(
     {
@@ -48,7 +49,7 @@ Deno.test("api-token: test routes through the Guest Space path when configured",
   assertEquals(calls[0].url, "https://acme.cybozu.com/k/guest/5/v1/app.json?id=1");
 });
 
-Deno.test("api-token: a structured Kintone error fails with the vendor's own code/message", async () => {
+test("api-token: a structured Kintone error fails with the vendor's own code/message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { code: "GAIA_NO01", id: "abc", message: "No privilege to proceed." },
@@ -64,7 +65,7 @@ Deno.test("api-token: a structured Kintone error fails with the vendor's own cod
   assert(out.message.includes("No privilege to proceed."), out.message);
 });
 
-Deno.test("api-token: a non-JSON response (Cybozu's edge decoy) fails as unreachable, not as a rejection", async () => {
+test("api-token: a non-JSON response (Cybozu's edge decoy) fails as unreachable, not as a rejection", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     headers: { "content-type": "text/html; charset=utf-8" },
@@ -78,7 +79,7 @@ Deno.test("api-token: a non-JSON response (Cybozu's edge decoy) fails as unreach
   assert(out.message.includes("no Kintone tenant"), out.message);
 });
 
-Deno.test("api-token: missing fields fail before any network call", async () => {
+test("api-token: missing fields fail before any network call", async () => {
   const noToken = mockCtx([]);
   assertEquals(
     await auth.test(
@@ -98,7 +99,7 @@ Deno.test("api-token: missing fields fail before any network call", async () => 
   assertEquals(noToken.calls.length + noAppId.calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect persists the normalised baseUrl and guestSpaceId, never the token", async () => {
+test("api-token: afterConnect persists the normalised baseUrl and guestSpaceId, never the token", async () => {
   const display = await auth.afterConnect!(
     {
       credential: {

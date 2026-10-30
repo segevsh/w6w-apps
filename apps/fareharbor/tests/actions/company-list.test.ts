@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import companyList from "../../actions/company-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("company-list: GET /api/external/v1/companies/", async () => {
+test("company-list: GET /api/external/v1/companies/", async () => {
   const body = { companies: [{ shortname: "bodyglove", name: "Body Glove", currency: "usd" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(
@@ -15,7 +16,7 @@ Deno.test("company-list: GET /api/external/v1/companies/", async () => {
   assertEquals(calls[0].headers["x-fareharbor-api-app"], undefined);
 });
 
-Deno.test("company-list: a vendor error surfaces its code and sentence", async () => {
+test("company-list: a vendor error surfaces its code and sentence", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody(404, "company-shortname-invalid", "nope is not a valid company shortname"),

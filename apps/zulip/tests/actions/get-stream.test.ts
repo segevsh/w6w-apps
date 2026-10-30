@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-stream.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BASE = "https://acme.zulipchat.com/api/v1";
 
-Deno.test("get-stream: fetches one channel", async () => {
+test("get-stream: fetches one channel", async () => {
   const { ctx, calls } = mockCtx([{
     body: { result: "success", msg: "", stream: { stream_id: 4 } },
   }]);
@@ -17,7 +18,7 @@ Deno.test("get-stream: fetches one channel", async () => {
   assertEquals(out, { stream: { stream_id: 4 } });
 });
 
-Deno.test("get-stream: sends no authorization header of its own", async () => {
+test("get-stream: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{
     body: { result: "success", msg: "", stream: { stream_id: 4 } },
   }]);
@@ -25,7 +26,7 @@ Deno.test("get-stream: sends no authorization header of its own", async () => {
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("get-stream: surfaces Zulip's error msg and code", async () => {
+test("get-stream: surfaces Zulip's error msg and code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { result: "error", msg: "Invalid parameter", code: "BAD_REQUEST" },
@@ -37,7 +38,7 @@ Deno.test("get-stream: surfaces Zulip's error msg and code", async () => {
   );
 });
 
-Deno.test("get-stream: a 401 names the credential problem", async () => {
+test("get-stream: a 401 names the credential problem", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "", headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({ stream_id: 4 }, ctx),
@@ -46,7 +47,7 @@ Deno.test("get-stream: a 401 names the credential problem", async () => {
   );
 });
 
-Deno.test("get-stream: a connection without a subdomain is refused before any request", async () => {
+test("get-stream: a connection without a subdomain is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = undefined;
   await assertRejects(

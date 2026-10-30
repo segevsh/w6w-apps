@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/orgunit-delete.ts";
 
-Deno.test("orgunit-delete: DELETEs the org unit path with slashes preserved", async () => {
+test("orgunit-delete: DELETEs the org unit path with slashes preserved", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ orgUnitPath: "/Sales/Support" }, ctx);
 

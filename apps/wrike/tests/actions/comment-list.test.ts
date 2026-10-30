@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentList from "../../actions/comment-list.ts";
 import { envelope, mockWrikeCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-list: GETs /tasks/{taskId}/comments", async () => {
+test("comment-list: GETs /tasks/{taskId}/comments", async () => {
   const { ctx, calls } = mockWrikeCtx([{ status: 200, body: envelope([{ id: "C1" }]) }]);
   const out = await commentList.execute({ taskId: "T1", plainText: true }, ctx) as {
     items: unknown[];

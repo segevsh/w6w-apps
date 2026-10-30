@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import quota, { judgeReading, QUOTA_PROBE_URL, WARN_FRACTION } from "../../health/quota.ts";
 import { emptyQuotaHeaders, mockCtx, pathOf, quotaHeaders } from "../_helpers.ts";
 
-Deno.test("quota: the probe is the identity endpoint, and it is signed", () => {
+test("quota: the probe is the identity endpoint, and it is signed", () => {
   assertEquals(QUOTA_PROBE_URL, "https://api.infusionsoft.com/crm/rest/v2/oauth/connect/userinfo");
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");
@@ -12,7 +13,7 @@ Deno.test("quota: the probe is the identity endpoint, and it is signed", () => {
 
 // --- the arithmetic ---------------------------------------------------------
 
-Deno.test("judgeReading is ok well below the threshold", () => {
+test("judgeReading is ok well below the threshold", () => {
   const out = judgeReading({ id: "x", limit: 1000, available: 900, window: "1 minute" });
   assertEquals(out.state, "ok");
   assertEquals(out.quota.limit, 1000);
@@ -21,7 +22,7 @@ Deno.test("judgeReading is ok well below the threshold", () => {
   assertEquals(out.note, undefined);
 });
 
-Deno.test("judgeReading degrades at the warning fraction and not before", () => {
+test("judgeReading degrades at the warning fraction and not before", () => {
   assertEquals(WARN_FRACTION, 0.9);
   // 89% consumed.
   assertEquals(judgeReading({ id: "x", limit: 100, available: 11 }).state, "ok");
@@ -31,13 +32,13 @@ Deno.test("judgeReading degrades at the warning fraction and not before", () => 
   assertStringIncludes(at.note!, "90%");
 });
 
-Deno.test("judgeReading reports an exhausted bucket as down", () => {
+test("judgeReading reports an exhausted bucket as down", () => {
   const out = judgeReading({ id: "x", limit: 100, available: 0 });
   assertEquals(out.state, "down");
   assertStringIncludes(out.note!, "exhausted");
 });
 
-Deno.test("judgeReading never reports a negative remaining", () => {
+test("judgeReading never reports a negative remaining", () => {
   assertEquals(judgeReading({ id: "x", limit: 100, available: -5 }).quota.remaining, 0);
 });
 
@@ -45,24 +46,24 @@ Deno.test("judgeReading never reports a negative remaining", () => {
  * A missing or non-positive limit is "not metered on this dimension", not "no
  * headroom". Reading it the other way reports every unmetered family exhausted.
  */
-Deno.test("judgeReading treats a missing or zero limit as unmetered, not exhausted", () => {
+test("judgeReading treats a missing or zero limit as unmetered, not exhausted", () => {
   assertEquals(judgeReading({ id: "x", available: 5 }).state, "ok");
   assertEquals(judgeReading({ id: "x", limit: 0, available: 0 }).state, "ok");
 });
 
-Deno.test("judgeReading falls back to `used` when the vendor sent no `available`", () => {
+test("judgeReading falls back to `used` when the vendor sent no `available`", () => {
   const out = judgeReading({ id: "x", limit: 100, used: 95 });
   assertEquals(out.state, "degraded");
   assertEquals(out.quota.remaining, undefined);
 });
 
-Deno.test("judgeReading is unknown when a limit exists but nothing counts against it", () => {
+test("judgeReading is unknown when a limit exists but nothing counts against it", () => {
   assertEquals(judgeReading({ id: "x", limit: 100 }).state, "unknown");
 });
 
 // --- the check --------------------------------------------------------------
 
-Deno.test("quota: a healthy response reports all four windows", async () => {
+test("quota: a healthy response reports all four windows", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "a@b.com" }, headers: quotaHeaders() }]);
   const report = await quota.check!({}, ctx);
   assertEquals(pathOf(calls[0].url), "/crm/rest/v2/oauth/connect/userinfo");
@@ -83,7 +84,7 @@ Deno.test("quota: a healthy response reports all four windows", async () => {
  * app, so it can run out for reasons that have nothing to do with this
  * connection. Collapsing the families would hide exactly that case.
  */
-Deno.test("quota: the tenant ceiling can be exhausted while the credential's own is fine", async () => {
+test("quota: the tenant ceiling can be exhausted while the credential's own is fine", async () => {
   const { ctx } = mockCtx([{
     body: {},
     headers: quotaHeaders({ "x-keap-tenant-throttle-available": "0|249999" }),
@@ -96,7 +97,7 @@ Deno.test("quota: the tenant ceiling can be exhausted while the credential's own
   assertEquals(daily.remaining, 149999);
 });
 
-Deno.test("quota: a 429 is itself the reading, and its headers are still parsed", async () => {
+test("quota: a 429 is itself the reading, and its headers are still parsed", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { fault: { faultstring: "Rate limit" } },
@@ -108,7 +109,7 @@ Deno.test("quota: a 429 is itself the reading, and its headers are still parsed"
   assert(report.quota!.length > 0);
 });
 
-Deno.test("quota: any other failure is unknown, never a quota verdict", async () => {
+test("quota: any other failure is unknown, never a quota verdict", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -120,7 +121,7 @@ Deno.test("quota: any other failure is unknown, never a quota verdict", async ()
  * number blank, and the tenant family a bare `|`. Reporting zeroes from that
  * would say "quota exhausted" about a request that never authenticated.
  */
-Deno.test("quota: blank headers report unknown rather than zero headroom", async () => {
+test("quota: blank headers report unknown rather than zero headroom", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: emptyQuotaHeaders() }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

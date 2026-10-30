@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-many-databases.ts";
 
-Deno.test("get-many-databases: walks /search until has_more is false", async () => {
+test("get-many-databases: walks /search until has_more is false", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

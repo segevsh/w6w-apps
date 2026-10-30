@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-template.ts";
 
-Deno.test("get-template: GETs /document_templates/{id} and unwraps document_template", async () => {
+test("get-template: GETs /document_templates/{id} and unwraps document_template", async () => {
   const tpl = { id: "tpl-1", identifier: "My Awesome Template", body: "<p>Hello</p>" };
   const { ctx, calls } = mockCtx([{ body: { document_template: tpl } }]);
   const result = await action.execute!({ templateId: "tpl-1" }, ctx);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-subscribers.ts";
 
-Deno.test("list-subscribers: GETs /api/subscribers with the default limit", async () => {
+test("list-subscribers: GETs /api/subscribers with the default limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], links: {}, meta: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-subscribers: GETs /api/subscribers with the default limit", asyn
   assertEquals(url.searchParams.get("limit"), "25");
 });
 
-Deno.test("list-subscribers: forwards the status filter and cursor", async () => {
+test("list-subscribers: forwards the status filter and cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ status: "active", limit: 50, cursor: "eyJpZCI6MX0" }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -20,7 +21,7 @@ Deno.test("list-subscribers: forwards the status filter and cursor", async () =>
   assertEquals(params.get("cursor"), "eyJpZCI6MX0");
 });
 
-Deno.test("list-subscribers: `include` is only sent when groups are requested", async () => {
+test("list-subscribers: `include` is only sent when groups are requested", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }, { body: { data: [] } }]);
   await action.execute!({ includeGroups: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("include"), "groups");
@@ -28,7 +29,7 @@ Deno.test("list-subscribers: `include` is only sent when groups are requested", 
   assert(!new URL(calls[1].url).searchParams.has("include"));
 });
 
-Deno.test("list-subscribers: omits status and cursor when not provided", async () => {
+test("list-subscribers: omits status and cursor when not provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({}, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -36,7 +37,7 @@ Deno.test("list-subscribers: omits status and cursor when not provided", async (
   assert(!params.has("cursor"));
 });
 
-Deno.test("list-subscribers: returns the envelope so the caller can paginate", async () => {
+test("list-subscribers: returns the envelope so the caller can paginate", async () => {
   const envelope = { data: [{ id: "1" }], links: {}, meta: { next_cursor: "abc" } };
   const { ctx } = mockCtx([{ body: envelope }]);
   assertEquals(await action.execute!({}, ctx), envelope);

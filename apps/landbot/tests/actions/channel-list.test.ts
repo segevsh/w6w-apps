@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import channelList from "../../actions/channel-list.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("channel-list: GET /channels/ with the documented query and body", async () => {
+test("channel-list: GET /channels/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -35,7 +36,7 @@ Deno.test("channel-list: GET /channels/ with the documented query and body", asy
   });
 });
 
-Deno.test("channel-list: a Landbot error surfaces its status and message", async () => {
+test("channel-list: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -51,7 +52,7 @@ Deno.test("channel-list: a Landbot error surfaces its status and message", async
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("channel-list: declares search", () => {
+test("channel-list: declares search", () => {
   assertEquals(channelList.type, "search");
   assertEquals(detailBody("x"), { detail: "x" });
 });

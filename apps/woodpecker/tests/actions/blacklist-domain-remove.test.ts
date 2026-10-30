@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import blacklistDomainRemove from "../../actions/blacklist-domain-remove.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("blacklist-domain-remove: DELETE /rest/v2/blacklist/domains with a JSON body", async () => {
+test("blacklist-domain-remove: DELETE /rest/v2/blacklist/domains with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "domains": ["x.domain"] } }]);
   const out = await blacklistDomainRemove.execute(
     { "domains": ["x.domain"] } as never,
@@ -19,7 +20,7 @@ Deno.test("blacklist-domain-remove: DELETE /rest/v2/blacklist/domains with a JSO
   assertEquals(out.count, 1);
 });
 
-Deno.test("blacklist-domain-remove: accepts the list as JSON text", async () => {
+test("blacklist-domain-remove: accepts the list as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "domains": ["y.domain"] } }]);
   await blacklistDomainRemove.execute({ "domains": '["y.domain"]' } as never, ctx);
   assertEquals(calls.length, 1);
@@ -32,7 +33,7 @@ Deno.test("blacklist-domain-remove: accepts the list as JSON text", async () => 
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("blacklist-domain-remove: refuses more than 500 entries", async () => {
+test("blacklist-domain-remove: refuses more than 500 entries", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

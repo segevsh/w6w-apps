@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { formatZeroBounceError, hostFor, ZeroBounceClient } from "../../lib/client.ts";
 
-Deno.test("hostFor: maps region names to hosts, defaulting to the global host", () => {
+test("hostFor: maps region names to hosts, defaulting to the global host", () => {
   assertEquals(hostFor(undefined), "api.zerobounce.net");
   assertEquals(hostFor("default"), "api.zerobounce.net");
   assertEquals(hostFor("us"), "api-us.zerobounce.net");
@@ -11,13 +12,13 @@ Deno.test("hostFor: maps region names to hosts, defaulting to the global host", 
   assertEquals(hostFor("nope"), "api.zerobounce.net");
 });
 
-Deno.test("formatZeroBounceError: reads the flat {error} shape", () => {
+test("formatZeroBounceError: reads the flat {error} shape", () => {
   const msg = formatZeroBounceError(200, "/v2/validate", { error: "bad key" });
   assert(msg.includes("bad key"));
   assert(msg.includes("/v2/validate"));
 });
 
-Deno.test("formatZeroBounceError: reads the {errors:[...]} batch shape", () => {
+test("formatZeroBounceError: reads the {errors:[...]} batch shape", () => {
   const msg = formatZeroBounceError(200, "/v2/validatebatch", {
     email_batch: [],
     errors: [{ error: "Invalid API Key or your account ran out of credits", email_address: "all" }],
@@ -26,7 +27,7 @@ Deno.test("formatZeroBounceError: reads the {errors:[...]} batch shape", () => {
   assert(msg.includes("Invalid API Key"));
 });
 
-Deno.test("ZeroBounceClient.request: builds the URL against the default host and query params", async () => {
+test("ZeroBounceClient.request: builds the URL against the default host and query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { Credits: 100 } }]);
   const client = new ZeroBounceClient(ctx);
   const result = await client.request("/v2/getcredits", { query: { api_key: "x" } });
@@ -38,14 +39,14 @@ Deno.test("ZeroBounceClient.request: builds the URL against the default host and
   assertEquals(result, { Credits: 100 });
 });
 
-Deno.test("ZeroBounceClient.request: honors the region option", async () => {
+test("ZeroBounceClient.request: honors the region option", async () => {
   const { ctx, calls } = mockCtx([{ body: { Credits: 100 } }]);
   const client = new ZeroBounceClient(ctx);
   await client.request("/v2/getcredits", { region: "eu" });
   assertEquals(new URL(calls[0].url).host, "api-eu.zerobounce.net");
 });
 
-Deno.test("ZeroBounceClient.request: sends a JSON body with content-type on POST", async () => {
+test("ZeroBounceClient.request: sends a JSON body with content-type on POST", async () => {
   const { ctx, calls } = mockCtx([{ body: { email_batch: [], errors: [] } }]);
   const client = new ZeroBounceClient(ctx);
   await client.request("/v2/validatebatch", { method: "POST", body: { email_batch: [] } });
@@ -54,13 +55,13 @@ Deno.test("ZeroBounceClient.request: sends a JSON body with content-type on POST
   assertEquals(JSON.parse(calls[0].body!), { email_batch: [] });
 });
 
-Deno.test("ZeroBounceClient.request: throws on a non-2xx status", async () => {
+test("ZeroBounceClient.request: throws on a non-2xx status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const client = new ZeroBounceClient(ctx);
   await assertRejects(() => client.request("/v2/getcredits"), Error, "500");
 });
 
-Deno.test("ZeroBounceClient.request: throws on the flat {error} body even when res.ok is true", async () => {
+test("ZeroBounceClient.request: throws on the flat {error} body even when res.ok is true", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { error: "Invalid API Key or your account ran out of credits" },
@@ -73,7 +74,7 @@ Deno.test("ZeroBounceClient.request: throws on the flat {error} body even when r
   );
 });
 
-Deno.test("ZeroBounceClient.request: does NOT throw on a validatebatch partial-failure envelope", async () => {
+test("ZeroBounceClient.request: does NOT throw on a validatebatch partial-failure envelope", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

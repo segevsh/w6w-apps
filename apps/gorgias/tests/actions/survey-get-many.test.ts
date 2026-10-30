@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/survey-get-many.ts";
 
-Deno.test("survey-get-many: GETs /satisfaction-surveys, wrapping the bare array in `surveys`", async () => {
+test("survey-get-many: GETs /satisfaction-surveys, wrapping the bare array in `surveys`", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: [{ id: 1234 }] }]);
   const out = await action.execute({ ticketId: 12 }, ctx);
   const url = new URL(calls[0].url);

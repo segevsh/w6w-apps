@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-create.ts";
 
-Deno.test("campaign-create: POSTs createCampaign with every field as a query param, listDetails JSON-encoded", async () => {
+test("campaign-create: POSTs createCampaign with every field as a query param, listDetails JSON-encoded", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { message: "Campaign created successfully", campaignKey: "10234695", code: "200" } },
   ]);

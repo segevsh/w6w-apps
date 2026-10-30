@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/item-create.ts";
 
-Deno.test("item-create: POSTs /items with name and the documented optional fields", async () => {
+test("item-create: POSTs /items with name and the documented optional fields", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", item: { item_id: "1" } } },
   ]);
@@ -30,7 +31,7 @@ Deno.test("item-create: POSTs /items with name and the documented optional field
   assertEquals(out, { item_id: "1" });
 });
 
-Deno.test("item-create: `name` alone is a valid body — nothing else is required", async () => {
+test("item-create: `name` alone is a valid body — nothing else is required", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", item: { item_id: "1" } } },
   ]);

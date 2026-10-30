@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getFormSubmission from "../../actions/get-form-submission.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-form-submission: GETs /v1/forms/{slugOrId}/submissions/{id}", async () => {
+test("get-form-submission: GETs /v1/forms/{slugOrId}/submissions/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ submission: { id: "s1", data: { name: "Ada" } } }),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-update.ts";
 
-Deno.test("appointment-update: POSTs booking_id and action as form fields", async () => {
+test("appointment-update: POSTs booking_id and action as form fields", async () => {
   const { ctx, calls } = mockBookingsCtx([
     {
       body: {
@@ -20,6 +21,6 @@ Deno.test("appointment-update: POSTs booking_id and action as form fields", asyn
   assertEquals(calls[0].form, { booking_id: "#AN-00014", action: "noshow" });
 });
 
-Deno.test("appointment-update: is declared idempotent", () => {
+test("appointment-update: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

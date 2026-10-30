@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/note-create.ts";
 
-Deno.test("note-create: POSTs to /Notes with Parent_Id and se_module naming the parent record", async () => {
+test("note-create: POSTs to /Notes with Parent_Id and se_module naming the parent record", async () => {
   const { ctx, calls } = mockRecruitCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: { id: "n1" } }] } },
   ]);
@@ -22,6 +23,6 @@ Deno.test("note-create: POSTs to /Notes with Parent_Id and se_module naming the 
   });
 });
 
-Deno.test("note-create: not idempotent — every call creates a new note", () => {
+test("note-create: not idempotent — every call creates a new note", () => {
   assertEquals(action.idempotent, false);
 });

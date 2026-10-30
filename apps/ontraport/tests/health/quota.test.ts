@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quota: reads X-Rate-Limit-* headers off the shared credential probe", async () => {
+test("quota: reads X-Rate-Limit-* headers off the shared credential probe", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ count: "0" }),
     headers: {
@@ -21,7 +22,7 @@ Deno.test("quota: reads X-Rate-Limit-* headers off the shared credential probe",
   assert(typeof report.quota?.[0].resetAt === "string");
 });
 
-Deno.test("quota: reports degraded, not down, at the ceiling — the window recovers on its own", async () => {
+test("quota: reports degraded, not down, at the ceiling — the window recovers on its own", async () => {
   const { ctx } = mockCtx([{
     body: envelope({}),
     headers: {
@@ -34,7 +35,7 @@ Deno.test("quota: reports degraded, not down, at the ceiling — the window reco
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: missing headers report unknown, not zero headroom", async () => {
+test("quota: missing headers report unknown, not zero headroom", async () => {
   const { ctx } = mockCtx([{
     body: envelope({}),
     headers: { "content-type": "application/json" },
@@ -43,7 +44,7 @@ Deno.test("quota: missing headers report unknown, not zero headroom", async () =
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: non-numeric headers report unknown rather than NaN math", async () => {
+test("quota: non-numeric headers report unknown rather than NaN math", async () => {
   const { ctx } = mockCtx([{
     body: envelope({}),
     headers: { "x-rate-limit-limit": "not-a-number", "x-rate-limit-remaining": "179" },
@@ -52,7 +53,7 @@ Deno.test("quota: non-numeric headers report unknown rather than NaN math", asyn
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: is signed and connection-scoped", () => {
+test("quota: is signed and connection-scoped", () => {
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.kind, "quota");

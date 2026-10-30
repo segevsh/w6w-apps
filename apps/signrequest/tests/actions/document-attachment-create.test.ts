@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentAttachmentCreate from "../../actions/document-attachment-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-attachment-create: POSTs /document-attachments/ with the document resource URL", async () => {
+test("document-attachment-create: POSTs /document-attachments/ with the document resource URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "att-1" } }]);
   await documentAttachmentCreate.execute({
     documentId: "doc-1",

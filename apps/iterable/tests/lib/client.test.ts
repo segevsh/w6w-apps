@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   apiBase,
@@ -14,7 +15,7 @@ import {
   strList,
 } from "../../lib/client.ts";
 
-Deno.test("regionFromConnection: eu only when display.region is eu, else us", () => {
+test("regionFromConnection: eu only when display.region is eu, else us", () => {
   assertEquals(regionFromConnection(undefined), "us");
   assertEquals(regionFromConnection({ display: { region: "eu" } } as never), "eu");
   assertEquals(regionFromConnection({ display: { region: "mars" } } as never), "us");
@@ -22,7 +23,7 @@ Deno.test("regionFromConnection: eu only when display.region is eu, else us", ()
   assertEquals(apiBase("eu"), "https://api.eu.iterable.com/api");
 });
 
-Deno.test("readers: coerce and validate", () => {
+test("readers: coerce and validate", () => {
   assertEquals(str("  a "), "a");
   assertEquals(str(""), undefined);
   assertEquals(str(5), "5");
@@ -36,7 +37,7 @@ Deno.test("readers: coerce and validate", () => {
   assertEquals(jsonArray("a", "[1]"), [1]);
 });
 
-Deno.test("readers: reject malformed input", () => {
+test("readers: reject malformed input", () => {
   assertThrows(() => int("n", "1.5"), Error, "`n` must be an integer");
   assertThrows(() => intList("l", "a"), Error, "list of integers");
   assertThrows(() => jsonObject("o", "[1]"), Error, "JSON object");
@@ -44,14 +45,14 @@ Deno.test("readers: reject malformed input", () => {
   assertThrows(() => jsonArray("a", "{}"), Error, "JSON array");
 });
 
-Deno.test("oneOf: exactly-one and at-least-one", () => {
+test("oneOf: exactly-one and at-least-one", () => {
   oneOf(["a", "b"], { a: 1, b: undefined });
   assertThrows(() => oneOf(["a", "b"], { a: 1, b: 2 }), Error, "provide only one");
   assertThrows(() => oneOf(["a", "b"], {}), Error, "is required");
   oneOf(["a", "b"], { a: 1, b: 2 }, "at-least-one");
 });
 
-Deno.test("call: repeats array query keys, sends JSON bodies, never sets credentials", async () => {
+test("call: repeats array query keys, sends JSON bodies, never sets credentials", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: "Success" } }]);
   await call(ctx, "POST", "/x", {
     query: { id: [1, 2], skip: undefined, q: "a b" },
@@ -62,7 +63,7 @@ Deno.test("call: repeats array query keys, sends JSON bodies, never sets credent
   assertEquals(calls[0].headers["api-key"], undefined);
 });
 
-Deno.test("call: an empty 2xx body is Success, a text endpoint returns { text }", async () => {
+test("call: an empty 2xx body is Success, a text endpoint returns { text }", async () => {
   const { ctx } = mockCtx([{ status: 202 }, {
     body: "a\nb",
     headers: { "content-type": "text/plain" },
@@ -71,12 +72,12 @@ Deno.test("call: an empty 2xx body is Success, a text endpoint returns { text }"
   assertEquals(await call(ctx, "GET", "/y", { text: true }), { text: "a\nb" });
 });
 
-Deno.test("call: a text endpoint answering 200 with an error envelope still throws", async () => {
+test("call: a text endpoint answering 200 with an error envelope still throws", async () => {
   const { ctx } = mockCtx([{ body: { code: "BadParams", msg: "bad" } }]);
   await assertRejects(() => call(ctx, "GET", "/y", { text: true }), Error, "BadParams: bad");
 });
 
-Deno.test("call: non-JSON error bodies are truncated into the message", async () => {
+test("call: non-JSON error bodies are truncated into the message", async () => {
   const { ctx } = mockCtx([{
     status: 502,
     body: "<html>bad gateway</html>",

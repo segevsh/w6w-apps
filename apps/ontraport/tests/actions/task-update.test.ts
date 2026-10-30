@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-update: calls PUT /1/Tasks, form-urlencoded", async () => {
+test("task-update: calls PUT /1/Tasks, form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ attrs: { id: "1" } }) }]);
   await taskUpdate.execute({ id: "1", owner: "3", status: "1" }, ctx);
 

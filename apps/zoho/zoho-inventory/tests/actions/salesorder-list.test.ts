@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/salesorder-list.ts";
 
-Deno.test("salesorder-list: GETs /salesorders with organization_id and unwraps `salesorders`", async () => {
+test("salesorder-list: GETs /salesorders with organization_id and unwraps `salesorders`", async () => {
   const { ctx, calls } = mockInventoryCtx([
     {
       body: {
@@ -23,7 +24,7 @@ Deno.test("salesorder-list: GETs /salesorders with organization_id and unwraps `
 });
 
 /** The path is `/salesorders` (one word) but the resource key is a separate name. */
-Deno.test("salesorder-list: the path segment is not the resource key", async () => {
+test("salesorder-list: the path segment is not the resource key", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", salesorders: [] } },
   ]);

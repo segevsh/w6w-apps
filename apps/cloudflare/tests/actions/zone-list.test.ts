@@ -1,8 +1,9 @@
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertStringIncludes } from "../_assert.ts";
 import { cfOk, mockCtx } from "../_helpers.ts";
 import action from "../../actions/zone-list.ts";
 
-Deno.test("zone-list: GETs /zones with pagination params", async () => {
+test("zone-list: GETs /zones with pagination params", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: cfOk([{ id: "z1", name: "example.com" }]) },
   ]);
@@ -16,7 +17,7 @@ Deno.test("zone-list: GETs /zones with pagination params", async () => {
   assertEquals(result, [{ id: "z1", name: "example.com" }]);
 });
 
-Deno.test("zone-list: filters by name and status", async () => {
+test("zone-list: filters by name and status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: cfOk([]) }]);
   await action.execute!({ name: "example.com", status: "active" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("zone-list: filters by name and status", async () => {
   assertStringIncludes(calls[0].url, "status=active");
 });
 
-Deno.test("zone-list: propagates a success:false envelope as an Error", async () => {
+test("zone-list: propagates a success:false envelope as an Error", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { success: false, errors: [{ code: 9109, message: "invalid token" }] } },
   ]);

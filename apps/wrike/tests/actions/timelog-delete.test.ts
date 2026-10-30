@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timelogDelete from "../../actions/timelog-delete.ts";
 import { mockWrikeCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("timelog-delete: DELETEs /timelogs/{timelogId}", async () => {
+test("timelog-delete: DELETEs /timelogs/{timelogId}", async () => {
   const { ctx, calls } = mockWrikeCtx([{ status: 200, body: {} }]);
   const out = await timelogDelete.execute({ timelogId: "TL1" }, ctx) as { status: number };
   assertEquals(calls[0].method, "DELETE");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/unsubscribe-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("unsubscribe-list: GET /unsubscribes?sort=email&sortAscending=true", async () => {
+test("unsubscribe-list: GET /unsubscribes?sort=email&sortAscending=true", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ email: "a@x.com" }], next: "n" } }]);
   const out = await action.execute!({ sort: "email", sortAscending: true } as never, ctx);
   assertEquals(calls[0].method, "GET");

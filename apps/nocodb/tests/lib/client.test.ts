@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   assertWhere,
@@ -16,7 +17,7 @@ import {
 
 const D = { display: { host: "https://nocodb.internal" } };
 
-Deno.test("normalizeHost: adds a scheme and strips a trailing API path", () => {
+test("normalizeHost: adds a scheme and strips a trailing API path", () => {
   assertEquals(normalizeHost("app.nocodb.com"), "https://app.nocodb.com");
   assertEquals(normalizeHost("https://nocodb.internal/"), "https://nocodb.internal");
   assertEquals(normalizeHost("https://nocodb.internal/api/v2/meta"), "https://nocodb.internal");
@@ -24,13 +25,13 @@ Deno.test("normalizeHost: adds a scheme and strips a trailing API path", () => {
   assertThrows(() => normalizeHost(""), Error, "required");
 });
 
-Deno.test("hostFromConnection: says to reconnect when no host is recorded", () => {
+test("hostFromConnection: says to reconnect when no host is recorded", () => {
   assertEquals(hostFromConnection(D), "https://nocodb.internal");
   const err = assertThrows(() => hostFromConnection({ display: {} }), Error);
   assert(/self-hosted as often as not/.test(err.message), err.message);
 });
 
-Deno.test("request: builds the path and never sets the token header", async () => {
+test("request: builds the path and never sets the token header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { list: [] } }], D);
   await new NocoDBClient(ctx).request("/api/v2/meta/bases");
   assertEquals(calls[0].url, "https://nocodb.internal/api/v2/meta/bases");
@@ -39,7 +40,7 @@ Deno.test("request: builds the path and never sets the token header", async () =
 });
 
 /** Measured: NocoDB publishes these on every response. */
-Deno.test("readRateLimit: reads the three headers NocoDB sends", async () => {
+test("readRateLimit: reads the three headers NocoDB sends", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { list: [] },
@@ -63,7 +64,7 @@ Deno.test("readRateLimit: reads the three headers NocoDB sends", async () => {
  * The filter trap: with spaces the request succeeds and returns nothing, so a
  * workflow reads "no records matched" and carries on.
  */
-Deno.test("assertWhere: refuses spaces inside a condition, and SQL", () => {
+test("assertWhere: refuses spaces inside a condition, and SQL", () => {
   assertWhere("");
   assertWhere("(Status,eq,Active)");
   assertWhere("(Status,eq,Active)~and(Amount,gt,100)");
@@ -76,7 +77,7 @@ Deno.test("assertWhere: refuses spaces inside a condition, and SQL", () => {
   assert(/looks like SQL/.test(sql.message), sql.message);
 });
 
-Deno.test("compact, csv, json and query behave as the actions assume", () => {
+test("compact, csv, json and query behave as the actions assume", () => {
   assertEquals(DEFAULT_PAGE_SIZE, 25);
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [] }), { a: 1 });
   assertEquals(csv("a, b"), ["a", "b"]);
@@ -86,7 +87,7 @@ Deno.test("compact, csv, json and query behave as the actions assume", () => {
 });
 
 /** NocoDB's codes are stable; its messages are prose. */
-Deno.test("describeError: reads the error code rather than matching the message", () => {
+test("describeError: reads the error code rather than matching the message", () => {
   const auth = describeError(
     401,
     JSON.stringify({ error: "ERR_AUTHENTICATION_REQUIRED", message: "Invalid token" }),
@@ -96,7 +97,7 @@ Deno.test("describeError: reads the error code rather than matching the message"
 });
 
 /** Verified live: the table check happens before the credential check. */
-Deno.test("describeError: a missing table says it is never an auth problem", () => {
+test("describeError: a missing table says it is never an auth problem", () => {
   const message = describeError(
     404,
     JSON.stringify({ error: "ERR_TABLE_NOT_FOUND", message: "Table 'x' not found" }),
@@ -105,18 +106,18 @@ Deno.test("describeError: a missing table says it is never an auth problem", () 
   assert(/never an auth one/.test(message), message);
 });
 
-Deno.test("describeError: a 429 quotes the published budget", () => {
+test("describeError: a 429 quotes the published budget", () => {
   const message = describeError(429, JSON.stringify({ message: "Too many requests" }));
   assert(/60 requests a minute/.test(message), message);
   assert(/x-ratelimit-remaining/.test(message), message);
 });
 
-Deno.test("describeError: an unknown code still comes through", () => {
+test("describeError: an unknown code still comes through", () => {
   const message = describeError(400, JSON.stringify({ error: "ERR_NEW_THING", message: "nope" }));
   assertEquals(message, "nope [ERR_NEW_THING]");
 });
 
-Deno.test("request: an error names the method, the path and the reason", async () => {
+test("request: an error names the method, the path and the reason", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: "ERR_TABLE_NOT_FOUND", message: "Table 'bogus' not found" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import secretDelete from "../../actions/secret-delete.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("secret-delete: DELETEs /secrets/{id}", async () => {
+test("secret-delete: DELETEs /secrets/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { secret_id: "secret-1", key: "GH_TOKEN" } }]);
   const out = await secretDelete.execute({ secretId: "secret-1" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("secret-delete: DELETEs /secrets/{id}", async () => {
   assertEquals(out.secret_id, "secret-1");
 });
 
-Deno.test("secret-delete: is marked idempotent — retrying lands on the same deleted state", () => {
+test("secret-delete: is marked idempotent — retrying lands on the same deleted state", () => {
   assertEquals(secretDelete.idempotent, true);
 });

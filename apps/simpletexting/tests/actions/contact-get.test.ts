@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const CONTACT = {
   updated: "2021-04-29T23:20:08.489Z",
 };
 
-Deno.test("contact-get: reads a contact by phone number, the vendor's preferred form", async () => {
+test("contact-get: reads a contact by phone number, the vendor's preferred form", async () => {
   const { ctx, calls } = mockCtx([{ body: CONTACT }]);
   const result = await contactGet.execute({ contactIdOrNumber: "1234567890" }, ctx) as {
     contactId: string;
@@ -27,7 +28,7 @@ Deno.test("contact-get: reads a contact by phone number, the vendor's preferred 
   assertEquals(result.contactId, CONTACT.contactId);
 });
 
-Deno.test("contact-get: a phone number pasted in any format stays one path segment", async () => {
+test("contact-get: a phone number pasted in any format stays one path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: CONTACT }]);
   await contactGet.execute({ contactIdOrNumber: "+1 (555) 123-4567" }, ctx);
   assertEquals(calls[0].url, `${API_ROOT}/api/contacts/%2B1%20(555)%20123-4567`);
@@ -38,7 +39,7 @@ Deno.test("contact-get: a phone number pasted in any format stays one path segme
  * so a contact created with only a phone number answers with them present and
  * empty rather than absent.
  */
-Deno.test("contact-get: declares the members the schema requires, not just the interesting ones", () => {
+test("contact-get: declares the members the schema requires, not just the interesting ones", () => {
   const output = contactGet.output;
   const keys = (Array.isArray(output) ? output : []).map((o) => o.key);
   for (const key of ["contactId", "contactPhone", "firstName", "lastName", "email"]) {
@@ -47,7 +48,7 @@ Deno.test("contact-get: declares the members the schema requires, not just the i
   assertEquals(keys.includes("lists"), true);
 });
 
-Deno.test("contact-get: is a read action", () => {
+test("contact-get: is a read action", () => {
   assertEquals(contactGet.type, "read");
   assertEquals(contactGet.resource, "contact");
 });

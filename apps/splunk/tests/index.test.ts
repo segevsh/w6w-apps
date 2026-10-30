@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exposes every action with a unique kebab-case key", () => {
+test("index: exposes every action with a unique kebab-case key", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
   for (const key of keys) {
@@ -19,12 +20,12 @@ Deno.test("index: exposes every action with a unique kebab-case key", () => {
   ]);
 });
 
-Deno.test("index: declares exactly one auth method, backed by test", () => {
+test("index: declares exactly one auth method, backed by test", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "token");
   assertEquals(typeof app.auth?.[0].test, "function");
 });
 
-Deno.test("index: declares the service health check", () => {
+test("index: declares the service health check", () => {
   assertEquals(app.healthChecks?.map((h) => h.key), ["service"]);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomMessageSend from "../../actions/room-message-send.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-message-send: posts the body, omitting self_unread by default", async () => {
+test("room-message-send: posts the body, omitting self_unread by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { message_id: "999" } }]);
   const out = await roomMessageSend.execute({ roomId: "5", body: "Hello Chatwork!" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/rooms/5/messages");
@@ -11,12 +12,12 @@ Deno.test("room-message-send: posts the body, omitting self_unread by default", 
   assertEquals(out, { message_id: "999" });
 });
 
-Deno.test("room-message-send: selfUnread true sends self_unread=1", async () => {
+test("room-message-send: selfUnread true sends self_unread=1", async () => {
   const { ctx, calls } = mockCtx([{ body: { message_id: "999" } }]);
   await roomMessageSend.execute({ roomId: "5", body: "Hi", selfUnread: true }, ctx);
   assertEquals(formOf(calls[0]), { body: "Hi", self_unread: "1" });
 });
 
-Deno.test("room-message-send: is not idempotent — retrying posts a duplicate message", () => {
+test("room-message-send: is not idempotent — retrying posts a duplicate message", () => {
   assertEquals(roomMessageSend.idempotent, false);
 });

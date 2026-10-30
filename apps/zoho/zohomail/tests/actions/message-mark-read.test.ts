@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageMarkRead from "../../actions/message-mark-read.ts";
 import { mockCtx, pathOf, statusOnly, usConnection } from "../_helpers.ts";
 
-Deno.test("message-mark-read: defaults to markAsRead", async () => {
+test("message-mark-read: defaults to markAsRead", async () => {
   const { ctx, calls } = mockCtx([{ body: statusOnly() }], usConnection({ accountId: "acc-1" }));
   const out = await messageMarkRead.execute({ messageId: "m1,m2" }, ctx);
 
@@ -12,13 +13,13 @@ Deno.test("message-mark-read: defaults to markAsRead", async () => {
   assertEquals(out, { ok: true });
 });
 
-Deno.test("message-mark-read: read=false marks unread", async () => {
+test("message-mark-read: read=false marks unread", async () => {
   const { ctx, calls } = mockCtx([{ body: statusOnly() }], usConnection());
   await messageMarkRead.execute({ messageId: "m1", read: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { mode: "markAsUnread", messageId: ["m1"] });
 });
 
-Deno.test("message-mark-read: throws with no messageId, without making a request", async () => {
+test("message-mark-read: throws with no messageId, without making a request", async () => {
   const { ctx, calls } = mockCtx([], usConnection());
   await assertRejects(
     async () => {
@@ -30,6 +31,6 @@ Deno.test("message-mark-read: throws with no messageId, without making a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-mark-read: is idempotent", () => {
+test("message-mark-read: is idempotent", () => {
   assertEquals(messageMarkRead.idempotent, true);
 });

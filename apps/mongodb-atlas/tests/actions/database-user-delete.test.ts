@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/database-user-delete.ts";
 
-Deno.test("database-user-delete: deletes at the two-part identity path", async () => {
+test("database-user-delete: deletes at the two-part identity path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", username: "app", confirmUsername: "app" },
@@ -17,7 +18,7 @@ Deno.test("database-user-delete: deletes at the two-part identity path", async (
   assertEquals(result.databaseName, "admin");
 });
 
-Deno.test("database-user-delete: a non-default auth database goes into the path", async () => {
+test("database-user-delete: a non-default auth database goes into the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -32,7 +33,7 @@ Deno.test("database-user-delete: a non-default auth database goes into the path"
 });
 
 /** The mistake surfaces later, at somebody else's reconnection. */
-Deno.test("database-user-delete: the username must be typed back", async () => {
+test("database-user-delete: the username must be typed back", async () => {
   for (const confirm of [undefined, "", "APP", "app2"]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -51,7 +52,7 @@ Deno.test("database-user-delete: the username must be typed back", async () => {
 });
 
 /** Revoking a user does not close the connections already authenticated. */
-Deno.test("database-user-delete: warns that existing connections keep working", async () => {
+test("database-user-delete: warns that existing connections keep working", async () => {
   const { ctx, logs } = mockCtx([{ status: 204 }]);
   await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", username: "app", confirmUsername: "app" },
@@ -62,7 +63,7 @@ Deno.test("database-user-delete: warns that existing connections keep working", 
   assert(/EXISTING CONNECTIONS ARE NOT CLOSED/.test(action.description!), action.description);
 });
 
-Deno.test("database-user-delete: a username is required", async () => {
+test("database-user-delete: a username is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

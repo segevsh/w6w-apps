@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import salesHistory from "../../actions/sales-history.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sales-history - builds the request with every filter mapped to its wire name", async () => {
+test("sales-history - builds the request with every filter mapped to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([{ product: { id: 1 } }]) }]);
   const out = await salesHistory.execute({
     productId: 123,
@@ -40,13 +41,13 @@ Deno.test("sales-history - builds the request with every filter mapped to its wi
   assertEquals((out as { items: unknown[] }).items.length, 1);
 });
 
-Deno.test("sales-history - works with no filters at all", async () => {
+test("sales-history - works with no filters at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope([]) }]);
   await salesHistory.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("sales-history - surfaces Hotmart's error body on a 401", async () => {
+test("sales-history - surfaces Hotmart's error body on a 401", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_token", "The Token has expired."),

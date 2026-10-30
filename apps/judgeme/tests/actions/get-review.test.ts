@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getReview from "../../actions/get-review.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-review: fetches by internal id and unwraps the review", async () => {
+test("get-review: fetches by internal id and unwraps the review", async () => {
   const { ctx, calls } = mockCtx([{ body: { review: { id: 111, rating: 5 } } }]);
   const out = await getReview.execute({ id: 111 }, ctx);
 

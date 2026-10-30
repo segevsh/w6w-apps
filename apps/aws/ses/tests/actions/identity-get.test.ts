@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/identity-get.ts";
 
-Deno.test("identity-get: GET /v2/email/identities/ada%40example.com and maps the response", async () => {
+test("identity-get: GET /v2/email/identities/ada%40example.com and maps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -37,7 +38,7 @@ Deno.test("identity-get: GET /v2/email/identities/ada%40example.com and maps the
   });
 });
 
-Deno.test("identity-get: uses the connection's region for the host", async () => {
+test("identity-get: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -58,7 +59,7 @@ Deno.test("identity-get: uses the connection's region for the host", async () =>
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("identity-get: surfaces the vendor's error type and message", async () => {
+test("identity-get: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

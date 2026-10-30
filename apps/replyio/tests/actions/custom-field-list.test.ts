@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldList from "../../actions/custom-field-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("custom-field-list: GETs /v3/custom-fields and returns the bare array unwrapped", async () => {
+test("custom-field-list: GETs /v3/custom-fields and returns the bare array unwrapped", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: 1, title: "Budget", fieldType: "text", orgWide: false }] },
   ]);
@@ -13,6 +14,6 @@ Deno.test("custom-field-list: GETs /v3/custom-fields and returns the bare array 
   assertEquals(out, [{ id: 1, title: "Budget", fieldType: "text", orgWide: false }]);
 });
 
-Deno.test("custom-field-list: takes no parameters — there is no paging on this endpoint", () => {
+test("custom-field-list: takes no parameters — there is no paging on this endpoint", () => {
   assertEquals(customFieldList.params?.length, 0);
 });

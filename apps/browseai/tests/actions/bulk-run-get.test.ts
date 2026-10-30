@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bulkRunGet from "../../actions/bulk-run-get.ts";
 import { mockCtx, pathOf, queryOf, resultEnvelope } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const RESULT = {
   robotTasks: { totalCount: 2, pageNumber: 1, hasMore: false, items: [] },
 };
 
-Deno.test("bulk-run-get: GETs /robots/{robotId}/bulk-runs/{bulkRunId} and unwraps result", async () => {
+test("bulk-run-get: GETs /robots/{robotId}/bulk-runs/{bulkRunId} and unwraps result", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: resultEnvelope(RESULT) }]);
   const out = await bulkRunGet.execute(
     { robotId: "r1", bulkRunId: "b1" },
@@ -19,7 +20,7 @@ Deno.test("bulk-run-get: GETs /robots/{robotId}/bulk-runs/{bulkRunId} and unwrap
   assertEquals(out.robotTasks.totalCount, 2);
 });
 
-Deno.test("bulk-run-get: page paginates the tasks inside the bulk run", async () => {
+test("bulk-run-get: page paginates the tasks inside the bulk run", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: resultEnvelope(RESULT) }]);
   await bulkRunGet.execute({ robotId: "r1", bulkRunId: "b1", page: 2 }, ctx);
   assertEquals(queryOf(calls[0].url), { page: "2" });

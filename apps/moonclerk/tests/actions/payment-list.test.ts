@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/payment-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("payment-list: maps every filter to the documented query name", async () => {
+test("payment-list: maps every filter to the documented query name", async () => {
   const { ctx, calls } = mockCtx([{ body: { payments: [{ id: 9 }] } }]);
   const out = await action.execute!({
     formId: 5346,
@@ -27,14 +28,14 @@ Deno.test("payment-list: maps every filter to the documented query name", async 
   assertEquals(out, { payments: [{ id: 9 }] });
 });
 
-Deno.test("payment-list: no input sends no query; short page has no nextOffset", async () => {
+test("payment-list: no input sends no query; short page has no nextOffset", async () => {
   const { ctx, calls } = mockCtx([{ body: { payments: [{ id: 1 }] } }]);
   const out = await action.execute!({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://api.moonclerk.com/payments");
   assertEquals("nextOffset" in out, false);
 });
 
-Deno.test("payment-list: a full default page reports the next offset", async () => {
+test("payment-list: a full default page reports the next offset", async () => {
   const payments = Array.from({ length: 10 }, (_, i) => ({ id: i }));
   const { ctx } = mockCtx([{ body: { payments } }]);
   const out = await action.execute!({}, ctx) as Record<string, unknown>;

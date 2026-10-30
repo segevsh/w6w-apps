@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadChangeStatus from "../../actions/lead-change-status.ts";
 import { leadChangeStatusOptions } from "../../lib/params.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-change-status: PUTs to /leads/{leadId}/status, leadId excluded from the body", async () => {
+test("lead-change-status: PUTs to /leads/{leadId}/status, leadId excluded from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await leadChangeStatus.execute({ leadId: 5, status: 3, lossReasonId: 12 }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("lead-change-status: PUTs to /leads/{leadId}/status, leadId excluded f
  * `Lead.status` values. This pins that the param options do not silently grow
  * to include 1 (Quoted) or 4 (Contacted), which the API rejects here.
  */
-Deno.test("lead-change-status: only offers the vendor's own change-status enum", () => {
+test("lead-change-status: only offers the vendor's own change-status enum", () => {
   const values = leadChangeStatusOptions.map((o) => o.value).sort((a, b) => a - b);
   assertEquals(values, [0, 2, 3, 5]);
 });

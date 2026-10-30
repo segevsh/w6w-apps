@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/transaction-sync.ts";
 
 const conn = { display: { environment: "sandbox" } };
 
-Deno.test("transaction-sync: returns added, modified and removed separately", async () => {
+test("transaction-sync: returns added, modified and removed separately", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -30,7 +31,7 @@ Deno.test("transaction-sync: returns added, modified and removed separately", as
 });
 
 /** The first sync of an Item is many pages. */
-Deno.test("transaction-sync: follows has_more, carrying the cursor", async () => {
+test("transaction-sync: follows has_more, carrying the cursor", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { added: [{ id: 1 }], next_cursor: "c2", has_more: true } },
     { status: 200, body: { added: [{ id: 2 }], next_cursor: "c3", has_more: false } },
@@ -47,7 +48,7 @@ Deno.test("transaction-sync: follows has_more, carrying the cursor", async () =>
 });
 
 /** Hitting the ceiling is not a failure — it means run again. */
-Deno.test("transaction-sync: the page ceiling stops the loop and says so", async () => {
+test("transaction-sync: the page ceiling stops the loop and says so", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { added: [], next_cursor: "c2", has_more: true } },
     { status: 200, body: { added: [], next_cursor: "c3", has_more: true } },
@@ -61,20 +62,20 @@ Deno.test("transaction-sync: the page ceiling stops the loop and says so", async
   assertEquals(out.nextCursor, "c3");
 });
 
-Deno.test("transaction-sync: the page size is capped at Plaid's maximum", async () => {
+test("transaction-sync: the page size is capped at Plaid's maximum", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { has_more: false } }], conn);
   await action.execute!({ accessToken: "tok", count: 5000 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).count, 500);
 });
 
-Deno.test("transaction-sync: a missing access token is refused", async () => {
+test("transaction-sync: a missing access token is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "accessToken");
   assertEquals(calls.length, 0);
 });
 
 /** The access token is a per-person secret, not a connection field. */
-Deno.test("transaction-sync: the access token is declared secret", () => {
+test("transaction-sync: the access token is declared secret", () => {
   const p = (action.params as Array<{ key: string; type: string }>)
     .find((p) => p.key === "accessToken")!;
   assertEquals(p.type, "secret");

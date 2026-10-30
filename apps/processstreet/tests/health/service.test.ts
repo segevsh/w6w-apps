@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: is an unsigned, app-scoped check", () => {
+test("service: is an unsigned, app-scoped check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.process.st"]);
 });
 
-Deno.test("service: reports ok when the 'Process Street APIs' component is operational", async () => {
+test("service: reports ok when the 'Process Street APIs' component is operational", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "none", description: "All Systems Operational" },
@@ -22,7 +23,7 @@ Deno.test("service: reports ok when the 'Process Street APIs' component is opera
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: a degraded API component reports degraded, ignoring the web app component", async () => {
+test("service: a degraded API component reports degraded, ignoring the web app component", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "minor" },
@@ -36,13 +37,13 @@ Deno.test("service: a degraded API component reports degraded, ignoring the web 
   assertEquals(r.state, "degraded");
 });
 
-Deno.test("service: missing component falls back to the page-level indicator", async () => {
+test("service: missing component falls back to the page-level indicator", async () => {
   const { ctx } = mockCtx([{ body: { status: { indicator: "critical" }, components: [] } }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "down");
 });
 
-Deno.test("service: a failed status API reports unknown, not down", async () => {
+test("service: a failed status API reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "unknown");

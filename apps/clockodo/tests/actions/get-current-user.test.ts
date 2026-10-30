@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-current-user.ts";
 import { API_ROOT, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("get-current-user: GETs /v4/users/me", async () => {
+test("get-current-user: GETs /v4/users/me", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1, name: "Ada" } } }]);
   const out = await exec(action, {}, ctx);
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("get-current-user: GETs /v4/users/me", async () => {
   assertEquals(out, { data: { id: 1, name: "Ada" } });
 });
 
-Deno.test("get-current-user: a 401 surfaces the vendor message", async () => {
+test("get-current-user: a 401 surfaces the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {

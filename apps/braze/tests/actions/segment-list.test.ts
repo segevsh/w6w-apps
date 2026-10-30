@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/segment-list.ts";
 
-Deno.test("segment-list: sends page and sort_direction", async () => {
+test("segment-list: sends page and sort_direction", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { segments: [] } }], {
     display: { instance: "iad-01" },
   });

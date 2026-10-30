@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -21,14 +22,14 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, not the API host", () => {
+test("service: probes the status host, not the API host", () => {
   assertEquals(STATUS_URL, "https://www.beehiivstatus.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["www.beehiivstatus.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
 });
 
-Deno.test("service: an all-operational page reports ok", async () => {
+test("service: an all-operational page reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -37,13 +38,13 @@ Deno.test("service: an all-operational page reports ok", async () => {
   assertEquals(report.message, "All Systems Operational");
 });
 
-Deno.test("service: components are keyed by the vendor's stable id", async () => {
+test("service: components are keyed by the vendor's stable id", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.components?.["c2"]?.message, "Public API");
 });
 
-Deno.test("service: a Public API outage is named explicitly in the message", async () => {
+test("service: a Public API outage is named explicitly in the message", async () => {
   const body = summary({ status: { indicator: "major", description: "Partial System Outage" } });
   (body.components[1] as { status: string }).status = "major_outage";
 
@@ -54,31 +55,31 @@ Deno.test("service: a Public API outage is named explicitly in the message", asy
   assertEquals(report.message?.includes("Public API (major_outage)"), true);
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "gateway error" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a redirect to an unclaimed page is unknown, not trusted", async () => {
+test("service: a redirect to an unclaimed page is unknown, not trusted", async () => {
   const { ctx } = mockCtx([{ body: summary({ page: { url: "https://example.com/" } }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: no readable body is unknown", async () => {
+test("service: no readable body is unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "not json" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: no components in the response is unknown", async () => {
+test("service: no components in the response is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
+test("mapComponentStatus: covers Statuspage's documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -87,7 +88,7 @@ Deno.test("mapComponentStatus: covers Statuspage's documented vocabulary", () =>
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("mapIndicator: covers Statuspage's page-level roll-up vocabulary", () => {
+test("mapIndicator: covers Statuspage's page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -96,7 +97,7 @@ Deno.test("mapIndicator: covers Statuspage's page-level roll-up vocabulary", () 
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a slug, then an index", () => {
+test("componentKey: prefers the vendor id, falls back to a slug, then an index", () => {
   assertEquals(componentKey({ id: "c1", name: "Public API" }, 0), "c1");
   assertEquals(componentKey({ name: "Public API" }, 0), "public-api-0");
   assertEquals(componentKey({}, 3), "component-3");

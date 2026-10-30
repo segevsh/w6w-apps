@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { envelope, mockWrikeCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs to /folders/{folderId}/tasks with a JSON-encoded dates object", async () => {
+test("task-create: POSTs to /folders/{folderId}/tasks with a JSON-encoded dates object", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "T1", title: "Ship it", status: "Active" }]) },
   ]);
@@ -21,7 +22,7 @@ Deno.test("task-create: POSTs to /folders/{folderId}/tasks with a JSON-encoded d
   assertEquals(out.id, "T1");
 });
 
-Deno.test("task-create: accepts dates as a hand-typed JSON string too", async () => {
+test("task-create: accepts dates as a hand-typed JSON string too", async () => {
   const { ctx, calls } = mockWrikeCtx([{ status: 200, body: envelope([{ id: "T1" }]) }]);
   await taskCreate.execute(
     { folderId: "F1", title: "x", dates: '{"duration":480}' },
@@ -30,7 +31,7 @@ Deno.test("task-create: accepts dates as a hand-typed JSON string too", async ()
   assertEquals(queryOf(calls[0].url).dates, '{"duration":480}');
 });
 
-Deno.test("task-create: malformed dates JSON fails before any request is made", async () => {
+test("task-create: malformed dates JSON fails before any request is made", async () => {
   const { ctx, calls } = mockWrikeCtx([]);
   let threw = false;
   try {
@@ -43,11 +44,11 @@ Deno.test("task-create: malformed dates JSON fails before any request is made", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("task-create: is declared non-idempotent — no idempotency key exists on this endpoint", () => {
+test("task-create: is declared non-idempotent — no idempotency key exists on this endpoint", () => {
   assertEquals(taskCreate.idempotent, false);
 });
 
-Deno.test("task-create: rawParams can reach an unmodeled field", async () => {
+test("task-create: rawParams can reach an unmodeled field", async () => {
   const { ctx, calls } = mockWrikeCtx([{ status: 200, body: envelope([{ id: "T1" }]) }]);
   await taskCreate.execute(
     { folderId: "F1", title: "x", rawParams: { workScheduleId: "IEAAAAAAAAAAAAAA" } },

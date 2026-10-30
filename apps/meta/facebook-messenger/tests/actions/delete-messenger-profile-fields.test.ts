@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-messenger-profile-fields.ts";
 
-Deno.test("delete-messenger-profile-fields: DELETE with a fields array body", async () => {
+test("delete-messenger-profile-fields: DELETE with a fields array body", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success" } }]);
   const out = await action.execute!({ fields: "persistent_menu, ice_breakers" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("delete-messenger-profile-fields: DELETE with a fields array body", as
   assertEquals(out, { result: "success" });
 });
 
-Deno.test("delete-messenger-profile-fields: blank fields fail locally", async () => {
+test("delete-messenger-profile-fields: blank fields fail locally", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({ fields: " , " }, ctx), Error, "fields");
   await assertRejects(async () => await action.execute!({ fields: "" }, ctx), Error, "fields");

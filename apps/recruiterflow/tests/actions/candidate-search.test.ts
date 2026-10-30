@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import candidateSearch from "../../actions/candidate-search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("candidate-search: POST /candidate/search with the mapped wire fields", async () => {
+test("candidate-search: POST /candidate/search with the mapped wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   const out = await candidateSearch.execute(
     {
@@ -28,7 +29,7 @@ Deno.test("candidate-search: POST /candidate/search with the mapped wire fields"
   assertEquals(out.items, [{ id: 1 }]);
 });
 
-Deno.test("candidate-search: a vendor error is thrown with its message", async () => {
+test("candidate-search: a vendor error is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Invalid API key" } }]);
   let msg = "";
   try {

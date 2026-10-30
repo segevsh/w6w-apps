@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-update.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-update: sends PUT /contacts/c1 and returns the vendor body", async () => {
+test("contact-update: sends PUT /contacts/c1 and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute(
     {
@@ -26,7 +27,7 @@ Deno.test("contact-update: sends PUT /contacts/c1 and returns the vendor body", 
   assertEquals(out, { success: true });
 });
 
-Deno.test("contact-update: a vendor error surfaces its title and status", async () => {
+test("contact-update: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>
@@ -44,7 +45,7 @@ Deno.test("contact-update: a vendor error surfaces its title and status", async 
   );
 });
 
-Deno.test("contact-update: refuses an update with no contact types, without a request", async () => {
+test("contact-update: refuses an update with no contact types, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ contactId: "c1", lastName: "Lee" } as never, ctx),

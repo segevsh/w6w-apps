@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-usage-get.ts";
 
-Deno.test("account-usage-get: builds the path with an explicit year/month and pins type=subaccount", async () => {
+test("account-usage-get: builds the path with an explicit year/month and pins type=subaccount", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -20,7 +21,7 @@ Deno.test("account-usage-get: builds the path with an explicit year/month and pi
   assertEquals(result.currency, { currency_name_short: "AUD" });
 });
 
-Deno.test("account-usage-get: defaults year/month to the current UTC calendar month", async () => {
+test("account-usage-get: defaults year/month to the current UTC calendar month", async () => {
   const { ctx, calls } = mockCtx([
     { body: { http_code: 200, response_code: "SUCCESS", response_msg: "ok", data: {} } },
   ]);

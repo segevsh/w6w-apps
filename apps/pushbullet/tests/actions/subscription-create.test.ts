@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionCreate from "../../actions/subscription-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-create: POSTs {channel_tag} to /v2/subscriptions", async () => {
+test("subscription-create: POSTs {channel_tag} to /v2/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "s1" } }]);
   await subscriptionCreate.execute({ channelTag: "elonmusknews" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("subscription-create: POSTs {channel_tag} to /v2/subscriptions", async
   assertEquals(JSON.parse(calls[0].body!), { channel_tag: "elonmusknews" });
 });
 
-Deno.test("subscription-create: is declared non-idempotent — resubscribe behaviour is undocumented", () => {
+test("subscription-create: is declared non-idempotent — resubscribe behaviour is undocumented", () => {
   assertEquals(subscriptionCreate.idempotent, false);
 });

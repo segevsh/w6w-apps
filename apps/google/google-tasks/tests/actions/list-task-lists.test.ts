@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-task-lists.ts";
 
-Deno.test("list-task-lists: hits /tasks/v1/users/@me/lists with no params by default", async () => {
+test("list-task-lists: hits /tasks/v1/users/@me/lists with no params by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { kind: "tasks#taskLists", items: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("list-task-lists: hits /tasks/v1/users/@me/lists with no params by def
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-task-lists: forwards maxResults and pageToken", async () => {
+test("list-task-lists: forwards maxResults and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ maxResults: 50, pageToken: "tok" }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -21,7 +22,7 @@ Deno.test("list-task-lists: forwards maxResults and pageToken", async () => {
   assertEquals(params.get("pageToken"), "tok");
 });
 
-Deno.test("list-task-lists: returns the parsed page", async () => {
+test("list-task-lists: returns the parsed page", async () => {
   const body = { kind: "tasks#taskLists", items: [{ id: "L1" }], nextPageToken: "n" };
   const { ctx } = mockCtx([{ body }]);
   assertEquals(await action.execute!({}, ctx), body);

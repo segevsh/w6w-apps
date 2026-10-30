@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-list.ts";
 
-Deno.test("note-list: GETs /notes with query filters", async () => {
+test("note-list: GETs /notes with query filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ associatedWithType: "account", associatedWithId: 3 }, ctx);
   const url = new URL(calls[0].url);

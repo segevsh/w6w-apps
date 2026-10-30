@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactTagAdd from "../../actions/contact-tag-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-add: POSTs to /contacts/{contact_id}/tags/{tag_id}", async () => {
+test("contact-tag-add: POSTs to /contacts/{contact_id}/tags/{tag_id}", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 5, name: "vip" }] }]);
   const out = await contactTagAdd.execute({ contactId: 3, tagId: 5 }, ctx) as unknown[];
 
@@ -12,6 +13,6 @@ Deno.test("contact-tag-add: POSTs to /contacts/{contact_id}/tags/{tag_id}", asyn
   assertEquals(out.length, 1);
 });
 
-Deno.test("contact-tag-add: is marked idempotent, as the vendor documents", () => {
+test("contact-tag-add: is marked idempotent, as the vendor documents", () => {
   assertEquals(contactTagAdd.idempotent, true);
 });

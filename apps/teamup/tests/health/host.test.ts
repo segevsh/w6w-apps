@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import host, { HOST_PROBE_PATH } from "../../health/host.ts";
 
@@ -10,7 +11,7 @@ const unauthorized = {
 };
 
 /** The probe is reachability, so it must not carry the credential. */
-Deno.test("host: probes the documented API path unsigned", async () => {
+test("host: probes the documented API path unsigned", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: unauthorized }]);
   const result = await host.check!({}, ctx);
   assertEquals(calls[0].url, "https://goteamup.com/api/v2/auth/profiles");
@@ -23,7 +24,7 @@ Deno.test("host: probes the documented API path unsigned", async () => {
 });
 
 /** A credential gate answering is the whole question this check asks. */
-Deno.test("host: a 401 and a 403 are both a pass", async () => {
+test("host: a 401 and a 403 are both a pass", async () => {
   for (const status of [401, 403]) {
     const { ctx } = mockCtx([{ status, body: { code: "permission_denied", message: "nope" } }]);
     assertEquals((await host.check!({}, ctx)).state, "ok");
@@ -33,7 +34,7 @@ Deno.test("host: a 401 and a 403 are both a pass", async () => {
   assertEquals((await host.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("host: a 200 is ok and reports the latency", async () => {
+test("host: a 200 is ok and reports the latency", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { count: 0, results: [] } }]);
   const result = await host.check!({}, ctx);
   assertEquals(result.state, "ok");
@@ -41,14 +42,14 @@ Deno.test("host: a 200 is ok and reports the latency", async () => {
 });
 
 /** A 404 means something answered, but not the documented API. */
-Deno.test("host: a 404 is degraded, not ok and not down", async () => {
+test("host: a 404 is degraded, not ok and not down", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "<html>not found</html>" }]);
   const result = await host.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assert(/documented API path/.test(result.message!), result.message);
 });
 
-Deno.test("host: a 5xx or an unreachable host is down", async () => {
+test("host: a 5xx or an unreachable host is down", async () => {
   for (const status of [500, 503]) {
     const { ctx } = mockCtx([{ status, body: { code: "server_error", message: "boom" } }]);
     assertEquals((await host.check!({}, ctx)).state, "down");
@@ -62,7 +63,7 @@ Deno.test("host: a 5xx or an unreachable host is down", async () => {
   assert(/could not reach https:\/\/goteamup.com/.test(result.message!), result.message);
 });
 
-Deno.test("host: is an informational app-scoped dependency check on the API host", () => {
+test("host: is an informational app-scoped dependency check on the API host", () => {
   assertEquals(host.key, "host");
   assertEquals(host.kind, "dependency");
   assertEquals(host.scope, "app");
@@ -75,7 +76,7 @@ Deno.test("host: is an informational app-scoped dependency check on the API host
  * The status page is abandoned, so there must be no `service` check pointing at
  * it — and the reason has to be written down where a host can read it.
  */
-Deno.test("host: documents why there is no `service` check against the status page", () => {
+test("host: documents why there is no `service` check against the status page", () => {
   assertEquals(host.severity, "informational");
   const description = host.description ?? "";
   assert(/status page/.test(description), description);

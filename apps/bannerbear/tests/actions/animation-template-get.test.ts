@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import animationTemplateGet from "../../actions/animation-template-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("animation-template-get: GET /animation_templates/{uid}", async () => {
+test("animation-template-get: GET /animation_templates/{uid}", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "at1", frame_rate: 24 } }]);
   const out = await animationTemplateGet.execute({ uid: "at1" }, ctx) as unknown as Record<
     string,
@@ -13,7 +14,7 @@ Deno.test("animation-template-get: GET /animation_templates/{uid}", async () => 
   assertEquals(out.frame_rate, 24);
 });
 
-Deno.test("animation-template-get: requires uid", async () => {
+test("animation-template-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => animationTemplateGet.execute({ uid: "" }, ctx));
 });

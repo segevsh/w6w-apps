@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/change-submit.ts";
 
@@ -14,7 +15,7 @@ const related = (statuses: string[]) => ({
 });
 const submitted = { status: 200, body: PREFIX + JSON.stringify({ status: "MERGED" }) };
 
-Deno.test("change-submit: submits after confirmation", async () => {
+test("change-submit: submits after confirmation", async () => {
   const { ctx, calls } = mockCtx([detail(), related(["NEW"]), submitted], D);
   const result = await action.execute({ changeId: "620421", confirm: true }, ctx) as Record<
     string,
@@ -27,7 +28,7 @@ Deno.test("change-submit: submits after confirmation", async () => {
 });
 
 /** There is no un-submit. */
-Deno.test("change-submit: refuses without confirmation, before any request", async () => {
+test("change-submit: refuses without confirmation, before any request", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ changeId: "620421" }, ctx),
@@ -38,7 +39,7 @@ Deno.test("change-submit: refuses without confirmation, before any request", asy
 });
 
 /** Gerrit would answer 409; checking first makes the refusal legible. */
-Deno.test("change-submit: an unsubmittable change is refused with the reasons", async () => {
+test("change-submit: an unsubmittable change is refused with the reasons", async () => {
   const { ctx, calls } = mockCtx([detail({ submittable: false })], D);
   const err = await assertRejects(
     async () => await action.execute({ changeId: "620421", confirm: true }, ctx),
@@ -49,7 +50,7 @@ Deno.test("change-submit: an unsubmittable change is refused with the reasons", 
 });
 
 /** Submitting a change merges its unmerged ancestors too. */
-Deno.test("change-submit: refuses to take a dependency chain without acknowledgement", async () => {
+test("change-submit: refuses to take a dependency chain without acknowledgement", async () => {
   const { ctx, calls } = mockCtx([detail(), related(["NEW", "NEW", "NEW"])], D);
   const err = await assertRejects(
     async () => await action.execute({ changeId: "620421", confirm: true }, ctx),
@@ -59,7 +60,7 @@ Deno.test("change-submit: refuses to take a dependency chain without acknowledge
   assertEquals(calls.length, 2, "it must not submit");
 });
 
-Deno.test("change-submit: allowChain lets the whole chain through", async () => {
+test("change-submit: allowChain lets the whole chain through", async () => {
   const { ctx, logs } = mockCtx([detail(), related(["NEW", "NEW"]), submitted], D);
   const result = await action.execute(
     { changeId: "620421", confirm: true, allowChain: true },
@@ -72,7 +73,7 @@ Deno.test("change-submit: allowChain lets the whole chain through", async () => 
   );
 });
 
-Deno.test("change-submit: an already-merged change is a no-op, not an error", async () => {
+test("change-submit: an already-merged change is a no-op, not an error", async () => {
   const { ctx, calls } = mockCtx([detail({ status: "MERGED" })], D);
   const result = await action.execute({ changeId: "620421", confirm: true }, ctx) as Record<
     string,
@@ -83,7 +84,7 @@ Deno.test("change-submit: an already-merged change is a no-op, not an error", as
   assertEquals(calls.length, 1);
 });
 
-Deno.test("change-submit: an abandoned change is refused", async () => {
+test("change-submit: an abandoned change is refused", async () => {
   const { ctx } = mockCtx([detail({ status: "ABANDONED" })], D);
   await assertRejects(
     async () => await action.execute({ changeId: "620421", confirm: true }, ctx),

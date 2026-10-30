@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email.ts";
 
-Deno.test("send-email: sends from.email_address_id (never a raw from address) and subject", async () => {
+test("send-email: sends from.email_address_id (never a raw from address) and subject", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -41,7 +42,7 @@ Deno.test("send-email: sends from.email_address_id (never a raw from address) an
   assertEquals(result.status, "WaitApproval");
 });
 
-Deno.test("send-email: maps attachments' contentId to the wire's content_id", async () => {
+test("send-email: maps attachments' contentId to the wire's content_id", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

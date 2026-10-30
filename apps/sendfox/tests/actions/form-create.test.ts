@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formCreate from "../../actions/form-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-create: POSTs title and lists to /forms and returns the public URL", async () => {
+test("form-create: POSTs title and lists to /forms and returns the public URL", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: 4, title: "Subscribe", url: "https://sendfox.com/f/abc" } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("form-create: POSTs title and lists to /forms and returns the public U
   assertEquals(out.url, "https://sendfox.com/f/abc");
 });
 
-Deno.test("form-create: redirect URL and the GDPR toggle are mapped when set", async () => {
+test("form-create: redirect URL and the GDPR toggle are mapped when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 4 } }]);
   await formCreate.execute(
     {
@@ -36,11 +37,11 @@ Deno.test("form-create: redirect URL and the GDPR toggle are mapped when set", a
   });
 });
 
-Deno.test("form-create: title and lists are the two required fields", () => {
+test("form-create: title and lists are the two required fields", () => {
   const requiredKeys = (formCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(requiredKeys, ["title", "lists"]);
 });
 
-Deno.test("form-create: is not marked idempotent", () => {
+test("form-create: is not marked idempotent", () => {
   assertEquals(formCreate.idempotent, false);
 });

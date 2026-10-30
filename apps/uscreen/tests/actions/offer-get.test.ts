@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import offerGet from "../../actions/offer-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("offer-get: sends GET /offers/${seg(input.offerId)}", async () => {
+test("offer-get: sends GET /offers/${seg(input.offerId)}", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 3 } }]);
   const out = await offerGet.execute({ "offerId": "3" } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -12,7 +13,7 @@ Deno.test("offer-get: sends GET /offers/${seg(input.offerId)}", async () => {
   assertEquals(out, { "id": 3 });
 });
 
-Deno.test("offer-get: a 422 surfaces the vendor's message", async () => {
+test("offer-get: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () => offerGet.execute({ "offerId": "3" } as never, ctx) as Promise<unknown>,

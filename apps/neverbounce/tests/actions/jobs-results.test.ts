@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsResults from "../../actions/jobs-results.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-results: sends job_id/page/items_per_page and returns per-row results", async () => {
+test("jobs-results: sends job_id/page/items_per_page and returns per-row results", async () => {
   const body = {
     status: "success",
     total_results: 1,

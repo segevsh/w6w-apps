@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionGet from "../../actions/transaction-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("transaction-get: GET /transactions/show?id=", async () => {
+test("transaction-get: GET /transactions/show?id=", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

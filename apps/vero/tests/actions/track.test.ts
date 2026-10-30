@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track.ts";
 
-Deno.test("track: POSTs identity/event_name/data to /events/track", async () => {
+test("track: POSTs identity/event_name/data to /events/track", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   const result = await action.execute!(
     { id: "u1", email: "a@b.com", eventName: "Viewed product", data: { product_name: "Shirt" } },
@@ -19,19 +20,19 @@ Deno.test("track: POSTs identity/event_name/data to /events/track", async () => 
   assertEquals(result, { success: true, message: "Success." });
 });
 
-Deno.test("track: accepts id alone, without email", async () => {
+test("track: accepts id alone, without email", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!({ id: "u1", eventName: "Signed up" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).identity, { id: "u1" });
 });
 
-Deno.test("track: accepts email alone, without id", async () => {
+test("track: accepts email alone, without id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!({ email: "a@b.com", eventName: "Signed up" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).identity, { email: "a@b.com" });
 });
 
-Deno.test("track: rejects when both id and email are blank", async () => {
+test("track: rejects when both id and email are blank", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ eventName: "Signed up" }, ctx),
@@ -41,7 +42,7 @@ Deno.test("track: rejects when both id and email are blank", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("track: rejects a blank eventName", async () => {
+test("track: rejects a blank eventName", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "u1", eventName: "  " }, ctx),
@@ -51,7 +52,7 @@ Deno.test("track: rejects a blank eventName", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("track: source and createdAt map to extras", async () => {
+test("track: source and createdAt map to extras", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!(
     { id: "u1", eventName: "e", source: "Segment.com", createdAt: "2026-01-01T00:00:00Z" },
@@ -63,7 +64,7 @@ Deno.test("track: source and createdAt map to extras", async () => {
   });
 });
 
-Deno.test("track: a non-2xx response propagates as an Error", async () => {
+test("track: a non-2xx response propagates as an Error", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { status: 400, message: "bad request" } }]);
   const err = await assertRejects(
     async () => await action.execute!({ id: "u1", eventName: "e" }, ctx),

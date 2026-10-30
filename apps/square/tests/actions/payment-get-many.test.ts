@@ -1,14 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/payment-get-many.ts";
 
-Deno.test("payment-get-many: GETs /v2/payments with no query when nothing is set", async () => {
+test("payment-get-many: GETs /v2/payments with no query when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { payments: [] } }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://connect.squareup.com/v2/payments");
 });
 
-Deno.test("payment-get-many: maps camelCase params onto Square's snake_case query", async () => {
+test("payment-get-many: maps camelCase params onto Square's snake_case query", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     beginTime: "2026-01-01T00:00:00Z",
@@ -35,7 +36,7 @@ Deno.test("payment-get-many: maps camelCase params onto Square's snake_case quer
   assertEquals(q.get("cursor"), "abc");
 });
 
-Deno.test("payment-get-many: exposes the cursor in and out", async () => {
+test("payment-get-many: exposes the cursor in and out", async () => {
   const { ctx } = mockCtx([{ body: { payments: [], cursor: "next" } }]);
   const out = await action.execute({ cursor: "prev" }, ctx) as { cursor: string };
   assertEquals(out.cursor, "next");
@@ -44,7 +45,7 @@ Deno.test("payment-get-many: exposes the cursor in and out", async () => {
   assert(action.params?.some((p) => p.key === "cursor"));
 });
 
-Deno.test("payment-get-many: the sort field options are Square's ListPayments enum", () => {
+test("payment-get-many: the sort field options are Square's ListPayments enum", () => {
   const p = action.params?.find((p) => p.key === "sortField");
   assertEquals(
     optionValues(p),
@@ -52,7 +53,7 @@ Deno.test("payment-get-many: the sort field options are Square's ListPayments en
   );
 });
 
-Deno.test("payment-get-many: the location hint warns about the main-location default", () => {
+test("payment-get-many: the location hint warns about the main-location default", () => {
   const p = action.params?.find((p) => p.key === "locationId");
   assert(/main location/i.test(p?.hint ?? ""), p?.hint);
 });

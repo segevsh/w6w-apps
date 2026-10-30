@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentAdd from "../../actions/workorder-comment-add.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workorder-comment-add: POST /v1/workorders/{id}/comments with { content }", async () => {
+test("workorder-comment-add: POST /v1/workorders/{id}/comments with { content }", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 90 } }]);
   const out = await commentAdd.execute({ workOrderId: 8, content: "Parts arrived" }, ctx);
   assertEquals(calls[0].method, "POST");

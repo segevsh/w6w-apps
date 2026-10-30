@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupGet from "../../actions/group-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-get: calls GET /teams/groups/:id with billingCycle", async () => {
+test("group-get: calls GET /teams/groups/:id with billingCycle", async () => {
   const { ctx, calls } = mockCtx([{ body: { group: {}, billingCycle: {} } }]);
   await groupGet.execute({ groupId: "group_abc", billingCycle: "2025-01-15" }, ctx);
   assertEquals(pathOf(calls[0].url), "/teams/groups/group_abc");

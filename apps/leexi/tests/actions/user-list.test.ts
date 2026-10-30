@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-list: full input maps to GET /users", async () => {
+test("user-list: full input maps to GET /users", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "data": [{ "uuid": "x1" }],
@@ -21,13 +22,13 @@ Deno.test("user-list: full input maps to GET /users", async () => {
   });
 });
 
-Deno.test("user-list: sends no authorization header of its own", async () => {
+test("user-list: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({ "page": 2, "items": 2 }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("user-list: surfaces a JSON error body as a thrown error", async () => {
+test("user-list: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () => await action.execute!({ "page": 2, "items": 2 }, ctx),
@@ -36,7 +37,7 @@ Deno.test("user-list: surfaces a JSON error body as a thrown error", async () =>
   );
 });
 
-Deno.test("user-list: an empty 401 body still reads as an auth failure", async () => {
+test("user-list: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({ "page": 2, "items": 2 }, ctx),
@@ -45,7 +46,7 @@ Deno.test("user-list: an empty 401 body still reads as an auth failure", async (
   );
 });
 
-Deno.test("user-list: declares type, params and output", () => {
+test("user-list: declares type, params and output", () => {
   assertEquals(action.type, "search");
   assertEquals(action.key, "user-list");
   assert(Array.isArray(action.output) && action.output.length > 0);

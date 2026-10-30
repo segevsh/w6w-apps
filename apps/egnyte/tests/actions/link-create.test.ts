@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockEgnyteCtx } from "../_helpers.ts";
 import action from "../../actions/link-create.ts";
 
-Deno.test("link-create: POSTs only the fields provided", async () => {
+test("link-create: POSTs only the fields provided", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ status: 201, body: { links: [{ id: "L" }] } }]);
   const out = await action.execute(
     { path: "/Shared/a.pdf", type: "file", accessibility: "anyone" },
@@ -18,7 +19,7 @@ Deno.test("link-create: POSTs only the fields provided", async () => {
   assertEquals(out, { links: [{ id: "L" }] });
 });
 
-Deno.test("link-create: maps recipients, expiry, email and flags to Egnyte names", async () => {
+test("link-create: maps recipients, expiry, email and flags to Egnyte names", async () => {
   const { ctx, calls } = mockEgnyteCtx([{ body: {} }]);
   await action.execute({
     path: "/f",
@@ -50,7 +51,7 @@ Deno.test("link-create: maps recipients, expiry, email and flags to Egnyte names
   });
 });
 
-Deno.test("link-create: surfaces a 400", async () => {
+test("link-create: surfaces a 400", async () => {
   const { ctx } = mockEgnyteCtx([{ status: 400, body: { errorMessage: "bad" } }]);
   await assertRejects(
     async () => await action.execute({ path: "/f", type: "file" }, ctx),

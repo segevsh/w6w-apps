@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/make-call.ts";
 
-Deno.test("make-call: POSTs JSON to /calls including the required connection_id", async () => {
+test("make-call: POSTs JSON to /calls including the required connection_id", async () => {
   const data = { call_control_id: "v3:abc", call_leg_id: "leg1", call_session_id: "sess1" };
   const { ctx, calls } = mockCtx([{ body: { data } }]);
 
@@ -24,7 +25,7 @@ Deno.test("make-call: POSTs JSON to /calls including the required connection_id"
   assertEquals(result, data);
 });
 
-Deno.test("make-call: passes through optional fields", async () => {
+test("make-call: passes through optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!(
     {
@@ -49,7 +50,7 @@ Deno.test("make-call: passes through optional fields", async () => {
   assertEquals(body.command_id, "cmd-1");
 });
 
-Deno.test("make-call: omits unset optional fields rather than sending null", async () => {
+test("make-call: omits unset optional fields rather than sending null", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ connectionId: "conn1", from: "+1", to: "+2" }, ctx);
   const body = JSON.parse(calls[0].body ?? "{}");

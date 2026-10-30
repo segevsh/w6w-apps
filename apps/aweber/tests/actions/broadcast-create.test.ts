@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastCreate from "../../actions/broadcast-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * (201, no body, Location header), creating a broadcast answers a plain 200
  * with the full created entity in the body.
  */
-Deno.test("broadcast-create: answers 200 with the full created broadcast, not a Location header", async () => {
+test("broadcast-create: answers 200 with the full created broadcast, not a Location header", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { broadcast_id: "1", subject: "Hello", status: "draft" } },
   ]);
@@ -22,7 +23,7 @@ Deno.test("broadcast-create: answers 200 with the full created broadcast, not a 
   assertEquals(out.status, "draft");
 });
 
-Deno.test("broadcast-create: sends only the fields provided", async () => {
+test("broadcast-create: sends only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { broadcast_id: "1" } }]);
   await broadcastCreate.execute({ accountId: "1", listId: "2", subject: "Hello" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { subject: "Hello" });

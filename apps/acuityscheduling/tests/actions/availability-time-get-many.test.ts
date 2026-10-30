@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/availability-time-get-many.ts";
 
-Deno.test("availability-time-get-many: GETs /availability/times with required filters", async () => {
+test("availability-time-get-many: GETs /availability/times with required filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ time: "2026-08-15T13:00:00-0700" }] }]);
   const result = await action.execute({ date: "2026-08-15", appointmentTypeID: 7 }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("availability-time-get-many: GETs /availability/times with required fi
   assertEquals(result, [{ time: "2026-08-15T13:00:00-0700" }]);
 });
 
-Deno.test("availability-time-get-many: serializes addonIDs and ignoreAppointmentIDs as arrays", async () => {
+test("availability-time-get-many: serializes addonIDs and ignoreAppointmentIDs as arrays", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute(
     {

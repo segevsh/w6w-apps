@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import analyticsGetStatistics from "../../actions/analytics-get-statistics.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("analytics-get-statistics: q=statistics, pivots as a List(), campaigns facet", async () => {
+test("analytics-get-statistics: q=statistics, pivots as a List(), campaigns facet", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGetStatistics.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("analytics-get-statistics: q=statistics, pivots as a List(), campaigns
   assertEquals(q.campaigns, "List(urn:li:sponsoredCampaign:1234567)");
 });
 
-Deno.test("analytics-get-statistics: up to three pivots are joined in one List()", async () => {
+test("analytics-get-statistics: up to three pivots are joined in one List()", async () => {
   const { ctx, calls } = mockCtx([{ body: { elements: [] } }]);
   await analyticsGetStatistics.execute(
     {
@@ -40,7 +41,7 @@ Deno.test("analytics-get-statistics: up to three pivots are joined in one List()
   );
 });
 
-Deno.test("analytics-get-statistics: rejects zero or more than three pivots, without a request", async () => {
+test("analytics-get-statistics: rejects zero or more than three pivots, without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionSetNextChargeDate from "../../actions/subscription-set-next-charge-date.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-set-next-charge-date: POSTs the date to set_next_charge_date", async () => {
+test("subscription-set-next-charge-date: POSTs the date to set_next_charge_date", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope("subscription", { id: 1, next_charge_scheduled_at: "2026-12-25" }) },
   ]);
@@ -11,6 +12,6 @@ Deno.test("subscription-set-next-charge-date: POSTs the date to set_next_charge_
   assertEquals(JSON.parse(calls[0].body!), { date: "2026-12-25" });
 });
 
-Deno.test("subscription-set-next-charge-date: is marked idempotent", () => {
+test("subscription-set-next-charge-date: is marked idempotent", () => {
   assertEquals(subscriptionSetNextChargeDate.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-template.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-template: maps html and plaintext", async () => {
+test("get-template: maps html and plaintext", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -26,7 +27,7 @@ Deno.test("get-template: maps html and plaintext", async () => {
   ]);
 });
 
-Deno.test("get-template: 404 throws", async () => {
+test("get-template: 404 throws", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: { message: "Template not found" } } }]);
   await assertRejects(() => run(action, { templateId: 1 }, ctx), Error, "Template not found");
 });

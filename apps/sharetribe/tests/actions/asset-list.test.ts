@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetList from "../../actions/asset-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("asset-list: comma-string assetPaths, no prefix", async () => {
+test("asset-list: comma-string assetPaths, no prefix", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: { version: "v" } } }]);
   await assetList.execute({ clientId: "cid-1", assetPaths: "a.json, b.json" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/assets/pub/cid-1/a/latest/");
@@ -10,7 +11,7 @@ Deno.test("asset-list: comma-string assetPaths, no prefix", async () => {
   assertEquals(assetList.requiresAuth, false);
 });
 
-Deno.test("asset-list: with a pathPrefix", async () => {
+test("asset-list: with a pathPrefix", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: { version: "v" } } }]);
   await assetList.execute(
     { clientId: "cid-1", assetPaths: "a.json", pathPrefix: "content/pages" },

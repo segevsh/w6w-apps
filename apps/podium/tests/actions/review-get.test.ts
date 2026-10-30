@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import reviewGet from "../../actions/review-get.ts";
 
-Deno.test("review-get: sends every documented field in its documented place", async () => {
+test("review-get: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("review-get: sends every documented field in its documented place", as
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("review-get: declares its params and kind", () => {
+test("review-get: declares its params and kind", () => {
   assertEquals((reviewGet.params ?? []).map((p) => p.key), ["uid"]);
   assertEquals((reviewGet.params ?? []).filter((p) => p.required).map((p) => p.key), ["uid"]);
   assertEquals(reviewGet.type, "read");

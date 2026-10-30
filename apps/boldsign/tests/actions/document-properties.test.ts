@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentProperties from "../../actions/document-properties.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-properties: reads documentId as a query param", async () => {
+test("document-properties: reads documentId as a query param", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { documentId: "doc-1", status: "InProgress" },

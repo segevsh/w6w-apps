@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: PATCH /webhooks/{uid}, resends name and url", async () => {
+test("webhook-update: PATCH /webhooks/{uid}, resends name and url", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "w1", name: "Hook 2" } }]);
   await webhookUpdate.execute(
     { uid: "w1", name: "Hook 2", url: "https://example.com/hooks/bb", status: "disabled" },
@@ -16,7 +17,7 @@ Deno.test("webhook-update: PATCH /webhooks/{uid}, resends name and url", async (
   assertEquals(body.status, "disabled");
 });
 
-Deno.test("webhook-update: requires uid, name and url", async () => {
+test("webhook-update: requires uid, name and url", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => webhookUpdate.execute({ uid: "", name: "n", url: "u" }, ctx));
   await assertRejects(() => webhookUpdate.execute({ uid: "w1", name: "", url: "u" }, ctx));

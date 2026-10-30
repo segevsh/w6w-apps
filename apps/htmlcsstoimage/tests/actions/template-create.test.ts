@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateCreate from "../../actions/template-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-create: POSTs only TemplateRequest fields and returns id + version", async () => {
+test("template-create: POSTs only TemplateRequest fields and returns id + version", async () => {
   const { ctx, calls } = mockCtx([{
     body: { template_id: "t-1", template_version: 1700000000000 },
   }]);
@@ -27,7 +28,7 @@ Deno.test("template-create: POSTs only TemplateRequest fields and returns id + v
   assertEquals(out, { template_id: "t-1", template_version: 1700000000000 });
 });
 
-Deno.test("template-create: html is required", async () => {
+test("template-create: html is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await templateCreate.execute({ html: "" }, ctx),
@@ -37,7 +38,7 @@ Deno.test("template-create: html is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("template-create: a no-placeholder 400 surfaces; not idempotent", async () => {
+test("template-create: a no-placeholder 400 surfaces; not idempotent", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("Bad Request", "Invalid", 400, [{

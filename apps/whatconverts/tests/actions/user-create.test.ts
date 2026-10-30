@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userCreate from "../../actions/user-create.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("user-create posts user_type and email at minimum", async () => {
+test("user-create posts user_type and email at minimum", async () => {
   const responseBody = {
     user_id: 63752,
     user_type: "master_account_user",
@@ -23,7 +24,7 @@ Deno.test("user-create posts user_type and email at minimum", async () => {
   });
 });
 
-Deno.test("user-create serializes nested notifications and accounts JSON params", async () => {
+test("user-create serializes nested notifications and accounts JSON params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await userCreate.execute({
     userType: "master_account_user",
@@ -38,7 +39,7 @@ Deno.test("user-create serializes nested notifications and accounts JSON params"
   assertEquals(body.accounts, [{ account_id: 3865709, reports: true }]);
 });
 
-Deno.test("user-create accepts accounts/new_account_notifications as JSON strings", async () => {
+test("user-create accepts accounts/new_account_notifications as JSON strings", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await userCreate.execute({
     userType: "account_user",

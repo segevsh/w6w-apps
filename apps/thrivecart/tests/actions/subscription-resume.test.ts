@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionResume from "../../actions/subscription-resume.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-resume: calls POST /resumeSubscription with order and subscription ids", async () => {
+test("subscription-resume: calls POST /resumeSubscription with order and subscription ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, subscription_id: "sub_1" } }]);
   const out = await subscriptionResume.execute({ orderId: "1", subscriptionId: "2" }, ctx) as {
     subscription_id: string;

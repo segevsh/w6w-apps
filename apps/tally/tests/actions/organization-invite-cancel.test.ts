@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-invite-cancel.ts";
 
-Deno.test("organization-invite-cancel: DELETEs the invite and handles the empty 204", async () => {
+test("organization-invite-cancel: DELETEs the invite and handles the empty 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({ organizationId: "org1", inviteId: "i1" }, ctx);
 

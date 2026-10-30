@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { APP_ID, mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/delete-record.ts";
 
-Deno.test("delete-record: DELETEs /v0/apps/{appId}/collections/{id}/{recordId}", async () => {
+test("delete-record: DELETEs /v0/apps/{appId}/collections/{id}/{recordId}", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: {} }]);
   const result = await action.execute!({ collectionId: "c1", recordId: "42" }, ctx);
   assertEquals(pathOf(calls[0].url), `/v0/apps/${APP_ID}/collections/c1/42`);
@@ -10,7 +11,7 @@ Deno.test("delete-record: DELETEs /v0/apps/{appId}/collections/{id}/{recordId}",
   assertEquals(result, { success: true });
 });
 
-Deno.test("delete-record: normalizes a 204 No Content the same way", async () => {
+test("delete-record: normalizes a 204 No Content the same way", async () => {
   const { ctx } = mockConnectedCtx([{ status: 204 }]);
   const result = await action.execute!({ collectionId: "c1", recordId: "42" }, ctx);
   assertEquals(result, { success: true });

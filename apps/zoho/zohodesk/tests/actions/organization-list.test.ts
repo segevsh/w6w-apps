@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/organization-list.ts";
 
-Deno.test("organization-list: GETs /organizations with no orgId header", async () => {
+test("organization-list: GETs /organizations with no orgId header", async () => {
   const { ctx, calls } = mockDeskCtx([
     { body: { data: [{ id: "1", companyName: "Zylker" }] } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("organization-list: GETs /organizations with no orgId header", async (
   assertEquals(out.data, [{ id: "1", companyName: "Zylker" }]);
 });
 
-Deno.test("organization-list: returns an empty list when data is absent", async () => {
+test("organization-list: returns an empty list when data is absent", async () => {
   const { ctx } = mockDeskCtx([{ body: { data: [] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(out.data, []);

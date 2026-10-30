@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/me-get.ts";
 
-Deno.test("me-get: GETs /rest/v1.0/me with no company header", async () => {
+test("me-get: GETs /rest/v1.0/me with no company header", async () => {
   const me = { id: 1, login: "a@b.co", name: "Ada" };
   const { ctx, calls } = mockCtx([{ body: me }], { companyId: 5 });
   const out = await action.execute!({}, ctx);
@@ -12,7 +13,7 @@ Deno.test("me-get: GETs /rest/v1.0/me with no company header", async () => {
   assertEquals(out, me);
 });
 
-Deno.test("me-get: forwards company_id/project_id as query parameters", async () => {
+test("me-get: forwards company_id/project_id as query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ companyId: 5, projectId: 8 }, ctx);
   const url = new URL(calls[0].url);

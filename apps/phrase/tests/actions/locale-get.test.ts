@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import localeGet from "../../actions/locale-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("locale-get: sends GET /v2/projects/project%201%2Fx/locales/locale%201%2Fx", async () => {
+test("locale-get: sends GET /v2/projects/project%201%2Fx/locales/locale%201%2Fx", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {
     "projectId": "project 1/x",
@@ -18,7 +19,7 @@ Deno.test("locale-get: sends GET /v2/projects/project%201%2Fx/locales/locale%201
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("locale-get: surfaces Phrase's validation message on a 422", async () => {
+test("locale-get: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await localeGet.execute({
@@ -30,7 +31,7 @@ Deno.test("locale-get: surfaces Phrase's validation message on a 422", async () 
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("locale-get: declares key, type and every param it reads", () => {
+test("locale-get: declares key, type and every param it reads", () => {
   assertEquals(localeGet.key, "locale-get");
   assertEquals(localeGet.type, "read");
   const declared = new Set((localeGet.params ?? []).map((p) => p.key));

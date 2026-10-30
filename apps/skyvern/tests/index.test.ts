@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 20;
 
-Deno.test("index: exports actions, one auth method and three health checks", () => {
+test("index: exports actions, one auth method and three health checks", () => {
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth?.length, 1);
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: action keys are unique kebab-case with description, execute and output", () => {
+test("index: action keys are unique kebab-case with description, execute and output", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -22,7 +23,7 @@ Deno.test("index: action keys are unique kebab-case with description, execute an
   }
 });
 
-Deno.test("index: every perform action declares idempotency; starters are not idempotent", () => {
+test("index: every perform action declares idempotency; starters are not idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -34,13 +35,13 @@ Deno.test("index: every perform action declares idempotency; starters are not id
   }
 });
 
-Deno.test("index: no action carries a credential param or hard-codes a header", () => {
+test("index: no action carries a credential param or hard-codes a header", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) assert(p.type !== "secret", `${a.key}/${p.key}`);
   }
 });
 
-Deno.test("index: unavailable quota check declares informational severity", () => {
+test("index: unavailable quota check declares informational severity", () => {
   const quota = app.healthChecks.find((h) => h.key === "quota")!;
   assertEquals(quota.severity, "informational");
   assert(quota.unavailable?.reason);

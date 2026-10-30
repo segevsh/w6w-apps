@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/org-list.ts";
 
-Deno.test("org-list: needs no org of its own — it is how you find one", async () => {
+test("org-list: needs no org of its own — it is how you find one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "o1" }], links: {} } }], {
     display: {},
   });

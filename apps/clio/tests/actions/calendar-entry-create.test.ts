@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarEntryCreate from "../../actions/calendar-entry-create.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { envelope, mockCtx } from "../_helpers.ts";
  * `calendar_owner` is the CALENDAR this entry files under, not a user — easy
  * to misread from the name alone.
  */
-Deno.test("calendar-entry-create: calendarId is sent as calendar_owner, not a user ref", async () => {
+test("calendar-entry-create: calendarId is sent as calendar_owner, not a user ref", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 1 }) }]);
   await calendarEntryCreate.execute(
     {

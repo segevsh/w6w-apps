@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-list.ts";
 
@@ -14,7 +15,7 @@ const listing = {
   },
 };
 
-Deno.test("object-list: lists a bucket's objects", async () => {
+test("object-list: lists a bucket's objects", async () => {
   const { ctx, calls } = mockCtx([listing]);
   const result = await action.execute({ bucket: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/storage/v1/b/uploads/o");
@@ -26,7 +27,7 @@ Deno.test("object-list: lists a bucket's objects", async () => {
  * The mistake this action exists to prevent: reading only `items` from a
  * delimited listing shows an empty folder while everything is one level down.
  */
-Deno.test("object-list: returns the synthetic subfolders separately, and counts them", async () => {
+test("object-list: returns the synthetic subfolders separately, and counts them", async () => {
   const { ctx, calls, logs } = mockCtx([listing]);
   const result = await action.execute(
     { bucket: "uploads", prefix: "logs/", delimiter: "/" },
@@ -41,7 +42,7 @@ Deno.test("object-list: returns the synthetic subfolders separately, and counts 
   assert(/SEPARATE `prefixes` array/.test(action.description!), action.description);
 });
 
-Deno.test("object-list: without a delimiter the listing is recursive and prefixes are empty", async () => {
+test("object-list: without a delimiter the listing is recursive and prefixes are empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [{ name: "a/b/c.txt" }] } }]);
   const result = await action.execute({ bucket: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).searchParams.get("delimiter"), null);
@@ -50,7 +51,7 @@ Deno.test("object-list: without a delimiter the listing is recursive and prefixe
 });
 
 /** Both are hidden by default, and both stop a bucket being deleted. */
-Deno.test("object-list: versions and soft-deleted objects are opt-in", async () => {
+test("object-list: versions and soft-deleted objects are opt-in", async () => {
   const { ctx, calls } = mockCtx([listing]);
   await action.execute({ bucket: "uploads", versions: true, softDeleted: true }, ctx);
   const url = new URL(calls[0].url);
@@ -63,19 +64,19 @@ Deno.test("object-list: versions and soft-deleted objects are opt-in", async () 
 });
 
 /** `size` is a string, because an object can exceed a safe integer. */
-Deno.test("object-list: sums the sizes, converting from the API's strings", async () => {
+test("object-list: sums the sizes, converting from the API's strings", async () => {
   const { ctx } = mockCtx([listing]);
   const result = await action.execute({ bucket: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(result.totalBytes, 3072);
 });
 
-Deno.test("object-list: a glob is filtered by Cloud Storage rather than the workflow", async () => {
+test("object-list: a glob is filtered by Cloud Storage rather than the workflow", async () => {
   const { ctx, calls } = mockCtx([listing]);
   await action.execute({ bucket: "uploads", matchGlob: "**/*.log" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("matchGlob"), "**/*.log");
 });
 
-Deno.test("object-list: an empty bucket is not an error", async () => {
+test("object-list: an empty bucket is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const result = await action.execute({ bucket: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

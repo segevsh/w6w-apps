@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth, { externalApplication } from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const refused = {
   errors: [{ type: "General", message: "Authentication failed", details: null, path: null }],
 };
 
-Deno.test("api-key: sign sets the two Clockodo headers and the external-application identifier", () => {
+test("api-key: sign sets the two Clockodo headers and the external-application identifier", () => {
   const req = {
     url: "https://my.clockodo.com/api/v3/customers",
     method: "GET",
@@ -23,7 +24,7 @@ Deno.test("api-key: sign sets the two Clockodo headers and the external-applicat
   assertEquals(externalApplication("a@b.de"), "w6w;a@b.de");
 });
 
-Deno.test("api-key: test passes on a data object and probes GET /v4/users/me", async () => {
+test("api-key: test passes on a data object and probes GET /v4/users/me", async () => {
   const { ctx, calls } = mockCtx([{ body: ok }]);
   assertEquals((await auth.test!({ credential: cred } as never, ctx)).ok, true);
   assertEquals(calls[0].url, "https://my.clockodo.com/api/v4/users/me");
@@ -32,7 +33,7 @@ Deno.test("api-key: test passes on a data object and probes GET /v4/users/me", a
   assertEquals(calls[0].headers["x-clockodo-external-application"], "w6w;ada@example.com");
 });
 
-Deno.test("api-key: a 401 envelope fails with the vendor message, never echoing the key", async () => {
+test("api-key: a 401 envelope fails with the vendor message, never echoing the key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: refused }]);
   const r = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(r.ok, false);
@@ -40,7 +41,7 @@ Deno.test("api-key: a 401 envelope fails with the vendor message, never echoing 
   assert(!JSON.stringify(r).includes("ck-secret-123"));
 });
 
-Deno.test("api-key: a 200 that is not the user shape fails, as do 429 and a 500", async () => {
+test("api-key: a 200 that is not the user shape fails, as do 429 and a 500", async () => {
   const a = mockCtx([{ body: "<html>proxy</html>" }]);
   assertEquals((await auth.test!({ credential: cred } as never, a.ctx)).ok, false);
   const b = mockCtx([{ status: 429, body: { errors: [{ type: "Rate", message: "slow" }] } }]);
@@ -52,7 +53,7 @@ Deno.test("api-key: a 200 that is not the user shape fails, as do 429 and a 500"
   assert(r2.message?.includes("500") && r2.message.includes("boom"));
 });
 
-Deno.test("api-key: missing fields and an unreachable host both fail", async () => {
+test("api-key: missing fields and an unreachable host both fail", async () => {
   assertEquals(
     (await auth.test!({ credential: { apiKey: "k" } } as never, mockCtx().ctx)).ok,
     false,

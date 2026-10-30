@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationList from "../../actions/conversation-list.ts";
 import { mockRelevanceCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-list: GETs /agents/conversations/list with page, size and search", async () => {
+test("conversation-list: GETs /agents/conversations/list with page, size and search", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     {
       body: {
@@ -28,13 +29,13 @@ Deno.test("conversation-list: GETs /agents/conversations/list with page, size an
   assertEquals(out.costs?.c1, 0.4);
 });
 
-Deno.test("conversation-list: sends no query at all when none is supplied", async () => {
+test("conversation-list: sends no query at all when none is supplied", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { results: [] } }]);
   await conversationList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("conversation-list: exposes the three common params and no debug toggles", () => {
+test("conversation-list: exposes the three common params and no debug toggles", () => {
   assertEquals(conversationList.params?.map((p) => p.key), ["query", "page", "pageSize"]);
   assertEquals(conversationList.type, "read");
   assertEquals(conversationList.resource, "conversation");

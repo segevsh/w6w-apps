@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dashboard-create-update.ts";
 
 const display = { endpoint: "https://example.grafana.net" };
 
-Deno.test("dashboard-create-update: POSTs /dashboards/db with the dashboard body", async () => {
+test("dashboard-create-update: POSTs /dashboards/db with the dashboard body", async () => {
   const { ctx, calls } = mockCtx([{ body: { uid: "new-uid", version: 1, status: "success" } }], {
     display,
   });
@@ -23,13 +24,13 @@ Deno.test("dashboard-create-update: POSTs /dashboards/db with the dashboard body
   assertEquals(result, { uid: "new-uid", version: 1, status: "success" });
 });
 
-Deno.test("dashboard-create-update: defaults overwrite to false when omitted", async () => {
+test("dashboard-create-update: defaults overwrite to false when omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ dashboard: { uid: "existing" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).overwrite, false);
 });
 
-Deno.test("dashboard-create-update: passes overwrite: true through when set", async () => {
+test("dashboard-create-update: passes overwrite: true through when set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ dashboard: { uid: "existing" }, overwrite: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).overwrite, true);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import actorRun from "../../actions/actor-run.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const RUN = envelope({ id: "r1", status: "READY", defaultDatasetId: "d1" });
 
-Deno.test("actor-run: POSTs the input as the body and the options as query", async () => {
+test("actor-run: POSTs the input as the body and the options as query", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: RUN }]);
   const out = await actorRun.execute(
     { actorId: "apify~web-scraper", input: { startUrls: ["https://a.example"] }, memory: 1024 },
@@ -20,19 +21,19 @@ Deno.test("actor-run: POSTs the input as the body and the options as query", asy
   assertEquals(out.defaultDatasetId, "d1");
 });
 
-Deno.test("actor-run: an absent input still sends a JSON object body", async () => {
+test("actor-run: an absent input still sends a JSON object body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: RUN }]);
   await actorRun.execute({ actorId: "a1" }, ctx);
   assertEquals(calls[0].body, "{}");
 });
 
-Deno.test("actor-run: input accepts the string form a user types", async () => {
+test("actor-run: input accepts the string form a user types", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: RUN }]);
   await actorRun.execute({ actorId: "a1", input: '{"maxItems":5}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { maxItems: 5 });
 });
 
-Deno.test("actor-run: malformed input JSON fails before any request is made", async () => {
+test("actor-run: malformed input JSON fails before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     // An async wrapper, not `Promise.resolve(...)`: `execute` here is a
@@ -52,11 +53,11 @@ Deno.test("actor-run: malformed input JSON fails before any request is made", as
  * Apify offers no idempotency key on any run endpoint, so a retry is a second
  * billed crawl. The runtime reads this flag to decide whether it may retry.
  */
-Deno.test("actor-run: is declared non-idempotent", () => {
+test("actor-run: is declared non-idempotent", () => {
   assertEquals(actorRun.idempotent, false);
 });
 
-Deno.test("actor-run: waitForFinish is capped at Apify's 60-second ceiling", () => {
+test("actor-run: waitForFinish is capped at Apify's 60-second ceiling", () => {
   const p = actorRun.params?.find((p) => p.key === "waitForFinish");
   assertEquals(p?.validation?.max, 60);
 });

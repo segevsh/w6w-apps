@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is a bearer method exposing an `apiKey` secret field", () => {
+test("api-key: is a bearer method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiKey");
@@ -11,7 +12,7 @@ Deno.test("api-key: is a bearer method exposing an `apiKey` secret field", () =>
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign appends Bearer using credential.apiKey", async () => {
+test("api-key: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign appends Bearer using credential.apiKey", async () => {
   assertEquals(out.headers["authorization"], "Bearer gsk_xyz");
 });
 
-Deno.test("api-key: test hits /openai/v1/models and reports ok", async () => {
+test("api-key: test hits /openai/v1/models and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   const result = await auth.test({ credential: { apiKey: "gsk_xyz" } }, ctx);
   assertEquals(result.ok, true);
@@ -30,7 +31,7 @@ Deno.test("api-key: test hits /openai/v1/models and reports ok", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer gsk_xyz");
 });
 
-Deno.test("api-key: test with missing apiKey reports the failure without hitting network", async () => {
+test("api-key: test with missing apiKey reports the failure without hitting network", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -38,7 +39,7 @@ Deno.test("api-key: test with missing apiKey reports the failure without hitting
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test returns the upstream status on non-2xx", async () => {
+test("api-key: test returns the upstream status on non-2xx", async () => {
   // Groq answers a bad key with a schema-correct 401 body — reachability is
   // proven, the credential just isn't live. `test` reports that as ok:false,
   // not as an outage.

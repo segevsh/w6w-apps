@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/timesheet-list.ts";
 
-Deno.test("timesheet-list: GETs the organization's timesheets", async () => {
+test("timesheet-list: GETs the organization's timesheets", async () => {
   const body = listEnvelope("timesheets", [{ id: 1, status: "submitted", tracked: 14400 }], 6);
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   const result = await action.execute!({ organization_id: 13 }, ctx) as typeof body;
@@ -16,7 +17,7 @@ Deno.test("timesheet-list: GETs the organization's timesheets", async () => {
  * `date[start]`/`date[stop]` bound the period and `approved[start]` selects by
  * approval instant — three bracket keys, independent axes, all sent verbatim.
  */
-Deno.test("timesheet-list: the three bracketed date filters go on the wire literally", async () => {
+test("timesheet-list: the three bracketed date filters go on the wire literally", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listEnvelope("timesheets", []) }]);
   await action.execute!({
     organization_id: 13,

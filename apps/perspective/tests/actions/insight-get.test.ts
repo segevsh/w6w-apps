@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import insightGet from "../../actions/insight-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const base = {
   to: "2025-01-31T00:00:00.000Z",
 };
 
-Deno.test("insight-get: GET /metrics/insights/{id} returns title and answers", async () => {
+test("insight-get: GET /metrics/insights/{id} returns title and answers", async () => {
   const insight = { title: "Goal?", answers: { A: 3 }, groupedAnswers: { "A; B": 2 } };
   const { ctx, calls } = mockCtx([{ body: envelope(insight) }]);
   const out = await insightGet.execute(base, ctx) as { data: typeof insight };
@@ -18,7 +19,7 @@ Deno.test("insight-get: GET /metrics/insights/{id} returns title and answers", a
   assertEquals(out.data, insight);
 });
 
-Deno.test("insight-get: requires an insight id and a valid window", async () => {
+test("insight-get: requires an insight id and a valid window", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(insightGet.execute({ ...base, insightId: "" }, ctx)),
@@ -33,7 +34,7 @@ Deno.test("insight-get: requires an insight id and a valid window", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("insight-get: a not-found 400 surfaces", async () => {
+test("insight-get: a not-found 400 surfaces", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: "Insight not found", status: 400 } }]);
   await assertRejects(
     () => Promise.resolve(insightGet.execute(base, ctx)),

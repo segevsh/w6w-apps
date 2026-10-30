@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-folder.ts";
 
-Deno.test("get-folder: GETs /folders/{id}", async () => {
+test("get-folder: GETs /folders/{id}", async () => {
   const folder = { id: "0", type: "folder", name: "All Files" };
   const { ctx, calls } = mockCtx([{ body: folder }]);
   const result = await action.execute!({ folderId: "0" }, ctx);

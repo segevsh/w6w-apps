@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-users.ts";
 
-Deno.test("list-users: GETs /users with the default page size", async () => {
+test("list-users: GETs /users with the default page size", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [{ id: "u1" }] } }]);
   const out = await action.execute({ top: 100 }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("list-users: GETs /users with the default page size", async () => {
   assertEquals(out.pages, 1);
 });
 
-Deno.test("list-users: filter, select and orderby go through as OData params", async () => {
+test("list-users: filter, select and orderby go through as OData params", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({
     filter: "accountEnabled eq true",
@@ -26,7 +27,7 @@ Deno.test("list-users: filter, select and orderby go through as OData params", a
   assertEquals(q.get("$orderby"), "displayName");
 });
 
-Deno.test("list-users: search quotes the term and sends ConsistencyLevel + $count", async () => {
+test("list-users: search quotes the term and sends ConsistencyLevel + $count", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [], "@odata.count": 0 } }]);
   const out = await action.execute({ search: "displayName:Adele" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -36,14 +37,14 @@ Deno.test("list-users: search quotes the term and sends ConsistencyLevel + $coun
   assertEquals(out.count, 0);
 });
 
-Deno.test("list-users: advancedQuery alone sets the header and $count", async () => {
+test("list-users: advancedQuery alone sets the header and $count", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ filter: "mail ne null", advancedQuery: true }, ctx);
   assertEquals(calls[0].headers.consistencylevel, "eventual");
   assertEquals(new URL(calls[0].url).searchParams.get("$count"), "true");
 });
 
-Deno.test("list-users: all=true follows nextLink", async () => {
+test("list-users: all=true follows nextLink", async () => {
   const next = "https://graph.microsoft.com/v1.0/users?$skiptoken=2";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": next } },
@@ -55,7 +56,7 @@ Deno.test("list-users: all=true follows nextLink", async () => {
   assertEquals(out.nextLink, undefined);
 });
 
-Deno.test("list-users: offers a page size capped at 999", () => {
+test("list-users: offers a page size capped at 999", () => {
   const top = action.params!.find((p) => p.key === "top")!;
   assertEquals(top.validation?.max, 999);
 });

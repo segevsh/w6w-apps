@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Spotify's endpoints, scopes and PKCE", () => {
+test("oauth2: declares Spotify's endpoints, scopes and PKCE", () => {
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://accounts.spotify.com/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://accounts.spotify.com/api/token");
@@ -18,7 +19,7 @@ Deno.test("oauth2: declares Spotify's endpoints, scopes and PKCE", () => {
   ]);
 });
 
-Deno.test("oauth2: sign sets the Bearer header", async () => {
+test("oauth2: sign sets the Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.spotify.com/v1/me",
@@ -29,14 +30,14 @@ Deno.test("oauth2: sign sets the Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer at_x");
 });
 
-Deno.test("oauth2: test reports missing credential without a request", async () => {
+test("oauth2: test reports missing credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.test({ credential: {} }, ctx);
   assertEquals(out, { ok: false, message: "credential missing accessToken" });
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test reports the upstream status", async () => {
+test("oauth2: test reports the upstream status", async () => {
   const bad = mockCtx([{ status: 401, body: {} }]);
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, bad.ctx), {
     ok: false,
@@ -44,12 +45,12 @@ Deno.test("oauth2: test reports the upstream status", async () => {
   });
 });
 
-Deno.test("oauth2: test reports ok on a live credential", async () => {
+test("oauth2: test reports ok on a live credential", async () => {
   const ok = mockCtx([{ status: 200, body: { id: "u1" } }]);
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, ok.ctx), { ok: true });
 });
 
-Deno.test("oauth2: afterConnect extracts id, display_name and email", async () => {
+test("oauth2: afterConnect extracts id, display_name and email", async () => {
   const { ctx } = mockCtx([
     { body: { id: "u1", display_name: "Alice", email: "alice@example.com" } },
   ]);
@@ -57,7 +58,7 @@ Deno.test("oauth2: afterConnect extracts id, display_name and email", async () =
   assertEquals(out, { user: { id: "u1", display_name: "Alice", email: "alice@example.com" } });
 });
 
-Deno.test("oauth2: afterConnect returns empty on a failed lookup", async () => {
+test("oauth2: afterConnect returns empty on a failed lookup", async () => {
   const { ctx } = mockCtx([{ status: 403, body: {} }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "t" } }, ctx);
   assertEquals(out, {});

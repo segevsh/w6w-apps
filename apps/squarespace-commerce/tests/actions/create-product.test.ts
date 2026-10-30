@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createProduct from "../../actions/create-product.ts";
 import { API_ROOT, bodyOf, errorBody, mockCtx } from "../_helpers.ts";
 
 const MINIMAL = { name: "Brine 32oz", storePageId: "SP1", type: "PHYSICAL" };
 
-Deno.test("create-product: POST /v2/commerce/products with name, storePageId and type", async () => {
+test("create-product: POST /v2/commerce/products with name, storePageId and type", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "P1", type: "PHYSICAL", storePageId: "SP1", name: "Brine 32oz" },
@@ -17,7 +18,7 @@ Deno.test("create-product: POST /v2/commerce/products with name, storePageId and
   assertEquals(out.id, "P1");
 });
 
-Deno.test("create-product: the full optional set is carried through", async () => {
+test("create-product: the full optional set is carried through", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "P1" } }]);
   await createProduct.execute!({
     ...MINIMAL,
@@ -38,14 +39,14 @@ Deno.test("create-product: the full optional set is carried through", async () =
   });
 });
 
-Deno.test("create-product: `isVisible: false` survives the body build", async () => {
+test("create-product: `isVisible: false` survives the body build", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "P1" } }]);
   await createProduct.execute!({ ...MINIMAL, isVisible: false }, ctx);
 
   assertEquals(bodyOf(calls[0]).isVisible, false);
 });
 
-Deno.test("create-product: no Idempotency-Key, and the action is not idempotent", async () => {
+test("create-product: no Idempotency-Key, and the action is not idempotent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "P1" } }]);
   await createProduct.execute!({ ...MINIMAL }, ctx);
 
@@ -53,7 +54,7 @@ Deno.test("create-product: no Idempotency-Key, and the action is not idempotent"
   assertEquals(createProduct.idempotent, false);
 });
 
-Deno.test("create-product: a 400 STORE_PAGE_NOT_FOUND body is surfaced", async () => {
+test("create-product: a 400 STORE_PAGE_NOT_FOUND body is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

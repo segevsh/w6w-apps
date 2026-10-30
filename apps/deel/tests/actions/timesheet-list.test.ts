@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/timesheet-list.ts";
 
-Deno.test("timesheet-list: cursor-paginated, with contract and date filters", async () => {
+test("timesheet-list: cursor-paginated, with contract and date filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "t1" }], page: {} } }], {
     display: {},
   });

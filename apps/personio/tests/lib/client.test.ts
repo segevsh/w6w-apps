@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { compact, flattenAttributes, flattenTimeOffPeriod } from "../../lib/client.ts";
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   const out = compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" });
   assertEquals(out, { d: false, e: 0, f: "x" });
 });
 
-Deno.test("flattenAttributes: unwraps { label, value, type, universal_id } into plain values", () => {
+test("flattenAttributes: unwraps { label, value, type, universal_id } into plain values", () => {
   const out = flattenAttributes({
     first_name: {
       label: "First name",
@@ -19,7 +20,7 @@ Deno.test("flattenAttributes: unwraps { label, value, type, universal_id } into 
   assertEquals(out, { first_name: "Alexander", id: 1 });
 });
 
-Deno.test("flattenAttributes: recursively flattens a nested { type, attributes } relationship", () => {
+test("flattenAttributes: recursively flattens a nested { type, attributes } relationship", () => {
   const out = flattenAttributes({
     supervisor: {
       label: "Supervisor",
@@ -34,7 +35,7 @@ Deno.test("flattenAttributes: recursively flattens a nested { type, attributes }
   assertEquals(out, { supervisor: { type: "Employee", id: 2 } });
 });
 
-Deno.test("flattenAttributes: flattens each element of a wrapped array value", () => {
+test("flattenAttributes: flattens each element of a wrapped array value", () => {
   const out = flattenAttributes({
     cost_centers: {
       label: "Cost center",
@@ -48,11 +49,11 @@ Deno.test("flattenAttributes: flattens each element of a wrapped array value", (
   assertEquals(out, { cost_centers: [{ type: "CostCenter", id: 1, name: "CC1" }] });
 });
 
-Deno.test("flattenAttributes: undefined attributes object returns an empty record", () => {
+test("flattenAttributes: undefined attributes object returns an empty record", () => {
   assertEquals(flattenAttributes(undefined), {});
 });
 
-Deno.test("flattenTimeOffPeriod: reads top-level fields as PLAIN scalars, not label/value", () => {
+test("flattenTimeOffPeriod: reads top-level fields as PLAIN scalars, not label/value", () => {
   const out = flattenTimeOffPeriod({
     type: "TimeOffPeriod",
     attributes: {
@@ -81,6 +82,6 @@ Deno.test("flattenTimeOffPeriod: reads top-level fields as PLAIN scalars, not la
   assertEquals((out.employee as Record<string, unknown>).first_name, "Michael");
 });
 
-Deno.test("flattenTimeOffPeriod: undefined period returns undefined", () => {
+test("flattenTimeOffPeriod: undefined period returns undefined", () => {
   assertEquals(flattenTimeOffPeriod(undefined), undefined);
 });

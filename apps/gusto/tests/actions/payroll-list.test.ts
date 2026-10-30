@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/payroll-list.ts";
 
 const conn = { display: { environment: "production", companyId: "co-1" } };
 
-Deno.test("payroll-list: reads the company's payrolls with its filters", async () => {
+test("payroll-list: reads the company's payrolls with its filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ payroll_uuid: "p1" }] }], conn);
   await action.execute!({
     startDate: "2026-07-01",
@@ -20,6 +21,6 @@ Deno.test("payroll-list: reads the company's payrolls with its filters", async (
 });
 
 /** An unprocessed payroll is a draft whose totals still move. */
-Deno.test("payroll-list: the description warns about unprocessed payrolls", () => {
+test("payroll-list: the description warns about unprocessed payrolls", () => {
   assert(/draft/i.test(action.description!), action.description);
 });

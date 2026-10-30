@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignSummaryGet from "../../actions/campaign-summary-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -20,7 +21,7 @@ const SUMMARY = {
   Mentions: 11,
 };
 
-Deno.test("campaign-summary-get: GETs /campaigns/{campaignid}/summary.json", async () => {
+test("campaign-summary-get: GETs /campaigns/{campaignid}/summary.json", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }]);
   const out = await campaignSummaryGet.execute({ campaignId: "cmp" }, ctx);
   assertEquals(pathOf(calls[0].url), `${API_PATH}/campaigns/cmp/summary.json`);
@@ -32,7 +33,7 @@ Deno.test("campaign-summary-get: GETs /campaigns/{campaignid}/summary.json", asy
  * example they differ by 47. Both must survive so a caller can pick the right
  * one rather than reading opens as people.
  */
-Deno.test("campaign-summary-get: keeps total and unique opens as separate numbers", async () => {
+test("campaign-summary-get: keeps total and unique opens as separate numbers", async () => {
   const { ctx } = mockCtx([{ body: SUMMARY }]);
   const out = await campaignSummaryGet.execute({ campaignId: "cmp" }, ctx);
   assertEquals(out.TotalOpened, 345);
@@ -44,7 +45,7 @@ Deno.test("campaign-summary-get: keeps total and unique opens as separate number
  * what proves none of them is fetched — createsend.com's report hosts are
  * deliberately absent from network.allow.
  */
-Deno.test("campaign-summary-get: returns the report URLs without fetching any of them", async () => {
+test("campaign-summary-get: returns the report URLs without fetching any of them", async () => {
   const { ctx, calls } = mockCtx([{ body: SUMMARY }]);
   const out = await campaignSummaryGet.execute({ campaignId: "cmp" }, ctx);
   assertEquals(calls.length, 1);

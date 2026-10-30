@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import raindropCreate from "../../actions/raindrop-create.ts";
 import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("raindrop-create: POSTs the singular path with just a link", async () => {
+test("raindrop-create: POSTs the singular path with just a link", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 1, link: "https://example.com" }) }]);
   const out = await raindropCreate.execute({ link: "https://example.com" }, ctx) as {
     item: unknown;
@@ -15,7 +16,7 @@ Deno.test("raindrop-create: POSTs the singular path with just a link", async () 
 });
 
 /** `collectionId` in the form is `collection.$id` on the wire. */
-Deno.test("raindrop-create: collectionId becomes collection.$id", async () => {
+test("raindrop-create: collectionId becomes collection.$id", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 1 }) }]);
   await raindropCreate.execute({ link: "https://x", collectionId: -1 }, ctx);
 
@@ -27,7 +28,7 @@ Deno.test("raindrop-create: collectionId becomes collection.$id", async () => {
  * `true` would be a type the vendor does not document; sending `false` would
  * rely on the API reading a boolean where it looks for an object.
  */
-Deno.test("raindrop-create: pleaseParse:true becomes an empty object, false is absent", async () => {
+test("raindrop-create: pleaseParse:true becomes an empty object, false is absent", async () => {
   const { ctx, calls } = mockCtx([{ body: item({}) }, { body: item({}) }]);
   await raindropCreate.execute({ link: "https://x", pleaseParse: true }, ctx);
   await raindropCreate.execute({ link: "https://x", pleaseParse: false }, ctx);
@@ -36,14 +37,14 @@ Deno.test("raindrop-create: pleaseParse:true becomes an empty object, false is a
   assertEquals("pleaseParse" in bodyOf(calls[1]), false);
 });
 
-Deno.test("raindrop-create: comma-separated tags become an array", async () => {
+test("raindrop-create: comma-separated tags become an array", async () => {
   const { ctx, calls } = mockCtx([{ body: item({}) }]);
   await raindropCreate.execute({ link: "https://x", tags: "a, b" }, ctx);
 
   assertEquals(bodyOf(calls[0]).tags, ["a", "b"]);
 });
 
-Deno.test("raindrop-create: refuses an empty link without making a request", async () => {
+test("raindrop-create: refuses an empty link without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => Promise.resolve(raindropCreate.execute({ link: "" }, ctx)), Error);
   assertEquals(calls.length, 0);
@@ -54,7 +55,7 @@ Deno.test("raindrop-create: refuses an empty link without making a request", asy
  * not a constraint — and accepts no idempotency key, so a replay makes a second
  * bookmark.
  */
-Deno.test("raindrop-create: is not idempotent", () => {
+test("raindrop-create: is not idempotent", () => {
   assertEquals(raindropCreate.idempotent, false);
 });
 
@@ -64,6 +65,6 @@ Deno.test("raindrop-create: is not idempotent", () => {
  * and cannot be settled from any second source. A wrong key would be swallowed
  * silently and the reminder would never fire.
  */
-Deno.test("raindrop-create: exposes no reminder field", () => {
+test("raindrop-create: exposes no reminder field", () => {
   assertEquals(raindropCreate.params?.some((p) => /reminder/i.test(p.key)), false);
 });

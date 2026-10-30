@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   DEFAULT_PORT,
@@ -30,7 +31,7 @@ const jsonResult = (rows: unknown[], meta: unknown[] = []) => ({
 });
 
 /** HTTPS is on 8443, and a host without it reaches 443 where nothing answers. */
-Deno.test("normalizeHost: adds the ClickHouse HTTPS port when it is missing", () => {
+test("normalizeHost: adds the ClickHouse HTTPS port when it is missing", () => {
   assertEquals(DEFAULT_PORT, 8443);
   assertEquals(normalizeHost("abc.clickhouse.cloud"), "https://abc.clickhouse.cloud:8443");
   assertEquals(
@@ -45,7 +46,7 @@ Deno.test("normalizeHost: adds the ClickHouse HTTPS port when it is missing", ()
 });
 
 /** A control-plane connection cannot run SQL, and the error says which it is. */
-Deno.test("hostFromConnection: an API-key connection is refused with the reason", () => {
+test("hostFromConnection: an API-key connection is refused with the reason", () => {
   const queryConn = mockCtx([], D);
   assertEquals(
     hostFromConnection(queryConn.ctx.connection),
@@ -59,7 +60,7 @@ Deno.test("hostFromConnection: an API-key connection is refused with the reason"
 });
 
 /** SQL goes in the body; the format and the buffering go in the query string. */
-Deno.test("run: posts SQL as the body and asks for JSON", async () => {
+test("run: posts SQL as the body and asks for JSON", async () => {
   const { ctx, calls } = mockCtx([jsonResult([{ n: 1 }])], D);
   await new QueryClient(ctx).run("SELECT 1 AS n");
   assertEquals(calls[0].method, "POST");
@@ -70,21 +71,21 @@ Deno.test("run: posts SQL as the body and asks for JSON", async () => {
 });
 
 /** Buffering server-side is what stops a partial body with an exception in it. */
-Deno.test("run: always sets wait_end_of_query", async () => {
+test("run: always sets wait_end_of_query", async () => {
   const { ctx, calls } = mockCtx([jsonResult([])], D);
   await new QueryClient(ctx).run("SELECT 1");
   assertEquals(new URL(calls[0].url).searchParams.get("wait_end_of_query"), "1");
 });
 
 /** The auth hook signs; the client must never carry a credential. */
-Deno.test("run: never sets an authorization header", async () => {
+test("run: never sets an authorization header", async () => {
   const { ctx, calls } = mockCtx([jsonResult([])], D);
   await new QueryClient(ctx).run("SELECT 1");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
 /** ClickHouse settings are query-string parameters on the HTTP interface. */
-Deno.test("run: settings and the database go into the query string", async () => {
+test("run: settings and the database go into the query string", async () => {
   const { ctx, calls } = mockCtx([jsonResult([])], D);
   await new QueryClient(ctx).run("SELECT 1", {
     database: "analytics",
@@ -98,7 +99,7 @@ Deno.test("run: settings and the database go into the query string", async () =>
 });
 
 /** meta carries the declared type, which is how a caller knows a string. */
-Deno.test("run: returns rows with each column's declared ClickHouse type", async () => {
+test("run: returns rows with each column's declared ClickHouse type", async () => {
   const { ctx } = mockCtx([
     jsonResult([{ id: "18446744073709551615", name: "x" }], [
       { name: "id", type: "UInt64" },
@@ -116,7 +117,7 @@ Deno.test("run: returns rows with each column's declared ClickHouse type", async
 });
 
 /** Every number in the summary is a string, for the same reason. */
-Deno.test("parseSummary: converts the string counters, and elapsed to milliseconds", () => {
+test("parseSummary: converts the string counters, and elapsed to milliseconds", () => {
   const summary = parseSummary(JSON.stringify({
     read_rows: "1000000",
     read_bytes: "8000000",
@@ -131,12 +132,12 @@ Deno.test("parseSummary: converts the string counters, and elapsed to millisecon
   assertEquals(summary.memoryUsageBytes, 1_147_327);
 });
 
-Deno.test("parseSummary: a missing or unparseable header is an empty summary", () => {
+test("parseSummary: a missing or unparseable header is an empty summary", () => {
   assertEquals(parseSummary(null), {});
   assertEquals(parseSummary("not json"), {});
 });
 
-Deno.test("run: surfaces the summary and the query id alongside the rows", async () => {
+test("run: surfaces the summary and the query id alongside the rows", async () => {
   const { ctx } = mockCtx([jsonResult([{ n: 1 }])], D);
   const result = await new QueryClient(ctx).run("SELECT 1");
   assertEquals(result.summary.readRows, 1_000_000);
@@ -144,7 +145,7 @@ Deno.test("run: surfaces the summary and the query id alongside the rows", async
 });
 
 /** The body ends with the symbolic name; the code is also in a header. */
-Deno.test("parseException: reads the code, the name and the message", () => {
+test("parseException: reads the code, the name and the message", () => {
   const body =
     "Code: 60. DB::Exception: Unknown table expression identifier 'nothing' in scope SELECT " +
     "nonsense FROM nothing. (UNKNOWN_TABLE) (version 26.8.1.1653 (official build))";
@@ -156,7 +157,7 @@ Deno.test("parseException: reads the code, the name and the message", () => {
 });
 
 /** The header is reliable even when the body is a partial result. */
-Deno.test("parseException: the header code wins over the body", () => {
+test("parseException: the header code wins over the body", () => {
   assertEquals(parseException("partial data here", "395").code, 395);
   assertEquals(parseException("Code: 60. DB::Exception: x (UNKNOWN_TABLE)", null).code, 60);
 });
@@ -165,7 +166,7 @@ Deno.test("parseException: the header code wins over the body", () => {
  * Measured against play.clickhouse.com: UNKNOWN_TABLE and UNKNOWN_IDENTIFIER
  * both map onto 404, which a generic client reads as a wrong URL.
  */
-Deno.test("describeQueryError: a 404 says it is a SQL error, not a wrong URL", () => {
+test("describeQueryError: a 404 says it is a SQL error, not a wrong URL", () => {
   const message = describeQueryError(
     404,
     "Code: 60. DB::Exception: Unknown table x. (UNKNOWN_TABLE)",
@@ -176,7 +177,7 @@ Deno.test("describeQueryError: a 404 says it is a SQL error, not a wrong URL", (
 });
 
 /** ACCESS_DENIED maps onto 403, which reads as a bad credential. */
-Deno.test("describeQueryError: a 403 says it is a SQL error, not a bad credential", () => {
+test("describeQueryError: a 403 says it is a SQL error, not a bad credential", () => {
   const message = describeQueryError(
     403,
     "Code: 497. DB::Exception: not enough privileges. (ACCESS_DENIED)",
@@ -186,7 +187,7 @@ Deno.test("describeQueryError: a 403 says it is a SQL error, not a bad credentia
   assert(/not allowed to run this statement/.test(message), message);
 });
 
-Deno.test("describeQueryError: 400 is a syntax error and 401 is the database user", () => {
+test("describeQueryError: 400 is a syntax error and 401 is the database user", () => {
   assert(/syntax error, mapped onto 400/.test(
     describeQueryError(400, "Code: 62. DB::Exception: x (SYNTAX_ERROR)", "62"),
   ));
@@ -194,7 +195,7 @@ Deno.test("describeQueryError: 400 is a syntax error and 401 is the database use
   assert(/service's own user, not the organisation API key/.test(unauthorized), unauthorized);
 });
 
-Deno.test("run: an error carries the explanation", async () => {
+test("run: an error carries the explanation", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: "Code: 60. DB::Exception: Unknown table x. (UNKNOWN_TABLE)",
@@ -211,7 +212,7 @@ Deno.test("run: an error carries the explanation", async () => {
 });
 
 /** Raw mode is for statements that return nothing, like an insert. */
-Deno.test("run: raw mode skips the JSON format and returns no rows", async () => {
+test("run: raw mode skips the JSON format and returns no rows", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: "",
@@ -226,7 +227,7 @@ Deno.test("run: raw mode skips the JSON format and returns no rows", async () =>
 });
 
 /** The defence is wait_end_of_query, so seeing this at all is unexpected. */
-Deno.test("run: an unparseable body explains the partial-response case", async () => {
+test("run: an unparseable body explains the partial-response case", async () => {
   const { ctx } = mockCtx(
     [{ status: 200, body: '{"data":[{"a":1}]\nCode: 395. DB::Exception' }],
     D,

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/contact-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ interface Out {
   nextCursor?: string;
 }
 
-Deno.test("contact-search: sends POST to the documented path", async () => {
+test("contact-search: sends POST to the documented path", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: "x1" }],
@@ -33,7 +34,7 @@ Deno.test("contact-search: sends POST to the documented path", async () => {
   assertEquals(out.nextCursor, "nc");
 });
 
-Deno.test("contact-search: a vendor error surfaces its code", async () => {
+test("contact-search: a vendor error surfaces its code", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {

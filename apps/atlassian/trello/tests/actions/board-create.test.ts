@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/board-create.ts";
 
-Deno.test("board-create: POSTs /boards with the name in the query", async () => {
+test("board-create: POSTs /boards with the name in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1", name: "Roadmap" } }]);
   const out = await action.execute({ name: "Roadmap" }, ctx);
   assertEquals(out, { id: "b1", name: "Roadmap" });
@@ -12,7 +13,7 @@ Deno.test("board-create: POSTs /boards with the name in the query", async () => 
   assertEquals(url.searchParams.get("name"), "Roadmap");
 });
 
-Deno.test("board-create: maps the prefs params onto Trello's prefs_ names", async () => {
+test("board-create: maps the prefs params onto Trello's prefs_ names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { name: "R", prefsPermissionLevel: "org", prefsBackground: "blue", defaultLists: false },
@@ -24,7 +25,7 @@ Deno.test("board-create: maps the prefs params onto Trello's prefs_ names", asyn
   assertEquals(q.get("defaultLists"), "false");
 });
 
-Deno.test("board-create: is a non-idempotent perform", () => {
+test("board-create: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

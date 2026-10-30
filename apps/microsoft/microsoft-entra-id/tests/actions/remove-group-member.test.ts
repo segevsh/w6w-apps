@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/remove-group-member.ts";
 
-Deno.test("remove-group-member: DELETEs .../members/{id}/$ref — never the bare member object", async () => {
+test("remove-group-member: DELETEs .../members/{id}/$ref — never the bare member object", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ groupId: "g1", memberId: "u1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("remove-group-member: DELETEs .../members/{id}/$ref — never the bare
   assertEquals(out, { removed: true, groupId: "g1", memberId: "u1" });
 });
 
-Deno.test("remove-group-member: a missing member is Graph's 404, surfaced", async () => {
+test("remove-group-member: a missing member is Graph's 404, surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: { code: "Request_ResourceNotFound", message: "not a member" } },

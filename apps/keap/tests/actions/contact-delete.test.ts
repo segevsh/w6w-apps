@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { apiErrorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-delete: DELETEs the contact and returns the status", async () => {
+test("contact-delete: DELETEs the contact and returns the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await contactDelete.execute({ contactId: "42" }, ctx) as { status: number };
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("contact-delete: DELETEs the contact and returns the status", async ()
   assertEquals(out.status, 204);
 });
 
-Deno.test("contact-delete: a 404 on a second delete surfaces as an error, not a silent success", async () => {
+test("contact-delete: a 404 on a second delete surfaces as an error, not a silent success", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: apiErrorBody(404, "Contact not found", "NOT_FOUND"),
@@ -23,6 +24,6 @@ Deno.test("contact-delete: a 404 on a second delete surfaces as an error, not a 
   );
 });
 
-Deno.test("contact-delete: is declared idempotent", () => {
+test("contact-delete: is declared idempotent", () => {
   assertEquals(contactDelete.idempotent, true);
 });

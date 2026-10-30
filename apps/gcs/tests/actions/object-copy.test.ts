@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-copy.ts";
 
@@ -17,7 +18,7 @@ const base = {
   destinationObject: "archive/a.txt",
 };
 
-Deno.test("object-copy: builds the copyTo path with both names encoded", async () => {
+test("object-copy: builds the copyTo path with both names encoded", async () => {
   const { ctx, calls } = mockCtx([copied()]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(
@@ -29,14 +30,14 @@ Deno.test("object-copy: builds the copyTo path with both names encoded", async (
   assertEquals(result.done, true);
 });
 
-Deno.test("object-copy: a blank destination bucket copies within the source", async () => {
+test("object-copy: a blank destination bucket copies within the source", async () => {
   const { ctx, calls } = mockCtx([copied()]);
   await action.execute({ ...base, destinationBucket: "archive-bucket" }, ctx);
   assert(new URL(calls[0].url).pathname.includes("/copyTo/b/archive-bucket/"), calls[0].url);
 });
 
 /** A move is a copy and a delete, and this makes it one step. */
-Deno.test("object-copy: deleting the source turns it into a move", async () => {
+test("object-copy: deleting the source turns it into a move", async () => {
   const { ctx, calls } = mockCtx([copied(), { status: 204 }]);
   const result = await action.execute({ ...base, deleteSource: true }, ctx) as Record<
     string,
@@ -51,7 +52,7 @@ Deno.test("object-copy: deleting the source turns it into a move", async () => {
 });
 
 /** Deleting the source of an unfinished copy loses the object entirely. */
-Deno.test("object-copy: an unfinished copy is never followed by a delete", async () => {
+test("object-copy: an unfinished copy is never followed by a delete", async () => {
   const { ctx, calls } = mockCtx([copied(false)]);
   let message = "";
   try {
@@ -64,7 +65,7 @@ Deno.test("object-copy: an unfinished copy is never followed by a delete", async
   assertEquals(calls.length, 1);
 });
 
-Deno.test("object-copy: an unfinished copy without a delete reports the token", async () => {
+test("object-copy: an unfinished copy without a delete reports the token", async () => {
   const { ctx } = mockCtx([copied(false)]);
   const result = await action.execute(base, ctx) as Record<string, unknown>;
   assertEquals(result.done, false);
@@ -72,7 +73,7 @@ Deno.test("object-copy: an unfinished copy without a delete reports the token", 
 });
 
 /** With deleteSource on, this would delete what was just written. */
-Deno.test("object-copy: copying an object onto itself is refused", async () => {
+test("object-copy: copying an object onto itself is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -87,13 +88,13 @@ Deno.test("object-copy: copying an object onto itself is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("object-copy: the precondition refuses to replace an existing destination", async () => {
+test("object-copy: the precondition refuses to replace an existing destination", async () => {
   const { ctx, calls } = mockCtx([copied()]);
   await action.execute({ ...base, ifGenerationMatch: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("ifGenerationMatch"), "0");
 });
 
-Deno.test("object-copy: says there is no move", () => {
+test("object-copy: says there is no move", () => {
   assert(/because there is no move/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

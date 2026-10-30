@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/payment-create.ts";
 
-Deno.test("payment-create: POSTs /payment with CustomerRef and TotalAmt", async () => {
+test("payment-create: POSTs /payment with CustomerRef and TotalAmt", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { Payment: { Id: "1" } } }]);
   await action.execute({ customerId: "42", totalAmount: 100 }, ctx);
   assertEquals(
@@ -15,7 +16,7 @@ Deno.test("payment-create: POSTs /payment with CustomerRef and TotalAmt", async 
   });
 });
 
-Deno.test("payment-create: merges additionalFields (e.g. LinkedTxn)", async () => {
+test("payment-create: merges additionalFields (e.g. LinkedTxn)", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: {} }]);
   await action.execute({
     customerId: "42",

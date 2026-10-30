@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-projects.ts";
 
-Deno.test("list-projects: uses workspace query when team is not set", async () => {
+test("list-projects: uses workspace query when team is not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ workspace: "ws-1" }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -11,7 +12,7 @@ Deno.test("list-projects: uses workspace query when team is not set", async () =
   assert(!p.has("team"));
 });
 
-Deno.test("list-projects: switches to team query when team is set (drops workspace)", async () => {
+test("list-projects: switches to team query when team is set (drops workspace)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({ workspace: "ws-1", team: "team-9" }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -19,7 +20,7 @@ Deno.test("list-projects: switches to team query when team is set (drops workspa
   assert(!p.has("workspace"));
 });
 
-Deno.test("list-projects: forwards archived / limit / offset / opt_fields", async () => {
+test("list-projects: forwards archived / limit / offset / opt_fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({
     workspace: "ws-1",

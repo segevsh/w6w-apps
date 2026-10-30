@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/lead-update.ts";
 
-Deno.test("lead-update: PUTs the id alongside the changed fields", async () => {
+test("lead-update: PUTs the id alongside the changed fields", async () => {
   const { ctx, calls } = mockZohoCtx([
     { body: { data: [{ code: "SUCCESS", status: "success", details: {} }] } },
   ]);
@@ -12,6 +13,6 @@ Deno.test("lead-update: PUTs the id alongside the changed fields", async () => {
   assertEquals(JSON.parse(calls[0].body!), { data: [{ id: "1", Lead_Status: "Contacted" }] });
 });
 
-Deno.test("lead-update: idempotent — a PUT writes absolute values", () => {
+test("lead-update: idempotent — a PUT writes absolute values", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactStageUpdate from "../../actions/contact-stage-update.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-stage-update: POSTs to /contacts/update_stages with array query params", async () => {
+test("contact-stage-update: POSTs to /contacts/update_stages with array query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [{ id: "c1" }, { id: "c2" }] } }]);
   const out = await contactStageUpdate.execute(
     { contact_ids: "c1,c2", contact_stage_id: "s1" },

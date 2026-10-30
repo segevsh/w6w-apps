@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import opportunityCreate from "../../actions/opportunity-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ const INPUT = {
   "custom_fields": '{"Source": "web"}',
 };
 
-Deno.test("opportunity-create: POST /api/v2/opportunities with the documented query, header and body", async () => {
+test("opportunity-create: POST /api/v2/opportunities with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1 } }]);
   const out = await opportunityCreate.execute(INPUT as never, ctx);
 
@@ -54,13 +55,13 @@ Deno.test("opportunity-create: POST /api/v2/opportunities with the documented qu
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("opportunity-create: an Axonaut error surfaces its message and status", async () => {
+test("opportunity-create: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await opportunityCreate.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("opportunity-create: invalid JSON in employees is rejected before any request", async () => {
+test("opportunity-create: invalid JSON in employees is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await (opportunityCreate.execute({

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   mapResourceStatus,
   resourceKey,
@@ -20,7 +21,7 @@ function statusPage(resources: Array<{ public_name: string; status: string }>) {
   };
 }
 
-Deno.test("service: reports the tracked OAuth2.0 API resource's own state, not the others'", async () => {
+test("service: reports the tracked OAuth2.0 API resource's own state, not the others'", async () => {
   const { ctx } = mockCtx([{
     body: statusPage([
       { public_name: "Lawmatics API", status: "downtime" },
@@ -32,7 +33,7 @@ Deno.test("service: reports the tracked OAuth2.0 API resource's own state, not t
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: a downtime OAuth2.0 API resource reports down", async () => {
+test("service: a downtime OAuth2.0 API resource reports down", async () => {
   const { ctx } = mockCtx([{
     body: statusPage([{ public_name: TRACKED_RESOURCE_NAME, status: "downtime" }]),
   }]);
@@ -40,7 +41,7 @@ Deno.test("service: a downtime OAuth2.0 API resource reports down", async () => 
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: a page that no longer identifies as Lawmatics reports unknown, never down", async () => {
+test("service: a page that no longer identifies as Lawmatics reports unknown, never down", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -54,13 +55,13 @@ Deno.test("service: a page that no longer identifies as Lawmatics reports unknow
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a broken status page reports unknown, never down", async () => {
+test("service: a broken status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: the tracked resource missing from the page reports unknown", async () => {
+test("service: the tracked resource missing from the page reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: statusPage([{ public_name: "Lawmatics API", status: "operational" }]),
   }]);
@@ -68,7 +69,7 @@ Deno.test("service: the tracked resource missing from the page reports unknown",
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("mapResourceStatus: covers Better Stack's vocabulary", () => {
+test("mapResourceStatus: covers Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
@@ -77,7 +78,7 @@ Deno.test("mapResourceStatus: covers Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus(undefined), "unknown");
 });
 
-Deno.test("resourceKey: slugifies the public name", () => {
+test("resourceKey: slugifies the public name", () => {
   assertEquals(
     resourceKey({ attributes: { public_name: TRACKED_RESOURCE_NAME } }, 0),
     "lawmatics-oauth2-0-api",
@@ -85,7 +86,7 @@ Deno.test("resourceKey: slugifies the public name", () => {
   assertEquals(resourceKey({ id: "9" }, 0), "9");
 });
 
-Deno.test("service: is unsigned and widens egress only to the status host", () => {
+test("service: is unsigned and widens egress only to the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.lawmatics.com"]);
 });

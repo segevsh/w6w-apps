@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unassign-subscriber-from-group.ts";
 
-Deno.test("unassign-subscriber-from-group: DELETEs the subscriber-rooted path", async () => {
+test("unassign-subscriber-from-group: DELETEs the subscriber-rooted path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, headers: {} }]);
   const out = await action.execute!({ subscriberId: "31986843064993537", groupId: "42" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -13,6 +14,6 @@ Deno.test("unassign-subscriber-from-group: DELETEs the subscriber-rooted path", 
   assertEquals(out, { success: true });
 });
 
-Deno.test("unassign-subscriber-from-group: is declared idempotent", () => {
+test("unassign-subscriber-from-group: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

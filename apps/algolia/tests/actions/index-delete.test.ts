@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/index-delete.ts";
 
-Deno.test("index-delete: DELETEs the index itself, not just its records", async () => {
+test("index-delete: DELETEs the index itself, not just its records", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { taskID: 2 } }], {
     display: { appId: "APPID" },
   });

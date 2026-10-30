@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import workspaceGetDefault from "../../actions/workspace-get-default.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("workspace-get-default: GET /api/v3/workspaces/get_default with every documented parameter", async () => {
+test("workspace-get-default: GET /api/v3/workspaces/get_default with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await workspaceGetDefault.execute({}, ctx) as Record<string, unknown>;
 
@@ -14,14 +15,14 @@ Deno.test("workspace-get-default: GET /api/v3/workspaces/get_default with every 
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("workspace-get-default: sends no credential of its own", async () => {
+test("workspace-get-default: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await workspaceGetDefault.execute({}, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("workspace-get-default: surfaces Twist's error body", async () => {
+test("workspace-get-default: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

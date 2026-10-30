@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-customer.ts";
 
-Deno.test("get-customer: is a read action over the customer resource", () => {
+test("get-customer: is a read action over the customer resource", () => {
   assertEquals(action.key, "get-customer");
   assertEquals(action.type, "read");
   assertEquals(action.resource, "customer");
 });
 
-Deno.test("get-customer: GETs /customers/{id} with no query string", async () => {
+test("get-customer: GETs /customers/{id} with no query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { customer: { id: "cust_1" } } }]);
   await action.execute({ customerId: "cust_1" }, connected(ctx));
   const url = new URL(calls[0].url);
@@ -18,13 +19,13 @@ Deno.test("get-customer: GETs /customers/{id} with no query string", async () =>
   assertEquals(url.search, "");
 });
 
-Deno.test("get-customer: percent-encodes an id that would otherwise change the route", async () => {
+test("get-customer: percent-encodes an id that would otherwise change the route", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { customer: {} } }]);
   await action.execute({ customerId: "a b?c" }, connected(ctx));
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/customers/a%20b%3Fc");
 });
 
-Deno.test("get-customer: returns customer and card together", async () => {
+test("get-customer: returns customer and card together", async () => {
   const body = { customer: { id: "cust_1" }, card: { last4: "4242" } };
   const { ctx } = mockCtx([{ status: 200, body }]);
   assertEquals(await action.execute({ customerId: "cust_1" }, connected(ctx)), body);
@@ -34,7 +35,7 @@ Deno.test("get-customer: returns customer and card together", async () => {
   );
 });
 
-Deno.test("get-customer: surfaces a 404 as an error rather than an empty result", async () => {
+test("get-customer: surfaces a 404 as an error rather than an empty result", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { message: "Customer not found", api_error_code: "resource_not_found" },

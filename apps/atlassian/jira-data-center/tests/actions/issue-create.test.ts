@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import issueCreate from "../../actions/issue-create.ts";
 import { BASE_URL, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("issue-create: POSTs /issue with a plain-string description, not ADF", async () => {
+test("issue-create: POSTs /issue with a plain-string description, not ADF", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 201,
@@ -30,6 +31,6 @@ Deno.test("issue-create: POSTs /issue with a plain-string description, not ADF",
   assertEquals(out.key, "ENG-1");
 });
 
-Deno.test("issue-create: is not idempotent", () => {
+test("issue-create: is not idempotent", () => {
   assertEquals(issueCreate.idempotent, false);
 });

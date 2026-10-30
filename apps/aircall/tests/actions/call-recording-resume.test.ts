@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callRecordingResume from "../../actions/call-recording-resume.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-recording-resume: POSTs /v1/calls/{id}/resume_recording", async () => {
+test("call-recording-resume: POSTs /v1/calls/{id}/resume_recording", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await callRecordingResume.execute({ callId: "812" }, ctx) as { status: number };
 

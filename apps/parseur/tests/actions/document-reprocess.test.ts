@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentReprocess from "../../actions/document-reprocess.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-reprocess: POSTs /document/{id}/process and returns the async acknowledgement", async () => {
+test("document-reprocess: POSTs /document/{id}/process and returns the async acknowledgement", async () => {
   const { ctx, calls } = mockCtx([
     { body: { notification_set: { info: ["Document is being processed. Please wait."] } } },
   ]);
@@ -15,6 +16,6 @@ Deno.test("document-reprocess: POSTs /document/{id}/process and returns the asyn
   assertEquals(out.notification_set.info, ["Document is being processed. Please wait."]);
 });
 
-Deno.test("document-reprocess: is not idempotent — a retry spends credits again", () => {
+test("document-reprocess: is not idempotent — a retry spends credits again", () => {
   assertEquals(documentReprocess.idempotent, false);
 });

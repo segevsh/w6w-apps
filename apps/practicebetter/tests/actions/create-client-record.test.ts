@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-client-record.ts";
 import { API_ROOT, bodyOf, mockCtx, urlOf } from "../_helpers.ts";
 
 const created = { id: "rec-9", isActive: true, client: { emailAddress: "ada@example.com" } };
 
-Deno.test("create-client-record: POSTs the profile to /consultant/records", async () => {
+test("create-client-record: POSTs the profile to /consultant/records", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   const result = await action.execute({
     profile: { emailAddress: "ada@example.com", firstName: "Ada", lastName: "Lovelace" },
@@ -20,7 +21,7 @@ Deno.test("create-client-record: POSTs the profile to /consultant/records", asyn
   assertEquals(result, created);
 });
 
-Deno.test("create-client-record: optional body fields are sent only when set", async () => {
+test("create-client-record: optional body fields are sent only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await action.execute({
     profile: { emailAddress: "ada@example.com", firstName: "Ada", lastName: "Lovelace" },
@@ -44,7 +45,7 @@ Deno.test("create-client-record: optional body fields are sent only when set", a
   assertEquals(Object.keys(bodyOf(bare.calls[0])), ["profile"]);
 });
 
-Deno.test("create-client-record: a missing profile is refused before any request", async () => {
+test("create-client-record: a missing profile is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ profile: undefined as unknown }, ctx),
@@ -54,7 +55,7 @@ Deno.test("create-client-record: a missing profile is refused before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-client-record: a 409 is surfaced with the conflict explanation", async () => {
+test("create-client-record: a 409 is surfaced with the conflict explanation", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: { message: "A record already exists for this client." },
@@ -69,7 +70,7 @@ Deno.test("create-client-record: a 409 is surfaced with the conflict explanation
   );
 });
 
-Deno.test("create-client-record: it is not idempotent — a retry creates a second record", () => {
+test("create-client-record: it is not idempotent — a retry creates a second record", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.params!.find((p) => p.key === "profile")!.required, true);
 });

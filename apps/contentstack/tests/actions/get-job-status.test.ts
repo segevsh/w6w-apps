@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-job-status.ts";
 
-Deno.test("get-job-status: metadata", () => {
+test("get-job-status: metadata", () => {
   assertEquals(action.key, "get-job-status");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["jobId"]);
 });
 
-Deno.test("get-job-status: calls GET /bulk/jobs/job1 on the NA host", async () => {
+test("get-job-status: calls GET /bulk/jobs/job1 on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "job": { "status": "completed" } } }]);
   const out = await action.execute({ "jobId": "job1" }, ctx);
   assertEquals(calls.length, 1);
@@ -21,7 +22,7 @@ Deno.test("get-job-status: calls GET /bulk/jobs/job1 on the NA host", async () =
   assertEquals(out, { "job": { "status": "completed" } });
 });
 
-Deno.test("get-job-status: uses the connection's regional host", async () => {
+test("get-job-status: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "job": { "status": "completed" } } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -29,7 +30,7 @@ Deno.test("get-job-status: uses the connection's regional host", async () => {
   assertEquals(calls[0].url, "https://azure-eu-api.contentstack.com/v3/bulk/jobs/job1");
 });
 
-Deno.test("get-job-status: rejects without `jobId` and makes no request", async () => {
+test("get-job-status: rejects without `jobId` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -41,7 +42,7 @@ Deno.test("get-job-status: rejects without `jobId` and makes no request", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-job-status: surfaces Contentstack's own error body", async () => {
+test("get-job-status: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGetCurrent from "../../actions/user-get-current.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-get-current: calls GET /users/me", async () => {
+test("user-get-current: calls GET /users/me", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: "tesla@streak.com" } }]);
   const out = await userGetCurrent.execute({}, ctx) as { email: string };
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("user-get-current: calls GET /users/me", async () => {
   assertEquals(out.email, "tesla@streak.com");
 });
 
-Deno.test("user-get-current: is safe to invoke with no params, as a health probe must be", () => {
+test("user-get-current: is safe to invoke with no params, as a health probe must be", () => {
   assertEquals(userGetCurrent.params, []);
   assertEquals(userGetCurrent.type, "read");
 });

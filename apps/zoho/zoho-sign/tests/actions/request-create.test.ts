@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/request-create.ts";
 
-Deno.test("request-create: multipart POST to /requests with a data part and a file part", async () => {
+test("request-create: multipart POST to /requests with a data part and a file part", async () => {
   const { ctx, calls } = mockSignCtx(
     [
       {
@@ -38,7 +39,7 @@ Deno.test("request-create: multipart POST to /requests with a data part and a fi
   assertEquals(out, { request_id: "14197000000767334", request_status: "draft" });
 });
 
-Deno.test("request-create: throws when the host provides no ctx.file", async () => {
+test("request-create: throws when the host provides no ctx.file", async () => {
   const { ctx } = mockSignCtx([], "sign.zoho.com", false);
   await assertRejects(
     async () => await action.execute({ requestName: "NDA", file: "x", actions: [] }, ctx),

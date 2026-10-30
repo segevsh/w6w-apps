@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/auth-token.ts";
 
-Deno.test("auth-token: signs with a plain bearer token", async () => {
+test("auth-token: signs with a plain bearer token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://us.sentry.io/api/0/organizations/",
@@ -13,13 +14,13 @@ Deno.test("auth-token: signs with a plain bearer token", async () => {
   assertEquals(out.headers["authorization"], "Bearer sntrys_abc");
 });
 
-Deno.test("auth-token: the token is only ever handled by sign/test, never a field default", () => {
+test("auth-token: the token is only ever handled by sign/test, never a field default", () => {
   const secretFields = auth.fields!.filter((f) => f.type === "secret").map((f) => f.key);
   assertEquals(secretFields, ["token"]);
   assertEquals(auth.fields!.find((f) => f.key === "token")!.default, undefined);
 });
 
-Deno.test("auth-token: test probes the named organization, not just the token", async () => {
+test("auth-token: test probes the named organization, not just the token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { slug: "acme" } }]);
   const result = await auth.test!(
     { credential: { token: "t", organizationSlug: "acme" } } as never,
@@ -30,7 +31,7 @@ Deno.test("auth-token: test probes the named organization, not just the token", 
   assertEquals(calls[0].headers["authorization"], "Bearer t");
 });
 
-Deno.test("auth-token: test honours a self-hosted endpoint", async () => {
+test("auth-token: test honours a self-hosted endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await auth.test!(
     {
@@ -45,7 +46,7 @@ Deno.test("auth-token: test honours a self-hosted endpoint", async () => {
   assertEquals(calls[0].url, "https://sentry.example.com/api/0/organizations/acme/?detailed=0");
 });
 
-Deno.test("auth-token: each failure mode gets its own message", async () => {
+test("auth-token: each failure mode gets its own message", async () => {
   for (
     const [status, needle] of [[401, "401"], [403, "403"], [404, "404"], [500, "500"]] as const
   ) {
@@ -59,7 +60,7 @@ Deno.test("auth-token: each failure mode gets its own message", async () => {
   }
 });
 
-Deno.test("auth-token: a missing token or org fails before any network call", async () => {
+test("auth-token: a missing token or org fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -72,7 +73,7 @@ Deno.test("auth-token: a missing token or org fails before any network call", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("auth-token: afterConnect publishes the org and endpoint, never the token", async () => {
+test("auth-token: afterConnect publishes the org and endpoint, never the token", async () => {
   const display = await auth.afterConnect!(
     {
       credential: { token: "sntrys_secret", organizationSlug: "acme", endpoint: "" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateSend from "../../actions/template-send.ts";
 import { bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("template-send: sends templateId as a query param and roles in the body", async () => {
+test("template-send: sends templateId as a query param and roles in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { documentId: "doc-1" } }]);
   const out = await templateSend.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("template-send: sends templateId as a query param and roles in the bod
   assertEquals(out, { documentId: "doc-1" });
 });
 
-Deno.test("template-send: maps `cc` addresses into BoldSign's {emailAddress} shape", async () => {
+test("template-send: maps `cc` addresses into BoldSign's {emailAddress} shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { documentId: "doc-1" } }]);
   await templateSend.execute(
     { templateId: "tpl-1", roles: [], cc: ["a@x.com"] },
@@ -31,6 +32,6 @@ Deno.test("template-send: maps `cc` addresses into BoldSign's {emailAddress} sha
   assertEquals(bodyOf(calls[0]).cc, [{ emailAddress: "a@x.com" }]);
 });
 
-Deno.test("template-send: is declared not idempotent", () => {
+test("template-send: is declared not idempotent", () => {
   assertEquals(templateSend.idempotent, false);
 });

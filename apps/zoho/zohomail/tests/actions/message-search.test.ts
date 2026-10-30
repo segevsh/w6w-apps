@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageSearch from "../../actions/message-search.ts";
 import { envelope, mockCtx, pathOf, queryOf, usConnection } from "../_helpers.ts";
 
-Deno.test("message-search: fetches messages/search with searchKey", async () => {
+test("message-search: fetches messages/search with searchKey", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope([{ messageId: 1, subject: "Invoice" }]) }],
     usConnection({ accountId: "acc-1" }),
@@ -17,7 +18,7 @@ Deno.test("message-search: fetches messages/search with searchKey", async () => 
   assertEquals(out, [{ messageId: 1, subject: "Invoice" }]);
 });
 
-Deno.test("message-search: passes receivedTime and pagination through", async () => {
+test("message-search: passes receivedTime and pagination through", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }], usConnection());
   await messageSearch.execute(
     { searchKey: "newMails", receivedTime: 1609459200000, start: 1, limit: 5 },
@@ -31,6 +32,6 @@ Deno.test("message-search: passes receivedTime and pagination through", async ()
   });
 });
 
-Deno.test("message-search: type is search", () => {
+test("message-search: type is search", () => {
   assertEquals(messageSearch.type, "search");
 });

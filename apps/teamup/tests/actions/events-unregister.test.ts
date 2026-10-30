@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/events-unregister.ts";
 
 const sample = { late: "True", attendance: 502 };
 
-Deno.test("events-unregister: posts the documented body to /events/8/unregister", async () => {
+test("events-unregister: posts the documented body to /events/8/unregister", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!(
     { id: 8, customer: 12, is_late_cancel: true },
@@ -18,7 +19,7 @@ Deno.test("events-unregister: posts the documented body to /events/8/unregister"
   assertEquals(result.attendance, 502);
 });
 
-Deno.test("events-unregister: sends only the fields the caller supplied", async () => {
+test("events-unregister: sends only the fields the caller supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 8, customer: 12 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -28,7 +29,7 @@ Deno.test("events-unregister: sends only the fields the caller supplied", async 
 });
 
 /** TeamUp answers `late` as a string; the declared output says so. */
-Deno.test("events-unregister: declares `late` as the string TeamUp returns", () => {
+test("events-unregister: declares `late` as the string TeamUp returns", () => {
   const fields = action.output as Array<{ key: string; type: string }>;
   assertEquals(fields.find((f) => f.key === "late")!.type, "string");
   assertEquals(fields.find((f) => f.key === "attendance")!.type, "number");

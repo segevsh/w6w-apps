@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-seat-map.ts";
 
-Deno.test("create-seat-map: posts source_seatmap_id", async () => {
+test("create-seat-map: posts source_seatmap_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { event_id: "e1" } }]);
   const result = await action.execute!({ eventId: "e1", sourceSeatmapId: "E1-m1" }, ctx);
   const url = new URL(calls[0].url);

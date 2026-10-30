@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/envelope-recipient-add.ts";
 
 const conn = { display: {} };
 
-Deno.test("envelope-recipient-add: POSTs the recipients under `data`", async () => {
+test("envelope-recipient-add: POSTs the recipients under `data`", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { recipients: [] } }], conn);
   await action.execute!({
     envelopeId: "e1",
@@ -16,7 +17,7 @@ Deno.test("envelope-recipient-add: POSTs the recipients under `data`", async () 
   assertEquals(body.data[0].signingOrder, 1);
 });
 
-Deno.test("envelope-recipient-add: a recipient without an email is refused", async () => {
+test("envelope-recipient-add: a recipient without an email is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ envelopeId: "e1", recipients: '[{"name":"Ada"}]' }, ctx),
@@ -26,6 +27,6 @@ Deno.test("envelope-recipient-add: a recipient without an email is refused", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("envelope-recipient-add: adds the people twice on a retry, and says so", () => {
+test("envelope-recipient-add: adds the people twice on a retry, and says so", () => {
   assertEquals(action.idempotent, false);
 });

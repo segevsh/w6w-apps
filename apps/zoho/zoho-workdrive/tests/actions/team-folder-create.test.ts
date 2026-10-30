@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamFolderCreate from "../../actions/team-folder-create.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("team-folder-create: POST /workdrive/api/v1/teamfolders", async () => {
+test("team-folder-create: POST /workdrive/api/v1/teamfolders", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{
     body: { "data": { "id": "tf9", "type": "teamfolders" } },
   }]);

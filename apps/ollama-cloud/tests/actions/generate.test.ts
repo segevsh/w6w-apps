@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, ok } from "./_shared.ts";
 import action from "../../actions/generate.ts";
@@ -14,7 +15,7 @@ const answer = ok({
   load_duration: 1_000_000_000,
 });
 
-Deno.test("generate: posts the prompt to the fixed cloud origin with stream false", async () => {
+test("generate: posts the prompt to the fixed cloud origin with stream false", async () => {
   const { ctx, calls } = mockCtx([answer]);
   const result = await action.execute!({ model: "llama3.2:3b", prompt: "hi" }, ctx) as Record<
     string,
@@ -34,7 +35,7 @@ Deno.test("generate: posts the prompt to the fixed cloud origin with stream fals
   assertEquals(result.loadSeconds, 1);
 });
 
-Deno.test("generate: options, think and images are shaped for the API", async () => {
+test("generate: options, think and images are shaped for the API", async () => {
   const { ctx, calls } = mockCtx([answer]);
   await action.execute!({
     model: "m",
@@ -54,7 +55,7 @@ Deno.test("generate: options, think and images are shaped for the API", async ()
   assertEquals("keep_alive" in body, false);
 });
 
-Deno.test("generate: json format parses the response, an unparsable one stays text", async () => {
+test("generate: json format parses the response, an unparsable one stays text", async () => {
   const first = mockCtx([ok({ response: '{"age": 30}', done: true })]);
   const parsed = await action.execute!({ model: "m", prompt: "p", format: "json" }, first.ctx) as {
     parsed: unknown;
@@ -71,7 +72,7 @@ Deno.test("generate: json format parses the response, an unparsable one stays te
   assertEquals(text.response, "not json");
 });
 
-Deno.test("generate: a blank prompt, a blank model or bad options are refused before any request", async () => {
+test("generate: a blank prompt, a blank model or bad options are refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ model: "m", prompt: "  " }, ctx), Error);
   await assertRejects(async () => await action.execute!({ model: "", prompt: "p" }, ctx), Error);
@@ -93,7 +94,7 @@ Deno.test("generate: a blank prompt, a blank model or bad options are refused be
   assertEquals(calls.length, 0);
 });
 
-Deno.test("generate: a rejected key is explained at the key page, not as a local server", async () => {
+test("generate: a rejected key is explained at the key page, not as a local server", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "unauthorized" } }]);
   const err = await assertRejects(
     async () => await action.execute!({ model: "m", prompt: "p" }, ctx),
@@ -101,7 +102,7 @@ Deno.test("generate: a rejected key is explained at the key page, not as a local
   assert(/settings\/keys/.test((err as Error).message), (err as Error).message);
 });
 
-Deno.test("generate: an unknown model is a 404 that points at model-list", async () => {
+test("generate: an unknown model is a 404 that points at model-list", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "model 'x' not found" } }]);
   const err = await assertRejects(
     async () => await action.execute!({ model: "x", prompt: "p" }, ctx),
@@ -109,7 +110,7 @@ Deno.test("generate: an unknown model is a 404 that points at model-list", async
   assert(/model-list/.test((err as Error).message), (err as Error).message);
 });
 
-Deno.test("generate: a rate limit names itself and points at the quota check", async () => {
+test("generate: a rate limit names itself and points at the quota check", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { error: "too many requests" } }]);
   const err = await assertRejects(
     async () => await action.execute!({ model: "m", prompt: "p" }, ctx),

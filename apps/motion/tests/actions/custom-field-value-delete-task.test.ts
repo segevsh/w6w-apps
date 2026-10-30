@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldValueDeleteTask from "../../actions/custom-field-value-delete-task.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custom-field-value-delete-task: DELETEs the value, not the definition", async () => {
+test("custom-field-value-delete-task: DELETEs the value, not the definition", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await customFieldValueDeleteTask.execute({ taskId: "t1", valueId: "v1" }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("custom-field-value-delete-task: DELETEs the value, not the definition
  * the set-value action writes with, and not the field NAME a task's
  * `customFieldValues` record is keyed by.
  */
-Deno.test("custom-field-value-delete-task: takes a value id, not a custom field id", () => {
+test("custom-field-value-delete-task: takes a value id, not a custom field id", () => {
   const keys = (customFieldValueDeleteTask.params ?? []).map((p) => p.key);
   assertEquals(keys, ["taskId", "valueId"]);
   assertEquals(customFieldValueDeleteTask.idempotent, true);

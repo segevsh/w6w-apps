@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobMilestoneDelete from "../../actions/job-milestone-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * fetched.") and declares no body, so the action reports the status code rather
  * than inventing a payload.
  */
-Deno.test("job-milestone-delete: DELETEs and reports the status, not a made-up body", async () => {
+test("job-milestone-delete: DELETEs and reports the status, not a made-up body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "" }]);
   const result = await jobMilestoneDelete.execute({ jobMilestoneId: 11 }, ctx) as Record<
     string,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/count-tokens.ts";
 
-Deno.test("count-tokens: POSTs /v1/messages/count_tokens with model + messages", async () => {
+test("count-tokens: POSTs /v1/messages/count_tokens with model + messages", async () => {
   const { ctx, calls } = mockCtx([{ body: { input_tokens: 42 } }]);
   const result = await action.execute!(
     {
@@ -22,7 +23,7 @@ Deno.test("count-tokens: POSTs /v1/messages/count_tokens with model + messages",
   assertEquals((result as { input_tokens: number }).input_tokens, 42);
 });
 
-Deno.test("count-tokens: forwards system + tools when provided", async () => {
+test("count-tokens: forwards system + tools when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { input_tokens: 100 } }]);
   await action.execute!(
     {

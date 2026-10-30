@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/contact-do-not-mail.ts";
 
-Deno.test("contact-do-not-mail: POSTs json/contactdonotmail with contactinfo JSON-encoded, no listkey", async () => {
+test("contact-do-not-mail: POSTs json/contactdonotmail with contactinfo JSON-encoded, no listkey", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { code: "0", message: "User successfully moved to Do-Not-Mail." } },
   ]);

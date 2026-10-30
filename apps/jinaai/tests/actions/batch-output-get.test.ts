@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import batchOutputGet from "../../actions/batch-output-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("batch-output-get: reads the response as raw JSONL text, not JSON", async () => {
+test("batch-output-get: reads the response as raw JSONL text, not JSON", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: '{"custom_id":"1"}\n{"custom_id":"2"}',

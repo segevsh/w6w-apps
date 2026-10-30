@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
-Deno.test("contact-get: GETs /contacts/people/:id", async () => {
+test("contact-get: GETs /contacts/people/:id", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 4, firstname: "Max", lastname: "Muster" } }]);
   const out = await action.execute({ contactId: 4 }, ctx);
   assertEquals(calls[0].url, "https://acme.mocoapp.com/api/v1/contacts/people/4");

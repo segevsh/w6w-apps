@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-base-schema.ts";
 
-Deno.test("get-base-schema: GETs /meta/bases/{baseId}/tables", async () => {
+test("get-base-schema: GETs /meta/bases/{baseId}/tables", async () => {
   const body = { tables: [{ id: "tbl1", name: "Users", fields: [] }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ baseId: "appABC" }, ctx);
@@ -11,7 +12,7 @@ Deno.test("get-base-schema: GETs /meta/bases/{baseId}/tables", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("get-base-schema: forwards include[] as bracketed repeats", async () => {
+test("get-base-schema: forwards include[] as bracketed repeats", async () => {
   const { ctx, calls } = mockCtx([{ body: { tables: [] } }]);
   await action.execute!({ baseId: "appABC", include: ["visibleFieldIds"] }, ctx);
   const url = new URL(calls[0].url);

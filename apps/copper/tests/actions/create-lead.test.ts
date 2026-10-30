@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import action from "../../actions/create-lead.ts";
 
-Deno.test("create-lead: POSTs to /leads with the documented body", async () => {
+test("create-lead: POSTs to /leads with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 8894157 } }]);
   await action.execute({
     name: "My Lead",
@@ -24,7 +25,7 @@ Deno.test("create-lead: POSTs to /leads with the documented body", async () => {
   });
 });
 
-Deno.test("create-lead: sends `email` singular, never an `emails` array", async () => {
+test("create-lead: sends `email` singular, never an `emails` array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ name: "L", email: { email: "a@b.com" } }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -33,15 +34,15 @@ Deno.test("create-lead: sends `email` singular, never an `emails` array", async 
   assert(!Array.isArray(body.email), "email must be an object, not an array");
 });
 
-Deno.test("create-lead: uses Copper's documented Lead status strings", () => {
+test("create-lead: uses Copper's documented Lead status strings", () => {
   assertEquals(optionValues(action, "status"), ["New", "Unqualified", "Contacted", "Qualified"]);
 });
 
-Deno.test("create-lead: company name is free text — a Lead links to no Company record", () => {
+test("create-lead: company name is free text — a Lead links to no Company record", () => {
   assertEquals(param(action, "companyName").type, "string");
 });
 
-Deno.test("create-lead: is a non-idempotent perform requiring only a name", () => {
+test("create-lead: is a non-idempotent perform requiring only a name", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals((action.params ?? []).filter((p) => p.required).map((p) => p.key), ["name"]);

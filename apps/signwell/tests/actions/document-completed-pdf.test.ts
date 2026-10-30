@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-completed-pdf.ts";
 
-Deno.test("document-completed-pdf: always asks for url_only and returns the file_url", async () => {
+test("document-completed-pdf: always asks for url_only and returns the file_url", async () => {
   const { ctx, calls } = mockCtx([{
     body: { file_url: "https://www.signwell.com/completed_docs/x/" },
   }]);
@@ -15,7 +16,7 @@ Deno.test("document-completed-pdf: always asks for url_only and returns the file
   assertEquals(url.searchParams.has("file_format"), false);
 });
 
-Deno.test("document-completed-pdf: forwards audit_page=false and file_format", async () => {
+test("document-completed-pdf: forwards audit_page=false and file_format", async () => {
   const { ctx, calls } = mockCtx([{ body: { file_url: "u" } }]);
   await action.execute!({ id: "d1", audit_page: false, file_format: "zip" }, ctx);
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("document-completed-pdf: forwards audit_page=false and file_format", a
   assertEquals(url.searchParams.get("url_only"), "true");
 });
 
-Deno.test("document-completed-pdf: id is required", async () => {
+test("document-completed-pdf: id is required", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`id` is required");
 });

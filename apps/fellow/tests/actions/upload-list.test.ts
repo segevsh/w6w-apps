@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import uploadList from "../../actions/upload-list.ts";
 import { bodyOf, mockCtx, page, pathOf } from "../_helpers.ts";
 
-Deno.test("upload-list: POST /api/v1/recordings/upload/list on the workspace host", async () => {
+test("upload-list: POST /api/v1/recordings/upload/list on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { uploads: page([{ recording_id: "r9" }]) },
@@ -18,7 +19,7 @@ Deno.test("upload-list: POST /api/v1/recordings/upload/list on the workspace hos
   assertEquals((out as { hasMore: boolean }).hasMore, false);
 });
 
-Deno.test("upload-list: a Fellow error surfaces its detail and status", async () => {
+test("upload-list: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(uploadList.execute({ status: "FAILED", cursor: "c1" }, ctx)),

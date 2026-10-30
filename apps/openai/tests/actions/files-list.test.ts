@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/files-list.ts";
 
-Deno.test("files-list: GETs /files with no query by default", async () => {
+test("files-list: GETs /files with no query by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], object: "list" } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("files-list: GETs /files with no query by default", async () => {
   assert(!url.searchParams.has("purpose"));
 });
 
-Deno.test("files-list: forwards purpose filter", async () => {
+test("files-list: forwards purpose filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ purpose: "assistants" }, ctx);
   const url = new URL(calls[0].url);

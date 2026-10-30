@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/record-update.ts";
 
@@ -10,7 +11,7 @@ const ok = {
   },
 };
 
-Deno.test("record-update: POSTs recordId + inputData (+ tabularData) to updateRecord", async () => {
+test("record-update: POSTs recordId + inputData (+ tabularData) to updateRecord", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: ok }]);
   const out = await action.execute({
     formLinkName: "employee",
@@ -26,7 +27,7 @@ Deno.test("record-update: POSTs recordId + inputData (+ tabularData) to updateRe
   assertEquals(out.pkId, "100");
 });
 
-Deno.test("record-update: omits tabularData when unset; requires recordId", async () => {
+test("record-update: omits tabularData when unset; requires recordId", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: ok }]);
   await action.execute({ formLinkName: "employee", recordId: "1", fields: { a: 1 } }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).has("tabularData"), false);
@@ -40,4 +41,4 @@ Deno.test("record-update: omits tabularData when unset; requires recordId", asyn
   );
 });
 
-Deno.test("record-update: idempotent", () => assertEquals(action.idempotent, true));
+test("record-update: idempotent", () => assertEquals(action.idempotent, true));

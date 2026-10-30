@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/holidays-get.ts";
 
-Deno.test("holidays-get: GETs getHolidays with userId", async () => {
+test("holidays-get: GETs getHolidays with userId", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ Name: "Test", Id: 65001 }], status: 0 } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("holidays-get: GETs getHolidays with userId", async () => {
   assertEquals(out.result.length, 1);
 });
 
-Deno.test("holidays-get: requires userId", async () => {
+test("holidays-get: requires userId", async () => {
   const { ctx } = mockPeopleCtx([]);
   await assertRejects(
     () => action.execute({ userId: "" }, ctx) as Promise<unknown>,

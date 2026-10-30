@@ -1,20 +1,21 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockActiveCampaignCtx, mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: quota / connection / signed posture, no extra network.allow", () => {
+test("quota: quota / connection / signed posture, no extra network.allow", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: unknown when the connection records no apiUrl", async () => {
+test("quota: unknown when the connection records no apiUrl", async () => {
   const { ctx } = mockCtx();
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("quota: reads RateLimit-* headers off the probe response", async () => {
+test("quota: reads RateLimit-* headers off the probe response", async () => {
   const { ctx, calls } = mockActiveCampaignCtx([{
     status: 200,
     body: { contacts: [] },
@@ -30,7 +31,7 @@ Deno.test("quota: reads RateLimit-* headers off the probe response", async () =>
   assertEquals(result.quota, [{ id: "account", limit: 5, remaining: 4, unit: "requests" }]);
 });
 
-Deno.test("quota: degraded under 20% headroom, down at zero", async () => {
+test("quota: degraded under 20% headroom, down at zero", async () => {
   const low = mockActiveCampaignCtx([{
     headers: {
       "content-type": "application/json",
@@ -50,7 +51,7 @@ Deno.test("quota: degraded under 20% headroom, down at zero", async () => {
   assertEquals((await quota.check!({}, degraded.ctx)).state, "degraded");
 });
 
-Deno.test("quota: unknown when the response carries no RateLimit-* headers", async () => {
+test("quota: unknown when the response carries no RateLimit-* headers", async () => {
   const { ctx } = mockActiveCampaignCtx([{ status: 200, body: {} }]);
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");

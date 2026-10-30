@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timelogList from "../../actions/timelog-list.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("timelog-list: GET /api/v3/portal/1/projects/2/timelogs", async () => {
+test("timelog-list: GET /api/v3/portal/1/projects/2/timelogs", async () => {
   const { ctx, calls } = mockProjectsCtx([{
     body: {
       "log_hours": {},

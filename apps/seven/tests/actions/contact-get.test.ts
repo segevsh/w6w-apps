@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const INPUT = { "id": 12876881 } as Parameters<typeof contactGet.execute>[0];
 
-Deno.test("contact-get: GET /api/contacts/12876881 with the documented fields", async () => {
+test("contact-get: GET /api/contacts/12876881 with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 12876881, "properties": { "firstname": "Peter" } },
   }]);
@@ -20,14 +21,14 @@ Deno.test("contact-get: GET /api/contacts/12876881 with the documented fields", 
   assertEquals(out.id, 12876881);
 });
 
-Deno.test("contact-get: declares type read-or-search and every required param", () => {
+test("contact-get: declares type read-or-search and every required param", () => {
   const required = (contactGet.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["id"]);
   assert(["read", "search", "perform"].includes(contactGet.type));
   assertEquals(contactGet.type === "perform", false);
 });
 
-Deno.test("contact-get: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("contact-get: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

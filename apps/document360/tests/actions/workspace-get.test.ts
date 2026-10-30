@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceGet from "../../actions/workspace-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("workspace-get: GETs the workspace", async () => {
+test("workspace-get: GETs the workspace", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "w1", language_code: "en" }),
@@ -17,7 +18,7 @@ Deno.test("workspace-get: GETs the workspace", async () => {
   assertEquals(out.language_code, "en");
 });
 
-Deno.test("workspace-get: a vendor error surfaces its code and message", async () => {
+test("workspace-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

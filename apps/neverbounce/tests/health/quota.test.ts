@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reports ok with the summed paid+free remaining balance", async () => {
+test("quota: reports ok with the summed paid+free remaining balance", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -15,7 +16,7 @@ Deno.test("quota: reports ok with the summed paid+free remaining balance", async
   assertEquals(report.quota?.[0].remaining, 9950801);
 });
 
-Deno.test("quota: reports down when the balance is exactly zero", async () => {
+test("quota: reports down when the balance is exactly zero", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: "success",
@@ -26,19 +27,19 @@ Deno.test("quota: reports down when the balance is exactly zero", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: reports unknown (not down) on status auth_failure — a credential problem, not an empty balance", async () => {
+test("quota: reports unknown (not down) on status auth_failure — a credential problem, not an empty balance", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { status: "auth_failure" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: reports unknown when the body carries no status field", async () => {
+test("quota: reports unknown when the body carries no status field", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: is a connection-scoped, signed, informational check", () => {
+test("quota: is a connection-scoped, signed, informational check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.scope, "connection");
   assertEquals(quota.credential, "signed");

@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { MistralClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new MistralClient(ctx);
   const result = await client.request("/v1/files/f1");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"error":"NOT_FOUND"}' },
   ]);
@@ -22,7 +23,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v1/models/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new MistralClient(ctx);
   await client.request("/x", {
@@ -35,7 +36,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new MistralClient(ctx);
   await client.request("/v1/chat/completions", {
@@ -49,7 +50,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new MistralClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -58,7 +59,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: non-JSON responses returned as text", async () => {
+test("client: non-JSON responses returned as text", async () => {
   const { ctx } = mockCtx([
     { body: "line1\nline2", headers: { "content-type": "application/x-ndjson" } },
   ]);

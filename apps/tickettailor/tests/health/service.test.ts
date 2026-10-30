@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -18,7 +19,7 @@ const SUMMARY = {
   ],
 };
 
-Deno.test("mapComponentStatus / mapIndicator: cover the documented vocabulary", () => {
+test("mapComponentStatus / mapIndicator: cover the documented vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -31,13 +32,13 @@ Deno.test("mapComponentStatus / mapIndicator: cover the documented vocabulary", 
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: uses the vendor id, falls back to a name slug", () => {
+test("componentKey: uses the vendor id, falls back to a name slug", () => {
   assertEquals(componentKey({ id: "c1", name: "API" }, 0), "c1");
   assertEquals(componentKey({ name: "Check-in app" }, 2), "check-in-app-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("check: all-operational reports ok with four components", async () => {
+test("check: all-operational reports ok with four components", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: SUMMARY }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -45,7 +46,7 @@ Deno.test("check: all-operational reports ok with four components", async () => 
   assertEquals(Object.keys(report.components ?? {}).length, 4);
 });
 
-Deno.test("check: a degraded component surfaces as degraded, with the affected name", async () => {
+test("check: a degraded component surfaces as degraded, with the affected name", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -64,13 +65,13 @@ Deno.test("check: a degraded component surfaces as degraded, with the affected n
   assertEquals(report.components?.["c4"].state, "degraded");
 });
 
-Deno.test("check: a broken status endpoint reports unknown, never down", async () => {
+test("check: a broken status endpoint reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("check: a page that no longer self-identifies as Ticket Tailor reports unknown", async () => {
+test("check: a page that no longer self-identifies as Ticket Tailor reports unknown", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: { ...SUMMARY, page: { url: "https://status.example.com/" } } },
   ]);

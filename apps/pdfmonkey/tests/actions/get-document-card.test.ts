@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-document-card.ts";
 
-Deno.test("get-document-card: GETs /document_cards/{id} and unwraps document_card", async () => {
+test("get-document-card: GETs /document_cards/{id} and unwraps document_card", async () => {
   const card = { id: "doc-1", status: "success", download_url: "https://x/y.pdf" };
   const { ctx, calls } = mockCtx([{ body: { document_card: card } }]);
   const result = await action.execute!({ documentId: "doc-1" }, ctx);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/function-call.ts";
 
@@ -17,7 +18,7 @@ const called = (returnValue: number) => ({
   body: { id: ID, return_value: returnValue, connected: true },
 });
 
-Deno.test("function-call: checks the device, then posts the argument as a form field", async () => {
+test("function-call: checks the device, then posts the argument as a form field", async () => {
   const { ctx, calls } = mockCtx([device(), called(1)]);
   const result = await action.execute(
     { deviceId: ID, function: "led", argument: "on" },
@@ -31,7 +32,7 @@ Deno.test("function-call: checks the device, then posts the argument as a form f
 });
 
 /** A single integer is the whole return channel. */
-Deno.test("function-call: reports the integer without interpreting it", async () => {
+test("function-call: reports the integer without interpreting it", async () => {
   for (const value of [0, 1, -1, 42]) {
     const { ctx } = mockCtx([device(), called(value)]);
     const result = await action.execute(
@@ -44,7 +45,7 @@ Deno.test("function-call: reports the integer without interpreting it", async ()
 });
 
 /** A function call is a round trip, not a message queued for later. */
-Deno.test("function-call: an offline device is refused, saying nothing will run it later", async () => {
+test("function-call: an offline device is refused, saying nothing will run it later", async () => {
   const { ctx, calls } = mockCtx([device({ connected: false })]);
   let message = "";
   try {
@@ -57,7 +58,7 @@ Deno.test("function-call: an offline device is refused, saying nothing will run 
   assertEquals(calls.length, 1);
 });
 
-Deno.test("function-call: an undeclared function names what the firmware does declare", async () => {
+test("function-call: an undeclared function names what the firmware does declare", async () => {
   const { ctx, calls } = mockCtx([device()]);
   let message = "";
   try {
@@ -71,7 +72,7 @@ Deno.test("function-call: an undeclared function names what the firmware does de
 });
 
 /** Particle documents 64 to 1024 bytes depending on Device OS and device. */
-Deno.test("function-call: the argument ceiling is enforced in bytes, and says it varies", async () => {
+test("function-call: the argument ceiling is enforced in bytes, and says it varies", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -84,7 +85,7 @@ Deno.test("function-call: the argument ceiling is enforced in bytes, and says it
   assertEquals(calls.length, 0, "checked before anything was called");
 });
 
-Deno.test("function-call: the ceiling counts bytes, not characters", async () => {
+test("function-call: the ceiling counts bytes, not characters", async () => {
   // 513 two-byte characters is 1026 bytes.
   const { ctx } = mockCtx([]);
   let message = "";
@@ -97,7 +98,7 @@ Deno.test("function-call: the ceiling counts bytes, not characters", async () =>
 });
 
 /** A command carries codes, positions and identifiers. */
-Deno.test("function-call: logs the function and the result, never the argument", async () => {
+test("function-call: logs the function and the result, never the argument", async () => {
   const { ctx, logs } = mockCtx([device(), called(0)]);
   await action.execute(
     { deviceId: ID, function: "led", argument: "secret-position-42" },
@@ -107,7 +108,7 @@ Deno.test("function-call: logs the function and the result, never the argument",
   assertEquals(logs[0].data, { function: "led", returnValue: 0 });
 });
 
-Deno.test("function-call: is not idempotent, because it actuates hardware", () => {
+test("function-call: is not idempotent, because it actuates hardware", () => {
   assertEquals(action.idempotent, false);
   assert(/actuates real hardware/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketStatusList from "../../actions/ticket-status-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-status-list: GET .../ticket-statuses, bare array", async () => {
+test("ticket-status-list: GET .../ticket-statuses, bare array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "st1", category: "new" }] }]);
   const out = await ticketStatusList.execute({ agentId: "a1" }, ctx) as unknown[];
 

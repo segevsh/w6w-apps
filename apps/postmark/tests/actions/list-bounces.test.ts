@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-bounces.ts";
 
-Deno.test("list-bounces: GETs /bounces with count/offset defaults", async () => {
+test("list-bounces: GETs /bounces with count/offset defaults", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { TotalCount: 0, Bounces: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-bounces: GETs /bounces with count/offset defaults", async () => 
   assertEquals(url.searchParams.get("offset"), "0");
 });
 
-Deno.test("list-bounces: forwards type/inactive/emailFilter/tag/messageId/date/stream filters", async () => {
+test("list-bounces: forwards type/inactive/emailFilter/tag/messageId/date/stream filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     {

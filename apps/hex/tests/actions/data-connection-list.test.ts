@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/data-connection-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("data-connection-list: GET /data-connections with sort and cursor", async () => {
+test("data-connection-list: GET /data-connections with sort and cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "d1", type: "snowflake" }]) }]);
   const out = await action.execute(
     { sortBy: "CREATED_AT", sortDirection: "DESC", limit: 3 },

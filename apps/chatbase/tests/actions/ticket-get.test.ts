@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketGet from "../../actions/ticket-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-get: GET .../tickets/{ticketNumber}, numeric in the path", async () => {
+test("ticket-get: GET .../tickets/{ticketNumber}, numeric in the path", async () => {
   const { ctx, calls } = mockCtx([{ body: { ticketNumber: 123, subject: "Export failing" } }]);
   const out = await ticketGet.execute({ agentId: "a1", ticketNumber: 123 }, ctx) as {
     subject: string;

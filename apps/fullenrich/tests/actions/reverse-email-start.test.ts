@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/reverse-email-start.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("reverse-email-start: single email posts one record", async () => {
+test("reverse-email-start: single email posts one record", async () => {
   const { ctx, calls } = mockCtx([{ body: { enrichment_id: "r1" } }]);
   const out = await action.execute!({
     name: "R",
@@ -19,7 +20,7 @@ Deno.test("reverse-email-start: single email posts one record", async () => {
   });
 });
 
-Deno.test("reverse-email-start: bulk emails override the single field; silentFail is a query flag", async () => {
+test("reverse-email-start: bulk emails override the single field; silentFail is a query flag", async () => {
   const { ctx, calls } = mockCtx([{ body: { enrichment_id: "r2" } }]);
   await action.execute!({
     name: "R",
@@ -31,7 +32,7 @@ Deno.test("reverse-email-start: bulk emails override the single field; silentFai
   assertEquals(JSON.parse(calls[0].body!).data, [{ email: "a@a.com" }, { email: "b@b.com" }]);
 });
 
-Deno.test("reverse-email-start: vendor errors are thrown", async () => {
+test("reverse-email-start: vendor errors are thrown", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { code: "error.reverse.email.invalid", message: "Email is invalid" },

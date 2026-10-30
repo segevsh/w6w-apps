@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "id": 12876881, "firstname": "Marc", "lastname": "Gump" } as Par
   typeof contactUpdate.execute
 >[0];
 
-Deno.test("contact-update: PATCH /api/contacts/12876881 with the documented fields", async () => {
+test("contact-update: PATCH /api/contacts/12876881 with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "id": 12876881, "properties": { "firstname": "Marc" } },
   }]);
@@ -25,14 +26,14 @@ Deno.test("contact-update: PATCH /api/contacts/12876881 with the documented fiel
   assertEquals(out.id, 12876881);
 });
 
-Deno.test("contact-update: declares type perform and every required param", () => {
+test("contact-update: declares type perform and every required param", () => {
   const required = (contactUpdate.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["id"]);
   assert(["read", "search", "perform"].includes(contactUpdate.type));
   assertEquals(contactUpdate.type, "perform");
 });
 
-Deno.test("contact-update: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("contact-update: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {
@@ -43,13 +44,13 @@ Deno.test("contact-update: a refused key (bare code 900 in an HTTP 200) is throw
   assert(message.includes("900") && message.includes("authentication failed"), message);
 });
 
-Deno.test("contact-update: an unset field is not sent, so it is left as it is", async () => {
+test("contact-update: an unset field is not sent, so it is left as it is", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await contactUpdate.execute({ id: 1, city: "Kiel" }, ctx);
   assertEquals(Object.fromEntries(new URLSearchParams(calls[0].body ?? "")), { city: "Kiel" });
 });
 
-Deno.test("contact-update: custom_properties that is not a JSON object is rejected before any call", async () => {
+test("contact-update: custom_properties that is not a JSON object is rejected before any call", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

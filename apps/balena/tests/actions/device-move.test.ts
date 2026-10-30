@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-move.ts";
 
@@ -16,7 +17,7 @@ const oldFleetVariables = {
 };
 const ok = { status: 200, body: {} };
 
-Deno.test("device-move: patches belongs_to__application to the destination id", async () => {
+test("device-move: patches belongs_to__application to the destination id", async () => {
   const { ctx, calls } = mockCtx([device, destination, oldFleetVariables, ok]);
   const result = await action.execute({ uuid: UUID, fleet: "acme/gateways" }, ctx) as Record<
     string,
@@ -29,7 +30,7 @@ Deno.test("device-move: patches belongs_to__application to the destination id", 
 });
 
 /** The commonest way a moved device comes up misconfigured. */
-Deno.test("device-move: names the fleet variables that do not travel, and warns", async () => {
+test("device-move: names the fleet variables that do not travel, and warns", async () => {
   const { ctx, logs } = mockCtx([device, destination, oldFleetVariables, ok]);
   const result = await action.execute({ uuid: UUID, fleet: "acme/gateways" }, ctx) as Record<
     string,
@@ -43,7 +44,7 @@ Deno.test("device-move: names the fleet variables that do not travel, and warns"
 });
 
 /** Moving a device to where it already is should not be a deployment. */
-Deno.test("device-move: a no-op move changes nothing and patches nothing", async () => {
+test("device-move: a no-op move changes nothing and patches nothing", async () => {
   const { ctx, calls } = mockCtx([device, {
     status: 200,
     body: { d: [{ id: 1, slug: "acme/sensors" }] },
@@ -57,7 +58,7 @@ Deno.test("device-move: a no-op move changes nothing and patches nothing", async
   assertEquals(calls.length, 2, "it must not patch");
 });
 
-Deno.test("device-move: an unknown destination is refused", async () => {
+test("device-move: an unknown destination is refused", async () => {
   const { ctx } = mockCtx([device, { status: 200, body: { d: [] } }]);
   await assertRejects(
     async () => await action.execute({ uuid: UUID, fleet: "acme/nope" }, ctx),
@@ -66,12 +67,12 @@ Deno.test("device-move: an unknown destination is refused", async () => {
   );
 });
 
-Deno.test("device-move: requires a destination", async () => {
+test("device-move: requires a destination", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({ uuid: UUID }, ctx), Error, "`fleet`");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("device-move: says a move is a deployment", () => {
+test("device-move: says a move is a deployment", () => {
   assert(/DEPLOYMENT/.test(action.description!), action.description);
 });

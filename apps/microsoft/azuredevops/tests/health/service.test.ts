@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -15,7 +16,7 @@ const health = (services: Array<{ id: string; geos: Record<string, string> }>) =
 
 const allHealthy = { US: "healthy", EU: "healthy", APAC: "healthy" };
 
-Deno.test("service: reads the services this app uses, by name", async () => {
+test("service: reads the services this app uses, by name", async () => {
   const { ctx, calls } = mockCtx([health([
     { id: "Core services", geos: allHealthy },
     { id: "Repos", geos: allHealthy },
@@ -34,7 +35,7 @@ Deno.test("service: reads the services this app uses, by name", async () => {
 });
 
 /** Surfaces this app never calls do not count. */
-Deno.test("service: Test Plans and Artifacts are ignored", async () => {
+test("service: Test Plans and Artifacts are ignored", async () => {
   const { ctx } = mockCtx([health([
     { id: "Repos", geos: allHealthy },
     { id: "Test Plans", geos: { US: "unhealthy" } },
@@ -46,7 +47,7 @@ Deno.test("service: Test Plans and Artifacts are ignored", async () => {
 });
 
 /** A disruption in one region is named rather than reported as everywhere. */
-Deno.test("service: a partial-geography outage names the regions affected", async () => {
+test("service: a partial-geography outage names the regions affected", async () => {
   const { ctx } = mockCtx([health([
     { id: "Repos", geos: { US: "healthy", EU: "degraded", BR: "degraded" } },
     { id: "Pipelines", geos: allHealthy },
@@ -57,7 +58,7 @@ Deno.test("service: a partial-geography outage names the regions affected", asyn
   assertEquals(result.components!["repos"].message, "affected: EU, BR");
 });
 
-Deno.test("service: unhealthy is down and degraded is degraded", async () => {
+test("service: unhealthy is down and degraded is degraded", async () => {
   const down = mockCtx([health([{ id: "Pipelines", geos: { US: "unhealthy" } }])]);
   assertEquals((await service.check!({}, down.ctx)).state, "down");
 
@@ -65,7 +66,7 @@ Deno.test("service: unhealthy is down and degraded is degraded", async () => {
   assertEquals((await service.check!({}, advisory.ctx)).state, "degraded");
 });
 
-Deno.test("service: a broken or shapeless status endpoint is unknown, never down", async () => {
+test("service: a broken or shapeless status endpoint is unknown, never down", async () => {
   const broken = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, broken.ctx)).state, "unknown");
 
@@ -73,13 +74,13 @@ Deno.test("service: a broken or shapeless status endpoint is unknown, never down
   assertEquals((await service.check!({}, shapeless.ctx)).state, "unknown");
 });
 
-Deno.test("service: an endpoint naming none of the used services says so", async () => {
+test("service: an endpoint naming none of the used services says so", async () => {
   const { ctx } = mockCtx([health([{ id: "Artifacts", geos: allHealthy }])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no longer names the services/.test(result.message!), result.message);
 });
 
-Deno.test("service: declares the status host, which is not the API host", () => {
+test("service: declares the status host, which is not the API host", () => {
   assertEquals(service.network!.allow, ["status.dev.azure.com"]);
 });

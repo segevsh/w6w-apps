@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: reports ok with plenty of headroom", async () => {
+test("quota: reports ok with plenty of headroom", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { id: "u1" } },
@@ -21,7 +22,7 @@ Deno.test("quota: reports ok with plenty of headroom", async () => {
   assertEquals(out.quota?.[0].resetAt, "2026-09-01T10:51:23.035+0100");
 });
 
-Deno.test("quota: reports degraded once remaining is low", async () => {
+test("quota: reports degraded once remaining is low", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: {} },
@@ -35,7 +36,7 @@ Deno.test("quota: reports degraded once remaining is low", async () => {
   assertEquals(out.state, "degraded");
 });
 
-Deno.test("quota: reports degraded (not down — recoverable within a minute) once exhausted", async () => {
+test("quota: reports degraded (not down — recoverable within a minute) once exhausted", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: {} },
@@ -49,19 +50,19 @@ Deno.test("quota: reports degraded (not down — recoverable within a minute) on
   assertEquals(out.state, "degraded");
 });
 
-Deno.test("quota: reports unknown when the headers are absent", async () => {
+test("quota: reports unknown when the headers are absent", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: {} } }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("quota: reports unknown, not degraded, when the credential itself is rejected", async () => {
+test("quota: reports unknown, not degraded, when the credential itself is rejected", async () => {
   const { ctx } = mockCtx([{ status: 401 }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("quota: is signed and scoped per connection", () => {
+test("quota: is signed and scoped per connection", () => {
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectDelete from "../../actions/project-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-delete: DELETEs the project and returns the boolean success flag", async () => {
+test("project-delete: DELETEs the project and returns the boolean success flag", async () => {
   const { ctx, calls } = mockCtx([{ body: { project_id: "p1", project_deleted: true } }]);
   const out = await projectDelete.execute({ projectId: "p1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,12 +11,12 @@ Deno.test("project-delete: DELETEs the project and returns the boolean success f
   assertEquals(out, { project_id: "p1", project_deleted: true });
 });
 
-Deno.test("project-delete: a 200 with project_deleted:false is surfaced, not hidden", async () => {
+test("project-delete: a 200 with project_deleted:false is surfaced, not hidden", async () => {
   const { ctx } = mockCtx([{ body: { project_id: "p1", project_deleted: false } }]);
   const out = await projectDelete.execute({ projectId: "p1" }, ctx) as { project_deleted: boolean };
   assertEquals(out.project_deleted, false);
 });
 
-Deno.test("project-delete: is idempotent", () => {
+test("project-delete: is idempotent", () => {
   assertEquals(projectDelete.idempotent, true);
 });

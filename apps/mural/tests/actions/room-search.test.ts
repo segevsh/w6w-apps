@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import roomSearch from "../../actions/room-search.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "workspaceId": "ws12345", "q": "des", "limit": 10, "next": "tok1" };
 
-Deno.test("room-search: GET /search/{workspaceId}/rooms", async () => {
+test("room-search: GET /search/{workspaceId}/rooms", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "a" }, { "id": "b" }], "next": "NXT" },
@@ -21,7 +22,7 @@ Deno.test("room-search: GET /search/{workspaceId}/rooms", async () => {
   assertEquals(out.next, "NXT");
 });
 
-Deno.test("room-search: puts no credential on the request (sign owns that)", async () => {
+test("room-search: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "a" }, { "id": "b" }], "next": "NXT" },
@@ -30,7 +31,7 @@ Deno.test("room-search: puts no credential on the request (sign owns that)", asy
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("room-search: a vendor error surfaces its own code and message", async () => {
+test("room-search: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -41,7 +42,7 @@ Deno.test("room-search: a vendor error surfaces its own code and message", async
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("room-search: an empty workspaceId is refused before any request", async () => {
+test("room-search: an empty workspaceId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await roomSearch.execute({ ...INPUT, workspaceId: "  " as never }, ctx)

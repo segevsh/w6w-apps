@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/field-list.ts";
 
-Deno.test("field-list: reshapes the plain map", async () => {
+test("field-list: reshapes the plain map", async () => {
   const { ctx, calls } = mockCtx([{
     body: { fieldFirstName: "First name", field12345: "Custom" },
   }]);
@@ -13,7 +14,7 @@ Deno.test("field-list: reshapes the plain map", async () => {
   });
 });
 
-Deno.test("field-list: detail mode carries the type", async () => {
+test("field-list: detail mode carries the type", async () => {
   const { ctx, calls } = mockCtx([{ body: { field1: { name: "Plan", type: "Line" } } }]);
   const out = await action.execute({ detail: true }, ctx);
   assertEquals(calls[0].url, "https://api.klicktipp.com/field?detail=true");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transcriptDelete from "../../actions/transcript-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transcript-delete: DELETEs /v2/transcript/{id} and returns the marked-deleted transcript", async () => {
+test("transcript-delete: DELETEs /v2/transcript/{id} and returns the marked-deleted transcript", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "t1", status: "completed", audio_url: "http://deleted_by_user" },
@@ -15,6 +16,6 @@ Deno.test("transcript-delete: DELETEs /v2/transcript/{id} and returns the marked
   assertEquals(out.audio_url, "http://deleted_by_user");
 });
 
-Deno.test("transcript-delete: is declared idempotent", () => {
+test("transcript-delete: is declared idempotent", () => {
   assertEquals(transcriptDelete.idempotent, true);
 });

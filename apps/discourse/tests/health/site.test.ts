@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import site from "../../health/site.ts";
 import { mockCtx, mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const BASIC_INFO = {
   locale: "en",
 };
 
-Deno.test("site: is a per-connection dependency read without a credential", () => {
+test("site: is a per-connection dependency read without a credential", () => {
   assertEquals(site.kind, "dependency");
   assertEquals(site.scope, "connection");
   // `context`: the Connection supplies the URL, not a credential. `sign` must
@@ -19,7 +20,7 @@ Deno.test("site: is a per-connection dependency read without a credential", () =
   assertEquals(site.minIntervalSeconds, 120);
 });
 
-Deno.test("site: probes /site/basic-info.json — the endpoint exempt from the login gate", async () => {
+test("site: probes /site/basic-info.json — the endpoint exempt from the login gate", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: BASIC_INFO }]);
   const report = await site.check!({}, ctx);
   assertEquals(calls[0].url, `${SITE_URL}/site/basic-info.json`);
@@ -33,12 +34,12 @@ Deno.test("site: probes /site/basic-info.json — the endpoint exempt from the l
   assertEquals(report.message, "Example Forum");
 });
 
-Deno.test("site: a private forum is healthy — basic-info answers even when login is required", async () => {
+test("site: a private forum is healthy — basic-info answers even when login is required", async () => {
   const { ctx } = mockDiscourseCtx([{ body: { ...BASIC_INFO, login_required: true } }]);
   assertEquals((await site.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("site: 5xx and a missing route are down; other failures are degraded", async () => {
+test("site: 5xx and a missing route are down; other failures are degraded", async () => {
   const five = mockDiscourseCtx([{ status: 502, body: "bad gateway" }]);
   const fiveReport = await site.check!({}, five.ctx);
   assertEquals(fiveReport.state, "down");
@@ -53,7 +54,7 @@ Deno.test("site: 5xx and a missing route are down; other failures are degraded",
   assertEquals((await site.check!({}, forbidden.ctx)).state, "degraded");
 });
 
-Deno.test("site: a 200 that is not Discourse is degraded, not ok", async () => {
+test("site: a 200 that is not Discourse is degraded, not ok", async () => {
   // A parked page, a captive portal or a proxy error page all answer 200. The
   // host is reachable; this forum is not what is on it.
   const html = mockDiscourseCtx([{ status: 200, body: "<html>parked</html>" }]);
@@ -65,7 +66,7 @@ Deno.test("site: a 200 that is not Discourse is degraded, not ok", async () => {
   assertEquals((await site.check!({}, wrongJson.ctx)).state, "degraded");
 });
 
-Deno.test("site: reports unknown, and makes no request, when the connection has no URL", async () => {
+test("site: reports unknown, and makes no request, when the connection has no URL", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = { display: {} };
   const report = await site.check!({}, ctx);
@@ -74,7 +75,7 @@ Deno.test("site: reports unknown, and makes no request, when the connection has 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("site: an unusable stored URL reports unknown rather than throwing", async () => {
+test("site: an unusable stored URL reports unknown rather than throwing", async () => {
   const { ctx, calls } = mockDiscourseCtx([], "https://");
   assertEquals((await site.check!({}, ctx)).state, "unknown");
   assertEquals(calls.length, 0);

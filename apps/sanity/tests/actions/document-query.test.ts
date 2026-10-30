@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-query.ts";
 
 const conn = { display: { projectId: "abc123", dataset: "production", useCdn: false } };
 
-Deno.test("document-query: sends the GROQ query to the dataset's query route", async () => {
+test("document-query: sends the GROQ query to the dataset's query route", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { result: [{ _id: "a" }], ms: 3 } }], conn);
   const out = await action.execute!(
     { query: '*[_type == "article"]', publishedOnly: false },
@@ -17,7 +18,7 @@ Deno.test("document-query: sends the GROQ query to the dataset's query route", a
 });
 
 /** Parameters go on the wire as `$name=<json>`, not interpolated. */
-Deno.test("document-query: parameters are sent as $-prefixed JSON arguments", async () => {
+test("document-query: parameters are sent as $-prefixed JSON arguments", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { result: [] } }], conn);
   await action.execute!({
     query: "*[_type == $type && views > $min]",
@@ -33,7 +34,7 @@ Deno.test("document-query: parameters are sent as $-prefixed JSON arguments", as
  * A draft is a separate document, so an unfiltered query returns each edited
  * document twice.
  */
-Deno.test("document-query: the published-only guard is spliced into the filter", async () => {
+test("document-query: the published-only guard is spliced into the filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { result: [] } }], conn);
   const out = await action.execute!({ query: '*[_type == "article"]' }, ctx) as { query: string };
   assertEquals(out.query, '*[_type == "article" && !(_id in path("drafts.**"))]');
@@ -43,7 +44,7 @@ Deno.test("document-query: the published-only guard is spliced into the filter",
   );
 });
 
-Deno.test("document-query: the guard survives a projection and a slice", async () => {
+test("document-query: the guard survives a projection and a slice", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { result: [] } }], conn);
   const out = await action.execute!(
     { query: '*[_type == "article"]{title}[0...10]' },
@@ -52,7 +53,7 @@ Deno.test("document-query: the guard survives a projection and a slice", async (
   assertEquals(out.query, '*[_type == "article" && !(_id in path("drafts.**"))]{title}[0...10]');
 });
 
-Deno.test("document-query: turning the guard off leaves the query alone", async () => {
+test("document-query: turning the guard off leaves the query alone", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { result: [] } }], conn);
   const out = await action.execute!(
     { query: "*[_type == $t]", publishedOnly: false },
@@ -61,19 +62,19 @@ Deno.test("document-query: turning the guard off leaves the query alone", async 
   assertEquals(out.query, "*[_type == $t]");
 });
 
-Deno.test("document-query: an empty query is refused", async () => {
+test("document-query: an empty query is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({ query: "  " }, ctx), Error, "query");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("document-query: a dataset override wins over the connection's", async () => {
+test("document-query: a dataset override wins over the connection's", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { result: [] } }], conn);
   await action.execute!({ query: "*", dataset: "staging", publishedOnly: false }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v2025-02-19/data/query/staging");
 });
 
 /** The hint has to explain the double-result, since almost nobody expects it. */
-Deno.test("document-query: says why drafts are filtered", () => {
+test("document-query: says why drafts are filtered", () => {
   assert(/twice/.test(action.description!), action.description);
 });

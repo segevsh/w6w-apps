@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import clientDraftsGet from "../../actions/client-drafts-get.ts";
 import clientCampaignsGet from "../../actions/client-campaigns-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("client-drafts-get: GETs /clients/{clientid}/drafts.json", async () => {
+test("client-drafts-get: GETs /clients/{clientid}/drafts.json", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await clientDraftsGet.execute({ clientId: "cid" }, ctx);
   assertEquals(pathOf(calls[0].url), `${API_PATH}/clients/cid/drafts.json`);
@@ -13,7 +14,7 @@ Deno.test("client-drafts-get: GETs /clients/{clientid}/drafts.json", async () =>
  * The asymmetry worth pinning: sent campaigns are paged, drafts are a bare
  * array. Same client, same noun, two response shapes.
  */
-Deno.test("client-drafts-get: returns a bare array, unlike sent campaigns", async () => {
+test("client-drafts-get: returns a bare array, unlike sent campaigns", async () => {
   const drafts = [{
     CampaignID: "7c7424792065d92627139208c8c01db1",
     Name: "Draft One",

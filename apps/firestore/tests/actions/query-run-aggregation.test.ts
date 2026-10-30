@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/query-run-aggregation.ts";
 
-Deno.test("query-run-aggregation: a COUNT is one aggregation over a StructuredQuery", async () => {
+test("query-run-aggregation: a COUNT is one aggregation over a StructuredQuery", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ result: { aggregateFields: { count: { integerValue: "42" } } }, readTime: "t" }],
@@ -27,7 +28,7 @@ Deno.test("query-run-aggregation: a COUNT is one aggregation over a StructuredQu
   assertEquals(result.readTime, "t");
 });
 
-Deno.test("query-run-aggregation: sum and avg carry a field and an alias", async () => {
+test("query-run-aggregation: sum and avg carry a field and an alias", async () => {
   const sum = mockCtx([{ status: 200, body: [{ result: { aggregateFields: {} } }] }], {
     display: DISPLAY,
   });
@@ -50,7 +51,7 @@ Deno.test("query-run-aggregation: sum and avg carry a field and an alias", async
   ]);
 });
 
-Deno.test("query-run-aggregation: filters and a collection group reach the nested query", async () => {
+test("query-run-aggregation: filters and a collection group reach the nested query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], { display: DISPLAY });
   await action.execute({
     collectionId: "orders",
@@ -67,7 +68,7 @@ Deno.test("query-run-aggregation: filters and a collection group reach the neste
   );
 });
 
-Deno.test("query-run-aggregation: sum/avg need a field, and the aggregation must be known", async () => {
+test("query-run-aggregation: sum/avg need a field, and the aggregation must be known", async () => {
   const missingField = mockCtx([], { display: DISPLAY });
   await assertRejects(
     async () => await action.execute({ collectionId: "o", aggregation: "sum" }, missingField.ctx),

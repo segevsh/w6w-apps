@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voteGet from "../../actions/vote-get.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("vote-get: retrieves by id", async () => {
+test("vote-get: retrieves by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "v1" } }]);
   await voteGet.execute({ id: "v1" }, ctx);
 

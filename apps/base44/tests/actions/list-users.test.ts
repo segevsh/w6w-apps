@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-users.ts";
 import { mockConnectedCtx, mockCtx, pathOf, queryOf, WORKSPACE_ID } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const PAGE = {
   pagination: { total: 1, limit: 50, next_cursor: null, has_more: false },
 };
 
-Deno.test("list-users: maps the users page and pagination", async () => {
+test("list-users: maps the users page and pagination", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   const result = await action.execute({}, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("list-users: maps the users page and pagination", async () => {
   assertEquals(result, { users: PAGE.users, total: 1, nextCursor: undefined, hasMore: false });
 });
 
-Deno.test("list-users: passes filters and booleans through as documented flags", async () => {
+test("list-users: passes filters and booleans through as documented flags", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   await action.execute({
     limit: 10,
@@ -42,20 +43,20 @@ Deno.test("list-users: passes filters and booleans through as documented flags",
   });
 });
 
-Deno.test("list-users: a false boolean filter is sent, not dropped as falsy", async () => {
+test("list-users: a false boolean filter is sent, not dropped as falsy", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   await action.execute({ isActive: false }, ctx);
   assertEquals(queryOf(calls[0].url).is_active, "false");
 });
 
-Deno.test("list-users: an omitted flag is absent, not sent as false", async () => {
+test("list-users: an omitted flag is absent, not sent as false", async () => {
   const { ctx, calls } = mockConnectedCtx([{ status: 200, body: PAGE }]);
   await action.execute({}, ctx);
   assertEquals("active_only" in queryOf(calls[0].url), false);
   assertEquals("is_active" in queryOf(calls[0].url), false);
 });
 
-Deno.test("list-users: reports the next cursor when present", async () => {
+test("list-users: reports the next cursor when present", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 200,
     body: { users: [], pagination: { total: 100, limit: 50, next_cursor: "abc", has_more: true } },
@@ -65,7 +66,7 @@ Deno.test("list-users: reports the next cursor when present", async () => {
   assertEquals(result.hasMore, true);
 });
 
-Deno.test("list-users: fails without a connected workspace", async () => {
+test("list-users: fails without a connected workspace", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "workspace id");
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockSalesforceCtx } from "../_helpers.ts";
 import action from "../../actions/record-upsert.ts";
 
-Deno.test("record-upsert: PATCHes the external-id route", async () => {
+test("record-upsert: PATCHes the external-id route", async () => {
   const { ctx, calls } = mockSalesforceCtx([{ body: { id: "00Q1", created: true } }]);
   await action.execute(
     {
@@ -21,7 +22,7 @@ Deno.test("record-upsert: PATCHes the external-id route", async () => {
   assertEquals(JSON.parse(calls[0].body!), { LastName: "Smith" });
 });
 
-Deno.test("record-upsert: percent-encodes the external id value", async () => {
+test("record-upsert: percent-encodes the external id value", async () => {
   const { ctx, calls } = mockSalesforceCtx([{ body: {} }]);
   await action.execute(
     { sobject: "Lead", externalIdField: "Legacy_Id__c", externalId: "A/B", fields: { x: 1 } },
@@ -33,7 +34,7 @@ Deno.test("record-upsert: percent-encodes the external id value", async () => {
   );
 });
 
-Deno.test("record-upsert: validates the external-id FIELD name too", () => {
+test("record-upsert: validates the external-id FIELD name too", () => {
   const { ctx } = mockSalesforceCtx();
   assertThrows(
     () =>
@@ -46,6 +47,6 @@ Deno.test("record-upsert: validates the external-id FIELD name too", () => {
   );
 });
 
-Deno.test("record-upsert: is the idempotent counterpart to record-create", () => {
+test("record-upsert: is the idempotent counterpart to record-create", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import secretKey from "../../auth/secret-key.ts";
 
-Deno.test("secret-key: sign injects the bearer prefix", async () => {
+test("secret-key: sign injects the bearer prefix", async () => {
   const request = { headers: {} as Record<string, string> };
   const out = await secretKey.sign!(
     { request, credential: { secretKey: "sk_test_abc" } } as never,
@@ -11,7 +12,7 @@ Deno.test("secret-key: sign injects the bearer prefix", async () => {
   assertEquals(out.headers["authorization"], "Bearer sk_test_abc");
 });
 
-Deno.test("test: a live key reports ok without echoing it", async () => {
+test("test: a live key reports ok without echoing it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   const out = await secretKey.test!({ credential: { secretKey: "sk_test_abc" } } as never, ctx);
   assertEquals(out.ok, true);
@@ -20,7 +21,7 @@ Deno.test("test: a live key reports ok without echoing it", async () => {
 });
 
 /** `clerk_key_invalid` names a bad key specifically, distinct from a malformed header. */
-Deno.test("test: an invalid key is named by Clerk's own error code", async () => {
+test("test: an invalid key is named by Clerk's own error code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -39,7 +40,7 @@ Deno.test("test: an invalid key is named by Clerk's own error code", async () =>
   assert(out.message!.includes("not one Clerk recognises"), out.message);
 });
 
-Deno.test("test: a credential with no secretKey fails without a request", async () => {
+test("test: a credential with no secretKey fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await secretKey.test!({ credential: {} } as never, ctx);
   assertEquals(out.ok, false);

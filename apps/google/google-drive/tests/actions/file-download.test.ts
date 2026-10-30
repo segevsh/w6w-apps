@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-download.ts";
 
-Deno.test("file-download: fetches metadata then media, returns base64 body", async () => {
+test("file-download: fetches metadata then media, returns base64 body", async () => {
   const { ctx, calls } = mockCtx([
     { body: { name: "report.pdf", mimeType: "application/pdf" } },
     {

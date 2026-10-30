@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-get.ts";
 
@@ -25,7 +26,7 @@ const service = (attributes: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("service-get: reads one service and surfaces the HTTPS endpoint", async () => {
+test("service-get: reads one service and surfaces the HTTPS endpoint", async () => {
   const { ctx, calls } = mockCtx([service()], D);
   const result = await action.execute({ serviceId: SVC }, ctx) as Record<string, unknown>;
   assertEquals(
@@ -38,7 +39,7 @@ Deno.test("service-get: reads one service and surfaces the HTTPS endpoint", asyn
 });
 
 /** `running` is the only state that answers SQL without waking first. */
-Deno.test("service-get: only a running service is reported as queryable", async () => {
+test("service-get: only a running service is reported as queryable", async () => {
   for (
     const [state, queryable] of [
       ["running", true],
@@ -54,7 +55,7 @@ Deno.test("service-get: only a running service is reported as queryable", async 
 });
 
 /** An address off the list fails to connect, not to authenticate. */
-Deno.test("service-get: surfaces the IP access list, and flags an open one", async () => {
+test("service-get: surfaces the IP access list, and flags an open one", async () => {
   const { ctx, logs } = mockCtx([service({
     ipAccessList: [{ source: "0.0.0.0/0", description: "anywhere" }],
   })], D);
@@ -68,7 +69,7 @@ Deno.test("service-get: surfaces the IP access list, and flags an open one", asy
   );
 });
 
-Deno.test("service-get: a restricted list does not warn", async () => {
+test("service-get: a restricted list does not warn", async () => {
   const { ctx, logs } = mockCtx([service()], D);
   const result = await action.execute({ serviceId: SVC }, ctx) as Record<string, unknown>;
   assertEquals(result.openToInternet, false);
@@ -76,7 +77,7 @@ Deno.test("service-get: a restricted list does not warn", async () => {
 });
 
 /** A name used where a UUID belongs looks exactly like a missing service. */
-Deno.test("service-get: a name instead of an id is refused before the request", async () => {
+test("service-get: a name instead of an id is refused before the request", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -88,7 +89,7 @@ Deno.test("service-get: a name instead of an id is refused before the request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-get: reports the scaling fields the bill depends on", async () => {
+test("service-get: reports the scaling fields the bill depends on", async () => {
   const { ctx } = mockCtx([service({ idleScaling: false })], D);
   const result = await action.execute({ serviceId: SVC }, ctx) as Record<string, unknown>;
   assertEquals(result.idleScaling, false);

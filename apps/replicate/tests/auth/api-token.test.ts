@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: signs as a bearer token, which the spec spells out", async () => {
+test("api-token: signs as a bearer token, which the spec spells out", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.replicate.com/v1/account",
@@ -14,23 +15,23 @@ Deno.test("api-token: signs as a bearer token, which the spec spells out", async
   assertEquals(auth.type, "bearer");
 });
 
-Deno.test("api-token: the token is a secret field with no default", () => {
+test("api-token: the token is a secret field with no default", () => {
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiToken"]);
   assertEquals(auth.fields!.find((f) => f.key === "apiToken")!.default, undefined);
 });
 
 /** A Replicate token is unscoped and spends money — worth saying. */
-Deno.test("api-token: the description says the token is unscoped", () => {
+test("api-token: the description says the token is unscoped", () => {
   assert(auth.description!.includes("no scoped tokens"), auth.description);
 });
 
-Deno.test("api-token: test probes the account endpoint", async () => {
+test("api-token: test probes the account endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { username: "ada" } }]);
   assertEquals(await auth.test!({ credential: { apiToken: "t" } } as never, ctx), { ok: true });
   assertEquals(calls[0].url, "https://api.replicate.com/v1/account");
 });
 
-Deno.test("api-token: a rejected token says so; another status reports itself", async () => {
+test("api-token: a rejected token says so; another status reports itself", async () => {
   const rejected = mockCtx([{ status: 401, body: { title: "Unauthenticated" } }]);
   assertEquals(await auth.test!({ credential: { apiToken: "t" } } as never, rejected.ctx), {
     ok: false,
@@ -43,7 +44,7 @@ Deno.test("api-token: a rejected token says so; another status reports itself", 
   });
 });
 
-Deno.test("api-token: a missing token fails before any network call", async () => {
+test("api-token: a missing token fails before any network call", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test!({ credential: {} } as never, ctx), {
     ok: false,
@@ -52,7 +53,7 @@ Deno.test("api-token: a missing token fails before any network call", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-token: afterConnect publishes the account, never the token", async () => {
+test("api-token: afterConnect publishes the account, never the token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { username: "ada", type: "user" } }]);
   const display = await auth.afterConnect!(
     { credential: { apiToken: "r8_supersecret" } } as never,
@@ -62,7 +63,7 @@ Deno.test("api-token: afterConnect publishes the account, never the token", asyn
   assert(!JSON.stringify(display).includes("supersecret"), "the credential leaked into display");
 });
 
-Deno.test("api-token: a failed lookup still connects", async () => {
+test("api-token: a failed lookup still connects", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: { apiToken: "t" } } as never, ctx), {});
 });

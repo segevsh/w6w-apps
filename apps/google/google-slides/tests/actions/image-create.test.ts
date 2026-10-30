@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/image-create.ts";
 
-Deno.test("image-create: bare call sends the URL and just the page id", async () => {
+test("image-create: bare call sends the URL and just the page id", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ createImage: { objectId: "i1" } }] } }]);
   await action.execute(
     { presentationId: "p1", pageObjectId: "g1", url: "https://cdn.example.com/a.png" },
@@ -20,7 +21,7 @@ Deno.test("image-create: bare call sends the URL and just the page id", async ()
   });
 });
 
-Deno.test("image-create: folds size and transform in the units requested", async () => {
+test("image-create: folds size and transform in the units requested", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     presentationId: "p1",
@@ -40,7 +41,7 @@ Deno.test("image-create: folds size and transform in the units requested", async
   });
 });
 
-Deno.test("image-create: a supplied objectId is passed through", async () => {
+test("image-create: a supplied objectId is passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { presentationId: "p1", pageObjectId: "g1", url: "https://x/a.png", objectId: "img1" },

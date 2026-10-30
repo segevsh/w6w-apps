@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemSubItemGet from "../../actions/job-item-sub-item-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-sub-item-get: reads GET /v2/job_item_sub_items/{id}", async () => {
+test("job-item-sub-item-get: reads GET /v2/job_item_sub_items/{id}", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { id: 6, description: "Prepare wireframes", completedDatetime: "2025-03-18T00:00:00Z" },

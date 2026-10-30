@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   errorText,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: seg, strList and buildQuery", () => {
+test("client: seg, strList and buildQuery", () => {
   assertEquals(seg("a/b c"), "a%2Fb%20c");
   assertEquals(strList(" a, b ,,c"), ["a", "b", "c"]);
   assertEquals(strList(["x", " y "]), ["x", "y"]);
@@ -18,7 +19,7 @@ Deno.test("client: seg, strList and buildQuery", () => {
   assertEquals(buildQuery({}), "");
 });
 
-Deno.test("client: vendorError needs ok:false and a string code", () => {
+test("client: vendorError needs ok:false and a string code", () => {
   assertEquals(vendorError({ ok: false, code: "UNAUTHORIZED" })?.code, "UNAUTHORIZED");
   assertEquals(vendorError({ ok: true, items: [] }), undefined);
   assertEquals(vendorError({ ok: false }), undefined);
@@ -26,7 +27,7 @@ Deno.test("client: vendorError needs ok:false and a string code", () => {
   assertEquals(errorText("nope", " raw text "), "raw text");
 });
 
-Deno.test("client: an ok:false envelope on a 200 still throws", async () => {
+test("client: an ok:false envelope on a 200 still throws", async () => {
   const { ctx } = mockCtx([{ body: { ok: false, code: "FORBIDDEN", message: "no" } }]);
   await assertRejects(
     async () => await new TaskadeClient(ctx).request("GET", "/workspaces"),
@@ -35,7 +36,7 @@ Deno.test("client: an ok:false envelope on a 200 still throws", async () => {
   );
 });
 
-Deno.test("client: 429 mentions the reset header and a bodyless 2xx is {}", async () => {
+test("client: 429 mentions the reset header and a bodyless 2xx is {}", async () => {
   const { ctx } = mockCtx([
     { status: 429, headers: { "x-rate-limit-reset": "12.5" }, body: "slow down" },
     { status: 204 },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSignCtx } from "../_helpers.ts";
 import action from "../../actions/request-recall.ts";
 
-Deno.test("request-recall: POST /requests/{id}/recall with no body", async () => {
+test("request-recall: POST /requests/{id}/recall with no body", async () => {
   const { ctx, calls } = mockSignCtx([
     { body: { code: 0, status: "success", message: "Document has been recalled", action_time: 1 } },
   ]);

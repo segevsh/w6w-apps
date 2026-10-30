@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import vendorUpdate from "../../actions/vendor-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("vendor-update: PUT /vendors/{id} sends only the supplied fields", async () => {
+test("vendor-update: PUT /vendors/{id} sends only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 5, status: "ARCHIVED" } }]);
   const out = await vendorUpdate.execute({ vendorId: 5, status: "ARCHIVED" }, ctx) as {
     status: string;
@@ -14,7 +15,7 @@ Deno.test("vendor-update: PUT /vendors/{id} sends only the supplied fields", asy
   assertEquals(out.status, "ARCHIVED");
 });
 
-Deno.test("vendor-update: the contact email goes out as `contactsEmail` (update spelling)", async () => {
+test("vendor-update: the contact email goes out as `contactsEmail` (update spelling)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 5 } }]);
   await vendorUpdate.execute({ vendorId: 5, contactsEmail: "sec@acme.io" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -23,11 +24,11 @@ Deno.test("vendor-update: the contact email goes out as `contactsEmail` (update 
   assertEquals("vendorId" in body, false, "the path id must not leak into the body");
 });
 
-Deno.test("vendor-update: is idempotent (a PUT of the same fields converges)", () => {
+test("vendor-update: is idempotent (a PUT of the same fields converges)", () => {
   assertEquals(vendorUpdate.idempotent, true);
 });
 
-Deno.test("vendor-update: a 404 surfaces Drata's message", async () => {
+test("vendor-update: a 404 surfaces Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Vendor not found", 3) }]);
   const err = await assertRejects(
     () => Promise.resolve().then(() => vendorUpdate.execute({ vendorId: 1 }, ctx)),

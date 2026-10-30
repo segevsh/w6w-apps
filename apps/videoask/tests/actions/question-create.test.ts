@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import questionCreate from "../../actions/question-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("question-create: builds the external-media body with wire field names", async () => {
+test("question-create: builds the external-media body with wire field names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { question_id: "q1" } }]);
   await questionCreate.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("question-create: builds the external-media body with wire field names
   });
 });
 
-Deno.test("question-create: accepts a comma-separated multiselect string too", async () => {
+test("question-create: accepts a comma-separated multiselect string too", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await questionCreate.execute(
     {

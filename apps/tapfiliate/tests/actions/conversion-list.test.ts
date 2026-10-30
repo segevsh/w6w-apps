@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionList from "../../actions/conversion-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversion-list: encodes pending/use_profile_timezone as the literal word, not 1/0", async () => {
+test("conversion-list: encodes pending/use_profile_timezone as the literal word, not 1/0", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await conversionList.execute({ pending: true, useProfileTimezone: false }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("conversion-list: encodes pending/use_profile_timezone as the literal 
   assertEquals(queryOf(calls[0].url).use_profile_timezone, "false");
 });
 
-Deno.test("conversion-list: full filter set maps to the documented snake_case names", async () => {
+test("conversion-list: full filter set maps to the documented snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await conversionList.execute(
     {

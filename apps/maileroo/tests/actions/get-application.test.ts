@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-application.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-application: maps the details and never returns the password or key", async () => {
+test("get-application: maps the details and never returns the password or key", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -27,7 +28,7 @@ Deno.test("get-application: maps the details and never returns the password or k
   assertEquals(JSON.stringify(out).includes("SECRET"), false);
 });
 
-Deno.test("get-application: requires an id; 404 throws", async () => {
+test("get-application: requires an id; 404 throws", async () => {
   await assertRejects(
     () => run(action, { applicationId: "" }, mockCtx().ctx),
     Error,

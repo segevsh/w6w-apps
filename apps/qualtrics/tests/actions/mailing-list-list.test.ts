@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailingListList from "../../actions/mailing-list-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("mailing-list-list: calls GET /mailinglists", async () => {
+test("mailing-list-list: calls GET /mailinglists", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ mailingListId: "CG_1" }]) }]);
   const out = await mailingListList.execute({}, ctx) as { elements: unknown[] };
 
@@ -11,7 +12,7 @@ Deno.test("mailing-list-list: calls GET /mailinglists", async () => {
   assertEquals(out.elements, [{ mailingListId: "CG_1" }]);
 });
 
-Deno.test("mailing-list-list: follows nextPage", async () => {
+test("mailing-list-list: follows nextPage", async () => {
   const page2 = "https://iad1.qualtrics.com/API/v3/mailinglists?offset=10";
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ mailingListId: "CG_1" }], page2) },

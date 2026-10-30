@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api, { API_PROBE_URL } from "../../health/api.ts";
 import { mockCtx, UNAUTHORIZED_BODY } from "../_helpers.ts";
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const HTML_HEADERS = { "content-type": "text/html; charset=utf-8" };
 
-Deno.test("api: probes the app's own host unsigned, widening nothing", () => {
+test("api: probes the app's own host unsigned, widening nothing", () => {
   assertEquals(API_PROBE_URL, "https://secure.splitwise.com/api/v3.0/get_current_user");
   assertEquals(api.credential, "none");
   assertEquals(api.kind, "dependency");
@@ -20,7 +21,7 @@ Deno.test("api: probes the app's own host unsigned, widening nothing", () => {
  * proves DNS, TLS, the edge, the v3.0 router and the auth filter all worked.
  * Judging by the status code would report Splitwise permanently down.
  */
-Deno.test("api: the documented JSON 401 is a pass", async () => {
+test("api: the documented JSON 401 is a pass", async () => {
   const { ctx, calls } = mockCtx([{
     status: 401,
     body: UNAUTHORIZED_BODY,
@@ -34,7 +35,7 @@ Deno.test("api: the documented JSON 401 is a pass", async () => {
   assert(/documented JSON 401/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("api: a 401 that is not the documented body is degraded, not ok", async () => {
+test("api: a 401 that is not the documented body is degraded, not ok", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "<html>Sign in</html>", headers: HTML_HEADERS }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "degraded");
@@ -46,7 +47,7 @@ Deno.test("api: a 401 that is not the documented body is degraded, not ok", asyn
  * return the site's 3,085-byte HTML 404. If v3.0 ever answers that, the version
  * this app is written against is gone and every action is dead.
  */
-Deno.test("api: an HTML 404 means the version was withdrawn — down", async () => {
+test("api: an HTML 404 means the version was withdrawn — down", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: "<!DOCTYPE html><title>Splitwise :: 404 Error</title>",
@@ -63,7 +64,7 @@ Deno.test("api: an HTML 404 means the version was withdrawn — down", async () 
  * the HTML 404 is what tells you a rewrite happened rather than a route being
  * dropped.
  */
-Deno.test("api: a JSON 404 is reported as a routed-but-gone endpoint", async () => {
+test("api: a JSON 404 is reported as a routed-but-gone endpoint", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ status: "404", title: "Not Found" }] },
@@ -81,14 +82,14 @@ Deno.test("api: a JSON 404 is reported as a routed-but-gone endpoint", async () 
  * A 200 here means the whoami stopped requiring a credential — which is what
  * the auth probe depends on. That is an anomaly to surface, not health.
  */
-Deno.test("api: an unauthenticated 200 is degraded, and says why", async () => {
+test("api: an unauthenticated 200 is degraded, and says why", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { user: { id: 1 } }, headers: JSON_HEADERS }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "degraded");
   assert(/stopped requiring a credential/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("api: 5xx is down, 429 is degraded", async () => {
+test("api: 5xx is down, 429 is degraded", async () => {
   const down = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await api.check!({}, down.ctx)).state, "down");
 
@@ -98,7 +99,7 @@ Deno.test("api: 5xx is down, 429 is degraded", async () => {
   assert(/429/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("api: an unexpected status is unknown, never invented", async () => {
+test("api: an unexpected status is unknown, never invented", async () => {
   const { ctx } = mockCtx([{ status: 402, body: {} }]);
   assertEquals((await api.check!({}, ctx)).state, "unknown");
 });

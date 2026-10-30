@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import moneyTransactionCreate from "../../actions/money-transaction-create.ts";
 
-Deno.test("money-transaction-create: builds anchor + single-category line item", async () => {
+test("money-transaction-create: builds anchor + single-category line item", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -39,7 +40,7 @@ Deno.test("money-transaction-create: builds anchor + single-category line item",
   }]);
 });
 
-Deno.test("money-transaction-create: an explicit `lineItems` JSON array overrides the single-category fields", async () => {
+test("money-transaction-create: an explicit `lineItems` JSON array overrides the single-category fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -68,7 +69,7 @@ Deno.test("money-transaction-create: an explicit `lineItems` JSON array override
   assertEquals(body.variables.input.lineItems.length, 2);
 });
 
-Deno.test("money-transaction-create: an unbalanced total is rejected via inputErrors", async () => {
+test("money-transaction-create: an unbalanced total is rejected via inputErrors", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -107,7 +108,7 @@ Deno.test("money-transaction-create: an unbalanced total is rejected via inputEr
   if (!threw) throw new Error("expected a rejection");
 });
 
-Deno.test("money-transaction-create: type/resource/idempotency metadata", () => {
+test("money-transaction-create: type/resource/idempotency metadata", () => {
   assertEquals(moneyTransactionCreate.type, "perform");
   assertEquals(moneyTransactionCreate.resource, "transaction");
   assertEquals(moneyTransactionCreate.idempotent, false);

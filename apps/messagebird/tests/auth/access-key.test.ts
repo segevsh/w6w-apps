@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accessKey from "../../auth/access-key.ts";
 import { errorBody, mockCtx } from "../_helpers.ts";
 
 const KEY = "test_gshuPaZoeEG6ovbc8M79w0QyM";
 
-Deno.test("access-key: sign stamps `AccessKey {key}`, not Bearer or Basic", () => {
+test("access-key: sign stamps `AccessKey {key}`, not Bearer or Basic", () => {
   const request = {
     method: "GET",
     url: "https://rest.messagebird.com/messages",
@@ -16,7 +17,7 @@ Deno.test("access-key: sign stamps `AccessKey {key}`, not Bearer or Basic", () =
   assertEquals(signed.headers.authorization, `AccessKey ${KEY}`);
 });
 
-Deno.test("access-key: test probes GET /balance, signed", async () => {
+test("access-key: test probes GET /balance, signed", async () => {
   const { ctx, calls } = mockCtx([{ body: { payment: "prepaid", type: "euros", amount: 103 } }]);
   const result = await accessKey.test({ credential: { accessKey: KEY } }, ctx);
 
@@ -30,7 +31,7 @@ Deno.test("access-key: test probes GET /balance, signed", async () => {
  * key — the probe must never be swapped for an endpoint that echoes the
  * credential back (e.g. a key-listing endpoint).
  */
-Deno.test("access-key: the probe response never contains the credential", async () => {
+test("access-key: the probe response never contains the credential", async () => {
   const { ctx } = mockCtx([{ body: { payment: "prepaid", type: "euros", amount: 103 } }]);
   const result = await accessKey.test({ credential: { accessKey: KEY } }, ctx);
   assert(!JSON.stringify(result).includes(KEY));
@@ -41,7 +42,7 @@ Deno.test("access-key: the probe response never contains the credential", async 
  * can 5xx transiently — the classification must come from the BODY shape,
  * never the HTTP status alone.
  */
-Deno.test("access-key: classifies success from the balance object's shape, not the status", async () => {
+test("access-key: classifies success from the balance object's shape, not the status", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { payment: "prepaid", type: "euros", amount: 0 },
@@ -50,7 +51,7 @@ Deno.test("access-key: classifies success from the balance object's shape, not t
   assertEquals(result.ok, true);
 });
 
-Deno.test("access-key: a rejected key is classified from the errors body, not the status code", async () => {
+test("access-key: a rejected key is classified from the errors body, not the status code", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -63,7 +64,7 @@ Deno.test("access-key: a rejected key is classified from the errors body, not th
   assert(/incorrect access_key/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("access-key: an unparseable / unexpected body is reported, never treated as ok", async () => {
+test("access-key: an unparseable / unexpected body is reported, never treated as ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>not json</html>" }]);
   const result = await accessKey.test({ credential: { accessKey: KEY } }, ctx);
 
@@ -71,7 +72,7 @@ Deno.test("access-key: an unparseable / unexpected body is reported, never treat
   assert(/Unexpected response/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("access-key: the credential field is a secret", () => {
+test("access-key: the credential field is a secret", () => {
   assertEquals(accessKey.fields?.[0].key, "accessKey");
   assertEquals(accessKey.fields?.[0].type, "secret");
 });

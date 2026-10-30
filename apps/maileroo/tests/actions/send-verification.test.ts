@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/send-verification.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const created = {
   expires_at: "2025-01-01T12:15:00Z",
 };
 
-Deno.test("send-verification: POSTs the vendor body, forwards the invocation id as Idempotency-Key", async () => {
+test("send-verification: POSTs the vendor body, forwards the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: created } }], {
     invocation: { invocationId: "inv-42" },
   });
@@ -44,7 +45,7 @@ Deno.test("send-verification: POSTs the vendor body, forwards the invocation id 
   assertEquals("code" in out, false);
 });
 
-Deno.test("send-verification: no invocation means no idempotency header; a bad channel throws; 402 surfaces", async () => {
+test("send-verification: no invocation means no idempotency header; a bad channel throws; 402 surfaces", async () => {
   const { ctx, calls } = mockCtx([{
     status: 402,
     body: { error: { message: "Your OTP Verification balance is too low." } },

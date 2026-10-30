@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email.ts";
 
-Deno.test("send-email: POST /v2/email/outbound-emails and maps the response", async () => {
+test("send-email: POST /v2/email/outbound-emails and maps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -66,7 +67,7 @@ Deno.test("send-email: POST /v2/email/outbound-emails and maps the response", as
   });
 });
 
-Deno.test("send-email: uses the connection's region for the host", async () => {
+test("send-email: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -89,7 +90,7 @@ Deno.test("send-email: uses the connection's region for the host", async () => {
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("send-email: surfaces the vendor's error type and message", async () => {
+test("send-email: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

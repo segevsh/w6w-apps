@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentLinkUpdate from "../../actions/payment-link-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-link-update: patches archived state", async () => {
+test("payment-link-update: patches archived state", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "pl_1", archived: true } }]);
   await paymentLinkUpdate.execute({ paymentLinkId: "pl_1", archived: true }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("payment-link-update: patches archived state", async () => {
   assertEquals(JSON.parse(calls[0].body!), { archived: true });
 });
 
-Deno.test("payment-link-update: is idempotent", () => {
+test("payment-link-update: is idempotent", () => {
   assertEquals(paymentLinkUpdate.idempotent, true);
 });

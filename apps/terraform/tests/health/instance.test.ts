@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import instance from "../../health/instance.ts";
 
@@ -10,7 +11,7 @@ const pong = (appName = "HCP Terraform", apiVersion = "2.6") => ({
 const connected = { host: "https://app.terraform.io", appName: "HCP Terraform", apiVersion: "2.6" };
 
 /** A revoked token must not read as an outage. */
-Deno.test("instance: pings unauthenticated, so a bad credential is not an outage", async () => {
+test("instance: pings unauthenticated, so a bad credential is not an outage", async () => {
   const { ctx, calls } = mockCtx([pong()], { display: connected });
   const result = await instance.check!({}, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/ping");
@@ -21,7 +22,7 @@ Deno.test("instance: pings unauthenticated, so a bad credential is not an outage
 });
 
 /** This is the only check that speaks for a self-hosted instance. */
-Deno.test("instance: pings the connection's own host, not HashiCorp's", async () => {
+test("instance: pings the connection's own host, not HashiCorp's", async () => {
   const { ctx, calls } = mockCtx([pong("Terraform Enterprise", "2.5")], {
     display: { host: "https://tfe.example.com" },
   });
@@ -31,7 +32,7 @@ Deno.test("instance: pings the connection's own host, not HashiCorp's", async ()
   assert(/Terraform Enterprise/.test(result.message!), result.message);
 });
 
-Deno.test("instance: an unreachable host is down", async () => {
+test("instance: an unreachable host is down", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("connection refused")),
     log: () => {},
@@ -43,7 +44,7 @@ Deno.test("instance: an unreachable host is down", async () => {
 });
 
 /** It answers 204 unauthenticated when healthy, so anything else is the host. */
-Deno.test("instance: a 5xx is down and a 4xx is degraded, both blaming the instance", async () => {
+test("instance: a 5xx is down and a 4xx is degraded, both blaming the instance", async () => {
   const serverError = mockCtx([{ status: 502, body: "" }], { display: connected });
   const down = await instance.check!({}, serverError.ctx);
   assertEquals(down.state, "down");
@@ -54,7 +55,7 @@ Deno.test("instance: a 5xx is down and a 4xx is degraded, both blaming the insta
 });
 
 /** A repointed DNS entry, or a host that now serves something else. */
-Deno.test("instance: the product changing under the connection is degraded", async () => {
+test("instance: the product changing under the connection is degraded", async () => {
   const { ctx } = mockCtx([pong("Terraform Enterprise", "2.6")], { display: connected });
   const result = await instance.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -65,7 +66,7 @@ Deno.test("instance: the product changing under the connection is degraded", asy
  * An endpoint that starts 404ing after a Terraform Enterprise upgrade says
  * nothing about versions in its error.
  */
-Deno.test("instance: an API version drift is reported with both versions", async () => {
+test("instance: an API version drift is reported with both versions", async () => {
   const { ctx } = mockCtx([pong("HCP Terraform", "2.7")], { display: connected });
   const result = await instance.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -73,12 +74,12 @@ Deno.test("instance: an API version drift is reported with both versions", async
   assert(/says nothing about versions/.test(result.message!), result.message);
 });
 
-Deno.test("instance: a connection that recorded nothing still reports up", async () => {
+test("instance: a connection that recorded nothing still reports up", async () => {
   const { ctx } = mockCtx([pong()], { display: {} });
   assertEquals((await instance.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("instance: it is connection-scoped, unsigned and fatal", () => {
+test("instance: it is connection-scoped, unsigned and fatal", () => {
   assertEquals(instance.scope, "connection");
   assertEquals(instance.credential, "none");
   assertEquals(instance.severity, "fatal");

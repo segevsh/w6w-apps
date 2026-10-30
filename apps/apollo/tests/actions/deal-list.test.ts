@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealList from "../../actions/deal-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("deal-list: GETs /opportunities/search with plain query params", async () => {
+test("deal-list: GETs /opportunities/search with plain query params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { opportunities: [{ id: "d1" }], pagination: { total_entries: 1 } } },
   ]);

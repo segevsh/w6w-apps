@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-list.ts";
 
-Deno.test("template-list: lists with the default limit, no filters on the wire", async () => {
+test("template-list: lists with the default limit, no filters on the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: 1 }], pagination: {} } }]);
   assertEquals(await action.execute!({}, ctx), [{ id: 1 }]);
   const q = new URL(calls[0].url).searchParams;
@@ -11,7 +12,7 @@ Deno.test("template-list: lists with the default limit, no filters on the wire",
   assertEquals(q.get("q"), null);
 });
 
-Deno.test("template-list: filters reach the wire", async () => {
+test("template-list: filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], pagination: {} } }]);
   await action.execute!({
     q: "nda",
@@ -30,7 +31,7 @@ Deno.test("template-list: filters reach the wire", async () => {
   assertEquals(q.get("shared"), "true");
 });
 
-Deno.test("template-list: returnAll follows the pagination cursor", async () => {
+test("template-list: returnAll follows the pagination cursor", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: 1 }], pagination: { next: 1 } } },
     { status: 200, body: { data: [{ id: 2 }], pagination: { next: null } } },

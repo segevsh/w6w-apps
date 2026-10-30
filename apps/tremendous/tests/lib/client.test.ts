@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { compact, compactBody, formatTremendousError, TremendousClient } from "../../lib/client.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined/null/empty-string values, keeps others", () => {
+test("compact: drops undefined/null/empty-string values, keeps others", () => {
   assertEquals(compact({ a: "x", b: undefined, c: null, d: "", e: 0, f: false }), {
     a: "x",
     e: "0",
@@ -10,11 +11,11 @@ Deno.test("compact: drops undefined/null/empty-string values, keeps others", () 
   });
 });
 
-Deno.test("compactBody: drops unset keys without stringifying survivors", () => {
+test("compactBody: drops unset keys without stringifying survivors", () => {
   assertEquals(compactBody({ denomination: 10, currency_code: undefined }), { denomination: 10 });
 });
 
-Deno.test("formatTremendousError: reports message and flattened nested payload", () => {
+test("formatTremendousError: reports message and flattened nested payload", () => {
   const raw = JSON.stringify({
     errors: {
       message: "Order failed: validation failure",
@@ -29,12 +30,12 @@ Deno.test("formatTremendousError: reports message and flattened nested payload",
   );
 });
 
-Deno.test("formatTremendousError: falls back to the raw body when it isn't the documented shape", () => {
+test("formatTremendousError: falls back to the raw body when it isn't the documented shape", () => {
   const msg = formatTremendousError(500, "GET", "/orders/X", "internal server error");
   assertEquals(msg, "Tremendous 500 for GET /orders/X: internal server error");
 });
 
-Deno.test("TremendousClient.json: parses the body and throws on a non-2xx status", async () => {
+test("TremendousClient.json: parses the body and throws on a non-2xx status", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { ok: true } }]);
   const body = await new TremendousClient(ctx).json("/ping");
   assertEquals(body, { ok: true });
@@ -46,7 +47,7 @@ Deno.test("TremendousClient.json: parses the body and throws on a non-2xx status
   await assertRejects(() => new TremendousClient(errCtx).json("/orders"));
 });
 
-Deno.test("TremendousClient.request: reports the status code alongside the body", async () => {
+test("TremendousClient.request: reports the status code alongside the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { order: { id: "X" } } }]);
   const { status, body } = await new TremendousClient(ctx).request<{ order: { id: string } }>(
     "/orders",
@@ -59,7 +60,7 @@ Deno.test("TremendousClient.request: reports the status code alongside the body"
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("TremendousClient: builds the URL from API_BASE + API_PREFIX + path + query", async () => {
+test("TremendousClient: builds the URL from API_BASE + API_PREFIX + path + query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { orders: [], total_count: 0 } }]);
   await new TremendousClient(ctx).json("/orders", { query: { limit: 5 } });
   assertEquals(calls[0].url, "https://api.tremendous.com/api/v2/orders?limit=5");

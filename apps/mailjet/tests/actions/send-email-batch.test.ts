@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email-batch.ts";
 
 const OK = { body: { Messages: [{ Status: "success" }, { Status: "success" }] } };
 
-Deno.test("send-email-batch: passes the Messages array through verbatim", async () => {
+test("send-email-batch: passes the Messages array through verbatim", async () => {
   const { ctx, calls } = mockCtx([OK]);
   const messages = [
     { From: { Email: "a@x.com" }, To: [{ Email: "b@x.com" }], Subject: "1", TextPart: "one" },
@@ -15,7 +16,7 @@ Deno.test("send-email-batch: passes the Messages array through verbatim", async 
   assertEquals(JSON.parse(calls[0].body!).Messages, messages);
 });
 
-Deno.test("send-email-batch: does not reorder, filter or reshape the caller's array", async () => {
+test("send-email-batch: does not reorder, filter or reshape the caller's array", async () => {
   // Response order is the only way to attribute a partial failure, so the
   // request order has to be preserved exactly.
   const { ctx, calls } = mockCtx([OK]);
@@ -28,14 +29,14 @@ Deno.test("send-email-batch: does not reorder, filter or reshape the caller's ar
   assertEquals(sent.map((m: { Subject: string }) => m.Subject), ["z", "a"]);
 });
 
-Deno.test("send-email-batch: does not cap the batch — Mailjet enforces its own 50 limit", async () => {
+test("send-email-batch: does not cap the batch — Mailjet enforces its own 50 limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { Messages: [] } }]);
   const messages = Array.from({ length: 60 }, (_, i) => ({ Subject: `m${i}` }));
   await action.execute!({ messages }, ctx);
   assertEquals(JSON.parse(calls[0].body!).Messages.length, 60);
 });
 
-Deno.test("send-email-batch: sandbox mode rides on the envelope", async () => {
+test("send-email-batch: sandbox mode rides on the envelope", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await action.execute!({ messages: [{ Subject: "x" }], sandboxMode: true }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -43,7 +44,7 @@ Deno.test("send-email-batch: sandbox mode rides on the envelope", async () => {
   assert(!("SandboxMode" in body.Messages[0]));
 });
 
-Deno.test("send-email-batch: surfaces a mixed success/error response as-is", async () => {
+test("send-email-batch: surfaces a mixed success/error response as-is", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

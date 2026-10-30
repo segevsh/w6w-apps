@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import checklistItemUpdate from "../../actions/checklist-item-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("checklist-item-update: PUT /checklist_items/:id, status 5 = completed", async () => {
+test("checklist-item-update: PUT /checklist_items/:id, status 5 = completed", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 12, status: 5 } }]);
   const out = await checklistItemUpdate.execute({ id: 12, status: 5 }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/checklist_items/12");

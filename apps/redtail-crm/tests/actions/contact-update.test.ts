@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-update: PUTs /contacts/:id and returns the updated contact", async () => {
+test("contact-update: PUTs /contacts/:id and returns the updated contact", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact: { id: 1, full_name: "Margaret Smith" } } }]);
   const out = await contactUpdate.execute({ contactId: 1, lastName: "Smith" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("contact-update: PUTs /contacts/:id and returns the updated contact", 
   assertEquals(out.contact.full_name, "Margaret Smith");
 });
 
-Deno.test("contact-update: is idempotent", () => {
+test("contact-update: is idempotent", () => {
   assertEquals(contactUpdate.idempotent, true);
 });

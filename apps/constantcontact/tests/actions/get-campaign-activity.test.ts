@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-campaign-activity.ts";
 
-Deno.test("get-campaign-activity: GETs /v3/emails/activities/{id}", async () => {
+test("get-campaign-activity: GETs /v3/emails/activities/{id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { campaign_activity_id: "ca1", role: "primary_email", subject: "Hello" },
   }]);
@@ -12,13 +13,13 @@ Deno.test("get-campaign-activity: GETs /v3/emails/activities/{id}", async () => 
   assertEquals(out.role, "primary_email");
 });
 
-Deno.test("get-campaign-activity: omits `include` by default, keeping the heavy parts off", async () => {
+test("get-campaign-activity: omits `include` by default, keeping the heavy parts off", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ campaignActivityId: "ca1" }, ctx);
   assert(!new URL(calls[0].url).searchParams.has("include"));
 });
 
-Deno.test("get-campaign-activity: forwards a comma-separated include list", async () => {
+test("get-campaign-activity: forwards a comma-separated include list", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     campaignActivityId: "ca1",

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-text-send.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("message-text-send: POSTs /conversations/messages/text", async () => {
+test("message-text-send: POSTs /conversations/messages/text", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { message: { id: "1", text: "Hello world", status: "sent" } } }],
     conn,
@@ -25,6 +26,6 @@ Deno.test("message-text-send: POSTs /conversations/messages/text", async () => {
   assertEquals(out, { message: { id: "1", text: "Hello world", status: "sent" } });
 });
 
-Deno.test("message-text-send: is not idempotent", () => {
+test("message-text-send: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

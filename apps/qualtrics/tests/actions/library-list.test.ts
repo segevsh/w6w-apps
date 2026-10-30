@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import libraryList from "../../actions/library-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("library-list: calls GET /libraries", async () => {
+test("library-list: calls GET /libraries", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ libraryId: "GR_1" }]) }]);
   const out = await libraryList.execute({}, ctx) as { elements: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("library-list: calls GET /libraries", async () => {
   assertEquals(out.elements, [{ libraryId: "GR_1" }]);
 });
 
-Deno.test("library-list: an empty list is a valid answer, not an error", async () => {
+test("library-list: an empty list is a valid answer, not an error", async () => {
   const { ctx } = mockCtx([{ body: listEnvelope([]) }]);
   const out = await libraryList.execute({}, ctx) as { elements: unknown[]; count: number };
 

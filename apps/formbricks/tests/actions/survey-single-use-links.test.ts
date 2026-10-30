@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/survey-single-use-links.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("survey-single-use-links: full input maps to the documented request", async () => {
+test("survey-single-use-links: full input maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": [{ "id": "x1" }] } }]);
   const out = await action.execute!({ "surveyId": "id_surveyId", "limit": 2 }, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("survey-single-use-links: full input maps to the documented request", 
   assertEquals(out, { "data": [{ "id": "x1" }] });
 });
 
-Deno.test("survey-single-use-links: required input only maps to the documented request", async () => {
+test("survey-single-use-links: required input only maps to the documented request", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": [{ "id": "x1" }] } }]);
   const out = await action.execute!({ "surveyId": "id_surveyId" }, ctx);
   const url = new URL(calls[0].url);
@@ -30,14 +31,14 @@ Deno.test("survey-single-use-links: required input only maps to the documented r
   assertEquals(out, { "data": [{ "id": "x1" }] });
 });
 
-Deno.test("survey-single-use-links: sends x-api-key never itself and no authorization header", async () => {
+test("survey-single-use-links: sends x-api-key never itself and no authorization header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "data": [{ "id": "x1" }] } }]);
   await action.execute!({ "surveyId": "id_surveyId" }, ctx);
   assert(!("x-api-key" in calls[0].headers), "the sign hook injects credentials, not actions");
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("survey-single-use-links: surfaces a Formbricks error body as a thrown error", async () => {
+test("survey-single-use-links: surfaces a Formbricks error body as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

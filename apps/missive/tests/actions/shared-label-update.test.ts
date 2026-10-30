@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/shared-label-update.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("shared-label-update: patches by id", async () => {
+test("shared-label-update: patches by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { shared_labels: [{ id: "l1", name: "Updated" }] } }]);
   const out = await action.execute({ id: "l1", name: "Updated", color: "#f96885" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/shared_labels/l1");
@@ -10,7 +11,7 @@ Deno.test("shared-label-update: patches by id", async () => {
   assertEquals(out, { id: "l1", name: "Updated" });
 });
 
-Deno.test("shared-label-update: requires id", async () => {
+test("shared-label-update: requires id", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ id: "" }, ctx));
 });

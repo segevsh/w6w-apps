@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import eventCreate from "../../actions/event-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const base = {
   timeZone: "America/New_York",
 };
 
-Deno.test("event-create: POST /v1/links/{id}/events with snake_case body", async () => {
+test("event-create: POST /v1/links/{id}/events with snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "event_9" } }]);
   const out = await eventCreate.execute({
     ...base,
@@ -35,7 +36,7 @@ Deno.test("event-create: POST /v1/links/{id}/events with snake_case body", async
   assertEquals(out.id, "event_9");
 });
 
-Deno.test("event-create: optional fields are omitted", async () => {
+test("event-create: optional fields are omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await eventCreate.execute(base, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), [
@@ -47,7 +48,7 @@ Deno.test("event-create: optional fields are omitted", async () => {
   ]);
 });
 
-Deno.test("event-create: bad fields JSON fails before any request", async () => {
+test("event-create: bad fields JSON fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await eventCreate.execute({ ...base, fields: "{nope" }, ctx),
@@ -57,7 +58,7 @@ Deno.test("event-create: bad fields JSON fails before any request", async () => 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-create: a 422 surfaces the vendor's error text", async () => {
+test("event-create: a 422 surfaces the vendor's error text", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: { start_at: ["not available"] } } }]);
   await assertRejects(async () => await eventCreate.execute(base, ctx), Error, "422");
 });

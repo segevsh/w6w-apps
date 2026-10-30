@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import allocationCreate from "../../actions/allocation-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("allocation-create - POSTs /tasks with the typed fields", async () => {
+test("allocation-create - POSTs /tasks with the typed fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { task_id: 1, project_id: 1345 } }]);
   const out = await allocationCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("allocation-create - POSTs /tasks with the typed fields", async () => 
   assertEquals(out, { task_id: 1, project_id: 1345 });
 });
 
-Deno.test("allocation-create - extraFields can assign several people via people_ids", async () => {
+test("allocation-create - extraFields can assign several people via people_ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await allocationCreate.execute(
     {

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldUpdate from "../../actions/custom-field-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * `209`, not `200`, and `res.ok` (used internally by AweberClient) is `true`
  * for any 2xx status — so this must transparently succeed.
  */
-Deno.test("custom-field-update: succeeds on the non-standard 209 status and returns the body", async () => {
+test("custom-field-update: succeeds on the non-standard 209 status and returns the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 209, body: { id: "3", name: "Favourite colour" } }]);
   const out = await customFieldUpdate.execute(
     { accountId: "1", listId: "2", customFieldId: "3", name: "Favourite colour" },
@@ -19,7 +20,7 @@ Deno.test("custom-field-update: succeeds on the non-standard 209 status and retu
   assertEquals(out.name, "Favourite colour");
 });
 
-Deno.test("custom-field-update: only sends the fields that were given", async () => {
+test("custom-field-update: only sends the fields that were given", async () => {
   const { ctx, calls } = mockCtx([{ status: 209, body: { id: "3" } }]);
   await customFieldUpdate.execute(
     { accountId: "1", listId: "2", customFieldId: "3", isSubscriberUpdateable: true },

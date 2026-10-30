@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sms-history-list.ts";
 
-Deno.test("sms-history-list: unwraps the double-nested page envelope", async () => {
+test("sms-history-list: unwraps the double-nested page envelope", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -35,7 +36,7 @@ Deno.test("sms-history-list: unwraps the double-nested page envelope", async () 
   assertEquals(calls[0].url, "https://rest.clicksend.com/v3/sms/history");
 });
 
-Deno.test("sms-history-list: forwards date filters and pagination as query params", async () => {
+test("sms-history-list: forwards date filters and pagination as query params", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

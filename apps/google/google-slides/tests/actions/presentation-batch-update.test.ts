@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/presentation-batch-update.ts";
 
-Deno.test("presentation-batch-update: POSTs the raw requests array verbatim", async () => {
+test("presentation-batch-update: POSTs the raw requests array verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { presentationId: "p1", replies: [{}, {}] } }]);
   const requests = [
     { createSlide: { insertionIndex: 0 } },
@@ -16,7 +17,7 @@ Deno.test("presentation-batch-update: POSTs the raw requests array verbatim", as
   assertEquals(JSON.parse(calls[0].body!), { requests });
 });
 
-Deno.test("presentation-batch-update: attaches Slides' single writeControl arm", async () => {
+test("presentation-batch-update: attaches Slides' single writeControl arm", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     presentationId: "p1",
@@ -26,7 +27,7 @@ Deno.test("presentation-batch-update: attaches Slides' single writeControl arm",
   assertEquals(JSON.parse(calls[0].body!).writeControl, { requiredRevisionId: "rev-7" });
 });
 
-Deno.test("presentation-batch-update: rejects an empty request array without calling the API", () => {
+test("presentation-batch-update: rejects an empty request array without calling the API", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ presentationId: "p1", requests: [] }, ctx),

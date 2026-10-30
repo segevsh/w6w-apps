@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-token.ts";
 
-Deno.test("api-token: is a bearer method exposing an `apiToken` secret field", () => {
+test("api-token: is a bearer method exposing an `apiToken` secret field", () => {
   assertEquals(auth.key, "api-token");
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiToken");
@@ -11,7 +12,7 @@ Deno.test("api-token: is a bearer method exposing an `apiToken` secret field", (
   assertEquals(field.required, true);
 });
 
-Deno.test("api-token: sign appends Bearer using credential.apiToken", async () => {
+test("api-token: sign appends Bearer using credential.apiToken", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("api-token: sign appends Bearer using credential.apiToken", async () =
   assertEquals(out.headers["authorization"], "Bearer wf-abc");
 });
 
-Deno.test("api-token: test hits /v2/sites and reports ok", async () => {
+test("api-token: test hits /v2/sites and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { sites: [] } }]);
   const result = await auth.test({ credential: { apiToken: "wf-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -32,7 +33,7 @@ Deno.test("api-token: test hits /v2/sites and reports ok", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer wf-abc");
 });
 
-Deno.test("api-token: test reports failure with status code when API rejects", async () => {
+test("api-token: test reports failure with status code when API rejects", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Unauthorized" } }]);
   const result = await auth.test({ credential: { apiToken: "bad" } }, ctx);
   assertEquals(result.ok, false);

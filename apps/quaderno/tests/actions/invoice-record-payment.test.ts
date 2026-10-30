@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuadernoCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-record-payment.ts";
 
-Deno.test("invoice-record-payment: calls the documented endpoint", async () => {
+test("invoice-record-payment: calls the documented endpoint", async () => {
   const { ctx, calls } = mockQuadernoCtx([{ status: 201, body: { id: 77, amount: 12.5 } }]);
   const out = await action.execute({ id: 40, amount: 12.5, paymentMethod: "cash" }, ctx);
   assertEquals(calls.length, 1);

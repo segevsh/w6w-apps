@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 
-Deno.test("contact-update: sends every documented field in its documented place", async () => {
+test("contact-update: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -35,7 +36,7 @@ Deno.test("contact-update: sends every documented field in its documented place"
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-update: a minimal call sends only what was set", async () => {
+test("contact-update: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -49,7 +50,7 @@ Deno.test("contact-update: a minimal call sends only what was set", async () => 
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-update: declares its params and kind", () => {
+test("contact-update: declares its params and kind", () => {
   assertEquals((contactUpdate.params ?? []).map((p) => p.key), [
     "identifier",
     "name",
@@ -66,7 +67,7 @@ Deno.test("contact-update: declares its params and kind", () => {
   assertEquals(contactUpdate.idempotent, true);
 });
 
-Deno.test("contact-update: a malformed JSON param fails before any request", async () => {
+test("contact-update: a malformed JSON param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

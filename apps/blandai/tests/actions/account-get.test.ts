@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-get: fetches /v1/me and maps billing fields", async () => {
+test("account-get: fetches /v1/me and maps billing fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -19,7 +20,7 @@ Deno.test("account-get: fetches /v1/me and maps billing fields", async () => {
   assertEquals(out.totalCalls, 9903);
 });
 
-Deno.test("account-get: reports refillTo when set", async () => {
+test("account-get: reports refillTo when set", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { status: "active", billing: { current_balance: 10, refill_to: 100 }, total_calls: 1 },

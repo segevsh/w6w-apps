@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceGet from "../../actions/invoice-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-get: reads GET /v2/invoices/{id} in the invoice currency", async () => {
+test("invoice-get: reads GET /v2/invoices/{id} in the invoice currency", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: 3456, currencyCode: "GBP", invoiceCurrencyBalance: 1200 } },
   ]);

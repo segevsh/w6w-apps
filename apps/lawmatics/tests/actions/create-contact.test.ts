@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import createContact from "../../actions/create-contact.ts";
 import { item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-contact: POSTs /v1/contacts with a JSON body", async () => {
+test("create-contact: POSTs /v1/contacts with a JSON body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: item("200", "contact", { first_name: "Bob", email: "bob@example.com" }),
@@ -19,12 +20,12 @@ Deno.test("create-contact: POSTs /v1/contacts with a JSON body", async () => {
   assertEquals(out.id, "200");
 });
 
-Deno.test("create-contact: never sets an Authorization header itself", async () => {
+test("create-contact: never sets an Authorization header itself", async () => {
   const { ctx, calls } = mockCtx([{ body: item("1", "contact", {}) }]);
   await createContact.execute({ firstName: "Bob" }, ctx);
   assert(!("authorization" in calls[0].headers), "action set its own auth header");
 });
 
-Deno.test("create-contact: is marked non-idempotent", () => {
+test("create-contact: is marked non-idempotent", () => {
   assertEquals(createContact.idempotent, false);
 });

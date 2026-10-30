@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/candidate-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("candidate-create: POSTs multipart/form-data with the vendor's field names", async () => {
+test("candidate-create: POSTs multipart/form-data with the vendor's field names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { first_name: "Ada" } }]);
   const out = await action.execute({
     firstName: "Ada",
@@ -26,12 +27,12 @@ Deno.test("candidate-create: POSTs multipart/form-data with the vendor's field n
   assertEquals(calls[0].headers.authorization, undefined, "credentials belong to sign only");
 });
 
-Deno.test("candidate-create: refuses an empty form without calling the API", async () => {
+test("candidate-create: refuses an empty form without calling the API", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await (action.execute({}, ctx)), Error, "at least one");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("candidate-create: is declared non-idempotent", () => {
+test("candidate-create: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

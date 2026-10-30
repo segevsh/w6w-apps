@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import featureGet from "../../actions/feature-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("feature-get: returns the input schema, output schema and models", async () => {
+test("feature-get: returns the input schema, output schema and models", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       mode: "sync",

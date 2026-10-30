@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import estimateGet from "../../actions/estimate-get.ts";
 
-Deno.test("estimate-get: returns the estimate by id", async () => {
+test("estimate-get: returns the estimate by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { business: { estimate: { id: "e1", estimateNumber: "EST-001" } } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("estimate-get: returns the estimate by id", async () => {
   assertEquals(body.variables.estimateId, "e1");
 });
 
-Deno.test("estimate-get: type/resource metadata", () => {
+test("estimate-get: type/resource metadata", () => {
   assertEquals(estimateGet.type, "read");
   assertEquals(estimateGet.resource, "estimate");
 });

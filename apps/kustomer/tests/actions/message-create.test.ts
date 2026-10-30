@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockKustomerCtx } from "../_helpers.ts";
 import action from "../../actions/message-create.ts";
 
-Deno.test("message-create: POSTs /conversations/{id}/messages with channel and app", async () => {
+test("message-create: POSTs /conversations/{id}/messages with channel and app", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: { id: "m1" } } }]);
   const out = await action.execute(
     { conversationId: "c1", channel: "email", app: "postmark" },
@@ -14,7 +15,7 @@ Deno.test("message-create: POSTs /conversations/{id}/messages with channel and a
   assertEquals(out, { id: "m1" });
 });
 
-Deno.test("message-create: includes direction, preview and subject when set", async () => {
+test("message-create: includes direction, preview and subject when set", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: {} } }]);
   await action.execute(
     {

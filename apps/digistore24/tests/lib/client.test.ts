@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_BASE,
   asOptionalJson,
@@ -11,11 +12,11 @@ import {
 } from "../../lib/client.ts";
 import { envelope, errorEnvelope, fieldsOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("client: base is the documented api/call prefix on www.digistore24.com", () => {
+test("client: base is the documented api/call prefix on www.digistore24.com", () => {
   assertEquals(API_BASE, "https://www.digistore24.com/api/call");
 });
 
-Deno.test("flatten: nested objects and arrays use PHP bracket notation", () => {
+test("flatten: nested objects and arrays use PHP bracket notation", () => {
   assertEquals(
     flatten({
       search: { email: "a@b.c", has_affiliate: true },
@@ -37,7 +38,7 @@ Deno.test("flatten: nested objects and arrays use PHP bracket notation", () => {
   );
 });
 
-Deno.test("compact: drops unset values but keeps false and 0", () => {
+test("compact: drops unset values but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -45,7 +46,7 @@ Deno.test("compact: drops unset values but keeps false and 0", () => {
   });
 });
 
-Deno.test("csv and asOptionalJson normalise user input", () => {
+test("csv and asOptionalJson normalise user input", () => {
   assertEquals(csv(["a", " b ", ""]), "a,b");
   assertEquals(csv("1, 2"), "1,2");
   assertEquals(csv(""), undefined);
@@ -60,7 +61,7 @@ Deno.test("csv and asOptionalJson normalise user input", () => {
   }
 });
 
-Deno.test("parseEnvelope: error with HTTP 200 throws Ds24Error carrying the code", () => {
+test("parseEnvelope: error with HTTP 200 throws Ds24Error carrying the code", () => {
   try {
     parseEnvelope(200, JSON.stringify(errorEnvelope("The API key is invalid.", 2)), "ping");
     assert(false, "should throw");
@@ -71,7 +72,7 @@ Deno.test("parseEnvelope: error with HTTP 200 throws Ds24Error carrying the code
   }
 });
 
-Deno.test("parseEnvelope: markup and missing result are errors, never data", () => {
+test("parseEnvelope: markup and missing result are errors, never data", () => {
   for (const raw of ["<html>nope</html>", "{}", ""]) {
     try {
       parseEnvelope(200, raw, "ping");
@@ -82,7 +83,7 @@ Deno.test("parseEnvelope: markup and missing result are errors, never data", () 
   }
 });
 
-Deno.test("call: GET puts arguments in the query, sends no body", async () => {
+test("call: GET puts arguments in the query, sends no body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ a: 1 }) }]);
   const out = await new Ds24Client(ctx).call("listBuyers", { page_no: 2 });
   assertEquals(out, { a: 1 });
@@ -92,7 +93,7 @@ Deno.test("call: GET puts arguments in the query, sends no body", async () => {
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("call: write POSTs a form body and leaves the URL bare", async () => {
+test("call: write POSTs a form body and leaves the URL bare", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await new Ds24Client(ctx).call("stopRebilling", { purchase_id: "P1" }, { write: true });
   assertEquals(calls[0].method, "POST");
@@ -100,14 +101,14 @@ Deno.test("call: write POSTs a form body and leaves the URL bare", async () => {
   assertEquals(calls[0].body, "purchase_id=P1");
 });
 
-Deno.test("call: an array payload is wrapped as items, an empty one as {}", async () => {
+test("call: an array payload is wrapped as items, an empty one as {}", async () => {
   const { ctx } = mockCtx([{ body: envelope([{ id: 1 }]) }, { body: envelope(null) }]);
   const c = new Ds24Client(ctx);
   assertEquals(await c.call("listProducts"), { items: [{ id: 1 }] });
   assertEquals(await c.call("ipnDelete"), {});
 });
 
-Deno.test("call: rejects on the error envelope", async () => {
+test("call: rejects on the error envelope", async () => {
   const { ctx } = mockCtx([{ body: errorEnvelope("No API key given.", 2) }]);
   await assertRejects(() => new Ds24Client(ctx).call("ping"), Ds24Error, "No API key given.");
 });

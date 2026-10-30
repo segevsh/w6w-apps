@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("api-key: declares HTTP Basic, matching Flodesk's `http`/`basic` scheme", () => {
+test("api-key: declares HTTP Basic, matching Flodesk's `http`/`basic` scheme", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "basic");
   // `apiKey` config would imply a verbatim-value header; Flodesk base64-encodes.
   assertEquals(auth.apiKey, undefined);
 });
 
-Deno.test("api-key: collects exactly one secret field — the password half is fixed empty", () => {
+test("api-key: collects exactly one secret field — the password half is fixed empty", () => {
   assertEquals(auth.fields?.length, 1);
   const field = auth.fields?.find((f) => f.key === "apiKey");
   assert(field, "no apiKey field");
@@ -17,7 +18,7 @@ Deno.test("api-key: collects exactly one secret field — the password half is f
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign builds Basic base64(`key:`) — with the trailing colon", () => {
+test("api-key: sign builds Basic base64(`key:`) — with the trailing colon", () => {
   const request = {
     url: "https://api.flodesk.com/v1/segments",
     headers: {} as Record<string, string>,
@@ -34,7 +35,7 @@ Deno.test("api-key: sign builds Basic base64(`key:`) — with the trailing colon
   assert(decoded.endsWith(":"), "the empty password separator is load-bearing");
 });
 
-Deno.test("api-key: sign never leaks the key into the URL", () => {
+test("api-key: sign never leaks the key into the URL", () => {
   const request = {
     url: "https://api.flodesk.com/v1/segments",
     headers: {} as Record<string, string>,
@@ -46,7 +47,7 @@ Deno.test("api-key: sign never leaks the key into the URL", () => {
   assert(!out.url.includes("fd_key_123"), "credential leaked into the URL");
 });
 
-Deno.test("api-key: test probes GET /v1/segments/colors and reports ok", async () => {
+test("api-key: test probes GET /v1/segments/colors and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ["#B7D4C7", "#E5D4C0"] }]);
   const out = await auth.test!({ credential: { apiKey: "fd_key_123" } } as never, ctx);
 
@@ -57,7 +58,7 @@ Deno.test("api-key: test probes GET /v1/segments/colors and reports ok", async (
   assertEquals(out.ok, true);
 });
 
-Deno.test("api-key: test reports the status and body on a rejected key", async () => {
+test("api-key: test reports the status and body on a rejected key", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", message: "Unauthorized access is denied!" },
@@ -68,14 +69,14 @@ Deno.test("api-key: test reports the status and body on a rejected key", async (
   assert(out.message?.includes("unauthorized"));
 });
 
-Deno.test("api-key: test fails fast when the credential has no key", async () => {
+test("api-key: test fails fast when the credential has no key", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await auth.test!({ credential: {} } as never, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0, "should not have called the network");
 });
 
-Deno.test("api-key: declares no afterConnect — Flodesk has no whoami under /v1", () => {
+test("api-key: declares no afterConnect — Flodesk has no whoami under /v1", () => {
   assertEquals(auth.afterConnect, undefined);
   assertEquals(auth.connectionLabel, undefined);
 });

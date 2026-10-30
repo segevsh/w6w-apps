@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeOffCreate from "../../actions/time-off-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-off-create: POST /resource-planner/assignments with the documented query and body", async () => {
+test("time-off-create: POST /resource-planner/assignments with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timeOffCreate.execute({
     "startDate": "2019-01-21",
@@ -35,7 +36,7 @@ Deno.test("time-off-create: POST /resource-planner/assignments with the document
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("time-off-create: an Everhour error surfaces its message and status", async () => {
+test("time-off-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -55,7 +56,7 @@ Deno.test("time-off-create: an Everhour error surfaces its message and status", 
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("time-off-create: declares perform and idempotent=false", () => {
+test("time-off-create: declares perform and idempotent=false", () => {
   assertEquals(timeOffCreate.type, "perform");
   assertEquals(timeOffCreate.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listMessages from "../../actions/list-messages.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => listMessages.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("list-messages: declares a read action with a description, params and output", () => {
+test("list-messages: declares a read action with a description, params and output", () => {
   assertEquals(listMessages.key, "list-messages");
   assertEquals(listMessages.type, "read");
   assert((listMessages.description ?? "").length > 0);
@@ -21,7 +22,7 @@ Deno.test("list-messages: declares a read action with a description, params and 
   assertEquals(listMessages.idempotent, undefined);
 });
 
-Deno.test("list-messages: sends the documented request and returns the documented shape", async () => {
+test("list-messages: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "startKey": "M4Vk",
@@ -69,7 +70,7 @@ Deno.test("list-messages: sends the documented request and returns the documente
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-messages: a SOLAPI error body is thrown with its code and message", async () => {
+test("list-messages: a SOLAPI error body is thrown with its code and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("Unauthorized", "no permission") }]);
   await assertRejects(() => run(ctx), Error, "SOLAPI 401: Unauthorized: no permission");
 });

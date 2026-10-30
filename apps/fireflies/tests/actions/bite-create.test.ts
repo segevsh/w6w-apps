@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/bite-create.ts";
 
 const OK = { data: { createBite: { id: "b1", status: "processing" } } };
 
-Deno.test("bite-create: clip boundaries stay Float variables, not integer literals", async () => {
+test("bite-create: clip boundaries stay Float variables, not integer literals", async () => {
   // Unlike pagination, a clip boundary is legitimately fractional — forcing
   // these through the integer-literal path would silently reject 12.5s.
   const { ctx, calls } = mockCtx([{ body: OK }]);
@@ -15,13 +16,13 @@ Deno.test("bite-create: clip boundaries stay Float variables, not integer litera
   assertEquals(variables, { transcriptId: "t1", startTime: 12.5, endTime: 30 });
 });
 
-Deno.test("bite-create: a start time of 0 is kept, not compacted away", async () => {
+test("bite-create: a start time of 0 is kept, not compacted away", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ transcriptId: "t1", startTime: 0, endTime: 5 }, ctx);
   assertEquals(sent(calls[0]).variables.startTime, 0);
 });
 
-Deno.test("bite-create: privacies is a comma-separated list", async () => {
+test("bite-create: privacies is a comma-separated list", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute(
     { transcriptId: "t1", startTime: 0, endTime: 5, privacies: "team, participants" },

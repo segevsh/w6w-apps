@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import organizationSearch from "../../actions/organization-search.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("organization-search: POSTs with filters as query params, including funding ranges", async () => {
+test("organization-search: POSTs with filters as query params, including funding ranges", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -26,13 +27,13 @@ Deno.test("organization-search: POSTs with filters as query params, including fu
   assertEquals(out.pagination.total_entries, 1);
 });
 
-Deno.test("organization-search: extraFilters merges into the query string", async () => {
+test("organization-search: extraFilters merges into the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { organizations: [] } }]);
   await organizationSearch.execute({ extraFilters: { q_organization_name: "Apollo" } }, ctx);
   assertEquals(queryOf(calls[0].url).q_organization_name, "Apollo");
 });
 
-Deno.test("organization-search: missing pagination in the response defaults to an empty object", async () => {
+test("organization-search: missing pagination in the response defaults to an empty object", async () => {
   const { ctx } = mockCtx([{ body: { organizations: [] } }]);
   const out = await organizationSearch.execute({}, ctx) as { pagination: unknown };
   assertEquals(out.pagination, {});

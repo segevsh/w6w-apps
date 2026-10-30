@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-events.ts";
 
-Deno.test("list-events: applies defaults (status=live, page_size=100, expand=venue,ticket_classes)", async () => {
+test("list-events: applies defaults (status=live, page_size=100, expand=venue,ticket_classes)", async () => {
   const body = { events: [], pagination: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!({ organizationId: "acct-1" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("list-events: applies defaults (status=live, page_size=100, expand=ven
   assertEquals(url.searchParams.get("expand"), "venue,ticket_classes");
 });
 
-Deno.test("list-events: forwards all optional filters when provided", async () => {
+test("list-events: forwards all optional filters when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
   await action.execute!(
     {
@@ -39,7 +40,7 @@ Deno.test("list-events: forwards all optional filters when provided", async () =
   assertEquals(params.get("expand"), "logo");
 });
 
-Deno.test("list-events: omits undefined optional filters", async () => {
+test("list-events: omits undefined optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
   await action.execute!({ organizationId: "acct-1" }, ctx);
   const params = new URL(calls[0].url).searchParams;
@@ -48,7 +49,7 @@ Deno.test("list-events: omits undefined optional filters", async () => {
   assert(!params.has("continuation"));
 });
 
-Deno.test("list-events: scopeId works like organizationId by default", async () => {
+test("list-events: scopeId works like organizationId by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
   await action.execute!({ scopeId: "acct-2", orderBy: "start_desc" }, ctx);
   const url = new URL(calls[0].url);
@@ -56,7 +57,7 @@ Deno.test("list-events: scopeId works like organizationId by default", async () 
   assertEquals(url.searchParams.get("order_by"), "start_desc");
 });
 
-Deno.test("list-events: venue scope", async () => {
+test("list-events: venue scope", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
   await action.execute!(
     { scope: "venue", scopeId: "v1", status: "live,draft", onlyPublic: true, nameFilter: "x" },
@@ -70,7 +71,7 @@ Deno.test("list-events: venue scope", async () => {
   assert(!url.searchParams.has("name_filter"));
 });
 
-Deno.test("list-events: series scope", async () => {
+test("list-events: series scope", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [], pagination: {} } }]);
   await action.execute!(
     {
@@ -91,7 +92,7 @@ Deno.test("list-events: series scope", async () => {
   assert(!url.searchParams.has("status"));
 });
 
-Deno.test("list-events: missing id throws", async () => {
+test("list-events: missing id throws", async () => {
   const { ctx } = mockCtx([]);
   let threw = false;
   try {

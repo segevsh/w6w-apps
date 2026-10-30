@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/unsubscribe-subscriber.ts";
 
-Deno.test("unsubscribe-subscriber: POSTs /subscribers/:idOrEmail/unsubscribe_all", async () => {
+test("unsubscribe-subscriber: POSTs /subscribers/:idOrEmail/unsubscribe_all", async () => {
   const { ctx, calls } = mockDripCtx([{
     body: { subscribers: [{ id: "abc", status: "unsubscribed" }] },
   }]);

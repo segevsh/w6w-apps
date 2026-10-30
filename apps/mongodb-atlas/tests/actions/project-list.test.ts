@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
@@ -14,7 +15,7 @@ const page = {
 };
 
 /** The console says project; every path says groups. */
-Deno.test("project-list: reads the groups endpoint", async () => {
+test("project-list: reads the groups endpoint", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/atlas/v2/groups");
@@ -23,7 +24,7 @@ Deno.test("project-list: reads the groups endpoint", async () => {
 });
 
 /** No project-scoped path accepts a name — this is how one becomes an id. */
-Deno.test("project-list: filters by name locally and returns the single id", async () => {
+test("project-list: filters by name locally and returns the single id", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ name: "PRODUCT" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
@@ -32,7 +33,7 @@ Deno.test("project-list: filters by name locally and returns the single id", asy
   assertEquals(new URL(calls[0].url).searchParams.get("name"), null);
 });
 
-Deno.test("project-list: an ambiguous or empty match leaves the single id unset", async () => {
+test("project-list: an ambiguous or empty match leaves the single id unset", async () => {
   const many = mockCtx([page]);
   const ambiguous = await action.execute({ name: "" }, many.ctx) as Record<string, unknown>;
   assertEquals(ambiguous.id, undefined, "two matches means no single answer");
@@ -43,14 +44,14 @@ Deno.test("project-list: an ambiguous or empty match leaves the single id unset"
   assertEquals(missing.id, undefined);
 });
 
-Deno.test("project-list: totalCount is the unfiltered total", async () => {
+test("project-list: totalCount is the unfiltered total", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({ name: "staging" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 1);
   assertEquals(result.totalCount, 2);
 });
 
-Deno.test("project-list: a project this account cannot reach is simply absent", async () => {
+test("project-list: a project this account cannot reach is simply absent", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { results: [], totalCount: 0 } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.ids, []);

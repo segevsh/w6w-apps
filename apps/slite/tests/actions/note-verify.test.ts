@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteVerify from "../../actions/note-verify.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-verify: PUT /v1/notes/n1/verify with the documented parameters", async () => {
+test("note-verify: PUT /v1/notes/n1/verify with the documented parameters", async () => {
   const response = { id: "n1", reviewState: "Verified" };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteVerify.execute({ noteId: "n1", until: "2027-01-01T00:00:00.000Z" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("note-verify: PUT /v1/notes/n1/verify with the documented parameters",
   assertEquals(out, response);
 });
 
-Deno.test("note-verify: a vendor error surfaces its own message and id", async () => {
+test("note-verify: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -27,7 +28,7 @@ Deno.test("note-verify: a vendor error surfaces its own message and id", async (
   );
 });
 
-Deno.test("note-verify: no expiry is sent as an explicit null, because `until` is required", async () => {
+test("note-verify: no expiry is sent as an explicit null, because `until` is required", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1" } }]);
   await noteVerify.execute({ noteId: "n1" }, ctx);
   assertEquals(calls[0].body, '{"until":null}');

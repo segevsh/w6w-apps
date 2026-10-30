@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import listStages from "../../actions/list-stages.ts";
 
-Deno.test("list-stages: GETs /stages with the documented sort options", async () => {
+test("list-stages: GETs /stages with the documented sort options", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "stages" }, stages: [{ id: 1, name: "Contact" }] },

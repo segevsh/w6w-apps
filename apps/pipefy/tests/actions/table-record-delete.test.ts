@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import tableRecordDelete from "../../actions/table-record-delete.ts";
 
-Deno.test("table-record-delete: deletes and returns success", async () => {
+test("table-record-delete: deletes and returns success", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { deleteTableRecord: { success: true } } } }]);
   const out = await tableRecordDelete.execute({ id: "1" }, ctx) as { success: boolean };
   assertEquals(out.success, true);
@@ -10,7 +11,7 @@ Deno.test("table-record-delete: deletes and returns success", async () => {
   assertEquals(q, "mutation { deleteTableRecord(input: { id: 1 }) { success } }");
 });
 
-Deno.test("table-record-delete: throws when success is false", async () => {
+test("table-record-delete: throws when success is false", async () => {
   const { ctx } = mockCtx([{ body: { data: { deleteTableRecord: { success: false } } } }]);
   let threw = false;
   try {
@@ -21,7 +22,7 @@ Deno.test("table-record-delete: throws when success is false", async () => {
   assert(threw);
 });
 
-Deno.test("table-record-delete: type/resource/idempotency metadata", () => {
+test("table-record-delete: type/resource/idempotency metadata", () => {
   assertEquals(tableRecordDelete.type, "perform");
   assertEquals(tableRecordDelete.resource, "table-record");
   assertEquals(tableRecordDelete.idempotent, true);

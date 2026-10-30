@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-email.ts";
 
-Deno.test("send-email: POSTs /email with From/To/Subject/TextBody", async () => {
+test("send-email: POSTs /email with From/To/Subject/TextBody", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { To: "bob@x.com", SubmittedAt: "now", MessageID: "abc", ErrorCode: 0, Message: "OK" },
@@ -22,7 +23,7 @@ Deno.test("send-email: POSTs /email with From/To/Subject/TextBody", async () => 
   assertEquals(body.HtmlBody, undefined);
 });
 
-Deno.test("send-email: throws when neither htmlBody nor textBody is provided", async () => {
+test("send-email: throws when neither htmlBody nor textBody is provided", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute({ from: "ada@x.com", to: "bob@x.com" }, ctx)),
@@ -31,7 +32,7 @@ Deno.test("send-email: throws when neither htmlBody nor textBody is provided", a
   );
 });
 
-Deno.test("send-email: forwards optional fields (tag, tracking, headers, attachments, metadata)", async () => {
+test("send-email: forwards optional fields (tag, tracking, headers, attachments, metadata)", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     {
@@ -58,7 +59,7 @@ Deno.test("send-email: forwards optional fields (tag, tracking, headers, attachm
   assertEquals(body.MessageStream, "broadcast");
 });
 
-Deno.test('send-email: omits an empty trackLinks selection rather than sending ""', async () => {
+test('send-email: omits an empty trackLinks selection rather than sending ""', async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute(
     { from: "ada@x.com", to: "bob@x.com", htmlBody: "<p>Hi</p>", trackLinks: "" },

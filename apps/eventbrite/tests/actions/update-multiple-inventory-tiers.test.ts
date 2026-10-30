@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-multiple-inventory-tiers.ts";
 
-Deno.test("update-multiple-inventory-tiers: posts inventory_tiers array to collection path", async () => {
+test("update-multiple-inventory-tiers: posts inventory_tiers array to collection path", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory_tiers: [] } }]);
   const result = await action.execute!({ eventId: "e1", tiers: [{ id: "t1", name: "X" }] }, ctx);
   const url = new URL(calls[0].url);

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-search.ts";
 
@@ -6,7 +7,7 @@ const D = { display: { host: "https://gerrit.example.com" } };
 const PREFIX = ")]}'\n";
 const accounts = (list: unknown[]) => ({ status: 200, body: PREFIX + JSON.stringify(list) });
 
-Deno.test("account-search: resolves people to ids Gerrit accepts", async () => {
+test("account-search: resolves people to ids Gerrit accepts", async () => {
   const { ctx, calls } = mockCtx([
     accounts([{ _account_id: 1000, name: "Ada", username: "ada", email: "ada@example.com" }]),
   ], D);
@@ -18,7 +19,7 @@ Deno.test("account-search: resolves people to ids Gerrit accepts", async () => {
 });
 
 /** An inactive account resolves and cannot be added as a reviewer. */
-Deno.test("account-search: excludes inactive accounts by default and counts them", async () => {
+test("account-search: excludes inactive accounts by default and counts them", async () => {
   const { ctx } = mockCtx([
     accounts([
       { _account_id: 1000, username: "ada" },
@@ -31,7 +32,7 @@ Deno.test("account-search: excludes inactive accounts by default and counts them
   assertEquals(result.exactMatch !== undefined, true);
 });
 
-Deno.test("account-search: includeInactive returns them", async () => {
+test("account-search: includeInactive returns them", async () => {
   const { ctx } = mockCtx([
     accounts([{ _account_id: 1001, username: "gone", inactive: true }]),
   ], D);
@@ -43,7 +44,7 @@ Deno.test("account-search: includeInactive returns them", async () => {
 });
 
 /** An empty result may be visibility policy rather than a missing person. */
-Deno.test("account-search: says an empty result is ambiguous", async () => {
+test("account-search: says an empty result is ambiguous", async () => {
   const { ctx, logs } = mockCtx([accounts([])], D);
   const result = await action.execute({ q: "nobody@example.com" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
@@ -53,7 +54,7 @@ Deno.test("account-search: says an empty result is ambiguous", async () => {
   );
 });
 
-Deno.test("account-search: asks for details and requires a query", async () => {
+test("account-search: asks for details and requires a query", async () => {
   const { ctx, calls } = mockCtx([accounts([])], D);
   await action.execute({ q: "ada" }, ctx);
   assert(new URL(calls[0].url).searchParams.getAll("o").includes("DETAILS"));

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import collaboratorList from "../../actions/collaborator-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collaborator-list: calls GET /api/templates/t1/collaborators with the documented body", async () => {
+test("collaborator-list: calls GET /api/templates/t1/collaborators with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ template_collaborator_id: "col1" }] } }]);
   const out = await collaboratorList.execute({ templateId: "t1" } as never, ctx) as Record<
     string,
@@ -18,7 +19,7 @@ Deno.test("collaborator-list: calls GET /api/templates/t1/collaborators with the
   assert((out.collaborators as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("collaborator-list: a vendor error surfaces its error_code and message", async () => {
+test("collaborator-list: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),

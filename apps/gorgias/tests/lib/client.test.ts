@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx, mockGorgiasCtx } from "../_helpers.ts";
 import {
   baseUrl,
@@ -9,19 +10,19 @@ import {
   unset,
 } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL from the connection's domain, not a param", async () => {
+test("client: builds the URL from the connection's domain, not a param", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { id: 1 } }], "acme");
   await new GorgiasClient(ctx).request("/tickets/1");
   assertEquals(calls[0].url, "https://acme.gorgias.com/api/tickets/1");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: fails loudly when the connection carries no domain", () => {
+test("client: fails loudly when the connection carries no domain", () => {
   const { ctx } = mockCtx();
   assertThrows(() => new GorgiasClient(ctx), Error, "no domain");
 });
 
-Deno.test("client: surfaces Gorgias's own error message, not just the status", async () => {
+test("client: surfaces Gorgias's own error message, not just the status", async () => {
   const { ctx } = mockGorgiasCtx([{
     status: 400,
     statusText: "Bad Request",
@@ -34,7 +35,7 @@ Deno.test("client: surfaces Gorgias's own error message, not just the status", a
   );
 });
 
-Deno.test("client: falls back to the raw body when the error isn't JSON", async () => {
+test("client: falls back to the raw body when the error isn't JSON", async () => {
   const { ctx } = mockGorgiasCtx([{ status: 500, body: "internal error" }]);
   await assertRejects(
     () => new GorgiasClient(ctx).request("/tickets/1"),
@@ -43,7 +44,7 @@ Deno.test("client: falls back to the raw body when the error isn't JSON", async 
   );
 });
 
-Deno.test("client: returns undefined for a 204", async () => {
+test("client: returns undefined for a 204", async () => {
   const { ctx } = mockGorgiasCtx([{ status: 204 }]);
   assertEquals(
     await new GorgiasClient(ctx).request("/tickets/1", { method: "DELETE" }),
@@ -51,7 +52,7 @@ Deno.test("client: returns undefined for a 204", async () => {
   );
 });
 
-Deno.test("domainFromConnection: reads the display data afterConnect records", () => {
+test("domainFromConnection: reads the display data afterConnect records", () => {
   assertEquals(
     domainFromConnection({ display: { domain: "acme" } } as never),
     "acme",
@@ -59,15 +60,15 @@ Deno.test("domainFromConnection: reads the display data afterConnect records", (
   assertThrows(() => domainFromConnection(undefined), Error, "no domain");
 });
 
-Deno.test("baseUrl: builds the per-account host", () => {
+test("baseUrl: builds the per-account host", () => {
   assertEquals(baseUrl("acme"), "https://acme.gorgias.com/api");
 });
 
-Deno.test("basicHeader: base64s email:apiKey", () => {
+test("basicHeader: base64s email:apiKey", () => {
   assertEquals(basicHeader("jo@acme.test", "tok"), `Basic ${btoa("jo@acme.test:tok")}`);
 });
 
-Deno.test("csv/unset behave as the other apps' helpers do", () => {
+test("csv/unset behave as the other apps' helpers do", () => {
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv(""), undefined);
   assertEquals(unset(""), undefined);

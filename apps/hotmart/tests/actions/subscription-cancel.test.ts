@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionCancel from "../../actions/subscription-cancel.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-cancel - POSTs the subscriber_code path with send_mail in the body", async () => {
+test("subscription-cancel - POSTs the subscriber_code path with send_mail in the body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: "INACTIVE", subscriber_code: "9W2LNSG2" },
@@ -14,17 +15,17 @@ Deno.test("subscription-cancel - POSTs the subscriber_code path with send_mail i
   assertEquals((out as { status: string }).status, "INACTIVE");
 });
 
-Deno.test("subscription-cancel - defaults send_mail to false when omitted", async () => {
+test("subscription-cancel - defaults send_mail to false when omitted", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "INACTIVE" } }]);
   await subscriptionCancel.execute({ subscriberCode: "X" }, ctx);
   assertEquals(calls[0].body, JSON.stringify({ send_mail: false }));
 });
 
-Deno.test("subscription-cancel - is declared non-idempotent", () => {
+test("subscription-cancel - is declared non-idempotent", () => {
   assertEquals(subscriptionCancel.idempotent, false);
 });
 
-Deno.test("subscription-cancel - surfaces it_can_not_cancel_subscription_status", async () => {
+test("subscription-cancel - surfaces it_can_not_cancel_subscription_status", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -7,7 +8,7 @@ const page = (components: Array<Record<string, unknown>>) => ({
   body: { components },
 });
 
-Deno.test("service: reads Ashby's own components and rolls them up", async () => {
+test("service: reads Ashby's own components and rolls them up", async () => {
   const { ctx, calls } = mockCtx([page([
     { name: "Ashby API", status: "operational" },
     { name: "Scheduling", status: "operational" },
@@ -23,7 +24,7 @@ Deno.test("service: reads Ashby's own components and rolls them up", async () =>
  * The status page lists Ashby's services and the vendors Ashby depends on in
  * the same array. Zoom having an incident is real and is not an Ashby outage.
  */
-Deno.test("service: a third-party outage is reported but does not make Ashby down", async () => {
+test("service: a third-party outage is reported but does not make Ashby down", async () => {
   const { ctx } = mockCtx([page([
     { name: "Ashby API", status: "operational" },
     { name: "Zoom", status: "major_outage" },
@@ -36,7 +37,7 @@ Deno.test("service: a third-party outage is reported but does not make Ashby dow
   assert(/Zoom/.test(result.message!), result.message);
 });
 
-Deno.test("service: an Ashby API outage is down", async () => {
+test("service: an Ashby API outage is down", async () => {
   const { ctx } = mockCtx([page([
     { name: "Ashby API", status: "major_outage" },
     { name: "Scheduling", status: "operational" },
@@ -46,13 +47,13 @@ Deno.test("service: an Ashby API outage is down", async () => {
   assert(/Ashby API/.test(result.message!), result.message);
 });
 
-Deno.test("service: degraded performance on an Ashby service is degraded", async () => {
+test("service: degraded performance on an Ashby service is degraded", async () => {
   const { ctx } = mockCtx([page([{ name: "Reports API", status: "degraded_performance" }])]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
 /** A status page that itself fails tells us nothing about Ashby. */
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -60,13 +61,13 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, shapeless.ctx)).state, "unknown");
 });
 
-Deno.test("service: a page naming only third parties cannot produce a verdict", async () => {
+test("service: a page naming only third parties cannot produce a verdict", async () => {
   const { ctx } = mockCtx([page([{ name: "Slack", status: "operational" }])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no longer names any Ashby service/.test(result.message!), result.message);
 });
 
-Deno.test("service: declares the status host, which is not the API host", () => {
+test("service: declares the status host, which is not the API host", () => {
   assertEquals(service.network!.allow, ["status.ashbyhq.com"]);
 });

@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignListsAndSegmentsGet from "../../actions/campaign-lists-and-segments-get.ts";
 import { API_PATH, mockCtx, pathOf } from "../_helpers.ts";
 
 /** An object with two arrays, not a flat list. */
-Deno.test("campaign-lists-and-segments-get: returns Lists and Segments separately", async () => {
+test("campaign-lists-and-segments-get: returns Lists and Segments separately", async () => {
   const body = {
     Lists: [{ ListID: "l1", Name: "List One" }],
     Segments: [{ ListID: "l1", SegmentID: "s1", Title: "Segment One" }],

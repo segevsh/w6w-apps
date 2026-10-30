@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const usage = (remaining: number, minuteRemaining = 50) => ({
   },
 });
 
-Deno.test("quota: healthy headroom reports every dimension", async () => {
+test("quota: healthy headroom reports every dimension", async () => {
   const { ctx, calls } = mockCtx([{ body: usage(900) }]);
   const r = await run(ctx);
   assertEquals(r.state, "ok");
@@ -21,14 +22,14 @@ Deno.test("quota: healthy headroom reports every dimension", async () => {
   assertEquals(calls[0].url, "https://api.lusha.com/v3/account/usage");
 });
 
-Deno.test("quota: under 10% left or exhausted degrades and names the dimension", async () => {
+test("quota: under 10% left or exhausted degrades and names the dimension", async () => {
   assertEquals((await run(mockCtx([{ body: usage(50) }]).ctx)).message, "credits low: 50/1000");
   const r = await run(mockCtx([{ body: usage(0) }]).ctx);
   assertEquals(r.state, "degraded");
   assertEquals(r.message, "credits exhausted");
 });
 
-Deno.test("quota: a refusal or an empty body is unknown, never ok", async () => {
+test("quota: a refusal or an empty body is unknown, never ok", async () => {
   assertEquals((await run(mockCtx([{ status: 401, body: {} }]).ctx)).state, "unknown");
   assertEquals((await run(mockCtx([{ body: {} }]).ctx)).state, "unknown");
   assertEquals((await run(mockCtx([{ body: { credits: {} } }]).ctx)).state, "unknown");

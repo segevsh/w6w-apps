@@ -1,11 +1,12 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import action from "../../actions/sales-invoice-create.ts";
 import { mockMoneybirdCtx, pathOf } from "../_helpers.ts";
 
 // deno-lint-ignore no-explicit-any
 const asInput = (v: unknown) => v as any;
 
-Deno.test("sales-invoice-create: POSTs /sales_invoices.json with details_attributes from lineItems", async () => {
+test("sales-invoice-create: POSTs /sales_invoices.json with details_attributes from lineItems", async () => {
   const { ctx, calls } = mockMoneybirdCtx([{ status: 201, body: { id: "i1", state: "draft" } }]);
   await action.execute({
     contactId: "c1",
@@ -23,7 +24,7 @@ Deno.test("sales-invoice-create: POSTs /sales_invoices.json with details_attribu
   });
 });
 
-Deno.test("sales-invoice-create: lineItems accepts a JSON string too", async () => {
+test("sales-invoice-create: lineItems accepts a JSON string too", async () => {
   const { ctx, calls } = mockMoneybirdCtx([{ status: 201, body: {} }]);
   await action.execute({
     contactId: "c1",
@@ -35,7 +36,7 @@ Deno.test("sales-invoice-create: lineItems accepts a JSON string too", async () 
   );
 });
 
-Deno.test("sales-invoice-create: rejects a non-array lineItems before making a request", () => {
+test("sales-invoice-create: rejects a non-array lineItems before making a request", () => {
   const { ctx, calls } = mockMoneybirdCtx();
   assertThrows(
     () => action.execute(asInput({ contactId: "c1", lineItems: { not: "an array" } }), ctx),
@@ -45,6 +46,6 @@ Deno.test("sales-invoice-create: rejects a non-array lineItems before making a r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("sales-invoice-create: is not idempotent", () => {
+test("sales-invoice-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

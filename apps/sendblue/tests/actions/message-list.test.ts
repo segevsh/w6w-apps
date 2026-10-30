@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageList from "../../actions/message-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-list: GETs /api/v2/messages with default limit/offset", async () => {
+test("message-list: GETs /api/v2/messages with default limit/offset", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], pagination: {} } }]);
   await messageList.execute({}, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("message-list: GETs /api/v2/messages with default limit/offset", async
   assertEquals(queryOf(calls[0].url), { limit: "50", offset: "0" });
 });
 
-Deno.test("message-list: forwards is_outbound/sendblue_number for inbound polling", async () => {
+test("message-list: forwards is_outbound/sendblue_number for inbound polling", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await messageList.execute({
     isOutbound: "false",

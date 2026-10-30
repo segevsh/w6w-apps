@@ -1,18 +1,19 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth, { authHeader, usagePath } from "../../auth/basic-auth.ts";
 
-Deno.test("authHeader: builds a standard HTTP Basic header from username:apiKey", () => {
+test("authHeader: builds a standard HTTP Basic header from username:apiKey", () => {
   const header = authHeader({ username: "Aladdin", apiKey: "open sesame" });
   assertEquals(header, "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
 });
 
-Deno.test("usagePath: builds the 1-indexed year/month/subaccount path", () => {
+test("usagePath: builds the 1-indexed year/month/subaccount path", () => {
   const path = usagePath(new Date(Date.UTC(2026, 7, 24))); // August is month index 7
   assertEquals(path, "/account/usage/2026/8/subaccount");
 });
 
-Deno.test("sign: stamps the Basic auth header and does not mutate other headers", async () => {
+test("sign: stamps the Basic auth header and does not mutate other headers", async () => {
   const request = {
     url: "https://rest.clicksend.com/v3/sms/send",
     headers: { accept: "application/json" },
@@ -26,7 +27,7 @@ Deno.test("sign: stamps the Basic auth header and does not mutate other headers"
   assertEquals(out.headers["accept"], "application/json");
 });
 
-Deno.test("test: reports ok on a live credential", async () => {
+test("test: reports ok on a live credential", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -47,14 +48,14 @@ Deno.test("test: reports ok on a live credential", async () => {
   assertEquals(calls[0].headers["authorization"], authHeader({ username: "user", apiKey: "key" }));
 });
 
-Deno.test("test: reports missing credential fields without a network call", async () => {
+test("test: reports missing credential fields without a network call", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!({ credential: { username: "", apiKey: "" } } as never, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("test: a 401 (missing, wrong, or inactive) says ClickSend cannot distinguish them", async () => {
+test("test: a 401 (missing, wrong, or inactive) says ClickSend cannot distinguish them", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -74,7 +75,7 @@ Deno.test("test: a 401 (missing, wrong, or inactive) says ClickSend cannot disti
   assertEquals((result as { message: string }).message.includes("does not distinguish"), true);
 });
 
-Deno.test("test: a 403 surfaces ClickSend's own suspended-account message", async () => {
+test("test: a 403 surfaces ClickSend's own suspended-account message", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,
@@ -96,7 +97,7 @@ Deno.test("test: a 403 surfaces ClickSend's own suspended-account message", asyn
   );
 });
 
-Deno.test("test: an unexpected status is reported with the raw ClickSend message", async () => {
+test("test: an unexpected status is reported with the raw ClickSend message", async () => {
   const { ctx } = mockCtx([
     { status: 500, body: { response_code: "INTERNAL_ERROR", response_msg: "Something broke." } },
   ]);

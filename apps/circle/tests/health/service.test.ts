@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   apiGroupStates,
   componentState,
@@ -52,14 +53,14 @@ function summary(overrides: Record<string, string> = {}) {
   };
 }
 
-Deno.test("service: probes the verified Statuspage summary endpoint", async () => {
+test("service: probes the verified Statuspage summary endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(STATUS_URL, "https://status.circle.so/api/v2/summary.json");
 });
 
-Deno.test("service: never sends a credential to a third-party status host", async () => {
+test("service: never sends a credential to a third-party status host", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);
@@ -67,11 +68,11 @@ Deno.test("service: never sends a credential to a third-party status host", asyn
   assert(service.credential === undefined || service.credential === "none");
 });
 
-Deno.test("service: egress is widened for the status host only, and not on the app allowlist", () => {
+test("service: egress is widened for the status host only, and not on the app allowlist", () => {
   assertEquals(service.network?.allow, ["status.circle.so"]);
 });
 
-Deno.test("service: all systems operational reports ok with every component listed", async () => {
+test("service: all systems operational reports ok with every component listed", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -83,7 +84,7 @@ Deno.test("service: all systems operational reports ok with every component list
   ]);
 });
 
-Deno.test("service: a REST API outage drives the verdict down", async () => {
+test("service: a REST API outage drives the verdict down", async () => {
   const { ctx } = mockCtx([{ body: summary({ "REST API": "major_outage" }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
@@ -95,7 +96,7 @@ Deno.test("service: a REST API outage drives the verdict down", async () => {
  * the mobile apps and the help centre, which no action in this app can reach.
  * Taking it would degrade every tenant because an iOS release wobbled.
  */
-Deno.test("service: a mobile-app outage does NOT degrade the verdict, but IS reported", async () => {
+test("service: a mobile-app outage does NOT degrade the verdict, but IS reported", async () => {
   const { ctx } = mockCtx([{
     body: {
       ...summary({ "Circle iOS App": "major_outage" }),
@@ -109,7 +110,7 @@ Deno.test("service: a mobile-app outage does NOT degrade the verdict, but IS rep
   assert(report.message!.includes("Major Service Outage"), "vendor roll-up is still shown");
 });
 
-Deno.test("service: if the Developer API group disappears, it falls back LOUDLY", async () => {
+test("service: if the Developer API group disappears, it falls back LOUDLY", async () => {
   const body = summary();
   body.components = body.components.filter((c) =>
     c.id !== DEV_API_GROUP && c.group_id !== DEV_API_GROUP
@@ -121,7 +122,7 @@ Deno.test("service: if the Developer API group disappears, it falls back LOUDLY"
   assert(report.message!.includes("Developer API"), "the fallback announces itself");
 });
 
-Deno.test("service: a broken status page is `unknown`, never `down`", async () => {
+test("service: a broken status page is `unknown`, never `down`", async () => {
   // A status API that itself fails says nothing about Circle.
   for (const queued of [{ status: 503, body: "" }, { status: 200, body: "not json" }]) {
     const { ctx } = mockCtx([queued]);
@@ -129,12 +130,12 @@ Deno.test("service: a broken status page is `unknown`, never `down`", async () =
   }
 });
 
-Deno.test("service: a summary with no named components is `unknown`", async () => {
+test("service: a summary with no named components is `unknown`", async () => {
   const { ctx } = mockCtx([{ body: { status: { indicator: "none" }, components: [] } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: Statuspage vocabularies map as documented", () => {
+test("service: Statuspage vocabularies map as documented", () => {
   assertEquals(componentState("operational"), "ok");
   assertEquals(componentState("degraded_performance"), "degraded");
   assertEquals(componentState("partial_outage"), "degraded");
@@ -149,14 +150,14 @@ Deno.test("service: Statuspage vocabularies map as documented", () => {
   assertEquals(indicatorState(undefined), "unknown");
 });
 
-Deno.test("service: the group lookup is case-insensitive and skips the group row itself", () => {
+test("service: the group lookup is case-insensitive and skips the group row itself", () => {
   const components = summary().components;
   assertEquals(apiGroupStates(components), ["ok"]);
   assertEquals(apiGroupStates(components, "DEVELOPER API"), ["ok"]);
   assertEquals(apiGroupStates(components, "nope"), []);
 });
 
-Deno.test("service: slug produces stable component selectors", () => {
+test("service: slug produces stable component selectors", () => {
   assertEquals(slug("Posts & Comments"), "posts-comments");
   assertEquals(slug("Paywalls & Member Billing"), "paywalls-member-billing");
 });

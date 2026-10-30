@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import { bool, csv, errorDetail, num, str } from "../lib/client.ts";
 
-Deno.test("errorDetail: reads all three vendor error shapes", () => {
+test("errorDetail: reads all three vendor error shapes", () => {
   assertEquals(errorDetail('{"error":"Missing parameter vs_currencies"}'), {
     code: undefined,
     message: "Missing parameter vs_currencies",
@@ -18,7 +19,7 @@ Deno.test("errorDetail: reads all three vendor error shapes", () => {
   assertEquals(errorDetail("").message, "empty response");
 });
 
-Deno.test("coercers: csv/str/bool/num", () => {
+test("coercers: csv/str/bool/num", () => {
   assertEquals(csv([" a ", "b", ""]), "a,b");
   assertEquals(csv("a, b"), "a,b");
   assertEquals(csv(""), undefined);

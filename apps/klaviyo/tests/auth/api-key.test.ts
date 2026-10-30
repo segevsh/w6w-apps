@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 import { API_REVISION } from "../../lib/client.ts";
 
-Deno.test("api-key: is a custom auth method exposing an `apiKey` secret field", () => {
+test("api-key: is a custom auth method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "custom");
   const field = auth.fields?.find((f) => f.key === "apiKey");
@@ -12,7 +13,7 @@ Deno.test("api-key: is a custom auth method exposing an `apiKey` secret field", 
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign sets `Klaviyo-API-Key` scheme (NOT Bearer)", async () => {
+test("api-key: sign sets `Klaviyo-API-Key` scheme (NOT Bearer)", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://a.klaviyo.com/api/profiles/",
@@ -23,7 +24,7 @@ Deno.test("api-key: sign sets `Klaviyo-API-Key` scheme (NOT Bearer)", async () =
   assertEquals(out.headers["authorization"], "Klaviyo-API-Key pk_test_abc");
 });
 
-Deno.test("api-key: test hits /accounts/ with revision header and reports ok on data[0]", async () => {
+test("api-key: test hits /accounts/ with revision header and reports ok on data[0]", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "acc-1" }] } }]);
   const result = await auth.test({ credential: { apiKey: "pk_test_abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -33,7 +34,7 @@ Deno.test("api-key: test hits /accounts/ with revision header and reports ok on 
   assertEquals(calls[0].headers["revision"], API_REVISION);
 });
 
-Deno.test("api-key: test returns ok=false when data is empty", async () => {
+test("api-key: test returns ok=false when data is empty", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: [] } }]);
   const result = await auth.test({ credential: { apiKey: "pk_x" } }, ctx);
   assertEquals(result.ok, false);

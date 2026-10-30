@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-get.ts";
 
 const display = { portalUrl: "https://myportal.bitrix24.com" };
 
-Deno.test("lead-get: fetches crm.lead.get with the numeric id and returns the raw lead", async () => {
+test("lead-get: fetches crm.lead.get with the numeric id and returns the raw lead", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { result: { ID: "5", TITLE: "A Lead" }, time: {} } },
   ], { display });
@@ -16,7 +17,7 @@ Deno.test("lead-get: fetches crm.lead.get with the numeric id and returns the ra
   assertEquals(out, { ID: "5", TITLE: "A Lead" });
 });
 
-Deno.test("lead-get: rejects a non-numeric id before any network call", async () => {
+test("lead-get: rejects a non-numeric id before any network call", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ id: NaN }, ctx);
@@ -24,7 +25,7 @@ Deno.test("lead-get: rejects a non-numeric id before any network call", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("lead-get: a NO_AUTH_FOUND body throws with the vendor's own message", async () => {
+test("lead-get: a NO_AUTH_FOUND body throws with the vendor's own message", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

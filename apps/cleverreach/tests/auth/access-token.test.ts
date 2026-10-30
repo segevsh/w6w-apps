@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accessToken, { probeToken } from "../../auth/access-token.ts";
 import { mockCtx, pathOf, unauthorized } from "../_helpers.ts";
 
 const TOKEN = "unitTestFixtureAccessTokenNotReal0000";
 
-Deno.test("access-token: sign stamps the bearer header and leaves the URL alone", () => {
+test("access-token: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://rest.cleverreach.com/v3/groups",
@@ -21,7 +22,7 @@ Deno.test("access-token: sign stamps the bearer header and leaves the URL alone"
   assertEquals(signed.url, "https://rest.cleverreach.com/v3/groups");
 });
 
-Deno.test("access-token: test passes when /v3/debug/ttl answers, and never echoes the body", async () => {
+test("access-token: test passes when /v3/debug/ttl answers, and never echoes the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { ttl: 31535999, token: TOKEN } }]);
   const result = await accessToken.test({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(result, { ok: true });
@@ -29,7 +30,7 @@ Deno.test("access-token: test passes when /v3/debug/ttl answers, and never echoe
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("access-token: a vendor error body fails the test, even on a 200", async () => {
+test("access-token: a vendor error body fails the test, even on a 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: unauthorized }]);
   const result = await accessToken.test({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(result.ok, false);
@@ -37,7 +38,7 @@ Deno.test("access-token: a vendor error body fails the test, even on a 200", asy
   assert(!result.message!.includes(TOKEN));
 });
 
-Deno.test("access-token: a 401 fails with guidance and no token in the message", async () => {
+test("access-token: a 401 fails with guidance and no token in the message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: unauthorized }]);
   const result = await accessToken.test({ credential: { accessToken: TOKEN } }, ctx);
   assertEquals(result.ok, false);
@@ -45,14 +46,14 @@ Deno.test("access-token: a 401 fails with guidance and no token in the message",
   assert(!result.message!.includes(TOKEN));
 });
 
-Deno.test("access-token: no token fails without a request", async () => {
+test("access-token: no token fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await accessToken.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: a network failure is reported, not thrown", async () => {
+test("access-token: a network failure is reported, not thrown", async () => {
   const ctx = { fetch: () => Promise.reject(new Error("boom")), log: () => {} } as never;
   const result = await probeToken(TOKEN, ctx);
   assertEquals(result.ok, false);

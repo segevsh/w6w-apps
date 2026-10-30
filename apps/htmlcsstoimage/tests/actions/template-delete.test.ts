@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import templateDelete from "../../actions/template-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-delete: DELETEs /template/{id} and reports whatever success status came back", async () => {
+test("template-delete: DELETEs /template/{id} and reports whatever success status came back", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await templateDelete.execute({ template_id: "t-1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,7 +11,7 @@ Deno.test("template-delete: DELETEs /template/{id} and reports whatever success 
   assertEquals(out, { template_id: "t-1", status: 200 });
 });
 
-Deno.test("template-delete: 404 surfaces; requires an id; idempotent", async () => {
+test("template-delete: 404 surfaces; requires an id; idempotent", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("Not Found", "No template", 404) }]);
   const err = await assertRejects(
     async () => await templateDelete.execute({ template_id: "t" }, ctx),

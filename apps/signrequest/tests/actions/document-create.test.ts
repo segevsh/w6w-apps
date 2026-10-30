@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentCreate from "../../actions/document-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-create: POSTs /documents/ with file_from_url", async () => {
+test("document-create: POSTs /documents/ with file_from_url", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "doc-1", name: "NDA.pdf" } }]);
   const out = await documentCreate.execute({
     name: "NDA.pdf",
@@ -14,7 +15,7 @@ Deno.test("document-create: POSTs /documents/ with file_from_url", async () => {
   assertEquals(out.uuid, "doc-1");
 });
 
-Deno.test("document-create: converts templateId into a full template resource URL", async () => {
+test("document-create: converts templateId into a full template resource URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "doc-2" } }]);
   await documentCreate.execute({ templateId: "tpl-1" }, ctx);
   assertEquals(
@@ -23,7 +24,7 @@ Deno.test("document-create: converts templateId into a full template resource UR
   );
 });
 
-Deno.test("document-create: parses prefillTags JSON and drops empty optional fields", async () => {
+test("document-create: parses prefillTags JSON and drops empty optional fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { uuid: "doc-3" } }]);
   await documentCreate.execute({
     fileFromContent: "base64==",

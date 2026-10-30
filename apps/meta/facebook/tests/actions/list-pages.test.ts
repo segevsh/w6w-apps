@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-pages.ts";
 
-Deno.test("list-pages: GETs /me/accounts with fields", async () => {
+test("list-pages: GETs /me/accounts with fields", async () => {
   const body = { data: [{ id: "p1", name: "My Page" }], paging: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -16,13 +17,13 @@ Deno.test("list-pages: GETs /me/accounts with fields", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("list-pages: omits authorization when no override is provided (runtime injects it)", async () => {
+test("list-pages: omits authorization when no override is provided (runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({}, ctx);
   assert(!("authorization" in calls[0].headers), "auth must be injected by the sign hook, not us");
 });
 
-Deno.test("list-pages: forwards cursor and limit", async () => {
+test("list-pages: forwards cursor and limit", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], paging: {} } }]);
   await action.execute!({ cursor: "cursor-abc", limit: 10 }, ctx);
   const url = new URL(calls[0].url);

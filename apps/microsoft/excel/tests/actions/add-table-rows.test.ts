@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-table-rows.ts";
 
-Deno.test("add-table-rows: POSTs to the table's /rows/add", async () => {
+test("add-table-rows: POSTs to the table's /rows/add", async () => {
   const { ctx, calls } = mockCtx([{ body: { index: 6, values: [[1, 2, 3]] } }]);
   const out = await action.execute({
     itemId: "ITEM1",
@@ -19,7 +20,7 @@ Deno.test("add-table-rows: POSTs to the table's /rows/add", async () => {
   assertEquals(out.index, 6);
 });
 
-Deno.test("add-table-rows: omits index entirely when appending to the end", async () => {
+test("add-table-rows: omits index entirely when appending to the end", async () => {
   // The API treats a missing index as "append"; sending `index: null` would be
   // a different request shape than sending none.
   const { ctx, calls } = mockCtx([{ body: {} }]);
@@ -27,13 +28,13 @@ Deno.test("add-table-rows: omits index entirely when appending to the end", asyn
   assertEquals(JSON.parse(calls[0].body!), { values: [["a"]] });
 });
 
-Deno.test("add-table-rows: sends a zero index rather than dropping it as falsy", async () => {
+test("add-table-rows: sends a zero index rather than dropping it as falsy", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", table: "Table1", values: [["a"]], index: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { values: [["a"]], index: 0 });
 });
 
-Deno.test("add-table-rows: batches many rows into one call", async () => {
+test("add-table-rows: batches many rows into one call", async () => {
   const rows = Array.from({ length: 50 }, (_, i) => [i, `row-${i}`]);
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", table: "Table1", values: rows }, ctx);
@@ -41,7 +42,7 @@ Deno.test("add-table-rows: batches many rows into one call", async () => {
   assertEquals(JSON.parse(calls[0].body!).values.length, 50);
 });
 
-Deno.test("add-table-rows: resolves within a worksheet when one is given", async () => {
+test("add-table-rows: resolves within a worksheet when one is given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemPath: "Q3.xlsx",
@@ -55,7 +56,7 @@ Deno.test("add-table-rows: resolves within a worksheet when one is given", async
   );
 });
 
-Deno.test("add-table-rows: refuses a call with no rows", async () => {
+test("add-table-rows: refuses a call with no rows", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", table: "Table1", values: undefined }, ctx),
@@ -65,7 +66,7 @@ Deno.test("add-table-rows: refuses a call with no rows", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-table-rows: forwards the session header", async () => {
+test("add-table-rows: forwards the session header", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemId: "ITEM1",
@@ -76,6 +77,6 @@ Deno.test("add-table-rows: forwards the session header", async () => {
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("add-table-rows: is honestly non-idempotent — a retry appends twice", () => {
+test("add-table-rows: is honestly non-idempotent — a retry appends twice", () => {
   assertEquals(action.idempotent, false);
 });

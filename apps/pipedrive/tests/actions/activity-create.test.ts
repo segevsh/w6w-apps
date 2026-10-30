@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/activity-create.ts";
 
-Deno.test("activity-create: POSTs /activities and coerces done to 0/1", async () => {
+test("activity-create: POSTs /activities and coerces done to 0/1", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: 1 } } }]);
   await action.execute!(
     { subject: "Call Ada", type: "call", dealId: 7, done: true, dueDate: "2026-08-01" },
@@ -18,7 +19,7 @@ Deno.test("activity-create: POSTs /activities and coerces done to 0/1", async ()
   assertEquals(body.due_date, "2026-08-01");
 });
 
-Deno.test("activity-create: done:false serializes as 0, not omitted", async () => {
+test("activity-create: done:false serializes as 0, not omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { id: 1 } } }]);
   await action.execute!({ subject: "Task", type: "task", done: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).done, 0);

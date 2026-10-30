@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import resourceSubscriptionList from "../../actions/resource-subscription-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "resourceName": "sale" };
 
-Deno.test("resource-subscription-list: sends GET /v2/resource_subscriptions with the mapped parameters", async () => {
+test("resource-subscription-list: sends GET /v2/resource_subscriptions with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "resource_subscriptions": [{ "id": "a" }] },
   }]);
@@ -16,7 +17,7 @@ Deno.test("resource-subscription-list: sends GET /v2/resource_subscriptions with
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("resource-subscription-list: returns the documented result shape", async () => {
+test("resource-subscription-list: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{
     body: { "success": true, "resource_subscriptions": [{ "id": "a" }] },
   }]);
@@ -25,7 +26,7 @@ Deno.test("resource-subscription-list: returns the documented result shape", asy
   });
 });
 
-Deno.test("resource-subscription-list: a 404 surfaces Gumroad's own message", async () => {
+test("resource-subscription-list: a 404 surfaces Gumroad's own message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { success: false, message: "The thing could not be found." },
@@ -37,7 +38,7 @@ Deno.test("resource-subscription-list: a 404 surfaces Gumroad's own message", as
   assertEquals(err.message.includes("The thing could not be found."), true, err.message);
 });
 
-Deno.test("resource-subscription-list: a 200 carrying success:false is still a failure", async () => {
+test("resource-subscription-list: a 200 carrying success:false is still a failure", async () => {
   const { ctx } = mockCtx([{ body: { success: false, message: "refused" } }]);
   await assertRejects(
     () => Promise.resolve(resourceSubscriptionList.execute(INPUT, ctx)),

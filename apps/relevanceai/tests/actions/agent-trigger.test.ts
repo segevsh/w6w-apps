@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import agentTrigger from "../../actions/agent-trigger.ts";
 import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-trigger: POSTs the vendor's documented body to /agents/trigger", async () => {
+test("agent-trigger: POSTs the vendor's documented body to /agents/trigger", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     {
       body: {
@@ -30,7 +31,7 @@ Deno.test("agent-trigger: POSTs the vendor's documented body to /agents/trigger"
   assertEquals(out.conversation_id, "c1");
 });
 
-Deno.test("agent-trigger: omitting the conversation starts a new one", async () => {
+test("agent-trigger: omitting the conversation starts a new one", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { agent_id: "a1" } }]);
   await agentTrigger.execute({ agentId: "a1", message: "hi" }, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("agent-trigger: omitting the conversation starts a new one", async () 
  * conversation rather than deduplicating a request — so a retry would bill a
  * second agent run.
  */
-Deno.test("agent-trigger: is a perform that is not idempotent, and says so", () => {
+test("agent-trigger: is a perform that is not idempotent, and says so", () => {
   assertEquals(agentTrigger.type, "perform");
   assertEquals(agentTrigger.idempotent, false);
   assertEquals(agentTrigger.params?.map((p) => p.key), ["agentId", "message", "conversationId"]);

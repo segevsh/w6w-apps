@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import memberList from "../../actions/member-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("member-list: sends paging params and maps the envelope", async () => {
+test("member-list: sends paging params and maps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { totalCount: 25, endCursor: 456, hasNextPage: true, data: [{ id: "mem_1" }] },
   }]);
@@ -26,7 +27,7 @@ Deno.test("member-list: sends paging params and maps the envelope", async () => 
   });
 });
 
-Deno.test("member-list: omits unset params, including includeJSON=false", async () => {
+test("member-list: omits unset params, including includeJSON=false", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], hasNextPage: false } }]);
   await memberList.execute({ includeJSON: false }, ctx);
   assertEquals(queryOf(calls[0].url), {});

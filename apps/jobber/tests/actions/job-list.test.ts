@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-list.ts";
 
-Deno.test("job-list: the scheduling window maps to visitsScheduledBetween", async () => {
+test("job-list: the scheduling window maps to visitsScheduledBetween", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { jobs: { nodes: [] } } } }]);
   await action.execute({
     visitsScheduledAfter: "2026-08-01T00:00:00Z",
@@ -18,13 +19,13 @@ Deno.test("job-list: the scheduling window maps to visitsScheduledBetween", asyn
   });
 });
 
-Deno.test("job-list: ids are split into a list for a batch fetch", async () => {
+test("job-list: ids are split into a list for a batch fetch", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { jobs: { nodes: [] } } } }]);
   await action.execute({ ids: "j1,j2 , j3" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.filter.ids, ["j1", "j2", "j3"]);
 });
 
-Deno.test("job-list: `includeUnscheduled: false` survives compaction", async () => {
+test("job-list: `includeUnscheduled: false` survives compaction", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { jobs: { nodes: [] } } } }]);
   await action.execute({ includeUnscheduled: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.filter, { includeUnscheduled: false });

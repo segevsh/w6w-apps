@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-list.ts";
 
 const display = { projectId: "p1" };
 
 /** BigQuery returns only the caller's own jobs unless allUsers is set. */
-Deno.test("job-list: allUsers is opt-in and reaches the wire", async () => {
+test("job-list: allUsers is opt-in and reaches the wire", async () => {
   const off = mockCtx([{ status: 200, body: { jobs: [] } }], { display });
   await action.execute!({}, off.ctx);
   assertEquals(new URL(off.calls[0].url).searchParams.get("allUsers"), null);

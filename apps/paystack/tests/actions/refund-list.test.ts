@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/refund-list.ts";
 import { LIST_META, mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("refund-list: GETs /refund with paging", async () => {
+test("refund-list: GETs /refund with paging", async () => {
   const { ctx, calls } = mockCtx([{ body: ok([{ id: 9 }], LIST_META) }]);
   assertEquals(await action.execute({ perPage: 2, page: 1 }, ctx), {
     items: [{ id: 9 }],

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/intent-handle.ts";
@@ -10,7 +11,7 @@ const handled = ok({
 });
 
 /** Home Assistant resolves "kitchen light" the way the voice assistant does. */
-Deno.test("intent-handle: posts the intent and its slots, and lifts the speech out", async () => {
+test("intent-handle: posts the intent and its slots, and lifts the speech out", async () => {
   const { ctx, calls } = mockCtx([handled], { display });
   const result = await action.execute!({
     name: "HassTurnOn",
@@ -25,7 +26,7 @@ Deno.test("intent-handle: posts the intent and its slots, and lifts the speech o
   assertEquals(result.matched.length, 1);
 });
 
-Deno.test("intent-handle: things it could not resolve come back separately", async () => {
+test("intent-handle: things it could not resolve come back separately", async () => {
   const { ctx } = mockCtx([
     ok({ data: { success: [], failed: [{ name: "kitchen lgiht" }] } }),
   ], { display });
@@ -37,19 +38,19 @@ Deno.test("intent-handle: things it could not resolve come back separately", asy
   assertEquals(result.unmatched.length, 1);
 });
 
-Deno.test("intent-handle: no slots still posts an object", async () => {
+test("intent-handle: no slots still posts an object", async () => {
   const { ctx, calls } = mockCtx([handled], { display });
   await action.execute!({ name: "HassGetState" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).data, {});
 });
 
-Deno.test("intent-handle: needs an intent name", async () => {
+test("intent-handle: needs an intent name", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`name` is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("intent-handle: logs the intent and match count, never the slots", async () => {
+test("intent-handle: logs the intent and match count, never the slots", async () => {
   const { ctx, logs } = mockCtx([handled], { display });
   await action.execute!({ name: "HassTurnOn", data: '{"name":"bedroom light"}' }, ctx);
   assert(!JSON.stringify(logs).includes("bedroom"), JSON.stringify(logs));
@@ -57,7 +58,7 @@ Deno.test("intent-handle: logs the intent and match count, never the slots", asy
 });
 
 /** Right for human input, wrong when the entity is already known. */
-Deno.test("intent-handle: says when to use it and when not to", () => {
+test("intent-handle: says when to use it and when not to", () => {
   assert(
     /Right for human input, wrong when the entity is known/.test(action.description!),
     action.description,

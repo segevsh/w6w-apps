@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import peopleAttributeList from "../../actions/people-attribute-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("people-attribute-list: GETs /people_attributes with sort and filters", async () => {
+test("people-attribute-list: GETs /people_attributes with sort and filters", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("people_attributes", "a1")]) }]);
   await peopleAttributeList.execute({ sort: "-created_at", builtin: true, type: "email" }, ctx);
 

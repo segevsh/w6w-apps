@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/account-get.ts";
 import { envelope, mockCtx, obj, pathOf } from "../_helpers.ts";
 
-Deno.test("account-get: GETs /account and returns plan and usage", async () => {
+test("account-get: GETs /account and returns plan and usage", async () => {
   const data = {
     plan: "free",
     usage: { used: 50, limit: 100, remaining: 50 },

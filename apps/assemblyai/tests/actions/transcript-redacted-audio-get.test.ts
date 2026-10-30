@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transcriptRedactedAudioGet from "../../actions/transcript-redacted-audio-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transcript-redacted-audio-get: GETs /v2/transcript/{id}/redacted-audio", async () => {
+test("transcript-redacted-audio-get: GETs /v2/transcript/{id}/redacted-audio", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: "redacted_audio_ready", redacted_audio_url: "https://s3.example/x.wav" },
@@ -16,6 +17,6 @@ Deno.test("transcript-redacted-audio-get: GETs /v2/transcript/{id}/redacted-audi
   assertEquals(out.redacted_audio_url, "https://s3.example/x.wav");
 });
 
-Deno.test("transcript-redacted-audio-get: is a read action", () => {
+test("transcript-redacted-audio-get: is a read action", () => {
   assertEquals(transcriptRedactedAudioGet.type, "read");
 });

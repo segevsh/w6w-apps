@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: calls GET /1/Contacts and returns items + count", async () => {
+test("contact-list: calls GET /1/Contacts and returns items + count", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "1" }, { id: "2" }], 2) }]);
   const out = await contactList.execute({ range: 50 }, ctx) as { items: unknown[]; count?: number };
 
@@ -12,7 +13,7 @@ Deno.test("contact-list: calls GET /1/Contacts and returns items + count", async
   assertEquals(out.count, 2);
 });
 
-Deno.test("contact-list: forwards sort/condition/search into the query string", async () => {
+test("contact-list: forwards sort/condition/search into the query string", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await contactList.execute({
     sort: "lastname",

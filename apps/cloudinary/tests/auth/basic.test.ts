@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
@@ -9,7 +10,7 @@ const credential = {
   region: "us",
 };
 
-Deno.test("basic: signs with HTTP Basic over key:secret", async () => {
+test("basic: signs with HTTP Basic over key:secret", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.cloudinary.com/v1_1/acme/ping",
@@ -20,7 +21,7 @@ Deno.test("basic: signs with HTTP Basic over key:secret", async () => {
   assertEquals(out.headers["authorization"], `Basic ${btoa("123456789:s3cret")}`);
 });
 
-Deno.test("basic: test pings the cloud on the region's host", async () => {
+test("basic: test pings the cloud on the region's host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "ok" } }]);
   const out = await auth.test!({ credential }, ctx);
   assertEquals(out.ok, true);
@@ -28,7 +29,7 @@ Deno.test("basic: test pings the cloud on the region's host", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/v1_1/acme/ping");
 });
 
-Deno.test("basic: the EU and AP regions use their own hosts", async () => {
+test("basic: the EU and AP regions use their own hosts", async () => {
   for (const [region, host] of [["eu", "api-eu.cloudinary.com"], ["ap", "api-ap.cloudinary.com"]]) {
     const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
     await auth.test!({ credential: { ...credential, region } }, ctx);
@@ -37,7 +38,7 @@ Deno.test("basic: the EU and AP regions use their own hosts", async () => {
 });
 
 /** The symptom points at the key; the fix is often the region dropdown. */
-Deno.test("basic: an unknown api_key blames the key AND the region", async () => {
+test("basic: an unknown api_key blames the key AND the region", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { message: "unknown api_key" } },
@@ -49,7 +50,7 @@ Deno.test("basic: an unknown api_key blames the key AND the region", async () =>
   assert(/region/.test(out.message!), out.message);
 });
 
-Deno.test("basic: a missing cloud name is caught before the network", async () => {
+test("basic: a missing cloud name is caught before the network", async () => {
   const { ctx, calls } = mockCtx();
   const out = await auth.test!({ credential: { apiKey: "1", apiSecret: "2" } }, ctx);
   assertEquals(out.ok, false);
@@ -57,13 +58,13 @@ Deno.test("basic: a missing cloud name is caught before the network", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: afterConnect records the cloud and region, never the secret", () => {
+test("basic: afterConnect records the cloud and region, never the secret", () => {
   const display = auth.afterConnect!({ credential }, mockCtx().ctx) as Record<string, unknown>;
   assertEquals(display, { cloudName: "acme", region: "us" });
   assert(!JSON.stringify(display).includes("s3cret"));
 });
 
-Deno.test("basic: an unknown region is normalised to us", () => {
+test("basic: an unknown region is normalised to us", () => {
   const display = auth.afterConnect!(
     { credential: { ...credential, region: "mars" } },
     mockCtx().ctx,
@@ -71,7 +72,7 @@ Deno.test("basic: an unknown region is normalised to us", () => {
   assertEquals(display.region, "us");
 });
 
-Deno.test("basic: both credential fields are declared secret", () => {
+test("basic: both credential fields are declared secret", () => {
   for (const key of ["apiKey", "apiSecret"]) {
     const f = auth.fields!.find((f) => f.key === key)!;
     assertEquals(f.type, "secret", key);

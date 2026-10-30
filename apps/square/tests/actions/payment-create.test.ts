@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { INVOCATION_ID, mockCtx } from "../_helpers.ts";
 import action from "../../actions/payment-create.ts";
 
-Deno.test("payment-create: POSTs /v2/payments with source, amount and idempotency key", async () => {
+test("payment-create: POSTs /v2/payments with source, amount and idempotency key", async () => {
   const { ctx, calls } = mockCtx([{ body: { payment: { id: "p1" } } }]);
   await action.execute({ sourceId: "cnon:card-nonce-ok", amount: 1000, currency: "usd" }, ctx);
   assertEquals(calls[0].url, "https://connect.squareup.com/v2/payments");
@@ -14,7 +15,7 @@ Deno.test("payment-create: POSTs /v2/payments with source, amount and idempotenc
   });
 });
 
-Deno.test("payment-create: maps the optional params onto Square's names", async () => {
+test("payment-create: maps the optional params onto Square's names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     sourceId: "cnon:x",
@@ -42,7 +43,7 @@ Deno.test("payment-create: maps the optional params onto Square's names", async 
   assertEquals(body.statement_description_identifier, "ACME");
 });
 
-Deno.test("payment-create: an explicit idempotency key overrides the invocation id", async () => {
+test("payment-create: an explicit idempotency key overrides the invocation id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { sourceId: "cnon:x", amount: 1, currency: "USD", idempotencyKey: "order-42" },
@@ -51,7 +52,7 @@ Deno.test("payment-create: an explicit idempotency key overrides the invocation 
   assertEquals(JSON.parse(calls[0].body!).idempotency_key, "order-42");
 });
 
-Deno.test("payment-create: refuses to call Square with no idempotency key available", async () => {
+test("payment-create: refuses to call Square with no idempotency key available", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { invocationId: "" });
   await assertRejects(
     async () => {
@@ -63,7 +64,7 @@ Deno.test("payment-create: refuses to call Square with no idempotency key availa
   assertEquals(calls.length, 0);
 });
 
-Deno.test("payment-create: is declared idempotent, and the key param states the 45-char cap", () => {
+test("payment-create: is declared idempotent, and the key param states the 45-char cap", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   const p = action.params?.find((p) => p.key === "idempotencyKey");
@@ -71,7 +72,7 @@ Deno.test("payment-create: is declared idempotent, and the key param states the 
   assert(p?.hint?.includes("45"), p?.hint);
 });
 
-Deno.test("payment-create: the amount hint spells out the minor-unit rule", () => {
+test("payment-create: the amount hint spells out the minor-unit rule", () => {
   const p = action.params?.find((p) => p.key === "amount");
   assert(p?.hint?.includes("1000 = $10.00"), p?.hint);
 });

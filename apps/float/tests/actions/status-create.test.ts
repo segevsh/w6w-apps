@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import statusCreate from "../../actions/status-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("status-create - POSTs /status and returns the {status: [...]} wrapper unchanged", async () => {
+test("status-create - POSTs /status and returns the {status: [...]} wrapper unchanged", async () => {
   // Real Float behaviour: creating an overlapping status returns BOTH the new
   // and the deleted-prior status in one array under the `status` key.
   const { ctx, calls } = mockCtx([

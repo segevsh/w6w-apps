@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-enrich-person.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const reply = {
   invalid_datapoints: ["3"],
 };
 
-Deno.test("bulk-enrich-person: posts the records plus flags and returns the three lists", async () => {
+test("bulk-enrich-person: posts the records plus flags and returns the three lists", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const records = [{ identifier: "1", email: "a@b.co" }, { identifier: "2", full_name: "A B" }];
   const out = await exec(action, { records, enrichMobile: true }, ctx);
@@ -22,7 +23,7 @@ Deno.test("bulk-enrich-person: posts the records plus flags and returns the thre
   assertEquals(out.matched.length, 1);
 });
 
-Deno.test("bulk-enrich-person: accepts a JSON string and rejects bad input before calling", async () => {
+test("bulk-enrich-person: accepts a JSON string and rejects bad input before calling", async () => {
   const { ctx, calls } = mockCtx([{ body: reply }]);
   await exec(action, { records: '[{"identifier":"1","linkedin_url":"u"}]' }, ctx);
   assertEquals((bodyOf(calls[0]).data as unknown[]).length, 1);
@@ -30,7 +31,7 @@ Deno.test("bulk-enrich-person: accepts a JSON string and rejects bad input befor
   assertEquals(calls.length, 1);
 });
 
-Deno.test("bulk-enrich-person: an INSUFFICIENT_CREDITS error throws", async () => {
+test("bulk-enrich-person: an INSUFFICIENT_CREDITS error throws", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: true, error_code: "INSUFFICIENT_CREDITS" },

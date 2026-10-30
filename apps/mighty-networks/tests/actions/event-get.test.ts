@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { API, mockConnectedCtx, mockCtx, NET } from "../_helpers.ts";
 import action from "../../actions/event-get.ts";
 
 const INPUT = { "id": 7 };
 
-Deno.test("event-get: GET /events/{id}/ on the connected Network", async () => {
+test("event-get: GET /events/{id}/ on the connected Network", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: { id: 1 } }]);
   await action.execute(INPUT as never, ctx);
   const url = new URL(calls[0].url);
@@ -15,24 +16,24 @@ Deno.test("event-get: GET /events/{id}/ on the connected Network", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("event-get: returns the API body", async () => {
+test("event-get: returns the API body", async () => {
   const { ctx } = mockConnectedCtx([{ body: { id: 42, marker: "x" } }]);
   assertEquals(await action.execute(INPUT as never, ctx), { id: 42, marker: "x" });
 });
 
-Deno.test("event-get: declares what it needs and what it returns", () => {
+test("event-get: declares what it needs and what it returns", () => {
   assertEquals(action.type, "read");
   assertEquals((action.params ?? []).filter((p) => p.required).map((p) => p.key), ["id"]);
   assert(Array.isArray(action.output) && action.output.length > 0);
 });
 
-Deno.test("event-get: refuses to run on a connection with no Network ID", async () => {
+test("event-get: refuses to run on a connection with no Network ID", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await assertRejects(async () => await action.execute(INPUT as never, ctx), Error, "Network ID");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-get: surfaces the vendor error with status and path", async () => {
+test("event-get: surfaces the vendor error with status and path", async () => {
   const { ctx } = mockConnectedCtx([{
     status: 403,
     statusText: "Forbidden",

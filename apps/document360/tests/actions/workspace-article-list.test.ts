@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceArticleList from "../../actions/workspace-article-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("workspace-article-list: lists article summaries", async () => {
+test("workspace-article-list: lists article summaries", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "a1", status: "draft" }]),
@@ -27,7 +28,7 @@ Deno.test("workspace-article-list: lists article summaries", async () => {
   assertEquals(out.items[0], { id: "a1", status: "draft" });
 });
 
-Deno.test("workspace-article-list: a vendor error surfaces its code and message", async () => {
+test("workspace-article-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

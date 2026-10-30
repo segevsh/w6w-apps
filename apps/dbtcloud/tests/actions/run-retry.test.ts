@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/run-retry.ts";
 
 const display = { accessUrl: "https://ab123.us1.dbt.com", accountId: "42" };
 
-Deno.test("run-retry: posts to the retry path and returns the NEW run", async () => {
+test("run-retry: posts to the retry path and returns the NEW run", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 200, body: { data: { id: 8, status: 1 } } }], {
     display,
   });
@@ -17,11 +18,11 @@ Deno.test("run-retry: posts to the retry path and returns the NEW run", async ()
 });
 
 /** Retry only works on a job's most recent run, which is the usual surprise. */
-Deno.test("run-retry: says it only applies to the most recent run", () => {
+test("run-retry: says it only applies to the most recent run", () => {
   assert(/MOST RECENT run/i.test(action.description!), action.description);
 });
 
-Deno.test("run-retry: needs a run id", async () => {
+test("run-retry: needs a run id", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "runId");
   assertEquals(calls.length, 0);

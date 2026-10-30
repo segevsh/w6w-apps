@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/queue-get-many.ts";
 
-Deno.test("queue-get-many: GETs queues under the service desk", async () => {
+test("queue-get-many: GETs queues under the service desk", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [] } }]);
   await action.execute({ serviceDeskId: "10" }, ctx);
   assertEquals(
@@ -11,7 +12,7 @@ Deno.test("queue-get-many: GETs queues under the service desk", async () => {
   );
 });
 
-Deno.test("queue-get-many: forwards includeCount", async () => {
+test("queue-get-many: forwards includeCount", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: {} }]);
   await action.execute({ serviceDeskId: "10", includeCount: true }, ctx);
   const url = new URL(calls[0].url);

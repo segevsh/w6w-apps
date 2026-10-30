@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-rerun.ts";
 
@@ -8,7 +9,7 @@ const display = { accessUrl: "https://ab123.us1.dbt.com", accountId: "42" };
  * The same call resumes a failed run OR starts a complete fresh build, decided
  * by state the caller did not check — so it is gated.
  */
-Deno.test("job-rerun: refuses without the acknowledgement, and points at run-retry", async () => {
+test("job-rerun: refuses without the acknowledgement, and points at run-retry", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ jobId: "9" }, ctx),
@@ -18,7 +19,7 @@ Deno.test("job-rerun: refuses without the acknowledgement, and points at run-ret
   assertEquals(calls.length, 0);
 });
 
-Deno.test("job-rerun: acknowledged, it posts to the rerun path", async () => {
+test("job-rerun: acknowledged, it posts to the rerun path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: 8, status: 1 } } }], {
     display,
   });
@@ -33,7 +34,7 @@ Deno.test("job-rerun: acknowledged, it posts to the rerun path", async () => {
   assertEquals(result.statusName, "Queued");
 });
 
-Deno.test("job-rerun: needs a job id", async () => {
+test("job-rerun: needs a job id", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ confirmFullRebuild: true }, ctx),
@@ -42,7 +43,7 @@ Deno.test("job-rerun: needs a job id", async () => {
   );
 });
 
-Deno.test("job-rerun: its description names both outcomes", () => {
+test("job-rerun: its description names both outcomes", () => {
   assert(/SUCCEEDED/.test(action.description!), action.description);
   assert(/fresh build/.test(action.description!), action.description);
 });

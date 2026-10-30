@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collaboratorRemove from "../../actions/collaborator-remove.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("collaborator-remove: DELETEs /collection/{id}/sharing/{userId}", async () => {
+test("collaborator-remove: DELETEs /collection/{id}/sharing/{userId}", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   const out = await collaboratorRemove.execute({ id: 8492393, userId: 373381 }, ctx) as {
     result: boolean;
@@ -18,7 +19,7 @@ Deno.test("collaborator-remove: DELETEs /collection/{id}/sharing/{userId}", asyn
  * The targeted counterpart to Unshare, whose behaviour depends on who is asking.
  * This one names its target, so it must always carry the user segment.
  */
-Deno.test("collaborator-remove: always addresses a named user", async () => {
+test("collaborator-remove: always addresses a named user", async () => {
   const { ctx, calls } = mockCtx([{ body: okBody() }]);
   await collaboratorRemove.execute({ id: 1, userId: 2 }, ctx);
   assertEquals(pathOf(calls[0].url).split("/").length, 7);

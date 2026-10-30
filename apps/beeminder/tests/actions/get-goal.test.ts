@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-goal.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -21,7 +22,7 @@ const GOAL = {
   updated_at: 5,
 };
 
-Deno.test("get-goal: reads the goal and maps the fields", async () => {
+test("get-goal: reads the goal and maps the fields", async () => {
   const { ctx, calls } = mockCtx([{ body: GOAL }]);
   const out = await run(action, { slug: "run", datapoints: true }, ctx);
   assertEquals(
@@ -34,7 +35,7 @@ Deno.test("get-goal: reads the goal and maps the fields", async () => {
   assertEquals(out.goal, GOAL);
 });
 
-Deno.test("get-goal: a missing slug throws; a 404 surfaces the vendor message", async () => {
+test("get-goal: a missing slug throws; a 404 surfaces the vendor message", async () => {
   await assertRejects(() => run(action, {}, mockCtx().ctx), Error, "slug is required");
   const bad = mockCtx([{ status: 404, body: { errors: "Couldn't find goal" } }]);
   await assertRejects(() => run(action, { slug: "x" }, bad.ctx), Error, "Couldn't find goal");

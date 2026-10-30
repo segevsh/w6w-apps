@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-records.ts";
 
-Deno.test("list-records: POSTs to records/list/ with paging query and a sort/filter body", async () => {
+test("list-records: POSTs to records/list/ with paging query and a sort/filter body", async () => {
   const { ctx, calls } = mockCtx([{ body: { total: 1, offset: 0, limit: 50, items: [] } }]);
   const result = await action.execute!(
     {
@@ -30,7 +31,7 @@ Deno.test("list-records: POSTs to records/list/ with paging query and a sort/fil
   assertEquals(result, { total: 1, offset: 0, limit: 50, items: [] });
 });
 
-Deno.test("list-records: defaults limit to 100 and omits absent optional params", async () => {
+test("list-records: defaults limit to 100 and omits absent optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ tableId: "tbl1" }, ctx);
   const url = new URL(calls[0].url);

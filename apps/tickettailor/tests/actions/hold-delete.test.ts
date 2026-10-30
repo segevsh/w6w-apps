@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import holdDelete from "../../actions/hold-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("hold-delete: DELETEs and returns the 200 body", async () => {
+test("hold-delete: DELETEs and returns the 200 body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "ho_1", object: "hold", deleted: "true" },

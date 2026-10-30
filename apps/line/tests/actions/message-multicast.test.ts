@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageMulticast from "../../actions/message-multicast.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const MESSAGES = [{ type: "text", text: "Hello, world1" }];
 
-Deno.test("message-multicast: POSTs an array of user ids", async () => {
+test("message-multicast: POSTs an array of user ids", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await messageMulticast.execute({ to: ["U1", "U2"], messages: MESSAGES }, ctx);
 
@@ -12,13 +13,13 @@ Deno.test("message-multicast: POSTs an array of user ids", async () => {
   assertEquals(JSON.parse(calls[0].body!), { to: ["U1", "U2"], messages: MESSAGES });
 });
 
-Deno.test("message-multicast: accepts a comma-separated string for to", async () => {
+test("message-multicast: accepts a comma-separated string for to", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await messageMulticast.execute({ to: "U1, U2", messages: MESSAGES }, ctx);
   assertEquals(JSON.parse(calls[0].body!).to, ["U1", "U2"]);
 });
 
-Deno.test("message-multicast: requires at least one recipient", async () => {
+test("message-multicast: requires at least one recipient", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await messageMulticast.execute({ to: [], messages: MESSAGES }, ctx),
@@ -28,7 +29,7 @@ Deno.test("message-multicast: requires at least one recipient", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-multicast: refuses more than 500 recipients before making a request", async () => {
+test("message-multicast: refuses more than 500 recipients before making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const to = Array.from({ length: 501 }, (_, i) => `U${i}`);
   await assertRejects(
@@ -39,6 +40,6 @@ Deno.test("message-multicast: refuses more than 500 recipients before making a r
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-multicast: is declared non-idempotent", () => {
+test("message-multicast: is declared non-idempotent", () => {
   assertEquals(messageMulticast.idempotent, false);
 });

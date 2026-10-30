@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_KEY_PATTERN,
   asOptionalJson,
@@ -14,7 +15,7 @@ import {
 } from "../../lib/client.ts";
 import { envelope, errorBody, LIVE_KEY, mockPaddleCtx, SANDBOX_KEY } from "../_helpers.ts";
 
-Deno.test("environmentFromApiKey: reads the environment out of the prefix", () => {
+test("environmentFromApiKey: reads the environment out of the prefix", () => {
   assertEquals(environmentFromApiKey(LIVE_KEY), "live");
   assertEquals(environmentFromApiKey(SANDBOX_KEY), "sandbox");
 });
@@ -24,7 +25,7 @@ Deno.test("environmentFromApiKey: reads the environment out of the prefix", () =
  * guessing would point sandbox traffic at production. `undefined` is the honest
  * answer and the callers handle it explicitly.
  */
-Deno.test("environmentFromApiKey: a legacy key yields undefined, not a guess", () => {
+test("environmentFromApiKey: a legacy key yields undefined, not a guess", () => {
   assertEquals(
     environmentFromApiKey("da3f01dbed7a549cf0d8eb454bf5fded90d021f9975eba5cae1"),
     undefined,
@@ -32,13 +33,13 @@ Deno.test("environmentFromApiKey: a legacy key yields undefined, not a guess", (
   assertEquals(environmentFromApiKey(""), undefined);
 });
 
-Deno.test("hostForEnvironment: sandbox gets its own host, everything else is live", () => {
+test("hostForEnvironment: sandbox gets its own host, everything else is live", () => {
   assertEquals(hostForEnvironment("live"), "api.paddle.com");
   assertEquals(hostForEnvironment("sandbox"), "sandbox-api.paddle.com");
   assertEquals(hostForEnvironment(undefined), "api.paddle.com");
 });
 
-Deno.test("API_KEY_PATTERN: matches Paddle's published format and rejects near-misses", () => {
+test("API_KEY_PATTERN: matches Paddle's published format and rejects near-misses", () => {
   assert(API_KEY_PATTERN.test(LIVE_KEY));
   assert(API_KEY_PATTERN.test(SANDBOX_KEY));
   assertEquals(LIVE_KEY.length, 69, "Paddle documents keys as 69 characters");
@@ -49,13 +50,13 @@ Deno.test("API_KEY_PATTERN: matches Paddle's published format and rejects near-m
   );
 });
 
-Deno.test("LEGACY_API_KEY_PATTERN: 50 lowercase alphanumerics, per the vendor's description", () => {
+test("LEGACY_API_KEY_PATTERN: 50 lowercase alphanumerics, per the vendor's description", () => {
   assert(LEGACY_API_KEY_PATTERN.test("a".repeat(50)));
   assert(!LEGACY_API_KEY_PATTERN.test("a".repeat(49)));
   assert(!LEGACY_API_KEY_PATTERN.test("A".repeat(50)), "legacy keys are lowercase only");
 });
 
-Deno.test("environmentFromConnection: reads display, ignoring anything unrecognised", () => {
+test("environmentFromConnection: reads display, ignoring anything unrecognised", () => {
   const { ctx } = mockPaddleCtx([], "sandbox");
   assertEquals(environmentFromConnection(ctx.connection), "sandbox");
   assertEquals(environmentFromConnection(undefined), undefined);
@@ -65,14 +66,14 @@ Deno.test("environmentFromConnection: reads display, ignoring anything unrecogni
   );
 });
 
-Deno.test("compact: drops unset keys but keeps false and 0", () => {
+test("compact: drops unset keys but keeps false and 0", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, g: "x" }),
     { a: 1, e: false, f: 0, g: "x" },
   );
 });
 
-Deno.test("toList: accepts an array, a bare string, or a comma-separated string", () => {
+test("toList: accepts an array, a bare string, or a comma-separated string", () => {
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList("a"), ["a"]);
   assertEquals(toList("a, b ,c"), ["a", "b", "c"]);
@@ -81,13 +82,13 @@ Deno.test("toList: accepts an array, a bare string, or a comma-separated string"
   assertEquals(toList(","), undefined);
 });
 
-Deno.test("asOptionalJson: passes objects through and parses strings", () => {
+test("asOptionalJson: passes objects through and parses strings", () => {
   assertEquals(asOptionalJson({ a: 1 }, "X"), { a: 1 });
   assertEquals(asOptionalJson('{"a":1}', "X"), { a: 1 });
   assertEquals(asOptionalJson("", "X"), undefined);
 });
 
-Deno.test("asOptionalJson: names the field when the string is not JSON", () => {
+test("asOptionalJson: names the field when the string is not JSON", () => {
   let message = "";
   try {
     asOptionalJson("{nope", "Items");
@@ -97,7 +98,7 @@ Deno.test("asOptionalJson: names the field when the string is not JSON", () => {
   assertEquals(message, "Items is not valid JSON");
 });
 
-Deno.test("truncate: leaves short text alone and reports what it cut", () => {
+test("truncate: leaves short text alone and reports what it cut", () => {
   assertEquals(truncate("short", 10), "short");
   const long = truncate("x".repeat(50), 10);
   assert(long.startsWith("x".repeat(10)));
@@ -109,7 +110,7 @@ Deno.test("truncate: leaves short text alone and reports what it cut", () => {
  * thrown away. `code`, `detail`, the per-field validation list and the
  * `request_id` Paddle support asks for must all survive.
  */
-Deno.test("formatPaddleError: surfaces code, detail, field errors and the request id", () => {
+test("formatPaddleError: surfaces code, detail, field errors and the request id", () => {
   const raw = JSON.stringify(
     errorBody("invalid_field", "Request does not pass validation.", [
       { field: "description", message: "maximum length of 256 exceeded" },
@@ -124,13 +125,13 @@ Deno.test("formatPaddleError: surfaces code, detail, field errors and the reques
   assert(msg.includes("49a0369b-a6de-4ba8-a03b-28e0cdc5f000"), msg);
 });
 
-Deno.test("formatPaddleError: falls back to the raw body when it is not Paddle's shape", () => {
+test("formatPaddleError: falls back to the raw body when it is not Paddle's shape", () => {
   const msg = formatPaddleError(502, "GET", "/products", "<html>bad gateway</html>");
   assert(msg.includes("502"), msg);
   assert(msg.includes("<html>bad gateway</html>"), msg);
 });
 
-Deno.test("client: builds against the connection's environment host", async () => {
+test("client: builds against the connection's environment host", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }], "sandbox");
   await new PaddleClient(ctx).request("/products");
   assertEquals(calls[0].url, "https://sandbox-api.paddle.com/products");
@@ -141,7 +142,7 @@ Deno.test("client: builds against the connection's environment host", async () =
  * as a repeated key. Getting this wrong silently filters on only the last value
  * on some endpoints and 400s on others.
  */
-Deno.test("client: joins array query values with commas rather than repeating the key", async () => {
+test("client: joins array query values with commas rather than repeating the key", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await new PaddleClient(ctx).request("/products", {
     query: { status: ["active", "archived"], include: "prices" },
@@ -152,7 +153,7 @@ Deno.test("client: joins array query values with commas rather than repeating th
   assertEquals(url.searchParams.get("include"), "prices");
 });
 
-Deno.test("client: drops empty query values instead of sending blanks", async () => {
+test("client: drops empty query values instead of sending blanks", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await new PaddleClient(ctx).request("/products", {
     query: { a: undefined, b: null, c: "", d: 0, e: false },
@@ -166,7 +167,7 @@ Deno.test("client: drops empty query values instead of sending blanks", async ()
   assertEquals(url.searchParams.get("e"), "false");
 });
 
-Deno.test("client: request unwraps `data`, envelope keeps `meta`", async () => {
+test("client: request unwraps `data`, envelope keeps `meta`", async () => {
   const { ctx } = mockPaddleCtx([
     { body: envelope([{ id: "pro_1" }], { has_more: true, next: "…" }) },
     { body: envelope([{ id: "pro_1" }], { has_more: true, next: "…" }) },
@@ -177,7 +178,7 @@ Deno.test("client: request unwraps `data`, envelope keeps `meta`", async () => {
   assertEquals(env.meta?.pagination?.has_more, true);
 });
 
-Deno.test("client: a 204 resolves to undefined rather than throwing on an empty body", async () => {
+test("client: a 204 resolves to undefined rather than throwing on an empty body", async () => {
   const { ctx } = mockPaddleCtx([{ status: 204 }]);
   assertEquals(
     await new PaddleClient(ctx).request("/notification-settings/ntfset_1", {
@@ -187,7 +188,7 @@ Deno.test("client: a 204 resolves to undefined rather than throwing on an empty 
   );
 });
 
-Deno.test("client: a JSON body is sent with a content-type, a GET is not", async () => {
+test("client: a JSON body is sent with a content-type, a GET is not", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope({}) }, { body: envelope({}) }]);
   const client = new PaddleClient(ctx);
   await client.request("/customers", { method: "POST", body: { email: "a@b.com" } });
@@ -197,7 +198,7 @@ Deno.test("client: a JSON body is sent with a content-type, a GET is not", async
   assertEquals(calls[1].headers["content-type"], undefined);
 });
 
-Deno.test("client: a non-2xx throws with Paddle's own error text", async () => {
+test("client: a non-2xx throws with Paddle's own error text", async () => {
   const { ctx } = mockPaddleCtx([
     { status: 404, body: errorBody("not_found", "Entity pro_01 not found") },
   ]);
@@ -211,7 +212,7 @@ Deno.test("client: a non-2xx throws with Paddle's own error text", async () => {
 });
 
 /** The action worker must never see or build an Authorization header. */
-Deno.test("client: never sets an authorization header — that is sign's job", async () => {
+test("client: never sets an authorization header — that is sign's job", async () => {
   const { ctx, calls } = mockPaddleCtx([{ body: envelope([]) }]);
   await new PaddleClient(ctx).request("/products");
   assertEquals(calls[0].headers["authorization"], undefined);

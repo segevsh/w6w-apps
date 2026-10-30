@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-list: GET /users with filters and a 500-max page size", async () => {
+test("user-list: GET /users with filters and a 500-max page size", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "u1" }]) }]);
   await userList.execute({
     groupId: "g1",
@@ -21,7 +22,7 @@ Deno.test("user-list: GET /users with filters and a 500-max page size", async ()
   });
 });
 
-Deno.test("user-list: the limit param allows up to 500", () => {
+test("user-list: the limit param allows up to 500", () => {
   const limit = userList.params!.find((p) => p.key === "limit")!;
   assertEquals(limit.validation?.max, 500);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-hard-bounces-list.ts";
 
-Deno.test("email-hard-bounces-list: sends the date range, limit, offset and email filter", async () => {
+test("email-hard-bounces-list: sends the date range, limit, offset and email filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { emails: [] } }], {
     display: { instance: "iad-01" },
   });

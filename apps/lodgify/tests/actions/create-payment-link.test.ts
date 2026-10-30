@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import createPaymentLink from "../../actions/create-payment-link.ts";
 
-Deno.test("create-payment-link: POSTs {amount} to the v2 paymentLink path", async () => {
+test("create-payment-link: POSTs {amount} to the v2 paymentLink path", async () => {
   const { ctx, calls } = mockCtx([{ body: { succeeded: true } }]);
   const out = await createPaymentLink.execute({ bookingId: 4, amount: 150.5 }, ctx);
   assertEquals(calls[0].method, "POST");

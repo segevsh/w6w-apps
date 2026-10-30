@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -17,29 +19,29 @@ const closed = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-Deno.test("service: probes the Google Ads dashboard, not the Workspace one", () => {
+test("service: probes the Google Ads dashboard, not the Workspace one", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["ads.google.com"]);
   // Google Ads is not a Workspace product; that feed would never mention it.
   assert(!JSON.stringify(service.network).includes("www.google.com"));
 });
 
-Deno.test("service: the status host is not on the app's own egress allowlist", async () => {
+test("service: the status host is not on the app's own egress allowlist", async () => {
   const pkg = JSON.parse(
-    await Deno.readTextFile(new URL("../../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../../package.json", import.meta.url)),
   ) as { w6w: { network: { allow: string[] } } };
   assertEquals(pkg.w6w.network.allow, ["googleads.googleapis.com"]);
   assert(!pkg.w6w.network.allow.includes("ads.google.com"));
 });
 
-Deno.test("service: no open incident is ok", async () => {
+test("service: no open incident is ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [closed()] }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
   assertEquals(calls[0].url, "https://ads.google.com/status/publisher/incidents.json");
 });
 
-Deno.test("service: an open Google Ads API disruption is degraded", async () => {
+test("service: an open Google Ads API disruption is degraded", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [open()] }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "degraded");
@@ -48,17 +50,17 @@ Deno.test("service: an open Google Ads API disruption is degraded", async () => 
   assertEquals(out.components?.["google-ads"].state, "ok");
 });
 
-Deno.test("service: an open outage is down", async () => {
+test("service: an open outage is down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [open({ status_impact: "SERVICE_OUTAGE" })] }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: matching tolerates the feed's leading space in service_name", async () => {
+test("service: matching tolerates the feed's leading space in service_name", async () => {
   const { ctx } = mockCtx([{ status: 200, body: [{ ...open(), service_name: "Google Ads API" }] }]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: a `Multiple Products` incident is matched via affected_products", async () => {
+test("service: a `Multiple Products` incident is matched via affected_products", async () => {
   // The broad outages that matter most carry the literal service_name
   // "Multiple Products" and name the real ones only in affected_products[].
   const { ctx } = mockCtx([{
@@ -75,7 +77,7 @@ Deno.test("service: a `Multiple Products` incident is matched via affected_produ
   assertEquals(out.components?.["google-ads"].state, "down");
 });
 
-Deno.test("service: another product's outage is not this app's outage", async () => {
+test("service: another product's outage is not this app's outage", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [{
@@ -88,7 +90,7 @@ Deno.test("service: another product's outage is not this app's outage", async ()
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: an informational notice is not a degradation", async () => {
+test("service: an informational notice is not a degradation", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [open({ status_impact: "SERVICE_INFORMATION" })],
@@ -96,14 +98,14 @@ Deno.test("service: an informational notice is not a degradation", async () => {
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a failing dashboard is unknown, never down", async () => {
+test("service: a failing dashboard is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "unknown");
   assert((out.message ?? "").includes("503"));
 });
 
-Deno.test("service: an unexpected payload shape is unknown", async () => {
+test("service: an unexpected payload shape is unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { incidents: [] } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

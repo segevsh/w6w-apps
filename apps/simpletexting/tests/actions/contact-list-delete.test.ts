@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactListDelete from "../../actions/contact-list-delete.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-list-delete: DELETEs the list's path and returns the status", async () => {
+test("contact-list-delete: DELETEs the list's path and returns the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await contactListDelete.execute({ listIdOrName: "My First List" }, ctx) as {
     listIdOrName: string;
@@ -15,6 +16,6 @@ Deno.test("contact-list-delete: DELETEs the list's path and returns the status",
   assertEquals(result.status, 204);
 });
 
-Deno.test("contact-list-delete: declared idempotent — the list stays gone on a retry", () => {
+test("contact-list-delete: declared idempotent — the list stays gone on a retry", () => {
   assertEquals(contactListDelete.idempotent, true);
 });

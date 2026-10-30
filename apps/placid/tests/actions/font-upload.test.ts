@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import fontUpload from "../../actions/font-upload.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
 const FONT = { uuid: "f1", title: "H", filename: "h.ttf", created_at: "2026-05-06T11:24:00+00:00" };
 
-Deno.test("font-upload: multipart carries file, title and terms_accepted=1", async () => {
+test("font-upload: multipart carries file, title and terms_accepted=1", async () => {
   const { ctx, calls } = mockCtx([{ body: FONT }]);
   await fontUpload.execute({
     contentBase64: btoa("FONTBYTES"),
@@ -22,7 +23,7 @@ Deno.test("font-upload: multipart carries file, title and terms_accepted=1", asy
   assert(text.includes("Content-Type: font/woff2\r\n\r\nFONTBYTES\r\n"));
 });
 
-Deno.test("font-upload: refuses without terms or with a non-font extension", async () => {
+test("font-upload: refuses without terms or with a non-font extension", async () => {
   const b64 = btoa("x");
   await assertRejects(() =>
     fontUpload.execute(

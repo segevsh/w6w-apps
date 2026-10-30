@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobAppointmentList from "../../actions/job-appointment-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-appointment-list: reads the unenveloped {appointments} shape", async () => {
+test("job-appointment-list: reads the unenveloped {appointments} shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { appointments: [{ id: "ap1" }, { id: "ap2" }] } }]);
   const out = await jobAppointmentList.execute({ jobId: "j1" }, ctx);
 

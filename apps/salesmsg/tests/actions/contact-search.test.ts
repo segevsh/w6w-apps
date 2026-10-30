@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactSearch from "../../actions/contact-search.ts";
 import { API_ROOT, mockCtx, queryOf, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-search: sends the documented request and returns the answer", async () => {
+test("contact-search: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ id: 1 }, { id: 2 }] } }]);
   const result = await contactSearch.execute({ "term": "ann" }, ctx) as {
     items: unknown[];
@@ -16,7 +17,7 @@ Deno.test("contact-search: sends the documented request and returns the answer",
   assertEquals(result.items.length, 2);
 });
 
-Deno.test("contact-search: a refused token surfaces the vendor message", async () => {
+test("contact-search: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

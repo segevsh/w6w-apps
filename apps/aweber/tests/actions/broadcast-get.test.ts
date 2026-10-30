@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import broadcastGet from "../../actions/broadcast-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("broadcast-get: fetches one broadcast by id", async () => {
+test("broadcast-get: fetches one broadcast by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { broadcast_id: "1", subject: "Hello", status: "sent" },
   }]);

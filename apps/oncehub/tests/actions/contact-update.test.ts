@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-update.ts";
 
-Deno.test("contact-update: PATCHes /contacts/{id} with only the provided fields", async () => {
+test("contact-update: PATCHes /contacts/{id} with only the provided fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "CTC-1" } }]);
   await action.execute({ id: "CTC-1", company: "Acme Inc" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("contact-update: PATCHes /contacts/{id} with only the provided fields"
   assertEquals(JSON.parse(calls[0].body!), { company: "Acme Inc" });
 });
 
-Deno.test("contact-update: never sends email or mobile_phone (not updatable via this endpoint)", async () => {
+test("contact-update: never sends email or mobile_phone (not updatable via this endpoint)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ id: "CTC-1", city: "New York" }, ctx);
   const body = JSON.parse(calls[0].body!);

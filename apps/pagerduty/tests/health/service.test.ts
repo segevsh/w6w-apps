@@ -1,7 +1,8 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertExists } from "../_assert.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: declared unavailable — no verifiable machine-readable status API", () => {
+test("service: declared unavailable — no verifiable machine-readable status API", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined);
   assertExists(service.unavailable);

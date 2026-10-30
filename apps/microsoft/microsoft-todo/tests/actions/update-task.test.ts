@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-task.ts";
 
-Deno.test("update-task: PATCHes only what was set", async () => {
+test("update-task: PATCHes only what was set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "T1" } }]);
   await action.execute!({
     taskList: "L1",
@@ -17,19 +18,19 @@ Deno.test("update-task: PATCHes only what was set", async () => {
   });
 });
 
-Deno.test("update-task: reopening a task is a status change, not a special endpoint", async () => {
+test("update-task: reopening a task is a status change, not a special endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ taskList: "L1", task: "T1", status: "notStarted" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { status: "notStarted" });
 });
 
-Deno.test("update-task: an empty body clears the notes rather than being dropped", async () => {
+test("update-task: an empty body clears the notes rather than being dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ taskList: "L1", task: "T1", body: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { body: { contentType: "text", content: "" } });
 });
 
-Deno.test("update-task: title is optional here, unlike on create", () => {
+test("update-task: title is optional here, unlike on create", () => {
   assertEquals(action.idempotent, true);
   assert(!action.params!.find((p) => p.key === "title")?.required);
 });

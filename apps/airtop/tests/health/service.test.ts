@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   COMPONENTS_URL,
   mapComponentStatus,
@@ -7,14 +8,14 @@ import service, {
 } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: probes the status host, not the API host", () => {
+test("service: probes the status host, not the API host", () => {
   assertEquals(SUMMARY_URL, "https://status.airtop.ai/summary.json");
   assertEquals(COMPONENTS_URL, "https://status.airtop.ai/components.json");
   assertEquals(service.network?.allow, ["status.airtop.ai"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an UP page with an operational component reports ok", async () => {
+test("service: an UP page with an operational component reports ok", async () => {
   const { ctx, calls } = mockCtx([
     { body: { page: { name: "Airtop", url: "https://status.airtop.ai", status: "UP" } } },
     { body: { components: [{ id: "c1", name: "App", status: "OPERATIONAL" }] } },
@@ -27,7 +28,7 @@ Deno.test("service: an UP page with an operational component reports ok", async 
   assertEquals(report.components?.c1.state, "ok");
 });
 
-Deno.test("service: HASISSUES reports degraded, with affected components named", async () => {
+test("service: HASISSUES reports degraded, with affected components named", async () => {
   const { ctx } = mockCtx([
     { body: { page: { name: "Airtop", url: "https://status.airtop.ai", status: "HASISSUES" } } },
     { body: { components: [{ id: "c1", name: "App", status: "PARTIALOUTAGE" }] } },
@@ -39,7 +40,7 @@ Deno.test("service: HASISSUES reports degraded, with affected components named",
   assert(/App \(PARTIALOUTAGE\)/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: component detail is best-effort — the page verdict stands if it fails", async () => {
+test("service: component detail is best-effort — the page verdict stands if it fails", async () => {
   const { ctx } = mockCtx([
     { body: { page: { name: "Airtop", url: "https://status.airtop.ai", status: "UP" } } },
     { status: 503, body: "" },
@@ -49,18 +50,18 @@ Deno.test("service: component detail is best-effort — the page verdict stands 
   assertEquals(report.components, undefined);
 });
 
-Deno.test("service: a failing summary endpoint reports unknown, not down", async () => {
+test("service: a failing summary endpoint reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
 /** Guards against a redirect silently pointing this probe at a different Instatus page. */
-Deno.test("service: a page that stops self-identifying as Airtop's reports unknown", async () => {
+test("service: a page that stops self-identifying as Airtop's reports unknown", async () => {
   const { ctx } = mockCtx([
     { body: { page: { name: "Somebody Else", url: "https://status.other.com", status: "UP" } } },
   ]);
@@ -69,7 +70,7 @@ Deno.test("service: a page that stops self-identifying as Airtop's reports unkno
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: mapPageStatus — confirmed and documented values, unknown default", () => {
+test("service: mapPageStatus — confirmed and documented values, unknown default", () => {
   assertEquals(mapPageStatus("UP"), "ok");
   assertEquals(mapPageStatus("HASISSUES"), "degraded");
   assertEquals(mapPageStatus("UNDERMAINTENANCE"), "degraded");
@@ -77,7 +78,7 @@ Deno.test("service: mapPageStatus — confirmed and documented values, unknown d
   assertEquals(mapPageStatus(undefined), "unknown");
 });
 
-Deno.test("service: mapComponentStatus — the observed value plus the Statuspage-parallel vocabulary", () => {
+test("service: mapComponentStatus — the observed value plus the Statuspage-parallel vocabulary", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("DEGRADEDPERFORMANCE"), "degraded");
   assertEquals(mapComponentStatus("PARTIALOUTAGE"), "degraded");

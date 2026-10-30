@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { API_ROOT, mockCtx, queryOf, unauthorized } from "../_helpers.ts";
 
-Deno.test("tag-create: sends the documented request and returns the answer", async () => {
+test("tag-create: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await tagCreate.execute({ "label": "vip" }, ctx) as { id: number };
 
@@ -13,12 +14,12 @@ Deno.test("tag-create: sends the documented request and returns the answer", asy
   assertEquals(result.id, 1);
 });
 
-Deno.test("tag-create: declares idempotent = false", () => {
+test("tag-create: declares idempotent = false", () => {
   assertEquals(tagCreate.idempotent, false);
   assertEquals(tagCreate.type, "perform");
 });
 
-Deno.test("tag-create: a refused token surfaces the vendor message", async () => {
+test("tag-create: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

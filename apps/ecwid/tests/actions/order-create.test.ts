@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orderCreate from "../../actions/order-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("order-create: POSTs the documented required fields to /orders", async () => {
+test("order-create: POSTs the documented required fields to /orders", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "EBJFT" } }]);
   const out = await orderCreate.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("order-create: POSTs the documented required fields to /orders", async
   assertEquals(out.id, "EBJFT");
 });
 
-Deno.test("order-create: items and the two persons pass through as JSON", async () => {
+test("order-create: items and the two persons pass through as JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await orderCreate.execute(
     {
@@ -50,7 +51,7 @@ Deno.test("order-create: items and the two persons pass through as JSON", async 
 });
 
 /** The five fields the vendor marks Required on `POST /orders`. */
-Deno.test("order-create: every Required field is declared required here too", () => {
+test("order-create: every Required field is declared required here too", () => {
   for (const key of ["email", "subtotal", "total", "fulfillmentStatus", "paymentStatus"]) {
     assertEquals(
       orderCreate.params?.find((p) => p.key === key)?.required,
@@ -60,7 +61,7 @@ Deno.test("order-create: every Required field is declared required here too", ()
   }
 });
 
-Deno.test("order-create: the status defaults are the states an unfulfilled order starts in", () => {
+test("order-create: the status defaults are the states an unfulfilled order starts in", () => {
   assertEquals(
     orderCreate.params?.find((p) => p.key === "fulfillmentStatus")?.default,
     "AWAITING_PROCESSING",

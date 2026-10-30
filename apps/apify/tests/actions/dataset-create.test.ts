@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import datasetCreate from "../../actions/dataset-create.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("dataset-create: POSTs to /v2/datasets with the name as a query parameter", async () => {
+test("dataset-create: POSTs to /v2/datasets with the name as a query parameter", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "d1", name: "results" }) }]);
   const out = await datasetCreate.execute({ name: "results" }, ctx) as { id: string };
 
@@ -14,7 +15,7 @@ Deno.test("dataset-create: POSTs to /v2/datasets with the name as a query parame
   assertEquals(out.id, "d1");
 });
 
-Deno.test("dataset-create: an unnamed create sends no name at all", async () => {
+test("dataset-create: an unnamed create sends no name at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "d2" }) }]);
   await datasetCreate.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
@@ -25,11 +26,11 @@ Deno.test("dataset-create: an unnamed create sends no name at all", async () => 
  * unnamed dataset every call. Idempotency is therefore a property of the
  * caller's input, not of the endpoint, and the honest declaration is `false`.
  */
-Deno.test("dataset-create: is declared non-idempotent", () => {
+test("dataset-create: is declared non-idempotent", () => {
   assertEquals(datasetCreate.idempotent, false);
 });
 
-Deno.test("dataset-create: the signing key is stripped from the created dataset", async () => {
+test("dataset-create: the signing key is stripped from the created dataset", async () => {
   const { ctx } = mockCtx([
     { status: 201, body: envelope({ id: "d1", urlSigningSecretKey: "hmac-key-do-not-leak" }) },
   ]);

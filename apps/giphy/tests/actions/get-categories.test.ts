@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getCategories from "../../actions/get-categories.ts";
 import { envelope, mockCtx, PAGINATION_FIXTURE, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const CATEGORY_FIXTURE = {
   gif: { images: { original: { url: "https://media.giphy.com/media/cat/giphy.gif" } } },
 };
 
-Deno.test("get-categories: calls GET /v1/gifs/categories and passes the list through", async () => {
+test("get-categories: calls GET /v1/gifs/categories and passes the list through", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope([CATEGORY_FIXTURE], { pagination: PAGINATION_FIXTURE }) },
   ]);
@@ -25,7 +26,7 @@ Deno.test("get-categories: calls GET /v1/gifs/categories and passes the list thr
   assertEquals(out.pagination, PAGINATION_FIXTURE);
 });
 
-Deno.test("get-categories: declares no params at all", () => {
+test("get-categories: declares no params at all", () => {
   assertEquals(getCategories.params, undefined);
   assertEquals(getCategories.type, "read");
 });

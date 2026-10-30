@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-group.ts";
 
-Deno.test("update-group: PATCHes only the set fields and reports success on 204", async () => {
+test("update-group: PATCHes only the set fields and reports success on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute(
     { groupId: "g1", description: "new", securityEnabled: false },
@@ -14,7 +15,7 @@ Deno.test("update-group: PATCHes only the set fields and reports success on 204"
   assertEquals(out, { updated: true, groupId: "g1" });
 });
 
-Deno.test("update-group: a 200 body from a Microsoft 365-only property is kept", async () => {
+test("update-group: a 200 body from a Microsoft 365-only property is kept", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "g1", allowExternalSenders: true } }]);
   const out = await action.execute({
     groupId: "g1",
@@ -25,7 +26,7 @@ Deno.test("update-group: a 200 body from a Microsoft 365-only property is kept",
   assertEquals(out.updated, true);
 });
 
-Deno.test("update-group: refuses an empty update", async () => {
+test("update-group: refuses an empty update", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ groupId: "g1" }, ctx),

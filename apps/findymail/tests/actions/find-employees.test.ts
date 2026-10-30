@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/find-employees.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("find-employees: POSTs the titles as an array and wraps the array response", async () => {
+test("find-employees: POSTs the titles as an array and wraps the array response", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "name": "John", "jobTitle": "CEO" }] }]);
   const out = await action.execute!(
     { "website": "findymail.com", "job_titles": "CEO, CTO", "count": 2 } as never,
@@ -23,7 +24,7 @@ Deno.test("find-employees: POSTs the titles as an array and wraps the array resp
   assertEquals(out, { "employees": [{ "name": "John", "jobTitle": "CEO" }] });
 });
 
-Deno.test("find-employees: rejects an empty title list before any request", async () => {
+test("find-employees: rejects an empty title list before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await action.execute!({ "website": "a.com", "job_titles": "" } as never, ctx)

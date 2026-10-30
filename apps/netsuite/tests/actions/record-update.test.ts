@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordUpdate from "../../actions/record-update.ts";
 import { BASE, created, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("record-update: PATCHes only the given fields", async () => {
+test("record-update: PATCHes only the given fields", async () => {
   const { ctx, calls } = mockCtx([created("customer", "107")]);
   const out = await run(recordUpdate, {
     recordType: "customer",
@@ -15,7 +16,7 @@ Deno.test("record-update: PATCHes only the given fields", async () => {
   assertEquals(out.id, "107");
 });
 
-Deno.test("record-update: a null field is sent as null (NetSuite deletes the field)", async () => {
+test("record-update: a null field is sent as null (NetSuite deletes the field)", async () => {
   const { ctx, calls } = mockCtx([created("customer", "eid:A")]);
   await run(recordUpdate, { recordType: "customer", id: "eid:A", fields: '{"body1":null}' }, ctx);
   assertEquals(calls[0].url, `${BASE}/services/rest/record/v1/customer/eid:A`);

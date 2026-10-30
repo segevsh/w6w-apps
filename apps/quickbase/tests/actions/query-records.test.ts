@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockQbCtx } from "../_helpers.ts";
 import action from "../../actions/query-records.ts";
 
 const body = (raw: string | null) => JSON.parse(raw!);
 
-Deno.test("query-records: posts to /records/query with `from` as the table", async () => {
+test("query-records: posts to /records/query with `from` as the table", async () => {
   const { ctx, calls } = mockQbCtx([{ body: { data: [], metadata: {} } }]);
   await action.execute({ tableId: "bck7gp3q2" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("query-records: posts to /records/query with `from` as the table", asy
   assertEquals(body(calls[0].body), { from: "bck7gp3q2" });
 });
 
-Deno.test("query-records: omits `options` entirely when no paging param is set", async () => {
+test("query-records: omits `options` entirely when no paging param is set", async () => {
   // Sending `options: {}` would be noise; Quickbase treats an absent options
   // block as "use your defaults".
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
@@ -21,7 +22,7 @@ Deno.test("query-records: omits `options` entirely when no paging param is set",
   assert(!("options" in body(calls[0].body)));
 });
 
-Deno.test("query-records: forwards select, sortBy, groupBy and paging options", async () => {
+test("query-records: forwards select, sortBy, groupBy and paging options", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({
     tableId: "bck1",
@@ -44,7 +45,7 @@ Deno.test("query-records: forwards select, sortBy, groupBy and paging options", 
   });
 });
 
-Deno.test("query-records: accepts JSON params as strings from the form", async () => {
+test("query-records: accepts JSON params as strings from the form", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({ tableId: "bck1", select: "[6,7]", sortBy: '[{"fieldId":4}]' }, ctx);
 
@@ -52,27 +53,27 @@ Deno.test("query-records: accepts JSON params as strings from the form", async (
   assertEquals(body(calls[0].body).sortBy, [{ fieldId: 4 }]);
 });
 
-Deno.test("query-records: sends record IDs as the `where` union arm", async () => {
+test("query-records: sends record IDs as the `where` union arm", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({ tableId: "bck1", recordIds: [12, 13] }, ctx);
 
   assertEquals(body(calls[0].body).where, [12, 13]);
 });
 
-Deno.test("query-records: a Where clause wins over record IDs", async () => {
+test("query-records: a Where clause wins over record IDs", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({ tableId: "bck1", where: "{3.GT.0}", recordIds: [12] }, ctx);
 
   assertEquals(body(calls[0].body).where, "{3.GT.0}");
 });
 
-Deno.test("query-records: omits `where` when neither is given, returning all records", async () => {
+test("query-records: omits `where` when neither is given, returning all records", async () => {
   const { ctx, calls } = mockQbCtx([{ body: {} }]);
   await action.execute({ tableId: "bck1", where: "   " }, ctx);
   assert(!("where" in body(calls[0].body)));
 });
 
-Deno.test("query-records: returns data, the field map and pagination metadata", async () => {
+test("query-records: returns data, the field map and pagination metadata", async () => {
   const { ctx } = mockQbCtx([{
     body: {
       data: [{ "6": { value: "Acme" } }],

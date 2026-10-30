@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import keyValueStoreList from "../../actions/key-value-store-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("key-value-store-list: calls GET /v2/key-value-stores", async () => {
+test("key-value-store-list: calls GET /v2/key-value-stores", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "s1", name: "config" }]) }]);
   const out = await keyValueStoreList.execute({ limit: 100 }, ctx) as { items: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("key-value-store-list: calls GET /v2/key-value-stores", async () => {
   assertEquals(out.items, [{ id: "s1", name: "config" }]);
 });
 
-Deno.test("key-value-store-list: unnamed stores are excluded unless asked for", async () => {
+test("key-value-store-list: unnamed stores are excluded unless asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }, { body: listEnvelope([]) }]);
   await keyValueStoreList.execute({}, ctx);
   assert(!("unnamed" in queryOf(calls[0].url)));
@@ -19,7 +20,7 @@ Deno.test("key-value-store-list: unnamed stores are excluded unless asked for", 
   assertEquals(queryOf(calls[1].url).unnamed, "1");
 });
 
-Deno.test("key-value-store-list: a signing key in a list item would still be stripped", async () => {
+test("key-value-store-list: a signing key in a list item would still be stripped", async () => {
   const { ctx } = mockCtx([
     { body: listEnvelope([{ id: "s1", urlSigningSecretKey: "hmac-key-do-not-leak" }]) },
   ]);

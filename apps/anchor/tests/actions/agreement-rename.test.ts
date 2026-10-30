@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import agreementRename from "../../actions/agreement-rename.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agreement-rename: sends PUT /v2/agreements/a1/title", async () => {
+test("agreement-rename: sends PUT /v2/agreements/a1/title", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await agreementRename.execute(
     { "id": "a1", "title": "Bookkeeping 2026" } as never,
@@ -23,7 +24,7 @@ Deno.test("agreement-rename: sends PUT /v2/agreements/a1/title", async () => {
   assert(typeof out === "object" && out !== null);
 });
 
-Deno.test("agreement-rename: a non-2xx answer throws with the vendor's error code", async () => {
+test("agreement-rename: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

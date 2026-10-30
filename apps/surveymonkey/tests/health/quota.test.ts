@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: parses X-Ratelimit-App-Global-* headers and converts delta reset to ISO", async () => {
+test("quota: parses X-Ratelimit-App-Global-* headers and converts delta reset to ISO", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -34,7 +35,7 @@ Deno.test("quota: parses X-Ratelimit-App-Global-* headers and converts delta res
   assertEquals(minuteResetMs >= before + 45_000 && minuteResetMs <= Date.now() + 45_000, true);
 });
 
-Deno.test("quota: low headroom (<10% remaining) on either window degrades", async () => {
+test("quota: low headroom (<10% remaining) on either window degrades", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -51,7 +52,7 @@ Deno.test("quota: low headroom (<10% remaining) on either window degrades", asyn
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: zero remaining on the daily window reports down", async () => {
+test("quota: zero remaining on the daily window reports down", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -66,13 +67,13 @@ Deno.test("quota: zero remaining on the daily window reports down", async () => 
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: missing rate-limit headers reports unknown", async () => {
+test("quota: missing rate-limit headers reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {}, headers: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("quota: a failing probe reports unknown", async () => {
+test("quota: a failing probe reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import instantUrlDelete from "../../actions/instant-url-delete.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("instant-url-delete: DELETE /instant_urls/{uid}", async () => {
+test("instant-url-delete: DELETE /instant_urls/{uid}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const out = await instantUrlDelete.execute({ uid: "iu1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("instant-url-delete: DELETE /instant_urls/{uid}", async () => {
   assertEquals(out, { uid: "iu1", deleted: true });
 });
 
-Deno.test("instant-url-delete: requires uid", async () => {
+test("instant-url-delete: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => instantUrlDelete.execute({ uid: "" }, ctx));
 });

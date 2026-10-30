@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { STATUS_URL } from "../../health/service.ts";
 import { mockCtx, type MockResponse } from "../_helpers.ts";
 
@@ -37,14 +38,14 @@ async function run(responses: MockResponse[]) {
   return { report, calls };
 }
 
-Deno.test("service: probes the vendor's own summary.json, unauthenticated", async () => {
+test("service: probes the vendor's own summary.json, unauthenticated", async () => {
   const { calls } = await run([{ body: summary() }]);
   assertEquals(calls[0].url, STATUS_URL);
   assertEquals(calls[0].method, "GET");
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("service: the API component's own state is the verdict", async () => {
+test("service: the API component's own state is the verdict", async () => {
   const { report } = await run([{
     body: summary({
       // A bad day on the end-user CRM must not report this app's API degraded.
@@ -62,7 +63,7 @@ Deno.test("service: the API component's own state is the verdict", async () => {
   });
 });
 
-Deno.test("service: a degraded API component reports degraded", async () => {
+test("service: a degraded API component reports degraded", async () => {
   const { report } = await run([{
     body: summary({
       components: COMPONENTS.map((c) =>
@@ -73,7 +74,7 @@ Deno.test("service: a degraded API component reports degraded", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: a major API outage reports down", async () => {
+test("service: a major API outage reports down", async () => {
   const { report } = await run([{
     body: summary({
       components: COMPONENTS.map((c) => c.name === "API" ? { ...c, status: "major_outage" } : c),
@@ -82,7 +83,7 @@ Deno.test("service: a major API outage reports down", async () => {
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: the message names the other four components", async () => {
+test("service: the message names the other four components", async () => {
   const { report } = await run([{ body: summary() }]);
   for (const name of ["CreditRepairCloud", "SecureClientAccess", "Billing API", "Signup"]) {
     assert(report.message?.includes(name), `${name} missing from: ${report.message}`);
@@ -90,7 +91,7 @@ Deno.test("service: the message names the other four components", async () => {
   assert(report.message?.includes("other components"), report.message);
 });
 
-Deno.test("service: a missing API component falls back to the page indicator", async () => {
+test("service: a missing API component falls back to the page indicator", async () => {
   const { report } = await run([{
     body: summary({
       components: COMPONENTS.filter((c) => c.name !== "API"),
@@ -102,7 +103,7 @@ Deno.test("service: a missing API component falls back to the page indicator", a
   assert(report.message?.includes("falling back"), report.message);
 });
 
-Deno.test("service: components without ids still report, slug-keyed", async () => {
+test("service: components without ids still report, slug-keyed", async () => {
   const { report } = await run([{
     body: summary({
       components: [{ name: "API", status: "operational" }, {
@@ -115,25 +116,25 @@ Deno.test("service: components without ids still report, slug-keyed", async () =
   assertEquals(Object.keys(report.components ?? {}), ["api-0", "signup-1"]);
 });
 
-Deno.test("service: an unreadable body is unknown, never down", async () => {
+test("service: an unreadable body is unknown, never down", async () => {
   const { report } = await run([{ status: 200, body: "<html>maintenance</html>" }]);
   assertEquals(report.state, "unknown");
   assertEquals(report.message, "Status page returned an unreadable body");
 });
 
-Deno.test("service: a failing status API is unknown, never down", async () => {
+test("service: a failing status API is unknown, never down", async () => {
   const { report } = await run([{ status: 503, body: "" }]);
   assertEquals(report.state, "unknown");
   assertEquals(report.message, "Status page returned 503");
 });
 
-Deno.test("service: an empty component list is unknown", async () => {
+test("service: an empty component list is unknown", async () => {
   const { report } = await run([{ body: summary({ components: [] }) }]);
   assertEquals(report.state, "unknown");
   assertEquals(report.message, "Status page returned no components");
 });
 
-Deno.test("service: a page that no longer self-identifies as CRC's is unknown", async () => {
+test("service: a page that no longer self-identifies as CRC's is unknown", async () => {
   const { report } = await run([{
     body: summary({ page: { id: "x", name: "Someone Else", url: "https://status.other.com" } }),
   }]);
@@ -141,7 +142,7 @@ Deno.test("service: a page that no longer self-identifies as CRC's is unknown", 
   assert(report.message?.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("service: the report is cached briefly and hides nothing about the API", async () => {
+test("service: the report is cached briefly and hides nothing about the API", async () => {
   const { report } = await run([{ body: summary() }]);
   assertEquals(report.ttlSeconds, 60);
   assertEquals(report.state, "ok");

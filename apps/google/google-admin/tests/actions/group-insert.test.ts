@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-insert.ts";
 
-Deno.test("group-insert: POSTs /groups with the given email/name/description", async () => {
+test("group-insert: POSTs /groups with the given email/name/description", async () => {
   const body = { id: "g-1" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({
@@ -22,6 +23,6 @@ Deno.test("group-insert: POSTs /groups with the given email/name/description", a
   assertEquals(result, body);
 });
 
-Deno.test("group-insert: is not idempotent", () => {
+test("group-insert: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

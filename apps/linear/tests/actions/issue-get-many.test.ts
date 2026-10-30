@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/issue-get-many.ts";
 
 const OK = { data: { issues: { nodes: [], pageInfo: { hasNextPage: false } } } };
 
-Deno.test("issue-get-many: builds Linear's nested filter shape", async () => {
+test("issue-get-many: builds Linear's nested filter shape", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ teamId: "t1", assigneeId: "u1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.filter, {
@@ -13,7 +14,7 @@ Deno.test("issue-get-many: builds Linear's nested filter shape", async () => {
   });
 });
 
-Deno.test("issue-get-many: omits the filter entirely when nothing is set", async () => {
+test("issue-get-many: omits the filter entirely when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({}, ctx);
   const vars = JSON.parse(calls[0].body!).variables;
@@ -21,7 +22,7 @@ Deno.test("issue-get-many: omits the filter entirely when nothing is set", async
   assertEquals(vars.first, 50);
 });
 
-Deno.test("issue-get-many: passes the cursor through for the next page", async () => {
+test("issue-get-many: passes the cursor through for the next page", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ after: "cursor-1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variables.after, "cursor-1");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pinCreate from "../../actions/pin-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pin-create: POSTs /pins with an image_url media_source", async () => {
+test("pin-create: POSTs /pins with an image_url media_source", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "9", link: null, board_id: "1" } },
   ]);
@@ -21,7 +22,7 @@ Deno.test("pin-create: POSTs /pins with an image_url media_source", async () => 
   assertEquals(out.id, "9");
 });
 
-Deno.test("pin-create: includes optional fields only when set", async () => {
+test("pin-create: includes optional fields only when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "9" } }]);
   await pinCreate.execute(
     {

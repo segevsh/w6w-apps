@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/list-labels.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-labels: GETs /contacts/v4/labels with no invented defaults", async () => {
+test("list-labels: GETs /contacts/v4/labels with no invented defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { labels: [] } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-labels: GETs /contacts/v4/labels with no invented defaults", asy
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-labels: forwards labelType, language, paging and sort", async () => {
+test("list-labels: forwards labelType, language, paging and sort", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     labelType: "USER_DEFINED",
@@ -30,7 +31,7 @@ Deno.test("list-labels: forwards labelType, language, paging and sort", async ()
   assertEquals(p.get("sort.order"), "DESC");
 });
 
-Deno.test("list-labels: is a search action returning the body", async () => {
+test("list-labels: is a search action returning the body", async () => {
   const body = { labels: [{ key: "custom.vip" }] };
   const { ctx } = mockCtx([{ body }]);
   assertEquals(await action.execute!({}, ctx), body);

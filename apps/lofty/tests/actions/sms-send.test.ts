@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sms-send.ts";
 
-Deno.test("sms-send: posts to the SMS endpoint and echoes the number used", async () => {
+test("sms-send: posts to the SMS endpoint and echoes the number used", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { messageId: "m1", phoneNumber: "5865865860", phoneCode: "1" },
@@ -22,7 +23,7 @@ Deno.test("sms-send: posts to the SMS endpoint and echoes the number used", asyn
   assertEquals(result.phoneNumber, "5865865860");
 });
 
-Deno.test("sms-send: an explicit number and code are sent", async () => {
+test("sms-send: an explicit number and code are sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { messageId: "m2" } }]);
   await action.execute!({
     leadId: 1,
@@ -38,6 +39,6 @@ Deno.test("sms-send: an explicit number and code are sent", async () => {
   });
 });
 
-Deno.test("sms-send: is not idempotent — a retry sends a second message", () => {
+test("sms-send: is not idempotent — a retry sends a second message", () => {
   assertEquals(action.idempotent, false);
 });

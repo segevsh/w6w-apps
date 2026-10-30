@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-delete.ts";
 
-Deno.test("campaign-delete: GETs deletecampaign with the campaign key", async () => {
+test("campaign-delete: GETs deletecampaign with the campaign key", async () => {
   const { ctx, calls } = mockCampaignsCtx([{
     body: { status: "success", code: "0", message: "success" },
   }]);

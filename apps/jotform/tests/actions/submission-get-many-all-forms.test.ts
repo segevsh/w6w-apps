@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-get-many-all-forms.ts";
 
-Deno.test("submission-get-many-all-forms: GETs /user/submissions with the resultSet", async () => {
+test("submission-get-many-all-forms: GETs /user/submissions with the resultSet", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([{ id: "237955080346633702", form_id: "31751954731962" }], {
@@ -23,7 +24,7 @@ Deno.test("submission-get-many-all-forms: GETs /user/submissions with the result
   });
 });
 
-Deno.test("submission-get-many-all-forms: accepts a filter already serialised as JSON", async () => {
+test("submission-get-many-all-forms: accepts a filter already serialised as JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await action.execute({ filter: '{"fullText":"John Brown"}' }, ctx);
   assertEquals(

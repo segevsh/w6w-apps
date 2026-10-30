@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobPhaseCreate from "../../actions/job-phase-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-phase-create: POSTs the one writable field", async () => {
+test("job-phase-create: POSTs the one writable field", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, name: "Initial Scoping" } }]);
   await jobPhaseCreate.execute({ jobId: 1010, name: "Initial Scoping" }, ctx);
 

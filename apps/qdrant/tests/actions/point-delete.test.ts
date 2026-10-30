@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/point-delete.ts";
 
 const done = ok({ operation_id: 3, status: "completed" });
 
-Deno.test("point-delete: deleting by id names exactly what goes", async () => {
+test("point-delete: deleting by id names exactly what goes", async () => {
   const { ctx, calls } = mockCtx([done], { display });
   const result = await action.execute!({ collection: "docs", ids: "1,2" }, ctx) as {
     byFilter: boolean;
@@ -20,7 +21,7 @@ Deno.test("point-delete: deleting by id names exactly what goes", async () => {
 });
 
 /** A filtered delete has no undo, so it needs the caller to say so. */
-Deno.test("point-delete: a filtered delete is refused without the acknowledgement", async () => {
+test("point-delete: a filtered delete is refused without the acknowledgement", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -34,7 +35,7 @@ Deno.test("point-delete: a filtered delete is refused without the acknowledgemen
   assertEquals(calls.length, 0);
 });
 
-Deno.test("point-delete: acknowledged, the filter goes through and is logged as a warning", async () => {
+test("point-delete: acknowledged, the filter goes through and is logged as a warning", async () => {
   const { ctx, calls, logs } = mockCtx([done], { display });
   const result = await action.execute!({
     collection: "docs",
@@ -51,7 +52,7 @@ Deno.test("point-delete: acknowledged, the filter goes through and is logged as 
  * `{}` is a filter that matches every point. Qdrant accepts it and empties the
  * collection.
  */
-Deno.test("point-delete: an empty filter object is refused even when acknowledged", async () => {
+test("point-delete: an empty filter object is refused even when acknowledged", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -62,7 +63,7 @@ Deno.test("point-delete: an empty filter object is refused even when acknowledge
   assertEquals(calls.length, 0);
 });
 
-Deno.test("point-delete: ids and a filter together are refused — Qdrant takes one selector", async () => {
+test("point-delete: ids and a filter together are refused — Qdrant takes one selector", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -78,7 +79,7 @@ Deno.test("point-delete: ids and a filter together are refused — Qdrant takes 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("point-delete: neither selector is refused", async () => {
+test("point-delete: neither selector is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs" }, ctx),
@@ -87,7 +88,7 @@ Deno.test("point-delete: neither selector is refused", async () => {
   );
 });
 
-Deno.test("point-delete: an unusable id is caught before the request", async () => {
+test("point-delete: an unusable id is caught before the request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs", ids: "doc-42" }, ctx),
@@ -97,7 +98,7 @@ Deno.test("point-delete: an unusable id is caught before the request", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("point-delete: needs a collection", async () => {
+test("point-delete: needs a collection", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({ ids: "1" }, ctx), Error, "collection");
 });

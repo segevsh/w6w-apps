@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, rejection } from "../_helpers.ts";
 import action from "../../actions/create-customer-invoice.ts";
 
@@ -10,7 +11,7 @@ const LINES = [{
   quantity: "1",
 }];
 
-Deno.test("create-customer-invoice: a default draft sends draft:true with the four required fields", async () => {
+test("create-customer-invoice: a default draft sends draft:true with the four required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 10 } }]);
   await action.execute({
     date: "2026-09-22",
@@ -32,7 +33,7 @@ Deno.test("create-customer-invoice: a default draft sends draft:true with the fo
   });
 });
 
-Deno.test("create-customer-invoice: draft omitted or false produces the Finalized shape (no `draft` key at all)", async () => {
+test("create-customer-invoice: draft omitted or false produces the Finalized shape (no `draft` key at all)", async () => {
   const omitted = mockCtx([{ body: { id: 10 } }]);
   await action.execute({
     date: "2026-09-22",
@@ -55,7 +56,7 @@ Deno.test("create-customer-invoice: draft omitted or false produces the Finalize
   assertEquals("draft" in finalised, false, "`draft: false` is not a documented body value");
 });
 
-Deno.test("create-customer-invoice: forwards the optional PDF, currency and reference fields", async () => {
+test("create-customer-invoice: forwards the optional PDF, currency and reference fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 10 } }]);
   await action.execute({
     date: "2026-09-22",
@@ -94,7 +95,7 @@ Deno.test("create-customer-invoice: forwards the optional PDF, currency and refe
   assertEquals(sent.currency, "USD");
 });
 
-Deno.test("create-customer-invoice: a 422 business-rule refusal surfaces `details`", async () => {
+test("create-customer-invoice: a 422 business-rule refusal surfaces `details`", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-list.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("webhook-list: redacts every subscription's secret", async () => {
+test("webhook-list: redacts every subscription's secret", async () => {
   const { ctx, calls } = mockCtx([{
     "body": {
       "results": [{ "id": "w_1", "secret": "s3cret" }, { "id": "w_2", "secret": null }],
@@ -36,7 +37,7 @@ Deno.test("webhook-list: redacts every subscription's secret", async () => {
   });
 });
 
-Deno.test("webhook-list: rejects after + before together", async () => {
+test("webhook-list: rejects after + before together", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "after": "a", "before": "b" } as never, ctx),

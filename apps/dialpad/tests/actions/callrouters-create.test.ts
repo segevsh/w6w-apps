@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callroutersCreate from "../../actions/callrouters-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("callrouters-create: POSTs /callrouters and strips the response signing secret", async () => {
+test("callrouters-create: POSTs /callrouters and strips the response signing secret", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -32,6 +33,6 @@ Deno.test("callrouters-create: POSTs /callrouters and strips the response signin
   assertEquals(out.signature.algo, "HS256");
 });
 
-Deno.test("callrouters-create: declared non-idempotent", () => {
+test("callrouters-create: declared non-idempotent", () => {
   assertEquals(callroutersCreate.idempotent, false);
 });

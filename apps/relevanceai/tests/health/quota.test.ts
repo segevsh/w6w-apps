@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: is a declared absence, not a silent gap", () => {
+test("quota: is a declared absence, not a silent gap", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assert((quota.unavailable?.reason.length ?? 0) > 100);
@@ -14,11 +15,11 @@ Deno.test("quota: is a declared absence, not a silent gap", () => {
  * `unknown`, and `unknown` outranks `ok` in the roll-up, so at any other
  * severity this would pin the app's verdict at `unknown` forever.
  */
-Deno.test("quota: is informational, so it cannot pin the app at unknown", () => {
+test("quota: is informational, so it cannot pin the app at unknown", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: the reason names what was checked and what was found", () => {
+test("quota: the reason names what was checked and what was found", () => {
   const reason = quota.unavailable!.reason;
   // The headers that were looked for and not found.
   assert(/X-RateLimit-\*/.test(reason), reason);

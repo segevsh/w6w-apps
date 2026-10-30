@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import evidenceCreate from "../../actions/evidence-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("evidence-create: builds a single URL artifact from the flat fields", async () => {
+test("evidence-create: builds a single URL artifact from the flat fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 12, artifactsCreated: 1 } }]);
   const out = await evidenceCreate.execute({
     workspaceId: 7,
@@ -29,7 +30,7 @@ Deno.test("evidence-create: builds a single URL artifact from the flat fields", 
   assertEquals(out.id, 12);
 });
 
-Deno.test("evidence-create: an S3_FILE artifact carries the fileKey and not the url", async () => {
+test("evidence-create: an S3_FILE artifact carries the fileKey and not the url", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await evidenceCreate.execute({
     workspaceId: 7,
@@ -45,7 +46,7 @@ Deno.test("evidence-create: an S3_FILE artifact carries the fileKey and not the 
   assertEquals("url" in artifact, false);
 });
 
-Deno.test("evidence-create: an `artifacts` JSON array replaces the flat fields", async () => {
+test("evidence-create: an `artifacts` JSON array replaces the flat fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   const artifacts = [
     { type: "URL", url: "https://a.example", filedAt: "2026-01-01" },
@@ -59,7 +60,7 @@ Deno.test("evidence-create: an `artifacts` JSON array replaces the flat fields",
   assertEquals(JSON.parse(calls[0].body!).artifacts, artifacts);
 });
 
-Deno.test("evidence-create: missing required artifact pieces fail before any request", async () => {
+test("evidence-create: missing required artifact pieces fail before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   for (
     const input of [
@@ -77,7 +78,7 @@ Deno.test("evidence-create: missing required artifact pieces fail before any req
   assertEquals(calls.length, 0);
 });
 
-Deno.test("evidence-create: is non-idempotent and a 403 names the permission", async () => {
+test("evidence-create: is non-idempotent and a 403 names the permission", async () => {
   assertEquals(evidenceCreate.idempotent, false);
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden", 5) }]);
   const err = await assertRejects(

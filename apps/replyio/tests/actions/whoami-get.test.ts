@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import whoamiGet from "../../actions/whoami-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("whoami-get: calls GET /v3/whoami and returns the body verbatim", async () => {
+test("whoami-get: calls GET /v3/whoami and returns the body verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { userId: 1, username: "acme", teamId: 2 } }]);
   const out = await whoamiGet.execute({}, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("whoami-get: calls GET /v3/whoami and returns the body verbatim", asyn
   assertEquals(out, { userId: 1, username: "acme", teamId: 2 });
 });
 
-Deno.test("whoami-get: takes no parameters", () => {
+test("whoami-get: takes no parameters", () => {
   assertEquals(whoamiGet.params?.length, 0);
 });

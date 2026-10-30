@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/conversation-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("conversation-list: GETs /conversations", async () => {
+test("conversation-list: GETs /conversations", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       conversation_list_count: 1,
@@ -17,7 +18,7 @@ Deno.test("conversation-list: GETs /conversations", async () => {
   assertEquals(out, { conversations: [{ conversation_id: 3 }], count: 1, total: 4 });
 });
 
-Deno.test("conversation-list: a 204 is an empty list", async () => {
+test("conversation-list: a 204 is an empty list", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({}, ctx), { conversations: [], count: 0, total: 0 });
 });

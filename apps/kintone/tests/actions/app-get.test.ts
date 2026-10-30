@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/app-get.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("app-get: GETs /k/v1/app.json?id=... (not `app=`)", async () => {
+test("app-get: GETs /k/v1/app.json?id=... (not `app=`)", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { appId: "1", code: "", name: "ToDo App" } }],
     conn,

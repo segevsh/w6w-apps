@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/call-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("call-list: repeats array params and unwraps call_list", async () => {
+test("call-list: repeats array params and unwraps call_list", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       call_list_count: 2,
@@ -32,7 +33,7 @@ Deno.test("call-list: repeats array params and unwraps call_list", async () => {
   });
 });
 
-Deno.test("call-list: a 204 is an empty page", async () => {
+test("call-list: a 204 is an empty page", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({}, ctx), {
     calls: [],

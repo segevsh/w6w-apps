@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationListByEndUser from "../../actions/conversation-list-by-end-user.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-list-by-end-user: calls GET /v1/endusers/11111111-2222-3333-4444-555555555555/conversations", async () => {
+test("conversation-list-by-end-user: calls GET /v1/endusers/11111111-2222-3333-4444-555555555555/conversations", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -32,7 +33,7 @@ Deno.test("conversation-list-by-end-user: calls GET /v1/endusers/11111111-2222-3
   assertEquals(out, { data: [{ "id": 1 }], nextPageKey: "abc==" });
 });
 
-Deno.test("conversation-list-by-end-user: surfaces a Dixa error message with the status", async () => {
+test("conversation-list-by-end-user: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -47,7 +48,7 @@ Deno.test("conversation-list-by-end-user: surfaces a Dixa error message with the
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("conversation-list-by-end-user: rejects bad input before any request", async () => {
+test("conversation-list-by-end-user: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

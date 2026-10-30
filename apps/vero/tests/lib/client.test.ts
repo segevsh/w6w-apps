@@ -1,30 +1,31 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { API_BASE, compact, parseJsonParam, request } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("API_BASE: fixed host, no region split", () => {
+test("API_BASE: fixed host, no region split", () => {
   assertEquals(API_BASE, "https://api.getvero.com/api/v2");
 });
 
-Deno.test("parseJsonParam: passes an already-parsed object through", () => {
+test("parseJsonParam: passes an already-parsed object through", () => {
   assertEquals(parseJsonParam({ a: 1 }), { a: 1 });
 });
 
-Deno.test("parseJsonParam: parses a JSON string", () => {
+test("parseJsonParam: parses a JSON string", () => {
   assertEquals(parseJsonParam('{"a":1}'), { a: 1 });
 });
 
-Deno.test("parseJsonParam: undefined/null/empty-string are absent", () => {
+test("parseJsonParam: undefined/null/empty-string are absent", () => {
   assertEquals(parseJsonParam(undefined), undefined);
   assertEquals(parseJsonParam(null), undefined);
   assertEquals(parseJsonParam(""), undefined);
 });
 
-Deno.test("parseJsonParam: rejects a non-object JSON value", () => {
+test("parseJsonParam: rejects a non-object JSON value", () => {
   assertThrows(() => parseJsonParam("42"), Error, "expected a JSON object");
 });
 
-Deno.test("compact: drops undefined, null and empty-string values", () => {
+test("compact: drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: "x", b: undefined, c: null, d: "", e: 0, f: false }), {
     a: "x",
     e: 0,
@@ -32,7 +33,7 @@ Deno.test("compact: drops undefined, null and empty-string values", () => {
   });
 });
 
-Deno.test("request: POST sends JSON content-type and returns success + message", async () => {
+test("request: POST sends JSON content-type and returns success + message", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   const result = await request(ctx, "POST", "/users/track", { id: "u1" });
   assertEquals(calls[0].url, "https://api.getvero.com/api/v2/users/track");
@@ -42,14 +43,14 @@ Deno.test("request: POST sends JSON content-type and returns success + message",
   assertEquals(result, { success: true, message: "Success." });
 });
 
-Deno.test("request: PUT reaches the given path", async () => {
+test("request: PUT reaches the given path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await request(ctx, "PUT", "/users/reidentify", { id: "u1", new_id: "u2" });
   assertEquals(calls[0].url, "https://api.getvero.com/api/v2/users/reidentify");
   assertEquals(calls[0].method, "PUT");
 });
 
-Deno.test("request: a non-2xx response reads Vero's own message", async () => {
+test("request: a non-2xx response reads Vero's own message", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -68,7 +69,7 @@ Deno.test("request: a non-2xx response reads Vero's own message", async () => {
   assert(err.message.includes("Invalid authentication"));
 });
 
-Deno.test("request: falls back to raw text when the body isn't JSON", async () => {
+test("request: falls back to raw text when the body isn't JSON", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     body: "upstream error",

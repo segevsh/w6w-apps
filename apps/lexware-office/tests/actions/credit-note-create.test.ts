@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/credit-note-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const voucher = { voucherDate: "2026-10-06T00:00:00.000+02:00", lineItems: [] };
 const result = { id: "n1", resourceUri: "https://api.lexware.io/v1/credit-notes/n1", version: 0 };
 
-Deno.test("credit-note-create: POSTs the body as JSON to /v1/credit-notes with no query by default", async () => {
+test("credit-note-create: POSTs the body as JSON to /v1/credit-notes with no query by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: result }]);
   const out = await action.execute({ voucher }, ctx) as { id: string };
   assertEquals(calls[0].method, "POST");
@@ -17,14 +18,14 @@ Deno.test("credit-note-create: POSTs the body as JSON to /v1/credit-notes with n
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("credit-note-create: finalize adds ?finalize=true; a JSON string body is parsed", async () => {
+test("credit-note-create: finalize adds ?finalize=true; a JSON string body is parsed", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: result }]);
   await action.execute({ voucher: JSON.stringify(voucher), finalize: true }, ctx);
   assertEquals(queryOf(calls[0].url), { finalize: "true" });
   assertEquals(JSON.parse(calls[0].body!), voucher);
 });
 
-Deno.test("credit-note-create: rejects non-object bodies before the network, and surfaces 406 details", async () => {
+test("credit-note-create: rejects non-object bodies before the network, and surfaces 406 details", async () => {
   const none = mockCtx();
   await assertRejects(
     async () => await action.execute({ voucher: "[1]" }, none.ctx),

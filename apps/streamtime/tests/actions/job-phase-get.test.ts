@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobPhaseGet from "../../actions/job-phase-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-phase-get: reads GET /v2/job_phases/{id}", async () => {
+test("job-phase-get: reads GET /v2/job_phases/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, name: "Initial Scoping", orderId: 1 } }]);
   const result = await jobPhaseGet.execute({ jobPhaseId: 3 }, ctx) as Record<string, unknown>;
 

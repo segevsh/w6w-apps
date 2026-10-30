@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import driveFolderCreate from "../../actions/drive-folder-create.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("drive-folder-create: POSTs the folder", async () => {
+test("drive-folder-create: POSTs the folder", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "f1", title: "Images" }) }]);
   const out = await driveFolderCreate.execute({ name: "Images", parentFolderId: "f0" }, ctx) as {
     id: string;
@@ -16,7 +17,7 @@ Deno.test("drive-folder-create: POSTs the folder", async () => {
   assertEquals(out.id, "f1");
 });
 
-Deno.test("drive-folder-create: a vendor error surfaces its code and message", async () => {
+test("drive-folder-create: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

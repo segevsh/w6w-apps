@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   BASE_URL,
   compact,
@@ -15,18 +16,18 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("BASE_URL: the cloud is one fixed origin, with no path of its own", () => {
+test("BASE_URL: the cloud is one fixed origin, with no path of its own", () => {
   assertEquals(BASE_URL, "https://ollama.com");
   assertEquals(new URL(BASE_URL).origin, BASE_URL);
 });
 
-Deno.test("describeError: a rejected key names the key page", () => {
+test("describeError: a rejected key names the key page", () => {
   const message = describeError(401, JSON.stringify({ error: "unauthorized" }));
   assert(/unauthorized/.test(message), message);
   assert(/settings\/keys/.test(message), message);
 });
 
-Deno.test("describeError: 404 points at model-list, 429 at the quota check, 5xx at the vendor", () => {
+test("describeError: 404 points at model-list, 429 at the quota check, 5xx at the vendor", () => {
   assert(/model-list/.test(describeError(404, JSON.stringify({ error: "model x not found" }))));
   assert(/quota/.test(describeError(429, JSON.stringify({ error: "slow down" }))));
   assert(/Ollama Cloud could not answer/.test(describeError(503, "unavailable")));
@@ -34,19 +35,19 @@ Deno.test("describeError: 404 points at model-list, 429 at the quota check, 5xx 
   assertEquals(describeError(418, ""), "HTTP 418");
 });
 
-Deno.test("describeError: an HTML error page is passed through, truncated", () => {
+test("describeError: an HTML error page is passed through, truncated", () => {
   const html = `<html>${"x".repeat(500)}</html>`;
   assertEquals(describeError(500, html).length, 300);
 });
 
-Deno.test("compact: unset, empty and empty-array keys are dropped", () => {
+test("compact: unset, empty and empty-array keys are dropped", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: [], f: [0], g: false }),
     { a: 1, f: [0], g: false },
   );
 });
 
-Deno.test("requiredString / optionalString / optionalNumber", () => {
+test("requiredString / optionalString / optionalNumber", () => {
   assertEquals(requiredString("  hi ", "field"), "hi");
   assertThrows(() => requiredString("   ", "field"), Error, "`field` is required");
   assertEquals(optionalString("  "), undefined);
@@ -56,21 +57,21 @@ Deno.test("requiredString / optionalString / optionalNumber", () => {
   assertThrows(() => optionalNumber("abc", "n"), Error, "must be a number");
 });
 
-Deno.test("images: a data URI prefix is stripped, and text splits on newlines or commas", () => {
+test("images: a data URI prefix is stripped, and text splits on newlines or commas", () => {
   assertEquals(images(["data:image/png;base64,AAAA", "BBBB"]), ["AAAA", "BBBB"]);
   assertEquals(images("AAAA\nBBBB,CCCC"), ["AAAA", "BBBB", "CCCC"]);
   assertEquals(images('["AAAA"]'), ["AAAA"]);
   assertEquals(images("   "), undefined);
 });
 
-Deno.test("format: blank, json, or a JSON Schema", () => {
+test("format: blank, json, or a JSON Schema", () => {
   assertEquals(format(""), undefined);
   assertEquals(format("JSON"), "json");
   assertEquals(format('{"type":"object"}'), { type: "object" });
   assertThrows(() => format("[1]"), Error, "`format`");
 });
 
-Deno.test("think: true/false/effort levels, and nothing else", () => {
+test("think: true/false/effort levels, and nothing else", () => {
   assertEquals(think("true"), true);
   assertEquals(think(false), false);
   assertEquals(think("HIGH"), "high");
@@ -78,7 +79,7 @@ Deno.test("think: true/false/effort levels, and nothing else", () => {
   assertThrows(() => think("maybe"), Error, "`think`");
 });
 
-Deno.test("modelOptions: named params win over the same key in options", () => {
+test("modelOptions: named params win over the same key in options", () => {
   assertEquals(modelOptions({}), undefined);
   assertEquals(
     modelOptions({ options: '{"top_k": 20, "temperature": 0.9}', temperature: 0.2 }),
@@ -87,7 +88,7 @@ Deno.test("modelOptions: named params win over the same key in options", () => {
   assertThrows(() => modelOptions({ options: "[1]" }), Error, "`options`");
 });
 
-Deno.test("usage / seconds: nanosecond durations become seconds", () => {
+test("usage / seconds: nanosecond durations become seconds", () => {
   assertEquals(seconds(1_500_000_000), 1.5);
   assertEquals(seconds("x"), undefined);
   assertEquals(usage({ prompt_eval_count: 3, eval_count: 2, total_duration: 1e9 }), {
@@ -99,7 +100,7 @@ Deno.test("usage / seconds: nanosecond durations become seconds", () => {
   assertEquals(usage(undefined).promptTokens, undefined);
 });
 
-Deno.test("client: a GET is unauthenticated at this layer and a JSON body is returned", async () => {
+test("client: a GET is unauthenticated at this layer and a JSON body is returned", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { version: "0.34.1" } }]);
   const { OllamaCloudClient } = await import("../../lib/client.ts");
   const body = await new OllamaCloudClient(ctx).request("/api/version");
@@ -109,7 +110,7 @@ Deno.test("client: a GET is unauthenticated at this layer and a JSON body is ret
   assertEquals(body, { version: "0.34.1" });
 });
 
-Deno.test("client: a POST sends JSON, and a failure throws with the mapped message", async () => {
+test("client: a POST sends JSON, and a failure throws with the mapped message", async () => {
   const { ctx, calls } = mockCtx([{ status: 404, body: { error: "model 'x' not found" } }]);
   const { OllamaCloudClient } = await import("../../lib/client.ts");
   const client = new OllamaCloudClient(ctx);
@@ -122,7 +123,7 @@ Deno.test("client: a POST sends JSON, and a failure throws with the mapped messa
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("client: a non-JSON 200 is an error, and a 204 is undefined", async () => {
+test("client: a non-JSON 200 is an error, and a 204 is undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>" }]);
   const { OllamaCloudClient } = await import("../../lib/client.ts");
   await assertRejects(

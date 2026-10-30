@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import labelUpdate from "../../actions/label-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("label-update: PUTs only the fields provided", async () => {
+test("label-update: PUTs only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 4 } }]);
   await labelUpdate.execute({ labelId: 4, archived: true }, ctx);
 

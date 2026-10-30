@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/product-get-many.ts";
 
-Deno.test("product-get-many: GETs /products filtered by product key", async () => {
+test("product-get-many: GETs /products filtered by product key", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { data: [] } }]);
   await action.execute({ productKey: "consulting" }, ctx);
   const url = new URL(calls[0].url);

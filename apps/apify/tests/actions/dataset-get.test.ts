@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import datasetGet from "../../actions/dataset-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("dataset-get: calls GET /v2/datasets/{id} and unwraps data", async () => {
+test("dataset-get: calls GET /v2/datasets/{id} and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "d1", name: "results", itemCount: 42, cleanItemCount: 40 }) },
   ]);
@@ -18,7 +19,7 @@ Deno.test("dataset-get: calls GET /v2/datasets/{id} and unwraps data", async () 
  * metadata read. An action result is persisted in the run record and echoed into
  * logs and previews, so returning it would be a durable leak.
  */
-Deno.test("dataset-get: the URL-signing secret never reaches the caller", async () => {
+test("dataset-get: the URL-signing secret never reaches the caller", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({
@@ -42,7 +43,7 @@ Deno.test("dataset-get: the URL-signing secret never reaches the caller", async 
   assertEquals(out.itemCount, 42);
 });
 
-Deno.test("dataset-get: the username~name form survives escaping", async () => {
+test("dataset-get: the username~name form survives escaping", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "d1" }) }]);
   await datasetGet.execute({ datasetId: "me~results" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/datasets/me~results");

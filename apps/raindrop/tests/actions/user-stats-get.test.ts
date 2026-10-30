@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userStatsGet from "../../actions/user-stats-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const SAMPLE = {
  * `items` and `meta` sit at the top level of the envelope, not under `item`, so
  * both have to be lifted out explicitly.
  */
-Deno.test("user-stats-get: lifts items and meta out of the envelope", async () => {
+test("user-stats-get: lifts items and meta out of the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: SAMPLE }]);
   const out = await userStatsGet.execute({}, ctx) as { items: unknown[]; meta: unknown };
 
@@ -32,14 +33,14 @@ Deno.test("user-stats-get: lifts items and meta out of the envelope", async () =
  * This is the only endpoint that reports the sizes of the three system
  * collections — the ids no collection listing ever returns.
  */
-Deno.test("user-stats-get: reports the system collections nothing else lists", async () => {
+test("user-stats-get: reports the system collections nothing else lists", async () => {
   const { ctx } = mockCtx([{ body: SAMPLE }]);
   const out = await userStatsGet.execute({}, ctx) as { items: Array<{ _id: number }> };
 
   assertEquals(out.items.map((i) => i._id), [0, -1, -99]);
 });
 
-Deno.test("user-stats-get: a response with neither key yields empty defaults", async () => {
+test("user-stats-get: a response with neither key yields empty defaults", async () => {
   const { ctx } = mockCtx([{ body: { result: true } }]);
   assertEquals(await userStatsGet.execute({}, ctx), { items: [], meta: {} });
 });

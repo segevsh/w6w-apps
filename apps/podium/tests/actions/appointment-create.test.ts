@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import appointmentCreate from "../../actions/appointment-create.ts";
 
-Deno.test("appointment-create: sends every documented field in its documented place", async () => {
+test("appointment-create: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -37,7 +38,7 @@ Deno.test("appointment-create: sends every documented field in its documented pl
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("appointment-create: a minimal call sends only what was set", async () => {
+test("appointment-create: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -65,7 +66,7 @@ Deno.test("appointment-create: a minimal call sends only what was set", async ()
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("appointment-create: declares its params and kind", () => {
+test("appointment-create: declares its params and kind", () => {
   assertEquals((appointmentCreate.params ?? []).map((p) => p.key), [
     "locationUid",
     "contactName",

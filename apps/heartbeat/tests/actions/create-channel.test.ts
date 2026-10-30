@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createChannel from "../../actions/create-channel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-channel: PUT /channels with required fields plus list params split", async () => {
+test("create-channel: PUT /channels with required fields plus list params split", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await createChannel.execute(
     {
@@ -25,6 +26,6 @@ Deno.test("create-channel: PUT /channels with required fields plus list params s
   });
 });
 
-Deno.test("create-channel: is not idempotent", () => {
+test("create-channel: is not idempotent", () => {
   assertEquals(createChannel.idempotent, false);
 });

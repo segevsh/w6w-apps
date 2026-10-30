@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { AUTH_HEADER } from "../../lib/client.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("health/api: is unsigned and connection-scoped", () => {
+test("health/api: is unsigned and connection-scoped", () => {
   assertEquals(api.credential, "context");
   assertEquals(api.scope, "connection");
   assertEquals(api.kind, "dependency");
@@ -12,7 +13,7 @@ Deno.test("health/api: is unsigned and connection-scoped", () => {
   assertEquals(api.network, undefined);
 });
 
-Deno.test("health/api: a 401 PASSES — it proves the route resolved", async () => {
+test("health/api: a 401 PASSES — it proves the route resolved", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: "X-Auth-Token header is required" }]);
   const report = await api.check!({}, ctx);
 
@@ -22,14 +23,14 @@ Deno.test("health/api: a 401 PASSES — it proves the route resolved", async () 
   assertEquals(calls[0].headers[AUTH_HEADER], undefined);
 });
 
-Deno.test("health/api: a 404 means BigCommerce stopped serving the route", async () => {
+test("health/api: a 404 means BigCommerce stopped serving the route", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "The route is not found, check the URL" }]);
   const report = await api.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message?.includes("no longer serves"), report.message);
 });
 
-Deno.test("health/api: 503 is a down store, 429 is a busy one, 5xx is down", async () => {
+test("health/api: 503 is a down store, 429 is a busy one, 5xx is down", async () => {
   const cases: Array<[number, string]> = [[503, "down"], [429, "degraded"], [500, "down"]];
   for (const [status, expected] of cases) {
     const { ctx } = mockCtx([{ status, body: "" }]);
@@ -37,12 +38,12 @@ Deno.test("health/api: 503 is a down store, 429 is a busy one, 5xx is down", asy
   }
 });
 
-Deno.test("health/api: an unexpected status is `unknown`, not a guess", async () => {
+test("health/api: an unexpected status is `unknown`, not a guess", async () => {
   const { ctx } = mockCtx([{ status: 418, body: "" }]);
   assertEquals((await api.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("health/api: without a store hash it reports unknown and makes no request", async () => {
+test("health/api: without a store hash it reports unknown and makes no request", async () => {
   // `mockCtx([])` throws on any fetch, so a request here fails the test.
   const { ctx } = mockCtx([], { storeHash: null });
   const report = await api.check!({}, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSeriesCreate from "../../actions/event-series-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-series-create: POSTs an x-www-form-urlencoded body", async () => {
+test("event-series-create: POSTs an x-www-form-urlencoded body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "es_1", object: "event_series" } }]);
   await eventSeriesCreate.execute({ name: "Tulip Festival", venue: "Hackney Downs" }, ctx);
   assertEquals(calls[0].method, "POST");

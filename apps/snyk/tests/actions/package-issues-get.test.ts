@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/package-issues-get.ts";
 
 const display = { orgId: "org-1" };
 
 /** A purl contains / and @ — unencoded it would address a different endpoint. */
-Deno.test("package-issues-get: percent-encodes the purl into the path", async () => {
+test("package-issues-get: percent-encodes the purl into the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], links: {} } }], { display });
   await action.execute!({ purl: "pkg:npm/lodash@4.17.20" }, ctx);
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("package-issues-get: percent-encodes the purl into the path", async ()
   );
 });
 
-Deno.test("package-issues-get: a non-purl is caught here, not by a 404", async () => {
+test("package-issues-get: a non-purl is caught here, not by a 404", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ purl: "lodash@4.17.20" }, ctx),

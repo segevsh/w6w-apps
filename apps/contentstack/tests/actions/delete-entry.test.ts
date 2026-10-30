@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-entry.ts";
 
-Deno.test("delete-entry: metadata", () => {
+test("delete-entry: metadata", () => {
   assertEquals(action.key, "delete-entry");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("delete-entry: metadata", () => {
   ]);
 });
 
-Deno.test("delete-entry: calls DELETE /content_types/blog/entries/blt9 on the NA host", async () => {
+test("delete-entry: calls DELETE /content_types/blog/entries/blt9 on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Entry deleted successfully." } }]);
   const out = await action.execute({
     "contentTypeUid": "blog",
@@ -33,7 +34,7 @@ Deno.test("delete-entry: calls DELETE /content_types/blog/entries/blt9 on the NA
   assertEquals(out, { "notice": "Entry deleted successfully." });
 });
 
-Deno.test("delete-entry: uses the connection's regional host", async () => {
+test("delete-entry: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Entry deleted successfully." } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -47,7 +48,7 @@ Deno.test("delete-entry: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("delete-entry: sends the branch header only when a branch is given", async () => {
+test("delete-entry: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { "notice": "Entry deleted successfully." } }, {
     body: { "notice": "Entry deleted successfully." },
   }]);
@@ -65,7 +66,7 @@ Deno.test("delete-entry: sends the branch header only when a branch is given", a
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("delete-entry: rejects without `contentTypeUid` and makes no request", async () => {
+test("delete-entry: rejects without `contentTypeUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -77,7 +78,7 @@ Deno.test("delete-entry: rejects without `contentTypeUid` and makes no request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("delete-entry: surfaces Contentstack's own error body", async () => {
+test("delete-entry: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

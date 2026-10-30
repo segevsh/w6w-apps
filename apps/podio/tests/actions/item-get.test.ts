@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import itemGet from "../../actions/item-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -27,7 +28,7 @@ const ITEM = {
   ],
 };
 
-Deno.test("item-get: GETs the item, sending no mark_as_viewed unless asked", async () => {
+test("item-get: GETs the item, sending no mark_as_viewed unless asked", async () => {
   const { ctx, calls } = mockCtx([{ body: ITEM }]);
   await itemGet.execute({ itemId: "9" }, ctx);
   assertEquals(pathOf(calls[0].url), "/item/9");
@@ -39,7 +40,7 @@ Deno.test("item-get: GETs the item, sending no mark_as_viewed unless asked", asy
  * notifications. A polling workflow needs to be able to turn that off, which
  * means `false` has to survive as a value rather than collapsing into absence.
  */
-Deno.test("item-get: mark_as_viewed=false is expressible, because Podio defaults it to true", async () => {
+test("item-get: mark_as_viewed=false is expressible, because Podio defaults it to true", async () => {
   const off = mockCtx([{ body: ITEM }]);
   await itemGet.execute({ itemId: "9", markAsViewed: false }, off.ctx);
   assertEquals(queryOf(off.calls[0].url), { mark_as_viewed: "false" });
@@ -54,7 +55,7 @@ Deno.test("item-get: mark_as_viewed=false is expressible, because Podio defaults
  * Podio's sub_id structure. Flattening a date field to one scalar would drop
  * the end date silently.
  */
-Deno.test("item-get: field values keep every sub_id, unflattened", async () => {
+test("item-get: field values keep every sub_id, unflattened", async () => {
   const { ctx } = mockCtx([{ body: ITEM }]);
   const out = await itemGet.execute({ itemId: "9" }, ctx) as { item: Record<string, unknown> };
   const fields = out.item.fields as Array<Record<string, unknown>>;
@@ -67,14 +68,14 @@ Deno.test("item-get: field values keep every sub_id, unflattened", async () => {
   assert(Array.isArray(out.item.fields), "fields was collapsed into a map");
 });
 
-Deno.test("item-get: the push channel signature is stripped", async () => {
+test("item-get: the push channel signature is stripped", async () => {
   const { ctx } = mockCtx([{ body: ITEM }]);
   const out = await itemGet.execute({ itemId: "9" }, ctx) as { item: Record<string, unknown> };
   assertEquals(out.item.push, undefined);
   assertEquals(out.item.item_id, 9);
 });
 
-Deno.test("item-get: an item id is path-escaped", async () => {
+test("item-get: an item id is path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await itemGet.execute({ itemId: "9/../1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/item/9%2F..%2F1");

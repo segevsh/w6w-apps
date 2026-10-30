@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listCreate from "../../actions/list-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-create: POST /api/1/createList/ with the documented form fields", async () => {
+test("list-create: POST /api/1/createList/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   const out = await listCreate.execute(
     {
@@ -35,7 +36,7 @@ Deno.test("list-create: POST /api/1/createList/ with the documented form fields"
   assertEquals(out, { id: "123" });
 });
 
-Deno.test("list-create: a vendor error surfaces its status and body", async () => {
+test("list-create: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await listCreate.execute(
@@ -55,7 +56,7 @@ Deno.test("list-create: a vendor error surfaces its status and body", async () =
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("list-create: an empty name fails before any request", async () => {
+test("list-create: an empty name fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -77,7 +78,7 @@ Deno.test("list-create: an empty name fails before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-create: unset optional fields are not sent", async () => {
+test("list-create: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   await listCreate.execute(
     { "name": "Newsletter", "sender_email": "me@example.com" } as never,

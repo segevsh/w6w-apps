@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/retention-query.ts";
 
 const conn = { display: { projectId: "123", region: "us" } };
 
-Deno.test("retention-query: sends both events and the retention type", async () => {
+test("retention-query: sends both events and the retention type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], conn);
   await action.execute!({
     fromDate: "2026-07-01",
@@ -22,7 +23,7 @@ Deno.test("retention-query: sends both events and the retention type", async () 
 });
 
 /** Birth-type retention has no cohort without a born event. */
-Deno.test("retention-query: birth retention without a cohort event is refused", async () => {
+test("retention-query: birth retention without a cohort event is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ fromDate: "2026-07-01", toDate: "2026-08-01" }, ctx),
@@ -32,7 +33,7 @@ Deno.test("retention-query: birth retention without a cohort event is refused", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("retention-query: the two retention types are described as incomparable", () => {
+test("retention-query: the two retention types are described as incomparable", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "retentionType")!;
   assert(/not comparable/.test(p.hint!), p.hint);

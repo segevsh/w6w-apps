@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import formArchive from "../../actions/form-archive.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-archive: DELETEs /v1/forms with form_uuid in the query", async () => {
+test("form-archive: DELETEs /v1/forms with form_uuid in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await formArchive.execute({ formUuid: "f1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -11,7 +12,7 @@ Deno.test("form-archive: DELETEs /v1/forms with form_uuid in the query", async (
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("form-archive: a vendor error surfaces its own message", async () => {
+test("form-archive: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(formArchive.execute({ formUuid: "f1" }, ctx)),

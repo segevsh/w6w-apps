@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardUpdate from "../../actions/card-update.ts";
 
-Deno.test("card-update: renames a card", async () => {
+test("card-update: renames a card", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { updateCard: { card: { id: "1", title: "New title" } } } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("card-update: renames a card", async () => {
   assert(q.startsWith("mutation { updateCard(input: { id: 1, title:"));
 });
 
-Deno.test("card-update: type/resource/idempotency metadata", () => {
+test("card-update: type/resource/idempotency metadata", () => {
   assertEquals(cardUpdate.type, "perform");
   assertEquals(cardUpdate.resource, "card");
   assertEquals(cardUpdate.idempotent, true);

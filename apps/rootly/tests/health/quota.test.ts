@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const h = (limit: string, remaining: string, reset = "1791314045") => ({
   "x-ratelimit-reset": reset,
 });
 
-Deno.test("quota health: reads the two-valued limit header and an epoch reset", async () => {
+test("quota health: reads the two-valued limit header and an epoch reset", async () => {
   const { ctx, calls } = mockCtx([{ headers: h("3000, 3000;window=60", "2999"), body: {} }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -23,7 +24,7 @@ Deno.test("quota health: reads the two-valued limit header and an epoch reset", 
   }]);
 });
 
-Deno.test("quota health: low headroom is degraded, none is down, no headers is unknown", async () => {
+test("quota health: low headroom is degraded, none is down, no headers is unknown", async () => {
   const low = await quota.check!({}, mockCtx([{ headers: h("3000, 3000;window=60", "100") }]).ctx);
   assertEquals(low.state, "degraded");
   const none = await quota.check!({}, mockCtx([{ headers: h("3000, 3000;window=60", "0") }]).ctx);
@@ -34,7 +35,7 @@ Deno.test("quota health: low headroom is degraded, none is down, no headers is u
   assertEquals(bad.state, "unknown");
 });
 
-Deno.test("quota health: is informational so low headroom never fails a verdict", () => {
+test("quota health: is informational so low headroom never fails a verdict", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
 });

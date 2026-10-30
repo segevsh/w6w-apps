@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import boardGet from "../../actions/board-get.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("board-get: posts id to /v1/boards/retrieve", async () => {
+test("board-get: posts id to /v1/boards/retrieve", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1", name: "Feature Requests" } }]);
   const out = await boardGet.execute({ id: "b1" }, ctx) as { name: string };
 

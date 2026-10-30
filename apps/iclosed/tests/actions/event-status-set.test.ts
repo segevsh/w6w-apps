@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventStatusSet from "../../actions/event-status-set.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("event-status-set: sends every input as body", async () => {
+test("event-status-set: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await eventStatusSet.execute({ "id": 7, "status": "ACTIVATED" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("event-status-set: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("event-status-set: omits every unset optional", async () => {
+test("event-status-set: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await eventStatusSet.execute({ "id": 7, "status": "ACTIVATED" } as never, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("event-status-set: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("event-status-set: declares a perform action's idempotency", () => {
+test("event-status-set: declares a perform action's idempotency", () => {
   assertEquals(eventStatusSet.type, "perform");
   assertEquals(eventStatusSet.idempotent, true);
   assertEquals(eventStatusSet.params!.filter((p) => p.required).map((p) => p.key), [

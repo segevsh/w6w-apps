@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ticketCreate from "../../actions/ticket-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ticket-create: POST .../helpdesk/tickets, nests customer", async () => {
+test("ticket-create: POST .../helpdesk/tickets, nests customer", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { ticketNumber: 1, statusCategory: "new", assigneeId: null } },
   ]);
@@ -24,7 +25,7 @@ Deno.test("ticket-create: POST .../helpdesk/tickets, nests customer", async () =
   assertEquals(out.ticketNumber, 1);
 });
 
-Deno.test("ticket-create: forwards subject, statusCategory, and assigneeEmail", async () => {
+test("ticket-create: forwards subject, statusCategory, and assigneeEmail", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { ticketNumber: 2, statusCategory: "on_you" } },
   ]);

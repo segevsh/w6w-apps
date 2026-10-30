@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mediaUploadFromUrl from "../../actions/media-upload-from-url.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("media-upload-from-url: POSTs to /api/upload-media-object", async () => {
+test("media-upload-from-url: POSTs to /api/upload-media-object", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", mediaObjectId: "abc" } }]);
   const out = await mediaUploadFromUrl.execute(
     { mediaUrl: "https://example.com/a.jpg" },

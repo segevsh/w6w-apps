@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import { SCOPES } from "../auth/oauth2.ts";
 
-Deno.test("index: exposes 28 actions with unique kebab-case keys", () => {
+test("index: exposes 28 actions with unique kebab-case keys", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.length, 28);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -11,7 +12,7 @@ Deno.test("index: exposes 28 actions with unique kebab-case keys", () => {
   }
 });
 
-Deno.test("index: every action declares a description, output, resource and a valid type", () => {
+test("index: every action declares a description, output, resource and a valid type", () => {
   for (const action of app.actions) {
     assert(action.description, `${action.key} is missing a description`);
     assert(action.output, `${action.key} declares no output`);
@@ -24,13 +25,13 @@ Deno.test("index: every action declares a description, output, resource and a va
   }
 });
 
-Deno.test("index: every perform action states whether it is idempotent", () => {
+test("index: every perform action states whether it is idempotent", () => {
   for (const action of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof action.idempotent, "boolean", `${action.key} does not declare idempotent`);
   }
 });
 
-Deno.test("index: creates and membership adds are the non-idempotent performs", () => {
+test("index: creates and membership adds are the non-idempotent performs", () => {
   const nonIdempotent = app.actions
     .filter((a) => a.type === "perform" && !a.idempotent)
     .map((a) => a.key)
@@ -43,12 +44,12 @@ Deno.test("index: creates and membership adds are the non-idempotent performs", 
   ]);
 });
 
-Deno.test("index: declares the oauth2 auth method and the three health checks", () => {
+test("index: declares the oauth2 auth method and the three health checks", () => {
   assertEquals(app.auth.map((a) => a.key), ["oauth2"]);
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: every param carries a label and a type, and keys are unique per action", () => {
+test("index: every param carries a label and a type, and keys are unique per action", () => {
   for (const action of app.actions) {
     const keys = (action.params ?? []).map((p) => p.key);
     assertEquals(new Set(keys).size, keys.length, `${action.key} repeats a param key`);
@@ -59,7 +60,7 @@ Deno.test("index: every param carries a label and a type, and keys are unique pe
   }
 });
 
-Deno.test("index: every list action offers the continuation controls", () => {
+test("index: every list action offers the continuation controls", () => {
   for (const action of app.actions.filter((a) => a.key.startsWith("list-"))) {
     const keys = (action.params ?? []).map((p) => p.key);
     for (const k of ["nextLink", "all", "maxPages"]) {
@@ -68,7 +69,7 @@ Deno.test("index: every list action offers the continuation controls", () => {
   }
 });
 
-Deno.test("index: scopes never ask for beta/legacy surfaces and always include offline_access", () => {
+test("index: scopes never ask for beta/legacy surfaces and always include offline_access", () => {
   assert(SCOPES.includes("offline_access"));
   assert(!SCOPES.some((s) => s.includes("graph.windows.net")));
 });

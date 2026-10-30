@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import labelCreate from "../../actions/label-create.ts";
 import { envelope, mockCtx, pathOf, usConnection } from "../_helpers.ts";
 
-Deno.test("label-create: POSTs displayName and color", async () => {
+test("label-create: POSTs displayName and color", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 201,
@@ -21,7 +22,7 @@ Deno.test("label-create: POSTs displayName and color", async () => {
   assertEquals(out, { labelId: "l2", displayName: "Campaigns", color: "#FFFFFF" });
 });
 
-Deno.test("label-create: omits color when not given, letting Zoho's own default apply", async () => {
+test("label-create: omits color when not given, letting Zoho's own default apply", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 201,
@@ -33,6 +34,6 @@ Deno.test("label-create: omits color when not given, letting Zoho's own default 
   assertEquals(JSON.parse(calls[0].body!), { displayName: "Follow up" });
 });
 
-Deno.test("label-create: is not idempotent", () => {
+test("label-create: is not idempotent", () => {
   assertEquals(labelCreate.idempotent, false);
 });

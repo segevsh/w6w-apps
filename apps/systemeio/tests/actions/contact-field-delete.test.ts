@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactFieldDelete from "../../actions/contact-field-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-field-delete: DELETEs /api/contact_fields/{slug}", async () => {
+test("contact-field-delete: DELETEs /api/contact_fields/{slug}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await contactFieldDelete.execute({ slug: "vip_since" }, ctx);
 

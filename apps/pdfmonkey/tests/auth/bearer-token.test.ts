@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/bearer-token.ts";
 
-Deno.test("bearer-token: is a bearer method exposing an `apiKey` secret field", () => {
+test("bearer-token: is a bearer method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "bearer-token");
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiKey");
@@ -11,7 +13,7 @@ Deno.test("bearer-token: is a bearer method exposing an `apiKey` secret field", 
   assertEquals(field.required, true);
 });
 
-Deno.test("bearer-token: sign sets Authorization: Bearer <key>", async () => {
+test("bearer-token: sign sets Authorization: Bearer <key>", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +24,7 @@ Deno.test("bearer-token: sign sets Authorization: Bearer <key>", async () => {
   assertEquals(out.headers["authorization"], "Bearer key-abc");
 });
 
-Deno.test("bearer-token: test hits GET /document_cards?page[number]=1 and reports ok", async () => {
+test("bearer-token: test hits GET /document_cards?page[number]=1 and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { document_cards: [], meta: {} } }]);
   const result = await auth.test({ credential: { apiKey: "key-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -33,14 +35,14 @@ Deno.test("bearer-token: test hits GET /document_cards?page[number]=1 and report
   assertEquals(calls[0].headers["authorization"], "Bearer key-abc");
 });
 
-Deno.test("bearer-token: test reports 401 with a specific message", async () => {
+test("bearer-token: test reports 401 with a specific message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: [{ detail: "Unauthorized" }] } }]);
   const result = await auth.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("401"));
 });
 
-Deno.test("bearer-token: test reports failure with status code on other errors", async () => {
+test("bearer-token: test reports failure with status code on other errors", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const result = await auth.test({ credential: { apiKey: "key-abc" } }, ctx);
   assertEquals(result.ok, false);
@@ -55,14 +57,14 @@ Deno.test("bearer-token: test reports failure with status code on other errors",
 // `unavailable`, no `check` hook, nothing executable at all) is free to name
 // the endpoint in its `unavailable.reason` string explaining why it's
 // avoided. Comments are stripped too, so module docs can do the same.
-Deno.test("bearer-token: current_user is never called from code (comments may name it)", async () => {
+test("bearer-token: current_user is never called from code (comments may name it)", async () => {
   const roots = ["actions", "auth", "lib"];
   for (const root of roots) {
     for await (
-      const entry of Deno.readDir(new URL(`../../${root}`, import.meta.url))
+      const entry of denoReadDir(new URL(`../../${root}`, import.meta.url))
     ) {
       if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
-      const text = await Deno.readTextFile(new URL(`../../${root}/${entry.name}`, import.meta.url));
+      const text = await denoReadTextFile(new URL(`../../${root}/${entry.name}`, import.meta.url));
       const withoutComments = text
         .replace(/\/\*[\s\S]*?\*\//g, "")
         .replace(/\/\/.*$/gm, "");

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetUpload from "../../actions/asset-upload.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
 const SAMPLE_BASE64 = "aGVsbG8="; // "hello"
 
-Deno.test("asset-upload: sends multipart with the file under the 'file' field", async () => {
+test("asset-upload: sends multipart with the file under the 'file' field", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -31,7 +32,7 @@ Deno.test("asset-upload: sends multipart with the file under the 'file' field", 
   });
 });
 
-Deno.test("asset-upload: strips a data: URL prefix before decoding", async () => {
+test("asset-upload: strips a data: URL prefix before decoding", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({

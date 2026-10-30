@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-domain-cards.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
@@ -10,7 +11,7 @@ const CARDS = [{
   bank: "citibank.com",
 }];
 
-Deno.test("list-domain-cards: posts get/domainCardList and returns cards with a count", async () => {
+test("list-domain-cards: posts get/domainCardList and returns cards with a count", async () => {
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200, domainCardList: CARDS } }]);
   const out = await action.execute!({ domain: "domain.tld" }, ctx);
   assertWire(calls[0]);
@@ -21,7 +22,7 @@ Deno.test("list-domain-cards: posts get/domainCardList and returns cards with a 
   assertEquals(out, { domainCardList: CARDS, count: 1 });
 });
 
-Deno.test("list-domain-cards: requires a domain locally and surfaces vendor errors", async () => {
+test("list-domain-cards: requires a domain locally and surfaces vendor errors", async () => {
   await assertRejects(
     async () => await action.execute!({ domain: " " }, mockCtx([]).ctx),
     Error,
@@ -33,6 +34,6 @@ Deno.test("list-domain-cards: requires a domain locally and surfaces vendor erro
   await assertRejects(async () => await action.execute!({ domain: "x" }, ctx), Error, "malformed");
 });
 
-Deno.test("list-domain-cards: declares a read", () => {
+test("list-domain-cards: declares a read", () => {
   assertEquals(action.type, "read");
 });

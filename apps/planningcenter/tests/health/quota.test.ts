@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: reads the X-PCO-API-Request-Rate-* headers", async () => {
+test("quota: reads the X-PCO-API-Request-Rate-* headers", async () => {
   const { ctx } = mockCtx([
     {
       body: { data: { id: "1" } },
@@ -20,7 +21,7 @@ Deno.test("quota: reads the X-PCO-API-Request-Rate-* headers", async () => {
   assertEquals(out.quota, [{ id: "requests", limit: 100, remaining: 82, unit: "requests" }]);
 });
 
-Deno.test("quota: missing rate-limit headers report unknown, not a fabricated number", async () => {
+test("quota: missing rate-limit headers report unknown, not a fabricated number", async () => {
   const { ctx } = mockCtx([{
     body: { data: { id: "1" } },
     headers: { "content-type": "application/json" },
@@ -30,6 +31,6 @@ Deno.test("quota: missing rate-limit headers report unknown, not a fabricated nu
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("quota: declared informational — a headroom check should never fail an App verdict", () => {
+test("quota: declared informational — a headroom check should never fail an App verdict", () => {
   assertEquals(quota.severity, "informational");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/member-list.ts";
 
-Deno.test("member-list: GETs /groups/{groupKey}/members", async () => {
+test("member-list: GETs /groups/{groupKey}/members", async () => {
   const body = { members: [] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ groupKey: "team@example.com" }, ctx);
@@ -14,7 +15,7 @@ Deno.test("member-list: GETs /groups/{groupKey}/members", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("member-list: forwards roles and includeDerivedMembership", async () => {
+test("member-list: forwards roles and includeDerivedMembership", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     groupKey: "team@example.com",

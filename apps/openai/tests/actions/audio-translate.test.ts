@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audio-translate.ts";
 
 const AUDIO_B64 = "aGVsbG8=";
 
-Deno.test("audio-translate: POSTs multipart to /audio/translations with defaults", async () => {
+test("audio-translate: POSTs multipart to /audio/translations with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { text: "hi" } }]);
   await action.execute!({ file: AUDIO_B64 }, ctx);
 

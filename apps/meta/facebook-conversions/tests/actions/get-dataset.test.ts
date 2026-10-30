@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-dataset.ts";
 
-Deno.test("get-dataset: GETs the dataset node with the default field list", async () => {
+test("get-dataset: GETs the dataset node with the default field list", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "1234567890", name: "Storefront", last_fired_time: "2026-08-03T10:00:00+0000" } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("get-dataset: GETs the dataset node with the default field list", asyn
   assertEquals(result.name, "Storefront");
 });
 
-Deno.test("get-dataset: honours an explicit dataset id and field list", async () => {
+test("get-dataset: honours an explicit dataset id and field list", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "42" } }]);
   await action.execute({ datasetId: "42", fields: "id,name" }, ctx);
   const url = new URL(calls[0].url);
@@ -23,7 +24,7 @@ Deno.test("get-dataset: honours an explicit dataset id and field list", async ()
   assertEquals(url.searchParams.get("fields"), "id,name");
 });
 
-Deno.test("get-dataset: reports the permission error verbatim", async () => {
+test("get-dataset: reports the permission error verbatim", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,
@@ -37,7 +38,7 @@ Deno.test("get-dataset: reports the permission error verbatim", async () => {
   );
 });
 
-Deno.test("get-dataset: omits authorization (the runtime injects it)", async () => {
+test("get-dataset: omits authorization (the runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1234567890" } }]);
   await action.execute({}, ctx);
   assert(!("authorization" in calls[0].headers));

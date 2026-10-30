@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import accessToken from "../auth/access-token.ts";
 import oauth2 from "../auth/oauth2.ts";
 import { errorBody, mockCtx, pathOf } from "./_helpers.ts";
@@ -9,7 +10,7 @@ const req = () => ({
   headers: {} as Record<string, string>,
 });
 
-Deno.test("access-token: sign stamps the bearer header", async () => {
+test("access-token: sign stamps the bearer header", async () => {
   const out = await accessToken.sign!(
     { request: req(), credential: { accessToken: "tok" } } as never,
     mockCtx().ctx,
@@ -17,7 +18,7 @@ Deno.test("access-token: sign stamps the bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("access-token: test probes GET /v1.0/merchant and passes on 200", async () => {
+test("access-token: test probes GET /v1.0/merchant and passes on 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "m", business_name: "Cafe" } }]);
   const out = await accessToken.test({ credential: { accessToken: "tok" } } as never, ctx);
   assertEquals(out, { ok: true });
@@ -25,7 +26,7 @@ Deno.test("access-token: test probes GET /v1.0/merchant and passes on 200", asyn
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("access-token: test classifies by vendor error code, not status", async () => {
+test("access-token: test classifies by vendor error code, not status", async () => {
   const bad = mockCtx([{
     status: 401,
     body: errorBody("UNAUTHORIZED", "Access token is not valid."),
@@ -47,14 +48,14 @@ Deno.test("access-token: test classifies by vendor error code, not status", asyn
   assertEquals(r4.message?.includes("500"), true);
 });
 
-Deno.test("access-token: test fails without calling the network when the token is empty", async () => {
+test("access-token: test fails without calling the network when the token is empty", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await accessToken.test({ credential: {} } as never, ctx);
   assertEquals(out.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: afterConnect keeps only business name and merchant id", async () => {
+test("access-token: afterConnect keeps only business name and merchant id", async () => {
   const { ctx } = mockCtx([{
     body: { id: "m1", business_name: "Cafe", email: "owner@example.com" },
   }]);
@@ -67,13 +68,13 @@ Deno.test("access-token: afterConnect keeps only business name and merchant id",
   );
 });
 
-Deno.test("oauth2: declares the verified endpoints and scopes", () => {
+test("oauth2: declares the verified endpoints and scopes", () => {
   assertEquals(oauth2.oauth2?.authorizationUrl, "https://api.loyverse.com/oauth/authorize");
   assertEquals(oauth2.oauth2?.tokenUrl, "https://api.loyverse.com/oauth/token");
   assertEquals(oauth2.oauth2?.scopes?.includes("MERCHANT_READ"), true);
 });
 
-Deno.test("oauth2: sign, test and afterConnect", async () => {
+test("oauth2: sign, test and afterConnect", async () => {
   const out = await oauth2.sign!(
     { request: req(), credential: { accessToken: "o" } } as never,
     mockCtx().ctx,

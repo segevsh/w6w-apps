@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import postUpdate from "../../actions/post-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("post-update: PATCHes only the given fields", async () => {
+test("post-update: PATCHes only the given fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "post_1", title: "New title" } } }]);
 
   const out = await postUpdate.execute(
@@ -18,7 +19,7 @@ Deno.test("post-update: PATCHes only the given fields", async () => {
   assertEquals(out.title, "New title");
 });
 
-Deno.test("post-update: a still-processing update reports processing: true", async () => {
+test("post-update: a still-processing update reports processing: true", async () => {
   const { ctx } = mockCtx([{ status: 202, body: { data: { id: "post_1", state: "pending" } } }]);
   const out = await postUpdate.execute(
     { publicationId: "pub_1", postId: "post_1", title: "x" },
@@ -29,7 +30,7 @@ Deno.test("post-update: a still-processing update reports processing: true", asy
   assertEquals(out.processing, true);
 });
 
-Deno.test("post-update: rejects bodyContent and blocks together, before any fetch", async () => {
+test("post-update: rejects bodyContent and blocks together, before any fetch", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -43,7 +44,7 @@ Deno.test("post-update: rejects bodyContent and blocks together, before any fetc
   assertEquals(calls.length, 0);
 });
 
-Deno.test("post-update: any non-2xx, non-202 status throws with the raw body", async () => {
+test("post-update: any non-2xx, non-202 status throws with the raw body", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "gateway error" }]);
   await assertRejects(
     () =>
@@ -55,7 +56,7 @@ Deno.test("post-update: any non-2xx, non-202 status throws with the raw body", a
   );
 });
 
-Deno.test("post-update: is an idempotent perform action", () => {
+test("post-update: is an idempotent perform action", () => {
   assert(!!postUpdate.idempotent);
   assertEquals(postUpdate.type, "perform");
 });

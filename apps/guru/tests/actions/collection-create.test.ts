@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionCreate from "../../actions/collection-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-create: POSTs the name and strips the response token", async () => {
+test("collection-create: POSTs the name and strips the response token", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "co1", name: "Eng", token: "live" } }]);
   const result = await collectionCreate.execute(
     { name: "Eng", description: "Engineering docs" },

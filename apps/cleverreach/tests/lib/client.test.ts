@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asList,
   CleverReachClient,
@@ -15,7 +16,7 @@ import {
 import { mockCtx, unauthorized } from "../_helpers.ts";
 import { receiverBody } from "../../lib/receiver.ts";
 
-Deno.test("client: sends bearer-less requests (auth is the sign hook's job) to /v3", async () => {
+test("client: sends bearer-less requests (auth is the sign hook's job) to /v3", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new CleverReachClient(ctx).request("/groups", { query: { order: "created ASC", x: "" } });
   assertEquals(calls[0].url, "https://rest.cleverreach.com/v3/groups?order=created+ASC");
@@ -23,7 +24,7 @@ Deno.test("client: sends bearer-less requests (auth is the sign hook's job) to /
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("client: an error body fails even on 200; an empty body is null; non-JSON throws", async () => {
+test("client: an error body fails even on 200; an empty body is null; non-JSON throws", async () => {
   await assertRejects(
     async () =>
       await new CleverReachClient(mockCtx([{ status: 200, body: unauthorized }]).ctx).request("/x"),
@@ -41,11 +42,11 @@ Deno.test("client: an error body fails even on 200; an empty body is null; non-J
   );
 });
 
-Deno.test("client: a bare scalar body is returned as is", async () => {
+test("client: a bare scalar body is returned as is", async () => {
   assertEquals(await new CleverReachClient(mockCtx([{ body: "true" }]).ctx).request("/x"), true);
 });
 
-Deno.test("errorOf: reads both of the vendor's error shapes and ignores everything else", () => {
+test("errorOf: reads both of the vendor's error shapes and ignores everything else", () => {
   assertEquals(
     errorOf({ error: { code: 401, message: "Unauthorized" } }),
     "Unauthorized (code 401)",
@@ -60,14 +61,14 @@ Deno.test("errorOf: reads both of the vendor's error shapes and ignores everythi
   assertEquals(errorOf(null), undefined);
 });
 
-Deno.test("describeError: classifies by status as a hint on top of the body", () => {
+test("describeError: classifies by status as a hint on top of the body", () => {
   assert(describeError(401, JSON.stringify(unauthorized)).includes("Extras → REST API"));
   assert(describeError(404, "").includes("wrong id"));
   assert(describeError(429, "").includes("back off"));
   assertEquals(describeError(500, ""), "HTTP 500");
 });
 
-Deno.test("param helpers validate and normalise", () => {
+test("param helpers validate and normalise", () => {
   assertEquals(pathId(" a@b.co ", "f"), "a%40b.co");
   assertThrows(() => pathId("", "f"), Error, "`f` is required");
   assertEquals(optInt("5", "n", 1, 9), 5);
@@ -89,7 +90,7 @@ Deno.test("param helpers validate and normalise", () => {
   assertEquals(asList({ a: 1 }), { items: [], count: 0, raw: { a: 1 } });
 });
 
-Deno.test("receiverBody: maps params to the wire object and drops unset fields", () => {
+test("receiverBody: maps params to the wire object and drops unset fields", () => {
   assertEquals(receiverBody({}), {});
   assertEquals(
     receiverBody({

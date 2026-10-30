@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { actionCtx } from "../_helpers.ts";
 import listTables from "../../actions/list-tables.ts";
 
-Deno.test("list-tables: GETs the tables collection with no expand by default", async () => {
+test("list-tables: GETs the tables collection with no expand by default", async () => {
   const { ctx, calls } = actionCtx([{ body: { tables: [] } }]);
   await listTables.execute!({ docId: "9PJhBDZ" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,19 +11,19 @@ Deno.test("list-tables: GETs the tables collection with no expand by default", a
   assert(!url.searchParams.has("expand"));
 });
 
-Deno.test("list-tables: expand:true becomes Grist's literal expand=column", async () => {
+test("list-tables: expand:true becomes Grist's literal expand=column", async () => {
   const { ctx, calls } = actionCtx([{ body: { tables: [] } }]);
   await listTables.execute!({ docId: "d", expand: true }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("expand"), "column");
 });
 
-Deno.test("list-tables: expand:false sends nothing, since 'false' is not a legal value", async () => {
+test("list-tables: expand:false sends nothing, since 'false' is not a legal value", async () => {
   const { ctx, calls } = actionCtx([{ body: { tables: [] } }]);
   await listTables.execute!({ docId: "d", expand: false }, ctx);
   assert(!new URL(calls[0].url).searchParams.has("expand"));
 });
 
-Deno.test("list-tables: returns table ids and inline columns when expanded", async () => {
+test("list-tables: returns table ids and inline columns when expanded", async () => {
   const { ctx } = actionCtx([{
     body: {
       tables: [{

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-add-user.ts";
 
-Deno.test("template-add-user: takes an email or an account id, and needs one", async () => {
+test("template-add-user: takes an email or an account id, and needs one", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { template: {} } }]);
   await action.execute!({ templateId: "t1", emailAddress: "ada@example.com" }, ctx);
   assertEquals(calls[0].url, "https://api.hellosign.com/v3/template/add_user/t1");
@@ -17,13 +18,13 @@ Deno.test("template-add-user: takes an email or an account id, and needs one", a
   assertEquals(neither.calls.length, 0);
 });
 
-Deno.test("template-add-user: skip_notification is only sent when set", async () => {
+test("template-add-user: skip_notification is only sent when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ templateId: "t1", accountId: "a1", skipNotification: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).skip_notification, true);
 });
 
-Deno.test("template-add-user: a blank template id fails before any request", async () => {
+test("template-add-user: a blank template id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ emailAddress: "a@x.com" }, ctx),

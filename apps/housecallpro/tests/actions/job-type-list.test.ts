@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobTypeList from "../../actions/job-type-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-type-list: calls GET /job_fields/job_types", async () => {
+test("job-type-list: calls GET /job_fields/job_types", async () => {
   const { ctx, calls } = mockCtx([{ body: page("job_types", [{ id: "jt1", name: "Repair" }]) }]);
   const out = await jobTypeList.execute({ name: "Repair" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("job-type-list: calls GET /job_fields/job_types", async () => {
   assertEquals(out.items, [{ id: "jt1", name: "Repair" }]);
 });
 
-Deno.test("job-type-list: sends no pagination — the endpoint documents none", async () => {
+test("job-type-list: sends no pagination — the endpoint documents none", async () => {
   const { ctx, calls } = mockCtx([{ body: page("job_types", []) }]);
   await jobTypeList.execute({}, ctx);
 

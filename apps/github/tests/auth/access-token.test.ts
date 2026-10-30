@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/access-token.ts";
 
-Deno.test("access-token: is a bearer method with one secret field", () => {
+test("access-token: is a bearer method with one secret field", () => {
   assertEquals(auth.key, "access-token");
   assertEquals(auth.type, "bearer");
   assertEquals(auth.fields?.length, 1);
@@ -10,7 +11,7 @@ Deno.test("access-token: is a bearer method with one secret field", () => {
   assert(auth.fields![0].required);
 });
 
-Deno.test("access-token: sign sets the Bearer header", async () => {
+test("access-token: sign sets the Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.github.com/user",
@@ -21,7 +22,7 @@ Deno.test("access-token: sign sets the Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer ghp_x");
 });
 
-Deno.test("access-token: test refuses an empty credential without a request", async () => {
+test("access-token: test refuses an empty credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -30,7 +31,7 @@ Deno.test("access-token: test refuses an empty credential without a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("access-token: test probes /user and reports the status", async () => {
+test("access-token: test probes /user and reports the status", async () => {
   const ok = mockCtx([{ body: { login: "acme" } }]);
   assertEquals(await auth.test({ credential: { accessToken: "t" } }, ok.ctx), { ok: true });
   assertEquals(ok.calls[0].url, "https://api.github.com/user");
@@ -42,7 +43,7 @@ Deno.test("access-token: test probes /user and reports the status", async () => 
   });
 });
 
-Deno.test("access-token: afterConnect labels the connection with the login", async () => {
+test("access-token: afterConnect labels the connection with the login", async () => {
   const { ctx } = mockCtx([{ body: { id: 7, login: "acme", name: "Acme" } }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {
     user: { id: 7, login: "acme", name: "Acme" },

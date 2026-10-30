@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   boolString,
   compact,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 
-Deno.test("normalizeSiteUrl: reduces every spelling of a forum URL to a bare origin", () => {
+test("normalizeSiteUrl: reduces every spelling of a forum URL to a bare origin", () => {
   assertEquals(normalizeSiteUrl("https://forum.example.com"), "https://forum.example.com");
   assertEquals(normalizeSiteUrl("https://forum.example.com/"), "https://forum.example.com");
   assertEquals(normalizeSiteUrl("https://forum.example.com/latest"), "https://forum.example.com");
@@ -22,7 +23,7 @@ Deno.test("normalizeSiteUrl: reduces every spelling of a forum URL to a bare ori
   );
 });
 
-Deno.test("normalizeSiteUrl: a bare host defaults to https, never http", () => {
+test("normalizeSiteUrl: a bare host defaults to https, never http", () => {
   // Producing an http:// base from a bare hostname would downgrade the
   // transport the API key travels over.
   assertEquals(normalizeSiteUrl("forum.example.com"), "https://forum.example.com");
@@ -30,13 +31,13 @@ Deno.test("normalizeSiteUrl: a bare host defaults to https, never http", () => {
   assertEquals(normalizeSiteUrl("http://localhost:3000"), "http://localhost:3000");
 });
 
-Deno.test("normalizeSiteUrl: rejects what it cannot turn into an origin", () => {
+test("normalizeSiteUrl: rejects what it cannot turn into an origin", () => {
   assertThrows(() => normalizeSiteUrl(""));
   assertThrows(() => normalizeSiteUrl("   "));
   assertThrows(() => normalizeSiteUrl("https://"));
 });
 
-Deno.test("siteUrlFromConnection: reads display, and says so when it is missing", () => {
+test("siteUrlFromConnection: reads display, and says so when it is missing", () => {
   assertEquals(
     siteUrlFromConnection({ display: { siteUrl: "https://a.test/" } } as never),
     "https://a.test",
@@ -45,20 +46,20 @@ Deno.test("siteUrlFromConnection: reads display, and says so when it is missing"
   assertThrows(() => siteUrlFromConnection({ display: {} } as never), Error, "records no site URL");
 });
 
-Deno.test("compact: drops undefined, null and blank, keeps false and 0", () => {
+test("compact: drops undefined, null and blank, keeps false and 0", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0, g: "x" }),
     { a: 1, e: false, f: 0, g: "x" },
   );
 });
 
-Deno.test("unset: a blank form field is absent, not empty", () => {
+test("unset: a blank form field is absent, not empty", () => {
   assertEquals(unset(""), undefined);
   assertEquals(unset("x"), "x");
   assertEquals(unset(undefined), undefined);
 });
 
-Deno.test("csvString: rebuilds the comma-separated STRING Discourse asks for", () => {
+test("csvString: rebuilds the comma-separated STRING Discourse asks for", () => {
   // Several endpoints type `usernames` / `target_recipients` as a string with
   // the example `username1,username2` — not as a JSON array.
   assertEquals(csvString("alice, bob ,, carol"), "alice,bob,carol");
@@ -67,17 +68,17 @@ Deno.test("csvString: rebuilds the comma-separated STRING Discourse asks for", (
   assertEquals(csvString(undefined), undefined);
 });
 
-Deno.test("csvList: the array form, for the endpoints that want one", () => {
+test("csvList: the array form, for the endpoints that want one", () => {
   assertEquals(csvList("a, b"), ["a", "b"]);
   assertEquals(csvList(""), undefined);
 });
 
-Deno.test("boolString: Discourse's lowercase token, per its own boolean convention", () => {
+test("boolString: Discourse's lowercase token, per its own boolean convention", () => {
   assertEquals(boolString(true), "true");
   assertEquals(boolString(false), "false");
 });
 
-Deno.test("client: builds URLs on the connection's origin and asks for JSON", async () => {
+test("client: builds URLs on the connection's origin and asks for JSON", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: { ok: true } }]);
   const out = await new DiscourseClient(ctx).request("/t/42.json");
   assertEquals(calls[0].url, `${SITE_URL}/t/42.json`);
@@ -86,7 +87,7 @@ Deno.test("client: builds URLs on the connection's origin and asks for JSON", as
   assertEquals(out, { ok: true });
 });
 
-Deno.test("client: never sets an auth header — sign owns that", async () => {
+test("client: never sets an auth header — sign owns that", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await new DiscourseClient(ctx).request("/t/1.json", { method: "POST", body: { a: 1 } });
   const names = Object.keys(calls[0].headers);
@@ -95,7 +96,7 @@ Deno.test("client: never sets an auth header — sign owns that", async () => {
   assert(!names.includes("api-username"));
 });
 
-Deno.test("client: skips blank query values rather than sending empty parameters", async () => {
+test("client: skips blank query values rather than sending empty parameters", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await new DiscourseClient(ctx).request("/latest.json", {
     query: { order: "created", ascending: undefined, per_page: 10, q: "", n: null },
@@ -108,7 +109,7 @@ Deno.test("client: skips blank query values rather than sending empty parameters
   assertEquals(url.searchParams.has("n"), false);
 });
 
-Deno.test("client: URL-encodes query values instead of concatenating them", async () => {
+test("client: URL-encodes query values instead of concatenating them", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);
   await new DiscourseClient(ctx).request("/search.json", {
     query: { q: "onboarding #howto tags:api after:2026-01-01" },
@@ -116,7 +117,7 @@ Deno.test("client: URL-encodes query values instead of concatenating them", asyn
   assert(calls[0].url.includes("q=onboarding+%23howto+tags%3Aapi+after%3A2026-01-01"));
 });
 
-Deno.test("client: sets content-type only when there is a body", async () => {
+test("client: sets content-type only when there is a body", async () => {
   const withBody = mockDiscourseCtx([{ body: {} }]);
   await new DiscourseClient(withBody.ctx).request("/posts.json", {
     method: "POST",
@@ -131,7 +132,7 @@ Deno.test("client: sets content-type only when there is a body", async () => {
   assertEquals(without.calls[0].body, null);
 });
 
-Deno.test("client: a DELETE keeps its body — Discourse's group route depends on it", async () => {
+test("client: a DELETE keeps its body — Discourse's group route depends on it", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: { success: "OK" } }]);
   await new DiscourseClient(ctx).request("/groups/7/members.json", {
     method: "DELETE",
@@ -141,7 +142,7 @@ Deno.test("client: a DELETE keeps its body — Discourse's group route depends o
   assertEquals(JSON.parse(calls[0].body!), { usernames: "alice" });
 });
 
-Deno.test("client: a non-2xx throws with the status and Discourse's own error body", async () => {
+test("client: a non-2xx throws with the status and Discourse's own error body", async () => {
   const { ctx } = mockDiscourseCtx([
     { status: 422, statusText: "Unprocessable Entity", body: { errors: ["Title is too short"] } },
   ]);
@@ -156,14 +157,14 @@ Deno.test("client: a non-2xx throws with the status and Discourse's own error bo
   assert(message.includes("Title is too short"));
 });
 
-Deno.test("client: 204 and an empty 200 both come back as undefined, not a parse error", async () => {
+test("client: 204 and an empty 200 both come back as undefined, not a parse error", async () => {
   const { ctx } = mockDiscourseCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new DiscourseClient(ctx);
   assertEquals(await client.request("/t/1.json", { method: "DELETE" }), undefined);
   assertEquals(await client.request("/t/2.json", { method: "DELETE" }), undefined);
 });
 
-Deno.test("client: refuses to build a URL when the connection records no forum", () => {
+test("client: refuses to build a URL when the connection records no forum", () => {
   const { ctx } = mockDiscourseCtx([]);
   (ctx as { connection?: unknown }).connection = { display: {} };
   assertThrows(() => new DiscourseClient(ctx), Error, "records no site URL");

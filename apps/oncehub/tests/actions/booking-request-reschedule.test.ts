@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-request-reschedule.ts";
 
-Deno.test("booking-request-reschedule: POSTs /bookings/{id}/request-reschedule", async () => {
+test("booking-request-reschedule: POSTs /bookings/{id}/request-reschedule", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "BKNG-1" } }]);
   await action.execute({ id: "BKNG-1", rescheduleReason: "host unavailable" }, ctx);
   const url = new URL(calls[0].url);

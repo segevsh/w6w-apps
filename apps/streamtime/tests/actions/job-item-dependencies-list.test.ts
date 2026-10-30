@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemDependenciesList from "../../actions/job-item-dependencies-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-dependencies-list: reads the dependencies route under the job", async () => {
+test("job-item-dependencies-list: reads the dependencies route under the job", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: 1, parentJobItemId: 88, childJobItemId: 89, lagDays: 2 }] },
   ]);
@@ -15,7 +16,7 @@ Deno.test("job-item-dependencies-list: reads the dependencies route under the jo
 });
 
 /** There is no create or delete route for a dependency, and the action says so. */
-Deno.test("job-item-dependencies-list: it is read-only, and the description claims no more", () => {
+test("job-item-dependencies-list: it is read-only, and the description claims no more", () => {
   assertEquals(jobItemDependenciesList.type, "search");
   assertEquals(/Read-only/.test(jobItemDependenciesList.description ?? ""), true);
 });

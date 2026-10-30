@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import runGet from "../../actions/run-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("run-get: GET /projects/{p}/runs/{r} returns status and timings", async () => {
+test("run-get: GET /projects/{p}/runs/{r} returns status and timings", async () => {
   const { ctx, calls } = mockCtx([{
     body: { runId: "r1", status: "COMPLETED", startTime: "a", endTime: "b", elapsedTime: 1200 },
   }]);
@@ -16,7 +17,7 @@ Deno.test("run-get: GET /projects/{p}/runs/{r} returns status and timings", asyn
   assertEquals(out.elapsedTime, 1200);
 });
 
-Deno.test("run-get: both ids are escaped", async () => {
+test("run-get: both ids are escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await runGet.execute({ projectId: "p/1", runId: "r?1" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/v1/projects/p%2F1/runs/r%3F1");

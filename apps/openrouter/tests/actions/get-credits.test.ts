@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-credits.ts";
 
-Deno.test("get-credits: GETs /credits with no params and returns the vendor's body", async () => {
+test("get-credits: GETs /credits with no params and returns the vendor's body", async () => {
   const body = { data: { total_credits: 100.5, total_usage: 25.75 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -14,6 +15,6 @@ Deno.test("get-credits: GETs /credits with no params and returns the vendor's bo
   assertEquals(result, body);
 });
 
-Deno.test("get-credits: description discloses the Management-key requirement", () => {
+test("get-credits: description discloses the Management-key requirement", () => {
   assertEquals(/Management API key/.test(action.description ?? ""), true);
 });

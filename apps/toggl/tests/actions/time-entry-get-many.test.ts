@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-get-many.ts";
 
-Deno.test("time-entry-get-many: GETs /me/time_entries with date filters", async () => {
+test("time-entry-get-many: GETs /me/time_entries with date filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   const result = await action.execute(
     { startDate: "2026-07-01", endDate: "2026-07-31" },
@@ -15,7 +16,7 @@ Deno.test("time-entry-get-many: GETs /me/time_entries with date filters", async 
   assertEquals(result, [{ id: 1 }]);
 });
 
-Deno.test("time-entry-get-many: omits unset filters from the query", async () => {
+test("time-entry-get-many: omits unset filters from the query", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

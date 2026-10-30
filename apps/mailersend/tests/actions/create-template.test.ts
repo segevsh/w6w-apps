@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-template.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-template: POSTs /v1/templates with wire names", async () => {
+test("create-template: POSTs /v1/templates with wire names", async () => {
   const resp = { data: { id: "t1", name: "Welcome" } };
   const { ctx, calls } = mockCtx([{ status: 201, body: resp }]);
   const out = await exec(action, {
@@ -28,7 +29,7 @@ Deno.test("create-template: POSTs /v1/templates with wire names", async () => {
   assertEquals(out, resp);
 });
 
-Deno.test("create-template: html alone is a valid minimal body", async () => {
+test("create-template: html alone is a valid minimal body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }]);
   await exec(action, { html: "<p>x</p>", autoGenerate: true }, ctx);
   assertEquals(bodyOf(calls[0]), { html: "<p>x</p>", auto_generate: true });

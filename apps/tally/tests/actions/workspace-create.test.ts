@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-create.ts";
 
-Deno.test("workspace-create: POSTs the name to /workspaces", async () => {
+test("workspace-create: POSTs the name to /workspaces", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "w2", name: "Ops" } }]);
   const result = await action.execute({ name: "Ops" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("workspace-create: POSTs the name to /workspaces", async () => {
   assertEquals(result.id, "w2");
 });
 
-Deno.test("workspace-create: is not idempotent — a replay makes a second workspace", () => {
+test("workspace-create: is not idempotent — a replay makes a second workspace", () => {
   assertEquals(action.idempotent, false);
 });

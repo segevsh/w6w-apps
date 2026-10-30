@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("auth: declares an apiKey method with a secret field and X-Api-Key header", () => {
+test("auth: declares an apiKey method with a secret field and X-Api-Key header", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.name, "X-Api-Key");
   assertEquals(auth.fields![0].type, "secret");
 });
 
-Deno.test("auth: sign stamps x-api-key and nothing else", async () => {
+test("auth: sign stamps x-api-key and nothing else", async () => {
   const req = {
     url: "https://api.peopledatalabs.com/v5/person/enrich",
     method: "GET",
@@ -22,7 +23,7 @@ Deno.test("auth: sign stamps x-api-key and nothing else", async () => {
   assertEquals((out as { headers: Record<string, string> }).headers, { "x-api-key": "k1" });
 });
 
-Deno.test("auth.test: a suggestions array is a live key, probed with GET /v5/autocomplete", async () => {
+test("auth.test: a suggestions array is a live key, probed with GET /v5/autocomplete", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: 200, data: [{ name: "engineer" }] } }]);
   const r = await auth.test!({ credential: { apiKey: "k" } }, ctx);
   assertEquals(r.ok, true);
@@ -32,7 +33,7 @@ Deno.test("auth.test: a suggestions array is a live key, probed with GET /v5/aut
   assertEquals(calls[0].headers["x-api-key"], "k");
 });
 
-Deno.test("auth.test: authentication_error is rejected from the body, array or string type", async () => {
+test("auth.test: authentication_error is rejected from the body, array or string type", async () => {
   const arr = mockCtx([{
     status: 401,
     body: {
@@ -53,7 +54,7 @@ Deno.test("auth.test: authentication_error is rejected from the body, array or s
   assertEquals((await auth.test!({ credential: { apiKey: "bad" } }, str.ctx)).ok, false);
 });
 
-Deno.test("auth.test: out-of-credits (402) and rate-limited (429) keys are still recognised keys", async () => {
+test("auth.test: out-of-credits (402) and rate-limited (429) keys are still recognised keys", async () => {
   const pay = mockCtx([{
     status: 402,
     body: { status: 402, error: { type: ["payment_required"], message: "x" } },
@@ -66,7 +67,7 @@ Deno.test("auth.test: out-of-credits (402) and rate-limited (429) keys are still
   assertEquals((await auth.test!({ credential: { apiKey: "k" } }, rate.ctx)).ok, true);
 });
 
-Deno.test("auth.test: a 200 without data, a 5xx, an HTML 4xx, no key and a network error all fail", async () => {
+test("auth.test: a 200 without data, a 5xx, an HTML 4xx, no key and a network error all fail", async () => {
   const shape = mockCtx([{ body: { hello: "world" } }]);
   assert(
     (await auth.test!({ credential: { apiKey: "k" } }, shape.ctx)).message!.includes(

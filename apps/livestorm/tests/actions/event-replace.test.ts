@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventReplace from "../../actions/event-replace.ts";
 import { mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("event-replace: PUTs the event", async () => {
+test("event-replace: PUTs the event", async () => {
   const { ctx, calls } = mockCtx([{ body: single("events", "e1", { title: "New" }) }]);
   const result = await eventReplace.execute({ id: "e1", title: "New" }, ctx);
 

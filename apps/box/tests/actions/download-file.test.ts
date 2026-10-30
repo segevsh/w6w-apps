@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/download-file.ts";
 import type { FileRef } from "@w6w/types";
@@ -33,7 +34,7 @@ function fakeFileCapability() {
   };
 }
 
-Deno.test("download-file: GETs /files/{id}/content and creates a FileRef from the raw bytes", async () => {
+test("download-file: GETs /files/{id}/content and creates a FileRef from the raw bytes", async () => {
   const { ctx: base, calls } = mockCtx([
     {
       body: "file contents",
@@ -59,7 +60,7 @@ Deno.test("download-file: GETs /files/{id}/content and creates a FileRef from th
   assertEquals(new TextDecoder().decode(created[0].bytes), "file contents");
 });
 
-Deno.test("download-file: parses the RFC 5987 filename* form when present", async () => {
+test("download-file: parses the RFC 5987 filename* form when present", async () => {
   const { ctx: base } = mockCtx([
     {
       body: "x",
@@ -77,7 +78,7 @@ Deno.test("download-file: parses the RFC 5987 filename* form when present", asyn
   assertEquals(created.length, 1);
 });
 
-Deno.test("download-file: falls back to octet-stream / the file id when Box sends no useful headers", async () => {
+test("download-file: falls back to octet-stream / the file id when Box sends no useful headers", async () => {
   // No `body` key at all (not even `""`) — mockCtx then builds a `Response`
   // with a `null` body, the one shape the Fetch spec never auto-assigns a
   // `Content-Type` for. A string body (even empty) would get
@@ -92,7 +93,7 @@ Deno.test("download-file: falls back to octet-stream / the file id when Box send
   assertEquals(created.length, 1);
 });
 
-Deno.test("download-file: fails with a clear message, not a TypeError, when ctx.file is absent", async () => {
+test("download-file: fails with a clear message, not a TypeError, when ctx.file is absent", async () => {
   const { ctx } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(action.execute!({ fileId: "1" }, ctx)),

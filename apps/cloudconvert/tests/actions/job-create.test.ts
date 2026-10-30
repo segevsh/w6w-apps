@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import jobCreate from "../../actions/job-create.ts";
 import { envelope, hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const JOB = envelope({ id: "j1", status: "processing", tasks: [] });
 
-Deno.test("job-create: POSTs to the async host with tasks/tag/webhook_url", async () => {
+test("job-create: POSTs to the async host with tasks/tag/webhook_url", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JOB }]);
   const out = await jobCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("job-create: POSTs to the async host with tasks/tag/webhook_url", asyn
   assertEquals(out.id, "j1");
 });
 
-Deno.test("job-create: accepts tasks as a JSON string", async () => {
+test("job-create: accepts tasks as a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: JOB }]);
   await jobCreate.execute(
     { tasks: '{"import-1":{"operation":"import/url","url":"https://x"}}' },
@@ -35,7 +36,7 @@ Deno.test("job-create: accepts tasks as a JSON string", async () => {
   assertEquals(body.tasks["import-1"].operation, "import/url");
 });
 
-Deno.test("job-create: rejects malformed tasks JSON before any request is made", async () => {
+test("job-create: rejects malformed tasks JSON before any request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await jobCreate.execute({ tasks: "{not json" }, ctx),
@@ -45,6 +46,6 @@ Deno.test("job-create: rejects malformed tasks JSON before any request is made",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("job-create: is declared non-idempotent", () => {
+test("job-create: is declared non-idempotent", () => {
   assertEquals(jobCreate.idempotent, false);
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { decodeBase64 } from "../../lib/client.ts";
 import action from "../../actions/file-write.ts";
@@ -7,7 +8,7 @@ const conn = { display: { baseUrl: "https://git.example.com", owner: "acme" } };
 const url = "https://git.example.com/api/v1/repos/acme/web/contents/src/index.ts";
 
 /** The sha guards against clobbering a change that landed in between. */
-Deno.test("file-write: reads the existing file and PUTs with its sha", async () => {
+test("file-write: reads the existing file and PUTs with its sha", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { sha: "abc123", content: "b2xk" } },
     { status: 200, body: { content: { sha: "def456" } } },
@@ -28,7 +29,7 @@ Deno.test("file-write: reads the existing file and PUTs with its sha", async () 
 });
 
 /** A file that does not exist yet is a 404 on the read, and means create. */
-Deno.test("file-write: falls back to POST when the file is not there", async () => {
+test("file-write: falls back to POST when the file is not there", async () => {
   const { ctx, calls } = mockCtx([
     { status: 404, body: { message: "object does not exist" } },
     { status: 201, body: { content: { sha: "new" } } },
@@ -44,7 +45,7 @@ Deno.test("file-write: falls back to POST when the file is not there", async () 
 });
 
 /** btoa alone throws above U+00FF — the encoder has to handle UTF-8. */
-Deno.test("file-write: encodes non-ASCII content rather than throwing", async () => {
+test("file-write: encodes non-ASCII content rather than throwing", async () => {
   const { ctx, calls } = mockCtx([
     { status: 404, body: {} },
     { status: 201, body: {} },
@@ -53,7 +54,7 @@ Deno.test("file-write: encodes non-ASCII content rather than throwing", async ()
   assertEquals(decodeBase64(JSON.parse(calls[1].body!).content), "こんにちは — 🎉");
 });
 
-Deno.test("file-write: a new branch is sent so a change can be proposed", async () => {
+test("file-write: a new branch is sent so a change can be proposed", async () => {
   const { ctx, calls } = mockCtx([
     { status: 404, body: {} },
     { status: 201, body: {} },
@@ -71,7 +72,7 @@ Deno.test("file-write: a new branch is sent so a change can be proposed", async 
 });
 
 /** Any failure other than "not found" is real and must not become a create. */
-Deno.test("file-write: a non-404 read failure is raised, not retried as a create", async () => {
+test("file-write: a non-404 read failure is raised, not retried as a create", async () => {
   const { ctx, calls } = mockCtx([{ status: 403, body: { message: "forbidden" } }], conn);
   await assertRejects(
     async () => await action.execute!({ repo: "web", path: "a.txt", content: "x" }, ctx),
@@ -81,7 +82,7 @@ Deno.test("file-write: a non-404 read failure is raised, not retried as a create
   assertEquals(calls.length, 1);
 });
 
-Deno.test("file-write: path and content are both required, before any request", async () => {
+test("file-write: path and content are both required, before any request", async () => {
   const noPath = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ repo: "web", content: "x" }, noPath.ctx),
@@ -98,7 +99,7 @@ Deno.test("file-write: path and content are both required, before any request", 
 });
 
 /** force_push discards history rather than adding to it. */
-Deno.test("file-write: force push is not offered at all", () => {
+test("file-write: force push is not offered at all", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assert(!keys.some((k) => /force/i.test(k)), "force_push must not be reachable");
 });

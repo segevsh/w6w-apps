@@ -1,23 +1,24 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, formObject, mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/resume-subscription.ts";
 
 const ok = { status: 200, body: { subscription: { id: "sub_1", status: "active" } } };
 
-Deno.test("resume-subscription: is an idempotent perform action", () => {
+test("resume-subscription: is an idempotent perform action", () => {
   assertEquals(action.key, "resume-subscription");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("resume-subscription: POSTs to /resume — no `_for_items` suffix", async () => {
+test("resume-subscription: POSTs to /resume — no `_for_items` suffix", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ subscriptionId: "sub_1" }, connected(ctx));
   assertEquals(calls[0].method, "POST");
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/subscriptions/sub_1/resume");
 });
 
-Deno.test("resume-subscription: maps every documented option", async () => {
+test("resume-subscription: maps every documented option", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     subscriptionId: "sub_1",
@@ -36,12 +37,12 @@ Deno.test("resume-subscription: maps every documented option", async () => {
   });
 });
 
-Deno.test("resume-subscription: offers only the TWO documented resume options", () => {
+test("resume-subscription: offers only the TWO documented resume options", () => {
   // Pause documents four; resume documents two. The asymmetry is real and is
   // not mirrored away.
   assertEquals(optionValues(action, "resumeOption"), ["immediately", "specific_date"]);
 });
 
-Deno.test("resume-subscription: exposes payment_initiator, which drives SCA handling", () => {
+test("resume-subscription: exposes payment_initiator, which drives SCA handling", () => {
   assertEquals(optionValues(action, "paymentInitiator"), ["customer", "merchant"]);
 });

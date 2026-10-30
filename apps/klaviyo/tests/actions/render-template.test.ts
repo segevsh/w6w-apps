@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/render-template.ts";
 
-Deno.test("render-template: POSTs /template-render/ with id + context", async () => {
+test("render-template: POSTs /template-render/ with id + context", async () => {
   const body = { data: { type: "template", id: "t-1", attributes: { html: "<p>hi Alice</p>" } } };
   const { ctx, calls } = mockCtx([{ status: 200, body }]);
   await action.execute!({ templateId: "t-1", context: { first_name: "Alice" } }, ctx);

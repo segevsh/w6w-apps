@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import listCustomFields from "../../actions/list-custom-fields.ts";
 
@@ -6,7 +7,7 @@ import listCustomFields from "../../actions/list-custom-fields.ts";
  * The lower-cased collection key is the trap this endpoint is most likely to
  * spring, so it is exercised end to end rather than only in the lib test.
  */
-Deno.test("list-custom-fields: unwraps the lower-cased `customfields` key", async () => {
+test("list-custom-fields: unwraps the lower-cased `customfields` key", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -23,7 +24,7 @@ Deno.test("list-custom-fields: unwraps the lower-cased `customfields` key", asyn
   assertEquals(result.records[1].name, "customClosePrice");
 });
 
-Deno.test("list-custom-fields: tells you to send `name`, not `label`", () => {
+test("list-custom-fields: tells you to send `name`, not `label`", () => {
   const d = listCustomFields.description!;
   assert(d.includes("customClosePrice"), d);
   assert(/label/i.test(d), d);

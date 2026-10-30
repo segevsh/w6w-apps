@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import rowLock from "../../actions/row-lock.ts";
 import { BASE_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("row-lock: sends PUT /lock-rows/ with table_name and row_ids", async () => {
+test("row-lock: sends PUT /lock-rows/ with table_name and row_ids", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const out = await rowLock.execute({ tableName: "Table1", rowIds: ["r1", "r2"] }, ctx) as {
     success: boolean;
@@ -13,13 +14,13 @@ Deno.test("row-lock: sends PUT /lock-rows/ with table_name and row_ids", async (
   assertEquals(out.success, true);
 });
 
-Deno.test("row-lock: row ids may arrive as JSON text", async () => {
+test("row-lock: row ids may arrive as JSON text", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await rowLock.execute({ tableName: "T", rowIds: '["a","b"]' }, ctx);
   assertEquals(bodyOf(calls[0]).row_ids, ["a", "b"]);
 });
 
-Deno.test("row-lock: an empty or non-array row id list is refused without a request", async () => {
+test("row-lock: an empty or non-array row id list is refused without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -38,6 +39,6 @@ Deno.test("row-lock: an empty or non-array row id list is refused without a requ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("row-lock: is declared idempotent", () => {
+test("row-lock: is declared idempotent", () => {
   assertEquals(rowLock.idempotent, true);
 });

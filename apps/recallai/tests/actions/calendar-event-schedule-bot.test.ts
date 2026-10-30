@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/calendar-event-schedule-bot.ts";
 
-Deno.test("calendar-event-schedule-bot: sends deduplication_key and bot_config", async () => {
+test("calendar-event-schedule-bot: sends deduplication_key and bot_config", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e1", bots: [{ bot_id: "b1" }] } }]);
   const out = await action.execute!({
     id: "e1",
@@ -22,7 +23,7 @@ Deno.test("calendar-event-schedule-bot: sends deduplication_key and bot_config",
   assertEquals(out, { id: "e1", bots: [{ bot_id: "b1" }] });
 });
 
-Deno.test("calendar-event-schedule-bot: bot_config is always present and join_at is not offered", async () => {
+test("calendar-event-schedule-bot: bot_config is always present and join_at is not offered", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ id: "e1", deduplicationKey: "k" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { deduplication_key: "k", bot_config: {} });
@@ -33,7 +34,7 @@ Deno.test("calendar-event-schedule-bot: bot_config is always present and join_at
   ]);
 });
 
-Deno.test("calendar-event-schedule-bot: a 404 is reported", async () => {
+test("calendar-event-schedule-bot: a 404 is reported", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { detail: "Not found.", code: "not_found" } }]);
   await assertRejects(
     async () => await action.execute!({ id: "e1", deduplicationKey: "k" }, ctx),

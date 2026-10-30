@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentList from "../../actions/comment-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const COMMENTS = [
   { comment_id: 2, value: "newest", created_on: "2026-01-02 09:00:00" },
 ];
 
-Deno.test("comment-list: GETs the polymorphic comment collection", async () => {
+test("comment-list: GETs the polymorphic comment collection", async () => {
   const { ctx, calls } = mockCtx([{ body: COMMENTS }]);
   const out = await commentList.execute({ refType: "item", refId: "9" }, ctx);
   assertEquals(out, { comments: COMMENTS });
@@ -15,7 +16,7 @@ Deno.test("comment-list: GETs the polymorphic comment collection", async () => {
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("comment-list: paging reaches the query string, including offset 0", async () => {
+test("comment-list: paging reaches the query string, including offset 0", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await commentList.execute({ refType: "task", refId: "5", limit: 10, offset: 0 }, ctx);
   // `offset: 0` is a value, not an absence, and reaches the wire as one.
@@ -28,13 +29,13 @@ Deno.test("comment-list: paging reaches the query string, including offset 0", a
  * workflow reacting to "the latest comment" wants the tail. The output label
  * has to say so, because nothing in the payload does.
  */
-Deno.test("comment-list: the output field states the oldest-first ordering", () => {
+test("comment-list: the output field states the oldest-first ordering", () => {
   const output = commentList.output as Array<{ key: string; label: string }>;
   assertEquals(output[0].key, "comments");
   assertEquals(output[0].label.includes("oldest first"), true);
 });
 
-Deno.test("comment-list: the reference type is a closed vocabulary", () => {
+test("comment-list: the reference type is a closed vocabulary", () => {
   const refType = commentList.params!.find((p) => p.key === "refType")!;
   assertEquals(refType.validation?.enum, ["item", "task", "status", "app", "space", "file"]);
 });

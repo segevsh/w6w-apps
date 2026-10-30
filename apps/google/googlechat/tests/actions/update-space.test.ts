@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-space.ts";
 
-Deno.test("update-space: PATCHes spaces/{space} with updateMask in the query", async () => {
+test("update-space: PATCHes spaces/{space} with updateMask in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", updateMask: "display_name", displayName: "New" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -12,7 +13,7 @@ Deno.test("update-space: PATCHes spaces/{space} with updateMask in the query", a
   assertEquals(JSON.parse(calls[0].body!), { displayName: "New" });
 });
 
-Deno.test("update-space: nests description and guidelines under spaceDetails together", async () => {
+test("update-space: nests description and guidelines under spaceDetails together", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     space: "spaces/A1",
@@ -23,7 +24,7 @@ Deno.test("update-space: nests description and guidelines under spaceDetails tog
   assertEquals(JSON.parse(calls[0].body!), { spaceDetails: { description: "d", guidelines: "g" } });
 });
 
-Deno.test("update-space: passes a multi-path mask through verbatim", async () => {
+test("update-space: passes a multi-path mask through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     space: "A1",
@@ -37,7 +38,7 @@ Deno.test("update-space: passes a multi-path mask through verbatim", async () =>
   );
 });
 
-Deno.test("update-space: sends an empty body when only the mask is given", async () => {
+test("update-space: sends an empty body when only the mask is given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ space: "A1", updateMask: "display_name" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sourceSummaryGet from "../../actions/source-summary-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("source-summary-get: GET .../sources/summary, bare object", async () => {
+test("source-summary-get: GET .../sources/summary, bare object", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       links: { count: 1, size: 100 },

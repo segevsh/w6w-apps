@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealList from "../../actions/deal-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("deal-list: sends every input as query", async () => {
+test("deal-list: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await dealList.execute({
     "contactId": 7,
@@ -42,7 +43,7 @@ Deno.test("deal-list: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("deal-list: omits every unset optional", async () => {
+test("deal-list: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await dealList.execute({} as never, ctx);
 
@@ -51,7 +52,7 @@ Deno.test("deal-list: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("deal-list: declares a read-only shape", () => {
+test("deal-list: declares a read-only shape", () => {
   assertEquals(dealList.type, "read");
   assertEquals(dealList.idempotent, undefined);
   assertEquals(dealList.params!.filter((p) => p.required).map((p) => p.key), []);

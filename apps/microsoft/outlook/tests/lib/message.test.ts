@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { buildMessage } from "../../lib/message.ts";
 
-Deno.test("buildMessage: maps the composition params onto Graph's message resource", () => {
+test("buildMessage: maps the composition params onto Graph's message resource", () => {
   const out = buildMessage({
     to: ["a@b.com", "Carol <c@d.com>"],
     cc: ["cc@x.com"],
@@ -28,12 +29,12 @@ Deno.test("buildMessage: maps the composition params onto Graph's message resour
   assertEquals(out.importance, "high");
 });
 
-Deno.test("buildMessage: omits every unset property rather than nulling it", () => {
+test("buildMessage: omits every unset property rather than nulling it", () => {
   const out = buildMessage({ to: ["a@b.com"] });
   assertEquals(Object.keys(out), ["toRecipients"]);
 });
 
-Deno.test("buildMessage: tags attachments with Graph's fileAttachment type", () => {
+test("buildMessage: tags attachments with Graph's fileAttachment type", () => {
   const out = buildMessage({
     to: ["a@b.com"],
     attachments: [
@@ -53,7 +54,7 @@ Deno.test("buildMessage: tags attachments with Graph's fileAttachment type", () 
   ]);
 });
 
-Deno.test("buildMessage: drops attachment rows missing a name or content", () => {
+test("buildMessage: drops attachment rows missing a name or content", () => {
   const out = buildMessage({
     to: ["a@b.com"],
     attachments: [

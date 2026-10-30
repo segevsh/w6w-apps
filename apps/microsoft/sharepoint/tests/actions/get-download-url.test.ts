@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-download-url.ts";
 
-Deno.test("get-download-url: reads @microsoft.graph.downloadUrl off a plain metadata GET", async () => {
+test("get-download-url: reads @microsoft.graph.downloadUrl off a plain metadata GET", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "F1",
@@ -25,7 +26,7 @@ Deno.test("get-download-url: reads @microsoft.graph.downloadUrl off a plain meta
   });
 });
 
-Deno.test("get-download-url: neither Item ID nor Item path is a legible error, never the library root", async () => {
+test("get-download-url: neither Item ID nor Item path is a legible error, never the library root", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => action.execute({}, ctx) as Promise<unknown>,
@@ -35,7 +36,7 @@ Deno.test("get-download-url: neither Item ID nor Item path is a legible error, n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-download-url: a folder gets a specific error, not a generic one", async () => {
+test("get-download-url: a folder gets a specific error, not a generic one", async () => {
   const { ctx } = mockCtx([{ body: { id: "D1", name: "Reports", folder: {} } }]);
   await assertRejects(
     () => action.execute({ itemId: "D1" }, ctx) as Promise<unknown>,
@@ -44,7 +45,7 @@ Deno.test("get-download-url: a folder gets a specific error, not a generic one",
   );
 });
 
-Deno.test("get-download-url: a file with no download URL at all still errors, distinctly", async () => {
+test("get-download-url: a file with no download URL at all still errors, distinctly", async () => {
   const { ctx } = mockCtx([{ body: { id: "F1", name: "ghost.txt" } }]);
   const err = await assertRejects(
     () => action.execute({ itemId: "F1" }, ctx) as Promise<unknown>,

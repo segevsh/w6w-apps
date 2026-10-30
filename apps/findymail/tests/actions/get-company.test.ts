@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-company.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-company: POSTs the domain", async () => {
+test("get-company: POSTs the domain", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "name": "Stripe", "domain": "stripe.com" },
@@ -21,14 +22,14 @@ Deno.test("get-company: POSTs the domain", async () => {
   assertEquals(out, { "name": "Stripe", "domain": "stripe.com" });
 });
 
-Deno.test("get-company: rejects a call with no identifier before any request", async () => {
+test("get-company: rejects a call with no identifier before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => await action.execute!({} as never, ctx));
   assert((err as Error).message.includes("needs a LinkedIn URL"));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-company: surfaces a 404 miss", async () => {
+test("get-company: surfaces a 404 miss", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { "message": "Not Found" } }]);
   const err = await assertRejects(async () =>
     await action.execute!({ "name": "Nope" } as never, ctx)

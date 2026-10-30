@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-sender-identity.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-sender-identity: POSTs /v1/identities with wire names", async () => {
+test("create-sender-identity: POSTs /v1/identities with wire names", async () => {
   const resp = { data: { id: "i1", email: "a@x.com", is_verified: false } };
   const { ctx, calls } = mockCtx([{ status: 201, body: resp }]);
   const out = await exec(action, {
@@ -28,7 +29,7 @@ Deno.test("create-sender-identity: POSTs /v1/identities with wire names", async 
   assertEquals(out, resp);
 });
 
-Deno.test("create-sender-identity: sends only the required pair when nothing else is set", async () => {
+test("create-sender-identity: sends only the required pair when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }]);
   await exec(action, { domainId: "d1", email: "a@x.com" }, ctx);
   assertEquals(bodyOf(calls[0]), { domain_id: "d1", email: "a@x.com" });

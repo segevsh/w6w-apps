@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/find-email.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("find-email: POSTs name/domain and maps the candidates", async () => {
+test("find-email: POSTs name/domain and maps the candidates", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -37,7 +38,7 @@ Deno.test("find-email: POSTs name/domain and maps the candidates", async () => {
   assertEquals((out.emails as unknown[]).length, 1);
 });
 
-Deno.test("find-email: a 524 with a queue_id is returned as queued, not thrown", async () => {
+test("find-email: a 524 with a queue_id is returned as queued, not thrown", async () => {
   const { ctx, logs } = mockCtx([{
     status: 524,
     body: {
@@ -50,7 +51,7 @@ Deno.test("find-email: a 524 with a queue_id is returned as queued, not thrown",
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("find-email: a 524 without a queue_id, 402 and blank inputs throw", async () => {
+test("find-email: a 524 without a queue_id, 402 and blank inputs throw", async () => {
   const noq = mockCtx([{
     status: 524,
     body: { status: "failed", error: { message: "timed out" } },

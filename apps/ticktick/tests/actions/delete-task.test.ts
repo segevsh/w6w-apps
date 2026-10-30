@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-task.ts";
 
-Deno.test("delete-task: DELETEs the project-nested task path", async () => {
+test("delete-task: DELETEs the project-nested task path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await action.execute!({ projectId: "P1", taskId: "T1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,14 +11,14 @@ Deno.test("delete-task: DELETEs the project-nested task path", async () => {
   assertEquals(out, { status: 200 });
 });
 
-Deno.test("delete-task: no body is sent", async () => {
+test("delete-task: no body is sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   await action.execute!({ projectId: "P1", taskId: "T1" }, ctx);
   assertEquals(calls[0].body, null);
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("delete-task: idempotent for retry purposes", () => {
+test("delete-task: idempotent for retry purposes", () => {
   assertEquals(action.idempotent, true);
   assertEquals(action.type, "perform");
 });

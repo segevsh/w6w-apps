@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { DiscordClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new DiscordClient(ctx);
   const result = await client.request("/channels/x", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"message":"Unknown Message","code":10008}' },
   ]);
@@ -23,7 +24,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/api/v10/channels/c/messages/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new DiscordClient(ctx);
   await client.request("/x", {
@@ -36,7 +37,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new DiscordClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -45,7 +46,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: POST with body serializes JSON and sets content-type", async () => {
+test("client: POST with body serializes JSON and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   const client = new DiscordClient(ctx);
   await client.request("/channels/c/messages", {
@@ -57,7 +58,7 @@ Deno.test("client: POST with body serializes JSON and sets content-type", async 
   assertEquals(calls[0].body, JSON.stringify({ content: "hi" }));
 });
 
-Deno.test("client: empty body with 2xx returns undefined", async () => {
+test("client: empty body with 2xx returns undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: undefined }]);
   const client = new DiscordClient(ctx);
   const result = await client.request("/anything");

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/recipient-view-create.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   clientUserId: "user-42",
 };
 
-Deno.test("recipient-view-create: POSTs a recipientViewRequest and returns the URL", async () => {
+test("recipient-view-create: POSTs a recipientViewRequest and returns the URL", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { url: "https://na4.docusign.net/Signing/x" },
@@ -29,14 +30,14 @@ Deno.test("recipient-view-create: POSTs a recipientViewRequest and returns the U
   assertEquals(out.url, "https://na4.docusign.net/Signing/x");
 });
 
-Deno.test("recipient-view-create: clientUserId is required — it is what makes a recipient embedded", () => {
+test("recipient-view-create: clientUserId is required — it is what makes a recipient embedded", () => {
   assertEquals(action.params?.find((p) => p.key === "clientUserId")?.required, true);
   assertEquals(action.params?.find((p) => p.key === "returnUrl")?.required, true);
   assertEquals(action.params?.find((p) => p.key === "email")?.required, true);
   assertEquals(action.params?.find((p) => p.key === "userName")?.required, true);
 });
 
-Deno.test("recipient-view-create: merges focus-view fields from additionalFields", async () => {
+test("recipient-view-create: merges focus-view fields from additionalFields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     ...INPUT,
@@ -52,13 +53,13 @@ Deno.test("recipient-view-create: merges focus-view fields from additionalFields
   assertEquals(body.authenticationMethod, "email");
 });
 
-Deno.test("recipient-view-create: additionalFields cannot override the explicit params", async () => {
+test("recipient-view-create: additionalFields cannot override the explicit params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...INPUT, additionalFields: '{"email":"spoof@evil.com"}' }, ctx);
   assertEquals(bodyOf(calls[0]).email, "a@b.com");
 });
 
-Deno.test("recipient-view-create: is a non-idempotent perform — every call mints a new URL", () => {
+test("recipient-view-create: is a non-idempotent perform — every call mints a new URL", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

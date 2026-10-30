@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactRestore from "../../actions/contact-restore.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-restore: PATCHes /contacts/{id}/restore", async () => {
+test("contact-restore: PATCHes /contacts/{id}/restore", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1" }) }]);
   await contactRestore.execute({ id: "1" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postCreate from "../../actions/post-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("post-create: posts NPF content and returns the new id", async () => {
+test("post-create: posts NPF content and returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "123" }) }]);
   const out = await postCreate.execute(
     {
@@ -22,7 +23,7 @@ Deno.test("post-create: posts NPF content and returns the new id", async () => {
   assertEquals(out.id, "123");
 });
 
-Deno.test("post-create: accepts content as a JSON string (the shape a form posts)", async () => {
+test("post-create: accepts content as a JSON string (the shape a form posts)", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "1" }) }]);
   await postCreate.execute(
     { blogIdentifier: "staff.tumblr.com", content: JSON.stringify([{ type: "text", text: "hi" }]) },
@@ -32,7 +33,7 @@ Deno.test("post-create: accepts content as a JSON string (the shape a form posts
   assertEquals(body.content, [{ type: "text", text: "hi" }]);
 });
 
-Deno.test("post-create: sending all three reblog fields includes them in the body", async () => {
+test("post-create: sending all three reblog fields includes them in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: "2" }) }]);
   await postCreate.execute(
     {
@@ -50,7 +51,7 @@ Deno.test("post-create: sending all three reblog fields includes them in the bod
   assertEquals(body.reblog_key, "rk");
 });
 
-Deno.test("post-create: rejects invalid JSON in content with a clear error", async () => {
+test("post-create: rejects invalid JSON in content with a clear error", async () => {
   const { ctx } = mockCtx([]);
   try {
     await postCreate.execute({ blogIdentifier: "staff.tumblr.com", content: "{not json" }, ctx);

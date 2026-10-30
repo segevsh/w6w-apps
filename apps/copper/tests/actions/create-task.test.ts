@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: POSTs to /tasks and assembles related_resource from its two halves", async () => {
+test("create-task: POSTs to /tasks and assembles related_resource from its two halves", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute({
     name: "Demo task",
@@ -27,7 +28,7 @@ Deno.test("create-task: POSTs to /tasks and assembles related_resource from its 
   });
 });
 
-Deno.test("create-task: omits related_resource unless BOTH halves are supplied", async () => {
+test("create-task: omits related_resource unless BOTH halves are supplied", async () => {
   for (const partial of [{ relatedResourceType: "project" }, { relatedResourceId: 1 }, {}]) {
     const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
     await action.execute({ name: "T", ...partial }, ctx);
@@ -36,12 +37,12 @@ Deno.test("create-task: omits related_resource unless BOTH halves are supplied",
   }
 });
 
-Deno.test("create-task: does not offer completed_date — Copper sets it and rejects direct writes", () => {
+test("create-task: does not offer completed_date — Copper sets it and rejects direct writes", () => {
   const keys = (action.params ?? []).map((p) => p.key);
   assert(!keys.some((k) => /completed/i.test(k)));
 });
 
-Deno.test("create-task: offers Copper's parent types and status/priority vocabularies", () => {
+test("create-task: offers Copper's parent types and status/priority vocabularies", () => {
   assertEquals(optionValues(action, "relatedResourceType"), [
     "lead",
     "person",
@@ -54,7 +55,7 @@ Deno.test("create-task: offers Copper's parent types and status/priority vocabul
   assertEquals(optionValues(action, "priority"), ["None", "Low", "Medium", "High"]);
 });
 
-Deno.test("create-task: is a non-idempotent perform", () => {
+test("create-task: is a non-idempotent perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

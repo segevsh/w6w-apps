@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Google endpoints and the two Gmail scopes", () => {
+test("oauth2: declares Google endpoints and the two Gmail scopes", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(
@@ -20,7 +21,7 @@ Deno.test("oauth2: declares Google endpoints and the two Gmail scopes", () => {
   assertEquals(auth.oauth2?.extraAuthParams?.prompt, "consent");
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://gmail.googleapis.com/x",
@@ -34,7 +35,7 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test with missing accessToken reports failure without a network call", async () => {
+test("oauth2: test with missing accessToken reports failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -42,7 +43,7 @@ Deno.test("oauth2: test with missing accessToken reports failure without a netwo
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test issues GET /users/me/profile with Bearer token", async () => {
+test("oauth2: test issues GET /users/me/profile with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { emailAddress: "u@example.com" } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -54,14 +55,14 @@ Deno.test("oauth2: test issues GET /users/me/profile with Bearer token", async (
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test surfaces upstream status on non-2xx", async () => {
+test("oauth2: test surfaces upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("oauth2: afterConnect returns the account's email", async () => {
+test("oauth2: afterConnect returns the account's email", async () => {
   const { ctx } = mockCtx([{ body: { emailAddress: "person@example.com" } }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "x" } }, ctx);
   assertEquals(

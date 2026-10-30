@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import socialChannelList from "../../actions/social-channel-list.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("social-channel-list: GETs socialmedia/channels.json with the documented parameters", async () => {
+test("social-channel-list: GETs socialmedia/channels.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "channels": { "Facebook": { "count": 1, "pages": [] } } }),
   }]);
@@ -16,7 +17,7 @@ Deno.test("social-channel-list: GETs socialmedia/channels.json with the document
   assertEquals(out, { "channels": { "Facebook": { "count": 1, "pages": [] } } });
 });
 
-Deno.test("social-channel-list: is a read with no request body", async () => {
+test("social-channel-list: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{
     body: okEnvelope({ "channels": { "Facebook": { "count": 1, "pages": [] } } }),
   }]);
@@ -25,7 +26,7 @@ Deno.test("social-channel-list: is a read with no request body", async () => {
   assertEquals(socialChannelList.type, "read");
 });
 
-Deno.test("social-channel-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("social-channel-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () => await socialChannelList.execute({} as never, ctx));

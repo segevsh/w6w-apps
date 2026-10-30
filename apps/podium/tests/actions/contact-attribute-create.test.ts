@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import contactAttributeCreate from "../../actions/contact-attribute-create.ts";
 
-Deno.test("contact-attribute-create: sends every documented field in its documented place", async () => {
+test("contact-attribute-create: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -30,7 +31,7 @@ Deno.test("contact-attribute-create: sends every documented field in its documen
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-attribute-create: a minimal call sends only what was set", async () => {
+test("contact-attribute-create: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -52,7 +53,7 @@ Deno.test("contact-attribute-create: a minimal call sends only what was set", as
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("contact-attribute-create: declares its params and kind", () => {
+test("contact-attribute-create: declares its params and kind", () => {
   assertEquals((contactAttributeCreate.params ?? []).map((p) => p.key), [
     "label",
     "dataType",

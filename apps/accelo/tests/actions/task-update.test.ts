@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockAcceloCtx } from "../_helpers.ts";
 import action from "../../actions/task-update.ts";
 
-Deno.test("task-update: PUTs only the changed fields to /tasks/{id}", async () => {
+test("task-update: PUTs only the changed fields to /tasks/{id}", async () => {
   const { ctx, calls } = mockAcceloCtx([{
     body: { meta: { status: "ok" }, response: { id: "8" } },
   }]);
@@ -17,7 +18,7 @@ Deno.test("task-update: PUTs only the changed fields to /tasks/{id}", async () =
   });
 });
 
-Deno.test("task-update: refuses an update that sets nothing, without a request", async () => {
+test("task-update: refuses an update that sets nothing, without a request", async () => {
   const { ctx, calls } = mockAcceloCtx([]);
   await assertRejects(
     async () => await action.execute({ taskId: 8 }, ctx),

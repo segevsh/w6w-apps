@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-messages.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const BASE = "https://acme.zulipchat.com/api/v1";
 
-Deno.test("get-messages: defaults to the newest 20 messages as Markdown", async () => {
+test("get-messages: defaults to the newest 20 messages as Markdown", async () => {
   const { ctx, calls } = mockCtx([{
     body: { result: "success", msg: "", messages: [{ id: 1 }], found_newest: true },
   }]);
@@ -22,7 +23,7 @@ Deno.test("get-messages: defaults to the newest 20 messages as Markdown", async 
   assertEquals(out, { messages: [{ id: 1 }], found_newest: true });
 });
 
-Deno.test("get-messages: channel and topic shortcuts become JSON narrow terms", async () => {
+test("get-messages: channel and topic shortcuts become JSON narrow terms", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "", messages: [] } }]);
   const out = await action.execute!({
     channel: "general",
@@ -50,7 +51,7 @@ Deno.test("get-messages: channel and topic shortcuts become JSON narrow terms", 
   assertEquals(out, { messages: [] });
 });
 
-Deno.test("get-messages: message_ids replaces the anchor range entirely", async () => {
+test("get-messages: message_ids replaces the anchor range entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "", messages: [] } }]);
   const out = await action.execute!({ message_ids: "1, 2", anchor: "oldest", num_before: 9 }, ctx);
   const url = new URL(calls[0].url);
@@ -64,7 +65,7 @@ Deno.test("get-messages: message_ids replaces the anchor range entirely", async 
   assertEquals(out, { messages: [] });
 });
 
-Deno.test("get-messages: sends no authorization header of its own", async () => {
+test("get-messages: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{
     body: { result: "success", msg: "", messages: [{ id: 1 }], found_newest: true },
   }]);
@@ -72,7 +73,7 @@ Deno.test("get-messages: sends no authorization header of its own", async () => 
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("get-messages: surfaces Zulip's error msg and code", async () => {
+test("get-messages: surfaces Zulip's error msg and code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { result: "error", msg: "Invalid parameter", code: "BAD_REQUEST" },
@@ -84,7 +85,7 @@ Deno.test("get-messages: surfaces Zulip's error msg and code", async () => {
   );
 });
 
-Deno.test("get-messages: a 401 names the credential problem", async () => {
+test("get-messages: a 401 names the credential problem", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "", headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () => await action.execute!({}, ctx),
@@ -93,7 +94,7 @@ Deno.test("get-messages: a 401 names the credential problem", async () => {
   );
 });
 
-Deno.test("get-messages: a connection without a subdomain is refused before any request", async () => {
+test("get-messages: a connection without a subdomain is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   (ctx as { connection?: unknown }).connection = undefined;
   await assertRejects(
@@ -104,7 +105,7 @@ Deno.test("get-messages: a connection without a subdomain is refused before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-messages: a numeric channel is sent as an ID, and a non-array narrow is refused", async () => {
+test("get-messages: a numeric channel is sent as an ID, and a non-array narrow is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: "success", msg: "", messages: [] } }]);
   await action.execute!({ channel: "12" }, ctx);
   assertEquals(

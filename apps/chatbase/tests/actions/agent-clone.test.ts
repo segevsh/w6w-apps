@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentClone from "../../actions/agent-clone.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-clone: POST /agents/{id}/clone returns the new agent id", async () => {
+test("agent-clone: POST /agents/{id}/clone returns the new agent id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "a2" } }]);
   const out = await agentClone.execute({ agentId: "a1" }, ctx) as { id: string };
 

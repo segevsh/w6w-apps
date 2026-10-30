@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateSession from "../../actions/update-session.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "payable": true,
 } as Parameters<typeof updateSession.execute>[0];
 
-Deno.test("update-session: sends PATCH to the documented path and returns the response", async () => {
+test("update-session: sends PATCH to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "sessionData": "Ab2" } }]);
   const out = await updateSession.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -24,7 +25,7 @@ Deno.test("update-session: sends PATCH to the documented path and returns the re
   assertEquals(out, { "sessionData": "Ab2" });
 });
 
-Deno.test("update-session: targets the connection's base URL and carries no credential", async () => {
+test("update-session: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{ status: 200, body: { "sessionData": "Ab2" } }], "live");
   await updateSession.execute(INPUT, ctx);
   assert(
@@ -36,7 +37,7 @@ Deno.test("update-session: targets the connection's base URL and carries no cred
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("update-session: surfaces Adyen's error code, type and message", async () => {
+test("update-session: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -54,6 +55,6 @@ Deno.test("update-session: surfaces Adyen's error code, type and message", async
   );
 });
 
-Deno.test("update-session: declares idempotency as true", () => {
+test("update-session: declares idempotency as true", () => {
   assertEquals(updateSession.idempotent, true);
 });

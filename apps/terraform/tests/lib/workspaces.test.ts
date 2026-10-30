@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { loadWorkspace, resolveWorkspace } from "../../lib/workspaces.ts";
 
@@ -14,14 +15,14 @@ const workspaceDocument = {
 };
 
 /** An id from an earlier action should not need a lookup to reuse. */
-Deno.test("resolveWorkspace: an id is used as given, with no request at all", async () => {
+test("resolveWorkspace: an id is used as given, with no request at all", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await resolveWorkspace({ workspaceId: "ws-abc123" }, ctx), { id: "ws-abc123" });
   assertEquals(calls.length, 0);
 });
 
 /** A name is unique only within its organisation. */
-Deno.test("resolveWorkspace: a name is looked up under its organisation", async () => {
+test("resolveWorkspace: a name is looked up under its organisation", async () => {
   const { ctx, calls } = mockCtx([workspaceDocument]);
   const ref = await resolveWorkspace({ organization: "acme", workspace: "prod" }, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/organizations/acme/workspaces/prod");
@@ -29,7 +30,7 @@ Deno.test("resolveWorkspace: a name is looked up under its organisation", async 
   assert(ref.workspace, "the record is kept so it is not fetched twice");
 });
 
-Deno.test("resolveWorkspace: an id in the wrong shape says how to use a name instead", async () => {
+test("resolveWorkspace: an id in the wrong shape says how to use a name instead", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -42,7 +43,7 @@ Deno.test("resolveWorkspace: an id in the wrong shape says how to use a name ins
   assertEquals(calls.length, 0);
 });
 
-Deno.test("resolveWorkspace: a name without an organisation is refused, and says why", async () => {
+test("resolveWorkspace: a name without an organisation is refused, and says why", async () => {
   for (const input of [{}, { organization: "acme" }, { workspace: "prod" }]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -57,7 +58,7 @@ Deno.test("resolveWorkspace: a name without an organisation is refused, and says
 });
 
 /** Resolving by name already fetched it; asking again is a wasted request. */
-Deno.test("loadWorkspace: reuses the record resolving by name already returned", async () => {
+test("loadWorkspace: reuses the record resolving by name already returned", async () => {
   const named = mockCtx([workspaceDocument]);
   const ref = await resolveWorkspace({ organization: "acme", workspace: "prod" }, named.ctx);
   const workspace = await loadWorkspace(ref, named.ctx);
@@ -65,7 +66,7 @@ Deno.test("loadWorkspace: reuses the record resolving by name already returned",
   assertEquals(workspace["name"], "prod");
 });
 
-Deno.test("loadWorkspace: fetches by id when only an id was given", async () => {
+test("loadWorkspace: fetches by id when only an id was given", async () => {
   const { ctx, calls } = mockCtx([workspaceDocument]);
   const workspace = await loadWorkspace({ id: "ws-abc123" }, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/workspaces/ws-abc123");

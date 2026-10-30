@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, formObject, formPairs, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-customer.ts";
 
 const ok = { status: 200, body: { customer: { id: "cust_1" } } };
 
-Deno.test("create-customer: is a non-idempotent perform action", () => {
+test("create-customer: is a non-idempotent perform action", () => {
   assertEquals(action.key, "create-customer");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "customer");
@@ -13,7 +14,7 @@ Deno.test("create-customer: is a non-idempotent perform action", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("create-customer: POSTs form-encoded, not JSON", async () => {
+test("create-customer: POSTs form-encoded, not JSON", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ firstName: "John" }, connected(ctx));
   assertEquals(calls[0].method, "POST");
@@ -22,7 +23,7 @@ Deno.test("create-customer: POSTs form-encoded, not JSON", async () => {
   assertEquals(calls[0].body, "first_name=John");
 });
 
-Deno.test("create-customer: maps camelCase params onto Chargebee's snake_case fields", async () => {
+test("create-customer: maps camelCase params onto Chargebee's snake_case fields", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({
     id: "cust_1",
@@ -51,7 +52,7 @@ Deno.test("create-customer: maps camelCase params onto Chargebee's snake_case fi
   });
 });
 
-Deno.test("create-customer: sends the billing address in BRACKET form", async () => {
+test("create-customer: sends the billing address in BRACKET form", async () => {
   // Chargebee's own sample:
   //   -d "billing_address[line1]"="PO Box 9999" -d "billing_address[city]"="Walnut"
   const { ctx, calls } = mockCtx([ok]);
@@ -67,13 +68,13 @@ Deno.test("create-customer: sends the billing address in BRACKET form", async ()
   ]);
 });
 
-Deno.test("create-customer: accepts the billing address as a JSON string too", async () => {
+test("create-customer: accepts the billing address as a JSON string too", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ billingAddress: '{"city":"Walnut"}' }, connected(ctx));
   assertEquals(formObject(calls[0].body), { "billing_address[city]": "Walnut" });
 });
 
-Deno.test("create-customer: sends meta_data JSON-encoded, NOT bracket-expanded", async () => {
+test("create-customer: sends meta_data JSON-encoded, NOT bracket-expanded", async () => {
   // The one parameter here that Chargebee reads as a JSON string — matching the
   // official SDKs' level-0 `jsonKeys` handling.
   const { ctx, calls } = mockCtx([ok]);
@@ -81,13 +82,13 @@ Deno.test("create-customer: sends meta_data JSON-encoded, NOT bracket-expanded",
   assertEquals(formObject(calls[0].body), { meta_data: '{"crm_id":"abc","tier":2}' });
 });
 
-Deno.test("create-customer: omits every field the caller left blank", async () => {
+test("create-customer: omits every field the caller left blank", async () => {
   const { ctx, calls } = mockCtx([ok]);
   await action.execute({ email: "a@b.com", firstName: "", lastName: undefined }, connected(ctx));
   assertEquals(calls[0].body, "email=a%40b.com");
 });
 
-Deno.test("create-customer: rejects malformed JSON instead of silently dropping it", async () => {
+test("create-customer: rejects malformed JSON instead of silently dropping it", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -99,7 +100,7 @@ Deno.test("create-customer: rejects malformed JSON instead of silently dropping 
   assertEquals(calls.length, 0, "nothing should reach the network");
 });
 
-Deno.test("create-customer: exposes no card or bank account params", () => {
+test("create-customer: exposes no card or bank account params", () => {
   // Chargebee's own guidance is to capture payment sources through their
   // dedicated APIs, and raw PAN data has no business in a workflow engine.
   const keys = (action.params ?? []).map((p) => p.key);

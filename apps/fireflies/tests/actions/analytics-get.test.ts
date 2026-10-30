@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/analytics-get.ts";
 
 const OK = { data: { analytics: { team: {} } } };
 
-Deno.test("analytics-get: start/end are String here, not the DateTime the transcripts query uses", async () => {
+test("analytics-get: start/end are String here, not the DateTime the transcripts query uses", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ startTime: "2026-01-01T00:00:00Z", endTime: "2026-01-31T23:59:59Z" }, ctx);
   const { query, variables } = sent(calls[0]);
@@ -16,7 +17,7 @@ Deno.test("analytics-get: start/end are String here, not the DateTime the transc
   });
 });
 
-Deno.test("analytics-get: the per-user breakdown is opt-in", async () => {
+test("analytics-get: the per-user breakdown is opt-in", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }, { body: OK }]);
   await action.execute({}, ctx);
   assert(!sent(calls[0]).query.includes("users {"));

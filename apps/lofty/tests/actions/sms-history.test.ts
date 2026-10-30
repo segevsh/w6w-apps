@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sms-history.ts";
 
-Deno.test("sms-history: lists a lead's texts and pages by id", async () => {
+test("sms-history: lists a lead's texts and pages by id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { texts: [{ id: 1, direction: "Outbound", textOutcome: "Delivered" }] },

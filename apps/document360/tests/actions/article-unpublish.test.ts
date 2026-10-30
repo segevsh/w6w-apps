@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleUnpublish from "../../actions/article-unpublish.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-unpublish: POSTs to /unpublish with the language as a query", async () => {
+test("article-unpublish: POSTs to /unpublish with the language as a query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope(null) }]);
   const out = await articleUnpublish.execute({
     articleId: "a1",
@@ -19,7 +20,7 @@ Deno.test("article-unpublish: POSTs to /unpublish with the language as a query",
   assertEquals(out.unpublished, true);
 });
 
-Deno.test("article-unpublish: a vendor error surfaces its code and message", async () => {
+test("article-unpublish: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/email-validate.ts";
 import { jsonBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-validate: POST /email/validate and flattens the verdict", async () => {
+test("email-validate: POST /email/validate and flattens the verdict", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -35,11 +36,11 @@ Deno.test("email-validate: POST /email/validate and flattens the verdict", async
   });
 });
 
-Deno.test("email-validate: requires an address", async () => {
+test("email-validate: requires an address", async () => {
   await assertRejects(async () => await action.execute({}, mockCtx([]).ctx));
 });
 
-Deno.test("email-validate: puts no credential on the request (sign owns that)", async () => {
+test("email-validate: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", data: { result: { valid: true } } },
   }]);
@@ -49,7 +50,7 @@ Deno.test("email-validate: puts no credential on the request (sign owns that)", 
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("email-validate: a vendor error surfaces its own message", async () => {
+test("email-validate: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ email: "a@b.com" }, ctx)

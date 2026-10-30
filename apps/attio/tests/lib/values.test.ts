@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   assertValuesObject,
   ENTRY_VALUES_PARAM,
@@ -29,25 +30,25 @@ const env = {
  * these are what break.
  */
 
-Deno.test("scalarOf: text reads `value`", () => {
+test("scalarOf: text reads `value`", () => {
   assertEquals(
     scalarOf({ ...env, attribute_type: "text", value: "A long time ago…" }),
     "A long time ago…",
   );
 });
 
-Deno.test("scalarOf: number and rating read `value`", () => {
+test("scalarOf: number and rating read `value`", () => {
   assertEquals(scalarOf({ ...env, attribute_type: "number", value: 14 }), 14);
   assertEquals(scalarOf({ ...env, attribute_type: "rating", value: 3 }), 3);
 });
 
-Deno.test("scalarOf: checkbox reads `value`, and `false` survives", () => {
+test("scalarOf: checkbox reads `value`, and `false` survives", () => {
   assertEquals(scalarOf({ ...env, attribute_type: "checkbox", value: true }), true);
   // The interesting half: a falsy scalar must not be confused with "no value".
   assertEquals(scalarOf({ ...env, attribute_type: "checkbox", value: false }), false);
 });
 
-Deno.test("scalarOf: currency reads `currency_value`, not `value`", () => {
+test("scalarOf: currency reads `currency_value`, not `value`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -59,7 +60,7 @@ Deno.test("scalarOf: currency reads `currency_value`, not `value`", () => {
   );
 });
 
-Deno.test("scalarOf: date and timestamp read `value`", () => {
+test("scalarOf: date and timestamp read `value`", () => {
   assertEquals(scalarOf({ ...env, attribute_type: "date", value: "2023-11-24" }), "2023-11-24");
   assertEquals(
     scalarOf({ ...env, attribute_type: "timestamp", value: "2023-11-24T15:17:48.000000000Z" }),
@@ -67,7 +68,7 @@ Deno.test("scalarOf: date and timestamp read `value`", () => {
   );
 });
 
-Deno.test("scalarOf: domain reads `domain`, not `root_domain`", () => {
+test("scalarOf: domain reads `domain`, not `root_domain`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -79,7 +80,7 @@ Deno.test("scalarOf: domain reads `domain`, not `root_domain`", () => {
   );
 });
 
-Deno.test("scalarOf: email reads the NORMALIZED address of five candidates", () => {
+test("scalarOf: email reads the NORMALIZED address of five candidates", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -96,7 +97,7 @@ Deno.test("scalarOf: email reads the NORMALIZED address of five candidates", () 
   );
 });
 
-Deno.test("scalarOf: phone prefers the normalized E.164 form", () => {
+test("scalarOf: phone prefers the normalized E.164 form", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -109,7 +110,7 @@ Deno.test("scalarOf: phone prefers the normalized E.164 form", () => {
   );
 });
 
-Deno.test("scalarOf: personal-name reads `full_name`", () => {
+test("scalarOf: personal-name reads `full_name`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -122,7 +123,7 @@ Deno.test("scalarOf: personal-name reads `full_name`", () => {
   );
 });
 
-Deno.test("scalarOf: select reads `option.title`", () => {
+test("scalarOf: select reads `option.title`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -143,7 +144,7 @@ Deno.test("scalarOf: select reads `option.title`", () => {
  * would look for `option` and find nothing. Keying on the property name gets it
  * right regardless.
  */
-Deno.test("scalarOf: status reads `status.title` EVEN WHEN mislabelled as select", () => {
+test("scalarOf: status reads `status.title` EVEN WHEN mislabelled as select", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -160,7 +161,7 @@ Deno.test("scalarOf: status reads `status.title` EVEN WHEN mislabelled as select
   );
 });
 
-Deno.test("scalarOf: record-reference reads `target_record_id`", () => {
+test("scalarOf: record-reference reads `target_record_id`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -172,7 +173,7 @@ Deno.test("scalarOf: record-reference reads `target_record_id`", () => {
   );
 });
 
-Deno.test("scalarOf: actor-reference reads `referenced_actor_id`", () => {
+test("scalarOf: actor-reference reads `referenced_actor_id`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -184,7 +185,7 @@ Deno.test("scalarOf: actor-reference reads `referenced_actor_id`", () => {
   );
 });
 
-Deno.test("scalarOf: interaction reads `interacted_at`", () => {
+test("scalarOf: interaction reads `interacted_at`", () => {
   assertEquals(
     scalarOf({
       ...env,
@@ -201,7 +202,7 @@ Deno.test("scalarOf: interaction reads `interacted_at`", () => {
  * Location has no single scalar, and inventing a formatted address string would
  * be a fabrication. It falls through to "the object minus the envelope".
  */
-Deno.test("scalarOf: location keeps its structure, minus the envelope keys", () => {
+test("scalarOf: location keeps its structure, minus the envelope keys", () => {
   const flat = scalarOf({
     ...env,
     attribute_type: "location",
@@ -226,7 +227,7 @@ Deno.test("scalarOf: location keeps its structure, minus the envelope keys", () 
 });
 
 /** An attribute type Attio adds tomorrow must keep its data, not become null. */
-Deno.test("scalarOf: an unknown attribute type falls back to its own properties", () => {
+test("scalarOf: an unknown attribute type falls back to its own properties", () => {
   assertEquals(
     scalarOf({ ...env, attribute_type: "something-new", weird_property: "kept" }),
     { weird_property: "kept" },
@@ -237,7 +238,7 @@ Deno.test("scalarOf: an unknown attribute type falls back to its own properties"
  * ── flattenValues: the unwrapping rule ───────────────────────────────────────
  */
 
-Deno.test("flattenValues: a single-element array unwraps to a scalar", () => {
+test("flattenValues: a single-element array unwraps to a scalar", () => {
   assertEquals(
     flattenValues({
       name: [{ ...env, attribute_type: "personal-name", full_name: "Ada Lovelace" }],
@@ -246,7 +247,7 @@ Deno.test("flattenValues: a single-element array unwraps to a scalar", () => {
   );
 });
 
-Deno.test("flattenValues: a multi-element array stays an array of scalars", () => {
+test("flattenValues: a multi-element array stays an array of scalars", () => {
   assertEquals(
     flattenValues({
       email_addresses: [
@@ -258,11 +259,11 @@ Deno.test("flattenValues: a multi-element array stays an array of scalars", () =
   );
 });
 
-Deno.test("flattenValues: an empty array becomes null, not an empty array", () => {
+test("flattenValues: an empty array becomes null, not an empty array", () => {
   assertEquals(flattenValues({ domains: [] }), { domains: null });
 });
 
-Deno.test("flattenValues: a non-object input yields an empty map rather than throwing", () => {
+test("flattenValues: a non-object input yields an empty map rather than throwing", () => {
   assertEquals(flattenValues(undefined), {});
   assertEquals(flattenValues(null), {});
   assertEquals(flattenValues("nope"), {});
@@ -273,18 +274,18 @@ Deno.test("flattenValues: a non-object input yields an empty map rather than thr
  * ── The write envelopes ──────────────────────────────────────────────────────
  */
 
-Deno.test("recordValues: wraps in { data: { values } }", () => {
+test("recordValues: wraps in { data: { values } }", () => {
   assertEquals(
     recordValues({ name: "Smith, John", email_addresses: ["john@smith.com"] }),
     { data: { values: { name: "Smith, John", email_addresses: ["john@smith.com"] } } },
   );
 });
 
-Deno.test("recordValues: an absent payload becomes an empty values object, not undefined", () => {
+test("recordValues: an absent payload becomes an empty values object, not undefined", () => {
   assertEquals(recordValues(undefined), { data: { values: {} } });
 });
 
-Deno.test("entryValues: wraps in { data: { …extra, entry_values } }", () => {
+test("entryValues: wraps in { data: { …extra, entry_values } }", () => {
   assertEquals(
     entryValues({ stage: "Lead" }, { parent_object: "people", parent_record_id: "abc" }),
     { data: { parent_object: "people", parent_record_id: "abc", entry_values: { stage: "Lead" } } },
@@ -295,17 +296,17 @@ Deno.test("entryValues: wraps in { data: { …extra, entry_values } }", () => {
  * ── assertValuesObject: the two authoring mistakes worth catching early ──────
  */
 
-Deno.test("assertValuesObject: rejects an array — the shape you get from pasting `data`", () => {
+test("assertValuesObject: rejects an array — the shape you get from pasting `data`", () => {
   const err = assertThrows(() => assertValuesObject([{ name: "x" }]), Error);
   assert(err.message.includes("must be a JSON object"), err.message);
   assert(err.message.includes("an array"), err.message);
 });
 
-Deno.test("assertValuesObject: rejects a string", () => {
+test("assertValuesObject: rejects a string", () => {
   assertThrows(() => assertValuesObject("name=John"), Error);
 });
 
-Deno.test("assertValuesObject: rejects a doubly-wrapped { data: { values } }", () => {
+test("assertValuesObject: rejects a doubly-wrapped { data: { values } }", () => {
   const err = assertThrows(
     () => assertValuesObject({ data: { values: { name: "x" } } }),
     Error,
@@ -313,7 +314,7 @@ Deno.test("assertValuesObject: rejects a doubly-wrapped { data: { values } }", (
   assert(err.message.includes("doubly wrapped"), err.message);
 });
 
-Deno.test("assertValuesObject: rejects a doubly-wrapped { values } / { entry_values }", () => {
+test("assertValuesObject: rejects a doubly-wrapped { values } / { entry_values }", () => {
   assertThrows(() => assertValuesObject({ values: { name: "x" } }), Error);
   assertThrows(
     () => assertValuesObject({ entry_values: { stage: "x" } }, "entry_values"),
@@ -325,14 +326,14 @@ Deno.test("assertValuesObject: rejects a doubly-wrapped { values } / { entry_val
  * The guard must not fire on a legitimate attribute that happens to be called
  * `data` or `values` alongside others — a workspace may well have one.
  */
-Deno.test("assertValuesObject: allows an attribute literally named `data` beside others", () => {
+test("assertValuesObject: allows an attribute literally named `data` beside others", () => {
   assertEquals(
     assertValuesObject({ data: "some text", name: "Smith, John" }),
     { data: "some text", name: "Smith, John" },
   );
 });
 
-Deno.test("assertValuesObject: null/undefined mean an empty map", () => {
+test("assertValuesObject: null/undefined mean an empty map", () => {
   assertEquals(assertValuesObject(undefined), {});
   assertEquals(assertValuesObject(null), {});
 });
@@ -341,7 +342,7 @@ Deno.test("assertValuesObject: null/undefined mean an empty map", () => {
  * ── The append/overwrite fork ────────────────────────────────────────────────
  */
 
-Deno.test("multiselectMethod: append is PATCH, overwrite is PUT", () => {
+test("multiselectMethod: append is PATCH, overwrite is PUT", () => {
   assertEquals(multiselectMethod("append"), "PATCH");
   assertEquals(multiselectMethod("overwrite"), "PUT");
 });
@@ -350,14 +351,14 @@ Deno.test("multiselectMethod: append is PATCH, overwrite is PUT", () => {
  * The safe default. Append can add values but never delete one, so an unset or
  * unexpected value must not silently become the destructive verb.
  */
-Deno.test("multiselectMethod: anything unrecognised falls back to the non-destructive PATCH", () => {
+test("multiselectMethod: anything unrecognised falls back to the non-destructive PATCH", () => {
   assertEquals(multiselectMethod(undefined), "PATCH");
   assertEquals(multiselectMethod(""), "PATCH");
   assertEquals(multiselectMethod("PUT"), "PATCH");
   assertEquals(multiselectMethod("Overwrite"), "PATCH");
 });
 
-Deno.test("MULTISELECT_MODE_PARAM: required, defaults to append, offers exactly two modes", () => {
+test("MULTISELECT_MODE_PARAM: required, defaults to append, offers exactly two modes", () => {
   assertEquals(MULTISELECT_MODE_PARAM.required, true);
   assertEquals(MULTISELECT_MODE_PARAM.default, "append");
   assertEquals(MULTISELECT_MODE_PARAM.options.map((o) => o.value), ["append", "overwrite"]);
@@ -373,22 +374,22 @@ Deno.test("MULTISELECT_MODE_PARAM: required, defaults to append, offers exactly 
  * cost real data, so a well-meaning edit that shortens a hint fails here first.
  */
 
-Deno.test("RECORD_VALUES_PARAM: warns that a bare `name` string is parsed Last-then-First", () => {
+test("RECORD_VALUES_PARAM: warns that a bare `name` string is parsed Last-then-First", () => {
   const h = RECORD_VALUES_PARAM.hint;
   assert(h.includes('"Last, First"'), h);
   assert(/FIRST name/.test(h), h);
   assert(h.includes("first_name"), h);
 });
 
-Deno.test("RECORD_VALUES_PARAM: says writes take shorthand, so reads need not be reconstructed", () => {
+test("RECORD_VALUES_PARAM: says writes take shorthand, so reads need not be reconstructed", () => {
   assert(/shorthand/i.test(RECORD_VALUES_PARAM.hint));
 });
 
-Deno.test("ENTRY_VALUES_PARAM: says the keys are the LIST's attributes, not the record's", () => {
+test("ENTRY_VALUES_PARAM: says the keys are the LIST's attributes, not the record's", () => {
   assert(/list's own/i.test(ENTRY_VALUES_PARAM.hint), ENTRY_VALUES_PARAM.hint);
 });
 
-Deno.test("MATCHING_ATTRIBUTE_PARAM: required, and states the unique + inverted-multiselect rules", () => {
+test("MATCHING_ATTRIBUTE_PARAM: required, and states the unique + inverted-multiselect rules", () => {
   assertEquals(MATCHING_ATTRIBUTE_PARAM.required, true);
   const h = MATCHING_ATTRIBUTE_PARAM.hint;
   assert(/unique/i.test(h), h);
@@ -399,7 +400,7 @@ Deno.test("MATCHING_ATTRIBUTE_PARAM: required, and states the unique + inverted-
   assert(/ADDED/.test(h), h);
 });
 
-Deno.test("WRITE_SHAPES: covers all 17 attribute types Attio documents", () => {
+test("WRITE_SHAPES: covers all 17 attribute types Attio documents", () => {
   assertEquals(Object.keys(WRITE_SHAPES).length, 17);
   for (
     const type of [

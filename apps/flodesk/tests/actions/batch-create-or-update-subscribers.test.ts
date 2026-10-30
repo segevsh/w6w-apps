@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx, outputKeys } from "../_helpers.ts";
 
 import batchCreateOrUpdateSubscribers from "../../actions/batch-create-or-update-subscribers.ts";
 
-Deno.test("batch: POSTs /v1/subscribers/batch wrapped in `subscribers`", async () => {
+test("batch: POSTs /v1/subscribers/batch wrapped in `subscribers`", async () => {
   const { ctx, calls } = mockCtx([{ body: { successes: [], failures: [] } }]);
   await batchCreateOrUpdateSubscribers.execute(
     { subscribers: [{ email: "a@b.com" }, { email: "c@d.com" }] },
@@ -15,7 +16,7 @@ Deno.test("batch: POSTs /v1/subscribers/batch wrapped in `subscribers`", async (
   });
 });
 
-Deno.test("batch: enforces Flodesk's documented 50-item cap before calling", () => {
+test("batch: enforces Flodesk's documented 50-item cap before calling", () => {
   const { ctx, calls } = mockCtx([]);
   const subscribers = Array.from({ length: 51 }, (_, i) => ({ email: `u${i}@e.com` }));
   const err = assertThrows(
@@ -26,14 +27,14 @@ Deno.test("batch: enforces Flodesk's documented 50-item cap before calling", () 
   assertEquals(calls.length, 0, "must not spend one of the 20 requests/minute on a 400");
 });
 
-Deno.test("batch: accepts exactly 50", async () => {
+test("batch: accepts exactly 50", async () => {
   const { ctx, calls } = mockCtx([{ body: { successes: [], failures: [] } }]);
   const subscribers = Array.from({ length: 50 }, (_, i) => ({ email: `u${i}@e.com` }));
   await batchCreateOrUpdateSubscribers.execute({ subscribers }, ctx);
   assertEquals(calls.length, 1);
 });
 
-Deno.test("batch: rejects an empty or non-array payload", () => {
+test("batch: rejects an empty or non-array payload", () => {
   const { ctx } = mockCtx([]);
   assertThrows(() => batchCreateOrUpdateSubscribers.execute({ subscribers: [] }, ctx), Error);
   assertThrows(
@@ -42,7 +43,7 @@ Deno.test("batch: rejects an empty or non-array payload", () => {
   );
 });
 
-Deno.test("batch: surfaces failures alongside successes", async () => {
+test("batch: surfaces failures alongside successes", async () => {
   const body = {
     successes: [{ id: "1", email: "a@b.com" }],
     failures: [{ index: 1, email: "bad", code: "invalid_email", message: "not an email" }],

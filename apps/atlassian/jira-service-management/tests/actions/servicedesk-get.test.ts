@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/servicedesk-get.ts";
 
-Deno.test("servicedesk-get: GETs the service desk by id", async () => {
+test("servicedesk-get: GETs the service desk by id", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { id: "10", projectKey: "HELPDESK" } }]);
   const out = await action.execute({ serviceDeskId: "10" }, ctx);
   assertEquals(calls[0].method, "GET");

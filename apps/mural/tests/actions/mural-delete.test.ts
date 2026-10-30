@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import muralDelete from "../../actions/mural-delete.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "muralId": "ws12345.1600" };
 
-Deno.test("mural-delete: DELETE /murals/{muralId}", async () => {
+test("mural-delete: DELETE /murals/{muralId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await muralDelete.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -17,13 +18,13 @@ Deno.test("mural-delete: DELETE /murals/{muralId}", async () => {
   assertEquals(out, { deleted: true, id: "ws12345.1600" });
 });
 
-Deno.test("mural-delete: puts no credential on the request (sign owns that)", async () => {
+test("mural-delete: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await muralDelete.execute(INPUT, ctx);
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("mural-delete: a vendor error surfaces its own code and message", async () => {
+test("mural-delete: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -34,7 +35,7 @@ Deno.test("mural-delete: a vendor error surfaces its own code and message", asyn
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("mural-delete: an empty muralId is refused before any request", async () => {
+test("mural-delete: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await muralDelete.execute({ ...INPUT, muralId: "  " as never }, ctx)

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import { fetchUserInfo, PROBE_PATH, probeCredential } from "../../auth/probe.ts";
 import { faultBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -13,11 +14,11 @@ const USER_INFO = {
   tenant_id: "ab103",
 };
 
-Deno.test("probe: the path is the identity endpoint, not a data read", () => {
+test("probe: the path is the identity endpoint, not a data read", () => {
   assertEquals(PROBE_PATH, "/rest/v2/oauth/connect/userinfo");
 });
 
-Deno.test("probe: a 200 is a pass", async () => {
+test("probe: a 200 is a pass", async () => {
   const { ctx, calls } = mockCtx([{ body: USER_INFO }]);
   assertEquals(await probeCredential({ authorization: "Bearer t" }, ctx, "Keap"), { ok: true });
   assertEquals(pathOf(calls[0].url), "/crm/rest/v2/oauth/connect/userinfo");
@@ -29,7 +30,7 @@ Deno.test("probe: a 200 is a pass", async () => {
  * are HTTP 401 and byte-identical at the status line; they need different
  * fixes.
  */
-Deno.test("probe: oauth.v2.InvalidAccessToken reports that NO credential arrived", async () => {
+test("probe: oauth.v2.InvalidAccessToken reports that NO credential arrived", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: faultBody("oauth.v2.InvalidAccessToken", "Invalid access token"),
@@ -42,7 +43,7 @@ Deno.test("probe: oauth.v2.InvalidAccessToken reports that NO credential arrived
   assert(!/wrong, expired or has been revoked/.test(out.message!));
 });
 
-Deno.test("probe: keymanagement.service.* reports that the credential WAS rejected", async () => {
+test("probe: keymanagement.service.* reports that the credential WAS rejected", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: faultBody("keymanagement.service.invalid_access_token", "Invalid Access Token"),
@@ -53,7 +54,7 @@ Deno.test("probe: keymanagement.service.* reports that the credential WAS reject
   assert(!/no usable credential/.test(out.message!));
 });
 
-Deno.test("probe: the two 401s produce different messages from the same status code", async () => {
+test("probe: the two 401s produce different messages from the same status code", async () => {
   const { ctx: a } = mockCtx([{
     status: 401,
     body: faultBody("oauth.v2.InvalidAccessToken", "Invalid access token"),
@@ -70,14 +71,14 @@ Deno.test("probe: the two 401s produce different messages from the same status c
   );
 });
 
-Deno.test("probe: a 403 says the credential is recognised but refused", async () => {
+test("probe: a 403 says the credential is recognised but refused", async () => {
   const { ctx } = mockCtx([{ status: 403, body: faultBody("access.denied", "Forbidden") }]);
   const out = await probeCredential({ authorization: "Bearer t" }, ctx, "Keap");
   assertEquals(out.ok, false);
   assertStringIncludes(out.message!, "recognised but not permitted");
 });
 
-Deno.test("probe: a 429 fails loudly and says it proves nothing about the credential", async () => {
+test("probe: a 429 fails loudly and says it proves nothing about the credential", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: faultBody("policies.ratelimit.QuotaViolation", "Rate limit exceeded"),
@@ -87,7 +88,7 @@ Deno.test("probe: a 429 fails loudly and says it proves nothing about the creden
   assertStringIncludes(out.message!, "not a statement about the credential");
 });
 
-Deno.test("probe: an unrecognised failure still reports the status", async () => {
+test("probe: an unrecognised failure still reports the status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "<html>oops</html>" }]);
   const out = await probeCredential({ authorization: "Bearer t" }, ctx, "Keap");
   assertEquals(out.ok, false);
@@ -96,7 +97,7 @@ Deno.test("probe: an unrecognised failure still reports the status", async () =>
 
 // --- afterConnect -----------------------------------------------------------
 
-Deno.test("fetchUserInfo publishes identity and nothing else", async () => {
+test("fetchUserInfo publishes identity and nothing else", async () => {
   const { ctx } = mockCtx([{ body: USER_INFO }]);
   const display = await fetchUserInfo({ authorization: "Bearer t" }, ctx);
   assertEquals(display, {
@@ -108,7 +109,7 @@ Deno.test("fetchUserInfo publishes identity and nothing else", async () => {
   });
 });
 
-Deno.test("fetchUserInfo never republishes the credential it was handed", async () => {
+test("fetchUserInfo never republishes the credential it was handed", async () => {
   const { ctx } = mockCtx([{ body: { ...USER_INFO, keap_id: "jo@example.com" } }]);
   const display = await fetchUserInfo({ authorization: "Bearer super-secret-token" }, ctx);
   const serialised = JSON.stringify(display);
@@ -116,14 +117,14 @@ Deno.test("fetchUserInfo never republishes the credential it was handed", async 
   assert(!/authorization/i.test(serialised));
 });
 
-Deno.test("fetchUserInfo falls back to the preferred name, then the email", async () => {
+test("fetchUserInfo falls back to the preferred name, then the email", async () => {
   const { ctx } = mockCtx([{ body: { email: "x@y.com", preferred_name: "Jojo" } }]);
   assertEquals((await fetchUserInfo({}, ctx)).name, "Jojo");
   const { ctx: bare } = mockCtx([{ body: { email: "x@y.com" } }]);
   assertEquals((await fetchUserInfo({}, bare)).name, "x@y.com");
 });
 
-Deno.test("fetchUserInfo is silent on failure — a missing label must not break a connection", async () => {
+test("fetchUserInfo is silent on failure — a missing label must not break a connection", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   assertEquals(await fetchUserInfo({ authorization: "Bearer t" }, ctx), {});
 });

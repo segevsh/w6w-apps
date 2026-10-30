@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTalentLmsCtx } from "../_helpers.ts";
 import action from "../../actions/user-get-by-custom-field.ts";
 
-Deno.test("user-get-by-custom-field: GET getusersbycustomfield and returns the vendor payload", async () => {
+test("user-get-by-custom-field: GET getusersbycustomfield and returns the vendor payload", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{ body: { ok: "yes" } }]);
   const out = await action.execute({ "customFieldValue": "Sales" }, ctx);
   assertEquals(calls.length, 1);

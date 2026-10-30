@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/payment-type-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("payment-type-list: GET /payment_types maps params to the vendor's query names", async () => {
+test("payment-type-list: GET /payment_types maps params to the vendor's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: { payment_types: [{ id: "a" }], cursor: "c2" } }]);
   const out = await action.execute({ paymentTypeIds: "p1" }, ctx) as {
     payment_types: unknown[];
@@ -15,7 +16,7 @@ Deno.test("payment-type-list: GET /payment_types maps params to the vendor's que
   assertEquals(out.cursor, "c2");
 });
 
-Deno.test("payment-type-list: no params sends no query string", async () => {
+test("payment-type-list: no params sends no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { payment_types: [] } }]);
   const out = await action.execute({}, ctx) as { cursor?: string };
   assertEquals(new URL(calls[0].url).search, "");

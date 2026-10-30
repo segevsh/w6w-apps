@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-snooze.ts";
 
-Deno.test("conversation-snooze: the wake time is sent in Unix seconds", async () => {
+test("conversation-snooze: the wake time is sent in Unix seconds", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!(
     { conversationId: "cnv_1", teammateId: "tea_1", scheduledAt: "2027-01-01T00:00:00Z" },
@@ -17,7 +18,7 @@ Deno.test("conversation-snooze: the wake time is sent in Unix seconds", async ()
 });
 
 /** No time means unsnooze — Front reads a null `scheduled_at` as "cancel". */
-Deno.test("conversation-snooze: no time sends an explicit null, which unsnoozes", async () => {
+test("conversation-snooze: no time sends an explicit null, which unsnoozes", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ conversationId: "cnv_1", teammateId: "tea_1" }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -25,7 +26,7 @@ Deno.test("conversation-snooze: no time sends an explicit null, which unsnoozes"
   assertEquals(sent.scheduled_at, null);
 });
 
-Deno.test("conversation-snooze: Front requires a teammate, so this does too", async () => {
+test("conversation-snooze: Front requires a teammate, so this does too", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ conversationId: "cnv_1" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("conversation-snooze: Front requires a teammate, so this does too", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("conversation-snooze: an unparseable time is caught before the call", async () => {
+test("conversation-snooze: an unparseable time is caught before the call", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () =>

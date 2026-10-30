@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transaction-verify.ts";
 import { errorBody, mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-verify: GETs by reference, path-escaped, and returns data", async () => {
+test("transaction-verify: GETs by reference, path-escaped, and returns data", async () => {
   const data = { id: 1, status: "success", reference: "a/b?c", amount: 100 };
   const { ctx, calls } = mockCtx([{ body: ok(data) }]);
   assertEquals(await action.execute({ id: "a/b?c" }, ctx), data);
@@ -10,13 +11,13 @@ Deno.test("transaction-verify: GETs by reference, path-escaped, and returns data
   assertEquals(pathOf(calls[0].url), "/transaction/verify/a%2Fb%3Fc");
 });
 
-Deno.test("transaction-verify: a failed payment is still a returned status, not a throw", async () => {
+test("transaction-verify: a failed payment is still a returned status, not a throw", async () => {
   const { ctx } = mockCtx([{ body: ok({ status: "failed", gateway_response: "Declined" }) }]);
   const out = await action.execute({ id: "r" }, ctx) as { status: string };
   assertEquals(out.status, "failed");
 });
 
-Deno.test("transaction-verify: requires a reference and surfaces a 404", async () => {
+test("transaction-verify: requires a reference and surfaces a 404", async () => {
   const { ctx, calls } = mockCtx([{
     status: 404,
     body: errorBody("Transaction reference not found", "transaction_not_found"),

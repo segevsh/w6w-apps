@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentChat from "../../actions/agent-chat.ts";
 import { mockCtx, pathOf, wrapped } from "../_helpers.ts";
 
-Deno.test("agent-chat: POST /agents/{id}/chat, always stream:false, unwraps data", async () => {
+test("agent-chat: POST /agents/{id}/chat, always stream:false, unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     { body: wrapped({ id: "msg_1", role: "assistant", parts: [{ type: "text", text: "hi" }] }) },
   ]);
@@ -17,7 +18,7 @@ Deno.test("agent-chat: POST /agents/{id}/chat, always stream:false, unwraps data
   assertEquals(out.role, "assistant");
 });
 
-Deno.test("agent-chat: forwards conversationId and userId, still forces stream:false", async () => {
+test("agent-chat: forwards conversationId and userId, still forces stream:false", async () => {
   const { ctx, calls } = mockCtx([{ body: wrapped({ id: "msg_2" }) }]);
   await agentChat.execute(
     { agentId: "a1", message: "hi", conversationId: "c1", userId: "user_1" },
@@ -31,7 +32,7 @@ Deno.test("agent-chat: forwards conversationId and userId, still forces stream:f
   });
 });
 
-Deno.test("agent-chat: message may be omitted (continuing after a tool result)", async () => {
+test("agent-chat: message may be omitted (continuing after a tool result)", async () => {
   const { ctx, calls } = mockCtx([{ body: wrapped({ id: "msg_3" }) }]);
   await agentChat.execute({ agentId: "a1", conversationId: "c1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { conversationId: "c1", stream: false });

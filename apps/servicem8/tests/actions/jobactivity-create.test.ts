@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobActivityCreate from "../../actions/jobactivity-create.ts";
 import { bodyOf, mockCtx, pathOf, result } from "../_helpers.ts";
 
-Deno.test("jobactivity-create: POSTs to /jobactivity.json with 0/1 for the boolean flag", async () => {
+test("jobactivity-create: POSTs to /jobactivity.json with 0/1 for the boolean flag", async () => {
   const { ctx, calls } = mockCtx([{ body: result(), headers: { "x-record-uuid": "a1" } }]);
   const out = await jobActivityCreate.execute({
     jobUuid: "j1",
@@ -23,7 +24,7 @@ Deno.test("jobactivity-create: POSTs to /jobactivity.json with 0/1 for the boole
   assertEquals(out, { uuid: "a1" });
 });
 
-Deno.test("jobactivity-create: none of its fields are marked required by the schema", () => {
+test("jobactivity-create: none of its fields are marked required by the schema", () => {
   for (const p of jobActivityCreate.params ?? []) {
     assertEquals(p.required ?? false, false, `${p.key}: unexpectedly required`);
   }

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import shiftUpdate from "../../actions/shift-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("shift-update: PUTs a one-element array carrying its own shiftId", async () => {
+test("shift-update: PUTs a one-element array carrying its own shiftId", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ shifts: [{ id: "sh_1" }], createdShifts: [], deletedShiftIds: [] }) },
   ]);
@@ -16,6 +17,6 @@ Deno.test("shift-update: PUTs a one-element array carrying its own shiftId", asy
   assertEquals(out, { shifts: [{ id: "sh_1" }], createdShifts: [], deletedShiftIds: [] });
 });
 
-Deno.test("shift-update: idempotent", () => {
+test("shift-update: idempotent", () => {
   assertEquals(shiftUpdate.idempotent, true);
 });

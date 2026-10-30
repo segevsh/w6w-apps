@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-event.ts";
 
-Deno.test("delete-event: DELETEs /calendars/{id}/events/{eventId} and returns success", async () => {
+test("delete-event: DELETEs /calendars/{id}/events/{eventId} and returns success", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const result = await action.execute!(
     { calendarId: "primary", eventId: "evt-1" },
@@ -13,7 +14,7 @@ Deno.test("delete-event: DELETEs /calendars/{id}/events/{eventId} and returns su
   assertEquals(result, { success: true });
 });
 
-Deno.test("delete-event: forwards sendUpdates", async () => {
+test("delete-event: forwards sendUpdates", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({
     calendarId: "primary",

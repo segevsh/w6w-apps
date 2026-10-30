@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listDeals from "../../actions/list-deals.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-deals: GET /deals with status, stage and pipeline filters", async () => {
+test("list-deals: GET /deals with status, stage and pipeline filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: listEnvelope("deals", [{ deal: { id: "d1" }, contacts: [] }]),
   }]);
@@ -24,7 +25,7 @@ Deno.test("list-deals: GET /deals with status, stage and pipeline filters", asyn
   assertEquals((out.items as unknown[]).length, 1);
 });
 
-Deno.test("list-deals: stage 0 is still sent (falsy but meaningful)", async () => {
+test("list-deals: stage 0 is still sent (falsy but meaningful)", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("deals", []) }]);
   await listDeals.execute({ stage: 0 }, ctx);
   assertEquals(queryOf(calls[0].url), { stage: "0" });

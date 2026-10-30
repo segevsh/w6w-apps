@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timelogList from "../../actions/timelog-list.ts";
 import { envelope, mockWrikeCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("timelog-list: GETs /tasks/{taskId}/timelogs", async () => {
+test("timelog-list: GETs /tasks/{taskId}/timelogs", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "TL1", hours: 2 }]) },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import scheduleGet from "../../actions/schedule-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("schedule-get: GETs /schedules/{id}", async () => {
+test("schedule-get: GETs /schedules/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 562, nextSend: "2014-10-13T05:00:00+0000" } }]);
   const out = await scheduleGet.execute({ id: 562 }, ctx);
 

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateContactByEmail from "../../actions/update-contact-by-email.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("update-contact-by-email: PATCHes /contacts with email as a query param, not in the body", async () => {
+test("update-contact-by-email: PATCHes /contacts with email as a query param, not in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", email: "a@b.com" } }]);
   await updateContactByEmail.execute({ email: "a@b.com", firstName: "Ada" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("update-contact-by-email: PATCHes /contacts with email as a query para
   assertEquals("email" in body, false);
 });
 
-Deno.test("update-contact-by-email: a 404 (no matching contact) surfaces as an error", async () => {
+test("update-contact-by-email: a 404 (no matching contact) surfaces as an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -28,7 +29,7 @@ Deno.test("update-contact-by-email: a 404 (no matching contact) surfaces as an e
   assert(err.message.includes("No contact with that email"), err.message);
 });
 
-Deno.test("update-contact-by-email: is marked idempotent", () => {
+test("update-contact-by-email: is marked idempotent", () => {
   assertEquals(updateContactByEmail.idempotent, true);
   assertEquals(updateContactByEmail.type, "perform");
 });

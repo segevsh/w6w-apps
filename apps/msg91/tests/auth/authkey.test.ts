@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import authkey, { authHeaders, PROBE_PATH, PROBE_QUERY } from "../../auth/authkey.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const KEY = "unitTestFixtureNotARealKey0000";
 const REJECTED = { message: "Invalid authkey", type: "error", code: "201" };
 
-Deno.test("authkey: sign stamps the authkey header and leaves the URL alone", () => {
+test("authkey: sign stamps the authkey header and leaves the URL alone", () => {
   const request = {
     method: "POST",
     url: "https://control.msg91.com/api/v5/flow",
@@ -19,24 +20,24 @@ Deno.test("authkey: sign stamps the authkey header and leaves the URL alone", ()
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("authkey: authHeaders is the single source of the wire format", () => {
+test("authkey: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ authkey: KEY }), { authkey: KEY });
 });
 
-Deno.test("authkey: the credential field is a secret", () => {
+test("authkey: the credential field is a secret", () => {
   const f = authkey.fields!.find((x) => x.key === "authkey")!;
   assertEquals(f.type, "secret");
   assertEquals(f.required, true);
 });
 
-Deno.test("authkey: test refuses an empty credential without a request", async () => {
+test("authkey: test refuses an empty credential without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const r = await authkey.test({ credential: { authkey: "  " } }, ctx);
   assertEquals(r.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("authkey: test sends the key as a header and probes the OTP verify path", async () => {
+test("authkey: test sends the key as a header and probes the OTP verify path", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "error", message: "No OTP request found" } }]);
   assertEquals(await authkey.test({ credential: { authkey: KEY } }, ctx), { ok: true });
   assertEquals(pathOf(calls[0].url), `/api/v5${PROBE_PATH}`);
@@ -45,14 +46,14 @@ Deno.test("authkey: test sends the key as a header and probes the OTP verify pat
   assert(!calls[0].url.includes(KEY));
 });
 
-Deno.test("authkey: HTTP 200 with Invalid authkey is a rejection, not a pass", async () => {
+test("authkey: HTTP 200 with Invalid authkey is a rejection, not a pass", async () => {
   const { ctx } = mockCtx([{ status: 200, body: REJECTED }]);
   const r = await authkey.test({ credential: { authkey: KEY } }, ctx);
   assertEquals(r.ok, false);
   assert(r.message!.includes("rejected"));
 });
 
-Deno.test("authkey: Auth Key missing and a 401 Unauthorized envelope are rejections", async () => {
+test("authkey: Auth Key missing and a 401 Unauthorized envelope are rejections", async () => {
   for (
     const [status, body] of [
       [200, { message: "Auth Key missing", type: "error" }],
@@ -70,7 +71,7 @@ Deno.test("authkey: Auth Key missing and a 401 Unauthorized envelope are rejecti
   }
 });
 
-Deno.test("authkey: a non-JSON or 5xx answer is not a pass", async () => {
+test("authkey: a non-JSON or 5xx answer is not a pass", async () => {
   for (
     const r of [
       { body: "<html></html>", headers: { "content-type": "text/html" } },

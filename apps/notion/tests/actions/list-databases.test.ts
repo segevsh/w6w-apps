@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-databases.ts";
 
-Deno.test("list-databases: POSTs /search filtered to object=data_source with defaults", async () => {
+test("list-databases: POSTs /search filtered to object=data_source with defaults", async () => {
   const body = { object: "list", results: [], next_cursor: null, has_more: false };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute({}, ctx);

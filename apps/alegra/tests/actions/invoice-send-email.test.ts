@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import invoiceSendEmail from "../../actions/invoice-send-email.ts";
 import { assertRejects, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("invoice-send-email: POST /invoices/:id/email with a recipient array and options", async () => {
+test("invoice-send-email: POST /invoices/:id/email with a recipient array and options", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 200 } }]);
   await invoiceSendEmail.execute({
     id: "3",
@@ -21,13 +22,13 @@ Deno.test("invoice-send-email: POST /invoices/:id/email with a recipient array a
   });
 });
 
-Deno.test("invoice-send-email: defaults send only the recipients (original document)", async () => {
+test("invoice-send-email: defaults send only the recipients (original document)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await invoiceSendEmail.execute({ id: "3", emails: "a@x.com" }, ctx);
   assertEquals(bodyOf(calls[0]), { emails: ["a@x.com"] });
 });
 
-Deno.test("invoice-send-email: no recipient fails before any request", async () => {
+test("invoice-send-email: no recipient fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => invoiceSendEmail.execute({ id: "3", emails: " , " }, ctx),

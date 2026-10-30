@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import datasetList from "../../actions/dataset-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("dataset-list: calls GET /v2/datasets and unwraps the page", async () => {
+test("dataset-list: calls GET /v2/datasets and unwraps the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "d1", name: "results" }]) }]);
   const out = await datasetList.execute({ limit: 100 }, ctx) as { items: unknown[] };
 
@@ -16,7 +17,7 @@ Deno.test("dataset-list: calls GET /v2/datasets and unwraps the page", async () 
  * default would change the vendor's semantics; not exposing it at all would
  * leave an empty list looking like a bug.
  */
-Deno.test("dataset-list: unnamed storages are excluded unless asked for", async () => {
+test("dataset-list: unnamed storages are excluded unless asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }, { body: listEnvelope([]) }]);
   await datasetList.execute({}, ctx);
   assert(!("unnamed" in queryOf(calls[0].url)));
@@ -25,7 +26,7 @@ Deno.test("dataset-list: unnamed storages are excluded unless asked for", async 
   assertEquals(queryOf(calls[1].url).unnamed, "1");
 });
 
-Deno.test("dataset-list: ownership is passed through", async () => {
+test("dataset-list: ownership is passed through", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await datasetList.execute({ ownership: "ownedByMe" }, ctx);
   assertEquals(queryOf(calls[0].url).ownership, "ownedByMe");
@@ -36,7 +37,7 @@ Deno.test("dataset-list: ownership is passed through", async () => {
  * so the rule is about the shape rather than about which action remembered — if
  * Apify ever widens the projection, this already holds.
  */
-Deno.test("dataset-list: a signing key in a list item would still be stripped", async () => {
+test("dataset-list: a signing key in a list item would still be stripped", async () => {
   const { ctx } = mockCtx([
     { body: listEnvelope([{ id: "d1", urlSigningSecretKey: "hmac-key-do-not-leak" }]) },
   ]);

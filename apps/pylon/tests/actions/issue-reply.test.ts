@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/issue-reply.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("issue-reply: POSTs message_id, body and email recipients", async () => {
+test("issue-reply: POSTs message_id, body and email recipients", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "m9", issue_id: "i1" } } }]);
   const out = await action.execute!({
     id: "i1",
@@ -23,7 +24,7 @@ Deno.test("issue-reply: POSTs message_id, body and email recipients", async () =
   assertEquals(out, { id: "m9", issue_id: "i1" });
 });
 
-Deno.test("issue-reply: no recipients means no email_info; message and body are required", async () => {
+test("issue-reply: no recipients means no email_info; message and body are required", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ id: "i1", messageId: "m1", bodyHtml: "x" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { message_id: "m1", body_html: "x" });
@@ -34,7 +35,7 @@ Deno.test("issue-reply: no recipients means no email_info; message and body are 
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("issue-reply: an internal-issue refusal is reported by code", async () => {
+test("issue-reply: an internal-issue refusal is reported by code", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { errors: ["no"], code: "internal_issue_reply_not_allowed" },

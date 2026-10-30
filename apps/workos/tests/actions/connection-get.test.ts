@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connection-get.ts";
 
-Deno.test("connection-get: fetches one connection by id", async () => {
+test("connection-get: fetches one connection by id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "conn_1", state: "active", domains: [{ domain: "acme.com" }] },
@@ -13,11 +14,11 @@ Deno.test("connection-get: fetches one connection by id", async () => {
 });
 
 /** "It says active and it still doesn't work" is almost always the domains. */
-Deno.test("connection-get: explains that active with the wrong domain is never reached", () => {
+test("connection-get: explains that active with the wrong domain is never reached", () => {
   assert(/domains do not match/.test(action.description!), action.description);
 });
 
-Deno.test("connection-get: needs a connection id", async () => {
+test("connection-get: needs a connection id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "connectionId");
   assertEquals(calls.length, 0);

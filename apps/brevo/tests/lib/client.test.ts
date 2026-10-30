@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BrevoClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new BrevoClient(ctx);
   const result = await client.request("/contacts/x");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"code":"document_not_found"}' },
   ]);
@@ -22,7 +23,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v3/contacts/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new BrevoClient(ctx);
   await client.request("/x", {
@@ -35,7 +36,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new BrevoClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -44,7 +45,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: sends JSON body with content-type header", async () => {
+test("client: sends JSON body with content-type header", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   const client = new BrevoClient(ctx);
   await client.request("/x", { method: "POST", body: { hello: "world" } });
@@ -53,7 +54,7 @@ Deno.test("client: sends JSON body with content-type header", async () => {
   assertEquals(calls[0].body, JSON.stringify({ hello: "world" }));
 });
 
-Deno.test("client: does not set api-key header (auth sign hook injects it)", async () => {
+test("client: does not set api-key header (auth sign hook injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new BrevoClient(ctx);
   await client.request("/account");

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageGet from "../../actions/image-get.ts";
 import pdfGet from "../../actions/pdf-get.ts";
 import videoGet from "../../actions/video-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-get / pdf-get / video-get: GET by id on their own collection", async () => {
+test("image-get / pdf-get / video-get: GET by id on their own collection", async () => {
   for (
     const [action, path, url] of [
       [imageGet, "/images/9", "image_url"],

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactRemoveTags from "../../actions/contact-remove-tags.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-remove-tags: DELETEs a bare array body to /contact/{identifier}/tag", async () => {
+test("contact-remove-tags: DELETEs a bare array body to /contact/{identifier}/tag", async () => {
   const { ctx, calls } = mockCtx([{ body: { contactId: 1 } }]);
   await contactRemoveTags.execute({ identifier: "id:1", tags: ["old-tag"] }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("contact-remove-tags: DELETEs a bare array body to /contact/{identifie
   assertEquals(JSON.parse(calls[0].body!), ["old-tag"]);
 });
 
-Deno.test("contact-remove-tags: an empty tag list is refused before any request", async () => {
+test("contact-remove-tags: an empty tag list is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await contactRemoveTags.execute({ identifier: "id:1", tags: [] }, ctx),
@@ -21,6 +22,6 @@ Deno.test("contact-remove-tags: an empty tag list is refused before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-remove-tags: is declared idempotent", () => {
+test("contact-remove-tags: is declared idempotent", () => {
   assertEquals(contactRemoveTags.idempotent, true);
 });

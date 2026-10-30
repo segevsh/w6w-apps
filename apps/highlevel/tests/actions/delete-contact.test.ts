@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/delete-contact.ts";
 
-Deno.test("delete-contact: DELETEs /contacts/:contactId and confirms", async () => {
+test("delete-contact: DELETEs /contacts/:contactId and confirms", async () => {
   const { ctx, calls } = mockHighLevelCtx([{ status: 200, body: {} }]);
   const out = await action.execute!({ contactId: "c1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

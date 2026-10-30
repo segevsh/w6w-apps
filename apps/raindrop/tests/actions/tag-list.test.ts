@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { items, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-list: no collection reads the account-wide path", async () => {
+test("tag-list: no collection reads the account-wide path", async () => {
   const { ctx, calls } = mockCtx([{ body: items([{ _id: "api", count: 100 }]) }]);
   const out = await tagList.execute({}, ctx) as { items: unknown[] };
 
@@ -11,7 +12,7 @@ Deno.test("tag-list: no collection reads the account-wide path", async () => {
   assertEquals(out.items, [{ _id: "api", count: 100 }]);
 });
 
-Deno.test("tag-list: a collection id becomes a path segment", async () => {
+test("tag-list: a collection id becomes a path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: items([]) }]);
   await tagList.execute({ collectionId: 8492393 }, ctx);
 
@@ -19,7 +20,7 @@ Deno.test("tag-list: a collection id becomes a path segment", async () => {
 });
 
 /** Collection 0 is a collection, not an absence — see highlight-list for why. */
-Deno.test("tag-list: collection 0 reaches the path", async () => {
+test("tag-list: collection 0 reaches the path", async () => {
   const { ctx, calls } = mockCtx([{ body: items([]) }]);
   await tagList.execute({ collectionId: 0 }, ctx);
 

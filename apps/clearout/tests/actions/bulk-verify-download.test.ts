@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/bulk-verify-download.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("bulk-verify-download: POSTs list_id to /download/result and returns the URL", async () => {
+test("bulk-verify-download: POSTs list_id to /download/result and returns the URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "success", data: { url: "https://files/x.csv" } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("bulk-verify-download: POSTs list_id to /download/result and returns t
   assertEquals(out.url, "https://files/x.csv");
 });
 
-Deno.test("bulk-verify-download: blank list ID and 402 throw", async () => {
+test("bulk-verify-download: blank list ID and 402 throw", async () => {
   await assertRejects(() => run(action, {}, mockCtx().ctx), Error, "listId is required");
   const poor = mockCtx([{
     status: 402,

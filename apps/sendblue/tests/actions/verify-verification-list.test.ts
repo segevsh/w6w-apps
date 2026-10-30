@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import verifyVerificationList from "../../actions/verify-verification-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("verify-verification-list: GETs /api/v2/verify/verifications", async () => {
+test("verify-verification-list: GETs /api/v2/verify/verifications", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], pagination: {} } }]);
   await verifyVerificationList.execute({ limit: 10, updatedAtGte: "2026-01-01T00:00:00Z" }, ctx);
 

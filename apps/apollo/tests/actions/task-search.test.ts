@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskSearch from "../../actions/task-search.ts";
 import { mockCtx, pathOf, queryAllOf } from "../_helpers.ts";
 
-Deno.test("task-search: POSTs to /tasks/search with query params, array for open_factor_names", async () => {
+test("task-search: POSTs to /tasks/search with query params, array for open_factor_names", async () => {
   const { ctx, calls } = mockCtx([
     { body: { tasks: [{ id: "t1" }], pagination: { total_entries: 1 } } },
   ]);

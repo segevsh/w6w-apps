@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import userReport from "../../actions/user-report.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-report: GET /dashboards/users with the documented query and body", async () => {
+test("user-report: GET /dashboards/users with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await userReport.execute({
     "dateGte": "2020-01-01",
@@ -32,7 +33,7 @@ Deno.test("user-report: GET /dashboards/users with the documented query and body
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": null });
 });
 
-Deno.test("user-report: an Everhour error surfaces its message and status", async () => {
+test("user-report: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -51,6 +52,6 @@ Deno.test("user-report: an Everhour error surfaces its message and status", asyn
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("user-report: declares search", () => {
+test("user-report: declares search", () => {
   assertEquals(userReport.type, "search");
 });

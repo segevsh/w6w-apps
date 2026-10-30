@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/data-export.ts";
 
-Deno.test("data-export: GETs /workspaces/<id>/views/<id>/data, returns raw content and content type", async () => {
+test("data-export: GETs /workspaces/<id>/views/<id>/data, returns raw content and content type", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       status: 200,

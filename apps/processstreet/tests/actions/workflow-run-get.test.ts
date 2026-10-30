@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-run-get.ts";
 
-Deno.test("workflow-run-get: GETs /workflow-runs/{id} with no envelope wrapper", async () => {
+test("workflow-run-get: GETs /workflow-runs/{id} with no envelope wrapper", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "run1", status: "Active", workflowId: "w1", shared: false },
   }]);

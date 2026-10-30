@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import createPerson from "../../actions/create-person.ts";
 
-Deno.test("create-person: POSTs the documented camelCase body", async () => {
+test("create-person: POSTs the documented camelCase body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 10763 } }]);
   await createPerson.execute({
     firstName: "Tom",
@@ -34,7 +35,7 @@ Deno.test("create-person: POSTs the documented camelCase body", async () => {
 /** `deduplicate` is a QUERY parameter, not a body field. Easy to get wrong. */
 
 /** `deduplicate` is a QUERY parameter, not a body field. Easy to get wrong. */
-Deno.test("create-person: sends deduplicate on the query string, not in the body", async () => {
+test("create-person: sends deduplicate on the query string, not in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await createPerson.execute({ firstName: "A", deduplicate: true }, ctx);
   const url = new URL(calls[0].url);
@@ -42,7 +43,7 @@ Deno.test("create-person: sends deduplicate on the query string, not in the body
   assertEquals(JSON.parse(calls[0].body!), { firstName: "A" });
 });
 
-Deno.test("create-person: merges custom fields as flat top-level keys", async () => {
+test("create-person: merges custom fields as flat top-level keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await createPerson.execute({
     firstName: "Mary",
@@ -66,7 +67,7 @@ Deno.test("create-person: merges custom fields as flat top-level keys", async ()
  * automations. If that warning ever falls out of the description, someone will
  * quietly route their lead intake through it.
  */
-Deno.test("create-person: warns that it does not run lead automations", () => {
+test("create-person: warns that it does not run lead automations", () => {
   assertEquals(createPerson.type, "perform");
   assertEquals(createPerson.idempotent, false);
   const d = createPerson.description!;
@@ -74,7 +75,7 @@ Deno.test("create-person: warns that it does not run lead automations", () => {
   assert(d.includes("Create Event"), d);
 });
 
-Deno.test("create-person: flags source and sourceUrl as write-once", () => {
+test("create-person: flags source and sourceUrl as write-once", () => {
   assert(param(createPerson, "source").hint?.includes("Write-once"));
   assert(param(createPerson, "sourceUrl").hint?.includes("write-once"));
 });

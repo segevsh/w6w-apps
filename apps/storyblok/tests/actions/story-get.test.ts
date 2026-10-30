@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/story-get.ts";
 
@@ -20,7 +21,7 @@ const story = {
   },
 };
 
-Deno.test("story-get: fetches by slug and returns the cache version", async () => {
+test("story-get: fetches by slug and returns the cache version", async () => {
   const { ctx, calls } = mockCtx([story], D);
   const result = await action.execute({ slug: "blog/my-post" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v2/cdn/stories/blog/my-post");
@@ -30,7 +31,7 @@ Deno.test("story-get: fetches by slug and returns the cache version", async () =
   assertEquals(result.cv, 1735645795, "the number that makes the next call cheap");
 });
 
-Deno.test("story-get: relations, language and cv reach the query", async () => {
+test("story-get: relations, language and cv reach the query", async () => {
   const { ctx, calls } = mockCtx([story], D);
   await action.execute({
     slug: "blog/my-post",
@@ -45,7 +46,7 @@ Deno.test("story-get: relations, language and cv reach the query", async () => {
 });
 
 /** Draft and published are separate documents. */
-Deno.test("story-get: asking for a draft says it differs from the site", async () => {
+test("story-get: asking for a draft says it differs from the site", async () => {
   const { ctx, logs } = mockCtx([story], D);
   await action.execute({ slug: "blog/my-post", version: "draft" }, ctx);
   assert(
@@ -55,7 +56,7 @@ Deno.test("story-get: asking for a draft says it differs from the site", async (
 });
 
 /** Storyblok's own error would be a bare Unauthorized. */
-Deno.test("story-get: refuses a management connection before requesting", async () => {
+test("story-get: refuses a management connection before requesting", async () => {
   const { ctx, calls } = mockCtx([], M);
   const err = await assertRejects(
     async () => await action.execute({ slug: "home" }, ctx),
@@ -66,13 +67,13 @@ Deno.test("story-get: refuses a management connection before requesting", async 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("story-get: a leading slash is trimmed rather than doubling the path", async () => {
+test("story-get: a leading slash is trimmed rather than doubling the path", async () => {
   const { ctx, calls } = mockCtx([story], D);
   await action.execute({ slug: "/blog/my-post" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v2/cdn/stories/blog/my-post");
 });
 
-Deno.test("story-get: requires a slug", async () => {
+test("story-get: requires a slug", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`slug` is required");
 });

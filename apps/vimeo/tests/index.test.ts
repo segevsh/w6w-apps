@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, 36);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -16,7 +18,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -28,7 +30,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
@@ -43,7 +45,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * `showcase-create` and `folder-create` are here for the same reason — neither
  * enforces name uniqueness.
  */
-Deno.test("index: actions that create a new entity per call are not idempotent", () => {
+test("index: actions that create a new entity per call are not idempotent", () => {
   for (
     const key of [
       "video-upload-pull",
@@ -57,7 +59,7 @@ Deno.test("index: actions that create a new entity per call are not idempotent",
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -79,11 +81,11 @@ function code(src: string): string {
 }
 
 const readSource = (path: string) =>
-  Deno.readTextFile(new URL(`../${path}`, import.meta.url)).then(code);
+  denoReadTextFile(new URL(`../${path}`, import.meta.url)).then(code);
 
 const actionSource = (key: string) => readSource(`actions/${key}.ts`);
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -93,7 +95,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -125,14 +127,14 @@ function stripProse(src: string): string {
  * versioned `Accept` header, the User-Agent and the error formatting live. An
  * action that assembled its own URL would silently drop all three.
  */
-Deno.test("index: no action hard-codes an API host in code", async () => {
+test("index: no action hard-codes an API host in code", async () => {
   for (const a of app.actions) {
     const src = stripProse(await actionSource(a.key));
     assert(!/vimeo\.com/.test(src), `${a.key}: contains a Vimeo host literal`);
   }
 });
 
-Deno.test("index: the prose stripper removes only prose, so the host scan still bites", () => {
+test("index: the prose stripper removes only prose, so the host scan still bites", () => {
   const sample = 'placeholder: "https://vimeo.com/1",\n' +
     'const u = "https://api.vimeo.com/me";';
   const stripped = stripProse(sample);
@@ -151,7 +153,7 @@ Deno.test("index: the prose stripper removes only prose, so the host scan still 
  * host itself is covered by the code scan above, which is the assertion that
  * would actually catch a redirected request.
  */
-Deno.test("index: the connection's identity is never reachable as an action param", () => {
+test("index: the connection's identity is never reachable as an action param", () => {
   const banned = /^(host|origin|base_?url|api_?key|token|access_?token|user_?agent)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -169,7 +171,7 @@ Deno.test("index: the connection's identity is never reachable as an action para
  * credential. A plain `string` param would render them unmasked and store them
  * in cleartext.
  */
-Deno.test("index: every password-shaped param is a secret", () => {
+test("index: every password-shaped param is a secret", () => {
   let seen = 0;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -199,7 +201,7 @@ Deno.test("index: every password-shaped param is a secret", () => {
  * passed to `formatVimeoError` — a message, not a request — while still not
  * proving that the calls it did allow were filtered.
  */
-Deno.test("index: every network call in the auth module is a field-filtered /me", async () => {
+test("index: every network call in the auth module is a field-filtered /me", async () => {
   const src = await readSource("auth/access-token.ts");
   const fetches = src.match(/ctx\.fetch\s*\(/g) ?? [];
   const probes = src.match(/\$\{API_BASE\}\/me\?fields=[a-z,]+/g) ?? [];
@@ -212,12 +214,12 @@ Deno.test("index: every network call in the auth module is a field-filtered /me"
 });
 
 /** The quota probe is filtered for the same reason, plus the doubled-figure one. */
-Deno.test("index: the quota probe is a field-filtered /me", async () => {
+test("index: the quota probe is a field-filtered /me", async () => {
   const src = await readSource("health/quota.ts");
   assert(src.includes("/me?fields=uri"), "quota probe lost its field filter");
 });
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -235,7 +237,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * This app declares no absences today. The rule is enforced anyway, because the
  * day someone adds one is exactly the day nobody remembers it.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   for (const h of app.healthChecks.filter((h) => h.unavailable)) {
     assertEquals(h.severity, "informational", `${h.key}: unavailable but not informational`);
   }
@@ -246,12 +248,12 @@ Deno.test("index: every unavailable health check is informational", () => {
  * — measured to happen on an unauthenticated call — so it carries the same
  * severity rule as a declared absence for the same reason.
  */
-Deno.test("index: the quota check is informational, so an unknown cannot pin the verdict", () => {
+test("index: the quota check is informational, so an unknown cannot pin the verdict", () => {
   assertEquals(app.healthChecks.find((h) => h.key === "quota")?.severity, "informational");
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the token. */
-Deno.test("index: any health check declaring extra egress is unsigned", () => {
+test("index: any health check declaring extra egress is unsigned", () => {
   for (const h of app.healthChecks) {
     if (!h.network?.allow?.length) continue;
     assert(
@@ -268,9 +270,9 @@ Deno.test("index: any health check declaring extra egress is unsigned", () => {
  * here: `w6w.network.allow` widens egress for every hook including the signed
  * ones, which is how a status page ends up seeing a credential.
  */
-Deno.test("index: the manifest allows the API host and not the status host", async () => {
+test("index: the manifest allows the API host and not the status host", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as { w6w: { id: string; network: { allow: string[] } } };
   assertEquals(manifest.w6w.id, "io.w6w.vimeo");
   assert(manifest.w6w.network.allow.includes("api.vimeo.com"));
@@ -286,7 +288,7 @@ Deno.test("index: the manifest allows the API host and not the status host", asy
  * blocked or parses a Cloudflare interstitial as a status document. If someone
  * "tidies" the URL back, this fails.
  */
-Deno.test("index: the service check calls the canonical status host, not the redirecting one", async () => {
+test("index: the service check calls the canonical status host, not the redirecting one", async () => {
   const src = await readSource("health/service.ts");
   assert(src.includes("www.vimeostatus.com"), "service check lost the canonical status host");
   assert(!/["'`]status\.vimeo\.com/.test(src), "service check points at the redirecting host");
@@ -299,7 +301,7 @@ Deno.test("index: the service check calls the canonical status host, not the red
  * prefix, so dropping it silently floats the app onto whatever the API treats
  * as default.
  */
-Deno.test("index: the client sends an explicit API version in Accept", async () => {
+test("index: the client sends an explicit API version in Accept", async () => {
   const src = await readSource("lib/client.ts");
   assert(
     src.includes("application/vnd.vimeo.*+json;version="),
@@ -310,7 +312,7 @@ Deno.test("index: the client sends an explicit API version in Accept", async () 
   assertEquals(ACCEPT, "application/vnd.vimeo.*+json;version=3.4");
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// access-token\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

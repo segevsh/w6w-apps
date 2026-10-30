@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-webhook.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-webhook: POSTs /v1/webhooks with wire names and coerces version to a number", async () => {
+test("create-webhook: POSTs /v1/webhooks with wire names and coerces version to a number", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { data: { id: "w1", name: "hook", signing_secret: "abc" } },
@@ -28,7 +29,7 @@ Deno.test("create-webhook: POSTs /v1/webhooks with wire names and coerces versio
   assertEquals(out, { data: { id: "w1", name: "hook" } }, "the signing secret never leaves");
 });
 
-Deno.test("create-webhook: events may be a comma-separated string; none is refused", async () => {
+test("create-webhook: events may be a comma-separated string; none is refused", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }]);
   await exec(action, {
     domainId: "d",
@@ -47,7 +48,7 @@ Deno.test("create-webhook: events may be a comma-separated string; none is refus
   );
 });
 
-Deno.test("create-webhook: the test-ping failure message is surfaced", async () => {
+test("create-webhook: the test-ping failure message is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {
@@ -68,7 +69,7 @@ Deno.test("create-webhook: the test-ping failure message is surfaced", async () 
   );
 });
 
-Deno.test("create-webhook: offers every event the docs list", () => {
+test("create-webhook: offers every event the docs list", () => {
   const options = action.params!.find((p) => p.key === "events")!.options as { value: string }[];
   assertEquals(options.length, 24);
 });

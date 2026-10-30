@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-get: GETs the enrichment by id and shapes the result", async () => {
+test("enrich-get: GETs the enrichment by id and shapes the result", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "e/1",
@@ -26,14 +27,14 @@ Deno.test("enrich-get: GETs the enrichment by id and shapes the result", async (
   });
 });
 
-Deno.test("enrich-get: an unfinished job returns its status with empty data", async () => {
+test("enrich-get: an unfinished job returns its status with empty data", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e", status: "IN_PROGRESS" } }]);
   const out = await action.execute!({ enrichmentId: "e" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).search, "");
   assertEquals([out.status, out.credits, out.data], ["IN_PROGRESS", null, []]);
 });
 
-Deno.test("enrich-get: a 404 is thrown with the vendor code", async () => {
+test("enrich-get: a 404 is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { code: "error.enrichment.not_found", message: "Enrichment ID not found" },

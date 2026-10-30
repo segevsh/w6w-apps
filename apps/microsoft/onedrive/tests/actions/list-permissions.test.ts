@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-permissions.ts";
 
-Deno.test("list-permissions: reads the item's permissions collection", async () => {
+test("list-permissions: reads the item's permissions collection", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "01ABC" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/drive/items/01ABC/permissions");
 });
 
-Deno.test("list-permissions: the path form keeps the closing colon before /permissions", async () => {
+test("list-permissions: the path form keeps the closing colon before /permissions", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemPath: "Reports/Q3.pdf" }, ctx);
   assertEquals(
@@ -17,13 +18,13 @@ Deno.test("list-permissions: the path form keeps the closing colon before /permi
   );
 });
 
-Deno.test("list-permissions: maps $select, the one documented query option", async () => {
+test("list-permissions: maps $select, the one documented query option", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "i", select: ["id", "roles"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("$select"), "id,roles");
 });
 
-Deno.test("list-permissions: surfaces inheritedFrom, which decides if it can be deleted", async () => {
+test("list-permissions: surfaces inheritedFrom, which decides if it can be deleted", async () => {
   const { ctx } = mockCtx([{
     body: {
       value: [
@@ -36,7 +37,7 @@ Deno.test("list-permissions: surfaces inheritedFrom, which decides if it can be 
   assertEquals(out.value.filter((p) => p.inheritedFrom).map((p) => p.id), ["inherited"]);
 });
 
-Deno.test("list-permissions: follows every page when `all` is set", async () => {
+test("list-permissions: follows every page when `all` is set", async () => {
   const next = "https://graph.microsoft.com/v1.0/me/drive/items/i/permissions?$skiptoken=1";
   const { ctx, calls } = mockCtx([
     { body: { value: [{ id: "a" }], "@odata.nextLink": next } },
@@ -47,7 +48,7 @@ Deno.test("list-permissions: follows every page when `all` is set", async () => 
   assertEquals(out.value.length, 2);
 });
 
-Deno.test("list-permissions: requires an item", async () => {
+test("list-permissions: requires an item", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => action.execute({}, ctx) as Promise<unknown>,

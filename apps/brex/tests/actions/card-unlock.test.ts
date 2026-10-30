@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardUnlock from "../../actions/card-unlock.ts";
 import { CARD, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-unlock: POSTs with no body at all, because Brex documents none", async () => {
+test("card-unlock: POSTs with no body at all, because Brex documents none", async () => {
   const { ctx, calls } = mockCtx([{ body: CARD }]);
   const result = await cardUnlock.execute({ id: "card_1" }, ctx) as typeof CARD;
 
@@ -15,11 +16,11 @@ Deno.test("card-unlock: POSTs with no body at all, because Brex documents none",
   assertEquals(result.status, "ACTIVE");
 });
 
-Deno.test("card-unlock: it exposes no reason param, because the endpoint takes none", () => {
+test("card-unlock: it exposes no reason param, because the endpoint takes none", () => {
   assertEquals(cardUnlock.params?.map((p) => p.key), ["id", "idempotencyKey"]);
 });
 
-Deno.test("card-unlock: an idempotency key is forwarded verbatim, and never invented", async () => {
+test("card-unlock: an idempotency key is forwarded verbatim, and never invented", async () => {
   const withKey = mockCtx([{ body: CARD }]);
   await cardUnlock.execute({ id: "card_1", idempotencyKey: "k1" }, withKey.ctx);
   assertEquals(withKey.calls[0].headers["idempotency-key"], "k1");
@@ -29,7 +30,7 @@ Deno.test("card-unlock: an idempotency key is forwarded verbatim, and never inve
   assertEquals(withoutKey.calls[0].headers["idempotency-key"], undefined);
 });
 
-Deno.test("card-unlock: it is a perform declared idempotent", () => {
+test("card-unlock: it is a perform declared idempotent", () => {
   assertEquals(cardUnlock.type, "perform");
   assertEquals(cardUnlock.idempotent, true);
 });

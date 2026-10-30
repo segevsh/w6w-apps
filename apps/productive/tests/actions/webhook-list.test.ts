@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: GET /webhooks with every filter, sort, include and page serialised", async () => {
+test("webhook-list: GET /webhooks with every filter, sort, include and page serialised", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -56,7 +57,7 @@ Deno.test("webhook-list: GET /webhooks with every filter, sort, include and page
   );
 });
 
-Deno.test("webhook-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
+test("webhook-list: a next link becomes nextCursor, and the cursor is sent back as page[after]", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -78,13 +79,13 @@ Deno.test("webhook-list: a next link becomes nextCursor, and the cursor is sent 
   assertEquals(queryOf(calls[1].url), { "page[after]": "abc123" });
 });
 
-Deno.test("webhook-list: a raw filter object is merged with the typed filters", async () => {
+test("webhook-list: a raw filter object is merged with the typed filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await webhookList.execute({ filter: '{"name": {"contains": "x"}, "id": [1, 2]}' }, ctx);
   assertEquals(queryOf(calls[0].url), { "filter[name][contains]": "x", "filter[id]": "1,2" });
 });
 
-Deno.test("webhook-list: a vendor error surfaces its status, title and detail", async () => {
+test("webhook-list: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("422", "unprocessable_entity", "Invalid", "is invalid"),
@@ -97,7 +98,7 @@ Deno.test("webhook-list: a vendor error surfaces its status, title and detail", 
   assertEquals(err.message.includes("is invalid"), true, err.message);
 });
 
-Deno.test("webhook-list: declares search", () => {
+test("webhook-list: declares search", () => {
   assertEquals(webhookList.type, "search");
   assertEquals(webhookList.idempotent, undefined);
   assertEquals(webhookList.key, "webhook-list");

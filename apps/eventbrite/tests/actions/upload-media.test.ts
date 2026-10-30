@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upload-media.ts";
 
-Deno.test("upload-media: POSTs token and crop_mask", async () => {
+test("upload-media: POSTs token and crop_mask", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await action.execute!({
     uploadToken: "abc",
@@ -19,7 +20,7 @@ Deno.test("upload-media: POSTs token and crop_mask", async () => {
   });
 });
 
-Deno.test("upload-media: token only", async () => {
+test("upload-media: token only", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ uploadToken: "abc" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { upload_token: "abc" });

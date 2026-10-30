@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import estimateCreate from "../../actions/estimate-create.ts";
 
-Deno.test("estimate-create: single-item convenience builds a one-element items array", async () => {
+test("estimate-create: single-item convenience builds a one-element items array", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -25,7 +26,7 @@ Deno.test("estimate-create: single-item convenience builds a one-element items a
   assertEquals(body.variables.input.status, undefined);
 });
 
-Deno.test("estimate-create: an explicit `items` JSON array overrides the single-item fields", async () => {
+test("estimate-create: an explicit `items` JSON array overrides the single-item fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: { estimateCreate: { didSucceed: true, inputErrors: [], estimate: { id: "est1" } } },
@@ -44,7 +45,7 @@ Deno.test("estimate-create: an explicit `items` JSON array overrides the single-
   assertEquals(body.variables.input.items, [{ productId: "p2", quantity: 5 }]);
 });
 
-Deno.test("estimate-create: a rejected create throws", async () => {
+test("estimate-create: a rejected create throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -65,7 +66,7 @@ Deno.test("estimate-create: a rejected create throws", async () => {
   if (!threw) throw new Error("expected a rejection");
 });
 
-Deno.test("estimate-create: type/resource/idempotency metadata", () => {
+test("estimate-create: type/resource/idempotency metadata", () => {
   assertEquals(estimateCreate.type, "perform");
   assertEquals(estimateCreate.resource, "estimate");
   assertEquals(estimateCreate.idempotent, false);

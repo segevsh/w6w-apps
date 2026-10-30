@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { CREDIT_USAGE_URL, readBucket } from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -12,13 +13,13 @@ function creditBody(stats: Record<string, { limit: number; consumed: number; lef
   };
 }
 
-Deno.test("quota: reads the credit-usage endpoint, signed, on the app's own host", () => {
+test("quota: reads the credit-usage endpoint, signed, on the app's own host", () => {
   assertEquals(CREDIT_USAGE_URL, "https://api.apollo.io/api/v1/usage_stats/credit_usage_stats");
   assertEquals(quota.credential, "signed");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: a healthy team reports ok with a reading per credit type", async () => {
+test("quota: a healthy team reports ok with a reading per credit type", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: creditBody({
@@ -43,7 +44,7 @@ Deno.test("quota: a healthy team reports ok with a reading per credit type", asy
   });
 });
 
-Deno.test("quota: a credit type past 90% reports degraded and names itself", async () => {
+test("quota: a credit type past 90% reports degraded and names itself", async () => {
   const { ctx } = mockCtx([
     { body: creditBody({ lead_credit: { limit: 100, consumed: 95, left_over: 5 } }) },
   ]);
@@ -52,39 +53,39 @@ Deno.test("quota: a credit type past 90% reports degraded and names itself", asy
   assert(/lead_credit at 95\/100 credits \(95%\)/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: an exhausted credit type reports down", async () => {
+test("quota: an exhausted credit type reports down", async () => {
   const { ctx } = mockCtx([
     { body: creditBody({ lead_credit: { limit: 100, consumed: 100, left_over: 0 } }) },
   ]);
   assertEquals((await quota.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: a zero-limit bucket means unmetered, not exhausted", () => {
+test("quota: a zero-limit bucket means unmetered, not exhausted", () => {
   const reading = readBucket("x", { limit: 0, consumed: 5, left_over: 0 }, undefined);
   assertEquals(reading?.state, "ok");
 });
 
-Deno.test("quota: usage past the limit never reports a negative remaining", () => {
+test("quota: usage past the limit never reports a negative remaining", () => {
   const reading = readBucket("x", { limit: 100, consumed: 100, left_over: -20 }, undefined);
   assertEquals(reading?.quota.remaining, 0);
 });
 
-Deno.test("quota: a bucket missing limit/consumed is skipped, not guessed at", () => {
+test("quota: a bucket missing limit/consumed is skipped, not guessed at", () => {
   assertEquals(readBucket("x", undefined, undefined), undefined);
   assertEquals(readBucket("x", { limit: 10 }, undefined), undefined);
 });
 
-Deno.test("quota: a refused read reports unknown, not degraded", async () => {
+test("quota: a refused read reports unknown, not degraded", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: a response with no credit_usage_stats reports unknown", async () => {
+test("quota: a response with no credit_usage_stats reports unknown", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: reads credit types generically — a vendor-new key still reports", async () => {
+test("quota: reads credit types generically — a vendor-new key still reports", async () => {
   const { ctx } = mockCtx([
     { body: creditBody({ brand_new_credit_type: { limit: 50, consumed: 10, left_over: 40 } }) },
   ]);

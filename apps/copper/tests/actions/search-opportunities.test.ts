@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 import action from "../../actions/search-opportunities.ts";
 
-Deno.test("search-opportunities: POSTs to /opportunities/search", async () => {
+test("search-opportunities: POSTs to /opportunities/search", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].method, "POST");
   assertEquals(calls[0].url, "https://api.copper.com/developer_api/v1/opportunities/search");
 });
 
-Deno.test("search-opportunities: maps every filter onto Copper's body keys", async () => {
+test("search-opportunities: maps every filter onto Copper's body keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute({
     name: "Big deal",
@@ -49,12 +50,12 @@ Deno.test("search-opportunities: maps every filter onto Copper's body keys", asy
   });
 });
 
-Deno.test("search-opportunities: pins Copper's hard-coded status ids 0-3", () => {
+test("search-opportunities: pins Copper's hard-coded status ids 0-3", () => {
   // "The possible values are 0, 1, 2, 3, for Open, Won, Lost, and Abandoned."
   assertEquals(optionValues(action, "statusIds"), [0, 1, 2, 3]);
 });
 
-Deno.test("search-opportunities: is a search on the opportunity resource", () => {
+test("search-opportunities: is a search on the opportunity resource", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "opportunity");
 });

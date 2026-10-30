@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/continue-prospect-search.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
 const listBody = { status: { code: 200 }, type: "list", data: { id: 4, status: "queued" } };
 
-Deno.test("continue-prospect-search: posts the numeric list id and optional settings", async () => {
+test("continue-prospect-search: posts the numeric list id and optional settings", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody }]);
   const out = await exec(action, {
     id: "123",
@@ -20,13 +21,13 @@ Deno.test("continue-prospect-search: posts the numeric list id and optional sett
   assertEquals(out, listBody.data);
 });
 
-Deno.test("continue-prospect-search: only the id is required", async () => {
+test("continue-prospect-search: only the id is required", async () => {
   const { ctx, calls } = mockCtx([{ body: listBody }]);
   await exec(action, { id: 5 }, ctx);
   assertEquals(bodyOf(calls[0]), { id: 5 });
 });
 
-Deno.test("continue-prospect-search: bad ids and sizes are refused locally; 404 fails", async () => {
+test("continue-prospect-search: bad ids and sizes are refused locally; 404 fails", async () => {
   const none = mockCtx();
   await assertRejects(() => exec(action, { id: "abc" }, none.ctx), Error, "numeric");
   await assertRejects(

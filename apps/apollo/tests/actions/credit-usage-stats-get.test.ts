@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import creditUsageStatsGet from "../../actions/credit-usage-stats-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("credit-usage-stats-get: POSTs to /usage_stats/credit_usage_stats and returns both fields", async () => {
+test("credit-usage-stats-get: POSTs to /usage_stats/credit_usage_stats and returns both fields", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

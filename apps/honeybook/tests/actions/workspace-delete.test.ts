@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workspaceDelete from "../../actions/workspace-delete.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "workspaceId": "x-workspaceId" };
 
-Deno.test("workspace-delete: sends DELETE /workspaces/{id} with the mapped fields", async () => {
+test("workspace-delete: sends DELETE /workspaces/{id} with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await workspaceDelete.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -16,20 +17,20 @@ Deno.test("workspace-delete: sends DELETE /workspaces/{id} with the mapped field
   assertEquals(out, { success: true });
 });
 
-Deno.test("workspace-delete: sends only what was supplied", async () => {
+test("workspace-delete: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await workspaceDelete.execute({ "workspaceId": "x-workspaceId" } as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("workspace-delete: percent-encodes path ids", async () => {
+test("workspace-delete: percent-encodes path ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   await workspaceDelete.execute({ ...INPUT, ...{ "workspaceId": "a/b" } }, ctx);
   const segs = pathOf(calls[0].url).split("/");
   assertEquals(segs.includes("a%2Fb"), true);
 });
 
-Deno.test("workspace-delete: surfaces the API error type and message", async () => {
+test("workspace-delete: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await workspaceDelete.execute(INPUT, ctx),

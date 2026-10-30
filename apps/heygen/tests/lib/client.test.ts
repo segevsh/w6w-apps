@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { envelope, errorBody, listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined, null and empty string, keeps false and 0", () => {
+test("compact: drops undefined, null and empty string, keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -17,7 +18,7 @@ Deno.test("compact: drops undefined, null and empty string, keeps false and 0", 
   });
 });
 
-Deno.test("asOptionalJson: passes through a non-string, parses a JSON string, errors on garbage", () => {
+test("asOptionalJson: passes through a non-string, parses a JSON string, errors on garbage", () => {
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "x"), undefined);
@@ -32,14 +33,14 @@ Deno.test("asOptionalJson: passes through a non-string, parses a JSON string, er
   assert(threw);
 });
 
-Deno.test("toList: splits a comma-separated string and trims entries", () => {
+test("toList: splits a comma-separated string and trims entries", () => {
   assertEquals(toList("Spanish (Spain), French"), ["Spanish (Spain)", "French"]);
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList(""), undefined);
   assertEquals(toList(undefined), undefined);
 });
 
-Deno.test("truncate: leaves short text alone, caps long text with a byte count", () => {
+test("truncate: leaves short text alone, caps long text with a byte count", () => {
   assertEquals(truncate("short"), "short");
   const long = "x".repeat(700);
   const out = truncate(long, 600);
@@ -47,32 +48,32 @@ Deno.test("truncate: leaves short text alone, caps long text with a byte count",
   assert(out.includes("700 bytes truncated"));
 });
 
-Deno.test("formatHeyGenError: surfaces the vendor's code, message and param", () => {
+test("formatHeyGenError: surfaces the vendor's code, message and param", () => {
   const raw = JSON.stringify(errorBody("insufficient_credit", "Not enough credits", null));
   const msg = formatHeyGenError(402, "POST", "/v3/videos", raw);
   assert(msg.includes("402 insufficient_credit"));
   assert(msg.includes("Not enough credits"));
 });
 
-Deno.test("formatHeyGenError: includes the param when the vendor names one", () => {
+test("formatHeyGenError: includes the param when the vendor names one", () => {
   const raw = JSON.stringify(errorBody("invalid_parameter", "Bad avatar_id", "avatar_id"));
   const msg = formatHeyGenError(400, "POST", "/v3/videos", raw);
   assert(msg.includes("param: avatar_id"));
 });
 
-Deno.test("formatHeyGenError: names the retry delay on a 429", () => {
+test("formatHeyGenError: names the retry delay on a 429", () => {
   const raw = JSON.stringify(errorBody("rate_limit_exceeded", "Too many requests"));
   const msg = formatHeyGenError(429, "GET", "/v3/videos", raw, "12");
   assert(msg.includes("retry after 12s"), msg);
 });
 
-Deno.test("formatHeyGenError: falls back to the raw body when it is not the error envelope", () => {
+test("formatHeyGenError: falls back to the raw body when it is not the error envelope", () => {
   const msg = formatHeyGenError(500, "GET", "/v3/videos", "upstream exploded");
   assert(msg.includes("500"));
   assert(msg.includes("upstream exploded"));
 });
 
-Deno.test("HeyGenClient.data: unwraps the single-resource envelope", async () => {
+test("HeyGenClient.data: unwraps the single-resource envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "v1", status: "completed" }) }]);
   const client = new HeyGenClient(ctx);
   const out = await client.data("/v3/videos/v1");
@@ -86,7 +87,7 @@ Deno.test("HeyGenClient.data: unwraps the single-resource envelope", async () =>
  * `.data()` unwrap would silently drop them. This is the one shape difference the client exists
  * to keep straight.
  */
-Deno.test("HeyGenClient.list: keeps has_more/next_token alongside the items, not inside them", async () => {
+test("HeyGenClient.list: keeps has_more/next_token alongside the items, not inside them", async () => {
   const { ctx } = mockCtx([
     { body: listEnvelope([{ id: "v1" }, { id: "v2" }], { has_more: true, next_token: "abc" }) },
   ]);
@@ -98,7 +99,7 @@ Deno.test("HeyGenClient.list: keeps has_more/next_token alongside the items, not
   assertEquals(page.nextToken, "abc");
 });
 
-Deno.test("HeyGenClient: query params drop undefined/null/empty entries", async () => {
+test("HeyGenClient: query params drop undefined/null/empty entries", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   const client = new HeyGenClient(ctx);
   await client.list("/v3/videos", { query: { limit: 10, token: undefined, title: "" } });
@@ -109,7 +110,7 @@ Deno.test("HeyGenClient: query params drop undefined/null/empty entries", async 
   assertEquals(url.searchParams.has("title"), false);
 });
 
-Deno.test("HeyGenClient: a JSON body is sent with a content-type header", async () => {
+test("HeyGenClient: a JSON body is sent with a content-type header", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ video_id: "v1", status: "waiting" }) }]);
   const client = new HeyGenClient(ctx);
   await client.data("/v3/videos", { method: "POST", body: { type: "avatar", avatar_id: "a1" } });
@@ -119,7 +120,7 @@ Deno.test("HeyGenClient: a JSON body is sent with a content-type header", async 
   assertEquals(JSON.parse(calls[0].body!), { type: "avatar", avatar_id: "a1" });
 });
 
-Deno.test("HeyGenClient: a FormData body is sent without a manual content-type", async () => {
+test("HeyGenClient: a FormData body is sent without a manual content-type", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ asset_id: "a1", url: "https://x", mime_type: "image/png", size_bytes: 3 }) },
   ]);
@@ -132,7 +133,7 @@ Deno.test("HeyGenClient: a FormData body is sent without a manual content-type",
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("HeyGenClient: a non-ok response throws a formatted error, not a raw HTTP failure", async () => {
+test("HeyGenClient: a non-ok response throws a formatted error, not a raw HTTP failure", async () => {
   const { ctx } = mockCtx([
     {
       status: 404,
@@ -147,7 +148,7 @@ Deno.test("HeyGenClient: a non-ok response throws a formatted error, not a raw H
   );
 });
 
-Deno.test("HeyGenClient: a 204 with no body resolves to undefined rather than throwing on JSON.parse", async () => {
+test("HeyGenClient: a 204 with no body resolves to undefined rather than throwing on JSON.parse", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   const client = new HeyGenClient(ctx);
   assertEquals(await client.json("/v3/videos/v1"), undefined);

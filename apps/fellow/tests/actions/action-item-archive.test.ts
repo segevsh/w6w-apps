@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import actionItemArchive from "../../actions/action-item-archive.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("action-item-archive: POST /api/v1/action_item/a1/archive on the workspace host", async () => {
+test("action-item-archive: POST /api/v1/action_item/a1/archive on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { action_item: { id: "a1", text: "Ship", status: "Archived" } },
@@ -17,7 +18,7 @@ Deno.test("action-item-archive: POST /api/v1/action_item/a1/archive on the works
   assertEquals((out as { status: string }).status, "Archived");
 });
 
-Deno.test("action-item-archive: a Fellow error surfaces its detail and status", async () => {
+test("action-item-archive: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(actionItemArchive.execute({ actionItemId: "a1" }, ctx)),

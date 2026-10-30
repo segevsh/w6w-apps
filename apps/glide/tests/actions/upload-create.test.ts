@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import uploadCreate from "../../actions/upload-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("upload-create: POSTs contentType/fileName and returns the upload handle", async () => {
+test("upload-create: POSTs contentType/fileName and returns the upload handle", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ uploadID: "upload-123", uploadLocation: "https://storage.example/x" }) },
   ]);

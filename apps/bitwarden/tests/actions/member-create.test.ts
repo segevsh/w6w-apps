@@ -1,10 +1,11 @@
-import { assertEquals, assertMatch, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertMatch, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/member-create.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("member-create: POSTs the invite with a numeric role", async () => {
+test("member-create: POSTs the invite with a numeric role", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "a1b2c3d4-e5f6-4789-8abc-def012345678", email: "new@x.io", type: 4, status: 0 },
   }], D);
@@ -25,7 +26,7 @@ Deno.test("member-create: POSTs the invite with a numeric role", async () => {
   assertEquals(result.statusName, "Invited");
 });
 
-Deno.test("member-create: rejects the non-existent role 3", async () => {
+test("member-create: rejects the non-existent role 3", async () => {
   const { ctx } = mockCtx([], D);
   const err = await assertRejects(async () =>
     await action.execute({ email: "a@x.io", type: 3 }, ctx)

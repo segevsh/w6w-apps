@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import orderCustomerGet from "../../actions/order-customer-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "orderId": 1337 };
 const RESPONSE = { "id": 1, "marker": true };
 
-Deno.test("order-customer-get: sends GET /v1/orders/1337/customer with the mapped parameters", async () => {
+test("order-customer-get: sends GET /v1/orders/1337/customer with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await orderCustomerGet.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -16,12 +17,12 @@ Deno.test("order-customer-get: sends GET /v1/orders/1337/customer with the mappe
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("order-customer-get: returns the documented result shape", async () => {
+test("order-customer-get: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await orderCustomerGet.execute(INPUT, ctx), { "id": 1, "marker": true });
 });
 
-Deno.test("order-customer-get: an error surfaces SamCart's own message", async () => {
+test("order-customer-get: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(orderCustomerGet.execute(INPUT, ctx)),
@@ -30,7 +31,7 @@ Deno.test("order-customer-get: an error surfaces SamCart's own message", async (
   assertEquals(err.message.includes("Object could not be found"), true, err.message);
 });
 
-Deno.test("order-customer-get: a non-integer orderId is refused before any request", async () => {
+test("order-customer-get: a non-integer orderId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

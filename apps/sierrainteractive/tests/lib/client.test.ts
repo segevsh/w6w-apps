@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("compact: drops unset values but keeps false and 0", () => {
+test("compact: drops unset values but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: [], e: false, f: 0, g: "x" }), {
     e: false,
     f: 0,
@@ -18,12 +19,12 @@ Deno.test("compact: drops unset values but keeps false and 0", () => {
   });
 });
 
-Deno.test("encodeId: percent-encodes an email and rejects an empty id", () => {
+test("encodeId: percent-encodes an email and rejects an empty id", () => {
   assertEquals(encodeId("a+b@x.com"), "a%2Bb%40x.com");
   assertThrows(() => encodeId("  "), Error, "required");
 });
 
-Deno.test("toList / asOptionalJson / truncate", () => {
+test("toList / asOptionalJson / truncate", () => {
   assertEquals(toList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(toList(""), undefined);
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
@@ -33,7 +34,7 @@ Deno.test("toList / asOptionalJson / truncate", () => {
   assertEquals(truncate("abcdef", 3).startsWith("abc…"), true);
 });
 
-Deno.test("failureOf: success:false wins even on HTTP 200; 4xx without envelope falls back", () => {
+test("failureOf: success:false wins even on HTTP 200; 4xx without envelope falls back", () => {
   assertEquals(failureOf(200, '{"success":false,"errorMessage":"nope"}'), "nope");
   assertEquals(
     failureOf(400, '{"success":false,"errorMessage":"Unauthorized request"}'),
@@ -44,7 +45,7 @@ Deno.test("failureOf: success:false wins even on HTTP 200; 4xx without envelope 
   assertEquals(failureOf(200, "[1]"), undefined);
 });
 
-Deno.test("SierraClient: sends JSON body with content-type, parses the reply", async () => {
+test("SierraClient: sends JSON body with content-type, parses the reply", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, id: 1 } }]);
   const out = await new SierraClient(ctx).request("POST", "/zapier/leads", { a: 1 });
   assertEquals(calls[0].url, "https://api.sierrainteractivedev.com/zapier/leads");
@@ -53,7 +54,7 @@ Deno.test("SierraClient: sends JSON body with content-type, parses the reply", a
   assertEquals(out, { data: { success: true, id: 1 } });
 });
 
-Deno.test("SierraClient: a 200 with success:false rejects; empty body yields null", async () => {
+test("SierraClient: a 200 with success:false rejects; empty body yields null", async () => {
   const bad = mockCtx([{ body: { success: false, errorMessage: "Lead not found" } }]);
   await assertRejects(
     () => new SierraClient(bad.ctx).get("/zapier/x"),

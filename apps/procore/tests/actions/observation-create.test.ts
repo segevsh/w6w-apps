@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/observation-create.ts";
 
-Deno.test("observation-create: POSTs project_id beside the observation object", async () => {
+test("observation-create: POSTs project_id beside the observation object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 11, name: "Open edge" } }]);
   const out = await action.execute!({
     companyId: 5,
@@ -33,7 +34,7 @@ Deno.test("observation-create: POSTs project_id beside the observation object", 
   assertEquals(out, { id: 11, name: "Open edge" });
 });
 
-Deno.test("observation-create: minimal body is name and type_id", async () => {
+test("observation-create: minimal body is name and type_id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!({ projectId: 8, name: "N", typeId: 2 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {
@@ -42,6 +43,6 @@ Deno.test("observation-create: minimal body is name and type_id", async () => {
   });
 });
 
-Deno.test("observation-create: is declared non-idempotent", () => {
+test("observation-create: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

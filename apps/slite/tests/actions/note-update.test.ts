@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteUpdate from "../../actions/note-update.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-update: PUT /v1/notes/n1 with the documented parameters", async () => {
+test("note-update: PUT /v1/notes/n1 with the documented parameters", async () => {
   const response = { id: "n1", title: "T" };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteUpdate.execute({
@@ -24,7 +25,7 @@ Deno.test("note-update: PUT /v1/notes/n1 with the documented parameters", async 
   assertEquals(out, response);
 });
 
-Deno.test("note-update: a vendor error surfaces its own message and id", async () => {
+test("note-update: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -40,7 +41,7 @@ Deno.test("note-update: a vendor error surfaces its own message and id", async (
   );
 });
 
-Deno.test("note-update: sends only what was given; 'bottom' passes through", async () => {
+test("note-update: sends only what was given; 'bottom' passes through", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1" } }]);
   await noteUpdate.execute({ noteId: "n1", listPosition: "bottom" }, ctx);
   assertEquals(JSON.parse(calls[0].body ?? "null"), { listPosition: "bottom" });

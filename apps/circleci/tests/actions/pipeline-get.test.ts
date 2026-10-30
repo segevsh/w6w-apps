@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pipeline-get.ts";
 
-Deno.test("pipeline-get: GETs /project/{slug}/pipeline/{number}", async () => {
+test("pipeline-get: GETs /project/{slug}/pipeline/{number}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "pipe1", number: 42 } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("pipeline-get: GETs /project/{slug}/pipeline/{number}", async () => {
   assertEquals(result, { id: "pipe1", number: 42 });
 });
 
-Deno.test("pipeline-get: requires projectSlug", async () => {
+test("pipeline-get: requires projectSlug", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ pipelineNumber: 1 }, ctx)),
@@ -22,7 +23,7 @@ Deno.test("pipeline-get: requires projectSlug", async () => {
   );
 });
 
-Deno.test("pipeline-get: requires pipelineNumber", async () => {
+test("pipeline-get: requires pipelineNumber", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ projectSlug: "gh/org/repo" }, ctx)),

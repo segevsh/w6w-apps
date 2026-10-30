@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { API_ROOT, mockCtx, queryOf, unauthorized } from "../_helpers.ts";
 
-Deno.test("tag-list: sends the documented request and returns the answer", async () => {
+test("tag-list: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: 1 }, { id: 2 }], meta: { current_page: 1, total: 2 } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("tag-list: sends the documented request and returns the answer", async
   assertEquals(result.items.length, 2);
 });
 
-Deno.test("tag-list: a refused token surfaces the vendor message", async () => {
+test("tag-list: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

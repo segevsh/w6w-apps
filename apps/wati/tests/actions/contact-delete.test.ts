@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-delete.ts";
 
 const conn = { display: { baseUrl: "https://live-mt-server.wati.io/12345" } };
 
-Deno.test("contact-delete: DELETEs /contacts/{target}, URL-encoding the target", async () => {
+test("contact-delete: DELETEs /contacts/{target}, URL-encoding the target", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { contact_id: "1", deleted: true, cleanup_completed: true } }],
     conn,
@@ -18,6 +19,6 @@ Deno.test("contact-delete: DELETEs /contacts/{target}, URL-encoding the target",
   assertEquals(out, { contact_id: "1", deleted: true, cleanup_completed: true });
 });
 
-Deno.test("contact-delete: is idempotent (a repeat soft-delete is safe)", () => {
+test("contact-delete: is idempotent (a repeat soft-delete is safe)", () => {
   assertEquals(action.idempotent, true);
 });

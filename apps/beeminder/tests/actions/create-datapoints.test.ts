@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-datapoints.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("create-datapoints: sends the array as a JSON string form field", async () => {
+test("create-datapoints: sends the array as a JSON string form field", async () => {
   const pts = [{ timestamp: 1343577600, value: 220.6, requestid: "a" }, { value: 220.7 }];
   const { ctx, calls } = mockCtx([{
     body: [{ id: "1", value: 220.6 }, { id: "2", value: 220.7 }],
@@ -17,7 +18,7 @@ Deno.test("create-datapoints: sends the array as a JSON string form field", asyn
   assertEquals(out.errors, []);
 });
 
-Deno.test("create-datapoints: a {successes, errors} body is split; a JSON string input parses", async () => {
+test("create-datapoints: a {successes, errors} body is split; a JSON string input parses", async () => {
   const { ctx, calls } = mockCtx([{
     body: { successes: [{ id: "1", value: 1 }], errors: [{ value: "bad" }] },
   }]);
@@ -27,7 +28,7 @@ Deno.test("create-datapoints: a {successes, errors} body is split; a JSON string
   assertEquals(JSON.parse(new URLSearchParams(calls[0].body!).get("datapoints")!).length, 2);
 });
 
-Deno.test("create-datapoints: an empty list throws before a call; errors surface", async () => {
+test("create-datapoints: an empty list throws before a call; errors surface", async () => {
   const none = mockCtx();
   await assertRejects(
     () => run(action, { slug: "w", datapoints: [] }, none.ctx),

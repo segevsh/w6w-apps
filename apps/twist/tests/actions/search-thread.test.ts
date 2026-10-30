@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import searchThread from "../../actions/search-thread.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search-thread: GET /api/v3/search/thread with every documented parameter", async () => {
+test("search-thread: GET /api/v3/search/thread with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await searchThread.execute({
     "threadId": 100,
@@ -30,14 +31,14 @@ Deno.test("search-thread: GET /api/v3/search/thread with every documented parame
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("search-thread: omits optional parameters that are not set", async () => {
+test("search-thread: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await searchThread.execute({ "threadId": 100, "query": "sample query" }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "thread_id": "100", "query": "sample query" });
 });
 
-Deno.test("search-thread: sends no credential of its own", async () => {
+test("search-thread: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await searchThread.execute({
     "threadId": 100,
@@ -52,7 +53,7 @@ Deno.test("search-thread: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("search-thread: surfaces Twist's error body", async () => {
+test("search-thread: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

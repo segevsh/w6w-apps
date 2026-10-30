@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { API, gqlOf, mockCtx } from "../_helpers.ts";
 import quota, {
   parseMember,
@@ -22,7 +23,7 @@ const withHeaders = (headers: Record<string, string>, status = 200) => ({
   body: { data: { account: { id: "a1" } } },
 });
 
-Deno.test("quota: posture — signed, informational, and no egress widening", () => {
+test("quota: posture — signed, informational, and no egress widening", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   // The spec forbids a signed check widening egress, and none is needed: the
@@ -30,7 +31,7 @@ Deno.test("quota: posture — signed, informational, and no egress widening", ()
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: probes the API host with the same minimal, PII-free query", async () => {
+test("quota: probes the API host with the same minimal, PII-free query", async () => {
   const { ctx, calls } = mockCtx([
     withHeaders({ ratelimit: RATELIMIT, "ratelimit-policy": POLICY }),
   ]);
@@ -42,7 +43,7 @@ Deno.test("quota: probes the API host with the same minimal, PII-free query", as
   assert(!/email/i.test(query), query);
 });
 
-Deno.test("quota: reports all three windows, not just one", async () => {
+test("quota: reports all three windows, not just one", async () => {
   const { ctx } = mockCtx([withHeaders({ ratelimit: RATELIMIT, "ratelimit-policy": POLICY })]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -51,7 +52,7 @@ Deno.test("quota: reports all three windows, not just one", async () => {
   assertEquals((report.quota ?? []).map((q) => q.limit), [200, 1000, 30000]);
 });
 
-Deno.test("quota: the verdict is the WORST window — a burst limit hides behind a healthy month", async () => {
+test("quota: the verdict is the WORST window — a burst limit hides behind a healthy month", async () => {
   const report = await run(
     '"200-in-15min";r=1;t=100, "30000-in-30days";r=29000;t=600000',
     '"200-in-15min";q=200;w=900, "30000-in-30days";q=30000;w=2592000',
@@ -60,7 +61,7 @@ Deno.test("quota: the verdict is the WORST window — a burst limit hides behind
   assertEquals(report.state, "down");
 });
 
-Deno.test("quota: a nearly-spent monthly allowance degrades even with burst room left", async () => {
+test("quota: a nearly-spent monthly allowance degrades even with burst room left", async () => {
   const report = await run(
     '"200-in-15min";r=200;t=900, "30000-in-30days";r=2000;t=600000',
     '"200-in-15min";q=200;w=900, "30000-in-30days";q=30000;w=2592000',
@@ -69,7 +70,7 @@ Deno.test("quota: a nearly-spent monthly allowance degrades even with burst room
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("quota: resetAt is a real instant, because `t` is an explicit reset countdown", async () => {
+test("quota: resetAt is a real instant, because `t` is an explicit reset countdown", async () => {
   const report = await run('"a";r=10;t=900', '"a";q=100;w=900');
   const resetAt = report.quota?.[0]?.resetAt;
   assert(resetAt, "no resetAt");
@@ -77,7 +78,7 @@ Deno.test("quota: resetAt is a real instant, because `t` is an explicit reset co
   assert(delta > 890_000 && delta < 910_000, `resetAt ${delta}ms away`);
 });
 
-Deno.test("quota: a 429 is a reading, not a failure — window and Retry-After both surface", async () => {
+test("quota: a 429 is a reading, not a failure — window and Retry-After both surface", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "retry-after": "591" },
@@ -95,21 +96,21 @@ Deno.test("quota: a 429 is a reading, not a failure — window and Retry-After b
   assertEquals(report.quota?.[0]?.remaining, 0);
 });
 
-Deno.test("quota: missing headers are unknown, never a fabricated ok", async () => {
+test("quota: missing headers are unknown, never a fabricated ok", async () => {
   const { ctx } = mockCtx([withHeaders({})]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(/no readable `RateLimit`/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: a failed probe is unknown, not down — that is the auth check's story", async () => {
+test("quota: a failed probe is unknown, not down — that is the auth check's story", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: [{ message: "nope" }] } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(/HTTP 401/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: headers on a non-2xx are still read, if they are there", async () => {
+test("quota: headers on a non-2xx are still read, if they are there", async () => {
   // A 403 that nonetheless carried the limiter's headers is a real reading.
   const { ctx } = mockCtx([{
     status: 403,
@@ -127,7 +128,7 @@ Deno.test("quota: headers on a non-2xx are still read, if they are there", async
 
 /* ---------------- parser units ---------------- */
 
-Deno.test("splitMembers: splits on comma-then-quote, the way Buffer's own example does", () => {
+test("splitMembers: splits on comma-then-quote, the way Buffer's own example does", () => {
   // A bare comma split would shred the `pk=:base64:` parameter.
   assertEquals(splitMembers(POLICY).length, 3);
   assert(splitMembers(POLICY)[0].includes("pk=:ZjJjZjVmNzM5M2Zm:"));
@@ -135,7 +136,7 @@ Deno.test("splitMembers: splits on comma-then-quote, the way Buffer's own exampl
   assertEquals(splitMembers(""), []);
 });
 
-Deno.test("parseMember: reads the quoted name and the numeric params only", () => {
+test("parseMember: reads the quoted name and the numeric params only", () => {
   assertEquals(parseMember('"200-in-15min";q=200;w=900;pk=:abc:'), {
     name: "200-in-15min",
     params: { q: 200, w: 900 },
@@ -144,7 +145,7 @@ Deno.test("parseMember: reads the quoted name and the numeric params only", () =
   assertEquals(parseMember("no-quotes;q=1"), undefined);
 });
 
-Deno.test("parseRateLimitHeaders: joins the two headers by their shared quoted name", () => {
+test("parseRateLimitHeaders: joins the two headers by their shared quoted name", () => {
   const rows = parseRateLimitHeaders(RATELIMIT, POLICY);
   assertEquals(rows.length, 3);
   assertEquals(rows[0], {
@@ -156,19 +157,19 @@ Deno.test("parseRateLimitHeaders: joins the two headers by their shared quoted n
   });
 });
 
-Deno.test("parseRateLimitHeaders: a policy with no live reading is dropped", () => {
+test("parseRateLimitHeaders: a policy with no live reading is dropped", () => {
   // A ceiling with no consumption says nothing about headroom.
   assertEquals(parseRateLimitHeaders(null, POLICY), []);
 });
 
-Deno.test("parseRateLimitHeaders: a RateLimit with no matching policy still reports", () => {
+test("parseRateLimitHeaders: a RateLimit with no matching policy still reports", () => {
   const rows = parseRateLimitHeaders('"x";r=5;t=10', null);
   assertEquals(rows.length, 1);
   assertEquals(rows[0].remaining, 5);
   assertEquals(rows[0].limit, undefined);
 });
 
-Deno.test("windowLabel: matches on the window length, per Buffer's instruction", () => {
+test("windowLabel: matches on the window length, per Buffer's instruction", () => {
   // "Policy names ... change with your plan. Match a policy by its window
   // length (w) ... rather than by name."
   assertEquals(WINDOWS[900], "15m");
@@ -179,7 +180,7 @@ Deno.test("windowLabel: matches on the window length, per Buffer's instruction",
   assertEquals(windowLabel(undefined), "unknown window");
 });
 
-Deno.test("quotaState: thresholds", () => {
+test("quotaState: thresholds", () => {
   assertEquals(quotaState(100, 100), "ok");
   assertEquals(quotaState(15, 100), "ok");
   assertEquals(quotaState(14, 100), "degraded");

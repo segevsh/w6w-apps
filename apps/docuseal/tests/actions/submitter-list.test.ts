@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submitter-list.ts";
 
-Deno.test("submitter-list: lists with the default limit", async () => {
+test("submitter-list: lists with the default limit", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: 7 }], pagination: {} } }]);
   assertEquals(await action.execute!({}, ctx), [{ id: 7 }]);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "10");
 });
 
-Deno.test("submitter-list: filters reach the wire", async () => {
+test("submitter-list: filters reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], pagination: {} } }]);
   await action.execute!({
     submissionId: 3,

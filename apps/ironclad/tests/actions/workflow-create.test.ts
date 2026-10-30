@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workflowCreate from "../../actions/workflow-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("workflow-create: POST /workflows with template and attributes", async () => {
+test("workflow-create: POST /workflows with template and attributes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w9", step: "Create" } }]);
   const out = await workflowCreate.execute(
     { template: "t1", attributes: { counterpartyName: "Acme" }, useDefaultValues: true },
@@ -19,13 +20,13 @@ Deno.test("workflow-create: POST /workflows with template and attributes", async
   assertEquals(out.id, "w9");
 });
 
-Deno.test("workflow-create: attributes may be a JSON string", async () => {
+test("workflow-create: attributes may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await workflowCreate.execute({ template: "t1", attributes: '{"counterpartyName":"A"}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).attributes, { counterpartyName: "A" });
 });
 
-Deno.test("workflow-create: invalid attributes JSON is refused before any request", async () => {
+test("workflow-create: invalid attributes JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await workflowCreate.execute({ template: "t1", attributes: "{nope" }, ctx)

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getFollowedChannels from "../../actions/get-followed-channels.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-followed-channels: calls GET /helix/channels/followed", async () => {
+test("get-followed-channels: calls GET /helix/channels/followed", async () => {
   const { ctx, calls } = mockCtx([{ body: { total: 2, data: [], pagination: {} } }]);
   await getFollowedChannels.execute({ userId: "141981764" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("get-followed-channels: calls GET /helix/channels/followed", async () 
  * the same two ids in opposite roles. Pinning the path here is what stops a
  * refactor swapping them into a plausible-looking 200.
  */
-Deno.test("get-followed-channels: the follow check goes in broadcaster_id, not user_id", async () => {
+test("get-followed-channels: the follow check goes in broadcaster_id, not user_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { total: 1, data: [], pagination: {} } }]);
   await getFollowedChannels.execute({ userId: "me", broadcasterId: "them", after: "cur" }, ctx);
   assertEquals(pathOf(calls[0].url), "/helix/channels/followed");

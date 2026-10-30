@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import queueScheduleGet from "../../actions/queue-schedule-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("queue-schedule-get: fetches the social set's queue schedule", async () => {
+test("queue-schedule-get: fetches the social set's queue schedule", async () => {
   const { ctx, calls } = mockCtx([{
     body: { social_set_id: 4, timezone: "America/New_York", rules: [] },
   }]);

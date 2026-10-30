@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, csv, HelpScoutClient, unset } from "../../lib/client.ts";
 
-Deno.test("client: builds the URL against the fixed api.helpscout.net host", async () => {
+test("client: builds the URL against the fixed api.helpscout.net host", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await new HelpScoutClient(ctx).request("/conversations/1");
   assertEquals(calls[0].url, "https://api.helpscout.net/v2/conversations/1");
   assertEquals("authorization" in calls[0].headers, false);
 });
 
-Deno.test("client: applies query params, skipping unset ones", async () => {
+test("client: applies query params, skipping unset ones", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new HelpScoutClient(ctx).request("/conversations", {
     query: { status: "active", tag: undefined, page: 2 },
@@ -20,7 +21,7 @@ Deno.test("client: applies query params, skipping unset ones", async () => {
   assertEquals(url.searchParams.get("page"), "2");
 });
 
-Deno.test("client: surfaces Help Scout's error body", async () => {
+test("client: surfaces Help Scout's error body", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     statusText: "Bad Request",
@@ -34,7 +35,7 @@ Deno.test("client: surfaces Help Scout's error body", async () => {
   );
 });
 
-Deno.test("client: request returns undefined for a 204", async () => {
+test("client: request returns undefined for a 204", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new HelpScoutClient(ctx).request("/conversations/1", { method: "DELETE" }),
@@ -42,7 +43,7 @@ Deno.test("client: request returns undefined for a 204", async () => {
   );
 });
 
-Deno.test("client: create() reads the id off Resource-ID/Location instead of the body", async () => {
+test("client: create() reads the id off Resource-ID/Location instead of the body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     headers: {
@@ -59,13 +60,13 @@ Deno.test("client: create() reads the id off Resource-ID/Location instead of the
   assertEquals(JSON.parse(calls[0].body!), { subject: "Help" });
 });
 
-Deno.test("create() tolerates a response with no Resource-ID header", async () => {
+test("create() tolerates a response with no Resource-ID header", async () => {
   const { ctx } = mockCtx([{ status: 201, headers: {} }]);
   const result = await new HelpScoutClient(ctx).create("/conversations/1/notes", { text: "hi" });
   assertEquals(result, { resourceId: undefined, location: undefined });
 });
 
-Deno.test("compact/csv/unset behave as the other apps' helpers do", () => {
+test("compact/csv/unset behave as the other apps' helpers do", () => {
   assertEquals(compact({ a: 0, b: undefined, c: null, d: "" }), { a: 0 });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv(""), undefined);

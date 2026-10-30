@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockActiveCampaignCtx } from "../_helpers.ts";
 import action from "../../actions/list-deals.ts";
 
-Deno.test("list-deals: GETs /deals with filters[...] query params", async () => {
+test("list-deals: GETs /deals with filters[...] query params", async () => {
   const body = { deals: [], meta: { total: 0 } };
   const { ctx, calls } = mockActiveCampaignCtx([{ body }]);
   const result = await action.execute(

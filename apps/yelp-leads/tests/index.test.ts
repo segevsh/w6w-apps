@@ -1,16 +1,18 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 7;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth?.length, 1);
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -18,7 +20,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -30,26 +32,26 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key}: idempotent not declared`);
   }
 });
 
-Deno.test("index: the two performs Yelp itself refuses to repeat are not idempotent", () => {
+test("index: the two performs Yelp itself refuses to repeat are not idempotent", () => {
   for (const key of ["write-lead-event", "mark-lead-as-replied"]) {
     assertEquals(app.actions.find((a) => a.key === key)?.idempotent, false, key);
   }
 });
 
-Deno.test("index: mark-lead-event-as-read, which Yelp never refuses to repeat, is idempotent", () => {
+test("index: mark-lead-event-as-read, which Yelp never refuses to repeat, is idempotent", () => {
   assertEquals(
     app.actions.find((a) => a.key === "mark-lead-event-as-read")?.idempotent,
     true,
   );
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -68,9 +70,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -80,7 +82,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -93,7 +95,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * hard-coded a host — or accepted one as a param — could be pointed somewhere
  * the manifest never allowlisted.
  */
-Deno.test("index: no action hard-codes a host or an absolute URL", async () => {
+test("index: no action hard-codes a host or an absolute URL", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/yelp\.com/.test(src), `${a.key}: contains a Yelp host literal`);
@@ -101,7 +103,7 @@ Deno.test("index: no action hard-codes a host or an absolute URL", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|api_?key|api_?token|token|access_?token)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -112,7 +114,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
 
 // --- auth --------------------------------------------------------------
 
-Deno.test("index: the auth method is oauth2 with the leads scope only", () => {
+test("index: the auth method is oauth2 with the leads scope only", () => {
   const [method] = app.auth ?? [];
   assertEquals(method.key, "oauth2");
   assertEquals(method.type, "oauth2");
@@ -126,11 +128,11 @@ Deno.test("index: the auth method is oauth2 with the leads scope only", () => {
  * Lead ID or Business ID this app cannot discover from the token alone, so
  * none of them can be the zero-input probe.
  */
-Deno.test("index: the auth probe is partner-api.yelp.com/token/v1/businesses", async () => {
-  const src = code(await Deno.readTextFile(new URL("../auth/oauth2.ts", import.meta.url)));
+test("index: the auth probe is partner-api.yelp.com/token/v1/businesses", async () => {
+  const src = code(await denoReadTextFile(new URL("../auth/oauth2.ts", import.meta.url)));
   assert(src.includes("PARTNER_API_URL"), "auth probe no longer imports/uses PARTNER_API_URL");
   assert(src.includes("/token/v1/businesses"), "auth probe no longer hits /token/v1/businesses");
-  const client = code(await Deno.readTextFile(new URL("../lib/client.ts", import.meta.url)));
+  const client = code(await denoReadTextFile(new URL("../lib/client.ts", import.meta.url)));
   assert(
     client.includes('PARTNER_API_URL = "https://partner-api.yelp.com"'),
     "PARTNER_API_URL no longer points at partner-api.yelp.com",
@@ -139,7 +141,7 @@ Deno.test("index: the auth probe is partner-api.yelp.com/token/v1/businesses", a
 
 // --- health --------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks ?? []) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -153,7 +155,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * in the roll-up, so at any severity but `informational` a declared absence
  * pins the App at `unknown` forever.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   const unavailable = (app.healthChecks ?? []).filter((h) => h.unavailable);
   assertEquals(unavailable.length, 2, "expected both declared checks (service, quota)");
   for (const h of unavailable) {
@@ -163,9 +165,9 @@ Deno.test("index: every unavailable health check is informational", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows exactly the two Yelp hosts this app calls", async () => {
+test("index: the manifest allows exactly the two Yelp hosts this app calls", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as {
     w6w: {
       id: string;
@@ -180,13 +182,13 @@ Deno.test("index: the manifest allows exactly the two Yelp hosts this app calls"
   assertEquals(manifest.w6w.appearance.icon.svg, "./assets/icon.svg");
 });
 
-Deno.test("index: the icon is Yelp's mark, inked with the vendor's brand red", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is Yelp's mark, inked with the vendor's brand red", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   assert(svg.includes("<title>Yelp</title>"), "icon lost its <title>");
   assert(svg.includes("#FF1A1A"), "vendor brand colour (simple-icons hex FF1A1A) missing");
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   assert(code('const u = "https://x/y";').includes("https://x/y"));

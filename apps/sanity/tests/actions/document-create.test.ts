@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-create.ts";
 
 const conn = { display: { projectId: "abc123", dataset: "production", useCdn: true } };
 const ok = { status: 200, body: { transactionId: "t1", results: [] } };
 
-Deno.test("document-create: wraps the document in the chosen mutation mode", async () => {
+test("document-create: wraps the document in the chosen mutation mode", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!(
     { mode: "createIfNotExists", document: '{"_id":"a","_type":"article","title":"T"}' },
@@ -18,13 +19,13 @@ Deno.test("document-create: wraps the document in the chosen mutation mode", asy
 });
 
 /** The CDN rejects any POST that is not a query. */
-Deno.test("document-create: a write goes to the live host even on a CDN connection", async () => {
+test("document-create: a write goes to the live host even on a CDN connection", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({ mode: "create", document: '{"_type":"article"}' }, ctx);
   assertEquals(new URL(calls[0].url).host, "abc123.api.sanity.io");
 });
 
-Deno.test("document-create: a document without _type is refused", async () => {
+test("document-create: a document without _type is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ mode: "create", document: '{"title":"T"}' }, ctx),
@@ -35,7 +36,7 @@ Deno.test("document-create: a document without _type is refused", async () => {
 });
 
 /** Replacing nothing is just a create — and silently loses the intent. */
-Deno.test("document-create: createOrReplace without an _id is refused", async () => {
+test("document-create: createOrReplace without an _id is refused", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(
     async () =>
@@ -45,7 +46,7 @@ Deno.test("document-create: createOrReplace without an _id is refused", async ()
   );
 });
 
-Deno.test("document-create: dry run and visibility reach the query string", async () => {
+test("document-create: dry run and visibility reach the query string", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({
     mode: "create",
@@ -61,7 +62,7 @@ Deno.test("document-create: dry run and visibility reach the query string", asyn
 });
 
 /** Only two of the three modes are idempotent, and this is one action. */
-Deno.test("document-create: declares itself non-idempotent, and says replace is not a merge", () => {
+test("document-create: declares itself non-idempotent, and says replace is not a merge", () => {
   assertEquals(action.idempotent, false);
   assert(/not a merge|omitted fields are deleted/i.test(action.description!), action.description);
 });

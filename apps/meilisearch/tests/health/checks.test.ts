@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import instance from "../../health/instance.ts";
 import service from "../../health/service.ts";
@@ -6,7 +7,7 @@ import service from "../../health/service.ts";
 const conn = { display: { baseUrl: "https://search.example.com" } };
 
 /** For a self-hosted app this is the check that matters. */
-Deno.test("instance: probes this connection's own /health, unsigned", async () => {
+test("instance: probes this connection's own /health, unsigned", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "available" } }], conn);
   const report = await instance.check!({}, ctx);
   assertEquals(calls[0].url, "https://search.example.com/health");
@@ -17,7 +18,7 @@ Deno.test("instance: probes this connection's own /health, unsigned", async () =
   assertEquals(instance.credential, "context");
 });
 
-Deno.test("instance: an unreachable server is down — that is what this check is for", async () => {
+test("instance: an unreachable server is down — that is what this check is for", async () => {
   const { ctx } = mockCtx([], conn);
   // No queued response: the mock throws, standing in for a dead host.
   const report = await instance.check!({}, ctx);
@@ -25,19 +26,19 @@ Deno.test("instance: an unreachable server is down — that is what this check i
   assert(report.message!.includes("unreachable"), report.message);
 });
 
-Deno.test("instance: a non-200 from /health is down", async () => {
+test("instance: a non-200 from /health is down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }], conn);
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message!.includes("503"), report.message);
 });
 
-Deno.test("instance: a health answer other than `available` is degraded", async () => {
+test("instance: a health answer other than `available` is degraded", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { status: "loading" } }], conn);
   assertEquals((await instance.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("instance: a connection with no URL is unknown, not down", async () => {
+test("instance: a connection with no URL is unknown, not down", async () => {
   const { ctx } = mockCtx([], { display: {} });
   const report = await instance.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -48,7 +49,7 @@ Deno.test("instance: a connection with no URL is unknown, not down", async () =>
  * The Cloud feed says nothing about a self-hosted server, so it is scoped to a
  * component rather than `*` and cannot pin the App's verdict.
  */
-Deno.test("service: speaks only for Cloud, and is informational", () => {
+test("service: speaks only for Cloud, and is informational", () => {
   assertEquals(service.covers, ["component:cloud"]);
   assertEquals(service.severity, "informational");
   assertEquals(service.feed!.url, "https://status.meilisearch.com/feed.rss");
@@ -65,7 +66,7 @@ const entry = (title: string, publishedAt: string, summary = "") => ({
 
 const NOW = "2026-08-18T12:00:00Z";
 
-Deno.test("service: no recent open incident is ok", async () => {
+test("service: no recent open incident is ok", async () => {
   const report = await service.check!({
     feed: {
       entries: [],
@@ -76,7 +77,7 @@ Deno.test("service: no recent open incident is ok", async () => {
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: a fresh unresolved incident is degraded, and names itself", async () => {
+test("service: a fresh unresolved incident is degraded, and names itself", async () => {
   const report = await service.check!({
     feed: {
       entries: [],
@@ -89,7 +90,7 @@ Deno.test("service: a fresh unresolved incident is degraded, and names itself", 
 });
 
 /** Better Stack titles a closed incident with the word, so a recent entry is not enough. */
-Deno.test("service: a resolved incident is history, however recent", async () => {
+test("service: a resolved incident is history, however recent", async () => {
   const report = await service.check!({
     feed: {
       entries: [],
@@ -100,7 +101,7 @@ Deno.test("service: a resolved incident is history, however recent", async () =>
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: a broken feed is unknown, never degraded", async () => {
+test("service: a broken feed is unknown, never degraded", async () => {
   const withError = await service.check!({
     feed: { entries: [], latest: [], fetchedAt: NOW, error: "404" },
   }, mockCtx([], conn).ctx);

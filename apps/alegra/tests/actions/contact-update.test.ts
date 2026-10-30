@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { assertRejects, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PUT /contacts/:id sends only the changed fields", async () => {
+test("contact-update: PUT /contacts/:id sends only the changed fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "8" } }]);
   await contactUpdate.execute({
     id: "8",
@@ -21,12 +22,12 @@ Deno.test("contact-update: PUT /contacts/:id sends only the changed fields", asy
   });
 });
 
-Deno.test("contact-update: a blank id fails before any request", async () => {
+test("contact-update: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(() => contactUpdate.execute({ id: "" }, ctx), Error, "id is required");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-update: is declared idempotent", () => {
+test("contact-update: is declared idempotent", () => {
   assertEquals(contactUpdate.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationUpdateStatus from "../../actions/conversation-update-status.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-update-status: opens a conversation with just a status", async () => {
+test("conversation-update-status: opens a conversation with just a status", async () => {
   const { ctx, calls } = mockCtx([{ body: { contactId: 1 } }]);
   await conversationUpdateStatus.execute({ identifier: "id:1", status: "open" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("conversation-update-status: opens a conversation with just a status",
   assertEquals(JSON.parse(calls[0].body!), { status: "open" });
 });
 
-Deno.test("conversation-update-status: closes with a category and summary", async () => {
+test("conversation-update-status: closes with a category and summary", async () => {
   const { ctx, calls } = mockCtx([{ body: { contactId: 1 } }]);
   await conversationUpdateStatus.execute(
     { identifier: "id:1", status: "close", category: "Resolved", summary: "Fixed it" },
@@ -23,6 +24,6 @@ Deno.test("conversation-update-status: closes with a category and summary", asyn
   });
 });
 
-Deno.test("conversation-update-status: is declared idempotent", () => {
+test("conversation-update-status: is declared idempotent", () => {
   assertEquals(conversationUpdateStatus.idempotent, true);
 });

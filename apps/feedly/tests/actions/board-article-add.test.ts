@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import boardArticleAdd from "../../actions/board-article-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("board-article-add: PUTs the entryId body to the board's stream path", async () => {
+test("board-article-add: PUTs the entryId body to the board's stream path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await boardArticleAdd.execute(
     { streamId: "enterprise/acme/tag/board-1", entryId: "e1" },
@@ -14,6 +15,6 @@ Deno.test("board-article-add: PUTs the entryId body to the board's stream path",
   assertEquals(JSON.parse(calls[0].body!), { entryId: "e1" });
 });
 
-Deno.test("board-article-add: is idempotent", () => {
+test("board-article-add: is idempotent", () => {
   assertEquals(boardArticleAdd.idempotent, true);
 });

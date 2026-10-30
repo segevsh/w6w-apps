@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/party-list.ts";
 
-Deno.test("party-list: GETs /parties with paging and since", async () => {
+test("party-list: GETs /parties with paging and since", async () => {
   const { ctx, calls } = mockCtx([{
     body: { parties: [{ id: 1 }] },
     headers: { link: '<https://api.capsulecrm.com/api/v2/parties?page=2>; rel="next"' },
@@ -16,13 +17,13 @@ Deno.test("party-list: GETs /parties with paging and since", async () => {
   assertEquals(out, { parties: [{ id: 1 }], nextPage: 2 });
 });
 
-Deno.test("party-list: joins embed values with a comma", async () => {
+test("party-list: joins embed values with a comma", async () => {
   const { ctx, calls } = mockCtx([{ body: { parties: [] } }]);
   await action.execute({ embed: ["tags", "fields"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("embed"), "tags,fields");
 });
 
-Deno.test("party-list: no Link header means no next page", async () => {
+test("party-list: no Link header means no next page", async () => {
   const { ctx } = mockCtx([{ body: { parties: [] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(out, { parties: [], nextPage: undefined });

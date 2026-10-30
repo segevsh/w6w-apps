@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import api from "../../health/api.ts";
 
-Deno.test("api: a Procore JSON 401 (error key) is a pass", async () => {
+test("api: a Procore JSON 401 (error key) is a pass", async () => {
   const { ctx, calls } = mockCtx([{ status: 401, body: { error: "Invalid Token" } }]);
   const r = await api.check!({}, ctx);
   assertEquals(r.state, "ok");
@@ -10,12 +11,12 @@ Deno.test("api: a Procore JSON 401 (error key) is a pass", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("api: the expired-token envelope (errors key) is a pass too", async () => {
+test("api: the expired-token envelope (errors key) is a pass too", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Your access token has expired" } }]);
   assertEquals((await api.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("api: a 5xx is down, a non-JSON edge page or foreign JSON is unknown", async () => {
+test("api: a 5xx is down, a non-JSON edge page or foreign JSON is unknown", async () => {
   const down = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await api.check!({}, down.ctx)).state, "down");
   const html = mockCtx([{ status: 200, body: "<html>shell</html>" }]);
@@ -24,6 +25,6 @@ Deno.test("api: a 5xx is down, a non-JSON edge page or foreign JSON is unknown",
   assertEquals((await api.check!({}, foreign.ctx)).state, "unknown");
 });
 
-Deno.test("api: declares no credential", () => {
+test("api: declares no credential", () => {
   assertEquals(api.credential, "none");
 });

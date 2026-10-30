@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/category-delete.ts";
 
 const input = { "category_id": 123 } as never;
 
-Deno.test("category-delete: DELETE /categories/{category_id}", async () => {
+test("category-delete: DELETE /categories/{category_id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": 200, "success": true, "data": { "id": 1 } },
@@ -20,7 +21,7 @@ Deno.test("category-delete: DELETE /categories/{category_id}", async () => {
   assertEquals(result, { deleted: true });
 });
 
-Deno.test("category-delete: a Salla error envelope throws with its message", async () => {
+test("category-delete: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

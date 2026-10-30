@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import squadList from "../../actions/squad-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("squad-list: calls GET /squad", async () => {
+test("squad-list: calls GET /squad", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "sq1" }] }]);
   const out = await squadList.execute({ limit: 25 }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTeamworkCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
-Deno.test("project-list: GETs /projects/api/v3/projects.json with filters", async () => {
+test("project-list: GETs /projects/api/v3/projects.json with filters", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ body: { projects: [] } }]);
   await action.execute({ searchTerm: "acme", onlyStarredProjects: true, page: 2 }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("project-list: GETs /projects/api/v3/projects.json with filters", asyn
   assertEquals(url.searchParams.get("page"), "2");
 });
 
-Deno.test("project-list: omits unset filters", async () => {
+test("project-list: omits unset filters", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ body: { projects: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

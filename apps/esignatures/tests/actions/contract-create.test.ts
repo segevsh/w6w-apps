@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contractCreate from "../../actions/contract-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contract-create: calls POST /api/contracts with the documented body", async () => {
+test("contract-create: calls POST /api/contracts with the documented body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: "queued", data: { contract: { id: "c1", signers: [{ id: "s1" }] } } },
   }]);
@@ -35,7 +36,7 @@ Deno.test("contract-create: calls POST /api/contracts with the documented body",
   );
 });
 
-Deno.test("contract-create: a vendor error surfaces its error_code and message", async () => {
+test("contract-create: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),
@@ -62,7 +63,7 @@ Deno.test("contract-create: a vendor error surfaces its error_code and message",
   );
 });
 
-Deno.test("contract-create: signers given as a JSON string are parsed; bad JSON throws", async () => {
+test("contract-create: signers given as a JSON string are parsed; bad JSON throws", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "queued", data: { contract: { id: "c" } } } }]);
   await contractCreate.execute(
     { templateId: "t1", signers: '[{"name":"A","email":"a@x.com"}]' } as never,
@@ -76,7 +77,7 @@ Deno.test("contract-create: signers given as a JSON string are parsed; bad JSON 
   );
 });
 
-Deno.test("contract-create: test and saveAsDraft are omitted unless set", async () => {
+test("contract-create: test and saveAsDraft are omitted unless set", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "queued", data: { contract: {} } } }]);
   await contractCreate.execute({ templateId: "t1", signers: [] } as never, ctx);
   const sent = JSON.parse(calls[0].body!);

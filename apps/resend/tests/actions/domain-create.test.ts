@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/domain-create.ts";
 
-Deno.test("domain-create: returns the DNS records the domain still needs", async () => {
+test("domain-create: returns the DNS records the domain still needs", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "d_1", name: "mail.example.com", status: "not_started", records: [{ type: "MX" }] },
@@ -14,7 +15,7 @@ Deno.test("domain-create: returns the DNS records the domain still needs", async
   assertEquals((result as Record<string, unknown>).status, "not_started");
 });
 
-Deno.test("domain-create: a name is required", async () => {
+test("domain-create: a name is required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`name`");
   assertEquals(calls.length, 0);

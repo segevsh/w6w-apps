@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, mockTalentLmsCtx } from "../_helpers.ts";
 import check from "../../health/quota.ts";
 
-Deno.test("quota: is an informational quota check that does not widen egress", () => {
+test("quota: is an informational quota check that does not widen egress", () => {
   assertEquals(check.kind, "quota");
   assertEquals(check.severity, "informational");
   assertEquals(check.network, undefined);
 });
 
-Deno.test("quota: reads the rate-limit document", async () => {
+test("quota: reads the rate-limit document", async () => {
   const { ctx, calls } = mockTalentLmsCtx([{
     body: { limit: "2000", remaining: "1999", reset: "1374757895" },
   }]);
@@ -24,14 +25,14 @@ Deno.test("quota: reads the rate-limit document", async () => {
   }]);
 });
 
-Deno.test("quota: degrades under 10% headroom and reports down at zero", async () => {
+test("quota: degrades under 10% headroom and reports down at zero", async () => {
   const low = mockTalentLmsCtx([{ body: { limit: "2000", remaining: "150" } }]);
   assertEquals((await check.check!({}, low.ctx)).state, "degraded");
   const none = mockTalentLmsCtx([{ body: { limit: "2000", remaining: "0" } }]);
   assertEquals((await check.check!({}, none.ctx)).state, "down");
 });
 
-Deno.test("quota: unknown when the connection has no domain, the call fails, or the body is odd", async () => {
+test("quota: unknown when the connection has no domain, the call fails, or the body is odd", async () => {
   const noDomain = mockCtx();
   assertEquals((await check.check!({}, noDomain.ctx)).state, "unknown");
   assertEquals(noDomain.calls.length, 0);

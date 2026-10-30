@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs /conversations/messages with the message Version header", async () => {
+test("send-message: POSTs /conversations/messages with the message Version header", async () => {
   const { ctx, calls } = mockHighLevelCtx([
     { status: 201, body: { conversationId: "conv-1", messageId: "m1" } },
   ]);
@@ -21,7 +22,7 @@ Deno.test("send-message: POSTs /conversations/messages with the message Version 
   assertEquals((out as { conversationId: string }).conversationId, "conv-1");
 });
 
-Deno.test("send-message: splits comma-separated CC/BCC addresses", async () => {
+test("send-message: splits comma-separated CC/BCC addresses", async () => {
   const { ctx, calls } = mockHighLevelCtx([{ body: {} }]);
   await action.execute!({
     contactId: "c1",

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_BASE,
   asJson,
@@ -16,12 +17,12 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client: the base and token URLs are the document's single server", () => {
+test("client: the base and token URLs are the document's single server", () => {
   assertEquals(API_BASE, "https://api.practicebetter.io");
   assertEquals(TOKEN_URL, "https://api.practicebetter.io/oauth2/token");
 });
 
-Deno.test("client: request() parses JSON and passes the body through unchanged", async () => {
+test("client: request() parses JSON and passes the body through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec-1", isActive: true } }]);
   const body = await new PracticeBetterClient(ctx).request<Record<string, unknown>>(
     "/consultant/records/x",
@@ -31,7 +32,7 @@ Deno.test("client: request() parses JSON and passes the body through unchanged",
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("client: a JSON body is serialized with a JSON content type", async () => {
+test("client: a JSON body is serialized with a JSON content type", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new PracticeBetterClient(ctx).request("/tags", { method: "POST", body: { name: "VIP" } });
   assertEquals(calls[0].method, "POST");
@@ -39,7 +40,7 @@ Deno.test("client: a JSON body is serialized with a JSON content type", async ()
   assertEquals(calls[0].body, '{"name":"VIP"}');
 });
 
-Deno.test("client: a 204 and an empty body both resolve to undefined", async () => {
+test("client: a 204 and an empty body both resolve to undefined", async () => {
   const empty = mockCtx([{ status: 204, body: undefined }]);
   assertEquals(await new PracticeBetterClient(empty.ctx).request("/x"), undefined);
 
@@ -47,7 +48,7 @@ Deno.test("client: a 204 and an empty body both resolve to undefined", async () 
   assertEquals(await new PracticeBetterClient(blank.ctx).request("/x"), undefined);
 });
 
-Deno.test("client: a non-JSON success body is a loud error, not silently undefined", async () => {
+test("client: a non-JSON success body is a loud error, not silently undefined", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>nope</html>" }]);
   await assertRejects(
     async () => await new PracticeBetterClient(ctx).request("/x"),
@@ -56,18 +57,18 @@ Deno.test("client: a non-JSON success body is a loud error, not silently undefin
   );
 });
 
-Deno.test("client: list() returns the envelope verbatim rather than unwrapping items", async () => {
+test("client: list() returns the envelope verbatim rather than unwrapping items", async () => {
   const envelope = { count: 128, hasMore: true, items: [{ id: "a" }] };
   const { ctx } = mockCtx([{ body: envelope }]);
   assertEquals(await new PracticeBetterClient(ctx).list("/consultant/records"), envelope);
 });
 
-Deno.test("client: status() reports the code without reading the body", async () => {
+test("client: status() reports the code without reading the body", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
   assertEquals(await new PracticeBetterClient(ctx).status("/tags/1", { method: "DELETE" }), 204);
 });
 
-Deno.test("client: array query values are sent as repeated keys, the OpenAPI 3 default", async () => {
+test("client: array query values are sent as repeated keys, the OpenAPI 3 default", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new PracticeBetterClient(ctx).request("/consultant/records", {
     query: { status: ["active", "archived"], limit: 10, flag: false },
@@ -78,7 +79,7 @@ Deno.test("client: array query values are sent as repeated keys, the OpenAPI 3 d
   assertEquals(queryOf(calls[0].url).flag, "false");
 });
 
-Deno.test("client: empty, null and undefined query values are dropped", async () => {
+test("client: empty, null and undefined query values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new PracticeBetterClient(ctx).request("/x", {
     query: { a: undefined, b: null, c: "", d: "kept" },
@@ -86,7 +87,7 @@ Deno.test("client: empty, null and undefined query values are dropped", async ()
   assertEquals(new URL(calls[0].url).search, "?d=kept");
 });
 
-Deno.test("client: a non-2xx throws with the status, method and path", async () => {
+test("client: a non-2xx throws with the status, method and path", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Not permitted." } }]);
   const err = await assertRejects(
     async () =>
@@ -98,13 +99,13 @@ Deno.test("client: a non-2xx throws with the status, method and path", async () 
   assert(/Not permitted\./.test(err.message), err.message);
 });
 
-Deno.test("client: pageQuery drops unset controls but keeps zero and false-ish values", () => {
+test("client: pageQuery drops unset controls but keeps zero and false-ish values", () => {
   assertEquals(pageQuery({}), {});
   assertEquals(pageQuery({ skip: 0, limit: 100 }), { skip: 0, limit: 100 });
   assertEquals(pageQuery({ after_id: "" }), {});
 });
 
-Deno.test("client: the four pagination params are declared once, with the documented limit range", () => {
+test("client: the four pagination params are declared once, with the documented limit range", () => {
   assertEquals(pageParams.map((p) => p.key), ["after_id", "before_id", "limit", "skip"]);
   const limit = pageParams.find((p) => p.key === "limit")!;
   assertEquals(limit.type, "number");
@@ -114,7 +115,7 @@ Deno.test("client: the four pagination params are declared once, with the docume
   }
 });
 
-Deno.test("client: compact keeps false and zero, drops unset", () => {
+test("client: compact keeps false and zero, drops unset", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -122,7 +123,7 @@ Deno.test("client: compact keeps false and zero, drops unset", () => {
   });
 });
 
-Deno.test("client: toList normalises arrays, comma strings and empties", () => {
+test("client: toList normalises arrays, comma strings and empties", () => {
   assertEquals(toList(["a", "b"]), ["a", "b"]);
   assertEquals(toList("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(toList(""), undefined);
@@ -130,7 +131,7 @@ Deno.test("client: toList normalises arrays, comma strings and empties", () => {
   assertEquals(toList(undefined), undefined);
 });
 
-Deno.test("client: JSON params accept both a parsed value and the text a user typed", () => {
+test("client: JSON params accept both a parsed value and the text a user typed", () => {
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson(undefined, "x"), undefined);
@@ -152,12 +153,12 @@ Deno.test("client: JSON params accept both a parsed value and the text a user ty
   assertEquals(message, "profile is required");
 });
 
-Deno.test("client: encodeId neutralises path metacharacters and trims", () => {
+test("client: encodeId neutralises path metacharacters and trims", () => {
   assertEquals(encodeId(" rec-1 "), "rec-1");
   assertEquals(encodeId("a/b?c"), "a%2Fb%3Fc");
 });
 
-Deno.test("client: truncate keeps a long validation body readable", () => {
+test("client: truncate keeps a long validation body readable", () => {
   assertEquals(truncate("short", 10), "short");
   const long = truncate("x".repeat(50), 10);
   assert(long.startsWith("xxxxxxxxxx…"), long);
@@ -169,7 +170,7 @@ Deno.test("client: truncate keeps a long validation body readable", () => {
  * defensive read: several plausible shapes in, a usable sentence out, and never
  * a fabricated one.
  */
-Deno.test("client: readErrorBody reads a JSON message, a raw body, and nothing", () => {
+test("client: readErrorBody reads a JSON message, a raw body, and nothing", () => {
   assertEquals(readErrorBody('{"message":"Duplicate record."}').detail, "Duplicate record.");
   assertEquals(readErrorBody('{"error":{"message":"Nested."}}').detail, "Nested.");
   assertEquals(readErrorBody("plain text refusal").detail, "plain text refusal");
@@ -177,7 +178,7 @@ Deno.test("client: readErrorBody reads a JSON message, a raw body, and nothing",
   assertEquals(readErrorBody("[1,2,3]").detail, "[1,2,3]");
 });
 
-Deno.test("client: readErrorBody reads the one documented error schema if it appears", () => {
+test("client: readErrorBody reads the one documented error schema if it appears", () => {
   // `ExternalApiError` describes a third-party system's error relayed by
   // Practice Better, not one of its own bodies — but its message and code are
   // read when present rather than thrown away.
@@ -188,7 +189,7 @@ Deno.test("client: readErrorBody reads the one documented error schema if it app
   assertEquals(detail.code, "CLAIM_MD_DOWN");
 });
 
-Deno.test("client: formatPracticeBetterError names the status first and hints at recoverable ones", () => {
+test("client: formatPracticeBetterError names the status first and hints at recoverable ones", () => {
   const conflict = formatPracticeBetterError(409, "POST", "/consultant/records", "");
   assert(
     conflict.startsWith("Practice Better returned HTTP 409 for POST /consultant/records"),

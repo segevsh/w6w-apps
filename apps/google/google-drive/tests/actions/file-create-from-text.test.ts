@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-create-from-text.ts";
 
-Deno.test("file-create-from-text: multipart upload to /upload/drive/v3/files", async () => {
+test("file-create-from-text: multipart upload to /upload/drive/v3/files", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "new-1" } }]);
   await action.execute!(
     { content: "hello world", name: "note.txt", parentFolderId: "fld-1" },

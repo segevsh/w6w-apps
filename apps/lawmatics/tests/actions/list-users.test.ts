@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listUsers from "../../actions/list-users.ts";
 import { item, list, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-users: hits GET /v1/users and takes no params", async () => {
+test("list-users: hits GET /v1/users and takes no params", async () => {
   const { ctx, calls } = mockCtx([{
     body: list([item("17", "user", { name: "Roey Chasman", email: "roey@lawmatics.com" })]),
   }]);

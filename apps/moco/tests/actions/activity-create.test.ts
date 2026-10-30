@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/activity-create.ts";
 
-Deno.test("activity-create: POSTs /activities, converting hours to the wire `seconds` field", async () => {
+test("activity-create: POSTs /activities, converting hours to the wire `seconds` field", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 1, hours: 2.5 } }]);
   const out = await action.execute({
     date: "2024-03-21",

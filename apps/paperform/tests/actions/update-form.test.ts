@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import updateForm from "../../actions/update-form.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("update-form: PUTs /v1/forms/{slugOrId} with the FormUpdate body shape", async () => {
+test("update-form: PUTs /v1/forms/{slugOrId} with the FormUpdate body shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ form: { id: "f1" } }) }]);
   const out = await updateForm.execute(
     { slugOrId: "f1", title: "New Title", disabled: true, customSlug: "new-slug" },
@@ -19,6 +20,6 @@ Deno.test("update-form: PUTs /v1/forms/{slugOrId} with the FormUpdate body shape
   assertEquals(out.form?.id, "f1");
 });
 
-Deno.test("update-form: declares idempotent true", () => {
+test("update-form: declares idempotent true", () => {
   assertEquals(updateForm.idempotent, true);
 });

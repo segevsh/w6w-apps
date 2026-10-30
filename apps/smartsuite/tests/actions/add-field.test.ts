@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-field.ts";
 
-Deno.test("add-field: POSTs the field wrapped under the `field` body key", async () => {
+test("add-field: POSTs the field wrapped under the `field` body key", async () => {
   const { ctx, calls } = mockCtx([{ body: { slug: "email", label: "Email" } }]);
   const result = await action.execute!(
     { tableId: "tbl1", field: { slug: "email", label: "Email", field_type: "email" } },

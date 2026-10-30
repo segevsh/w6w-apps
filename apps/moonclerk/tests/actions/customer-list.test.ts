@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/customer-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("customer-list: maps every filter to the documented query name", async () => {
+test("customer-list: maps every filter to the documented query name", async () => {
   const { ctx, calls } = mockCtx([{ body: { customers: [{ id: 1 }] } }]);
   const out = await action.execute!({
     formId: 5346,
@@ -29,19 +30,19 @@ Deno.test("customer-list: maps every filter to the documented query name", async
   assertEquals(out, { customers: [{ id: 1 }] });
 });
 
-Deno.test("customer-list: no input sends no query", async () => {
+test("customer-list: no input sends no query", async () => {
   const { ctx, calls } = mockCtx([{ body: { customers: [] } }]);
   await action.execute!({}, ctx);
   assertEquals(calls[0].url, "https://api.moonclerk.com/customers");
 });
 
-Deno.test("customer-list: a full page reports the next offset", async () => {
+test("customer-list: a full page reports the next offset", async () => {
   const { ctx } = mockCtx([{ body: { customers: [{ id: 1 }, { id: 2 }] } }]);
   const out = await action.execute!({ count: 2, offset: 2 }, ctx) as Record<string, unknown>;
   assertEquals(out.nextOffset, 4);
 });
 
-Deno.test("customer-list: status options are the documented six", () => {
+test("customer-list: status options are the documented six", () => {
   const status = action.params!.find((p) => p.key === "status")!;
   assertEquals(
     status.options && "length" in status.options ? status.options.map((o) => o.value) : [],

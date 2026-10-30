@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-start.ts";
 
-Deno.test("campaign-start: POSTs the campaign id as a query parameter and returns the status", async () => {
+test("campaign-start: POSTs the campaign id as a query parameter and returns the status", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const result = await action.execute!({ campaignId: 5 }, ctx);
   assertEquals(
@@ -15,7 +16,7 @@ Deno.test("campaign-start: POSTs the campaign id as a query parameter and return
 });
 
 /** The documented 400 (bad status/schedule/accounts) must surface as an error. */
-Deno.test("campaign-start: HeyReach's own 400 is thrown with its message", async () => {
+test("campaign-start: HeyReach's own 400 is thrown with its message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { errorMessage: "Campaign is not in a valid state" },

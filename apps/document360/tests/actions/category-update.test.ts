@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryUpdate from "../../actions/category-update.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("category-update: PATCHes only what was set", async () => {
+test("category-update: PATCHes only what was set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "c1", name: "Renamed" }) }]);
   const out = await categoryUpdate.execute(
     { categoryId: "c1", name: "Renamed", hidden: true },
@@ -17,7 +18,7 @@ Deno.test("category-update: PATCHes only what was set", async () => {
   assertEquals(out.name, "Renamed");
 });
 
-Deno.test("category-update: a vendor error surfaces its code and message", async () => {
+test("category-update: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

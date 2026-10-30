@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/stop-clock.ts";
 import { API_ROOT, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("stop-clock: DELETEs /v2/clock/{id} with query flags", async () => {
+test("stop-clock: DELETEs /v2/clock/{id} with query flags", async () => {
   const { ctx, calls } = mockCtx([{
     body: { running: null, stopped: { id: 11 }, current_time: "t" },
   }]);
@@ -21,7 +22,7 @@ Deno.test("stop-clock: DELETEs /v2/clock/{id} with query flags", async () => {
   assertEquals(out.stopped, { id: 11 });
 });
 
-Deno.test("stop-clock: plain stop has no query; a bad id is refused", async () => {
+test("stop-clock: plain stop has no query; a bad id is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { stopped: { id: 2 } } }]);
   await exec(action, { id: 2 }, ctx);
   assertEquals(calls[0].url, `${API_ROOT}/v2/clock/2`);

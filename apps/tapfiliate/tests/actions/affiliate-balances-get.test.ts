@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import affiliateBalancesGet from "../../actions/affiliate-balances-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("affiliate-balances-get: returns the currency->amount map, not an array", async () => {
+test("affiliate-balances-get: returns the currency->amount map, not an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { USD: 5, EUR: 35 } }]);
   const out = await affiliateBalancesGet.execute({ affiliateId: "janejameson" }, ctx);
 

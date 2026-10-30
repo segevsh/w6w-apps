@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-items.ts";
 
-Deno.test("list-items: GETs /v2/collections/{id}/items with paging params", async () => {
+test("list-items: GETs /v2/collections/{id}/items with paging params", async () => {
   const body = { items: [], pagination: { total: 0 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ collectionId: "c1", limit: 25, offset: 50 }, ctx);

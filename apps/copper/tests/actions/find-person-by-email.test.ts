@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/find-person-by-email.ts";
 
-Deno.test("find-person-by-email: POSTs the address in the body, not the path", async () => {
+test("find-person-by-email: POSTs the address in the body, not the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 7, name: "Jim Halpert" } }]);
   const out = await action.execute({ email: "jim@example.com" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,7 +14,7 @@ Deno.test("find-person-by-email: POSTs the address in the body, not the path", a
   assert(!calls[0].url.includes("jim"));
 });
 
-Deno.test("find-person-by-email: is a read whose email param is the CONTACT's, not the credential's", () => {
+test("find-person-by-email: is a read whose email param is the CONTACT's, not the credential's", () => {
   assertEquals(action.type, "read");
   const p = param(action, "email");
   assertEquals(p.required, true);

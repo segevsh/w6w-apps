@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-refund-retention-policy.ts";
 
-Deno.test("get-refund-retention-policy: GETs policy with query", async () => {
+test("get-refund-retention-policy: GETs policy with query", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await action.execute!({
     orderId: "o1",

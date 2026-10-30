@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, display, ok } from "./_shared.ts";
 import action from "../../actions/chat.ts";
@@ -13,7 +14,7 @@ const reply = ok({
 });
 const messages = [{ role: "user", content: "hi" }];
 
-Deno.test("chat: posts the whole messages array to /api/chat with stream false", async () => {
+test("chat: posts the whole messages array to /api/chat with stream false", async () => {
   const { ctx, calls } = mockCtx([reply], { display });
   const result = await action.execute!({ model: "llama3.2:3b", messages }, ctx) as Record<
     string,
@@ -26,13 +27,13 @@ Deno.test("chat: posts the whole messages array to /api/chat with stream false",
   assertEquals(result.completionTokens, 2);
 });
 
-Deno.test("chat: messages may arrive as a JSON string", async () => {
+test("chat: messages may arrive as a JSON string", async () => {
   const { ctx, calls } = mockCtx([reply], { display });
   await action.execute!({ model: "m", messages: JSON.stringify(messages) }, ctx);
   assertEquals(JSON.parse(calls[0].body!).messages, messages);
 });
 
-Deno.test("chat: structured format is sent and the content parsed", async () => {
+test("chat: structured format is sent and the content parsed", async () => {
   const { ctx, calls } = mockCtx([
     ok({ message: { role: "assistant", content: '{"ok":true}' }, done: true }),
   ], { display });
@@ -43,7 +44,7 @@ Deno.test("chat: structured format is sent and the content parsed", async () => 
   assertEquals(result.parsed, { ok: true });
 });
 
-Deno.test("chat: tool calls are surfaced and tools are forwarded", async () => {
+test("chat: tool calls are surfaced and tools are forwarded", async () => {
   const toolCalls = [{ function: { name: "weather", arguments: { city: "Oslo" } } }];
   const { ctx, calls } = mockCtx([
     ok({ message: { role: "assistant", content: "", tool_calls: toolCalls }, done: true }),
@@ -57,7 +58,7 @@ Deno.test("chat: tool calls are surfaced and tools are forwarded", async () => {
   assertEquals(result.toolCalls, toolCalls);
 });
 
-Deno.test("chat: rejects bad messages before any request", async () => {
+test("chat: rejects bad messages before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ model: "m", messages: [] }, ctx),
@@ -82,7 +83,7 @@ Deno.test("chat: rejects bad messages before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("chat: a proxy 401 is explained as not coming from Ollama", async () => {
+test("chat: a proxy 401 is explained as not coming from Ollama", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }], { display });
   const err = await assertRejects(async () => await action.execute!({ model: "m", messages }, ctx));
   assert(/reverse proxy/.test((err as Error).message), (err as Error).message);

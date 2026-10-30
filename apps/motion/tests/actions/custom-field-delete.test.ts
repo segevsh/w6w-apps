@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldDelete from "../../actions/custom-field-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custom-field-delete: DELETEs /beta/workspaces/{id}/custom-fields/{id}", async () => {
+test("custom-field-delete: DELETEs /beta/workspaces/{id}/custom-fields/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await customFieldDelete.execute({ workspaceId: "ws1", id: "cf1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("custom-field-delete: DELETEs /beta/workspaces/{id}/custom-fields/{id}
   assertEquals(out, { id: "cf1", status: 204 });
 });
 
-Deno.test("custom-field-delete: both ids are path-escaped", async () => {
+test("custom-field-delete: both ids are path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await customFieldDelete.execute({ workspaceId: "a/b", id: "c/d" }, ctx);
   assertEquals(pathOf(calls[0].url), "/beta/workspaces/a%2Fb/custom-fields/c%2Fd");

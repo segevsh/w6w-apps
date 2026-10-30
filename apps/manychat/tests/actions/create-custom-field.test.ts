@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createCustomField from "../../actions/create-custom-field.ts";
 
 const OK = { body: { status: "success", data: { field: { id: 3, name: "plan", type: "text" } } } };
 
-Deno.test("create-custom-field: sends `caption`, NOT `name`", async () => {
+test("create-custom-field: sends `caption`, NOT `name`", async () => {
   // The request field is `caption`; the response calls the same thing `name`.
   // Sending `name` here fails Manychat's required-field check.
   const { ctx, calls } = mockCtx([OK]);
@@ -15,7 +16,7 @@ Deno.test("create-custom-field: sends `caption`, NOT `name`", async () => {
   assert(!("name" in body), "the request field is `caption`");
 });
 
-Deno.test("create-custom-field: omits an unset description rather than nulling it", async () => {
+test("create-custom-field: omits an unset description rather than nulling it", async () => {
   const { ctx, calls } = mockCtx([OK]);
   await createCustomField.execute!({ caption: "plan", type: "number" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -23,7 +24,7 @@ Deno.test("create-custom-field: omits an unset description rather than nulling i
   assertEquals(body.type, "number");
 });
 
-Deno.test("create-custom-field: offers exactly Manychat's five field types", () => {
+test("create-custom-field: offers exactly Manychat's five field types", () => {
   const type = createCustomField.params?.find((p) => p.key === "type");
   assertEquals(
     ((type?.options ?? []) as Array<{ value: string }>).map((o) => o.value),
@@ -32,7 +33,7 @@ Deno.test("create-custom-field: offers exactly Manychat's five field types", () 
   assertEquals(type?.default, undefined, "the type is fixed at creation — do not guess one");
 });
 
-Deno.test("create-custom-field: result nests under data.field", async () => {
+test("create-custom-field: result nests under data.field", async () => {
   const { ctx } = mockCtx([OK]);
   const out = await createCustomField.execute!({ caption: "plan", type: "text" }, ctx) as {
     data: { field: { id: number } };

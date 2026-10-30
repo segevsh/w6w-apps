@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contract-list.ts";
 
 const display = {};
 
-Deno.test("contract-list: uses the CURSOR pager", async () => {
+test("contract-list: uses the CURSOR pager", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "c1" }], page: { cursor: "n1" } } },
     { status: 200, body: { data: [{ id: "c2" }], page: {} } },
@@ -15,7 +16,7 @@ Deno.test("contract-list: uses the CURSOR pager", async () => {
   assertEquals(result, [{ id: "c1" }, { id: "c2" }]);
 });
 
-Deno.test("contract-list: filters repeat their key", async () => {
+test("contract-list: filters repeat their key", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], page: {} } }], { display });
   await action.execute!({ statuses: ["in_progress"], countries: "GB,US", teamId: "t1" }, ctx);
   const q = new URL(calls[0].url).searchParams;

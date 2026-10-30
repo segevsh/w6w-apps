@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/record-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("record-update: sends PUT /api/record/{object}/{id} with the fields as the body", async () => {
+test("record-update: sends PUT /api/record/{object}/{id} with the fields as the body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { Record: { accountid: "a1", accountname: "New" } }, message: "" },
   }]);
@@ -16,13 +17,13 @@ Deno.test("record-update: sends PUT /api/record/{object}/{id} with the fields as
   assertEquals(out, { record: { accountid: "a1", accountname: "New" } });
 });
 
-Deno.test("record-update: accepts JSON text and keeps null (which clears a field)", async () => {
+test("record-update: accepts JSON text and keeps null (which clears a field)", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: { Record: {} } } }]);
   await action.execute!({ object: "contact", recordId: "c1", fields: '{"telephone1":null}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { telephone1: null });
 });
 
-Deno.test("record-update: rejects non-object fields before any request", async () => {
+test("record-update: rejects non-object fields before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ object: "a", recordId: "1", fields: "nope" }, ctx),
@@ -32,7 +33,7 @@ Deno.test("record-update: rejects non-object fields before any request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-update: sends no tokenid header and surfaces vendor errors", async () => {
+test("record-update: sends no tokenid header and surfaces vendor errors", async () => {
   const ok = mockCtx([{ body: { success: true, data: { Record: {} } } }]);
   await action.execute!({ object: "a", recordId: "1", fields: { x: 1 } }, ok.ctx);
   assert(!("tokenid" in ok.calls[0].headers));
@@ -47,7 +48,7 @@ Deno.test("record-update: sends no tokenid header and surfaces vendor errors", a
   );
 });
 
-Deno.test("record-update: is idempotent", () => {
+test("record-update: is idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

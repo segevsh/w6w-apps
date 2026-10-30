@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/payments-list.ts";
 
 const conn = { display: { schoolDomain: "https://yourschool.learnworlds.com" } };
 
-Deno.test("payments-list: GETs /v2/payments and forwards filters with LearnWorlds' own param names", async () => {
+test("payments-list: GETs /v2/payments and forwards filters with LearnWorlds' own param names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: {} } }], conn);
   await action.execute!(
     { productType: "course", userId: "u1", productId: "p1", page: 1, itemsPerPage: 50 },

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import pricingGet from "../../actions/pricing-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "country": "de" } as Parameters<typeof pricingGet.execute>[0];
 
-Deno.test("pricing-get: GET /api/pricing with the documented fields", async () => {
+test("pricing-get: GET /api/pricing with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "countCountries": 1, "countNetworks": 4, "countries": [] },
   }]);
@@ -20,14 +21,14 @@ Deno.test("pricing-get: GET /api/pricing with the documented fields", async () =
   assertEquals(out.countCountries, 1);
 });
 
-Deno.test("pricing-get: declares type read-or-search and every required param", () => {
+test("pricing-get: declares type read-or-search and every required param", () => {
   const required = (pricingGet.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, []);
   assert(["read", "search", "perform"].includes(pricingGet.type));
   assertEquals(pricingGet.type === "perform", false);
 });
 
-Deno.test("pricing-get: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("pricing-get: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

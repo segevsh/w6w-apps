@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-pattern-list.ts";
 
-Deno.test("event-pattern-list: reads the cursor-paged collection", async () => {
+test("event-pattern-list: reads the cursor-paged collection", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ id: "a" }], pagination: { nextCursor: null } },
@@ -12,7 +13,7 @@ Deno.test("event-pattern-list: reads the cursor-paged collection", async () => {
 });
 
 /** nextCursor is null rather than absent on the last page. */
-Deno.test("event-pattern-list: returnAll follows the cursor and stops on null", async () => {
+test("event-pattern-list: returnAll follows the cursor and stops on null", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "a" }], pagination: { nextCursor: "c2" } } },
     { status: 200, body: { data: [{ id: "b" }], pagination: { nextCursor: null } } },

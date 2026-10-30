@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/account-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("account-search: POSTs the filter and fuzzy text", async () => {
+test("account-search: POSTs the filter and fuzzy text", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "a1" }], pagination: { cursor: "n", has_next_page: true } },
   }]);

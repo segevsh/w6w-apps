@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const headers = (remaining: string) => ({
   "zeplin-ratelimit-reset": "1575025620000",
 });
 
-Deno.test("quota health: reads the rate-limit headers into one quota entry", async () => {
+test("quota health: reads the rate-limit headers into one quota entry", async () => {
   const { ctx, calls } = mockCtx([{ headers: headers("142"), body: { id: "u" } }]);
   const out = await quota.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -23,7 +24,7 @@ Deno.test("quota health: reads the rate-limit headers into one quota entry", asy
   }]);
 });
 
-Deno.test("quota health: zero remaining is degraded; missing headers or an error are unknown", async () => {
+test("quota health: zero remaining is degraded; missing headers or an error are unknown", async () => {
   const spent = mockCtx([{ headers: headers("0"), body: { id: "u" } }]);
   assertEquals((await quota.check!({}, spent.ctx)).state, "degraded");
   const none = mockCtx([{ body: { id: "u" } }]);
@@ -32,7 +33,7 @@ Deno.test("quota health: zero remaining is degraded; missing headers or an error
   assertEquals((await quota.check!({}, err.ctx)).state, "unknown");
 });
 
-Deno.test("quota health: informational and signed (no network override)", () => {
+test("quota health: informational and signed (no network override)", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.credential, undefined);

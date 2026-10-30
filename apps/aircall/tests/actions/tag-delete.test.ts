@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import tagDelete from "../../actions/tag-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-delete: DELETEs /v1/tags/{id} and warns about the blast radius", async () => {
+test("tag-delete: DELETEs /v1/tags/{id} and warns about the blast radius", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 204 }]);
   const out = await tagDelete.execute({ tagId: "681" }, ctx) as { status: number };
 

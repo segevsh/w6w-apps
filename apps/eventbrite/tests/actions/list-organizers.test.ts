@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-organizers.ts";
 
-Deno.test("list-organizers: GETs /organizations/{id}/organizers/", async () => {
+test("list-organizers: GETs /organizations/{id}/organizers/", async () => {
   const body = { organizers: [{ id: "orgr1" }], pagination: { object_count: 1 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ organizationId: "acct-123", page: 3 }, ctx);

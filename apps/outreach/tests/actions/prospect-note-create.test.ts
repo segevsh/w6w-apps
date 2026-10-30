@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import prospectNoteCreate from "../../actions/prospect-note-create.ts";
 import { bodyOf, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("prospect-note-create: POSTs a prospectNote related to the prospect", async () => {
+test("prospect-note-create: POSTs a prospectNote related to the prospect", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("prospectNote", 4) }]);
   await prospectNoteCreate.execute({
     message: "Met at the expo",
@@ -21,7 +22,7 @@ Deno.test("prospect-note-create: POSTs a prospectNote related to the prospect", 
   });
 });
 
-Deno.test("prospect-note-create: message and prospectId are required", () => {
+test("prospect-note-create: message and prospectId are required", () => {
   const required = prospectNoteCreate.params!.filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["message", "prospectId"]);
 });

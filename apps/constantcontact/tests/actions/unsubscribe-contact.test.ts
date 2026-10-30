@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unsubscribe-contact.ts";
 
@@ -14,7 +15,7 @@ const existing = {
   anniversary: "2020-12-10",
 };
 
-Deno.test("unsubscribe-contact: reads the contact, then PUTs it back", async () => {
+test("unsubscribe-contact: reads the contact, then PUTs it back", async () => {
   const { ctx, calls } = mockCtx([
     { body: existing },
     { body: { ...existing, email_address: { address: "a@b.test" } } },
@@ -27,7 +28,7 @@ Deno.test("unsubscribe-contact: reads the contact, then PUTs it back", async () 
   assertEquals(new URL(calls[1].url).pathname, "/v3/contacts/c1");
 });
 
-Deno.test("unsubscribe-contact: sets permission_to_send to unsubscribed", async () => {
+test("unsubscribe-contact: sets permission_to_send to unsubscribed", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1" }, ctx);
   const body = JSON.parse(calls[1].body!);
@@ -35,7 +36,7 @@ Deno.test("unsubscribe-contact: sets permission_to_send to unsubscribed", async 
   assertEquals(body.email_address.permission_to_send, "unsubscribed");
 });
 
-Deno.test("unsubscribe-contact: echoes the scalars back so the full-replace PUT does not null them", async () => {
+test("unsubscribe-contact: echoes the scalars back so the full-replace PUT does not null them", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1" }, ctx);
   const body = JSON.parse(calls[1].body!);
@@ -48,7 +49,7 @@ Deno.test("unsubscribe-contact: echoes the scalars back so the full-replace PUT 
   assertEquals(body.anniversary, "2020-12-10");
 });
 
-Deno.test("unsubscribe-contact: does not echo sub-resources, which survive by omission", async () => {
+test("unsubscribe-contact: does not echo sub-resources, which survive by omission", async () => {
   const { ctx, calls } = mockCtx([
     { body: { ...existing, list_memberships: ["l1"], taggings: ["t1"] } },
     { body: {} },
@@ -59,37 +60,37 @@ Deno.test("unsubscribe-contact: does not echo sub-resources, which survive by om
   assertEquals("taggings" in body, false);
 });
 
-Deno.test("unsubscribe-contact: does not fetch sub-resources it will not echo", async () => {
+test("unsubscribe-contact: does not fetch sub-resources it will not echo", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1" }, ctx);
   assert(!new URL(calls[0].url).searchParams.has("include"));
 });
 
-Deno.test("unsubscribe-contact: defaults update_source to Contact", async () => {
+test("unsubscribe-contact: defaults update_source to Contact", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1" }, ctx);
   assertEquals(JSON.parse(calls[1].body!).update_source, "Contact");
 });
 
-Deno.test("unsubscribe-contact: honours an Account update_source", async () => {
+test("unsubscribe-contact: honours an Account update_source", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1", updateSource: "Account" }, ctx);
   assertEquals(JSON.parse(calls[1].body!).update_source, "Account");
 });
 
-Deno.test("unsubscribe-contact: carries the opt-out reason when given", async () => {
+test("unsubscribe-contact: carries the opt-out reason when given", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1", optOutReason: "No longer interested" }, ctx);
   assertEquals(JSON.parse(calls[1].body!).email_address.opt_out_reason, "No longer interested");
 });
 
-Deno.test("unsubscribe-contact: omits opt_out_reason when not given", async () => {
+test("unsubscribe-contact: omits opt_out_reason when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: existing }, { body: {} }]);
   await action.execute!({ contactId: "c1" }, ctx);
   assertEquals("opt_out_reason" in JSON.parse(calls[1].body!).email_address, false);
 });
 
-Deno.test("unsubscribe-contact: omits scalars the contact does not have", async () => {
+test("unsubscribe-contact: omits scalars the contact does not have", async () => {
   const { ctx, calls } = mockCtx([
     { body: { contact_id: "c1", email_address: { address: "a@b.test" } } },
     { body: {} },
@@ -101,7 +102,7 @@ Deno.test("unsubscribe-contact: omits scalars the contact does not have", async 
   ]);
 });
 
-Deno.test("unsubscribe-contact: refuses an SMS-only contact rather than PUTting a null address", async () => {
+test("unsubscribe-contact: refuses an SMS-only contact rather than PUTting a null address", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact_id: "c1" } }]);
   await assertRejects(
     () => action.execute!({ contactId: "c1" }, ctx) as Promise<unknown>,
@@ -111,6 +112,6 @@ Deno.test("unsubscribe-contact: refuses an SMS-only contact rather than PUTting 
   assertEquals(calls.length, 1, "must not attempt the PUT");
 });
 
-Deno.test("unsubscribe-contact: is declared idempotent", () => {
+test("unsubscribe-contact: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

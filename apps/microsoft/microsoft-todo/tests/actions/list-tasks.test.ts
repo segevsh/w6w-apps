@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: hits the list's tasks collection with no invented params", async () => {
+test("list-tasks: hits the list's tasks collection with no invented params", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute!({ taskList: "L1" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-tasks: hits the list's tasks collection with no invented params"
   assertEquals([...url.searchParams.keys()], []);
 });
 
-Deno.test("list-tasks: forwards every OData param under its `$` name", async () => {
+test("list-tasks: forwards every OData param under its `$` name", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute!({
     taskList: "L1",
@@ -28,14 +29,14 @@ Deno.test("list-tasks: forwards every OData param under its `$` name", async () 
   assertEquals(p.get("$top"), "50");
 });
 
-Deno.test("list-tasks: a nextLink wins over the freshly built query", async () => {
+test("list-tasks: a nextLink wins over the freshly built query", async () => {
   const link = "https://graph.microsoft.com/v1.0/me/todo/lists/L1/tasks?$skiptoken=z";
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute!({ taskList: "L1", nextLink: link, filter: "ignored" }, ctx);
   assertEquals(calls[0].url, link);
 });
 
-Deno.test("list-tasks: is a search over the task resource", () => {
+test("list-tasks: is a search over the task resource", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "task");
   // There is no cross-list endpoint, so the list id is not optional.

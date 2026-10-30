@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-get-many.ts";
 
-Deno.test("booking-get-many: GETs /bookings with cal-api-version 2026-05-01", async () => {
+test("booking-get-many: GETs /bookings with cal-api-version 2026-05-01", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], pagination: { hasMore: false } } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("booking-get-many: GETs /bookings with cal-api-version 2026-05-01", as
   assertEquals(calls[0].headers["cal-api-version"], "2026-05-01");
 });
 
-Deno.test("booking-get-many: maps every filter to its query param", async () => {
+test("booking-get-many: maps every filter to its query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute(
     {
@@ -37,7 +38,7 @@ Deno.test("booking-get-many: maps every filter to its query param", async () => 
   assertEquals(url.searchParams.get("cursor"), "next");
 });
 
-Deno.test("booking-get-many: omits unset optional filters", async () => {
+test("booking-get-many: omits unset optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);

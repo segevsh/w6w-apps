@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tasks.ts";
 
-Deno.test("list-tasks: GETs /tasks with default limit=100", async () => {
+test("list-tasks: GETs /tasks with default limit=100", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("list-tasks: GETs /tasks with default limit=100", async () => {
   assertEquals(url.searchParams.get("limit"), "100");
 });
 
-Deno.test("list-tasks: forwards all optional filters", async () => {
+test("list-tasks: forwards all optional filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({
     assignee: "u-1",
@@ -35,7 +36,7 @@ Deno.test("list-tasks: forwards all optional filters", async () => {
   assertEquals(p.get("offset"), "cur");
 });
 
-Deno.test("list-tasks: omits filters that are undefined", async () => {
+test("list-tasks: omits filters that are undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   const p = new URL(calls[0].url).searchParams;

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getProfile from "../../actions/get-profile.ts";
 import { HOMESERVER, mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("get-profile: GETs /profile/{userId}", async () => {
+test("get-profile: GETs /profile/{userId}", async () => {
   const { ctx, calls } = mockMatrixCtx([
     { body: { displayname: "Alice", avatar_url: "mxc://example.org/abc" } },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentCreate from "../../actions/agent-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-create: POST /agents with only provided fields", async () => {
+test("agent-create: POST /agents with only provided fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "a1" } }]);
   const out = await agentCreate.execute({ name: "Support Bot" }, ctx) as { id: string };
 
@@ -12,7 +13,7 @@ Deno.test("agent-create: POST /agents with only provided fields", async () => {
   assertEquals(out.id, "a1");
 });
 
-Deno.test("agent-create: forwards url, model, temp, visibility when given", async () => {
+test("agent-create: forwards url, model, temp, visibility when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "a1" } }]);
   await agentCreate.execute({
     name: "Support Bot",
@@ -30,7 +31,7 @@ Deno.test("agent-create: forwards url, model, temp, visibility when given", asyn
   });
 });
 
-Deno.test("agent-create: surfaces pendingSteps when the response reports one", async () => {
+test("agent-create: surfaces pendingSteps when the response reports one", async () => {
   const { ctx } = mockCtx([{ status: 201, body: { id: "a1", pendingSteps: ["ADD_SOURCE"] } }]);
   const out = await agentCreate.execute({ name: "Bot", url: "bad" }, ctx) as {
     pendingSteps?: string[];

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/edit-tags.ts";
 
-Deno.test("edit-tags: PUTs id/add/remove to /users/tags/edit", async () => {
+test("edit-tags: PUTs id/add/remove to /users/tags/edit", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   const result = await action.execute!({ id: "u1", add: ["prospect"], remove: ["cold"] }, ctx);
   assertEquals(calls.length, 1);
@@ -12,13 +13,13 @@ Deno.test("edit-tags: PUTs id/add/remove to /users/tags/edit", async () => {
   assertEquals(result, { success: true, message: "Success." });
 });
 
-Deno.test("edit-tags: add-only is valid", async () => {
+test("edit-tags: add-only is valid", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!({ id: "u1", add: ["prospect"] }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { id: "u1", add: ["prospect"], remove: [] });
 });
 
-Deno.test("edit-tags: rejects a blank id", async () => {
+test("edit-tags: rejects a blank id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "", add: ["a"] }, ctx),
@@ -28,7 +29,7 @@ Deno.test("edit-tags: rejects a blank id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("edit-tags: rejects when both add and remove are empty", async () => {
+test("edit-tags: rejects when both add and remove are empty", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "u1" }, ctx),
@@ -38,7 +39,7 @@ Deno.test("edit-tags: rejects when both add and remove are empty", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("edit-tags: a non-2xx response propagates as an Error", async () => {
+test("edit-tags: a non-2xx response propagates as an Error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { status: 404, message: "not found" } }]);
   const err = await assertRejects(
     async () => await action.execute!({ id: "u1", add: ["x"] }, ctx),

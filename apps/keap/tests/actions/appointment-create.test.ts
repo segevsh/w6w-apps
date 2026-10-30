@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import appointmentCreate from "../../actions/appointment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const CREATED = { id: "1", title: "Demo" };
 
-Deno.test("appointment-create: POSTs to the v1 path", async () => {
+test("appointment-create: POSTs to the v1 path", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await appointmentCreate.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("appointment-create: POSTs to the v1 path", async () => {
 });
 
 /** Only title, start and end are required — a contact-less calendar block is legal. */
-Deno.test("appointment-create: title, start and end are the required params", () => {
+test("appointment-create: title, start and end are the required params", () => {
   const required = (appointmentCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), ["endDate", "startDate", "title"]);
 });
@@ -33,7 +34,7 @@ Deno.test("appointment-create: title, start and end are the required params", ()
  * The assignee's property on the v1 schema is bare `user`, holding an int64 —
  * where every v2 equivalent is `user_id` or `assigned_to_user_id`.
  */
-Deno.test("appointment-create: the assignee is `user`, as a number", async () => {
+test("appointment-create: the assignee is `user`, as a number", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await appointmentCreate.execute(
     {
@@ -57,7 +58,7 @@ Deno.test("appointment-create: the assignee is `user`, as a number", async () =>
  * "Required for pop-up reminders". Without both, the reminder quietly does not
  * happen.
  */
-Deno.test("appointment-create: a reminder without a contact and a user is refused up front", async () => {
+test("appointment-create: a reminder without a contact and a user is refused up front", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -76,7 +77,7 @@ Deno.test("appointment-create: a reminder without a contact and a user is refuse
   assertEquals(calls.length, 0);
 });
 
-Deno.test("appointment-create: a reminder with both goes out as a number", async () => {
+test("appointment-create: a reminder with both goes out as a number", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await appointmentCreate.execute(
     {
@@ -94,6 +95,6 @@ Deno.test("appointment-create: a reminder with both goes out as a number", async
   assertEquals(typeof body.remind_time, "number");
 });
 
-Deno.test("appointment-create: is declared non-idempotent — a retry double-books", () => {
+test("appointment-create: is declared non-idempotent — a retry double-books", () => {
   assertEquals(appointmentCreate.idempotent, false);
 });

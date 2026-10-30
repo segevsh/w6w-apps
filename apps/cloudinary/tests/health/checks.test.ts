@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -19,7 +20,7 @@ const page = (over: Record<string, string> = {}) => ({
 const us = { display: { cloudName: "acme", region: "us" } };
 const eu = { display: { cloudName: "acme", region: "eu" } };
 
-Deno.test("service: watches only this connection's datacenter", async () => {
+test("service: watches only this connection's datacenter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page() }], us);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "ok");
@@ -32,36 +33,36 @@ Deno.test("service: watches only this connection's datacenter", async () => {
 });
 
 /** An outage in another region is not this connection's problem. */
-Deno.test("service: an EU outage does not touch a US connection", async () => {
+test("service: an EU outage does not touch a US connection", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ "Admin API - EU": "major_outage" }) }], us);
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: the same outage IS this connection's problem in the EU", async () => {
+test("service: the same outage IS this connection's problem in the EU", async () => {
   const { ctx } = mockCtx([{ status: 200, body: page({ "Admin API - EU": "major_outage" }) }], eu);
   const out = await service.check!({}, ctx);
   assertEquals(out.state, "down");
   assert(out.message!.includes("Admin API - EU"), out.message);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }], us);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: renamed components report unknown rather than a false green", async () => {
+test("service: renamed components report unknown rather than a false green", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { components: [{ name: "Something" }] } }], us);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
 /** It reads the connection's region and never sees a credential. */
-Deno.test("service: is connection-scoped and unsigned", () => {
+test("service: is connection-scoped and unsigned", () => {
   assertEquals(service.scope, "connection");
   assertEquals(service.credential, "context");
   assertEquals(service.network!.allow, ["status.cloudinary.com"]);
 });
 
-Deno.test("quota: reports the hourly requests and the plan credits separately", async () => {
+test("quota: reports the hourly requests and the plan credits separately", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { plan: "Free", credits: { usage: 5, limit: 25 } },
@@ -81,7 +82,7 @@ Deno.test("quota: reports the hourly requests and the plan credits separately", 
   assertEquals(out.quota![0].resetAt, "2026-08-18T17:00:00.000Z");
 });
 
-Deno.test("quota: a nearly-empty hourly allowance is degraded", async () => {
+test("quota: a nearly-empty hourly allowance is degraded", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {},
@@ -95,7 +96,7 @@ Deno.test("quota: a nearly-empty hourly allowance is degraded", async () => {
 });
 
 /** Running out of credits changes the bill; being throttled stops the job. */
-Deno.test("quota: nearly-spent credits are degraded even with requests to spare", async () => {
+test("quota: nearly-spent credits are degraded even with requests to spare", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { credits: { usage: 24.5, limit: 25 } },
@@ -108,14 +109,14 @@ Deno.test("quota: nearly-spent credits are degraded even with requests to spare"
   assertEquals((await quota.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: neither headers nor a usable body is unknown, not a failure", async () => {
+test("quota: neither headers nor a usable body is unknown, not a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { plan: "Free" } }], {
     display: { cloudName: "acme", region: "us" },
   });
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: headroom is informational", () => {
+test("quota: headroom is informational", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
 });

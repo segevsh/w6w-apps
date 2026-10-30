@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildSearch,
   errorText,
@@ -10,18 +11,18 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, pathOf, text } from "../_helpers.ts";
 
-Deno.test("buildSearch: drops unset values and repeats arrays", () => {
+test("buildSearch: drops unset values and repeats arrays", () => {
   const p = buildSearch({ a: "x", b: undefined, c: "", d: 0, i: ["1", 2] });
   assertEquals(p.toString(), "a=x&d=0&i=1&i=2");
 });
 
-Deno.test("errorText: strips Error= and collapses an HTML page", () => {
+test("errorText: strips Error= and collapses an HTML page", () => {
   assertEquals(errorText("Error=Please enter password\n"), "Please enter password");
   assertEquals(errorText("<!DOCTYPE html><html>blocked</html>"), "(HTML error page)");
   assert(errorText("x".repeat(400)).endsWith("(truncated)"));
 });
 
-Deno.test("formatError: each documented status says what to do", () => {
+test("formatError: each documented status says what to do", () => {
   assert(
     formatError(401, "GET", "/user-info", "OAuth token not found or invalid.").includes(
       "reconnect",
@@ -33,7 +34,7 @@ Deno.test("formatError: each documented status says what to do", () => {
   assert(formatError(503, "GET", "/x", "").includes("(empty body)"));
 });
 
-Deno.test("readZoneUsage: reads the five documented headers", () => {
+test("readZoneUsage: reads the five documented headers", () => {
   const h = new Headers({
     "X-Reader-Zone1-Limit": "100",
     "X-Reader-Zone2-Limit": "100",
@@ -51,13 +52,13 @@ Deno.test("readZoneUsage: reads the five documented headers", () => {
   assertEquals(readZoneUsage(new Headers()).zone1Limit, undefined);
 });
 
-Deno.test("streamPath / splitIds", () => {
+test("streamPath / splitIds", () => {
   assertEquals(streamPath("feed/http://a.b/c"), "feed%2Fhttp%3A%2F%2Fa.b%2Fc");
   assertEquals(splitIds(" 1, 2\n3 ,, "), ["1", "2", "3"]);
   assertEquals(splitIds(undefined), []);
 });
 
-Deno.test("client.json: parses JSON, rejects a non-JSON 200 and a non-object", async () => {
+test("client.json: parses JSON, rejects a non-JSON 200 and a non-object", async () => {
   const a = mockCtx([{ body: { ok: 1 } }]);
   assertEquals(await new InoreaderClient(a.ctx).json("/user-info"), { ok: 1 });
   assertEquals(pathOf(a.calls[0].url), "/reader/api/0/user-info");
@@ -70,7 +71,7 @@ Deno.test("client.json: parses JSON, rejects a non-JSON 200 and a non-object", a
   await assertRejects(() => new InoreaderClient(c.ctx).json("/x"), Error, "not an object");
 });
 
-Deno.test("client.ok: only the literal OK passes — Error= on HTTP 200 and other bodies fail", async () => {
+test("client.ok: only the literal OK passes — Error= on HTTP 200 and other bodies fail", async () => {
   const good = mockCtx([text("OK")]);
   await new InoreaderClient(good.ctx).ok("/edit-tag", { query: { a: "x" } });
   assertEquals(good.calls[0].method, "POST");

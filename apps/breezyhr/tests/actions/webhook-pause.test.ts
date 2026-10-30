@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/webhook-pause.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("webhook-pause: POSTs to /pause with no body", async () => {
+test("webhook-pause: POSTs to /pause with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1", status: "paused", enabled: false } }]);
   const out = await action.execute!({ companyId: "c1", endpointId: "w1" }, ctx);
   assertEquals(calls[0].url, "https://api.breezy.hr/v3/company/c1/webhook_endpoint/w1/pause");

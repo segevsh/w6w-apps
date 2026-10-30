@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import letterCreate from "../../actions/letter-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const addr = {
   address_zip: "94107",
 };
 
-Deno.test("letter-create: POSTs the documented body to /letters", async () => {
+test("letter-create: POSTs the documented body to /letters", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_1", url: "https://lob-assets.com/x.pdf" } }]);
   const out = await letterCreate.execute({
     to: "adr_1",
@@ -34,7 +35,7 @@ Deno.test("letter-create: POSTs the documented body to /letters", async () => {
   assertEquals(out.id, "x_1");
 });
 
-Deno.test("letter-create: a saved address id passes through as a string, an inline address as an object", async () => {
+test("letter-create: a saved address id passes through as a string, an inline address as an object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_2" } }]);
   await letterCreate.execute({
     ...{
@@ -63,7 +64,7 @@ Deno.test("letter-create: a saved address id passes through as a string, an inli
   assertEquals(bodyOf(second.calls[0]).to, addr);
 });
 
-Deno.test("letter-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
+test("letter-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
   const own = mockCtx([{ body: { id: "a" } }]);
   await letterCreate.execute({
     ...{
@@ -102,11 +103,11 @@ Deno.test("letter-create: Idempotency-Key is the caller's own, else the invocati
   assertEquals("idempotency-key" in none.calls[0].headers, false);
 });
 
-Deno.test("letter-create: is declared non-idempotent (it mails a physical piece)", () => {
+test("letter-create: is declared non-idempotent (it mails a physical piece)", () => {
   assertEquals(letterCreate.idempotent, false);
 });
 
-Deno.test("letter-create: a missing use type is refused before any request", async () => {
+test("letter-create: a missing use type is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -127,7 +128,7 @@ Deno.test("letter-create: a missing use type is refused before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("letter-create: Lob's validation error is surfaced with its code", async () => {
+test("letter-create: Lob's validation error is surfaced with its code", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("invalid", "to is invalid", 422) }]);
   await assertRejects(
     async () =>
@@ -144,7 +145,7 @@ Deno.test("letter-create: Lob's validation error is surfaced with its code", asy
   );
 });
 
-Deno.test("letter-create: a letter without a sender is refused before any request", async () => {
+test("letter-create: a letter without a sender is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await letterCreate.execute({ to: "adr_1", file: "x", useType: "marketing" }, ctx),
@@ -154,7 +155,7 @@ Deno.test("letter-create: a letter without a sender is refused before any reques
   assertEquals(calls.length, 0);
 });
 
-Deno.test("letter-create: color defaults to false rather than being omitted", async () => {
+test("letter-create: color defaults to false rather than being omitted", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ltr_1" } }]);
   await letterCreate.execute({ to: "adr_1", from: "adr_2", file: "x", useType: "marketing" }, ctx);
   assertEquals(bodyOf(calls[0]).color, false);

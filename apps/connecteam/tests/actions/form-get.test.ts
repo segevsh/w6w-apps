@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formGet from "../../actions/form-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-get: GETs one form by id, unwrapped (not nested under a 'form' key)", async () => {
+test("form-get: GETs one form by id, unwrapped (not nested under a 'form' key)", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ formId: 1, formName: "Incident Report", questions: [], settings: {} }) },
   ]);

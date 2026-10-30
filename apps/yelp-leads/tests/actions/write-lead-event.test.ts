@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import writeLeadEvent from "../../actions/write-lead-event.ts";
 import { mockCtx, pathOf, yelpError } from "../_helpers.ts";
 
-Deno.test("write-lead-event: POSTs request_content with a fixed TEXT request_type", async () => {
+test("write-lead-event: POSTs request_content with a fixed TEXT request_type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await writeLeadEvent.execute({ leadId: "abc", requestContent: "We'll be there at 3pm" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("write-lead-event: POSTs request_content with a fixed TEXT request_typ
   });
 });
 
-Deno.test("write-lead-event: surfaces the SAME_SUCCESSIVE_MESSAGE guard verbatim", async () => {
+test("write-lead-event: surfaces the SAME_SUCCESSIVE_MESSAGE guard verbatim", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -31,6 +32,6 @@ Deno.test("write-lead-event: surfaces the SAME_SUCCESSIVE_MESSAGE guard verbatim
   );
 });
 
-Deno.test("write-lead-event: is declared not idempotent", () => {
+test("write-lead-event: is declared not idempotent", () => {
   assertEquals(writeLeadEvent.idempotent, false);
 });

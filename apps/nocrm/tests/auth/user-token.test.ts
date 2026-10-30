@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/user-token.ts";
 
-Deno.test("user-token: is a separate method collecting the subdomain and the token", () => {
+test("user-token: is a separate method collecting the subdomain and the token", () => {
   assertEquals(auth.key, "user-token");
   assertEquals(auth.apiKey, { in: "header", name: "X-USER-TOKEN" });
   assertEquals(auth.fields?.map((f) => f.key), ["subdomain", "userToken"]);
@@ -11,7 +12,7 @@ Deno.test("user-token: is a separate method collecting the subdomain and the tok
   assertEquals(typeof auth.sign, "function");
 });
 
-Deno.test("user-token: sign stamps X-USER-TOKEN and nothing else", async () => {
+test("user-token: sign stamps X-USER-TOKEN and nothing else", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://acme.nocrm.io/api/v2/leads",
@@ -24,7 +25,7 @@ Deno.test("user-token: sign stamps X-USER-TOKEN and nothing else", async () => {
   assertEquals("authorization" in out.headers, false);
 });
 
-Deno.test("user-token: test refuses a half-filled credential without a request", async () => {
+test("user-token: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.test({ credential: { subdomain: "acme" } }, ctx),
@@ -37,7 +38,7 @@ Deno.test("user-token: test refuses a half-filled credential without a request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-token: test probes the same ping endpoint with its own header", async () => {
+test("user-token: test probes the same ping endpoint with its own header", async () => {
   const ok = mockCtx([{ body: { status: 200, message: "Your API key is correct." } }]);
   assertEquals(
     await auth.test({ credential: { subdomain: "acme", userToken: "ITd-Jb3E" } }, ok.ctx),
@@ -48,7 +49,7 @@ Deno.test("user-token: test probes the same ping endpoint with its own header", 
   assertEquals("x-api-key" in ok.calls[0].headers, false);
 });
 
-Deno.test("user-token: test reads the disabled-token refusal from the body", async () => {
+test("user-token: test reads the disabled-token refusal from the body", async () => {
   const bad = mockCtx([{
     status: 401,
     body: {
@@ -63,7 +64,7 @@ Deno.test("user-token: test reads the disabled-token refusal from the body", asy
   );
 });
 
-Deno.test("user-token: a missing-token body without prose still reports the vendor's type", async () => {
+test("user-token: a missing-token body without prose still reports the vendor's type", async () => {
   const bad = mockCtx([{ status: 401, body: { error: 401, type: "unauthorized_missing_token" } }]);
   assertEquals(
     await auth.test({ credential: { subdomain: "acme", userToken: "k" } }, bad.ctx),
@@ -71,7 +72,7 @@ Deno.test("user-token: a missing-token body without prose still reports the vend
   );
 });
 
-Deno.test("user-token: afterConnect records the subdomain", async () => {
+test("user-token: afterConnect records the subdomain", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     await auth.afterConnect!({ credential: { subdomain: "acme", userToken: "k" } }, ctx),

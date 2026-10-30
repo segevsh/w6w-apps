@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import milestoneCreate from "../../actions/milestone-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("milestone-create - POSTs /milestones with the datetime-string date field", async () => {
+test("milestone-create - POSTs /milestones with the datetime-string date field", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { milestone_id: 9, name: "Sprint #14" } }]);
   const out = await milestoneCreate.execute(
     { name: "Sprint #14", projectId: 1, date: "2025-12-01 09:00" },

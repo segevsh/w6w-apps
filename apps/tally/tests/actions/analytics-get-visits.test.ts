@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/analytics-get-visits.ts";
 
-Deno.test("analytics-get-visits: GETs the visits series", async () => {
+test("analytics-get-visits: GETs the visits series", async () => {
   const { ctx, calls } = mockCtx([
     { body: { data: { "2026-08-01": { totalVisits: 12 } }, interval: 86400 } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("analytics-get-visits: GETs the visits series", async () => {
   assertEquals(result.interval, 86400);
 });
 
-Deno.test("analytics-get-visits: defaults data to an empty map", async () => {
+test("analytics-get-visits: defaults data to an empty map", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals((await action.execute({ formId: "f1", period: "all" }, ctx)).data, {});
 });

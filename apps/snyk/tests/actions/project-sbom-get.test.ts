@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-sbom-get.ts";
 
 const display = { orgId: "org-1" };
 
-Deno.test("project-sbom-get: sends the required format", async () => {
+test("project-sbom-get: sends the required format", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { bomFormat: "CycloneDX" } }], { display });
   await action.execute!({ projectId: "p1", format: "cyclonedx1.6+json" }, ctx);
   const url = new URL(calls[0].url);
@@ -13,7 +14,7 @@ Deno.test("project-sbom-get: sends the required format", async () => {
 });
 
 /** Snyk has no default format — CycloneDX and SPDX are different documents. */
-Deno.test("project-sbom-get: a blank format is refused rather than guessed", async () => {
+test("project-sbom-get: a blank format is refused rather than guessed", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ projectId: "p1", format: "" }, ctx),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-create: sends POST /contacts", async () => {
+test("contact-create: sends POST /contacts", async () => {
   const { ctx, calls } = mockCtx([{ body: '"c_new"' }]);
   const out = await contactCreate.execute(
     {
@@ -34,7 +35,7 @@ Deno.test("contact-create: sends POST /contacts", async () => {
   assertEquals(out.contactId, "c_new");
 });
 
-Deno.test("contact-create: a non-2xx answer throws with the vendor's error code", async () => {
+test("contact-create: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {
@@ -55,7 +56,7 @@ Deno.test("contact-create: a non-2xx answer throws with the vendor's error code"
   assert(message.includes("FORBIDDEN_USER"), message);
 });
 
-Deno.test("contact-create: invalid metadata JSON is rejected before any request", async () => {
+test("contact-create: invalid metadata JSON is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let failed = false;
   try {

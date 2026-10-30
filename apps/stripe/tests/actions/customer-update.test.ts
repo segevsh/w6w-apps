@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customer-update.ts";
 
-Deno.test("customer-update: POSTs only the supplied fields", async () => {
+test("customer-update: POSTs only the supplied fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ customerId: "cus_1", name: "New", email: "" }, ctx);
   assertEquals(calls[0].url, "https://api.stripe.com/v1/customers/cus_1");

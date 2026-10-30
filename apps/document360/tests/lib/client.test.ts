@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   apiBase,
   compact,
@@ -12,14 +13,14 @@ import {
 } from "../../lib/client.ts";
 import { CA, envelope, EU, mockCtx, PID, problem, PROBLEM_HEADERS, US } from "../_helpers.ts";
 
-Deno.test("client: each region resolves to its documented host", () => {
+test("client: each region resolves to its documented host", () => {
   assertEquals(apiBase("eu"), EU);
   assertEquals(apiBase("us"), US);
   assertEquals(apiBase("ca"), CA);
   assertEquals(Object.keys(REGIONS), ["eu", "us", "ca"]);
 });
 
-Deno.test("client: region falls back to Europe for a missing or unknown value", () => {
+test("client: region falls back to Europe for a missing or unknown value", () => {
   assertEquals(resolveRegion(undefined), "eu");
   // deno-lint-ignore no-explicit-any
   assertEquals(resolveRegion({ display: { region: "mars" } } as any), "eu");
@@ -27,21 +28,21 @@ Deno.test("client: region falls back to Europe for a missing or unknown value", 
   assertEquals(resolveRegion({ display: { region: "us" } } as any), "us");
 });
 
-Deno.test("client: requests go to the Connection's regional host", async () => {
+test("client: requests go to the Connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }], { region: "us", projectId: PID });
   const c = new Document360Client(ctx);
   await c.data("GET", c.projectPath(undefined));
   assertEquals(calls[0].url, `${US}/v3/projects/${PID}`);
 });
 
-Deno.test("client: no Connection projectId and no override is a clear error", () => {
+test("client: no Connection projectId and no override is a clear error", () => {
   const { ctx } = mockCtx([], { region: "eu" });
   const c = new Document360Client(ctx);
   assertThrows(() => c.projectPath(undefined), Error, "no project id");
   assertEquals(c.projectPath("p 1", "/x"), "/v3/projects/p%201/x");
 });
 
-Deno.test("client: requests carry no credential and a JSON body gets a content-type", async () => {
+test("client: requests carry no credential and a JSON body gets a content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   const c = new Document360Client(ctx);
   await c.data("POST", "/v3/projects/x/articles", { body: { a: 1 } });
@@ -51,7 +52,7 @@ Deno.test("client: requests carry no credential and a JSON body gets a content-t
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("client: a 2xx envelope with success:false is an error", async () => {
+test("client: a 2xx envelope with success:false is an error", async () => {
   const { ctx } = mockCtx([{
     body: { success: false, errors: [{ code: "OPERATION_FAILED", message: "nope" }] },
   }]);
@@ -65,7 +66,7 @@ Deno.test("client: a 2xx envelope with success:false is an error", async () => {
   assertEquals(msg.includes("nope"), true, msg);
 });
 
-Deno.test("client: a non-JSON 2xx body is reported, not parsed blindly", async () => {
+test("client: a non-JSON 2xx body is reported, not parsed blindly", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -80,7 +81,7 @@ Deno.test("client: a non-JSON 2xx body is reported, not parsed blindly", async (
   assertEquals(msg.includes("non-JSON"), true, msg);
 });
 
-Deno.test("client: list returns items and the pagination block, and tolerates an empty body", async () => {
+test("client: list returns items and the pagination block, and tolerates an empty body", async () => {
   const { ctx } = mockCtx([
     {
       body: { success: true, data: [{ id: 1 }], pagination: { has_more: true, next_cursor: "n" } },
@@ -94,7 +95,7 @@ Deno.test("client: list returns items and the pagination block, and tolerates an
   assertEquals(await c.list("/v3/projects"), { items: [], pagination: null });
 });
 
-Deno.test("client: array query values repeat the key", () => {
+test("client: array query values repeat the key", () => {
   const { ctx } = mockCtx();
   const u = new URL(
     new Document360Client(ctx).url("/v3/x", { a: ["1", "2"], b: undefined, c: "" }),
@@ -104,7 +105,7 @@ Deno.test("client: array query values repeat the key", () => {
   assertEquals(u.searchParams.has("c"), false);
 });
 
-Deno.test("client: describeProblem reads the code, field message, retry-after and trace id", async () => {
+test("client: describeProblem reads the code, field message, retry-after and trace id", async () => {
   const res = new Response(JSON.stringify(problem(429, "TOO_MANY_REQUESTS", "Slow down.")), {
     status: 429,
     headers: { ...PROBLEM_HEADERS, "retry-after": "42" },
@@ -117,7 +118,7 @@ Deno.test("client: describeProblem reads the code, field message, retry-after an
   }
 });
 
-Deno.test("client: an empty-body 401 is explained as a missing or invalid key", async () => {
+test("client: an empty-body 401 is explained as a missing or invalid key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   let msg = "";
   try {
@@ -129,7 +130,7 @@ Deno.test("client: an empty-body 401 is explained as a missing or invalid key", 
   assertEquals(msg.includes("missing or invalid API key"), true, msg);
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(encodeId(" a/b "), "a%2Fb");
   assertEquals(compact({ a: 1, b: "", c: null, d: undefined, e: false, f: 0 }), {
     a: 1,

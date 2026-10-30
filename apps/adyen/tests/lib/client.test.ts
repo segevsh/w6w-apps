@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   AdyenClient,
   baseUrlFor,
@@ -11,12 +12,12 @@ import {
 } from "../../lib/client.ts";
 import { connectionCtx, LIVE_BASE, mockCtx, TEST_BASE } from "../_helpers.ts";
 
-Deno.test("normalizePrefix: accepts the documented prefix shape", () => {
+test("normalizePrefix: accepts the documented prefix shape", () => {
   assertEquals(normalizePrefix("1797a841fbb37ca7-AdyenDemo"), "1797a841fbb37ca7-AdyenDemo");
   assertEquals(normalizePrefix("  abc123  "), "abc123");
 });
 
-Deno.test("normalizePrefix: extracts the prefix from a pasted live URL", () => {
+test("normalizePrefix: extracts the prefix from a pasted live URL", () => {
   assertEquals(
     normalizePrefix(
       "https://1797a841fbb37ca7-AdyenDemo-checkout-live.adyenpayments.com/checkout/v72/payments",
@@ -26,7 +27,7 @@ Deno.test("normalizePrefix: extracts the prefix from a pasted live URL", () => {
   assertEquals(normalizePrefix("abc-checkout-live.adyenpayments.com"), "abc");
 });
 
-Deno.test("normalizePrefix: refuses anything that could steer the host", () => {
+test("normalizePrefix: refuses anything that could steer the host", () => {
   for (
     const bad of [
       "",
@@ -55,13 +56,13 @@ Deno.test("normalizePrefix: refuses anything that could steer the host", () => {
   }
 });
 
-Deno.test("normalizePrefix: the longest legal prefix still fits one DNS label", () => {
+test("normalizePrefix: the longest legal prefix still fits one DNS label", () => {
   const p = "a".repeat(49);
   assertEquals(normalizePrefix(p), p);
   assert(`${p}-checkout-live`.length <= 63);
 });
 
-Deno.test("baseUrlFor: test and live have different shapes, live adds /checkout", () => {
+test("baseUrlFor: test and live have different shapes, live adds /checkout", () => {
   assertEquals(baseUrlFor("test"), "https://checkout-test.adyen.com/v72");
   assertEquals(
     baseUrlFor("live", "1797a841fbb37ca7-AdyenDemo"),
@@ -70,7 +71,7 @@ Deno.test("baseUrlFor: test and live have different shapes, live adds /checkout"
   assertThrows(() => baseUrlFor("live"), Error, "empty");
 });
 
-Deno.test("baseUrlFromConnection: reads the stored URL and rejects foreign hosts", () => {
+test("baseUrlFromConnection: reads the stored URL and rejects foreign hosts", () => {
   assertEquals(baseUrlFromConnection(connectionCtx([]).ctx.connection), TEST_BASE);
   assertEquals(baseUrlFromConnection(connectionCtx([], "live").ctx.connection), LIVE_BASE);
   for (
@@ -95,7 +96,7 @@ Deno.test("baseUrlFromConnection: reads the stored URL and rejects foreign hosts
   assertThrows(() => baseUrlFromConnection(undefined), Error, "reconnect");
 });
 
-Deno.test("merchantAccountFor: explicit value, else the connection, else an error", () => {
+test("merchantAccountFor: explicit value, else the connection, else an error", () => {
   const conn = connectionCtx([]).ctx.connection;
   assertEquals(merchantAccountFor("Own", conn), "Own");
   assertEquals(merchantAccountFor("", conn), "TestMerchant");
@@ -107,7 +108,7 @@ Deno.test("merchantAccountFor: explicit value, else the connection, else an erro
   );
 });
 
-Deno.test("buildBody: amount is upper-cased and validated", () => {
+test("buildBody: amount is upper-cased and validated", () => {
   const { ctx } = connectionCtx([]);
   assertEquals(buildBody(ctx, { currency: "eur", value: 10 }, { amount: true }), {
     merchantAccount: "TestMerchant",
@@ -135,7 +136,7 @@ Deno.test("buildBody: amount is upper-cased and validated", () => {
   );
 });
 
-Deno.test("buildBody: an optional amount needs both halves or neither", () => {
+test("buildBody: an optional amount needs both halves or neither", () => {
   const { ctx } = connectionCtx([]);
   assertEquals(buildBody(ctx, {}, { amount: "optional" }), { merchantAccount: "TestMerchant" });
   assertThrows(
@@ -150,7 +151,7 @@ Deno.test("buildBody: an optional amount needs both halves or neither", () => {
   });
 });
 
-Deno.test("buildBody: typed params win over additionalFields; false and 0 survive", () => {
+test("buildBody: typed params win over additionalFields; false and 0 survive", () => {
   const { ctx } = connectionCtx([]);
   const body = buildBody(
     ctx,
@@ -172,7 +173,7 @@ Deno.test("buildBody: typed params win over additionalFields; false and 0 surviv
   });
 });
 
-Deno.test("buildBody: JSON params accept objects or strings, and reject bad JSON", () => {
+test("buildBody: JSON params accept objects or strings, and reject bad JSON", () => {
   const { ctx } = connectionCtx([]);
   assertEquals(buildBody(ctx, { m: { a: 1 }, n: "[1]" }, { json: ["m", "n"], merchant: false }), {
     m: { a: 1 },
@@ -182,12 +183,12 @@ Deno.test("buildBody: JSON params accept objects or strings, and reject bad JSON
   assertThrows(() => buildBody(ctx, { additionalFields: "[1]" }, {}), Error, "JSON object");
 });
 
-Deno.test("encodeId: percent-encodes a path segment and refuses an empty one", () => {
+test("encodeId: percent-encodes a path segment and refuses an empty one", () => {
   assertEquals(encodeId("a/b c"), "a%2Fb%20c");
   assertThrows(() => encodeId(" "), Error);
 });
 
-Deno.test("formatAdyenError: quotes type, code, message and pspReference", () => {
+test("formatAdyenError: quotes type, code, message and pspReference", () => {
   assertEquals(
     formatAdyenError(
       403,
@@ -202,17 +203,17 @@ Deno.test("formatAdyenError: quotes type, code, message and pspReference", () =>
   assertEquals(formatAdyenError(500, ""), "HTTP 500");
 });
 
-Deno.test("AdyenClient: a 200 that is not JSON is reported, not parsed", async () => {
+test("AdyenClient: a 200 that is not JSON is reported, not parsed", async () => {
   const { ctx } = connectionCtx([{ status: 200, body: "<html>login</html>" }]);
   await assertRejects(() => new AdyenClient(ctx).get("/x"), Error, "not JSON");
 });
 
-Deno.test("AdyenClient: an empty 2xx body becomes an empty object", async () => {
+test("AdyenClient: an empty 2xx body becomes an empty object", async () => {
   const { ctx } = connectionCtx([{ status: 204 }]);
   assertEquals(await new AdyenClient(ctx).delete("/x"), {});
 });
 
-Deno.test("AdyenClient: Idempotency-Key is sent on POST only, and not over 64 characters", async () => {
+test("AdyenClient: Idempotency-Key is sent on POST only, and not over 64 characters", async () => {
   const post = connectionCtx([{ body: {} }, { body: {} }, { body: {} }]);
   post.ctx.invocation = { invocationId: "a".repeat(64) } as typeof post.ctx.invocation;
   await new AdyenClient(post.ctx).post("/x", {});
@@ -224,7 +225,7 @@ Deno.test("AdyenClient: Idempotency-Key is sent on POST only, and not over 64 ch
   assert(!("idempotency-key" in post.calls[2].headers));
 });
 
-Deno.test("AdyenClient: refuses a connection with no base URL before any request", () => {
+test("AdyenClient: refuses a connection with no base URL before any request", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(() => new AdyenClient(ctx), Error, "reconnect");
   assertEquals(calls.length, 0);

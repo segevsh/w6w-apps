@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createPayment from "../../actions/create-payment.ts";
 import { envelope, errorBody, mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
 const created = envelope("payments", { id: "PM1", amount: 1000, status: "pending_submission" });
 
-Deno.test("create-payment: POST /payments with amount, currency and links.mandate", async () => {
+test("create-payment: POST /payments with amount, currency and links.mandate", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   const out = await createPayment.execute!({
     amount: 1000,
@@ -36,7 +37,7 @@ Deno.test("create-payment: POST /payments with amount, currency and links.mandat
  * `retry_if_possible: false` is a value the caller chose, not an omitted field:
  * dropping it would silently hand GoCardless its own default.
  */
-Deno.test("create-payment: an explicit false survives the body builder", async () => {
+test("create-payment: an explicit false survives the body builder", async () => {
   const { ctx, calls } = mockCtx([{ body: created }]);
   await createPayment.execute!({
     amount: 500,
@@ -47,7 +48,7 @@ Deno.test("create-payment: an explicit false survives the body builder", async (
   assertEquals(JSON.parse(calls[0].body!).payments.retry_if_possible, false);
 });
 
-Deno.test("create-payment: the invocation id keys the retry when none was typed", async () => {
+test("create-payment: the invocation id keys the retry when none was typed", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ body: created }], "inv-payment-1");
   await createPayment.execute!({ amount: 1000, currency: "GBP", mandateId: "MD1" }, ctx);
   assertEquals(calls[0].headers["idempotency-key"], "inv-payment-1");
@@ -57,7 +58,7 @@ Deno.test("create-payment: the invocation id keys the retry when none was typed"
  * The whole point of the idempotency key is to find the resource the first call
  * created, so the vendor's `conflicting_resource_id` must reach the message.
  */
-Deno.test("create-payment: a 409 names the payment the key already created", async () => {
+test("create-payment: a 409 names the payment the key already created", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: errorBody("invalid_state", {
@@ -88,7 +89,7 @@ Deno.test("create-payment: a 409 names the payment the key already created", asy
   assertEquals(err.message.includes("PM_EXISTING"), true, err.message);
 });
 
-Deno.test("create-payment: an inactive mandate surfaces invalid_state", async () => {
+test("create-payment: an inactive mandate surfaces invalid_state", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("invalid_state", {

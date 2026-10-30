@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/quote-get.ts";
 
-Deno.test("quote-get: fetches by id with a bounded line-item page", async () => {
+test("quote-get: fetches by id with a bounded line-item page", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { quote: { id: "q1" } } } }]);
   await action.execute({ quoteId: "q1" }, ctx);
   const sent = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import verifiedContactCreate from "../../actions/verified-contact-create.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("verified-contact-create: POSTs to the bare /v3/verified-contacts (no /api prefix)", async () => {
+test("verified-contact-create: POSTs to the bare /v3/verified-contacts (no /api prefix)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { contact: {}, line: {} } } }]);
   await verifiedContactCreate.execute({ phoneNumber: "+15551234567" }, ctx);
 

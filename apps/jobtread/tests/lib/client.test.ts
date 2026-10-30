@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connectionArgs, JobTreadClient } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("JobTreadClient.query: posts {query} to the single /pave endpoint", async () => {
+test("JobTreadClient.query: posts {query} to the single /pave endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { organization: { id: "abc" } } }]);
   const client = new JobTreadClient(ctx);
   const result = await client.query({ organization: { $: { id: "abc" }, id: {} } });
@@ -14,7 +15,7 @@ Deno.test("JobTreadClient.query: posts {query} to the single /pave endpoint", as
   assertEquals(result, { organization: { id: "abc" } });
 });
 
-Deno.test("JobTreadClient.query: a non-2xx plain-text body becomes a thrown Error carrying the vendor message", async () => {
+test("JobTreadClient.query: a non-2xx plain-text body becomes a thrown Error carrying the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     headers: { "content-type": "text/plain; charset=utf-8" },
@@ -28,7 +29,7 @@ Deno.test("JobTreadClient.query: a non-2xx plain-text body becomes a thrown Erro
   );
 });
 
-Deno.test("connectionArgs: only sets keys the caller actually provided", () => {
+test("connectionArgs: only sets keys the caller actually provided", () => {
   assertEquals(connectionArgs({}), {});
   assertEquals(connectionArgs({ size: 10 }), { size: 10 });
   assertEquals(
@@ -37,6 +38,6 @@ Deno.test("connectionArgs: only sets keys the caller actually provided", () => {
   );
 });
 
-Deno.test("connectionArgs: ignores undefined/null where and sortBy rather than sending null", () => {
+test("connectionArgs: ignores undefined/null where and sortBy rather than sending null", () => {
   assertEquals(connectionArgs({ where: undefined, sortBy: null }), {});
 });

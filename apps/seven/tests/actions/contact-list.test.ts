@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "offset": 1,
 } as Parameters<typeof contactList.execute>[0];
 
-Deno.test("contact-list: GET /api/contacts with the documented fields", async () => {
+test("contact-list: GET /api/contacts with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "pagingMetadata": { "total": 1 }, "data": [{ "id": 1 }] },
   }]);
@@ -32,14 +33,14 @@ Deno.test("contact-list: GET /api/contacts with the documented fields", async ()
   assertEquals((out.data as unknown[]).length, 1);
 });
 
-Deno.test("contact-list: declares type read-or-search and every required param", () => {
+test("contact-list: declares type read-or-search and every required param", () => {
   const required = (contactList.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, []);
   assert(["read", "search", "perform"].includes(contactList.type));
   assertEquals(contactList.type === "perform", false);
 });
 
-Deno.test("contact-list: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("contact-list: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

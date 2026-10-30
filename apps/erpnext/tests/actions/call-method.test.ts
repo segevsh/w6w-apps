@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callMethod from "../../actions/call-method.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const conn = { display: { baseUrl: "https://erpnext.example.com" } };
 
-Deno.test("call-method: GET sends arguments as query params, no body", async () => {
+test("call-method: GET sends arguments as query params, no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: 3 } }], conn);
   const result = await callMethod.execute({
     method: "frappe.client.get_count",
@@ -19,7 +20,7 @@ Deno.test("call-method: GET sends arguments as query params, no body", async () 
   assertEquals(result, { result: 3 });
 });
 
-Deno.test("call-method: POST sends arguments as a JSON body, no query", async () => {
+test("call-method: POST sends arguments as a JSON body, no query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: { ok: true } } }], conn);
   await callMethod.execute({
     method: "frappe.client.rename_doc",
@@ -31,7 +32,7 @@ Deno.test("call-method: POST sends arguments as a JSON body, no query", async ()
   assertEquals(JSON.parse(calls[0].body!), { doctype: "ToDo", old_name: "a", new_name: "b" });
 });
 
-Deno.test("call-method: defaults httpMethod to GET for anything else supplied", async () => {
+test("call-method: defaults httpMethod to GET for anything else supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { message: null } }], conn);
   await callMethod.execute(
     { method: "frappe.auth.get_logged_user", httpMethod: "PATCH" as never },
@@ -40,7 +41,7 @@ Deno.test("call-method: defaults httpMethod to GET for anything else supplied", 
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("call-method: refuses a non-object Arguments", async () => {
+test("call-method: refuses a non-object Arguments", async () => {
   const { ctx } = mockCtx([], conn);
   let threw = false;
   try {
@@ -51,6 +52,6 @@ Deno.test("call-method: refuses a non-object Arguments", async () => {
   assertEquals(threw, true);
 });
 
-Deno.test("call-method: the method chosen at runtime cannot be promised safe to retry", () => {
+test("call-method: the method chosen at runtime cannot be promised safe to retry", () => {
   assertEquals(callMethod.idempotent, false);
 });

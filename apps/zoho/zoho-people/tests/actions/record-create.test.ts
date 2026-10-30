@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/record-create.ts";
 
@@ -10,7 +11,7 @@ const ok = {
   },
 };
 
-Deno.test("record-create: POSTs inputData as a urlencoded JSON string", async () => {
+test("record-create: POSTs inputData as a urlencoded JSON string", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: ok }]);
   const out = await action.execute({
     formLinkName: "employee",
@@ -26,7 +27,7 @@ Deno.test("record-create: POSTs inputData as a urlencoded JSON string", async ()
   assertEquals(out.pkId, "100");
 });
 
-Deno.test("record-create: accepts fields as a JSON string and rejects non-objects", async () => {
+test("record-create: accepts fields as a JSON string and rejects non-objects", async () => {
   const { ctx, calls } = mockPeopleCtx([{ body: ok }]);
   await action.execute({ formLinkName: "leave", fields: '{"a":"b"}' }, ctx);
   assertEquals(JSON.parse(new URLSearchParams(calls[0].body!).get("inputData")!), { a: "b" });
@@ -37,7 +38,7 @@ Deno.test("record-create: accepts fields as a JSON string and rejects non-object
   );
 });
 
-Deno.test("record-create: mandatory-field failure (7052) is thrown even inside a 2xx", async () => {
+test("record-create: mandatory-field failure (7052) is thrown even inside a 2xx", async () => {
   const { ctx } = mockPeopleCtx([{
     body: { response: { errors: { code: 7052, message: "Invalid value/mandatory" }, status: 1 } },
   }]);
@@ -48,4 +49,4 @@ Deno.test("record-create: mandatory-field failure (7052) is thrown even inside a
   );
 });
 
-Deno.test("record-create: not idempotent", () => assertEquals(action.idempotent, false));
+test("record-create: not idempotent", () => assertEquals(action.idempotent, false));

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../auth/api-key.ts";
 import { envelope, mockCtx, pathOf } from "./_helpers.ts";
 
 const credential = { apiKey: "key_123" };
 
-Deno.test("auth: sign stamps the apiKey header", async () => {
+test("auth: sign stamps the apiKey header", async () => {
   const req = {
     url: "https://api.webconnex.com/v2/public/x",
     method: "GET",
@@ -16,7 +17,7 @@ Deno.test("auth: sign stamps the apiKey header", async () => {
   assertEquals(authHeaders({}).apiKey, "");
 });
 
-Deno.test("auth: test passes only on the documented envelope with a data array", async () => {
+test("auth: test passes only on the documented envelope with a data array", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   const res = await apiKey.test({ credential } as never, ctx);
   assertEquals(res.ok, true);
@@ -26,11 +27,11 @@ Deno.test("auth: test passes only on the documented envelope with a data array",
   assert(PROBE_PATH.startsWith("/forms"));
 });
 
-Deno.test("auth: the public /ping is never the probe", () => {
+test("auth: the public /ping is never the probe", () => {
   assert(!PROBE_PATH.includes("ping"));
 });
 
-Deno.test("auth: a 200 that is not the documented shape is not a pass", async () => {
+test("auth: a 200 that is not the documented shape is not a pass", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -40,7 +41,7 @@ Deno.test("auth: a 200 that is not the documented shape is not a pass", async ()
   assert(res.message?.includes("unexpected response"), res.message);
 });
 
-Deno.test("auth: a wrong key (HTTP 404, invalid apiKey) is a rejected key", async () => {
+test("auth: a wrong key (HTTP 404, invalid apiKey) is a rejected key", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { responseCode: 404, error: { code: 4404, description: "invalid apiKey" } },
@@ -51,7 +52,7 @@ Deno.test("auth: a wrong key (HTTP 404, invalid apiKey) is a rejected key", asyn
   assert(!res.message?.includes("key_123"));
 });
 
-Deno.test("auth: a missing key (HTTP 401, code 4401) is a rejected key", async () => {
+test("auth: a missing key (HTTP 401, code 4401) is a rejected key", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: {
@@ -62,7 +63,7 @@ Deno.test("auth: a missing key (HTTP 401, code 4401) is a rejected key", async (
   assertEquals((await apiKey.test({ credential } as never, ctx)).ok, false);
 });
 
-Deno.test("auth: an unrelated 404 is unexpected, not a rejected key", async () => {
+test("auth: an unrelated 404 is unexpected, not a rejected key", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { responseCode: 404, error: { code: 4404, description: "GET /forms not found" } },
@@ -72,7 +73,7 @@ Deno.test("auth: an unrelated 404 is unexpected, not a rejected key", async () =
   assert(res.message?.includes("unexpected response"), res.message);
 });
 
-Deno.test("auth: a missing key never reaches the network", async () => {
+test("auth: a missing key never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const res = await apiKey.test({ credential: {} } as never, ctx);
   assertEquals(res.ok, false);

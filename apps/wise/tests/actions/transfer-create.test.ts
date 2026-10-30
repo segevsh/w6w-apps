@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import transferCreate from "../../actions/transfer-create.ts";
 import { deriveUuid } from "../../lib/client.ts";
 import { mockCtx, mockCtxWithInvocation, pathOf } from "../_helpers.ts";
 
 const TRANSFER = { id: 1, status: "incoming_payment_waiting", quoteUuid: "q-1" };
 
-Deno.test("transfer-create: POSTs targetAccount/quoteUuid and a caller-supplied idempotency key", async () => {
+test("transfer-create: POSTs targetAccount/quoteUuid and a caller-supplied idempotency key", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: TRANSFER }]);
   const out = await transferCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("transfer-create: POSTs targetAccount/quoteUuid and a caller-supplied 
   assertEquals(out.id, 1);
 });
 
-Deno.test("transfer-create: derives a stable UUID from the invocation when none is supplied", async () => {
+test("transfer-create: derives a stable UUID from the invocation when none is supplied", async () => {
   const { ctx, calls } = mockCtxWithInvocation([{ status: 201, body: TRANSFER }], "inv_fixed_seed");
   await transferCreate.execute({ targetAccount: 5, quoteUuid: "q-1" }, ctx);
 
@@ -33,7 +34,7 @@ Deno.test("transfer-create: derives a stable UUID from the invocation when none 
   assertEquals(body.customerTransactionId, await deriveUuid("inv_fixed_seed"));
 });
 
-Deno.test("transfer-create: falls back to a random UUID with no invocation at all", async () => {
+test("transfer-create: falls back to a random UUID with no invocation at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: TRANSFER }]);
   await transferCreate.execute({ targetAccount: 5, quoteUuid: "q-1" }, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("transfer-create: falls back to a random UUID with no invocation at al
   );
 });
 
-Deno.test("transfer-create: nests reference and purpose fields under details, omitting details when empty", async () => {
+test("transfer-create: nests reference and purpose fields under details, omitting details when empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: TRANSFER }]);
   await transferCreate.execute(
     { targetAccount: 5, quoteUuid: "q-1", reference: "Invoice 42" },
@@ -57,6 +58,6 @@ Deno.test("transfer-create: nests reference and purpose fields under details, om
   assertEquals(JSON.parse(calls2[0].body!).details, undefined);
 });
 
-Deno.test("transfer-create: is declared idempotent, backed by customerTransactionId", () => {
+test("transfer-create: is declared idempotent, backed by customerTransactionId", () => {
   assertEquals(transferCreate.idempotent, true);
 });

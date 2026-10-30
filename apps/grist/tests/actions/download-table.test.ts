@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { actionCtx } from "../_helpers.ts";
 import downloadTable from "../../actions/download-table.ts";
 
-Deno.test("download-table: GETs /download/csv with tableId and a colId header", async () => {
+test("download-table: GETs /download/csv with tableId and a colId header", async () => {
   const { ctx, calls } = actionCtx([
     { body: "pet,popularity\ncat,67\n", headers: { "content-type": "text/csv" } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("download-table: GETs /download/csv with tableId and a colId header", 
   assertEquals(out.content, "pet,popularity\ncat,67\n");
 });
 
-Deno.test("download-table: tsv switches the path, and header=label is forwarded", async () => {
+test("download-table: tsv switches the path, and header=label is forwarded", async () => {
   const { ctx, calls } = actionCtx([
     { body: "pet\tpopularity\n", headers: { "content-type": "text/tab-separated-values" } },
   ]);
@@ -29,7 +30,7 @@ Deno.test("download-table: tsv switches the path, and header=label is forwarded"
   assertEquals(out.format, "tsv");
 });
 
-Deno.test("download-table: offers only csv and tsv — dsv has no delimiter parameter", () => {
+test("download-table: offers only csv and tsv — dsv has no delimiter parameter", () => {
   const p = downloadTable.params!.find((p) => p.key === "format")!;
   assertEquals((p.options as Array<{ value: string }>).map((o) => o.value), ["csv", "tsv"]);
 });

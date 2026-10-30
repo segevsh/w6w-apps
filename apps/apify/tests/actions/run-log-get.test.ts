@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import runLogGet from "../../actions/run-log-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const LOG = "2026-08-11T06:00:49.733Z Application started.\n" +
  * mistake and fails on the first line, so this asserts the body comes back as
  * text.
  */
-Deno.test("run-log-get: reads a text/plain body without parsing it", async () => {
+test("run-log-get: reads a text/plain body without parsing it", async () => {
   const { ctx, calls } = mockCtx([
     { body: LOG, headers: { "content-type": "text/plain; charset=utf-8" } },
   ]);
@@ -27,7 +28,7 @@ Deno.test("run-log-get: reads a text/plain body without parsing it", async () =>
   assertEquals(out.truncated, false);
 });
 
-Deno.test("run-log-get: a log longer than the cap is truncated and says so", async () => {
+test("run-log-get: a log longer than the cap is truncated and says so", async () => {
   const big = "x".repeat(5000);
   const { ctx } = mockCtx([{ body: big, headers: { "content-type": "text/plain" } }]);
   const out = await runLogGet.execute({ runId: "r1", maxBytes: 1000 }, ctx) as {
@@ -42,7 +43,7 @@ Deno.test("run-log-get: a log longer than the cap is truncated and says so", asy
   assert(out.log.includes("truncated"), out.log.slice(-60));
 });
 
-Deno.test("run-log-get: ANSI stripping is left on unless raw is requested", async () => {
+test("run-log-get: ANSI stripping is left on unless raw is requested", async () => {
   const { ctx, calls } = mockCtx([
     { body: "", headers: { "content-type": "text/plain" } },
     { body: "", headers: { "content-type": "text/plain" } },
@@ -58,6 +59,6 @@ Deno.test("run-log-get: ANSI stripping is left on unless raw is requested", asyn
  * `stream` holds the connection open for the life of the run. An Action returns
  * one value, so exposing it would only produce a request that hangs.
  */
-Deno.test("run-log-get: does not expose the streaming parameter", () => {
+test("run-log-get: does not expose the streaming parameter", () => {
   assertEquals(runLogGet.params?.some((p) => p.key === "stream"), false);
 });

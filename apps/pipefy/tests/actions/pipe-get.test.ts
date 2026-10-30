@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import pipeGet from "../../actions/pipe-get.ts";
 
-Deno.test("pipe-get: fetches a pipe with its phases, start-form fields and labels", async () => {
+test("pipe-get: fetches a pipe with its phases, start-form fields and labels", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { pipe: { id: "1", name: "Sales", phases: [{ id: "10", name: "New" }] } } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("pipe-get: fetches a pipe with its phases, start-form fields and label
   assert(q.includes("labels { id name color }"));
 });
 
-Deno.test("pipe-get: type/resource metadata", () => {
+test("pipe-get: type/resource metadata", () => {
   assertEquals(pipeGet.type, "read");
   assertEquals(pipeGet.resource, "pipe");
 });

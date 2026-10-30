@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionList from "../../actions/session-list.ts";
 import { list, mockCtx, pathOf, queryOf, resource } from "../_helpers.ts";
 
-Deno.test("session-list: lists all sessions, filtered", async () => {
+test("session-list: lists all sessions, filtered", async () => {
   const { ctx, calls } = mockCtx([{ body: list([resource("sessions", "s1")]) }]);
   await sessionList.execute({ status: "upcoming", dateFrom: "2026-01-01" }, ctx);
 

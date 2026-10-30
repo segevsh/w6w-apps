@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, errorBody, listEnvelope, pathOf, queryOf, WS } from "../_helpers.ts";
 import action from "../../actions/record-list.ts";
 
-Deno.test("record-list: sends filter (never the deprecated `filters`), fields, sort, paging", async () => {
+test("record-list: sends filter (never the deprecated `filters`), fields, sort, paging", async () => {
   const rows = [{ id: "1", values: { name: "Ada" } }];
   const { ctx, calls } = connCtx([{ body: listEnvelope(rows, { has_more: true, offset: 10 }) }]);
   const out = await action.execute({
@@ -27,7 +28,7 @@ Deno.test("record-list: sends filter (never the deprecated `filters`), fields, s
   assertEquals("filters" in q, false);
 });
 
-Deno.test("record-list: accepts the filter as a JSON string", async () => {
+test("record-list: accepts the filter as a JSON string", async () => {
   const { ctx, calls } = connCtx([{ body: listEnvelope([]) }]);
   await action.execute(
     { moduleName: "crm", tableName: "contacts", filter: '{"a": 1}' },
@@ -36,7 +37,7 @@ Deno.test("record-list: accepts the filter as a JSON string", async () => {
   assertEquals(queryOf(calls[0].url).filter, '{"a":1}');
 });
 
-Deno.test("record-list: an invalid filter string is rejected before any request", async () => {
+test("record-list: an invalid filter string is rejected before any request", async () => {
   const { ctx, calls } = connCtx();
   await assertRejects(
     async () =>
@@ -47,7 +48,7 @@ Deno.test("record-list: an invalid filter string is rejected before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-list: a 404 for an unknown table is an error", async () => {
+test("record-list: a 404 for an unknown table is an error", async () => {
   const { ctx } = connCtx([{ status: 404, body: errorBody("Table not found") }]);
   await assertRejects(
     async () => await action.execute({ moduleName: "crm", tableName: "nope" }, ctx),

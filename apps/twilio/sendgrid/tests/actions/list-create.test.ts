@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-create.ts";
 
-Deno.test("list-create: POST /marketing/lists with { name }", async () => {
+test("list-create: POST /marketing/lists with { name }", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: "list-1", name: "VIPs", contact_count: 0 } },
   ]);
@@ -16,7 +17,7 @@ Deno.test("list-create: POST /marketing/lists with { name }", async () => {
   assertEquals(result, { id: "list-1", name: "VIPs", contact_count: 0 });
 });
 
-Deno.test("list-create: missing name rejects", async () => {
+test("list-create: missing name rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ name: "" }, ctx),

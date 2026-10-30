@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealUpdate from "../../actions/deal-update.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("deal-update: PUTs a stage move", async () => {
+test("deal-update: PUTs a stage move", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1, stage_id: 2 }) }]);
   await dealUpdate.execute({ id: 1, stageId: 2 }, ctx);
 

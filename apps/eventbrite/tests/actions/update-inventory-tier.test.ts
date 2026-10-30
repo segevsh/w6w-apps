@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-inventory-tier.ts";
 
-Deno.test("update-inventory-tier: posts partial body to tier path", async () => {
+test("update-inventory-tier: posts partial body to tier path", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory_tier: { id: "t1" } } }]);
   const result = await action.execute!({
     eventId: "e1",

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/change-abandon.ts";
 
@@ -10,7 +11,7 @@ const detail = (status: string) => ({
 });
 const done = (status: string) => ({ status: 200, body: PREFIX + JSON.stringify({ status }) });
 
-Deno.test("change-abandon: abandons with a message", async () => {
+test("change-abandon: abandons with a message", async () => {
   const { ctx, calls } = mockCtx([detail("NEW"), done("ABANDONED")], D);
   const result = await action.execute(
     { changeId: "620421", message: "Superseded by 620500" },
@@ -22,7 +23,7 @@ Deno.test("change-abandon: abandons with a message", async () => {
   assertEquals(result.owner, "Ada");
 });
 
-Deno.test("change-abandon: restoring hits the other endpoint", async () => {
+test("change-abandon: restoring hits the other endpoint", async () => {
   const { ctx, calls } = mockCtx([detail("ABANDONED"), done("NEW")], D);
   const result = await action.execute(
     { changeId: "620421", abandon: false, message: "Back on" },
@@ -33,7 +34,7 @@ Deno.test("change-abandon: restoring hits the other endpoint", async () => {
 });
 
 /** Gerrit notifies the author, so an unexplained abandon is poor automation. */
-Deno.test("change-abandon: requires a message", async () => {
+test("change-abandon: requires a message", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ changeId: "620421" }, ctx),
@@ -43,7 +44,7 @@ Deno.test("change-abandon: requires a message", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("change-abandon: abandoning an abandoned change writes nothing", async () => {
+test("change-abandon: abandoning an abandoned change writes nothing", async () => {
   const { ctx, calls } = mockCtx([detail("ABANDONED")], D);
   const result = await action.execute({ changeId: "620421", message: "x" }, ctx) as Record<
     string,
@@ -54,7 +55,7 @@ Deno.test("change-abandon: abandoning an abandoned change writes nothing", async
 });
 
 /** A merged change cannot be abandoned. */
-Deno.test("change-abandon: refuses a merged change and names the remedy", async () => {
+test("change-abandon: refuses a merged change and names the remedy", async () => {
   const { ctx } = mockCtx([detail("MERGED")], D);
   const err = await assertRejects(
     async () => await action.execute({ changeId: "620421", message: "x" }, ctx),
@@ -63,7 +64,7 @@ Deno.test("change-abandon: refuses a merged change and names the remedy", async 
   assert(/landing a revert/.test(err.message), err.message);
 });
 
-Deno.test("change-abandon: says it is reversible, unlike deletion", () => {
+test("change-abandon: says it is reversible, unlike deletion", () => {
   assert(/REVERSIBLE/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentUpdate from "../../actions/agent-update.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-update: posts agent_id, nickname and about, returns the agent unwrapped", async () => {
+test("agent-update: posts agent_id, nickname and about, returns the agent unwrapped", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({ agent: { id: "a1", nickname: "New name", about: "New bio" } }),
   }]);
@@ -19,6 +20,6 @@ Deno.test("agent-update: posts agent_id, nickname and about, returns the agent u
   assertEquals(out.nickname, "New name");
 });
 
-Deno.test("agent-update: is idempotent", () => {
+test("agent-update: is idempotent", () => {
   assertEquals(agentUpdate.idempotent, true);
 });

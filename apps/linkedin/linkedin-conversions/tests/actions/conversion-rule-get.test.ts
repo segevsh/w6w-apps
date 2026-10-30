@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionRuleGet from "../../actions/conversion-rule-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversion-rule-get: GETs by bare id with the account URN in the query", async () => {
+test("conversion-rule-get: GETs by bare id with the account URN in the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 104012, name: "test", type: "LEAD" } }]);
   const result = await conversionRuleGet.execute(
     { conversionId: "urn:lla:llaPartnerConversion:104012", accountId: "519072844" },

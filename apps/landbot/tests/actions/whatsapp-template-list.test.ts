@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import whatsappTemplateList from "../../actions/whatsapp-template-list.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-template-list: GET /channels/whatsapp/templates/ with the documented query and body", async () => {
+test("whatsapp-template-list: GET /channels/whatsapp/templates/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "templates": [{ "id": 5, "params_number": 2, "text": "Hi {{1}}" }] },
@@ -21,7 +22,7 @@ Deno.test("whatsapp-template-list: GET /channels/whatsapp/templates/ with the do
   });
 });
 
-Deno.test("whatsapp-template-list: a Landbot error surfaces its status and message", async () => {
+test("whatsapp-template-list: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () => Promise.resolve(whatsappTemplateList.execute({ "channelId": 3 } as never, ctx)),
@@ -31,7 +32,7 @@ Deno.test("whatsapp-template-list: a Landbot error surfaces its status and messa
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("whatsapp-template-list: declares search", () => {
+test("whatsapp-template-list: declares search", () => {
   assertEquals(whatsappTemplateList.type, "search");
   assertEquals(detailBody("x"), { detail: "x" });
 });

@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import sendChatAnnouncement from "../../actions/send-chat-announcement.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 /** The two ids are QUERY parameters; the message and colour are in the BODY. */
-Deno.test("send-chat-announcement: POSTs ids in the query and the message in the body", async () => {
+test("send-chat-announcement: POSTs ids in the query and the message in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await sendChatAnnouncement.execute(
     { broadcasterId: "11111", moderatorId: "44444", message: "hello", color: "purple" },
@@ -22,7 +23,7 @@ Deno.test("send-chat-announcement: POSTs ids in the query and the message in the
  * silently halved announcement would look like a success. Refusing locally is
  * the whole point.
  */
-Deno.test("send-chat-announcement: refuses an over-long message rather than letting Twitch truncate it", async () => {
+test("send-chat-announcement: refuses an over-long message rather than letting Twitch truncate it", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -36,7 +37,7 @@ Deno.test("send-chat-announcement: refuses an over-long message rather than lett
   assertEquals(calls.length, 0, "sent a message Twitch would have silently truncated");
 });
 
-Deno.test("send-chat-announcement: refuses an empty message", async () => {
+test("send-chat-announcement: refuses an empty message", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -50,7 +51,7 @@ Deno.test("send-chat-announcement: refuses an empty message", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-chat-announcement: omits colour when unset, and is not idempotent", async () => {
+test("send-chat-announcement: omits colour when unset, and is not idempotent", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await sendChatAnnouncement.execute(
     { broadcasterId: "1", moderatorId: "2", message: "hi" },

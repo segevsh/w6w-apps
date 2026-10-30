@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postDelete from "../../actions/post-delete.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("post-delete: POSTs the id in the body to /post/delete", async () => {
+test("post-delete: POSTs the id in the body to /post/delete", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   const out = await postDelete.execute({ blogIdentifier: "staff.tumblr.com", id: 123 }, ctx);
 

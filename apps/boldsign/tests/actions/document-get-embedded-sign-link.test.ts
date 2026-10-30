@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentGetEmbeddedSignLink from "../../actions/document-get-embedded-sign-link.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-get-embedded-sign-link: sends DocumentId/SignerEmail/RedirectUrl as query params", async () => {
+test("document-get-embedded-sign-link: sends DocumentId/SignerEmail/RedirectUrl as query params", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { signLink: "https://app.boldsign.com/sign/abc" },
@@ -19,7 +20,7 @@ Deno.test("document-get-embedded-sign-link: sends DocumentId/SignerEmail/Redirec
   assertEquals(out.signLink, "https://app.boldsign.com/sign/abc");
 });
 
-Deno.test("document-get-embedded-sign-link: redirectUrl is optional", async () => {
+test("document-get-embedded-sign-link: redirectUrl is optional", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { signLink: "https://app.boldsign.com/sign/abc" },

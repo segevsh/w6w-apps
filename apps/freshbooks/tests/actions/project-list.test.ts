@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshBooksCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
-Deno.test("project-list: GETs /projects under the connection's businessId", async () => {
+test("project-list: GETs /projects under the connection's businessId", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: { projects: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("project-list: GETs /projects under the connection's businessId", asyn
   assertEquals(url.searchParams.get("page"), "1");
 });
 
-Deno.test("project-list: forwards filters as plain query params", async () => {
+test("project-list: forwards filters as plain query params", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: { projects: [] } }]);
   await action.execute({ filters: { active: true } }, ctx);
   const url = new URL(calls[0].url);

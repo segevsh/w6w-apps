@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/reminder-create.ts";
 
-Deno.test("reminder-create: self reminder", async () => {
+test("reminder-create: self reminder", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 201,
     "body": { "id": "r1", "content": "Review" },
@@ -21,7 +22,7 @@ Deno.test("reminder-create: self reminder", async () => {
   });
 });
 
-Deno.test("reminder-create: for users by email", async () => {
+test("reminder-create: for users by email", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "id": "r2" } }]);
   const out = await action.execute({ "content": "Go", "emailIds": "a@b.c" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -35,7 +36,7 @@ Deno.test("reminder-create: for users by email", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "reminder": { "id": "r2" } });
 });
 
-Deno.test("reminder-create: for a chat", async () => {
+test("reminder-create: for a chat", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "id": "r3" } }]);
   const out = await action.execute(
     { "content": "Sync", "time": 5, "chatId": "1277744356562927809" } as never,
@@ -56,7 +57,7 @@ Deno.test("reminder-create: for a chat", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "reminder": { "id": "r3" } });
 });
 
-Deno.test("reminder-create: on a message", async () => {
+test("reminder-create: on a message", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "id": "r4" } }]);
   const out = await action.execute(
     { "messageId": "1536662288710", "chatId": "123", "time": 7 } as never,
@@ -77,7 +78,7 @@ Deno.test("reminder-create: on a message", async () => {
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "reminder": { "id": "r4" } });
 });
 
-Deno.test("reminder-create: a message reminder needs a chat id", async () => {
+test("reminder-create: a message reminder needs a chat id", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "messageId": "1", "time": 1 } as never, ctx)),
@@ -87,7 +88,7 @@ Deno.test("reminder-create: a message reminder needs a chat id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("reminder-create: a chat reminder needs a time", async () => {
+test("reminder-create: a chat reminder needs a time", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "content": "x", "chatId": "1" } as never, ctx)),
@@ -97,13 +98,13 @@ Deno.test("reminder-create: a chat reminder needs a time", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("reminder-create: a self reminder needs content", async () => {
+test("reminder-create: a self reminder needs content", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(() => Promise.resolve(action.execute({} as never, ctx)), Error, "content");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("reminder-create: caps assignees at 4", async () => {
+test("reminder-create: caps assignees at 4", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "content": "x", "userIds": "1,2,3,4,5" } as never, ctx)),
@@ -113,7 +114,7 @@ Deno.test("reminder-create: caps assignees at 4", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("reminder-create: idempotent is declared as false", () => {
+test("reminder-create: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

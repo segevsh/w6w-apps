@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-update.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("conversation-update: PATCHes only the fields that were set", async () => {
+test("conversation-update: PATCHes only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "cv_1", "status": "snoozed" } }]);
   const result = await action.execute!(
     {
@@ -39,7 +40,7 @@ Deno.test("conversation-update: PATCHes only the fields that were set", async ()
   assertEquals(result, { "id": "cv_1", "status": "snoozed" });
 });
 
-Deno.test("conversation-update: maps inbox and assignees to their snake_case fields", async () => {
+test("conversation-update: maps inbox and assignees to their snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "cv_1" } }]);
   const result = await action.execute!(
     { "conversationId": "cv_1", "inboxId": "i_1", "assignedUsers": ["u_1"] } as never,

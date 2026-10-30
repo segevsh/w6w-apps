@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import context from "../../actions/get-brand-context.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const CONTEXT = {
   brand: { voice: { summary: "bold" }, style: { summary: "minimal" } },
 };
 
-Deno.test("get-brand-context: JSON format asks for application/json and keeps snake_case", async () => {
+test("get-brand-context: JSON format asks for application/json and keeps snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: CONTEXT }]);
   const out = await run(context, { domain: "nike.com", format: "json" }, ctx);
   assertEquals(calls[0].url, "https://api.brandfetch.io/v2/context/nike.com");
@@ -19,7 +20,7 @@ Deno.test("get-brand-context: JSON format asks for application/json and keeps sn
   assertEquals(out.markdown, undefined);
 });
 
-Deno.test("get-brand-context: Markdown format asks for text/markdown and returns the text", async () => {
+test("get-brand-context: Markdown format asks for text/markdown and returns the text", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "content-type": "text/markdown" },
     body: "# Nike\n\nJust do it",
@@ -29,7 +30,7 @@ Deno.test("get-brand-context: Markdown format asks for text/markdown and returns
   assertEquals(out, { found: true, markdown: "# Nike\n\nJust do it" });
 });
 
-Deno.test("get-brand-context: cachedOnly 204 is notIndexed; crawl_queued 404 is crawlQueued", async () => {
+test("get-brand-context: cachedOnly 204 is notIndexed; crawl_queued 404 is crawlQueued", async () => {
   const none = mockCtx([{ status: 204 }]);
   const out = await run(context, { domain: "x.com", cachedOnly: true }, none.ctx);
   assertEquals(new URL(none.calls[0].url).searchParams.get("cachedOnly"), "true");

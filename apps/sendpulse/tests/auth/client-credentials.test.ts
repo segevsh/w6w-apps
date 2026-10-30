@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/client-credentials.ts";
 
-Deno.test("client-credentials: collects ID and Secret, both secret fields", () => {
+test("client-credentials: collects ID and Secret, both secret fields", () => {
   assertEquals(auth.key, "client-credentials");
   assertEquals(auth.type, "custom");
   assertEquals(auth.fields?.map((f) => f.key), ["clientId", "clientSecret"]);
   for (const f of auth.fields ?? []) assertEquals(f.type, "secret", `${f.key} not secret`);
 });
 
-Deno.test("client-credentials: exchange mints a token against the shared token endpoint", async () => {
+test("client-credentials: exchange mints a token against the shared token endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok", expires_in: 3600 } }]);
   const cred = await auth.exchange!(
     { fields: { clientId: "cid", clientSecret: "sec" } },
@@ -31,7 +32,7 @@ Deno.test("client-credentials: exchange mints a token against the shared token e
   assert(typeof cred.expiresAt === "string");
 });
 
-Deno.test("client-credentials: expiry leaves headroom before SendPulse's documented 1-hour TTL", async () => {
+test("client-credentials: expiry leaves headroom before SendPulse's documented 1-hour TTL", async () => {
   const { ctx } = mockCtx([{ body: { access_token: "tok", expires_in: 3600 } }]);
   const cred = await auth.exchange!(
     { fields: { clientId: "c", clientSecret: "s" } },
@@ -42,7 +43,7 @@ Deno.test("client-credentials: expiry leaves headroom before SendPulse's documen
   assert(ttlMs > 3_500_000, "but not so early that it churns");
 });
 
-Deno.test("client-credentials: exchange refuses missing fields without a request", async () => {
+test("client-credentials: exchange refuses missing fields without a request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(auth.exchange!({ fields: { clientId: "c" } }, ctx)),
@@ -52,7 +53,7 @@ Deno.test("client-credentials: exchange refuses missing fields without a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: exchange surfaces SendPulse's rejection reason", async () => {
+test("client-credentials: exchange surfaces SendPulse's rejection reason", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "invalid_client", error_description: "Client authentication failed" },
@@ -67,7 +68,7 @@ Deno.test("client-credentials: exchange surfaces SendPulse's rejection reason", 
   );
 });
 
-Deno.test("client-credentials: refresh re-mints from the stored ID/Secret — no refresh token exists", async () => {
+test("client-credentials: refresh re-mints from the stored ID/Secret — no refresh token exists", async () => {
   const { ctx, calls } = mockCtx([{ body: { access_token: "tok2", expires_in: 3600 } }]);
   const cred = await auth.refresh!(
     { credential: { clientId: "cid", clientSecret: "sec", accessToken: "old" } },
@@ -77,7 +78,7 @@ Deno.test("client-credentials: refresh re-mints from the stored ID/Secret — no
   assertEquals(cred.accessToken, "tok2");
 });
 
-Deno.test("client-credentials: sign stamps the current token", async () => {
+test("client-credentials: sign stamps the current token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.sendpulse.com/crm/v1/users",
@@ -88,7 +89,7 @@ Deno.test("client-credentials: sign stamps the current token", async () => {
   assertEquals(out.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("client-credentials: test probes GET /balance and reports ok", async () => {
+test("client-credentials: test probes GET /balance and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: { currency: "USD", balance_currency: 1 } }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result, { ok: true });
@@ -96,7 +97,7 @@ Deno.test("client-credentials: test probes GET /balance and reports ok", async (
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("client-credentials: test tells the user to reconnect when there is no access token", async () => {
+test("client-credentials: test tells the user to reconnect when there is no access token", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -105,14 +106,14 @@ Deno.test("client-credentials: test tells the user to reconnect when there is no
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client-credentials: test reports a 401 without throwing", async () => {
+test("client-credentials: test reports a 401 without throwing", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Unauthorized!", error_code: 401 } }]);
   const result = await auth.test({ credential: { accessToken: "bogus" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("401"));
 });
 
-Deno.test("client-credentials: test reports a 403 distinctly from a 401", async () => {
+test("client-credentials: test reports a 403 distinctly from a 401", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Forbidden", error_code: 403 } }]);
   const result = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(result.ok, false);

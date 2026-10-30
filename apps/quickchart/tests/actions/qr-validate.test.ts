@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/qr-validate.ts";
 import { exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("qr-validate: success maps to valid:true", async () => {
+test("qr-validate: success maps to valid:true", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, errors: [], warnings: [], normalized: { size: 300 } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("qr-validate: success maps to valid:true", async () => {
   assertEquals(out.normalized, { size: 300 });
 });
 
-Deno.test("qr-validate: 400 is data; 403 throws", async () => {
+test("qr-validate: 400 is data; 403 throws", async () => {
   const bad = mockCtx([{ status: 400, body: { success: false, errors: ["unsupported format"] } }]);
   const out = await exec(action, { text: "x", format: "gif" }, bad.ctx);
   assertEquals(out.valid, false);

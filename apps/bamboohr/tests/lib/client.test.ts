@@ -1,4 +1,6 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_PATH,
   apiHost,
@@ -15,7 +17,7 @@ import { mockCtx, TEST_SUBDOMAIN } from "../_helpers.ts";
 
 // ------------------------------------------------- the per-customer base URL --
 
-Deno.test("client: the base URL is the documented per-customer host form", () => {
+test("client: the base URL is the documented per-customer host form", () => {
   // The exact shape from every reference page's OpenAPI `servers` block:
   //   "url": "https://{companyDomain}.bamboohr.com"
   // plus the `/api/v1` prefix from the Getting Started curl sample.
@@ -27,7 +29,7 @@ Deno.test("client: the base URL is the documented per-customer host form", () =>
   assertEquals(BAMBOOHR_DOMAIN, "bamboohr.com");
 });
 
-Deno.test("client: the subdomain lands in the HOST, not in a path segment", () => {
+test("client: the subdomain lands in the HOST, not in a path segment", () => {
   const url = new URL(resolveApiUrl({ subdomain: "acme" }));
   assertEquals(url.hostname, "acme.bamboohr.com");
   assertEquals(url.pathname, "/api/v1");
@@ -38,12 +40,12 @@ Deno.test("client: the subdomain lands in the HOST, not in a path segment", () =
   assertEquals(url.hostname.startsWith("api."), false, "must not use a fixed api. host");
 });
 
-Deno.test("client: the resolved host stays inside the declared egress allowlist", async () => {
+test("client: the resolved host stays inside the declared egress allowlist", async () => {
   // `w6w.network.allow` is `["*.bamboohr.com"]` — "any subdomain at any depth,
   // NOT the apex". A host that fell outside it would be denied by the sandbox at
   // runtime, which is a much later and much more confusing failure than this.
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../../package.json", import.meta.url)),
   ) as { w6w: { network: { allow: string[] } } };
   assertEquals(manifest.w6w.network.allow, ["*.bamboohr.com"]);
 
@@ -54,7 +56,7 @@ Deno.test("client: the resolved host stays inside the declared egress allowlist"
   }
 });
 
-Deno.test("client: normalizeSubdomain reduces every form a user might paste", () => {
+test("client: normalizeSubdomain reduces every form a user might paste", () => {
   for (
     const raw of [
       "acme",
@@ -70,7 +72,7 @@ Deno.test("client: normalizeSubdomain reduces every form a user might paste", ()
   }
 });
 
-Deno.test("client: a subdomain must be a single DNS label", () => {
+test("client: a subdomain must be a single DNS label", () => {
   assert(isValidSubdomain("acme"));
   assert(isValidSubdomain("a"));
   assert(isValidSubdomain("big-company-1"));
@@ -83,7 +85,7 @@ Deno.test("client: a subdomain must be a single DNS label", () => {
   assert(!isValidSubdomain("evil.example.com"));
 });
 
-Deno.test("client: apiHost rejects what isValidSubdomain rejects, with a usable message", () => {
+test("client: apiHost rejects what isValidSubdomain rejects, with a usable message", () => {
   assertEquals(apiHost("acme"), "acme.bamboohr.com");
   assertEquals(apiHost("https://acme.bamboohr.com/api/v1"), "acme.bamboohr.com");
 
@@ -93,7 +95,7 @@ Deno.test("client: apiHost rejects what isValidSubdomain rejects, with a usable 
   assertThrows(() => apiHost("evil.example.com"), Error, "not a BambooHR company domain");
 });
 
-Deno.test("client: a request without a Connection fails with a clear message", async () => {
+test("client: a request without a Connection fails with a clear message", async () => {
   const { ctx } = mockCtx([], { display: null });
   await assertRejects(
     () => new BambooClient(ctx).request("/employees/1"),
@@ -104,7 +106,7 @@ Deno.test("client: a request without a Connection fails with a clear message", a
 
 // ------------------------------------------------------ Accept: application/json --
 
-Deno.test("client: every request sends Accept: application/json", async () => {
+test("client: every request sends Accept: application/json", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await new BambooClient(ctx).request("/employees/1");
   assertEquals(calls[0].headers["accept"], "application/json");
@@ -117,7 +119,7 @@ Deno.test("client: every request sends Accept: application/json", async () => {
  * asserts the guarantee for EVERY action in the app rather than trusting each
  * one to remember, which is the only version of this test worth having.
  */
-Deno.test("client: every action in the app sends Accept: application/json", async () => {
+test("client: every action in the app sends Accept: application/json", async () => {
   for (const action of app.actions) {
     const { ctx, calls } = mockCtx([{ body: {} }]);
     // Minimal plausible input: every required param gets a value of its type.
@@ -136,7 +138,7 @@ Deno.test("client: every action in the app sends Accept: application/json", asyn
   }
 });
 
-Deno.test("client: every action targets the connection's host under /api/v1", async () => {
+test("client: every action targets the connection's host under /api/v1", async () => {
   for (const action of app.actions) {
     const { ctx, calls } = mockCtx([{ body: {} }]);
     const input: Record<string, unknown> = {};
@@ -158,7 +160,7 @@ Deno.test("client: every action targets the connection's host under /api/v1", as
   }
 });
 
-Deno.test("client: a caller may override Accept deliberately, but never by omission", async () => {
+test("client: a caller may override Accept deliberately, but never by omission", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new BambooClient(ctx).request("/x", { headers: { accept: "application/xml" } });
   assertEquals(calls[0].headers["accept"], "application/xml");
@@ -166,7 +168,7 @@ Deno.test("client: a caller may override Accept deliberately, but never by omiss
 
 // ------------------------------------------------------------------- requests --
 
-Deno.test("client: query params are appended, and empty values are dropped", async () => {
+test("client: query params are appended, and empty values are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new BambooClient(ctx).request("/employees/1", {
     query: { fields: "firstName", onlyCurrent: false, skip: undefined, blank: "", nil: null },
@@ -180,7 +182,7 @@ Deno.test("client: query params are appended, and empty values are dropped", asy
   assertEquals(url.searchParams.has("nil"), false);
 });
 
-Deno.test("client: a body is JSON-encoded with a content-type", async () => {
+test("client: a body is JSON-encoded with a content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new BambooClient(ctx).request("/employees", { method: "POST", body: { firstName: "Ava" } });
   assertEquals(calls[0].method, "POST");
@@ -188,7 +190,7 @@ Deno.test("client: a body is JSON-encoded with a content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { firstName: "Ava" });
 });
 
-Deno.test("client: no request carries an Authorization header — that is sign's job", async () => {
+test("client: no request carries an Authorization header — that is sign's job", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new BambooClient(ctx).request("/employees/1");
   assertEquals(calls[0].headers["authorization"], undefined);
@@ -196,7 +198,7 @@ Deno.test("client: no request carries an Authorization header — that is sign's
 
 // -------------------------------------------------------------------- errors --
 
-Deno.test("client: an error surfaces BambooHR's X-BambooHR-Error-Message header", async () => {
+test("client: an error surfaces BambooHR's X-BambooHR-Error-Message header", async () => {
   // BambooHR puts the human-readable reason in a header, not the body. A 406
   // means "references to non-existent fields", which is unguessable without it.
   const { ctx } = mockCtx([{
@@ -210,7 +212,7 @@ Deno.test("client: an error surfaces BambooHR's X-BambooHR-Error-Message header"
   assert(err.message.includes("Invalid field: notAField"), "error header not surfaced");
 });
 
-Deno.test("client: a 204 and an empty body both resolve to undefined", async () => {
+test("client: a 204 and an empty body both resolve to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   assertEquals(await new BambooClient(ctx).request("/x"), undefined);
   assertEquals(await new BambooClient(ctx).request("/x"), undefined);
@@ -218,13 +220,13 @@ Deno.test("client: a 204 and an empty body both resolve to undefined", async () 
 
 // -------------------------------------------------------------------- helpers --
 
-Deno.test("client: compact drops undefined but keeps null and empty string", () => {
+test("client: compact drops undefined but keeps null and empty string", () => {
   // An update is a merge, so `undefined` must mean "leave alone" while an
   // explicit null/"" must survive as "clear this".
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "" }), { a: 1, c: null, d: "" });
 });
 
-Deno.test("client: withFields merges extras under named params", () => {
+test("client: withFields merges extras under named params", () => {
   assertEquals(
     withFields({ firstName: "Ava", lastName: undefined }, { division: "West" }),
     { division: "West", firstName: "Ava" },

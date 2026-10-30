@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pipeline-list.ts";
 
-Deno.test("pipeline-list: uses this endpoint's currPage/pageSize spelling", async () => {
+test("pipeline-list: uses this endpoint's currPage/pageSize spelling", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { get_metadata: { total: 1 }, pipelines: [{ id: 100234, name: "Active" }] },
@@ -21,13 +22,13 @@ Deno.test("pipeline-list: uses this endpoint's currPage/pageSize spelling", asyn
   assertEquals(result.pipelines[0].name, "Active");
 });
 
-Deno.test("pipeline-list: currPage=0 is a value, not an absence", async () => {
+test("pipeline-list: currPage=0 is a value, not an absence", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ currPage: 0 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("currPage"), "0");
 });
 
-Deno.test("pipeline-list: the name filter is documented as a substring match", () => {
+test("pipeline-list: the name filter is documented as a substring match", () => {
   const name = action.params!.find((p) => p.key === "name")!;
   assert(/Substring/.test(name.hint!), name.hint);
 });

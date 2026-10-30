@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import inventoryItemList from "../../actions/inventory-item-list.ts";
 import { mockCtx, pathOf, queryOf, v3Page } from "../_helpers.ts";
 
-Deno.test("inventory-item-list: GETs /v3/inventory/items with :in filters", async () => {
+test("inventory-item-list: GETs /v3/inventory/items with :in filters", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([{ sku: "MUG-1", location_id: 1 }]) }]);
   const out = await inventoryItemList.execute({ skus: "MUG-1", locationIds: "1,2" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("inventory-item-list: GETs /v3/inventory/items with :in filters", asyn
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("inventory-item-list: the row is (item, location), which the description says", () => {
+test("inventory-item-list: the row is (item, location), which the description says", () => {
   assert(inventoryItemList.description?.includes("per location"), inventoryItemList.description);
 });

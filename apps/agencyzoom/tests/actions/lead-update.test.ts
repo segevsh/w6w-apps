@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadUpdate from "../../actions/lead-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const REQUIRED = {
   country: "US",
 };
 
-Deno.test("lead-update: PUTs to /leads/{leadId}, leadId excluded from the body", async () => {
+test("lead-update: PUTs to /leads/{leadId}, leadId excluded from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "ok" } }]);
   await leadUpdate.execute(REQUIRED, ctx);
 
@@ -28,13 +29,13 @@ Deno.test("lead-update: PUTs to /leads/{leadId}, leadId excluded from the body",
  * not about this destructive-replace behaviour — pinned here so a reader does
  * not read idempotency as "safe to call with partial data".
  */
-Deno.test("lead-update: is a full replace — pipelineId/stageId are optional, unlike lead-create", () => {
+test("lead-update: is a full replace — pipelineId/stageId are optional, unlike lead-create", () => {
   const keys = new Set((leadUpdate.params ?? []).map((p) => p.key));
   assertEquals(keys.has("pipelineId"), true);
   const pipelineIdParam = leadUpdate.params?.find((p) => p.key === "pipelineId");
   assertEquals(pipelineIdParam?.required, undefined);
 });
 
-Deno.test("lead-update: is declared idempotent", () => {
+test("lead-update: is declared idempotent", () => {
   assertEquals(leadUpdate.idempotent, true);
 });

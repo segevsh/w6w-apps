@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tweet-like.ts";
 
-Deno.test("tweet-like: resolves /users/me, then POSTs /users/{id}/likes", async () => {
+test("tweet-like: resolves /users/me, then POSTs /users/{id}/likes", async () => {
   const { ctx, calls } = mockCtx([
     { body: { data: { id: "7" } } },
     { body: { data: { liked: true } } },
@@ -15,6 +16,6 @@ Deno.test("tweet-like: resolves /users/me, then POSTs /users/{id}/likes", async 
   assertEquals(out, { liked: true });
 });
 
-Deno.test("tweet-like: is idempotent", () => {
+test("tweet-like: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

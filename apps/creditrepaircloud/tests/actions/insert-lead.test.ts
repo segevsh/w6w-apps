@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import insertLead from "../../actions/insert-lead.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("insert-lead: POSTs the documented document to /api/lead/insertRecord", async () => {
+test("insert-lead: POSTs the documented document to /api/lead/insertRecord", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse("<id>MQ==</id>") }]);
   const out = await insertLead.execute({
     type: "Lead",
@@ -23,7 +24,7 @@ Deno.test("insert-lead: POSTs the documented document to /api/lead/insertRecord"
   assertEquals(out.result, { id: "MQ==" });
 });
 
-Deno.test("insert-lead: escapes user data and drops the fields left empty", async () => {
+test("insert-lead: escapes user data and drops the fields left empty", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   await insertLead.execute({
     type: "Client",
@@ -44,7 +45,7 @@ Deno.test("insert-lead: escapes user data and drops the fields left empty", asyn
   assert(!xml.includes("<phone_work>"), xml);
 });
 
-Deno.test("insert-lead: sends the insert-only portal fields when supplied", async () => {
+test("insert-lead: sends the insert-only portal fields when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   await insertLead.execute({
     type: "Client",
@@ -64,7 +65,7 @@ Deno.test("insert-lead: sends the insert-only portal fields when supplied", asyn
   );
 });
 
-Deno.test("insert-lead: the vendor's own failure message surfaces", async () => {
+test("insert-lead: the vendor's own failure message surfaces", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4402, "Mandatory field missing") }]);
   await assertRejects(
     async () => {

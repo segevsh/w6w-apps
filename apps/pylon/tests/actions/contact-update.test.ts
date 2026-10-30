@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCHes parsed emails", async () => {
+test("contact-update: PATCHes parsed emails", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "c1" } } }]);
   await action.execute!({
     id: "c1",
@@ -17,7 +18,7 @@ Deno.test("contact-update: PATCHes parsed emails", async () => {
   });
 });
 
-Deno.test("contact-update: an empty account ID is sent so the contact leaves its account", async () => {
+test("contact-update: an empty account ID is sent so the contact leaves its account", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ id: "c1", accountId: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { account_id: "" });

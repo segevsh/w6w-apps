@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentGet from "../../actions/agent-get.ts";
 import { mockRelevanceCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("agent-get: GETs /agents/{id}/get and passes the definition through", async () => {
+test("agent-get: GETs /agents/{id}/get and passes the definition through", async () => {
   const { ctx, calls } = mockRelevanceCtx([{
     body: { agent: { agent_id: "a1", title: "Triage" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("agent-get: GETs /agents/{id}/get and passes the definition through", 
   assertEquals(out.agent.title, "Triage");
 });
 
-Deno.test("agent-get: the version filter and the id encoding both survive", async () => {
+test("agent-get: the version filter and the id encoding both survive", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { agent: {} } }]);
   await agentGet.execute({ agentId: "a1.b2-c3_d4", version: "draft" }, ctx);
 
@@ -24,7 +25,7 @@ Deno.test("agent-get: the version filter and the id encoding both survive", asyn
   assertEquals(queryOf(calls[0].url), { version: "draft" });
 });
 
-Deno.test("agent-get: the vendor's agent_not_found is the error a caller sees", async () => {
+test("agent-get: the vendor's agent_not_found is the error a caller sees", async () => {
   const { ctx } = mockRelevanceCtx([
     { status: 404, body: { message: "Agent abc not found", error_type: "agent_not_found" } },
   ]);

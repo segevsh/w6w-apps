@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   API_BASE,
   API_PREFIX,
@@ -13,7 +14,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, pathOf, withCredits } from "../_helpers.ts";
 
-Deno.test("API_BASE/API_PREFIX/PATHS: the one documented origin and version prefix", () => {
+test("API_BASE/API_PREFIX/PATHS: the one documented origin and version prefix", () => {
   assertEquals(API_BASE, "https://api.wappalyzer.com");
   assertEquals(API_PREFIX, "/v2");
   // Collection endpoints carry a trailing slash in every worked example.
@@ -24,20 +25,20 @@ Deno.test("API_BASE/API_PREFIX/PATHS: the one documented origin and version pref
   assertEquals(PATHS.lists, "/lists/");
 });
 
-Deno.test("listPath: never a trailing slash, and escapes the id", () => {
+test("listPath: never a trailing slash, and escapes the id", () => {
   assertEquals(listPath("lst_abcdef"), "/lists/lst_abcdef");
   assertEquals(listPath(" lst_abcdef "), "/lists/lst_abcdef");
   assertEquals(listPath("weird/id"), "/lists/weird%2Fid");
 });
 
-Deno.test("joinList: comma-joins and trims, matching style:form explode:false", () => {
+test("joinList: comma-joins and trims, matching style:form explode:false", () => {
   assertEquals(joinList("https://a.com, https://b.com"), "https://a.com,https://b.com");
   assertEquals(joinList(["a", " b ", ""]), "a,b");
   assertEquals(joinList(undefined), undefined);
   assertEquals(joinList(""), undefined);
 });
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }), {
     d: false,
     e: 0,
@@ -45,13 +46,13 @@ Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", ()
   });
 });
 
-Deno.test("toStringList: normalises an array or comma string, dropping blanks", () => {
+test("toStringList: normalises an array or comma string, dropping blanks", () => {
   assertEquals(toStringList([" a ", "", "b"]), ["a", "b"]);
   assertEquals(toStringList("a, b"), ["a", "b"]);
   assertEquals(toStringList(undefined), undefined);
 });
 
-Deno.test("asOptionalJson: parses a JSON string, passes a non-string through, rejects garbage", () => {
+test("asOptionalJson: parses a JSON string, passes a non-string through, rejects garbage", () => {
   assertEquals(asOptionalJson('[{"slug":"shopify"}]', "technologies"), [{ slug: "shopify" }]);
   assertEquals(asOptionalJson([{ slug: "shopify" }], "technologies"), [{ slug: "shopify" }]);
   assertEquals(asOptionalJson(undefined, "technologies"), undefined);
@@ -71,7 +72,7 @@ Deno.test("asOptionalJson: parses a JSON string, passes a non-string through, re
  * this pack. `formatWappalyzerError` therefore leans on the status code for
  * category and the message for detail.
  */
-Deno.test("formatWappalyzerError: reads the vendor's message and adds a 403/429 hint", () => {
+test("formatWappalyzerError: reads the vendor's message and adds a 403/429 hint", () => {
   const msg403 = formatWappalyzerError(
     403,
     "GET",
@@ -86,12 +87,12 @@ Deno.test("formatWappalyzerError: reads the vendor's message and adds a 403/429 
   assert(/rate limit/i.test(msg429));
 });
 
-Deno.test("formatWappalyzerError: falls back to the raw body when it is not JSON", () => {
+test("formatWappalyzerError: falls back to the raw body when it is not JSON", () => {
   const msg = formatWappalyzerError(500, "GET", "/v2/lookup/", "upstream exploded");
   assert(msg.includes("upstream exploded"));
 });
 
-Deno.test("WappalyzerClient.get: reads the credit headers off a successful response", async () => {
+test("WappalyzerClient.get: reads the credit headers off a successful response", async () => {
   const { ctx, calls } = mockCtx([withCredits({ credits: 5 }, 1, 4)]);
   const client = new WappalyzerClient(ctx);
   const result = await client.get<{ credits: number }>(PATHS.creditsBalance);
@@ -102,7 +103,7 @@ Deno.test("WappalyzerClient.get: reads the credit headers off a successful respo
   assertEquals(result.creditsRemaining, 4);
 });
 
-Deno.test("WappalyzerClient.get: a response with no credit headers omits them, not NaN", async () => {
+test("WappalyzerClient.get: a response with no credit headers omits them, not NaN", async () => {
   const { ctx } = mockCtx([{ body: { credits: 5 } }]);
   const client = new WappalyzerClient(ctx);
   const result = await client.get<{ credits: number }>(PATHS.creditsBalance);
@@ -111,7 +112,7 @@ Deno.test("WappalyzerClient.get: a response with no credit headers omits them, n
   assertEquals("creditsRemaining" in result, false);
 });
 
-Deno.test("WappalyzerClient: a non-ok response throws a formatted error, not a raw fetch failure", async () => {
+test("WappalyzerClient: a non-ok response throws a formatted error, not a raw fetch failure", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Forbidden" } }]);
   const client = new WappalyzerClient(ctx);
   await assertRejects(
@@ -121,7 +122,7 @@ Deno.test("WappalyzerClient: a non-ok response throws a formatted error, not a r
   );
 });
 
-Deno.test("WappalyzerClient.post: sends a JSON body with the right content-type", async () => {
+test("WappalyzerClient.post: sends a JSON body with the right content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "lst_abcdef", status: "Calculating" } }]);
   const client = new WappalyzerClient(ctx);
   await client.post(PATHS.lists, { technologies: [{ slug: "shopify" }] });
@@ -131,7 +132,7 @@ Deno.test("WappalyzerClient.post: sends a JSON body with the right content-type"
   assertEquals(JSON.parse(calls[0].body!), { technologies: [{ slug: "shopify" }] });
 });
 
-Deno.test("WappalyzerClient.delete: sends no body", async () => {
+test("WappalyzerClient.delete: sends no body", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new WappalyzerClient(ctx);
   await client.delete(listPath("lst_abcdef"));

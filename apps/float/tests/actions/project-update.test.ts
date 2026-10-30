@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectUpdate from "../../actions/project-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-update - PATCHes /projects/{id} with only provided fields", async () => {
+test("project-update - PATCHes /projects/{id} with only provided fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { project_id: 3, name: "Renamed" } }]);
   const out = await projectUpdate.execute({ project_id: 3, name: "Renamed", active: false }, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/projects/3");

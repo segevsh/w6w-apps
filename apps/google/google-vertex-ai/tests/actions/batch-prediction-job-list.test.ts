@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-prediction-job-list.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 
-Deno.test("batch-prediction-job-list: paginates and passes the filter", async () => {
+test("batch-prediction-job-list: paginates and passes the filter", async () => {
   const { ctx, calls } = mockCtx([
     { body: { batchPredictionJobs: [{ name: "a" }], nextPageToken: "t" } },
     { body: { batchPredictionJobs: [{ name: "b" }] } },
@@ -17,7 +18,7 @@ Deno.test("batch-prediction-job-list: paginates and passes the filter", async ()
   assert(calls[1].url.includes("pageToken=t"));
 });
 
-Deno.test("batch-prediction-job-list: an API error carries Google's status", async () => {
+test("batch-prediction-job-list: an API error carries Google's status", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { status: "PERMISSION_DENIED", message: "no" } },

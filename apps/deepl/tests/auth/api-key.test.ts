@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 import { FREE_URL, PRO_URL } from "../../lib/client.ts";
 
-Deno.test("api-key: is an apiKey method exposing a single `apiKey` secret field", () => {
+test("api-key: is an apiKey method exposing a single `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "header");
@@ -15,7 +16,7 @@ Deno.test("api-key: is an apiKey method exposing a single `apiKey` secret field"
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign stamps DeepL-Auth-Key (not Bearer) and never touches the URL", async () => {
+test("api-key: sign stamps DeepL-Auth-Key (not Bearer) and never touches the URL", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://placeholder.example/v2/usage",
@@ -27,7 +28,7 @@ Deno.test("api-key: sign stamps DeepL-Auth-Key (not Bearer) and never touches th
   assertEquals(out.url, "https://placeholder.example/v2/usage");
 });
 
-Deno.test("api-key: test routes a Free key (:fx suffix) to api-free.deepl.com", async () => {
+test("api-key: test routes a Free key (:fx suffix) to api-free.deepl.com", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { character_count: 0 } }]);
   const result = await auth.test({ credential: { apiKey: "abc:fx" } }, ctx);
   assertEquals(result.ok, true);
@@ -37,7 +38,7 @@ Deno.test("api-key: test routes a Free key (:fx suffix) to api-free.deepl.com", 
   assertEquals(calls[0].headers["authorization"], "DeepL-Auth-Key abc:fx");
 });
 
-Deno.test("api-key: test routes a Pro key (no suffix) to api.deepl.com", async () => {
+test("api-key: test routes a Pro key (no suffix) to api.deepl.com", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { character_count: 0 } }]);
   const result = await auth.test({ credential: { apiKey: "abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -45,14 +46,14 @@ Deno.test("api-key: test routes a Pro key (no suffix) to api.deepl.com", async (
   assertEquals(url.origin, PRO_URL);
 });
 
-Deno.test("api-key: test reports failure with status code when the API rejects", async () => {
+test("api-key: test reports failure with status code when the API rejects", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { message: "Forbidden" } }]);
   const result = await auth.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message?.includes("403"));
 });
 
-Deno.test("api-key: afterConnect labels a :fx key 'free' and a bare key 'pro'", async () => {
+test("api-key: afterConnect labels a :fx key 'free' and a bare key 'pro'", async () => {
   const { ctx } = mockCtx();
   const free = await auth.afterConnect!({ credential: { apiKey: "abc:fx" } }, ctx);
   assertEquals(free.plan, "free");

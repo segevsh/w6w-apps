@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/candidate-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("candidate-create: POSTs a sourced candidate with parsed JSON fields", async () => {
+test("candidate-create: POSTs a sourced candidate with parsed JSON fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "k1", name: "Bo" } }]);
   const out = await action.execute!({
     companyId: "c1",
@@ -31,7 +32,7 @@ Deno.test("candidate-create: POSTs a sourced candidate with parsed JSON fields",
   assertEquals(out, { _id: "k1", name: "Bo" });
 });
 
-Deno.test("candidate-create: a 202 is reported as accepted, not as a candidate", async () => {
+test("candidate-create: a 202 is reported as accepted, not as a candidate", async () => {
   const { ctx } = mockCtx([{
     status: 202,
     body: { error: { type: "pending", message: "email sent to complete" } },
@@ -43,7 +44,7 @@ Deno.test("candidate-create: a 202 is reported as accepted, not as a candidate",
   assertEquals(out, { accepted: true, message: "email sent to complete" });
 });
 
-Deno.test("candidate-create: 409 duplicate is an error", async () => {
+test("candidate-create: 409 duplicate is an error", async () => {
   const { ctx } = mockCtx([{ status: 409, body: { error: { type: "exists", message: "dup" } } }]);
   await assertRejects(
     async () => await action.execute!({ companyId: "c1", positionId: "p1", name: "Bo" }, ctx),

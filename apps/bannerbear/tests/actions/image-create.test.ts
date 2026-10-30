@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageCreate from "../../actions/image-create.ts";
 import { API_ROOT, assertRejects, mockCtx, pathOf, SYNC_API_ROOT } from "../_helpers.ts";
 
-Deno.test("image-create: POST /images on the async host by default, modifications defaults to {}", async () => {
+test("image-create: POST /images on the async host by default, modifications defaults to {}", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "i1", status: "pending" } }]);
   const out = await imageCreate.execute({ template: "t1" }, ctx) as unknown as Record<
     string,
@@ -17,14 +18,14 @@ Deno.test("image-create: POST /images on the async host by default, modification
   assertEquals(out.uid, "i1");
 });
 
-Deno.test("image-create: useSyncHost switches to the sync API root", async () => {
+test("image-create: useSyncHost switches to the sync API root", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { uid: "i1", status: "completed" } }]);
   await imageCreate.execute({ template: "t1", useSyncHost: true }, ctx);
 
   assertEquals(calls[0].url.startsWith(SYNC_API_ROOT), true);
 });
 
-Deno.test("image-create: passes modifications, formats, scale and metadata through", async () => {
+test("image-create: passes modifications, formats, scale and metadata through", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "i1" } }]);
   await imageCreate.execute(
     {
@@ -44,11 +45,11 @@ Deno.test("image-create: passes modifications, formats, scale and metadata throu
   assertEquals(body.metadata, "order-42");
 });
 
-Deno.test("image-create: requires a template", async () => {
+test("image-create: requires a template", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => imageCreate.execute({ template: "" }, ctx));
 });
 
-Deno.test("image-create: not idempotent", () => {
+test("image-create: not idempotent", () => {
   assertEquals(imageCreate.idempotent, false);
 });

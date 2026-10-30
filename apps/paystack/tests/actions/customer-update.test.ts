@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/customer-update.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-update: PUTs only the given fields to /customer/{code}", async () => {
+test("customer-update: PUTs only the given fields to /customer/{code}", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ customer_code: "CUS_1" }) }]);
   await action.execute({ code: "CUS_1", firstName: "Ada" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("customer-update: PUTs only the given fields to /customer/{code}", asy
   assertEquals(JSON.parse(calls[0].body!), { first_name: "Ada" });
 });
 
-Deno.test("customer-update: refuses an empty update and a missing code without a request", async () => {
+test("customer-update: refuses an empty update and a missing code without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ code: "CUS_1" }, ctx),

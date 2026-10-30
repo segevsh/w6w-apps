@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockRecruitCtx } from "../_helpers.ts";
 import action from "../../actions/candidate-list.ts";
 
-Deno.test("candidate-list: GETs /Candidates with paging and filter params", async () => {
+test("candidate-list: GETs /Candidates with paging and filter params", async () => {
   const { ctx, calls } = mockRecruitCtx([{ body: { data: [{ id: "1" }], info: { count: 1 } } }]);
   const out = await action.execute({
     fields: "id,Last_Name",
@@ -24,7 +25,7 @@ Deno.test("candidate-list: GETs /Candidates with paging and filter params", asyn
   assertEquals(out, { data: [{ id: "1" }], info: { count: 1 } });
 });
 
-Deno.test("candidate-list: fields is optional — omitting it sends no fields param", async () => {
+test("candidate-list: fields is optional — omitting it sends no fields param", async () => {
   const { ctx, calls } = mockRecruitCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("fields"), false);

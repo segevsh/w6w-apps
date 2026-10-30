@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/create-project-color.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const base = { projectId: "p1", name: "Brand", r: 10, g: 20, b: 30, a: 0.5 };
 
-Deno.test("create-project-color: POSTs the color and returns the created id", async () => {
+test("create-project-color: POSTs the color and returns the created id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "col1" } }]);
   assertEquals(await action.execute({ ...base, sourceId: "S1" }, ctx), { id: "col1" });
   assertEquals(calls[0].method, "POST");
@@ -19,13 +20,13 @@ Deno.test("create-project-color: POSTs the color and returns the created id", as
   });
 });
 
-Deno.test("create-project-color: alpha defaults to 1; zero channels are sent", async () => {
+test("create-project-color: alpha defaults to 1; zero channels are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "col2" } }]);
   await action.execute({ projectId: "p1", name: "Black", r: 0, g: 0, b: 0 }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Black", r: 0, g: 0, b: 0, a: 1 });
 });
 
-Deno.test("create-project-color: out-of-range channels, long names and missing values are refused", async () => {
+test("create-project-color: out-of-range channels, long names and missing values are refused", async () => {
   const { ctx, calls } = mockCtx();
   for (
     const [patch, msg] of [

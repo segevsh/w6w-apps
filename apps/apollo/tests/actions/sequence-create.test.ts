@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceCreate from "../../actions/sequence-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sequence-create: POSTs to /sequences and merges `settings` into the body", async () => {
+test("sequence-create: POSTs to /sequences and merges `settings` into the body", async () => {
   const { ctx, calls } = mockCtx([{
     body: { emailer_campaign: { id: "seq1", name: "Outbound" } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("sequence-create: POSTs to /sequences and merges `settings` into the b
   assertEquals(out.sequence.name, "Outbound");
 });
 
-Deno.test("sequence-create: label_names is comma-split into an array", async () => {
+test("sequence-create: label_names is comma-split into an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { emailer_campaign: { id: "seq1" } } }]);
   await sequenceCreate.execute({ name: "X", label_names: "A, B" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).label_names, ["A", "B"]);

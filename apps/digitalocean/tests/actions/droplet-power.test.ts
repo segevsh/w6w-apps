@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/droplet-power.ts";
 
@@ -7,7 +8,7 @@ const accepted = (type: string) => ({
   body: { action: { id: 7654321, status: "in-progress", type } },
 });
 
-Deno.test("droplet-power: posts the action type", async () => {
+test("droplet-power: posts the action type", async () => {
   const { ctx, calls } = mockCtx([accepted("shutdown")]);
   const result = await action.execute(
     { dropletId: "3164444", action: "shutdown" },
@@ -19,7 +20,7 @@ Deno.test("droplet-power: posts the action type", async () => {
 });
 
 /** DigitalOcean's own docs warn about this; the names do not convey it. */
-Deno.test("droplet-power: the hard forms need an acknowledgement", async () => {
+test("droplet-power: the hard forms need an acknowledgement", async () => {
   for (const type of ["power_off", "power_cycle"]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -35,7 +36,7 @@ Deno.test("droplet-power: the hard forms need an acknowledgement", async () => {
   }
 });
 
-Deno.test("droplet-power: the graceful forms are not gated", async () => {
+test("droplet-power: the graceful forms are not gated", async () => {
   for (const type of ["shutdown", "reboot", "power_on"]) {
     const { ctx, calls } = mockCtx([accepted(type)]);
     await action.execute({ dropletId: "3164444", action: type }, ctx);
@@ -43,7 +44,7 @@ Deno.test("droplet-power: the graceful forms are not gated", async () => {
   }
 });
 
-Deno.test("droplet-power: an acknowledged hard power-off warns", async () => {
+test("droplet-power: an acknowledged hard power-off warns", async () => {
   const { ctx, logs } = mockCtx([accepted("power_off")]);
   await action.execute(
     { dropletId: "3164444", action: "power_off", confirmHardPower: true },
@@ -54,7 +55,7 @@ Deno.test("droplet-power: an acknowledged hard power-off warns", async () => {
 });
 
 /** There is no cost reason to power a droplet down. */
-Deno.test("droplet-power: always reports that the droplet still bills", async () => {
+test("droplet-power: always reports that the droplet still bills", async () => {
   const { ctx } = mockCtx([accepted("shutdown")]);
   const result = await action.execute(
     { dropletId: "3164444", action: "shutdown" },

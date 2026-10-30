@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listsList from "../../actions/lists-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lists-list: reads /v2/lists/ and takes no params", async () => {
+test("lists-list: reads /v2/lists/ and takes no params", async () => {
   const results = [{
     id: "lst_abcdef",
     createdAt: 1620687647,
@@ -18,7 +19,7 @@ Deno.test("lists-list: reads /v2/lists/ and takes no params", async () => {
   assertEquals(listsList.params?.length, 0);
 });
 
-Deno.test("lists-list: an empty body is reported as an empty results array", async () => {
+test("lists-list: an empty body is reported as an empty results array", async () => {
   const { ctx } = mockCtx([{ status: 200, body: undefined }]);
   const out = await listsList.execute({}, ctx) as { results: unknown[] };
   assertEquals(out.results, []);

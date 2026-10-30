@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -10,7 +11,7 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, queryAll } from "../_helpers.ts";
 
-Deno.test("client: array query values are repeated keys, not comma-joined", async () => {
+test("client: array query values are repeated keys, not comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ body: { workOrders: [], nextCursor: null } }]);
   await new MaintainXClient(ctx).list("/workorders", "workOrders", {
     statuses: ["OPEN", "DONE"],
@@ -20,7 +21,7 @@ Deno.test("client: array query values are repeated keys, not comma-joined", asyn
   assertEquals(queryAll(calls[0].url), { statuses: ["OPEN", "DONE"], limit: ["5"] });
 });
 
-Deno.test("client: list keeps the vendor's array key and normalises nextCursor", async () => {
+test("client: list keeps the vendor's array key and normalises nextCursor", async () => {
   const { ctx } = mockCtx([{ body: { teams: [{ id: 1 }], nextCursor: "c2", nextPageUrl: "u" } }]);
   assertEquals(await new MaintainXClient(ctx).list("/teams", "teams", {}), {
     teams: [{ id: 1 }],
@@ -28,7 +29,7 @@ Deno.test("client: list keeps the vendor's array key and normalises nextCursor",
   });
 });
 
-Deno.test("client: organizationId becomes x-organization-id only when set", async () => {
+test("client: organizationId becomes x-organization-id only when set", async () => {
   const a = mockCtx([{ body: {} }, { body: {} }]);
   const c = new MaintainXClient(a.ctx);
   await c.request("/x", { organizationId: 7 });
@@ -37,23 +38,23 @@ Deno.test("client: organizationId becomes x-organization-id only when set", asyn
   assertEquals(a.calls[1].headers["x-organization-id"], undefined);
 });
 
-Deno.test("client: errors surface the vendor's error string and status", async () => {
+test("client: errors surface the vendor's error string and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("Work order not found") }]);
   const err = await assertRejects(() => new MaintainXClient(ctx).request("/workorders/9"), Error);
   assert(err.message.includes("404"));
   assert(err.message.includes("Work order not found"));
 });
 
-Deno.test("client: a 429 explains the batch endpoint", () => {
+test("client: a 429 explains the batch endpoint", () => {
   assert(formatMaintainXError(429, "POST", "/v1/x", '{"error":"slow"}').includes("batch"));
 });
 
-Deno.test("client: 204 and empty bodies resolve undefined", async () => {
+test("client: 204 and empty bodies resolve undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new MaintainXClient(ctx).request("/x", { method: "DELETE" }), undefined);
 });
 
-Deno.test("client: helpers", () => {
+test("client: helpers", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [], e: null, f: 0 }), { a: 1, f: 0 });
   assertEquals(encodeId("a/b"), "a%2Fb");
   assertEquals(toList("a, b,,c"), ["a", "b", "c"]);
@@ -65,7 +66,7 @@ Deno.test("client: helpers", () => {
   assertEquals(asOptionalJson("", "j"), undefined);
 });
 
-Deno.test("client: helpers reject bad input loudly", () => {
+test("client: helpers reject bad input loudly", () => {
   let threw = false;
   try {
     toIdList("1,a", "ids");

@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports the full action set with unique kebab-case keys", () => {
+test("index: exports the full action set with unique kebab-case keys", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys, [
     "list-task-lists",
@@ -22,7 +23,7 @@ Deno.test("index: exports the full action set with unique kebab-case keys", () =
   for (const k of keys) assert(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(k), `${k} is not kebab-case`);
 });
 
-Deno.test("index: every action declares a valid type, description, params and output", () => {
+test("index: every action declares a valid type, description, params and output", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key} has type ${a.type}`);
     assert(a.title, `${a.key} has no title`);
@@ -33,7 +34,7 @@ Deno.test("index: every action declares a valid type, description, params and ou
   }
 });
 
-Deno.test("index: every perform action declares idempotent honestly", () => {
+test("index: every perform action declares idempotent honestly", () => {
   for (const a of app.actions.filter((x) => x.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -44,7 +45,7 @@ Deno.test("index: every perform action declares idempotent honestly", () => {
   assertEquals(nonIdempotent, ["create-task-list", "create-task"]);
 });
 
-Deno.test("index: exports oauth2 as the only auth method, with a test hook", () => {
+test("index: exports oauth2 as the only auth method, with a test hook", () => {
   assertEquals(app.auth.map((a) => a.key), ["oauth2"]);
   assertEquals(app.auth[0].type, "oauth2");
   assertEquals(typeof app.auth[0].test, "function");
@@ -53,11 +54,11 @@ Deno.test("index: exports oauth2 as the only auth method, with a test hook", () 
   assertEquals(app.auth[0].fields, undefined);
 });
 
-Deno.test("index: exports the service and quota health checks", () => {
+test("index: exports the service and quota health checks", () => {
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: every task-scoped action takes a task list ID", () => {
+test("index: every task-scoped action takes a task list ID", () => {
   for (const a of app.actions) {
     if (a.key === "list-task-lists" || a.key === "create-task-list") continue;
     const p = a.params!.find((x) => x.key === "taskList");

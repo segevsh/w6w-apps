@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formSubmissionList from "../../actions/form-submission-list.ts";
 import { mockCtx, pagedEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("form-submission-list: GETs a form's submissions with the numeric-id filters", async () => {
+test("form-submission-list: GETs a form's submissions with the numeric-id filters", async () => {
   const { ctx, calls } = mockCtx([
     { body: pagedEnvelope({ formSubmissions: [{ id: "sub_1" }] }) },
   ]);

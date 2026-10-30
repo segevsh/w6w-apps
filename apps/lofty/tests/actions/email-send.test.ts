@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/email-send.ts";
 
-Deno.test("email-send: posts to the email endpoint and echoes the address used", async () => {
+test("email-send: posts to the email endpoint and echoes the address used", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { messageId: "e1", toEmail: "recipient@example.com", subject: "Welcome" },
@@ -23,7 +24,7 @@ Deno.test("email-send: posts to the email endpoint and echoes the address used",
   assertEquals(result.toEmail, "recipient@example.com");
 });
 
-Deno.test("email-send: an explicit recipient is sent", async () => {
+test("email-send: an explicit recipient is sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     leadId: 1,
@@ -34,6 +35,6 @@ Deno.test("email-send: an explicit recipient is sent", async () => {
   assertEquals(JSON.parse(calls[0].body!).toEmail, "recipient@example.com");
 });
 
-Deno.test("email-send: is not idempotent", () => {
+test("email-send: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ping from "../../actions/ping.ts";
 import { errorOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ping: GET /v1/ping returns pong, with no credential in the request", async () => {
+test("ping: GET /v1/ping returns pong, with no credential in the request", async () => {
   const { ctx, calls } = mockCtx([{ body: { msg: "pong" } }]);
   assertEquals(await ping.execute({}, ctx), { msg: "pong" });
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("ping: GET /v1/ping returns pong, with no credential in the request", 
   assertEquals(calls[0].url.includes("api_key"), false);
 });
 
-Deno.test("ping: surfaces the vendor error text on 403", async () => {
+test("ping: surfaces the vendor error text on 403", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "api key not valid" } }]);
   const err = await errorOf(() => ping.execute({}, ctx));
   assertEquals(err.message, "Docparser 403 for GET /v1/ping: api key not valid");

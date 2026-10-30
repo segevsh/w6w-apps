@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-conversation-messages.ts";
 
-Deno.test("list-conversation-messages: GETs /v1/conversations/{id}/messages", async () => {
+test("list-conversation-messages: GETs /v1/conversations/{id}/messages", async () => {
   const { ctx, calls } = mockCtx([envelope([{ id: 326, body: "hello guest" }], { count: 1 })]);
   const page = await action.execute(
     { conversationId: 1406, limit: 20, includeScheduledMessages: 1 },
@@ -16,7 +17,7 @@ Deno.test("list-conversation-messages: GETs /v1/conversations/{id}/messages", as
   assertEquals(page.items[0].body, "hello guest");
 });
 
-Deno.test("list-conversation-messages: refuses a call without a conversation id", async () => {
+test("list-conversation-messages: refuses a call without a conversation id", async () => {
   const { ctx } = mockCtx();
   await assertRejects(() => Promise.resolve(action.execute({}, ctx)), Error, "conversationId");
 });

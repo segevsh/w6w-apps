@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs /contacts with a compacted body", async () => {
+test("contact-create: POSTs /contacts with a compacted body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { success: true, id: 74 } }]);
   const out = await contactCreate.execute({
     type: "Crm::Contact::Individual",
@@ -20,6 +21,6 @@ Deno.test("contact-create: POSTs /contacts with a compacted body", async () => {
   assertEquals(out, { success: true, id: 74 });
 });
 
-Deno.test("contact-create: is not idempotent — a retry creates a second contact", () => {
+test("contact-create: is not idempotent — a retry creates a second contact", () => {
   assertEquals(contactCreate.idempotent, false);
 });

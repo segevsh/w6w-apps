@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/job-list.ts";
 import { mockCtx, paginator, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("job-list: GETs /jobs with page and limit and folds the paginator", async () => {
+test("job-list: GETs /jobs with page and limit and folds the paginator", async () => {
   const { ctx, calls } = mockCtx([{
     body: paginator([{ slug: "1" }, { slug: "2" }], "https://x/next"),
   }]);
@@ -15,7 +16,7 @@ Deno.test("job-list: GETs /jobs with page and limit and folds the paginator", as
   assertEquals(out.currentPage, 1);
 });
 
-Deno.test("job-list: last page reports hasMore false and unset params are not sent", async () => {
+test("job-list: last page reports hasMore false and unset params are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([]) }]);
   const out = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://api.recruitcrm.io/v1/jobs");
@@ -23,7 +24,7 @@ Deno.test("job-list: last page reports hasMore false and unset params are not se
   assertEquals(out.items, []);
 });
 
-Deno.test("job-list: a vendor error surfaces with its own text", async () => {
+test("job-list: a vendor error surfaces with its own text", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Unauthorized" } }]);
   let msg = "";
   try {
@@ -34,7 +35,7 @@ Deno.test("job-list: a vendor error surfaces with its own text", async () => {
   assertEquals(msg, "Recruit CRM 401 for GET /v1/jobs: Unauthorized");
 });
 
-Deno.test("job-list: forwards sort_by and sort_order", async () => {
+test("job-list: forwards sort_by and sort_order", async () => {
   const { ctx, calls } = mockCtx([{ body: paginator([]) }]);
   await action.execute({ sortBy: "name", sortOrder: "asc" }, ctx);
   assertEquals(queryOf(calls[0].url), { sort_by: "name", sort_order: "asc" });

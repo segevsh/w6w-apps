@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, {
   capState,
@@ -51,7 +52,7 @@ const allGood = page([
   ["GCP europe-west3", "operational", CLUSTERS],
 ]);
 
-Deno.test("service: reads the Better Stack JSON route, not a Statuspage path", async () => {
+test("service: reads the Better Stack JSON route, not a Statuspage path", async () => {
   const { ctx, calls } = mockCtx([allGood]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -64,7 +65,7 @@ Deno.test("service: reads the Better Stack JSON route, not a Statuspage path", a
  * One region down is total for the tenants in it and irrelevant to everyone
  * else. An app-scoped check has no connection and so no region.
  */
-Deno.test("service: a single region outage is capped at degraded, and says why", async () => {
+test("service: a single region outage is capped at degraded, and says why", async () => {
   const { ctx } = mockCtx([
     page([
       ["Cloud UI", "operational", CONTROL],
@@ -79,7 +80,7 @@ Deno.test("service: a single region outage is capped at degraded, and says why",
 });
 
 /** Every region at once is no longer a "which region are you in" question. */
-Deno.test("service: every region down is a real outage", async () => {
+test("service: every region down is a real outage", async () => {
   const { ctx } = mockCtx([
     page([
       ["Cloud UI", "operational", CONTROL],
@@ -93,7 +94,7 @@ Deno.test("service: every region down is a real outage", async () => {
 });
 
 /** The console being down does not stop a cluster answering queries. */
-Deno.test("service: control-plane trouble is reported but capped", async () => {
+test("service: control-plane trouble is reported but capped", async () => {
   const { ctx } = mockCtx([
     page([
       ["Cloud UI", "downtime", CONTROL],
@@ -110,7 +111,7 @@ Deno.test("service: control-plane trouble is reported but capped", async () => {
  * HTML, so a parse failure is the signal that the JSON route has gone — not an
  * anomaly to swallow.
  */
-Deno.test("service: the catch-all HTML reads as unknown, not as healthy", async () => {
+test("service: the catch-all HTML reads as unknown, not as healthy", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<!DOCTYPE html><html>…</html>" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
@@ -118,7 +119,7 @@ Deno.test("service: the catch-all HTML reads as unknown, not as healthy", async 
 });
 
 /** A redirect or rebrand pointing at somebody else's healthy page is not good news. */
-Deno.test("service: a page that is not Qdrant's reads as unknown", async () => {
+test("service: a page that is not Qdrant's reads as unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -135,14 +136,14 @@ Deno.test("service: a page that is not Qdrant's reads as unknown", async () => {
 });
 
 /** A broken status page says nothing about Qdrant. */
-Deno.test("service: a failing status page is never down", async () => {
+test("service: a failing status page is never down", async () => {
   for (const status of [404, 500, 503]) {
     const { ctx } = mockCtx([{ status, body: "nope" }]);
     assertEquals((await service.check!({}, ctx)).state, "unknown");
   }
 });
 
-Deno.test("service: an unreachable status host is unknown too", async () => {
+test("service: an unreachable status host is unknown too", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("dns")),
     log: () => {},
@@ -150,14 +151,14 @@ Deno.test("service: an unreachable status host is unknown too", async () => {
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page with no resources is unknown", async () => {
+test("service: a page with no resources is unknown", async () => {
   const { ctx } = mockCtx([page([])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no resources/.test(result.message!), result.message);
 });
 
-Deno.test("service: maps Better Stack's vocabulary", () => {
+test("service: maps Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("degraded"), "degraded");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
@@ -166,7 +167,7 @@ Deno.test("service: maps Better Stack's vocabulary", () => {
   assertEquals(mapResourceStatus("something new"), "unknown");
 });
 
-Deno.test("service: component keys are slugs of the public names", () => {
+test("service: component keys are slugs of the public names", () => {
   assertEquals(resourceKey({ attributes: { public_name: "AWS us-east-1" } }, 0), "aws-us-east-1");
   assertEquals(
     resourceKey({ attributes: { public_name: "Cloud API (extern)" } }, 0),
@@ -176,7 +177,7 @@ Deno.test("service: component keys are slugs of the public names", () => {
   assertEquals(resourceKey({}, 3), "resource-3");
 });
 
-Deno.test("service: capping only ever lowers down", () => {
+test("service: capping only ever lowers down", () => {
   assertEquals(capState("down"), "degraded");
   assertEquals(capState("degraded"), "degraded");
   assertEquals(capState("ok"), "ok");
@@ -187,7 +188,7 @@ Deno.test("service: capping only ever lowers down", () => {
  * The whole reason this check is not authoritative: it cannot tell a cloud
  * connection from a self-hosted one, and most Qdrant instances are self-hosted.
  */
-Deno.test("service: is informational, unsigned, and names only the status host", () => {
+test("service: is informational, unsigned, and names only the status host", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");

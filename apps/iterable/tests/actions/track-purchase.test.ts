@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track-purchase.ts";
 
-Deno.test("track-purchase: metadata", () => {
+test("track-purchase: metadata", () => {
   assertEquals(action.key, "track-purchase");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -18,7 +19,7 @@ Deno.test("track-purchase: metadata", () => {
   ]);
 });
 
-Deno.test("track-purchase: calls POST /commerce/trackPurchase on the US host", async () => {
+test("track-purchase: calls POST /commerce/trackPurchase on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "user": { "a": 1 },
@@ -47,7 +48,7 @@ Deno.test("track-purchase: calls POST /commerce/trackPurchase on the US host", a
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("track-purchase: uses the EU host when the connection region is eu", async () => {
+test("track-purchase: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -64,7 +65,7 @@ Deno.test("track-purchase: uses the EU host when the connection region is eu", a
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/commerce/trackPurchase");
 });
 
-Deno.test("track-purchase: rejects a missing `user` without calling Iterable", async () => {
+test("track-purchase: rejects a missing `user` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -84,7 +85,7 @@ Deno.test("track-purchase: rejects a missing `user` without calling Iterable", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("track-purchase: surfaces an HTTP error with Iterable's own code", async () => {
+test("track-purchase: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -104,7 +105,7 @@ Deno.test("track-purchase: surfaces an HTTP error with Iterable's own code", asy
   );
 });
 
-Deno.test("track-purchase: treats a 200 carrying a non-Success code as a failure", async () => {
+test("track-purchase: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

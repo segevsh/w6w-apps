@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import extract from "../../actions/extract-start.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("extract-start: POSTs url + prompt + parsed schema and returns the job id", async () => {
+test("extract-start: POSTs url + prompt + parsed schema and returns the job id", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { jobId: "e1" } }]);
   const out = await extract.execute(
     { url: "https://youtu.be/x", prompt: " list products ", schema: '{"type":"object"}' },
@@ -19,7 +20,7 @@ Deno.test("extract-start: POSTs url + prompt + parsed schema and returns the job
   });
 });
 
-Deno.test("extract-start: a schema object alone is enough; neither prompt nor schema is refused", async () => {
+test("extract-start: a schema object alone is enough; neither prompt nor schema is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { jobId: "e2" } }]);
   await extract.execute({ url: "https://x.test/v", schema: { type: "object" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { url: "https://x.test/v", schema: { type: "object" } });
@@ -32,7 +33,7 @@ Deno.test("extract-start: a schema object alone is enough; neither prompt nor sc
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("extract-start: an unparseable or non-object schema is refused before any call", async () => {
+test("extract-start: an unparseable or non-object schema is refused before any call", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await extract.execute({ url: "u", schema: "{nope" }, ctx),

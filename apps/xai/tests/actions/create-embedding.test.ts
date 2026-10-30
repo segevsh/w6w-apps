@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-embedding.ts";
 
-Deno.test("create-embedding: calls POST /v1/embeddings on api.x.ai and returns the body", async () => {
+test("create-embedding: calls POST /v1/embeddings on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({ model: "emb", input: "one", dimensions: 8 }, ctx);
@@ -17,7 +18,7 @@ Deno.test("create-embedding: calls POST /v1/embeddings on api.x.ai and returns t
   assertEquals(result, reply);
 });
 
-Deno.test("create-embedding: surfaces the vendor error code on failure", async () => {
+test("create-embedding: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {
@@ -28,7 +29,7 @@ Deno.test("create-embedding: surfaces the vendor error code on failure", async (
   assert(message.includes("400") && message.includes("[invalid-argument]"), message);
 });
 
-Deno.test("create-embedding: a JSON array input is passed through as an array", async () => {
+test("create-embedding: a JSON array input is passed through as an array", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ model: "m", input: '["a","b"]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).input, ["a", "b"]);

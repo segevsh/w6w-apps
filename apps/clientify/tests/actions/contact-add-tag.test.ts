@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactAddTag from "../../actions/contact-add-tag.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-add-tag: POST /v1/contacts/{contactId}/tags/", async () => {
+test("contact-add-tag: POST /v1/contacts/{contactId}/tags/", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { name: "vip" } }]);
   const result = await contactAddTag.execute({ contactId: "42", name: "vip" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -14,12 +15,12 @@ Deno.test("contact-add-tag: POST /v1/contacts/{contactId}/tags/", async () => {
   assertEquals(result, { name: "vip" });
 });
 
-Deno.test("contact-add-tag: declares type perform", () => {
+test("contact-add-tag: declares type perform", () => {
   assertEquals(contactAddTag.type, "perform");
   assertEquals(contactAddTag.idempotent, true);
 });
 
-Deno.test("contact-add-tag: surfaces the vendor error body", async () => {
+test("contact-add-tag: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

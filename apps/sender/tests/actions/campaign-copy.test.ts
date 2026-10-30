@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignCopy from "../../actions/campaign-copy.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-copy: POSTs to /v2/campaigns/{id}/copy", async () => {
+test("campaign-copy: POSTs to /v2/campaigns/{id}/copy", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: { success: true, message: "Campaign duplicated", data: { id: "c2", status: "DRAFT" } },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarUpdate from "../../actions/webinar-update.ts";
 import { mockCtxWithOrganizer, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webinar-update: PUTs and reports the vendor's actual 202 status", async () => {
+test("webinar-update: PUTs and reports the vendor's actual 202 status", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([{ status: 202 }], "org-1");
   const out = await webinarUpdate.execute({ webinarKey: "9", subject: "New subject" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("webinar-update: PUTs and reports the vendor's actual 202 status", asy
   assertEquals(out, { status: 202 });
 });
 
-Deno.test("webinar-update: passes notifyParticipants as a query param", async () => {
+test("webinar-update: passes notifyParticipants as a query param", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([{ status: 202 }], "org-1");
   await webinarUpdate.execute({ webinarKey: "9", notifyParticipants: true }, ctx);
   assertEquals(queryOf(calls[0].url).notifyParticipants, "true");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberDelete from "../../actions/subscriber-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-delete: DELETEs /v2/subscribers with no data envelope", async () => {
+test("subscriber-delete: DELETEs /v2/subscribers with no data envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: { message: "Selected subscribers will be deleted shortly", delete_instance: "ref1" } },
   ]);

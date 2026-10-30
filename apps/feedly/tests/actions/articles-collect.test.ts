@@ -1,8 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { denoReadTextFile } from "../_deno.ts";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articlesCollect from "../../actions/articles-collect.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("articles-collect: builds the documented query and passes the response through", async () => {
+test("articles-collect: builds the documented query and passes the response through", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "enterprise/acme/category/x", updated: 1, continuation: "c1", items: [{}] } },
   ]);
@@ -20,7 +22,7 @@ Deno.test("articles-collect: builds the documented query and passes the response
   assertEquals((out as { continuation: string }).continuation, "c1");
 });
 
-Deno.test("articles-collect: omits unset optional params from the query", async () => {
+test("articles-collect: omits unset optional params from the query", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await articlesCollect.execute({ streamId: "feed/https://example.com/rss" }, ctx);
 
@@ -28,8 +30,8 @@ Deno.test("articles-collect: omits unset optional params from the query", async 
   assertEquals(Object.keys(q).sort(), ["streamId"]);
 });
 
-Deno.test("articles-collect: requires no credential in its own code", async () => {
-  const src = await Deno.readTextFile(
+test("articles-collect: requires no credential in its own code", async () => {
+  const src = await denoReadTextFile(
     new URL("../../actions/articles-collect.ts", import.meta.url),
   );
   assertEquals(/credential/i.test(src), false);

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   COVERED_GROUPS,
   COVERED_STANDALONE,
@@ -33,7 +34,7 @@ function summary(overrides: {
   };
 }
 
-Deno.test("mapComponentStatus: maps the Statuspage vocabulary", () => {
+test("mapComponentStatus: maps the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -41,7 +42,7 @@ Deno.test("mapComponentStatus: maps the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: reports ok when every covered component is operational", async () => {
+test("service: reports ok when every covered component is operational", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -49,7 +50,7 @@ Deno.test("service: reports ok when every covered component is operational", asy
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: an outage on an UNCOVERED product (r.jina.ai) does not affect the verdict", async () => {
+test("service: an outage on an UNCOVERED product (r.jina.ai) does not affect the verdict", async () => {
   // r.jina.ai is major_outage in the fixture, but Reader is not a covered group and jina-vlm
   // (the one Reader-group component this app DOES use) is still operational.
   const { ctx } = mockCtx([{ body: summary() }]);
@@ -61,7 +62,7 @@ Deno.test("service: an outage on an UNCOVERED product (r.jina.ai) does not affec
   assertEquals("c5" in (report.components ?? {}), true);
 });
 
-Deno.test("service: an outage on a COVERED component (Embedding Models) reports down", async () => {
+test("service: an outage on a COVERED component (Embedding Models) reports down", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -74,20 +75,20 @@ Deno.test("service: an outage on a COVERED component (Embedding Models) reports 
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: covers only the declared groups plus jina-vlm", () => {
+test("service: covers only the declared groups plus jina-vlm", () => {
   assertEquals(COVERED_GROUPS.has("Embedding Models"), true);
   assertEquals(COVERED_GROUPS.has("Reranker Models"), true);
   assertEquals(COVERED_GROUPS.has("Reader"), false);
   assertEquals(COVERED_STANDALONE.has("jina-vlm"), true);
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Jina AI's is unknown", async () => {
+test("service: a page that no longer self-identifies as Jina AI's is unknown", async () => {
   const { ctx } = mockCtx([
     { body: { page: { url: "https://status.example.com" }, components: [] } },
   ]);

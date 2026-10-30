@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import publishScheduleCreate from "../../actions/publish-schedule-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("publish-schedule-create: POSTs publishAt alongside the nested postDetail", async () => {
+test("publish-schedule-create: POSTs publishAt alongside the nested postDetail", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ scheduleId: "sch1" }) }]);
   const out = await publishScheduleCreate.execute({
     projectId: "P1",
@@ -19,6 +20,6 @@ Deno.test("publish-schedule-create: POSTs publishAt alongside the nested postDet
   assertEquals(out.scheduleId, "sch1");
 });
 
-Deno.test("publish-schedule-create: is declared non-idempotent", () => {
+test("publish-schedule-create: is declared non-idempotent", () => {
   assertEquals(publishScheduleCreate.idempotent, false);
 });

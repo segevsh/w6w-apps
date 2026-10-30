@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetCreate from "../../actions/asset-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("asset-create: POST /v1/assets, manufacturer/model nest as {name}", async () => {
+test("asset-create: POST /v1/assets, manufacturer/model nest as {name}", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 11 } }]);
   const out = await assetCreate.execute({
     name: "Compressor",
@@ -29,7 +30,7 @@ Deno.test("asset-create: POST /v1/assets, manufacturer/model nest as {name}", as
   assertEquals(out, { id: 11 });
 });
 
-Deno.test("asset-create: only name is sent when nothing else is set", async () => {
+test("asset-create: only name is sent when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await assetCreate.execute({ name: "A" }, ctx);
   assertEquals(bodyOf(calls[0]), { name: "A" });

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/ip-access-list-set.ts";
 
@@ -12,7 +13,7 @@ const existing = (sources: string[]) => ({
 });
 const updated = { status: 200, body: { result: { ipAccessList: [] } } };
 
-Deno.test("ip-access-list-set: reads the current list, then PATCHes the service", async () => {
+test("ip-access-list-set: reads the current list, then PATCHes the service", async () => {
   const { ctx, calls } = mockCtx([existing(["203.0.113.4"]), updated], D);
   const result = await action.execute({
     serviceId: SVC,
@@ -24,7 +25,7 @@ Deno.test("ip-access-list-set: reads the current list, then PATCHes the service"
 });
 
 /** The list replaces, so what stops working is worth naming first. */
-Deno.test("ip-access-list-set: dropping a source needs an acknowledgement, and names it", async () => {
+test("ip-access-list-set: dropping a source needs an acknowledgement, and names it", async () => {
   const { ctx, calls } = mockCtx([existing(["203.0.113.4", "198.51.100.7"])], D);
   let message = "";
   try {
@@ -41,7 +42,7 @@ Deno.test("ip-access-list-set: dropping a source needs an acknowledgement, and n
   assertEquals(calls.length, 1, "nothing was changed");
 });
 
-Deno.test("ip-access-list-set: an acknowledged removal goes through and warns", async () => {
+test("ip-access-list-set: an acknowledged removal goes through and warns", async () => {
   const { ctx, logs } = mockCtx([existing(["203.0.113.4", "198.51.100.7"]), updated], D);
   const result = await action.execute({
     serviceId: SVC,
@@ -53,7 +54,7 @@ Deno.test("ip-access-list-set: an acknowledged removal goes through and warns", 
   assert(/can no longer connect/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("ip-access-list-set: opening it to the internet needs its own acknowledgement", async () => {
+test("ip-access-list-set: opening it to the internet needs its own acknowledgement", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -68,7 +69,7 @@ Deno.test("ip-access-list-set: opening it to the internet needs its own acknowle
   assertEquals(calls.length, 0, "checked before even reading the current list");
 });
 
-Deno.test("ip-access-list-set: the list must be an array", async () => {
+test("ip-access-list-set: the list must be an array", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -80,7 +81,7 @@ Deno.test("ip-access-list-set: the list must be an array", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("ip-access-list-set: says it replaces rather than merges", () => {
+test("ip-access-list-set: says it replaces rather than merges", () => {
   assert(/REPLACES rather than merges/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });

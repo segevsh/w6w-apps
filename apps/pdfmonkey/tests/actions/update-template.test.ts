@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-template.ts";
 
-Deno.test("update-template: PUTs /document_templates/{id} with only the provided fields", async () => {
+test("update-template: PUTs /document_templates/{id} with only the provided fields", async () => {
   const tpl = { id: "tpl-1", identifier: "Invoice Template v2" };
   const { ctx, calls } = mockCtx([{ body: { document_template: tpl } }]);
   const result = await action.execute!(

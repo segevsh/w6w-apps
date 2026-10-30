@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import activityCreate from "../../actions/activity-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("activity-create: POSTs the note", async () => {
+test("activity-create: POSTs the note", async () => {
   const { ctx, calls } = mockCtx([{ body: { jnid: "n1" } }]);
   await activityCreate.execute({ note: "My new note", record_type_name: "Note" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("activity-create: POSTs the note", async () => {
   assertEquals(JSON.parse(calls[0].body!), { note: "My new note", record_type_name: "Note" });
 });
 
-Deno.test("activity-create: related_jnid becomes the primary.id JobNimbus expects", async () => {
+test("activity-create: related_jnid becomes the primary.id JobNimbus expects", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await activityCreate.execute({ note: "My new note", related_jnid: "i97" }, ctx);
 
@@ -20,11 +21,11 @@ Deno.test("activity-create: related_jnid becomes the primary.id JobNimbus expect
   assertEquals("related_jnid" in body, false);
 });
 
-Deno.test("activity-create: record_type_name defaults to Note", () => {
+test("activity-create: record_type_name defaults to Note", () => {
   const field = (activityCreate.params ?? []).find((p) => p.key === "record_type_name");
   assertEquals(field?.default, "Note");
 });
 
-Deno.test("activity-create: is not marked idempotent", () => {
+test("activity-create: is not marked idempotent", () => {
   assertEquals(activityCreate.idempotent, false);
 });

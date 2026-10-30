@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-get-many.ts";
 
-Deno.test("folder-get-many: GETs /user/folders and returns the folder tree", async () => {
+test("folder-get-many: GETs /user/folders and returns the folder tree", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({

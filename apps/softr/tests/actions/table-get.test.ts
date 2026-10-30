@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tableGet from "../../actions/table-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("table-get: calls GET /databases/{databaseId}/tables/{tableId}", async () => {
+test("table-get: calls GET /databases/{databaseId}/tables/{tableId}", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "tbl1", name: "Contacts", fields: [] }) },
   ]);

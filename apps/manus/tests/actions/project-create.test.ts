@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { mockCtx, okBody, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create: posts name and instruction, returns the project unwrapped", async () => {
+test("project-create: posts name and instruction, returns the project unwrapped", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({ project: { id: "p1", name: "Acme", created_at: 1 } }),
   }]);
@@ -12,7 +13,7 @@ Deno.test("project-create: posts name and instruction, returns the project unwra
   assertEquals(out, { id: "p1", name: "Acme", created_at: 1 });
 });
 
-Deno.test("project-create: omits instruction when not set", async () => {
+test("project-create: omits instruction when not set", async () => {
   const { ctx, calls } = mockCtx([{
     body: okBody({ project: { id: "p1", name: "Acme", created_at: 1 } }),
   }]);
@@ -20,6 +21,6 @@ Deno.test("project-create: omits instruction when not set", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Acme" });
 });
 
-Deno.test("project-create: is not idempotent — no uniqueness constraint on name", () => {
+test("project-create: is not idempotent — no uniqueness constraint on name", () => {
   assertEquals(projectCreate.idempotent, false);
 });

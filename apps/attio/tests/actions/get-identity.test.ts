@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import getIdentity from "../../actions/get-identity.ts";
 
-Deno.test("get-identity: splits the scope claim into a list", async () => {
+test("get-identity: splits the scope claim into a list", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -34,7 +35,7 @@ Deno.test("get-identity: splits the scope claim into a list", async () => {
  * Verified on the wire, 2026-08-03: a 64-character random token gets
  * `HTTP 200 {"active":false}`. Anything that trusts `res.ok` here is broken.
  */
-Deno.test("get-identity: throws on the 200 `{active:false}` arm rather than returning nulls", async () => {
+test("get-identity: throws on the 200 `{active:false}` arm rather than returning nulls", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { active: false } }]);
   let threw = false;
   try {
@@ -47,7 +48,7 @@ Deno.test("get-identity: throws on the 200 `{active:false}` arm rather than retu
   assert(threw, "an inactive token must not look like a successful identify");
 });
 
-Deno.test('get-identity: an empty scope string yields an empty list, not [""]', async () => {
+test('get-identity: an empty scope string yields an empty list, not [""]', async () => {
   const { ctx } = mockCtx([{ status: 200, body: { active: true, scope: "" } }]);
   const out = await run<{ scopes: string[] }>(getIdentity, {}, ctx);
   assertEquals(out.scopes, []);

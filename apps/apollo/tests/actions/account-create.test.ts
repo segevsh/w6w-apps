@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountCreate from "../../actions/account-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-create: POSTs a JSON body to /accounts", async () => {
+test("account-create: POSTs a JSON body to /accounts", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { account: { id: "a1", name: "Acme" } } }]);
   const out = await accountCreate.execute({ name: "Acme", domain: "acme.com" }, ctx) as {
     account: { id: string };
@@ -13,7 +14,7 @@ Deno.test("account-create: POSTs a JSON body to /accounts", async () => {
   assertEquals(out.account.id, "a1");
 });
 
-Deno.test("account-create: omits unset optional fields from the body entirely", async () => {
+test("account-create: omits unset optional fields from the body entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { account: { id: "a1" } } }]);
   await accountCreate.execute({ name: "Acme" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Acme" });

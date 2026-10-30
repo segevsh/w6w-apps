@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageStoreList from "../../actions/message-store-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-store-list: hits the extension mailbox", async () => {
+test("message-store-list: hits the extension mailbox", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }]) }]);
   const out = await messageStoreList.execute({}, ctx) as { records: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("message-store-list: hits the extension mailbox", async () => {
   assertEquals(out.records.length, 1);
 });
 
-Deno.test("message-store-list: multi-valued filters repeat the query key", async () => {
+test("message-store-list: multi-valued filters repeat the query key", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await messageStoreList.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("message-store-list: multi-valued filters repeat the query key", async
   assertEquals(queryAllOf(calls[0].url, "readStatus"), ["Unread"]);
 });
 
-Deno.test("message-store-list: distinctConversations is only sent when true", async () => {
+test("message-store-list: distinctConversations is only sent when true", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }, { body: listEnvelope([]) }]);
   await messageStoreList.execute({ distinctConversations: false }, ctx);
   assertEquals(queryOf(calls[0].url).distinctConversations, undefined);

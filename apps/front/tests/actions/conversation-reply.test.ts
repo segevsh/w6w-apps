@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-reply.ts";
 
@@ -7,7 +8,7 @@ import action from "../../actions/conversation-reply.ts";
  * reply normally takes the conversation out of the queue. This action inverts
  * that default and always sends the flag, so Front's can never apply.
  */
-Deno.test("conversation-reply: archive is sent explicitly, and defaults to false", async () => {
+test("conversation-reply: archive is sent explicitly, and defaults to false", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { id: "msg_1" } }]);
   await action.execute!({ conversationId: "cnv_1", body: "on it" }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -15,20 +16,20 @@ Deno.test("conversation-reply: archive is sent explicitly, and defaults to false
   assertEquals(sent.options.archive, false);
 });
 
-Deno.test("conversation-reply: asking to archive does archive", async () => {
+test("conversation-reply: asking to archive does archive", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { id: "msg_1" } }]);
   await action.execute!({ conversationId: "cnv_1", body: "done", archive: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!).options.archive, true);
 });
 
-Deno.test("conversation-reply: the param hint warns about Front's own default", () => {
+test("conversation-reply: the param hint warns about Front's own default", () => {
   const p = (action.params as Array<{ key: string; hint?: string; default?: unknown }>)
     .find((p) => p.key === "archive")!;
   assertEquals(p.default, false);
   assert(/default is `true`/.test(p.hint!), p.hint);
 });
 
-Deno.test("conversation-reply: recipients, author and channel reach the wire", async () => {
+test("conversation-reply: recipients, author and channel reach the wire", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { id: "msg_1" } }]);
   await action.execute!({
     conversationId: "cnv_1",
@@ -48,7 +49,7 @@ Deno.test("conversation-reply: recipients, author and channel reach the wire", a
   assertEquals(new URL(calls[0].url).pathname, "/conversations/cnv_1/messages");
 });
 
-Deno.test("conversation-reply: an empty body is refused before sending anything", async () => {
+test("conversation-reply: an empty body is refused before sending anything", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ conversationId: "cnv_1", body: "   " }, ctx),
@@ -59,6 +60,6 @@ Deno.test("conversation-reply: an empty body is refused before sending anything"
 });
 
 /** Sending twice sends twice — there is nothing idempotent about an email. */
-Deno.test("conversation-reply: declares itself non-idempotent", () => {
+test("conversation-reply: declares itself non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

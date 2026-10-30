@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-images.ts";
 
-Deno.test("get-images: GETs /v1/images/{key} with ids and format", async () => {
+test("get-images: GETs /v1/images/{key} with ids and format", async () => {
   const { ctx, calls } = mockCtx([{ body: { images: { "1:2": "https://x/1.png" } } }]);
   await action.execute({ fileKey: "abc123", ids: "1:2", format: "png", scale: 2 }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("get-images: GETs /v1/images/{key} with ids and format", async () => {
   assertEquals(url.searchParams.get("scale"), "2");
 });
 
-Deno.test("get-images: forwards svg-only options using Figma's snake_case names", async () => {
+test("get-images: forwards svg-only options using Figma's snake_case names", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     fileKey: "abc123",

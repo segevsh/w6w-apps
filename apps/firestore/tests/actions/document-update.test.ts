@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-update.ts";
 
@@ -7,7 +8,7 @@ const UPDATED = {
   fields: { age: { integerValue: "37" } },
 };
 
-Deno.test("document-update: PATCHes with a repeated updateMask.fieldPaths", async () => {
+test("document-update: PATCHes with a repeated updateMask.fieldPaths", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: UPDATED }], { display: DISPLAY });
 
   await action.execute({ path: "users/alice", mask: "age, address.city", data: { age: 37 } }, ctx);
@@ -28,13 +29,13 @@ Deno.test("document-update: PATCHes with a repeated updateMask.fieldPaths", asyn
 });
 
 /** No mask is Firestore's documented "overwrite the document" default. */
-Deno.test("document-update: a blank mask sends no updateMask at all", async () => {
+test("document-update: a blank mask sends no updateMask at all", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: UPDATED }], { display: DISPLAY });
   await action.execute({ path: "users/alice", data: { age: 37 } }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("updateMask.fieldPaths"), false);
 });
 
-Deno.test("document-update: the existence precondition maps to a boolean query param", async () => {
+test("document-update: the existence precondition maps to a boolean query param", async () => {
   const exists = mockCtx([{ status: 200, body: UPDATED }], { display: DISPLAY });
   await action.execute({ path: "users/alice", data: {}, exists: "exists" }, exists.ctx);
   assertEquals(new URL(exists.calls[0].url).searchParams.get("currentDocument.exists"), "true");
@@ -48,7 +49,7 @@ Deno.test("document-update: the existence precondition maps to a boolean query p
   assertEquals(new URL(none.calls[0].url).searchParams.has("currentDocument.exists"), false);
 });
 
-Deno.test("document-update: updateTime is the optimistic-concurrency precondition", async () => {
+test("document-update: updateTime is the optimistic-concurrency precondition", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: UPDATED }], { display: DISPLAY });
   await action.execute(
     { path: "users/alice", data: {}, currentUpdateTime: "2026-09-22T00:00:00Z" },
@@ -60,7 +61,7 @@ Deno.test("document-update: updateTime is the optimistic-concurrency preconditio
   );
 });
 
-Deno.test("document-update: decodes the patched document and requires `data`", async () => {
+test("document-update: decodes the patched document and requires `data`", async () => {
   const { ctx } = mockCtx([{ status: 200, body: UPDATED }], { display: DISPLAY });
   const result = await action.execute({ path: "users/alice", data: { age: 37 } }, ctx) as {
     data?: unknown;

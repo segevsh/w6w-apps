@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import userGet, { projectUser } from "../../actions/user-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -27,7 +28,7 @@ const SAMPLE_USER = {
   registered: "2014-09-30T07:51:15.406Z",
 };
 
-Deno.test("user-get: reads /user and returns the projected account", async () => {
+test("user-get: reads /user and returns the projected account", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: true, user: SAMPLE_USER } }]);
   const out = await userGet.execute({}, ctx) as { user: Record<string, unknown> };
 
@@ -43,7 +44,7 @@ Deno.test("user-get: reads /user and returns the projected account", async () =>
  * result. This is the assertion that keeps the projection honest: an undocumented
  * field is dropped even when it looks harmless.
  */
-Deno.test("user-get: drops fields the reference does not document", () => {
+test("user-get: drops fields the reference does not document", () => {
   const projected = projectUser({
     ...SAMPLE_USER,
     apiToken: "should-never-be-forwarded",
@@ -59,7 +60,7 @@ Deno.test("user-get: drops fields the reference does not document", () => {
  * lives, and the vendor's "Nested structure" page makes this call step 1 of 3
  * for rebuilding the sidebar.
  */
-Deno.test("user-get: keeps groups, which holds root-collection order", () => {
+test("user-get: keeps groups, which holds root-collection order", () => {
   const projected = projectUser(SAMPLE_USER)!;
   assertEquals(projected.groups, SAMPLE_USER.groups);
 });
@@ -69,19 +70,19 @@ Deno.test("user-get: keeps groups, which holds root-collection order", () => {
  * pins that reading. If Raindrop ever made it a string, the projection would
  * forward it, so the assertion is on the type as well as the presence.
  */
-Deno.test("user-get: the `password` field is the documented boolean, not a secret", () => {
+test("user-get: the `password` field is the documented boolean, not a secret", () => {
   const projected = projectUser(SAMPLE_USER)!;
   assertEquals(typeof projected.password, "boolean");
   assertEquals(projected.password, true);
 });
 
 /** The six linked-account objects carry only `{enabled}`, so they collapse. */
-Deno.test("user-get: linked social accounts collapse to booleans", () => {
+test("user-get: linked social accounts collapse to booleans", () => {
   const projected = projectUser(SAMPLE_USER)!;
   assertEquals(projected.linkedAccounts, { dropbox: true, gdrive: true });
 });
 
-Deno.test("user-get: the config and files sub-objects are projected too", () => {
+test("user-get: the config and files sub-objects are projected too", () => {
   const projected = projectUser({
     ...SAMPLE_USER,
     config: { ...SAMPLE_USER.config, secretSetting: "x" },
@@ -93,13 +94,13 @@ Deno.test("user-get: the config and files sub-objects are projected too", () => 
   assertEquals((projected.files as Record<string, unknown>).size, 10000000000);
 });
 
-Deno.test("user-get: a missing user object yields undefined rather than throwing", () => {
+test("user-get: a missing user object yields undefined rather than throwing", () => {
   assertEquals(projectUser(undefined), undefined);
   assertEquals(projectUser("not an object"), undefined);
   assertEquals(projectUser([{ _id: 1 }]), undefined);
 });
 
-Deno.test("user-get: takes no parameters", () => {
+test("user-get: takes no parameters", () => {
   assertEquals(userGet.params, []);
   assert(/documented fields only/i.test(userGet.description ?? ""), userGet.description);
 });

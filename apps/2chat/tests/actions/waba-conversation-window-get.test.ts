@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { mockCtx } from "../_helpers.ts";
 import wabaConversationWindowGet from "../../actions/waba-conversation-window-get.ts";
 
-Deno.test("waba-conversation-window-get: reads the window", async () => {
+test("waba-conversation-window-get: reads the window", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "success": true,
@@ -15,12 +16,12 @@ Deno.test("waba-conversation-window-get: reads the window", async () => {
     { "fromNumber": "+15550001111", "toNumber": "+15552223333" } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "GET");
-  assertEquals(
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "GET");
+  assert.deepStrictEqual(
     calls[0].url,
     "https://api.p.2chat.io/open/waba/conversation-window/+15550001111/+15552223333",
   );
-  assertEquals(calls[0].body, null);
-  assertEquals((out as { window_open: boolean }).window_open, true);
+  assert.deepStrictEqual(calls[0].body, null);
+  assert.deepStrictEqual((out as { window_open: boolean }).window_open, true);
 });

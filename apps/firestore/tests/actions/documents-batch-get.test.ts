@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/documents-batch-get.ts";
 
@@ -14,7 +15,7 @@ const STREAM = [
   { readTime: "2026-09-22T00:00:01Z" },
 ];
 
-Deno.test("documents-batch-get: POSTs full resource names, and separates found from missing", async () => {
+test("documents-batch-get: POSTs full resource names, and separates found from missing", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: STREAM }], { display: DISPLAY });
 
   const result = await action.execute({ paths: ["users/alice", "users/bob"] }, ctx) as {
@@ -40,7 +41,7 @@ Deno.test("documents-batch-get: POSTs full resource names, and separates found f
   assertEquals(result.readTime, "2026-09-22T00:00:01Z");
 });
 
-Deno.test("documents-batch-get: an empty or blank list is refused before the request", async () => {
+test("documents-batch-get: an empty or blank list is refused before the request", async () => {
   const empty = mockCtx([], { display: DISPLAY });
   await assertRejects(async () => await action.execute({ paths: [] }, empty.ctx), Error, "`paths`");
   await assertRejects(

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/country-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("country-list: GET /countries and unwraps the envelope", async () => {
+test("country-list: GET /countries and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "code": 200, "result": [{ "code": "AU", "name": "Australia" }] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("country-list: GET /countries and unwraps the envelope", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("country-list: a Printful error is surfaced with its reason and message", async () => {
+test("country-list: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

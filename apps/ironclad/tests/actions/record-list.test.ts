@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recordList from "../../actions/record-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("record-list: GET /records with every filter", async () => {
+test("record-list: GET /records with every filter", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "r1" }]) }]);
   const out = await recordList.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("record-list: GET /records with every filter", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("record-list: page 0 is sent, not dropped as falsy", async () => {
+test("record-list: page 0 is sent, not dropped as falsy", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await recordList.execute({ page: 0 }, ctx);
   assertEquals(queryOf(calls[0].url), { page: "0" });

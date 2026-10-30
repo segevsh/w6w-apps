@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userGet from "../../actions/user-get.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("user-get: GET /api/v3/portal/1/users/a%40b.com", async () => {
+test("user-get: GET /api/v3/portal/1/users/a%40b.com", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: { "zpuid": "7", "email": "a@b.com" } }]);
   const res = await userGet.execute(
     { "portalId": "1", "userId": "a@b.com" } as never,

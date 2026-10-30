@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiToken, {
   authHeaders,
   PROBE_PATH,
@@ -10,7 +11,7 @@ import { errorBody, mockCtx, queryOf } from "../_helpers.ts";
 
 const TOKEN = "bxt_unitTestFixtureNotARealToken0000000000";
 
-Deno.test("api-token: sign stamps the bearer header and nothing else", () => {
+test("api-token: sign stamps the bearer header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.brex.com/v2/users/me",
@@ -28,23 +29,23 @@ Deno.test("api-token: sign stamps the bearer header and nothing else", () => {
   assert(!signed.url.includes(TOKEN));
 });
 
-Deno.test("api-token: authHeaders is the single source of the wire format", () => {
+test("api-token: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiToken: TOKEN }), { authorization: `Bearer ${TOKEN}` });
 });
 
-Deno.test("api-token: the probe is the whoami, addressed through one shared constant", () => {
+test("api-token: the probe is the whoami, addressed through one shared constant", () => {
   assertEquals(PROBE_PATH, "/users/me");
   assertEquals(probeUrl(), "https://api.brex.com/v2/users/me");
 });
 
-Deno.test("api-token: the declared method is a bearer credential field", () => {
+test("api-token: the declared method is a bearer credential field", () => {
   assertEquals(apiToken.type, "bearer");
   assertEquals(apiToken.connectionLabel, "Brex ({{email}})");
   assertEquals((apiToken.fields ?? []).map((f) => f.key), ["apiToken"]);
 });
 
 /** See the file's header: 403 is overloaded, so the BODY decides. */
-Deno.test("api-token: TOKEN_REJECTED is anchored on body text, not on a status code", () => {
+test("api-token: TOKEN_REJECTED is anchored on body text, not on a status code", () => {
   assert(TOKEN_REJECTED.test("FORBIDDEN: Invalid or Revoked Token"));
   assert(TOKEN_REJECTED.test("UNAUTHORIZED: PERMISSION_DENIED: Invalid or Revoked Token"));
   assert(TOKEN_REJECTED.test("Expired token"));
@@ -52,7 +53,7 @@ Deno.test("api-token: TOKEN_REJECTED is anchored on body text, not on a status c
   assert(!TOKEN_REJECTED.test(""));
 });
 
-Deno.test("api-token: test passes when the whoami answers", async () => {
+test("api-token: test passes when the whoami answers", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "u1", first_name: "Ada", email: "ada@example.com" } },
   ]);
@@ -64,7 +65,7 @@ Deno.test("api-token: test passes when the whoami answers", async () => {
   assertEquals(calls[0].headers.authorization, `Bearer ${TOKEN}`);
 });
 
-Deno.test("api-token: test fails with no token, without making a request", async () => {
+test("api-token: test fails with no token, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiToken.test({ credential: {} }, ctx);
 
@@ -77,7 +78,7 @@ Deno.test("api-token: test fails with no token, without making a request", async
  * `403 {"type":"FORBIDDEN","message":"Invalid or Revoked Token"}`. A status-code
  * check would call this "forbidden"; the body says the token is dead.
  */
-Deno.test("api-token: the measured 403 FORBIDDEN body is reported as a rejected token", async () => {
+test("api-token: the measured 403 FORBIDDEN body is reported as a rejected token", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody("FORBIDDEN", "Invalid or Revoked Token") },
   ]);
@@ -90,7 +91,7 @@ Deno.test("api-token: the measured 403 FORBIDDEN body is reported as a rejected 
 });
 
 /** Brex's documented 401 body — the same verdict as the 403 above. */
-Deno.test("api-token: the documented 401 UNAUTHORIZED body is a rejected token too", async () => {
+test("api-token: the documented 401 UNAUTHORIZED body is a rejected token too", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -107,7 +108,7 @@ Deno.test("api-token: the documented 401 UNAUTHORIZED body is a rejected token t
  * Brex's error table lists `403` with the message "Expired token" — the same
  * status, a different sentence, and the same fix.
  */
-Deno.test("api-token: a 403 saying the token expired is a rejected token, not a refusal", async () => {
+test("api-token: a 403 saying the token expired is a rejected token, not a refusal", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("FORBIDDEN", "Expired token") }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -116,7 +117,7 @@ Deno.test("api-token: a 403 saying the token expired is a rejected token, not a 
 });
 
 /** A 403 that says nothing about the token is a scope refusal, and is reported as one. */
-Deno.test("api-token: a 403 that is not about the token is reported as a refusal", async () => {
+test("api-token: a 403 that is not about the token is reported as a refusal", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: errorBody("PERMISSION_DENIED", "Must be a card admin or account admin") },
   ]);
@@ -133,7 +134,7 @@ Deno.test("api-token: a 403 that is not about the token is reported as a refusal
  * `401` with no body — which is a different problem from a bad token, and the
  * message has to say so.
  */
-Deno.test("api-token: an empty 401 is reported as a credential that never arrived", async () => {
+test("api-token: an empty 401 is reported as a credential that never arrived", async () => {
   const { ctx } = mockCtx([{ status: 401, body: undefined }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -142,7 +143,7 @@ Deno.test("api-token: an empty 401 is reported as a credential that never arrive
   assert(/never reached/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-token: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiToken.test({ credential: { apiToken: TOKEN } }, ctx);
 
@@ -155,7 +156,7 @@ Deno.test("api-token: a 500 is reported as an HTTP failure, not a credential pro
  * token field, and the failure paths are built from Brex's own words plus fixed
  * prose — so asserting the token is absent from every message keeps it that way.
  */
-Deno.test("api-token: no probe message ever contains the credential", async () => {
+test("api-token: no probe message ever contains the credential", async () => {
   const cases = [
     { status: 200, body: { id: "u1" } },
     { status: 403, body: errorBody("FORBIDDEN", "Invalid or Revoked Token") },
@@ -172,7 +173,7 @@ Deno.test("api-token: no probe message ever contains the credential", async () =
   }
 });
 
-Deno.test("api-token: afterConnect publishes the email and nothing else", async () => {
+test("api-token: afterConnect publishes the email and nothing else", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -198,12 +199,12 @@ Deno.test("api-token: afterConnect publishes the email and nothing else", async 
   }
 });
 
-Deno.test("api-token: afterConnect stays silent when the whoami fails", async () => {
+test("api-token: afterConnect stays silent when the whoami fails", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("FORBIDDEN", "nope") }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx), {});
 });
 
-Deno.test("api-token: afterConnect stays silent when the response carries no email", async () => {
+test("api-token: afterConnect stays silent when the response carries no email", async () => {
   const { ctx } = mockCtx([{ body: { id: "u1" } }]);
   assertEquals(await apiToken.afterConnect!({ credential: { apiToken: TOKEN } }, ctx), {});
 });

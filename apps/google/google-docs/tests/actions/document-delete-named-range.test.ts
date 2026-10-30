@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/document-delete-named-range.ts";
 
-Deno.test("document-delete-named-range: by ID", async () => {
+test("document-delete-named-range: by ID", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { documentURL: "d-1", reference: "namedRangeId", value: "nr-1" },
@@ -13,7 +14,7 @@ Deno.test("document-delete-named-range: by ID", async () => {
   });
 });
 
-Deno.test("document-delete-named-range: by name", async () => {
+test("document-delete-named-range: by name", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { documentURL: "d-1", reference: "name", value: "chapter-1" },

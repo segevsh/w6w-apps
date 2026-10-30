@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userCreate from "../../actions/user-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-create: POSTs a one-element array, dropping unset optional fields", async () => {
+test("user-create: POSTs a one-element array, dropping unset optional fields", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ results: [{ userId: 1 }] }) }]);
   await userCreate.execute(
     { firstName: "Ada", lastName: "Lovelace", phoneNumber: "+15551234567", userType: "user" },
@@ -15,7 +16,7 @@ Deno.test("user-create: POSTs a one-element array, dropping unset optional field
   ]);
 });
 
-Deno.test("user-create: sendActivation is sent as a query parameter, not in the body", async () => {
+test("user-create: sendActivation is sent as a query parameter, not in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ results: [] }) }]);
   await userCreate.execute(
     {
@@ -31,6 +32,6 @@ Deno.test("user-create: sendActivation is sent as a query parameter, not in the 
   assertEquals(url.searchParams.get("sendActivation"), "true");
 });
 
-Deno.test("user-create: is marked not idempotent — retrying creates a second employee", () => {
+test("user-create: is marked not idempotent — retrying creates a second employee", () => {
   assertEquals(userCreate.idempotent, false);
 });

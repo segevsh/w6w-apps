@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { TodoistClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new TodoistClient(ctx);
   const result = await client.request("/tasks/1/close", { method: "POST" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"error":"NOT_FOUND"}' },
   ]);
@@ -22,7 +23,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/tasks/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new TodoistClient(ctx);
   await client.request("/tasks", {
@@ -35,7 +36,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   const client = new TodoistClient(ctx);
   await client.request("/tasks", { method: "POST", body: { content: "hi" } });
@@ -43,7 +44,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   assertEquals(JSON.parse(calls[0].body!), { content: "hi" });
 });
 
-Deno.test("client: resolves relative paths against the REST v2 base", async () => {
+test("client: resolves relative paths against the REST v2 base", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new TodoistClient(ctx);
   await client.request("/projects");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/label-get.ts";
 
-Deno.test("label-get: fetches by labelId", async () => {
+test("label-get: fetches by labelId", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { label_id: "se-1", tracking_number: "1Z999", voided: false } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("label-get: fetches by labelId", async () => {
   assertEquals(result.voided, false);
 });
 
-Deno.test("label-get: requires labelId", async () => {
+test("label-get: requires labelId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "labelId");
   assertEquals(calls.length, 0);

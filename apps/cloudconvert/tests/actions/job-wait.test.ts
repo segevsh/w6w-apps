@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobWait from "../../actions/job-wait.ts";
 import { envelope, hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-wait: GETs /v2/jobs/{id} on the SYNC host", async () => {
+test("job-wait: GETs /v2/jobs/{id} on the SYNC host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ id: "j1", status: "finished" }),
@@ -13,7 +14,7 @@ Deno.test("job-wait: GETs /v2/jobs/{id} on the SYNC host", async () => {
   assertEquals(out.status, "finished");
 });
 
-Deno.test("job-wait: is a read action with a single required jobId param", () => {
+test("job-wait: is a read action with a single required jobId param", () => {
   assertEquals(jobWait.type, "read");
   assertEquals(jobWait.params?.map((p) => p.key), ["jobId"]);
   assertEquals(jobWait.params?.[0].required, true);

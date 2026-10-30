@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-label-format.ts";
 
@@ -8,7 +9,7 @@ const label = (formats: Record<string, string>) => ({
 });
 
 /** A thermal printer will not take the PNG a purchase returns. */
-Deno.test("shipment-label-format: converts to ZPL and returns that URL", async () => {
+test("shipment-label-format: converts to ZPL and returns that URL", async () => {
   const { ctx, calls } = mockCtx([label({
     label_url: "https://ep/l.png",
     label_zpl_url: "https://ep/l.zpl",
@@ -21,7 +22,7 @@ Deno.test("shipment-label-format: converts to ZPL and returns that URL", async (
   assertEquals(result.labelUrl, "https://ep/l.zpl");
 });
 
-Deno.test("shipment-label-format: PDF resolves to the pdf URL", async () => {
+test("shipment-label-format: PDF resolves to the pdf URL", async () => {
   const { ctx } = mockCtx([label({
     label_url: "https://ep/l.png",
     label_pdf_url: "https://ep/l.pdf",
@@ -32,7 +33,7 @@ Deno.test("shipment-label-format: PDF resolves to the pdf URL", async () => {
   assertEquals(result.labelUrl, "https://ep/l.pdf");
 });
 
-Deno.test("shipment-label-format: PNG falls back to the plain label url", async () => {
+test("shipment-label-format: PNG falls back to the plain label url", async () => {
   const { ctx } = mockCtx([label({ label_url: "https://ep/l.png" })]);
   const result = await action.execute!({ shipmentId: "shp_1", format: "PNG" }, ctx) as {
     labelUrl: string;
@@ -40,18 +41,18 @@ Deno.test("shipment-label-format: PNG falls back to the plain label url", async 
   assertEquals(result.labelUrl, "https://ep/l.png");
 });
 
-Deno.test("shipment-label-format: a lowercase format is normalised", async () => {
+test("shipment-label-format: a lowercase format is normalised", async () => {
   const { ctx, calls } = mockCtx([label({ label_url: "x", label_zpl_url: "z" })]);
   await action.execute!({ shipmentId: "shp_1", format: "zpl" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("file_format"), "ZPL");
 });
 
-Deno.test("shipment-label-format: needs a shipment id", async () => {
+test("shipment-label-format: needs a shipment id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(async () => await action.execute!({}, ctx), Error, "shipmentId");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("shipment-label-format: says why the PNG is not enough", () => {
+test("shipment-label-format: says why the PNG is not enough", () => {
   assert(/thermal printer/.test(action.description!), action.description);
 });

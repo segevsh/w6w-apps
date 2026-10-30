@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/pull-request-create.ts";
@@ -9,7 +10,7 @@ const created = one({ pullRequestId: 42 });
  * Azure DevOps defaults to non-draft; an unattended workflow would notify
  * reviewers and start a validation build on every run.
  */
-Deno.test("pull-request-create: defaults to a draft, against the API's own default", async () => {
+test("pull-request-create: defaults to a draft, against the API's own default", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   const result = await action.execute!({
     project: "P",
@@ -29,7 +30,7 @@ Deno.test("pull-request-create: defaults to a draft, against the API's own defau
   assertEquals(result.isDraft, true);
 });
 
-Deno.test("pull-request-create: publishing is explicit", async () => {
+test("pull-request-create: publishing is explicit", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({
     project: "P",
@@ -42,7 +43,7 @@ Deno.test("pull-request-create: publishing is explicit", async () => {
   assertEquals(JSON.parse(calls[0].body!).isDraft, false);
 });
 
-Deno.test("pull-request-create: reviewers and work items become id references", async () => {
+test("pull-request-create: reviewers and work items become id references", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({
     project: "P",
@@ -59,7 +60,7 @@ Deno.test("pull-request-create: reviewers and work items become id references", 
 });
 
 /** A pull request from a branch to itself is a mistake worth catching early. */
-Deno.test("pull-request-create: identical branches are refused before the request", async () => {
+test("pull-request-create: identical branches are refused before the request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -76,7 +77,7 @@ Deno.test("pull-request-create: identical branches are refused before the reques
   assertEquals(calls.length, 0);
 });
 
-Deno.test("pull-request-create: every required field is checked before the request", async () => {
+test("pull-request-create: every required field is checked before the request", async () => {
   const base = {
     project: "P",
     repository: "api",
@@ -95,7 +96,7 @@ Deno.test("pull-request-create: every required field is checked before the reque
   }
 });
 
-Deno.test("pull-request-create: logs the id and draft state", async () => {
+test("pull-request-create: logs the id and draft state", async () => {
   const { ctx, logs } = mockCtx([created], { display });
   await action.execute!({
     project: "P",

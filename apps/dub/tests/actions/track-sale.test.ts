@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/track-sale.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("track-sale: sends POST /track/sale with the mapped input", async () => {
+test("track-sale: sends POST /track/sale with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "eventName": "Purchase", "customer": {}, "sale": {} },
   }]);
@@ -26,7 +27,7 @@ Deno.test("track-sale: sends POST /track/sale with the mapped input", async () =
   assertEquals(out, { "eventName": "Purchase", "customer": {}, "sale": {} });
 });
 
-Deno.test("track-sale: sends no authorization header of its own", async () => {
+test("track-sale: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "eventName": "Purchase", "customer": {}, "sale": {} },
   }]);
@@ -39,7 +40,7 @@ Deno.test("track-sale: sends no authorization header of its own", async () => {
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("track-sale: surfaces Dub's error envelope as a thrown error", async () => {
+test("track-sale: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -57,7 +58,7 @@ Deno.test("track-sale: surfaces Dub's error envelope as a thrown error", async (
   );
 });
 
-Deno.test("track-sale: declares type, idempotency and output", () => {
+test("track-sale: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

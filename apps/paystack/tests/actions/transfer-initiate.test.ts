@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transfer-initiate.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("transfer-initiate: POSTs /transfer from the balance by default", async () => {
+test("transfer-initiate: POSTs /transfer from the balance by default", async () => {
   const data = { transfer_code: "TRF_1", status: "success" };
   const { ctx, calls } = mockCtx([{ body: ok(data) }]);
   const out = await action.execute({
@@ -25,7 +26,7 @@ Deno.test("transfer-initiate: POSTs /transfer from the balance by default", asyn
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("transfer-initiate: refuses a bad amount or missing recipient before any money moves", async () => {
+test("transfer-initiate: refuses a bad amount or missing recipient before any money moves", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ amount: 0, recipient: "RCP_1" }, ctx),

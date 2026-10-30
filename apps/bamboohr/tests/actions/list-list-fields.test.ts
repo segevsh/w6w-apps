@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listListFields from "../../actions/list-list-fields.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-list-fields: searches /meta/lists with no params", async () => {
+test("list-list-fields: searches /meta/lists with no params", async () => {
   assertEquals(listListFields.type, "search");
   assertEquals(listListFields.params, []);
 
@@ -13,7 +14,7 @@ Deno.test("list-list-fields: searches /meta/lists with no params", async () => {
   assertEquals(url.search, "");
 });
 
-Deno.test("list-list-fields: does not expose `format`, which only duplicates Accept", async () => {
+test("list-list-fields: does not expose `format`, which only duplicates Accept", async () => {
   // `format=json` is documented as "an alternative to using the Accept header",
   // and the client already sends `Accept: application/json`. Two switches for
   // one outcome, where turning the visible one off changes nothing.

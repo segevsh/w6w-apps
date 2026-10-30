@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
@@ -14,14 +15,14 @@ const headers = (remaining: number, limit = 40) => ({
   "x-sentry-rate-limit-concurrentremaining": "24",
 });
 
-Deno.test("quota: is informational and signed on the app's own egress", () => {
+test("quota: is informational and signed on the app's own egress", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   // A signed check must not widen the allowlist.
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: reports both the request and the concurrency allowance", async () => {
+test("quota: reports both the request and the concurrency allowance", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {}, headers: headers(39) }], { display });
   const result = await quota.check!({} as never, ctx) as {
     state: string;
@@ -41,19 +42,19 @@ Deno.test("quota: reports both the request and the concurrency allowance", async
   assertEquals(result.quota[1].remaining, 24);
 });
 
-Deno.test("quota: under 10% headroom degrades, and exhaustion is down", async () => {
+test("quota: under 10% headroom degrades, and exhaustion is down", async () => {
   const low = mockCtx([{ status: 200, body: {}, headers: headers(3) }], { display });
   assertEquals((await quota.check!({} as never, low.ctx) as { state: string }).state, "degraded");
   const out = mockCtx([{ status: 200, body: {}, headers: headers(0) }], { display });
   assertEquals((await quota.check!({} as never, out.ctx) as { state: string }).state, "down");
 });
 
-Deno.test("quota: the headers are read even off a 429, which is when they matter most", async () => {
+test("quota: the headers are read even off a 429, which is when they matter most", async () => {
   const { ctx } = mockCtx([{ status: 429, body: "", headers: headers(0) }], { display });
   assertEquals((await quota.check!({} as never, ctx) as { state: string }).state, "down");
 });
 
-Deno.test("quota: no headers, or no org on the connection, is unknown", async () => {
+test("quota: no headers, or no org on the connection, is unknown", async () => {
   const bare = mockCtx([{ status: 200, body: {} }], { display });
   const noHeaders = await quota.check!({} as never, bare.ctx) as { state: string; message: string };
   assertEquals(noHeaders.state, "unknown");

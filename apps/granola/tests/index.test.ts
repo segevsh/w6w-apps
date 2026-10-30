@@ -1,14 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDirSync, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import pkg from "../package.json" with { type: "json" };
 
-Deno.test("index: 17 actions, one auth method, two health checks", () => {
+test("index: 17 actions, one auth method, two health checks", () => {
   assertEquals(app.actions.length, 17);
   assertEquals(app.auth.length, 1);
   assertEquals(app.healthChecks.length, 2);
 });
 
-Deno.test("index: action keys are unique kebab-case; each has type, description, execute, output", () => {
+test("index: action keys are unique kebab-case; each has type, description, execute, output", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -20,7 +22,7 @@ Deno.test("index: action keys are unique kebab-case; each has type, description,
   }
 });
 
-Deno.test("index: every perform action states idempotency; creates and deletes are not idempotent", () => {
+test("index: every perform action states idempotency; creates and deletes are not idempotent", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", a.key);
   }
@@ -32,16 +34,16 @@ Deno.test("index: every perform action states idempotency; creates and deletes a
   }
 });
 
-Deno.test("index: manifest allows only the API host; the status host is per-hook", () => {
+test("index: manifest allows only the API host; the status host is per-hook", () => {
   assertEquals(pkg.w6w.network.allow, ["public-api.granola.ai"]);
   assertEquals(app.healthChecks.find((h) => h.key === "service")?.network?.allow, [
     "status.granola.ai",
   ]);
 });
 
-Deno.test("index: no action holds a credential", async () => {
-  for (const f of Deno.readDirSync(new URL("../actions", import.meta.url))) {
-    const src = await Deno.readTextFile(new URL(`../actions/${f.name}`, import.meta.url));
+test("index: no action holds a credential", async () => {
+  for (const f of denoReadDirSync(new URL("../actions", import.meta.url))) {
+    const src = await denoReadTextFile(new URL(`../actions/${f.name}`, import.meta.url));
     assert(!/authorization/i.test(src.replace(/\/\*[\s\S]*?\*\//g, "")), f.name);
   }
 });

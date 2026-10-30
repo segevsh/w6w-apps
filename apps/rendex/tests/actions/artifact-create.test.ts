@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/artifact-create.ts";
 import { bodyOf, envelope, mockCtx, obj, pathOf } from "../_helpers.ts";
 
-Deno.test("artifact-create: POSTs /artifact with parsed branding and page setup", async () => {
+test("artifact-create: POSTs /artifact with parsed branding and page setup", async () => {
   const data = {
     pdfUrl: "https://api.rendex.dev/v1/images/a.pdf",
     expiresAt: "2026-10-07T00:00:00Z",
@@ -28,7 +29,7 @@ Deno.test("artifact-create: POSTs /artifact with parsed branding and page setup"
   assertEquals(out.pdfUrl, data.pdfUrl);
 });
 
-Deno.test("artifact-create: content is required", async () => {
+test("artifact-create: content is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute({ content: " " }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-conversations.ts";
 
-Deno.test("list-conversations: GETs /v1/conversations with the four documented parameters", async () => {
+test("list-conversations: GETs /v1/conversations with the four documented parameters", async () => {
   const { ctx, calls } = mockCtx([envelope([{ reservationId: 2 }], { count: 1 })]);
   await action.execute({ limit: 50, offset: 0, reservationId: 2, includeResources: 1 }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("list-conversations: GETs /v1/conversations with the four documented p
   assertEquals(url.searchParams.has("listingMapId"), false);
 });
 
-Deno.test("list-conversations: no filters means a bare list request", async () => {
+test("list-conversations: no filters means a bare list request", async () => {
   const { ctx, calls } = mockCtx([envelope([])]);
   await action.execute({}, ctx);
   assertEquals(calls[0].url, "https://api.hostaway.com/v1/conversations");

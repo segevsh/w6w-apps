@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listEntriesDelete from "../../actions/list-entries-delete.ts";
 import { mockCtx, pathOf, successBody } from "../_helpers.ts";
 
-Deno.test("list-entries-delete: DELETEs /lists/{id}/list-entries/{entryId}", async () => {
+test("list-entries-delete: DELETEs /lists/{id}/list-entries/{entryId}", async () => {
   const { ctx, calls } = mockCtx([{ body: successBody() }]);
   const out = await listEntriesDelete.execute({ listId: 450, listEntryId: 56517 }, ctx);
   assertEquals(calls[0].method, "DELETE");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import groupCreate from "../../actions/group-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-create: sends POST /groups", async () => {
+test("group-create: sends POST /groups", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 2 } }]);
   const out = await groupCreate.execute(
     { "name": "Acme", "billingEmail": "b@a.co", "planId": 8, "numberOfSeats": 5 } as never,
@@ -20,7 +21,7 @@ Deno.test("group-create: sends POST /groups", async () => {
   assertEquals(out, { "id": 2 });
 });
 
-Deno.test("group-create: a 422 surfaces the vendor's message", async () => {
+test("group-create: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

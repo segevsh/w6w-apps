@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import planCreate from "../../actions/plan-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("plan-create: POST /v1/src1/plans with the documented query/body", async () => {
+test("plan-create: POST /v1/src1/plans with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { plan: {} } }]);
   const out = await planCreate.execute({
     source_id: "src1",
@@ -33,7 +34,7 @@ Deno.test("plan-create: POST /v1/src1/plans with the documented query/body", asy
   assert("plan" in out);
 });
 
-Deno.test("plan-create: omits unset optional body fields", async () => {
+test("plan-create: omits unset optional body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await planCreate.execute({
     source_id: "src1",
@@ -50,7 +51,7 @@ Deno.test("plan-create: omits unset optional body fields", async () => {
   );
 });
 
-Deno.test("plan-create: declares type perform and every required param", () => {
+test("plan-create: declares type perform and every required param", () => {
   assertEquals(planCreate.type, "perform");
   const required = (planCreate.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, [
@@ -64,7 +65,7 @@ Deno.test("plan-create: declares type perform and every required param", () => {
   ]);
 });
 
-Deno.test("plan-create: surfaces a vendor error as a thrown message", async () => {
+test("plan-create: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

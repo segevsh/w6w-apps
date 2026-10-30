@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getPublisher from "../../actions/get-publisher-model.ts";
 
 const display = { projectId: "p1", location: "europe-west4" };
 
-Deno.test("get-publisher-model: GETs the global, project-less path", async () => {
+test("get-publisher-model: GETs the global, project-less path", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { name: "publishers/google/models/gemini-2.5-flash" } }],
     { display },

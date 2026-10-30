@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formCreate from "../../actions/form-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-create: POSTs only the fields the caller set, with the right wire names", async () => {
+test("form-create: POSTs only the fields the caller set, with the right wire names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { form_id: "f1", title: "My VideoAsk" } }]);
   const out = await formCreate.execute(
     { title: "My VideoAsk", requiresContactEmail: true, showConsent: false },
@@ -20,7 +21,7 @@ Deno.test("form-create: POSTs only the fields the caller set, with the right wir
   assertEquals(out.result.form_id, "f1");
 });
 
-Deno.test("form-create: an unset boolean is omitted, not sent as false", async () => {
+test("form-create: an unset boolean is omitted, not sent as false", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { form_id: "f1" } }]);
   await formCreate.execute({ title: "x" }, ctx);
   const body = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createFormWebhook from "../../actions/create-form-webhook.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-form-webhook: POSTs target_url and triggers, splitting a comma string", async () => {
+test("create-form-webhook: POSTs target_url and triggers, splitting a comma string", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: envelope({ webhook: { id: "w1", target_url: "https://example.com/webhook" } }),
@@ -25,7 +26,7 @@ Deno.test("create-form-webhook: POSTs target_url and triggers, splitting a comma
   assertEquals(out.webhook?.id, "w1");
 });
 
-Deno.test("create-form-webhook: accepts triggers already as an array", async () => {
+test("create-form-webhook: accepts triggers already as an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ webhook: {} }) }]);
   await createFormWebhook.execute(
     { slugOrId: "f1", targetUrl: "https://example.com/hook", triggers: ["submission"] },
@@ -34,6 +35,6 @@ Deno.test("create-form-webhook: accepts triggers already as an array", async () 
   assertEquals(JSON.parse(calls[0].body!).triggers, ["submission"]);
 });
 
-Deno.test("create-form-webhook: declares idempotent false — no idempotency key is documented", () => {
+test("create-form-webhook: declares idempotent false — no idempotency key is documented", () => {
   assertEquals(createFormWebhook.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/contact-list.ts";
 import { mockCtx, PAGE, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: maps filters and paging to the vendor's query names", async () => {
+test("contact-list: maps filters and paging to the vendor's query names", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   const out = await action.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("contact-list: maps filters and paging to the vendor's query names", a
   assertEquals(out.last, true);
 });
 
-Deno.test("contact-list: page 0 is sent (zero is meaningful); unset filters are dropped", async () => {
+test("contact-list: page 0 is sent (zero is meaningful); unset filters are dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await action.execute({ page: 0 }, ctx);
   assertEquals(queryOf(calls[0].url), { page: "0" });

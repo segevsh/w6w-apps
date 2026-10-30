@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-create.ts";
 
-Deno.test("invoice-create: POSTs to /2.0/kb_invoice with mapped body and positions", async () => {
+test("invoice-create: POSTs to /2.0/kb_invoice with mapped body and positions", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, document_nr: "RE-0001" } }]);
   const positions = [{
     type: "KbPositionCustom",

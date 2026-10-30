@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import clickGet from "../../actions/click-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("click-get: fetches click details by id", async () => {
+test("click-get: fetches click details by id", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", details: { os: "Mac OS X" } } },
   ]);

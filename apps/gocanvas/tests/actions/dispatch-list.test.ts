@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/dispatch-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("dispatch-list: GET /api/v3/dispatches with the documented shape", async () => {
+test("dispatch-list: GET /api/v3/dispatches with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }] }]);
   const out = await action.execute(
     { "formId": 346103, "status": "assigned", "scheduledStartDate": "2024-01-30" } as never,

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-entry.ts";
 
-Deno.test("update-entry: metadata", () => {
+test("update-entry: metadata", () => {
   assertEquals(action.key, "update-entry");
   assertEquals(action.type, "perform");
   assertEquals(action.params?.map((p) => p.key), [
@@ -14,7 +15,7 @@ Deno.test("update-entry: metadata", () => {
   ]);
 });
 
-Deno.test("update-entry: calls PUT /content_types/blog/entries/blt9 on the NA host", async () => {
+test("update-entry: calls PUT /content_types/blog/entries/blt9 on the NA host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Entry updated successfully.", "entry": { "uid": "blt9" } },
   }]);
@@ -32,7 +33,7 @@ Deno.test("update-entry: calls PUT /content_types/blog/entries/blt9 on the NA ho
   assertEquals(out, { "notice": "Entry updated successfully.", "entry": { "uid": "blt9" } });
 });
 
-Deno.test("update-entry: uses the connection's regional host", async () => {
+test("update-entry: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Entry updated successfully.", "entry": { "uid": "blt9" } },
   }], {
@@ -49,7 +50,7 @@ Deno.test("update-entry: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("update-entry: sends the branch header only when a branch is given", async () => {
+test("update-entry: sends the branch header only when a branch is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "notice": "Entry updated successfully.", "entry": { "uid": "blt9" } },
   }, { body: { "notice": "Entry updated successfully.", "entry": { "uid": "blt9" } } }]);
@@ -68,7 +69,7 @@ Deno.test("update-entry: sends the branch header only when a branch is given", a
   assertEquals(calls[1].headers["branch"], "dev");
 });
 
-Deno.test("update-entry: rejects without `contentTypeUid` and makes no request", async () => {
+test("update-entry: rejects without `contentTypeUid` and makes no request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => {
@@ -80,7 +81,7 @@ Deno.test("update-entry: rejects without `contentTypeUid` and makes no request",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-entry: surfaces Contentstack's own error body", async () => {
+test("update-entry: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

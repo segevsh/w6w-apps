@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import actorRunSyncGetItems from "../../actions/actor-run-sync-get-items.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * the vendor's three documented exceptions. If this action ever went through the
  * envelope-unwrapping path it would return the array only by accident.
  */
-Deno.test("actor-run-sync-get-items: reads a bare array response, not an envelope", async () => {
+test("actor-run-sync-get-items: reads a bare array response, not an envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: [{ url: "a" }, { url: "b" }] }]);
   const out = await actorRunSyncGetItems.execute(
     { actorId: "a1", input: { q: "x" }, limit: 100 },
@@ -19,7 +20,7 @@ Deno.test("actor-run-sync-get-items: reads a bare array response, not an envelop
   assertEquals(out.items, [{ url: "a" }, { url: "b" }]);
 });
 
-Deno.test("actor-run-sync-get-items: an envelope-shaped body is NOT unwrapped", async () => {
+test("actor-run-sync-get-items: an envelope-shaped body is NOT unwrapped", async () => {
   // Proves the action is not silently tolerant of the wrong shape: if the
   // vendor ever wrapped this response, the change would be visible here rather
   // than producing an empty result somewhere downstream.
@@ -28,7 +29,7 @@ Deno.test("actor-run-sync-get-items: an envelope-shaped body is NOT unwrapped", 
   assertEquals(out.items, { data: [{ url: "a" }] });
 });
 
-Deno.test("actor-run-sync-get-items: item-shaping params reach the query string", async () => {
+test("actor-run-sync-get-items: item-shaping params reach the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: [] }]);
   await actorRunSyncGetItems.execute(
     { actorId: "a1", limit: 5, clean: true, fields: "url,title", skipEmpty: false, build: "beta" },
@@ -42,6 +43,6 @@ Deno.test("actor-run-sync-get-items: item-shaping params reach the query string"
   });
 });
 
-Deno.test("actor-run-sync-get-items: is declared non-idempotent", () => {
+test("actor-run-sync-get-items: is declared non-idempotent", () => {
   assertEquals(actorRunSyncGetItems.idempotent, false);
 });

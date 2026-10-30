@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listContacts from "../../actions/list-contacts.ts";
 import { errorBody, listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-contacts: GET /contacts with mapped filters, paging and no credential", async () => {
+test("list-contacts: GET /contacts with mapped filters, paging and no credential", async () => {
   const { ctx, calls } = mockCtx([{
     body: listEnvelope("contacts", [{ contact: { id: "c1", last_name: "Lovelace" } }]),
   }]);
@@ -39,14 +40,14 @@ Deno.test("list-contacts: GET /contacts with mapped filters, paging and no crede
   assertEquals([out.totalCount, out.page, out.perPage, out.maxPage], [1, 1, 10, 1]);
 });
 
-Deno.test("list-contacts: no filters sends no query string", async () => {
+test("list-contacts: no filters sends no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope("contacts", []) }]);
   const out = await listContacts.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].url, "https://app.onepagecrm.com/api/v3/contacts");
   assertEquals(out.items, []);
 });
 
-Deno.test("list-contacts: a vendor error surfaces error_name and message", async () => {
+test("list-contacts: a vendor error surfaces error_name and message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: errorBody("invalid_request_data", "bad filter") }]);
   const err = await assertRejects(() => Promise.resolve(listContacts.execute({}, ctx)), Error);
   assert(err.message.includes("invalid_request_data") && err.message.includes("bad filter"));

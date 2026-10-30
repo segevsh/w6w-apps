@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/extract-product.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { PRODUCT_DOC } from "../_fixtures.ts";
 
-Deno.test("extract-product: GETs /v3/product with the url and shapes the objects", async () => {
+test("extract-product: GETs /v3/product with the url and shapes the objects", async () => {
   const { ctx, calls } = mockCtx([{ body: PRODUCT_DOC }]);
   const out = await run(action, { url: "https://example.com/x", fields: "links, meta" }, ctx);
   const u = new URL(calls[0].url);
@@ -17,7 +18,7 @@ Deno.test("extract-product: GETs /v3/product with the url and shapes the objects
   assertEquals(out.humanLanguage, "en");
 });
 
-Deno.test("extract-product: no objects gives a null object; an error body or a 4xx throws", async () => {
+test("extract-product: no objects gives a null object; an error body or a 4xx throws", async () => {
   const empty = mockCtx([{ body: { request: {}, objects: [] } }]);
   const out = await run(action, { url: "https://e.com" }, empty.ctx);
   assertEquals(out.count, 0);
@@ -42,7 +43,7 @@ Deno.test("extract-product: no objects gives a null object; an error body or a 4
   assert(err.message.includes("Incorrect token"));
 });
 
-Deno.test("extract-product: discussion=false is sent only when switched off", async () => {
+test("extract-product: discussion=false is sent only when switched off", async () => {
   const on = mockCtx([{ body: PRODUCT_DOC }]);
   await run(action, { url: "https://e.com", discussion: true }, on.ctx);
   assertEquals(new URL(on.calls[0].url).searchParams.has("discussion"), false);

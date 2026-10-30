@@ -1,15 +1,17 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDirSync, denoReadTextFile, denoStat } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-const PKG = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+const PKG = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
 
-Deno.test("index: one api-key auth method and three health checks", () => {
+test("index: one api-key auth method and three health checks", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "api", "quota"]);
 });
 
-Deno.test("index: 27 unique kebab-case actions with a valid type and an execute hook", () => {
+test("index: 27 unique kebab-case actions with a valid type and an execute hook", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(keys.length, 27);
   assertEquals(new Set(keys).size, keys.length);
@@ -21,31 +23,31 @@ Deno.test("index: 27 unique kebab-case actions with a valid type and an execute 
   }
 });
 
-Deno.test("index: every action key has a source file and a test file", async () => {
+test("index: every action key has a source file and a test file", async () => {
   for (const key of app.actions.map((a) => a.key)) {
-    await Deno.stat(new URL(`../actions/${key}.ts`, import.meta.url));
-    await Deno.stat(new URL(`./actions/${key}.test.ts`, import.meta.url));
+    await denoStat(new URL(`../actions/${key}.ts`, import.meta.url));
+    await denoStat(new URL(`./actions/${key}.test.ts`, import.meta.url));
   }
 });
 
-Deno.test("index: no action or lib source touches a credential or global fetch", async () => {
-  const files = [...Deno.readDirSync(new URL("../actions", import.meta.url))].map((e) =>
+test("index: no action or lib source touches a credential or global fetch", async () => {
+  const files = [...denoReadDirSync(new URL("../actions", import.meta.url))].map((e) =>
     `../actions/${e.name}`
   );
   files.push("../lib/client.ts", "../lib/factories.ts", "../lib/lead.ts");
   for (const f of files) {
-    const src = await Deno.readTextFile(new URL(f, import.meta.url));
+    const src = await denoReadTextFile(new URL(f, import.meta.url));
     const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
     assertEquals(/authorization|bearer|apiToken/i.test(code), false, f);
     assertEquals(/(^|[^.\w])fetch\(/.test(code), false, f);
   }
 });
 
-Deno.test("index: network.allow lists exactly the one host the app calls", () => {
+test("index: network.allow lists exactly the one host the app calls", () => {
   assertEquals([...PKG.w6w.network.allow], ["api.clearout.io"]);
 });
 
-Deno.test("index: service is a declared absence at informational severity, the rest are live", () => {
+test("index: service is a declared absence at informational severity, the rest are live", () => {
   const [service, api, quota] = app.healthChecks!;
   assert(service.unavailable);
   assertEquals(service.severity, "informational");

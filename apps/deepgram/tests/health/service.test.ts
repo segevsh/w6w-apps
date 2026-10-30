@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -7,7 +8,7 @@ const page = (components: Array<Record<string, unknown>>) => ({
   body: { components },
 });
 
-Deno.test("service: reads the surfaces this app uses and rolls them up", async () => {
+test("service: reads the surfaces this app uses and rolls them up", async () => {
   const { ctx, calls } = mockCtx([page([
     { name: "Batch API", status: "operational" },
     { name: "TTS API", status: "operational" },
@@ -23,7 +24,7 @@ Deno.test("service: reads the surfaces this app uses and rolls them up", async (
  * Streaming and Voice Agent are WebSocket surfaces this app cannot reach, so
  * their outages say nothing about whether its actions will work.
  */
-Deno.test("service: a streaming outage does not count", async () => {
+test("service: a streaming outage does not count", async () => {
   const { ctx } = mockCtx([page([
     { name: "Batch API", status: "operational" },
     { name: "Streaming API", status: "major_outage" },
@@ -35,7 +36,7 @@ Deno.test("service: a streaming outage does not count", async () => {
 });
 
 /** A TTS outage with a healthy batch API is a real, partial answer. */
-Deno.test("service: a TTS outage is down and is named", async () => {
+test("service: a TTS outage is down and is named", async () => {
   const { ctx } = mockCtx([page([
     { name: "Batch API", status: "operational" },
     { name: "TTS API", status: "major_outage" },
@@ -45,12 +46,12 @@ Deno.test("service: a TTS outage is down and is named", async () => {
   assert(/TTS API/.test(result.message!), result.message);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([page([{ name: "Batch API", status: "degraded_performance" }])]);
   assertEquals((await service.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("service: component groups are skipped, not counted twice", async () => {
+test("service: component groups are skipped, not counted twice", async () => {
   const { ctx } = mockCtx([page([
     { name: "Deepgram Public API (api.deepgram.com)", status: "major_outage", group: true },
     { name: "Batch API", status: "operational" },
@@ -59,7 +60,7 @@ Deno.test("service: component groups are skipped, not counted twice", async () =
 });
 
 /** A status page that itself fails tells us nothing about Deepgram. */
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 
@@ -67,13 +68,13 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, shapeless.ctx)).state, "unknown");
 });
 
-Deno.test("service: a page naming none of the used surfaces says so", async () => {
+test("service: a page naming none of the used surfaces says so", async () => {
   const { ctx } = mockCtx([page([{ name: "Streaming API", status: "operational" }])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/no longer names/.test(result.message!), result.message);
 });
 
-Deno.test("service: declares the status host, which is not the API host", () => {
+test("service: declares the status host, which is not the API host", () => {
   assertEquals(service.network!.allow, ["status.deepgram.com"]);
 });

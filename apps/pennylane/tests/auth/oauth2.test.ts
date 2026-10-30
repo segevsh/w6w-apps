@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
@@ -14,7 +15,7 @@ const ME = {
   scopes: ["customers:all"],
 };
 
-Deno.test("oauth2: declares Pennylane's authorize/token endpoints and no PKCE", () => {
+test("oauth2: declares Pennylane's authorize/token endpoints and no PKCE", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://app.pennylane.com/oauth/authorize");
@@ -24,7 +25,7 @@ Deno.test("oauth2: declares Pennylane's authorize/token endpoints and no PKCE", 
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: requests exactly the union of the scopes the 22 actions need", () => {
+test("oauth2: requests exactly the union of the scopes the 22 actions need", () => {
   assertEquals(auth.oauth2?.scopes, [
     "customers:all",
     "suppliers:all",
@@ -42,7 +43,7 @@ Deno.test("oauth2: requests exactly the union of the scopes the 22 actions need"
   }
 });
 
-Deno.test("oauth2: sign stamps the Bearer header from the stored access token", () => {
+test("oauth2: sign stamps the Bearer header from the stored access token", () => {
   const request = {
     url: "https://app.pennylane.com/api/external/v2/me",
     method: "GET" as const,
@@ -54,7 +55,7 @@ Deno.test("oauth2: sign stamps the Bearer header from the stored access token", 
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test probes GET /me with the token and succeeds on 200", async () => {
+test("oauth2: test probes GET /me with the token and succeeds on 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ME }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
 
@@ -63,7 +64,7 @@ Deno.test("oauth2: test probes GET /me with the token and succeeds on 200", asyn
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test reports the vendor's own error text from the body", async () => {
+test("oauth2: test reports the vendor's own error text from the body", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "unauthorized", message: "Access token is missing or invalid" },
@@ -75,7 +76,7 @@ Deno.test("oauth2: test reports the vendor's own error text from the body", asyn
   assert((result.message ?? "").includes("Access token is missing or invalid"), result.message);
 });
 
-Deno.test("oauth2: test falls back to the status when a 401 carries no body", async () => {
+test("oauth2: test falls back to the status when a 401 carries no body", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
 
@@ -83,7 +84,7 @@ Deno.test("oauth2: test falls back to the status when a 401 carries no body", as
   assert((result.message ?? "").includes("401"), result.message);
 });
 
-Deno.test("oauth2: test with no accessToken fails without calling the API", async () => {
+test("oauth2: test with no accessToken fails without calling the API", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
 
@@ -92,7 +93,7 @@ Deno.test("oauth2: test with no accessToken fails without calling the API", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect labels the connection with the user and company", async () => {
+test("oauth2: afterConnect labels the connection with the user and company", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ME }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "x" } }, ctx);
 
@@ -110,13 +111,13 @@ Deno.test("oauth2: afterConnect labels the connection with the user and company"
   });
 });
 
-Deno.test("oauth2: afterConnect does not echo credential material", async () => {
+test("oauth2: afterConnect does not echo credential material", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ME }]);
   const out = await auth.afterConnect!({ credential: { accessToken: "super-secret" } }, ctx);
   assert(!JSON.stringify(out).includes("super-secret"));
 });
 
-Deno.test("oauth2: afterConnect degrades to {} when the probe fails or is unreadable", async () => {
+test("oauth2: afterConnect degrades to {} when the probe fails or is unreadable", async () => {
   const failing = mockCtx([{ status: 503, body: undefined }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, failing.ctx), {});
 
@@ -124,7 +125,7 @@ Deno.test("oauth2: afterConnect degrades to {} when the probe fails or is unread
   assertEquals(await auth.afterConnect!({ credential: {} }, unreadable.ctx), {});
 });
 
-Deno.test("oauth2: a null user does not break the label", async () => {
+test("oauth2: a null user does not break the label", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { user: null, company: { id: 1, name: "Acme" } },

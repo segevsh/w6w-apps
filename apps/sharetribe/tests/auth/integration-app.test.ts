@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import auth from "../../auth/integration-app.ts";
 import { AUTH_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("integration-app: exchange mints a token via client_credentials, scope=integ", async () => {
+test("integration-app: exchange mints a token via client_credentials, scope=integ", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -34,7 +35,7 @@ Deno.test("integration-app: exchange mints a token via client_credentials, scope
   assertEquals(cred.clientId, "cid");
 });
 
-Deno.test("integration-app: exchange requires both clientId and clientSecret", async () => {
+test("integration-app: exchange requires both clientId and clientSecret", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await auth.exchange!({ fields: { clientId: "only-id" } } as never, ctx),
@@ -43,7 +44,7 @@ Deno.test("integration-app: exchange requires both clientId and clientSecret", a
   );
 });
 
-Deno.test("integration-app: exchange surfaces a plain-text 401 (not JSON) from a bad credential", async () => {
+test("integration-app: exchange surfaces a plain-text 401 (not JSON) from a bad credential", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }]);
   await assertRejects(
     async () =>
@@ -53,7 +54,7 @@ Deno.test("integration-app: exchange surfaces a plain-text 401 (not JSON) from a
   );
 });
 
-Deno.test("integration-app: refresh prefers grant_type=refresh_token when a refresh token exists", async () => {
+test("integration-app: refresh prefers grant_type=refresh_token when a refresh token exists", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { access_token: "at-2", expires_in: 3600, refresh_token: "rt-2" } },
   ]);
@@ -77,7 +78,7 @@ Deno.test("integration-app: refresh prefers grant_type=refresh_token when a refr
   assertEquals(cred.accessToken, "at-2");
 });
 
-Deno.test("integration-app: refresh falls back to client_credentials with no stored refresh token", async () => {
+test("integration-app: refresh falls back to client_credentials with no stored refresh token", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { access_token: "at-3", expires_in: 3600 },
@@ -98,7 +99,7 @@ Deno.test("integration-app: refresh falls back to client_credentials with no sto
   assertEquals(body.get("client_secret"), "secret");
 });
 
-Deno.test("integration-app: sign stamps a lowercase bearer header", async () => {
+test("integration-app: sign stamps a lowercase bearer header", async () => {
   const { ctx } = mockCtx([]);
   const request = {
     url: "https://flex-integ-api.sharetribe.com/v1/integration_api/marketplace/show",
@@ -109,7 +110,7 @@ Deno.test("integration-app: sign stamps a lowercase bearer header", async () => 
   assertEquals(out.headers["authorization"], "bearer tok-1");
 });
 
-Deno.test("integration-app: test ok on a 200", async () => {
+test("integration-app: test ok on a 200", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { data: { id: "mp-1", type: "marketplace", attributes: {} } },
@@ -118,14 +119,14 @@ Deno.test("integration-app: test ok on a 200", async () => {
   assertEquals(result.ok, true);
 });
 
-Deno.test("integration-app: test short-circuits with no fetch when the credential has no accessToken", async () => {
+test("integration-app: test short-circuits with no fetch when the credential has no accessToken", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await auth.test!({ credential: { accessToken: "" } } as never, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("integration-app: test distinguishes auth-missing-access-token from auth-invalid-access-token", async () => {
+test("integration-app: test distinguishes auth-missing-access-token from auth-invalid-access-token", async () => {
   const missing = mockCtx([
     {
       status: 401,
@@ -151,7 +152,7 @@ Deno.test("integration-app: test distinguishes auth-missing-access-token from au
   assertEquals(pathOf(invalid.calls[0].url), "/v1/integration_api/marketplace/show");
 });
 
-Deno.test("integration-app: afterConnect publishes marketplaceName and swallows failures", async () => {
+test("integration-app: afterConnect publishes marketplaceName and swallows failures", async () => {
   const ok = mockCtx([
     {
       status: 200,

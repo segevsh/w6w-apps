@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/customer-list.ts";
 import { LIST_META, mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-list: sends paging and date range, returns {items, meta}", async () => {
+test("customer-list: sends paging and date range, returns {items, meta}", async () => {
   const { ctx, calls } = mockCtx([{ body: ok([{ id: 1 }], LIST_META) }]);
   const out = await action.execute(
     { perPage: 10, page: 3, from: "2026-01-01", to: "2026-02-01" },

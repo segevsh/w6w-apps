@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-jobs.ts";
 
 const display = { endpoint: "https://ci.example.com" };
 
-Deno.test("list-jobs: GETs /api/json?tree=jobs[...] at the instance root with no folder", async () => {
+test("list-jobs: GETs /api/json?tree=jobs[...] at the instance root with no folder", async () => {
   const { ctx, calls } = mockCtx([
     { body: { jobs: [{ name: "job-a", url: "x", color: "blue", buildable: true }] } },
   ], { display });
@@ -16,7 +17,7 @@ Deno.test("list-jobs: GETs /api/json?tree=jobs[...] at the instance root with no
   assertEquals(result, { jobs: [{ name: "job-a", url: "x", color: "blue", buildable: true }] });
 });
 
-Deno.test("list-jobs: narrows to /job/<folder>/api/json when a folder is given", async () => {
+test("list-jobs: narrows to /job/<folder>/api/json when a folder is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { jobs: [] } }], { display });
   await action.execute({ folder: "team/project" }, ctx);
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("list-jobs: narrows to /job/<folder>/api/json when a folder is given",
   assertEquals(url.searchParams.get("tree"), "jobs[name,url,color,buildable]");
 });
 
-Deno.test("list-jobs: defaults to an empty array when the response has no jobs field", async () => {
+test("list-jobs: defaults to an empty array when the response has no jobs field", async () => {
   const { ctx } = mockCtx([{ body: {} }], { display });
   const result = await action.execute({}, ctx);
   assertEquals(result, { jobs: [] });

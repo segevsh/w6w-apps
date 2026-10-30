@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/task-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("task-list: calls GET /projects/{projectId}/tasks", async () => {
+test("task-list: calls GET /projects/{projectId}/tasks", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, items: [{ id: "x1" }, { id: "x2" }] } }]);
   const out = await action.execute!({ "projectId": "projectId-1", "limit": 2 }, ctx) as Record<
     string,
@@ -14,7 +15,7 @@ Deno.test("task-list: calls GET /projects/{projectId}/tasks", async () => {
   assertEquals(out.nextAfter, "x2");
 });
 
-Deno.test("task-list: a failure envelope is an error", async () => {
+test("task-list: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -33,7 +34,7 @@ Deno.test("task-list: a failure envelope is an error", async () => {
   );
 });
 
-Deno.test("task-list: a short page has no nextAfter and cursors are forwarded", async () => {
+test("task-list: a short page has no nextAfter and cursors are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, items: [{ id: "x1" }] } }]);
   const out = await action.execute!({ projectId: "p1", limit: 5, after: "t9" }, ctx) as Record<
     string,

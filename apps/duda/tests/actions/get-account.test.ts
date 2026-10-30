@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockConnectedCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/get-account.ts";
 
@@ -14,7 +15,7 @@ const account = {
   accountData: { company_name: "Acme" },
 };
 
-Deno.test("get-account: GETs /api/accounts/{accountName} and passes the body through", async () => {
+test("get-account: GETs /api/accounts/{accountName} and passes the body through", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: account }]);
   const result = await action.execute!({ accountName: "acme-001" }, ctx) as typeof account;
 
@@ -27,14 +28,14 @@ Deno.test("get-account: GETs /api/accounts/{accountName} and passes the body thr
   assertEquals(result.accountData, { company_name: "Acme" });
 });
 
-Deno.test("get-account: the output names the spaced properties the same way", () => {
+test("get-account: the output names the spaced properties the same way", () => {
   const keys = (action.output as Array<{ key: string }>).map((o) => o.key);
   for (const key of ["Account name identifier", "Account first name", "Account last name"]) {
     assertEquals(keys.includes(key), true, key);
   }
 });
 
-Deno.test("get-account: encodes the account name as one path segment", async () => {
+test("get-account: encodes the account name as one path segment", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: account }]);
   await action.execute!({ accountName: "acme 001" }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/accounts/acme%20001");

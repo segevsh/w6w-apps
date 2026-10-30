@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postChangeBoard from "../../actions/post-change-board.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-change-board: moves a post, unwraps the confirmation string", async () => {
+test("post-change-board: moves a post, unwraps the confirmation string", async () => {
   const { ctx, calls } = mockCtx([{ body: "success" }]);
   const out = await postChangeBoard.execute({ postID: "p1", boardID: "b2" }, ctx) as {
     message: string;

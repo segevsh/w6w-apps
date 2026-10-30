@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import getContactImportJob from "../../actions/get-contact-import-job.ts";
 
 // ------------------------------------------------------ get-contact-import-job
 
-Deno.test("get-contact-import-job: GETs the job under its list", async () => {
+test("get-contact-import-job: GETs the job under its list", async () => {
   const { ctx, calls } = mockCtx([{ body: { Data: [{ Status: "Completed", Count: 12 }] } }]);
   await getContactImportJob.execute!({ listId: 42, jobId: 35800 }, ctx);
   assertEquals(calls[0].method, "GET");
@@ -14,7 +15,7 @@ Deno.test("get-contact-import-job: GETs the job under its list", async () => {
   );
 });
 
-Deno.test("get-contact-import-job: surfaces a terminal Error status with its ErrorFile", async () => {
+test("get-contact-import-job: surfaces a terminal Error status with its ErrorFile", async () => {
   const { ctx } = mockCtx([{
     body: { Data: [{ Status: "Error", Error: "bad row", ErrorFile: "https://example/err" }] },
   }]);
@@ -25,7 +26,7 @@ Deno.test("get-contact-import-job: surfaces a terminal Error status with its Err
   assertEquals(result.Data[0].ErrorFile, "https://example/err");
 });
 
-Deno.test("get-contact-import-job: does not fetch the ErrorFile — that host is off-allowlist", async () => {
+test("get-contact-import-job: does not fetch the ErrorFile — that host is off-allowlist", async () => {
   const { ctx, calls } = mockCtx([{
     body: { Data: [{ Status: "Error", ErrorFile: "https://example/err" }] },
   }]);

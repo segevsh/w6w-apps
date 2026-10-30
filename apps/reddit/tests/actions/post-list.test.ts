@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/post-list.ts";
 
-Deno.test("post-list: builds the sort-specific listing URL with limit", async () => {
+test("post-list: builds the sort-specific listing URL with limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       kind: "Listing",
@@ -14,7 +15,7 @@ Deno.test("post-list: builds the sort-specific listing URL with limit", async ()
   assertEquals(out, { posts: [{ id: "1" }], after: "t3_1" });
 });
 
-Deno.test("post-list: passes the time window only for top/controversial", async () => {
+test("post-list: passes the time window only for top/controversial", async () => {
   const { ctx, calls } = mockCtx([
     { body: { kind: "Listing", data: { children: [], after: null } } },
     { body: { kind: "Listing", data: { children: [], after: null } } },
@@ -25,7 +26,7 @@ Deno.test("post-list: passes the time window only for top/controversial", async 
   assertEquals(calls[1].url, "https://oauth.reddit.com/r/test/hot.json?limit=25");
 });
 
-Deno.test("post-list: forwards the after cursor for pagination", async () => {
+test("post-list: forwards the after cursor for pagination", async () => {
   const { ctx, calls } = mockCtx([{
     body: { kind: "Listing", data: { children: [], after: null } },
   }]);

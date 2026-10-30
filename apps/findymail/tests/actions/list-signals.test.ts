@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-signals.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-signals: sends only the set filters", async () => {
+test("list-signals: sends only the set filters", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": [{ "id": 1, "type": "new_hire" }] },
@@ -26,7 +27,7 @@ Deno.test("list-signals: sends only the set filters", async () => {
   assertEquals(out, { "data": [{ "id": 1, "type": "new_hire" }] });
 });
 
-Deno.test("list-signals: surfaces the feature-disabled 404", async () => {
+test("list-signals: surfaces the feature-disabled 404", async () => {
   const { ctx } = mockCtx([{ status: 404, body: {} }]);
   const err = await assertRejects(async () => await action.execute!({} as never, ctx));
   const msg = (err as Error).message;

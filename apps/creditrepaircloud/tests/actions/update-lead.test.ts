@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateLead from "../../actions/update-lead.ts";
 import { errorResponse, mockCtx, okResponse, pathOf, xmlDataOf } from "../_helpers.ts";
 
-Deno.test("update-lead: names the record and POSTs to /api/lead/updateRecord", async () => {
+test("update-lead: names the record and POSTs to /api/lead/updateRecord", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse("<id>MQ==</id>") }]);
   const out = await updateLead.execute({
     id: "MQ==",
@@ -21,7 +22,7 @@ Deno.test("update-lead: names the record and POSTs to /api/lead/updateRecord", a
   assertEquals(out.success, true);
 });
 
-Deno.test("update-lead: never sends the fields the vendor's Update table drops", async () => {
+test("update-lead: never sends the fields the vendor's Update table drops", async () => {
   const { ctx, calls } = mockCtx([{ body: okResponse() }]);
   await updateLead.execute({ id: "MQ==", type: "Lead", firstname: "A", lastname: "B" }, ctx);
   const xml = xmlDataOf(calls[0].body)!;
@@ -37,7 +38,7 @@ Deno.test("update-lead: never sends the fields the vendor's Update table drops",
   }
 });
 
-Deno.test("update-lead: a wrong record id surfaces the vendor's own code", async () => {
+test("update-lead: a wrong record id surfaces the vendor's own code", async () => {
   const { ctx } = mockCtx([{ body: errorResponse(4410, "Wrong ID in update") }]);
   await assertRejects(
     async () => {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import callGet from "../../actions/call-get.ts";
 
-Deno.test("call-get: sends every documented field in its documented place", async () => {
+test("call-get: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("call-get: sends every documented field in its documented place", asyn
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("call-get: declares its params and kind", () => {
+test("call-get: declares its params and kind", () => {
   assertEquals((callGet.params ?? []).map((p) => p.key), ["uid"]);
   assertEquals((callGet.params ?? []).filter((p) => p.required).map((p) => p.key), ["uid"]);
   assertEquals(callGet.type, "read");

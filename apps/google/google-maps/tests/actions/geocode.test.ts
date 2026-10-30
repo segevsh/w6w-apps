@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { legacy } from "./_shared.ts";
 import action from "../../actions/geocode.ts";
@@ -12,7 +13,7 @@ const hit = legacy({
   }],
 });
 
-Deno.test("geocode: returns the best result and its precision", async () => {
+test("geocode: returns the best result and its precision", async () => {
   const { ctx, calls } = mockCtx([hit]);
   const result = await action.execute!({ address: "1600 Amphitheatre Parkway" }, ctx) as {
     found: boolean;
@@ -33,7 +34,7 @@ Deno.test("geocode: returns the best result and its precision", async () => {
  * An address that does not exist is a successful answer, not a failure. A
  * workflow needs to branch on it, not crash on it.
  */
-Deno.test("geocode: ZERO_RESULTS is found:false, not an error", async () => {
+test("geocode: ZERO_RESULTS is found:false, not an error", async () => {
   const { ctx } = mockCtx([legacy({ status: "ZERO_RESULTS", results: [] })]);
   const result = await action.execute!({ address: "45 Nowhere Lane" }, ctx) as { found: boolean };
   assertEquals(result.found, false);
@@ -43,7 +44,7 @@ Deno.test("geocode: ZERO_RESULTS is found:false, not an error", async () => {
  * Google returns a confident-looking result for an address it guessed at. The
  * only signal is a field that is absent on a good match.
  */
-Deno.test("geocode: a guessed match is surfaced as partialMatch", async () => {
+test("geocode: a guessed match is surfaced as partialMatch", async () => {
   const { ctx } = mockCtx([
     legacy({
       status: "OK",
@@ -56,14 +57,14 @@ Deno.test("geocode: a guessed match is surfaced as partialMatch", async () => {
   assertEquals(result.partialMatch, true);
 });
 
-Deno.test("geocode: a confident match normalises partialMatch to false, not undefined", async () => {
+test("geocode: a confident match normalises partialMatch to false, not undefined", async () => {
   const { ctx } = mockCtx([hit]);
   const result = await action.execute!({ address: "x" }, ctx) as { partialMatch: boolean };
   assertEquals(result.partialMatch, false);
 });
 
 /** A refused key arrives as HTTP 200. */
-Deno.test("geocode: REQUEST_DENIED throws rather than reading as no results", async () => {
+test("geocode: REQUEST_DENIED throws rather than reading as no results", async () => {
   const { ctx } = mockCtx([
     legacy({ status: "REQUEST_DENIED", error_message: "The provided API key is invalid. " }),
   ]);
@@ -74,7 +75,7 @@ Deno.test("geocode: REQUEST_DENIED throws rather than reading as no results", as
   );
 });
 
-Deno.test("geocode: component filters and bias reach the wire", async () => {
+test("geocode: component filters and bias reach the wire", async () => {
   const { ctx, calls } = mockCtx([hit]);
   await action.execute!({
     address: "High Street",
@@ -91,14 +92,14 @@ Deno.test("geocode: component filters and bias reach the wire", async () => {
 });
 
 /** An address is somebody's home. */
-Deno.test("geocode: logs precision and counts, never the address", async () => {
+test("geocode: logs precision and counts, never the address", async () => {
   const { ctx, logs } = mockCtx([hit]);
   await action.execute!({ address: "1600 Amphitheatre Parkway" }, ctx);
   assert(!JSON.stringify(logs).includes("Amphitheatre"), JSON.stringify(logs));
   assertEquals(logs[0].data, { results: 1, locationType: "ROOFTOP", partialMatch: false });
 });
 
-Deno.test("geocode: needs an address", async () => {
+test("geocode: needs an address", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`address` is required");
   assertEquals(calls.length, 0);

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   LOGIN_COMPONENT_ID,
@@ -19,13 +20,13 @@ const summary = (api: string, login = "operational", other = "operational") => (
   ],
 });
 
-Deno.test("service: probes the real Statuspage summary, unsigned, on its own host only", () => {
+test("service: probes the real Statuspage summary, unsigned, on its own host only", () => {
   assertEquals(STATUS_URL, "https://status.fortnox.se/api/v2/summary.json");
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.fortnox.se"]);
 });
 
-Deno.test("mapComponentStatus: covers the Statuspage vocabulary", () => {
+test("mapComponentStatus: covers the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -34,19 +35,19 @@ Deno.test("mapComponentStatus: covers the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: operational API and login report ok with both components", async () => {
+test("service: operational API and login report ok with both components", async () => {
   const { ctx } = mockCtx([{ body: summary("operational") }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
   assertEquals(Object.keys(r.components!).sort(), [API_COMPONENT_ID, LOGIN_COMPONENT_ID].sort());
 });
 
-Deno.test("service: an unrelated component being down does not affect the verdict", async () => {
+test("service: an unrelated component being down does not affect the verdict", async () => {
   const { ctx } = mockCtx([{ body: summary("operational", "operational", "major_outage") }]);
   assertEquals((await service.check!({} as never, ctx)).state, "ok");
 });
 
-Deno.test("service: API major outage is down; login partial outage is degraded", async () => {
+test("service: API major outage is down; login partial outage is degraded", async () => {
   const a = mockCtx([{ body: summary("major_outage") }]);
   const down = await service.check!({} as never, a.ctx);
   assertEquals(down.state, "down");
@@ -55,7 +56,7 @@ Deno.test("service: API major outage is down; login partial outage is degraded",
   assertEquals((await service.check!({} as never, b.ctx)).state, "degraded");
 });
 
-Deno.test("service: a different page id, a missing API component or a bad body is unknown", async () => {
+test("service: a different page id, a missing API component or a bad body is unknown", async () => {
   const wrong = mockCtx([{ body: { ...summary("operational"), page: { ...page, id: "other" } } }]);
   assertEquals((await service.check!({} as never, wrong.ctx)).state, "unknown");
   const missing = mockCtx([{ body: { page, components: [] } }]);

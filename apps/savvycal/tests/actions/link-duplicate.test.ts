@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkDuplicate from "../../actions/link-duplicate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("link-duplicate: POST /v1/links/{id}/duplicate", async () => {
+test("link-duplicate: POST /v1/links/{id}/duplicate", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "link_copy" } }]);
   const out = await linkDuplicate.execute({ linkId: "link_1" }, ctx) as { id: string };
   assertEquals(calls[0].method, "POST");

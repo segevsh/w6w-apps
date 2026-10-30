@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/metadata-get.ts";
 
-Deno.test("metadata-get: reads the property's own dimension and metric catalogue", async () => {
+test("metadata-get: reads the property's own dimension and metric catalogue", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { dimensions: [], metrics: [] } }], {
     display: { propertyId: "123" },
   });
@@ -13,7 +14,7 @@ Deno.test("metadata-get: reads the property's own dimension and metric catalogue
   );
 });
 
-Deno.test("metadata-get: no property anywhere is a directive error", async () => {
+test("metadata-get: no property anywhere is a directive error", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "propertyId");
   assertEquals(calls.length, 0);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/employee-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("employee-list: GETs /employees with paging, filter and sort", async () => {
+test("employee-list: GETs /employees with paging, filter and sort", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       collection: [{ n: 1 }],
@@ -22,14 +23,14 @@ Deno.test("employee-list: GETs /employees with paging, filter and sort", async (
   assertEquals(out, { items: [{ n: 1 }], count: 1, total: 7, hasMore: true, nextSkipPages: 3 });
 });
 
-Deno.test("employee-list: the last page has no nextSkipPages", async () => {
+test("employee-list: the last page has no nextSkipPages", async () => {
   const { ctx, calls } = mockCtx([{ body: { collection: [], pagination: { results: 0 } } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("pagesize"), "100");
   assertEquals(out, { items: [], count: 0, total: 0, hasMore: false });
 });
 
-Deno.test("employee-list: an API error is thrown with the vendor message", async () => {
+test("employee-list: an API error is thrown with the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "bad filter", httpStatusCode: 400 } }]);
   let msg = "";
   try {

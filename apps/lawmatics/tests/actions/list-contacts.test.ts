@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listContacts from "../../actions/list-contacts.ts";
 import { item, list, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-contacts: hits GET /v1/contacts and returns the envelope as-is", async () => {
+test("list-contacts: hits GET /v1/contacts and returns the envelope as-is", async () => {
   const { ctx, calls } = mockCtx([{
     body: list([item("1", "contact", { first_name: "Linda", last_name: "Baker" })]),
   }]);
@@ -17,7 +18,7 @@ Deno.test("list-contacts: hits GET /v1/contacts and returns the envelope as-is",
   assertEquals(out.meta.total_pages, 1);
 });
 
-Deno.test("list-contacts: forwards fields/page/sort/filter as query params", async () => {
+test("list-contacts: forwards fields/page/sort/filter as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: list([]) }]);
   await listContacts.execute({
     fields: "first_name,email",
@@ -40,7 +41,7 @@ Deno.test("list-contacts: forwards fields/page/sort/filter as query params", asy
   });
 });
 
-Deno.test("list-contacts: omits unset query params entirely rather than sending blanks", async () => {
+test("list-contacts: omits unset query params entirely rather than sending blanks", async () => {
   const { ctx, calls } = mockCtx([{ body: list([]) }]);
   await listContacts.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

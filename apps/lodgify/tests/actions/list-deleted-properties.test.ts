@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import listDeleted from "../../actions/list-deleted-properties.ts";
 
-Deno.test("list-deleted-properties: passes deletedSince and returns the id array", async () => {
+test("list-deleted-properties: passes deletedSince and returns the id array", async () => {
   const { ctx, calls } = mockCtx([{ body: [3, 4] }]);
   const out = await listDeleted.execute({ deletedSince: "2026-02-01" }, ctx) as {
     items: number[];

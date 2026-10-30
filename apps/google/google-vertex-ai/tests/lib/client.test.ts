@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   resolveLocation,
@@ -10,7 +11,7 @@ import {
 
 const conn = (display: Record<string, unknown>) => mockCtx([], { display }).ctx.connection;
 
-Deno.test("resolveProject: override wins, then the connection, else an error", () => {
+test("resolveProject: override wins, then the connection, else an error", () => {
   assertEquals(resolveProject(conn({ projectId: "c" }), "o"), "o");
   assertEquals(resolveProject(conn({ projectId: "c" })), "c");
   try {
@@ -27,7 +28,7 @@ Deno.test("resolveProject: override wins, then the connection, else an error", (
   }
 });
 
-Deno.test("resolveLocation: defaults to us-central1 and refuses unknown values", () => {
+test("resolveLocation: defaults to us-central1 and refuses unknown values", () => {
   assertEquals(resolveLocation(undefined), "us-central1");
   assertEquals(resolveLocation(conn({ location: "europe-west4" })), "europe-west4");
   assertEquals(resolveLocation(conn({ location: "europe-west4" }), "global"), "global");
@@ -39,7 +40,7 @@ Deno.test("resolveLocation: defaults to us-central1 and refuses unknown values",
   }
 });
 
-Deno.test("resolveResource: a full name's own location wins over the connection's", () => {
+test("resolveResource: a full name's own location wins over the connection's", () => {
   const t = resolveResource(
     conn({ projectId: "p1", location: "us-central1" }),
     { endpointId: "projects/p2/locations/europe-west4/endpoints/77" },
@@ -52,7 +53,7 @@ Deno.test("resolveResource: a full name's own location wins over the connection'
   });
 });
 
-Deno.test("resolveResource: a bare id uses the connection; a wrong collection or bad id throws", () => {
+test("resolveResource: a bare id uses the connection; a wrong collection or bad id throws", () => {
   const c = conn({ projectId: "p1", location: "asia-southeast1" });
   assertEquals(
     resolveResource(c, { jobId: "123" }, "batchPredictionJobs", "jobId").name,
@@ -72,7 +73,7 @@ Deno.test("resolveResource: a bare id uses the connection; a wrong collection or
   }
 });
 
-Deno.test("resolvePublisherModel: bare id, publishers/ form, and full name", () => {
+test("resolvePublisherModel: bare id, publishers/ form, and full name", () => {
   const c = conn({ projectId: "p1", location: "us-central1" });
   const base = "projects/p1/locations/us-central1/publishers";
   assertEquals(
@@ -94,7 +95,7 @@ Deno.test("resolvePublisherModel: bare id, publishers/ form, and full name", () 
   );
 });
 
-Deno.test("VertexClient: routes to the location's host, surfaces error.status and message", async () => {
+test("VertexClient: routes to the location's host, surfaces error.status and message", async () => {
   const { ctx, calls } = mockCtx([
     { status: 403, body: { error: { code: 403, status: "PERMISSION_DENIED", message: "nope" } } },
   ]);
@@ -109,7 +110,7 @@ Deno.test("VertexClient: routes to the location's host, surfaces error.status an
   );
 });
 
-Deno.test("VertexClient: requestAll follows nextPageToken and honours the limit", async () => {
+test("VertexClient: requestAll follows nextPageToken and honours the limit", async () => {
   const { ctx, calls } = mockCtx([
     { body: { endpoints: [{ n: 1 }, { n: 2 }], nextPageToken: "t2" } },
     { body: { endpoints: [{ n: 3 }] } },

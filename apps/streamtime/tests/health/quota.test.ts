@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import app from "../../index.ts";
 
@@ -8,7 +9,7 @@ import app from "../../index.ts";
  * carried a limit, a remaining count or a retry hint on 2026-09-22. The check is
  * therefore a declared absence rather than a probe that happens to fail.
  */
-Deno.test("quota: it declares an absence instead of installing a check hook", () => {
+test("quota: it declares an absence instead of installing a check hook", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
@@ -23,15 +24,15 @@ Deno.test("quota: it declares an absence instead of installing a check hook", ()
  * `ok`, so at any severity but informational this pins the App at `unknown`
  * forever.
  */
-Deno.test("quota: it is informational, which is what keeps the App reportable", () => {
+test("quota: it is informational, which is what keeps the App reportable", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: it makes no request at all", () => {
+test("quota: it makes no request at all", () => {
   assertEquals(quota.credential, "none");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: it is declared in the app, not orphaned in health/", () => {
+test("quota: it is declared in the app, not orphaned in health/", () => {
   assertEquals(app.healthChecks.find((h) => h.key === "quota"), quota);
 });

@@ -1,9 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactBatchUpdate from "../../actions/contact-batch-update.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-batch-update: PATCH /contacts/batch", async () => {
+test("contact-batch-update: PATCH /contacts/batch", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await contactBatchUpdate.execute({
     "contacts": [
@@ -34,7 +35,7 @@ Deno.test("contact-batch-update: PATCH /contacts/batch", async () => {
   assertEquals(out.count, 1);
 });
 
-Deno.test("contact-batch-update: a vendor error surfaces its code and message", async () => {
+test("contact-batch-update: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ code: "not_found", message: "Nope" }] },

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pay-schedule-list.ts";
 
 const conn = { display: { environment: "production", companyId: "co-1" } };
 
-Deno.test("pay-schedule-list: reads the company's pay schedules", async () => {
+test("pay-schedule-list: reads the company's pay schedules", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ uuid: "ps1", frequency: "Every week" }],

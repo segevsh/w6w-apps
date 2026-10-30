@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postAddTag from "../../actions/post-add-tag.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("post-add-tag: posts postID and tagID", async () => {
+test("post-add-tag: posts postID and tagID", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1" } }]);
   await postAddTag.execute({ postID: "p1", tagID: "t1" }, ctx);
 
@@ -10,6 +11,6 @@ Deno.test("post-add-tag: posts postID and tagID", async () => {
   assertEquals(bodyOf(calls[0]), { postID: "p1", tagID: "t1" });
 });
 
-Deno.test("post-add-tag: is idempotent", () => {
+test("post-add-tag: is idempotent", () => {
   assertEquals(postAddTag.idempotent, true);
 });

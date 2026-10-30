@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import payoutList from "../../actions/payout-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("payout-list: GETs the payouts collection with its filters", async () => {
+test("payout-list: GETs the payouts collection with its filters", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "payouts") }]);
   await payoutList.execute({
     siteId: "111",
@@ -25,13 +26,13 @@ Deno.test("payout-list: GETs the payouts collection with its filters", async () 
  * every other collection, where it is merely recommended. Pinned so the param
  * is not "harmonised" into the optional shared `siteFilterParam`.
  */
-Deno.test("payout-list: the site filter is required, unlike every other list", () => {
+test("payout-list: the site filter is required, unlike every other list", () => {
   const site = payoutList.params!.find((p) => p.key === "siteId")!;
   assertEquals(site.required, true);
 });
 
 /** The spec declares `page[number]` but neither `page[size]` nor `sort` here. */
-Deno.test("payout-list: offers no page size or sort, because the spec declares none", () => {
+test("payout-list: offers no page size or sort, because the spec declares none", () => {
   const keys = payoutList.params!.map((p) => p.key);
   assertEquals(keys.includes("pageSize"), false);
   assertEquals(keys.includes("sort"), false);

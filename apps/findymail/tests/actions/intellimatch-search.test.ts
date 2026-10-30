@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/intellimatch-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("intellimatch-search: sends the query alone when no option is set", async () => {
+test("intellimatch-search: sends the query alone when no option is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "hash": "abc" } }]);
   const out = await action.execute!({ "query": "B2B SaaS in France" } as never, ctx);
   const url = new URL(calls[0].url);
@@ -18,7 +19,7 @@ Deno.test("intellimatch-search: sends the query alone when no option is set", as
   assertEquals(out, { "hash": "abc" });
 });
 
-Deno.test("intellimatch-search: nests the enrichment options under config", async () => {
+test("intellimatch-search: nests the enrichment options under config", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "hash": "h" } }]);
   const out = await action.execute!(
     {
@@ -53,7 +54,7 @@ Deno.test("intellimatch-search: nests the enrichment options under config", asyn
   assertEquals(out, { "hash": "h" });
 });
 
-Deno.test("intellimatch-search: surfaces a 429 rate limit", async () => {
+test("intellimatch-search: surfaces a 429 rate limit", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { "message": "Too Many Attempts." } }]);
   const err = await assertRejects(async () =>
     await action.execute!({ "query": "q" } as never, ctx)

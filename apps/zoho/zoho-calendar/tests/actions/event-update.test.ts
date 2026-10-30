@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/event-update.ts";
 
-Deno.test("event-update: PUTs .../events/<uid> including the mandatory etag", async () => {
+test("event-update: PUTs .../events/<uid> including the mandatory etag", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { events: [{ uid: "e1", etag: "2" }] } }]);
   const out = await action.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("event-update: PUTs .../events/<uid> including the mandatory etag", as
   assertEquals(out, { uid: "e1", etag: "2" });
 });
 
-Deno.test("event-update: rejects without etag reaching the network", async () => {
+test("event-update: rejects without etag reaching the network", async () => {
   const { ctx, calls } = mockCalendarCtx([]);
   await assertRejects(() =>
     Promise.resolve(
@@ -37,7 +38,7 @@ Deno.test("event-update: rejects without etag reaching the network", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-update: rejects without start/end reaching the network", async () => {
+test("event-update: rejects without start/end reaching the network", async () => {
   const { ctx, calls } = mockCalendarCtx([]);
   await assertRejects(() =>
     Promise.resolve(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceGet from "../../actions/workspace-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("workspace-get: fetches GET /workspace with no params", async () => {
+test("workspace-get: fetches GET /workspace with no params", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       meta: { retrieved_at: "2026-09-29T00:00:00Z" },
@@ -23,7 +24,7 @@ Deno.test("workspace-get: fetches GET /workspace with no params", async () => {
   assertEquals(out.data.id, 42);
 });
 
-Deno.test("workspace-get: declares no params", () => {
+test("workspace-get: declares no params", () => {
   assertEquals(workspaceGet.params, []);
   assertEquals(workspaceGet.type, "read");
 });

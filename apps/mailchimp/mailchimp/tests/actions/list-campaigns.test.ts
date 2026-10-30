@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-campaigns.ts";
 
-Deno.test("list-campaigns: GETs /campaigns with default fields, count, offset", async () => {
+test("list-campaigns: GETs /campaigns with default fields, count, offset", async () => {
   const { ctx, calls } = mockCtx([{ body: { campaigns: [], total_items: 0 } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
@@ -15,7 +16,7 @@ Deno.test("list-campaigns: GETs /campaigns with default fields, count, offset", 
   assert(fields.includes("campaigns.settings.title"));
 });
 
-Deno.test("list-campaigns: forwards status/list/filters and joins array fields", async () => {
+test("list-campaigns: forwards status/list/filters and joins array fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { campaigns: [] } }]);
   await action.execute!(
     {

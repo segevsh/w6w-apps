@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-get.ts";
 
-Deno.test("submission-get: GETs one submission with its question set", async () => {
+test("submission-get: GETs one submission with its question set", async () => {
   const { ctx, calls } = mockCtx([
     { body: { questions: [{ id: "q1" }], submission: { id: "s1", isCompleted: true } } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("submission-get: GETs one submission with its question set", async () 
   assertEquals(result.questions, [{ id: "q1" }]);
 });
 
-Deno.test("submission-get: defaults questions to an empty array", async () => {
+test("submission-get: defaults questions to an empty array", async () => {
   const { ctx } = mockCtx([{ body: { submission: { id: "s1" } } }]);
   const result = await action.execute({ formId: "f1", submissionId: "s1" }, ctx);
   assertEquals(result.questions, []);

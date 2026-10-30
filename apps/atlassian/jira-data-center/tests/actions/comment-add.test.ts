@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentAdd from "../../actions/comment-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-add: POSTs a plain-string body, not ADF", async () => {
+test("comment-add: POSTs a plain-string body, not ADF", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "10", created: "now" } }]);
   await commentAdd.execute({ issueKey: "ENG-1", body: "Looks good" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("comment-add: POSTs a plain-string body, not ADF", async () => {
   assertEquals(body.visibility, undefined);
 });
 
-Deno.test("comment-add: restricts visibility to the given role", async () => {
+test("comment-add: restricts visibility to the given role", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "10" } }]);
   await commentAdd.execute({
     issueKey: "ENG-1",

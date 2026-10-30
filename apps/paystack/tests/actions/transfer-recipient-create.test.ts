@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/transfer-recipient-create.ts";
 import { mockCtx, ok, pathOf } from "../_helpers.ts";
 
-Deno.test("transfer-recipient-create: POSTs /transferrecipient with snake_case fields", async () => {
+test("transfer-recipient-create: POSTs /transferrecipient with snake_case fields", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ recipient_code: "RCP_1" }) }]);
   const out = await action.execute({
     type: "nuban",
@@ -22,7 +23,7 @@ Deno.test("transfer-recipient-create: POSTs /transferrecipient with snake_case f
   });
 });
 
-Deno.test("transfer-recipient-create: every required field is checked locally", async () => {
+test("transfer-recipient-create: every required field is checked locally", async () => {
   const { ctx, calls } = mockCtx([]);
   const full = { type: "nuban", name: "A", accountNumber: "1", bankCode: "058" };
   for (

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 import service from "../../health/service.ts";
@@ -8,7 +9,7 @@ import { PRODUCTION } from "../../lib/client.ts";
  * Deel has a Statuspage and does not publish it — the 401 is Statuspage's own
  * message for an unpublished page, so there is nothing to probe.
  */
-Deno.test("service: is a declared absence, with the private-page evidence", () => {
+test("service: is a declared absence, with the private-page evidence", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined);
   assert(service.unavailable?.reason.includes("inactive"));
@@ -24,14 +25,14 @@ const headers = (remaining: number, limit = 100) => ({
   "x-ratelimit-reset": "1787044307",
 });
 
-Deno.test("quota: is a live check — Deel sends the headers on every response", () => {
+test("quota: is a live check — Deel sends the headers on every response", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
   assert(typeof quota.check === "function");
 });
 
-Deno.test("quota: reads the allowance and converts the epoch-seconds reset", async () => {
+test("quota: reads the allowance and converts the epoch-seconds reset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {}, headers: headers(97) }], {
     display: {},
   });
@@ -47,17 +48,17 @@ Deno.test("quota: reads the allowance and converts the epoch-seconds reset", asy
 });
 
 /** The headers ride on error responses too, which is when they matter most. */
-Deno.test("quota: reads the headers off a 429 as well", async () => {
+test("quota: reads the headers off a 429 as well", async () => {
   const { ctx } = mockCtx([{ status: 429, body: "", headers: headers(0) }], { display: {} });
   assertEquals((await quota.check!({} as never, ctx) as { state: string }).state, "down");
 });
 
-Deno.test("quota: under 10% headroom degrades", async () => {
+test("quota: under 10% headroom degrades", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {}, headers: headers(5) }], { display: {} });
   assertEquals((await quota.check!({} as never, ctx) as { state: string }).state, "degraded");
 });
 
-Deno.test("quota: no headers is unknown, and says which kind of nothing it got", async () => {
+test("quota: no headers is unknown, and says which kind of nothing it got", async () => {
   const ok = mockCtx([{ status: 200, body: {} }], { display: {} });
   const a = await quota.check!({} as never, ok.ctx) as { state: string; message: string };
   assertEquals(a.state, "unknown");

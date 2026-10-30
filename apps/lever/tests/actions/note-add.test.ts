@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/note-add.ts";
 
@@ -7,7 +8,7 @@ const OPP = "8d49b010-cc6a-4f40-ace5-e86061c677ed";
 const USER = "63dd55b2-a99f-4e7b-985f-22c7bf80ab42";
 const created = { status: 200, body: { data: { id: "n1" } } };
 
-Deno.test("note-add: posts the note with perform_as", async () => {
+test("note-add: posts the note with perform_as", async () => {
   const { ctx, calls } = mockCtx([created], D);
   const result = await action.execute(
     { opportunityId: OPP, value: "Background check cleared", performAs: USER },
@@ -20,7 +21,7 @@ Deno.test("note-add: posts the note with perform_as", async () => {
   assertEquals(result.id, "n1");
 });
 
-Deno.test("note-add: secret and notify are sent only when chosen", async () => {
+test("note-add: secret and notify are sent only when chosen", async () => {
   const plain = mockCtx([created], D);
   await action.execute({ opportunityId: OPP, value: "x", performAs: USER }, plain.ctx);
   assertEquals(new URL(plain.calls[0].url).searchParams.get("notify"), "false");
@@ -35,7 +36,7 @@ Deno.test("note-add: secret and notify are sent only when chosen", async () => {
   assertEquals(JSON.parse(loud.calls[0].body!).secret, true);
 });
 
-Deno.test("note-add: a backdate is passed through only when positive", async () => {
+test("note-add: a backdate is passed through only when positive", async () => {
   const { ctx, calls } = mockCtx([created], D);
   await action.execute(
     { opportunityId: OPP, value: "x", performAs: USER, createdAt: 1423231549510 },
@@ -44,7 +45,7 @@ Deno.test("note-add: a backdate is passed through only when positive", async () 
   assertEquals(JSON.parse(calls[0].body!).createdAt, 1423231549510);
 });
 
-Deno.test("note-add: refuses an empty note and a missing performAs", async () => {
+test("note-add: refuses an empty note and a missing performAs", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ opportunityId: OPP, value: "  ", performAs: USER }, ctx),
@@ -60,7 +61,7 @@ Deno.test("note-add: refuses an empty note and a missing performAs", async () =>
 });
 
 /** The note is what somebody wrote about a person. */
-Deno.test("note-add: logs ids, never the note itself", async () => {
+test("note-add: logs ids, never the note itself", async () => {
   const { ctx, logs } = mockCtx([created], D);
   await action.execute(
     { opportunityId: OPP, value: "Concerns about references", performAs: USER },
@@ -69,7 +70,7 @@ Deno.test("note-add: logs ids, never the note itself", async () => {
   assert(!/Concerns about references/.test(JSON.stringify(logs)), JSON.stringify(logs));
 });
 
-Deno.test("note-add: says notes are permanent and personal", () => {
+test("note-add: says notes are permanent and personal", () => {
   assert(/PERMANENT/.test(action.description!), action.description);
   assert(/data-subject request/.test(action.description!), action.description);
   assertEquals(action.idempotent, false);

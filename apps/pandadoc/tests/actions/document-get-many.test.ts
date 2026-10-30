@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/document-get-many.ts";
 
-Deno.test("document-get-many: GETs /documents mapping every filter to its wire name", async () => {
+test("document-get-many: GETs /documents mapping every filter to its wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [{ id: "d1" }] } }]);
   const out = await action.execute({
     q: "renewal",
@@ -50,13 +51,13 @@ Deno.test("document-get-many: GETs /documents mapping every filter to its wire n
   assertEquals(out, { results: [{ id: "d1" }] });
 });
 
-Deno.test("document-get-many: sends no query at all when nothing is set", async () => {
+test("document-get-many: sends no query at all when nothing is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("document-get-many: is a search action on the document resource", () => {
+test("document-get-many: is a search action on the document resource", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "document");
 });

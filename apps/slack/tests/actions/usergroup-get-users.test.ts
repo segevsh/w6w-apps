@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/usergroup-get-users.ts";
 
-Deno.test("usergroup-get-users: filters usergroups.list?include_users=true down to the group's users", async () => {
+test("usergroup-get-users: filters usergroups.list?include_users=true down to the group's users", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -22,7 +23,7 @@ Deno.test("usergroup-get-users: filters usergroups.list?include_users=true down 
   assertEquals(result, ["U1", "U2"]);
 });
 
-Deno.test("usergroup-get-users: throws when the group id is not found", async () => {
+test("usergroup-get-users: throws when the group id is not found", async () => {
   const { ctx } = mockCtx([{ body: { ok: true, usergroups: [] } }]);
   await assertRejects(
     async () => await action.execute!({ userGroupId: "Sxx" }, ctx),

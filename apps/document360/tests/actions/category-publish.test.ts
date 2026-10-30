@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryPublish from "../../actions/category-publish.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("category-publish: POSTs workspace_id and version_number", async () => {
+test("category-publish: POSTs workspace_id and version_number", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope(null) }]);
   const out = await categoryPublish.execute({
     categoryId: "c1",
@@ -19,7 +20,7 @@ Deno.test("category-publish: POSTs workspace_id and version_number", async () =>
   assertEquals(out.published, true);
 });
 
-Deno.test("category-publish: a vendor error surfaces its code and message", async () => {
+test("category-publish: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

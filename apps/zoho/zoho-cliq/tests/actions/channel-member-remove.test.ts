@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/channel-member-remove.ts";
 
-Deno.test("channel-member-remove: removes with a DELETE body incl. silent", async () => {
+test("channel-member-remove: removes with a DELETE body incl. silent", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute(
     { "channelId": "O1", "userIds": "1", "silent": true } as never,
@@ -19,7 +20,7 @@ Deno.test("channel-member-remove: removes with a DELETE body incl. silent", asyn
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true });
 });
 
-Deno.test("channel-member-remove: needs at least one id", async () => {
+test("channel-member-remove: needs at least one id", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "channelId": "O1" } as never, ctx)),
@@ -29,7 +30,7 @@ Deno.test("channel-member-remove: needs at least one id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("channel-member-remove: idempotent is declared as true", () => {
+test("channel-member-remove: idempotent is declared as true", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

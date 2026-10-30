@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate, { webhookBody } from "../../actions/webhook-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: events go in filter.event_type, never the deprecated top level", async () => {
+test("webhook-create: events go in filter.event_type, never the deprecated top level", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "w1", name: "Hook" } }]);
   const out = await webhookCreate.execute({
     name: "Hook",
@@ -24,8 +25,8 @@ Deno.test("webhook-create: events go in filter.event_type, never the deprecated 
   assertEquals(out.id, "w1");
 });
 
-Deno.test("webhook-body: no filters means no filter object", () => {
+test("webhook-body: no filters means no filter object", () => {
   assertEquals(webhookBody({ name: "n", url: "u" }), { name: "n", url: "u" });
 });
 
-Deno.test("webhook-create: is not idempotent", () => assertEquals(webhookCreate.idempotent, false));
+test("webhook-create: is not idempotent", () => assertEquals(webhookCreate.idempotent, false));

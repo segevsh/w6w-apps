@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/opportunity-archive.ts";
 
@@ -15,7 +16,7 @@ const reasons = (text: string) => ({
 });
 const ok = { status: 200, body: {} };
 
-Deno.test("opportunity-archive: archives with a reason", async () => {
+test("opportunity-archive: archives with a reason", async () => {
   const { ctx, calls } = mockCtx([active, reasons("Not a fit"), ok], D);
   const result = await action.execute(
     { opportunityId: OPP, reasonId: REASON, performAs: USER },
@@ -31,7 +32,7 @@ Deno.test("opportunity-archive: archives with a reason", async () => {
 });
 
 /** An empty reason is how Lever unarchives. */
-Deno.test("opportunity-archive: no reason reopens the candidate", async () => {
+test("opportunity-archive: no reason reopens the candidate", async () => {
   const { ctx, calls } = mockCtx([archived, ok], D);
   const result = await action.execute({ opportunityId: OPP, performAs: USER }, ctx) as Record<
     string,
@@ -43,7 +44,7 @@ Deno.test("opportunity-archive: no reason reopens the candidate", async () => {
 });
 
 /** A hire reason with a requisition changes headcount reporting. */
-Deno.test("opportunity-archive: warns when the archive records a hire", async () => {
+test("opportunity-archive: warns when the archive records a hire", async () => {
   const { ctx, logs } = mockCtx([active, reasons("Hired"), ok], D);
   const result = await action.execute(
     { opportunityId: OPP, reasonId: REASON, performAs: USER, requisitionId: REQ },
@@ -57,7 +58,7 @@ Deno.test("opportunity-archive: warns when the archive records a hire", async ()
 });
 
 /** A requisition with no reason would unarchive while looking like a hire. */
-Deno.test("opportunity-archive: refuses a requisition without a reason", async () => {
+test("opportunity-archive: refuses a requisition without a reason", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () =>
@@ -68,7 +69,7 @@ Deno.test("opportunity-archive: refuses a requisition without a reason", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("opportunity-archive: cancelling interviews is passed through and noted", async () => {
+test("opportunity-archive: cancelling interviews is passed through and noted", async () => {
   const { ctx, calls, logs } = mockCtx([active, reasons("Not a fit"), ok], D);
   await action.execute(
     { opportunityId: OPP, reasonId: REASON, performAs: USER, cleanInterviews: true },
@@ -81,7 +82,7 @@ Deno.test("opportunity-archive: cancelling interviews is passed through and note
   );
 });
 
-Deno.test("opportunity-archive: requires performAs", async () => {
+test("opportunity-archive: requires performAs", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ opportunityId: OPP, reasonId: REASON }, ctx),

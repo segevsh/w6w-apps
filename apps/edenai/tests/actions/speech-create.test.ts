@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import speechCreate, { toBase64 } from "../../actions/speech-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("toBase64: encodes bytes, including a buffer past the chunk size", () => {
+test("toBase64: encodes bytes, including a buffer past the chunk size", () => {
   assertEquals(toBase64(new Uint8Array([72, 105])), "SGk=");
   const big = new Uint8Array(0x8000 * 2 + 5).fill(65);
   assertEquals(atob(toBase64(big)).length, big.length);
 });
 
-Deno.test("speech-create: returns base64 audio with cost and provider from the headers", async () => {
+test("speech-create: returns base64 audio with cost and provider from the headers", async () => {
   const { ctx, calls } = mockCtx([{
     headers: {
       "content-type": "audio/mpeg",
@@ -38,7 +39,7 @@ Deno.test("speech-create: returns base64 audio with cost and provider from the h
   assertEquals(out.provider, "openai");
 });
 
-Deno.test("speech-create: missing or unparseable cost header is left unset", async () => {
+test("speech-create: missing or unparseable cost header is left unset", async () => {
   const { ctx } = mockCtx([{
     headers: { "content-type": "audio/wav", "x-edenai-cost": "n/a" },
     body: "x",
@@ -50,7 +51,7 @@ Deno.test("speech-create: missing or unparseable cost header is left unset", asy
   assertEquals(out.cost, undefined);
 });
 
-Deno.test("speech-create: a vendor error is thrown, not returned as audio", async () => {
+test("speech-create: a vendor error is thrown, not returned as audio", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { detail: [{ loc: ["body", "voice"], msg: "unknown voice" }] },

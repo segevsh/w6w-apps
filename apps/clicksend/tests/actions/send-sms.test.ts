@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-sms.ts";
 
@@ -9,7 +10,7 @@ const okEnvelope = (data: unknown) => ({
   data,
 });
 
-Deno.test("send-sms: POSTs one message wrapped in a messages array", async () => {
+test("send-sms: POSTs one message wrapped in a messages array", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: okEnvelope({
@@ -41,7 +42,7 @@ Deno.test("send-sms: POSTs one message wrapped in a messages array", async () =>
   assertEquals(result.queuedCount, 1);
 });
 
-Deno.test("send-sms: requires either `to` or `listId`", async () => {
+test("send-sms: requires either `to` or `listId`", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ body: "hi" } as never, ctx),
@@ -51,7 +52,7 @@ Deno.test("send-sms: requires either `to` or `listId`", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("send-sms: sends listId instead of to when provided", async () => {
+test("send-sms: sends listId instead of to when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ messages: [] }) }]);
   await action.execute({ listId: 428, body: "hi" } as never, ctx);
   const sent = JSON.parse(calls[0].body ?? "{}");
@@ -59,7 +60,7 @@ Deno.test("send-sms: sends listId instead of to when provided", async () => {
   assertEquals(sent.messages[0].to, undefined);
 });
 
-Deno.test("send-sms: logs (but does not throw on) a per-recipient failure", async () => {
+test("send-sms: logs (but does not throw on) a per-recipient failure", async () => {
   const { ctx, logs } = mockCtx([
     {
       body: okEnvelope({

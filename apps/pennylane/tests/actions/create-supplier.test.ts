@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-supplier.ts";
 
-Deno.test("create-supplier: POSTs /suppliers with just the required name", async () => {
+test("create-supplier: POSTs /suppliers with just the required name", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, name: "Papeterie SARL" } }]);
   await action.execute({ name: "Papeterie SARL" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("create-supplier: POSTs /suppliers with just the required name", async
   assertEquals(JSON.parse(calls[0].body!), { name: "Papeterie SARL" });
 });
 
-Deno.test("create-supplier: forwards the French identifiers, address, IBAN and payment terms", async () => {
+test("create-supplier: forwards the French identifiers, address, IBAN and payment terms", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3 } }]);
   await action.execute({
     name: "Papeterie SARL",

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 
@@ -6,7 +7,7 @@ import quota from "../../health/quota.ts";
  * Both checks are declared absences, and each carries the measurement that
  * justifies it — a check that is confidently wrong is worse than no check.
  */
-Deno.test("service: is a declared absence, not a missing check", () => {
+test("service: is a declared absence, not a missing check", () => {
   assertEquals(service.check, undefined);
   assertEquals(service.severity, "informational");
   const reason = service.unavailable!.reason;
@@ -18,7 +19,7 @@ Deno.test("service: is a declared absence, not a missing check", () => {
   assert(reason.includes("zero unresolved incidents"), reason);
 });
 
-Deno.test("quota: is a declared absence because allowance is not consumption", () => {
+test("quota: is a declared absence because allowance is not consumption", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   const reason = quota.unavailable!.reason;
@@ -28,7 +29,7 @@ Deno.test("quota: is a declared absence because allowance is not consumption", (
 });
 
 /** Neither absence may claim a health state; both simply do not run. */
-Deno.test("both absences are informational, so neither pins the App's verdict", () => {
+test("both absences are informational, so neither pins the App's verdict", () => {
   for (const check of [service, quota]) {
     assertEquals(check.severity, "informational");
     assertEquals(check.covers, ["*"]);

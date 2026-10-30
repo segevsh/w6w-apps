@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is a bearer method exposing an `apiKey` secret field", () => {
+test("api-key: is a bearer method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiKey");
@@ -11,7 +12,7 @@ Deno.test("api-key: is a bearer method exposing an `apiKey` secret field", () =>
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign appends Bearer using credential.apiKey", async () => {
+test("api-key: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign appends Bearer using credential.apiKey", async () => {
   assertEquals(out.headers["authorization"], "Bearer pplx-abc");
 });
 
-Deno.test("api-key: test hits /v1/models and reports ok on 200", async () => {
+test("api-key: test hits /v1/models and reports ok on 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { object: "list", data: [] } }]);
   const result = await auth.test({ credential: { apiKey: "pplx-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -37,7 +38,7 @@ Deno.test("api-key: test hits /v1/models and reports ok on 200", async () => {
  * 401s an unauthenticated or bogus request exactly like every other endpoint
  * (measured 2026-08-16) — this is what makes it usable as a probe at all.
  */
-Deno.test("api-key: test reports failure with the vendor's error type on rejection", async () => {
+test("api-key: test reports failure with the vendor's error type on rejection", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -50,7 +51,7 @@ Deno.test("api-key: test reports failure with the vendor's error type on rejecti
   assert(result.message?.includes("invalid_api_key"), result.message);
 });
 
-Deno.test("api-key: test reports failure when the credential is missing, without a request", async () => {
+test("api-key: test reports failure when the credential is missing, without a request", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

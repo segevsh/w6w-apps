@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import handwritingStyleList from "../../actions/handwriting-style-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("handwriting-style-list: calls GET /api/v2/handwriting-styles and shapes the output", async () => {
+test("handwriting-style-list: calls GET /api/v2/handwriting-styles and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "data": [{ "handwriting_style_id": 1, "name": "Hi Clarice" }] },
   }]);
@@ -18,7 +19,7 @@ Deno.test("handwriting-style-list: calls GET /api/v2/handwriting-styles and shap
   assert((out.styles as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("handwriting-style-list: a vendor error surfaces the HTTP status and message", async () => {
+test("handwriting-style-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 500, body: { "message": "Server Error" } }]);
   const err = await assertRejects(
     () => Promise.resolve(handwritingStyleList.execute({} as never, ctx)),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import accountUsageGet from "../../actions/account-usage-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("account-usage-get: calls GET /v2/users/me/usage/monthly", async () => {
+test("account-usage-get: calls GET /v2/users/me/usage/monthly", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -26,7 +27,7 @@ Deno.test("account-usage-get: calls GET /v2/users/me/usage/monthly", async () =>
  * `date` selects the billing *cycle* containing that date, not that day — and a
  * cycle starts on the account's billing anniversary, not the 1st.
  */
-Deno.test("account-usage-get: the date selects a cycle and is passed through verbatim", async () => {
+test("account-usage-get: the date selects a cycle and is passed through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await accountUsageGet.execute({ date: "2026-07-15" }, ctx);
   assertEquals(queryOf(calls[0].url), { date: "2026-07-15" });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { FacebookClient } from "../../lib/client.ts";
 
-Deno.test("client: throws a descriptive Error carrying the vendor's error.message on non-2xx", async () => {
+test("client: throws a descriptive Error carrying the vendor's error.message on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 400, statusText: "Bad Request", body: { error: { message: "boom", code: 100 } } },
   ]);
@@ -16,14 +17,14 @@ Deno.test("client: throws a descriptive Error carrying the vendor's error.messag
   assertEquals(err.message.includes("/v23.0/12345/feed"), true);
 });
 
-Deno.test("client: falls back to raw text when the error body isn't Facebook's JSON envelope", async () => {
+test("client: falls back to raw text when the error body isn't Facebook's JSON envelope", async () => {
   const { ctx } = mockCtx([{ status: 500, statusText: "Internal Error", body: "oops" }]);
   const client = new FacebookClient(ctx);
   const err = await assertRejects(() => client.request("/x"), Error);
   assertEquals(err.message.includes("oops"), true);
 });
 
-Deno.test("client: skips null/undefined/empty params", async () => {
+test("client: skips null/undefined/empty params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FacebookClient(ctx);
   await client.request("/x", { params: { a: "kept", b: undefined, c: null, d: "" } });
@@ -34,7 +35,7 @@ Deno.test("client: skips null/undefined/empty params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: sends POST params in the query string, not a JSON body", async () => {
+test("client: sends POST params in the query string, not a JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   const client = new FacebookClient(ctx);
   await client.request("/x/feed", { method: "POST", params: { message: "hi" } });
@@ -43,7 +44,7 @@ Deno.test("client: sends POST params in the query string, not a JSON body", asyn
   assertEquals(new URL(calls[0].url).searchParams.get("message"), "hi");
 });
 
-Deno.test("client: never sets an Authorization header (credentials belong to `sign`)", async () => {
+test("client: never sets an Authorization header (credentials belong to `sign`)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FacebookClient(ctx);
   await client.request("/x");

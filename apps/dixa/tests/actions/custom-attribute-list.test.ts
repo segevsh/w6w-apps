@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import customAttributeList from "../../actions/custom-attribute-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("custom-attribute-list: calls GET /v1/custom-attributes", async () => {
+test("custom-attribute-list: calls GET /v1/custom-attributes", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "data": [] } }]);
   const out = await customAttributeList.execute({} as never, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("custom-attribute-list: calls GET /v1/custom-attributes", async () => 
   assertEquals(out, { "data": [] });
 });
 
-Deno.test("custom-attribute-list: surfaces a Dixa error message with the status", async () => {
+test("custom-attribute-list: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {

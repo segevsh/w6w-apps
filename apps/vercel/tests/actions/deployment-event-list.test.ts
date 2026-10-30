@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deployment-event-list.ts";
 
-Deno.test("deployment-event-list: returns Vercel's bare array without paging it", async () => {
+test("deployment-event-list: returns Vercel's bare array without paging it", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ type: "stdout", text: "building" }] }], {
     display: {},
   });
@@ -15,7 +16,7 @@ Deno.test("deployment-event-list: returns Vercel's bare array without paging it"
   assertEquals(result, [{ type: "stdout", text: "building" }]);
 });
 
-Deno.test("deployment-event-list: builds flag goes as Vercel's 1, and follow is never sent", async () => {
+test("deployment-event-list: builds flag goes as Vercel's 1, and follow is never sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }], { display: {} });
   await action.execute!({ idOrUrl: "dpl_1", builds: true, direction: "backward" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -26,7 +27,7 @@ Deno.test("deployment-event-list: builds flag goes as Vercel's 1, and follow is 
   assertEquals(action.params!.some((p) => p.key === "follow"), false);
 });
 
-Deno.test("deployment-event-list: a blank id fails before any request", async () => {
+test("deployment-event-list: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`idOrUrl`");
   assertEquals(calls.length, 0);

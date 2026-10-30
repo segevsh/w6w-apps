@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { subscriberHash } from "../../lib/subscriber-hash.ts";
 
-Deno.test("subscriberHash: MD5 of lowercased email — known vectors", () => {
+test("subscriberHash: MD5 of lowercased email — known vectors", () => {
   // Reference values from Mailchimp docs / md5("").
   assertEquals(subscriberHash(""), "d41d8cd98f00b204e9800998ecf8427e");
   // md5("urist@mailchimp.com") — verified via md5sum.
@@ -11,7 +12,7 @@ Deno.test("subscriberHash: MD5 of lowercased email — known vectors", () => {
   );
 });
 
-Deno.test("subscriberHash: lowercases before hashing (Mailchimp requirement)", () => {
+test("subscriberHash: lowercases before hashing (Mailchimp requirement)", () => {
   assertEquals(
     subscriberHash("URIST@MAILCHIMP.COM"),
     subscriberHash("urist@mailchimp.com"),

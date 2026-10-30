@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
 const IDENTITY_URL = "https://api.freshbooks.com/auth/api/v1/users/me";
 
-Deno.test("oauth2: endpoints and scopes verified against the FreshBooks reference", () => {
+test("oauth2: endpoints and scopes verified against the FreshBooks reference", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://auth.freshbooks.com/oauth/authorize/");
   assertEquals(auth.oauth2?.tokenUrl, "https://api.freshbooks.com/auth/oauth/token");
   assertEquals(auth.oauth2?.refreshUrl, "https://api.freshbooks.com/auth/oauth/token");
@@ -16,7 +17,7 @@ Deno.test("oauth2: endpoints and scopes verified against the FreshBooks referenc
   assert(auth.oauth2?.scopes?.includes("user:time_entries:write"));
 });
 
-Deno.test("sign: stamps Authorization only — accountId/businessId are path segments, not headers", async () => {
+test("sign: stamps Authorization only — accountId/businessId are path segments, not headers", async () => {
   const request = {
     url: "https://api.freshbooks.com/accounting/account/acc1/users/clients",
     method: "GET",
@@ -26,7 +27,7 @@ Deno.test("sign: stamps Authorization only — accountId/businessId are path seg
   assertEquals(signed.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test rejects a response with no identity id", async () => {
+test("oauth2: test rejects a response with no identity id", async () => {
   const { ctx, calls } = mockCtx([{ body: { response: {} } }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), {
     ok: false,
@@ -37,12 +38,12 @@ Deno.test("oauth2: test rejects a response with no identity id", async () => {
   assertEquals(calls[0].headers["api-version"], "alpha");
 });
 
-Deno.test("oauth2: test accepts a response with an identity id", async () => {
+test("oauth2: test accepts a response with an identity id", async () => {
   const { ctx } = mockCtx([{ body: { response: { id: 712052 } } }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), { ok: true });
 });
 
-Deno.test("oauth2: test rejects a missing accessToken without calling the network", async () => {
+test("oauth2: test rejects a missing accessToken without calling the network", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -51,7 +52,7 @@ Deno.test("oauth2: test rejects a missing accessToken without calling the networ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: afterConnect prefers the owner-role membership with an account id", async () => {
+test("oauth2: afterConnect prefers the owner-role membership with an account id", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       response: {
@@ -78,7 +79,7 @@ Deno.test("oauth2: afterConnect prefers the owner-role membership with an accoun
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: afterConnect falls back to the first membership when none is an owner", async () => {
+test("oauth2: afterConnect falls back to the first membership when none is an owner", async () => {
   const { ctx } = mockCtx([{
     body: {
       response: {
@@ -94,7 +95,7 @@ Deno.test("oauth2: afterConnect falls back to the first membership when none is 
   assertEquals(out.accountId, undefined);
 });
 
-Deno.test("oauth2: afterConnect degrades to {} when there are no business memberships", async () => {
+test("oauth2: afterConnect degrades to {} when there are no business memberships", async () => {
   const { ctx } = mockCtx([{ body: { response: { id: 1, business_memberships: [] } } }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "tok" } }, ctx), {});
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import pipeList from "../../actions/pipe-list.ts";
 
-Deno.test("pipe-list: lists an organization's pipes", async () => {
+test("pipe-list: lists an organization's pipes", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { organization: { pipes: [{ id: "1", name: "Sales" }] } } },
   }]);
@@ -15,7 +16,7 @@ Deno.test("pipe-list: lists an organization's pipes", async () => {
   assert(q.includes("emailAddress"));
 });
 
-Deno.test("pipe-list: throws when the organization does not resolve", async () => {
+test("pipe-list: throws when the organization does not resolve", async () => {
   const { ctx } = mockCtx([{ body: { data: { organization: null } } }]);
   let threw = false;
   try {
@@ -26,7 +27,7 @@ Deno.test("pipe-list: throws when the organization does not resolve", async () =
   assert(threw);
 });
 
-Deno.test("pipe-list: type/resource metadata", () => {
+test("pipe-list: type/resource metadata", () => {
   assertEquals(pipeList.type, "read");
   assertEquals(pipeList.resource, "pipe");
 });

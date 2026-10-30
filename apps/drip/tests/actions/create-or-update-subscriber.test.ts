@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/create-or-update-subscriber.ts";
 
-Deno.test("create-or-update-subscriber: POSTs a single-element subscribers array", async () => {
+test("create-or-update-subscriber: POSTs a single-element subscribers array", async () => {
   const { ctx, calls } = mockDripCtx([{
     body: { subscribers: [{ id: "abc", email: "john@acme.com", status: "active" }] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("create-or-update-subscriber: POSTs a single-element subscribers array
   assertEquals(out, { id: "abc", email: "john@acme.com", status: "active" });
 });
 
-Deno.test("create-or-update-subscriber: forwards optional fields, tags, and custom fields", async () => {
+test("create-or-update-subscriber: forwards optional fields, tags, and custom fields", async () => {
   const { ctx, calls } = mockDripCtx([{ body: { subscribers: [{}] } }]);
   await action.execute(
     {
@@ -40,7 +41,7 @@ Deno.test("create-or-update-subscriber: forwards optional fields, tags, and cust
   });
 });
 
-Deno.test("create-or-update-subscriber: drops blank optional fields rather than sending them", async () => {
+test("create-or-update-subscriber: drops blank optional fields rather than sending them", async () => {
   const { ctx, calls } = mockDripCtx([{ body: { subscribers: [{}] } }]);
   await action.execute({ email: "john@acme.com", firstName: "", tags: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { subscribers: [{ email: "john@acme.com" }] });

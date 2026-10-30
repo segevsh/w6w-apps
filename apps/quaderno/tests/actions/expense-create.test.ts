@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuadernoCtx } from "../_helpers.ts";
 import action from "../../actions/expense-create.ts";
 
-Deno.test("expense-create: calls the documented endpoint", async () => {
+test("expense-create: calls the documented endpoint", async () => {
   const { ctx, calls } = mockQuadernoCtx([{ status: 201, body: { id: 40 } }]);
   const out = await action.execute({
     contactId: 3,
@@ -20,7 +21,7 @@ Deno.test("expense-create: calls the documented endpoint", async () => {
   assertEquals(out, { id: 40 });
 });
 
-Deno.test("expense-create: refuses a missing contact before any request", async () => {
+test("expense-create: refuses a missing contact before any request", async () => {
   const { ctx, calls } = mockQuadernoCtx();
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignSendingStatusGet from "../../actions/campaign-sending-status-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-sending-status-get: GETs /campaigns/{id}/sending-status", async () => {
+test("campaign-sending-status-get: GETs /campaigns/{id}/sending-status", async () => {
   const { ctx, calls } = mockCtx([
     { body: { diagnostics: { status: "healthy" }, summary: "Sending normally" } },
   ]);

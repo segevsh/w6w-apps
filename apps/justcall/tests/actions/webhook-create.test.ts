@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: POSTs to /v2.1/webhooks", async () => {
+test("webhook-create: POSTs to /v2.1/webhooks", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ type: "call.completed", url_count: 1, webhook_urls: [] }) },
   ]);
@@ -19,6 +20,6 @@ Deno.test("webhook-create: POSTs to /v2.1/webhooks", async () => {
   });
 });
 
-Deno.test("webhook-create: is declared non-idempotent — the vendor documents no dedupe", () => {
+test("webhook-create: is declared non-idempotent — the vendor documents no dedupe", () => {
   assertEquals(webhookCreate.idempotent, false);
 });

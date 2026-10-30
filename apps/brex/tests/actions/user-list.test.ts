@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf, USER } from "../_helpers.ts";
 
-Deno.test("user-list: GETs the users collection with no auth header of its own", async () => {
+test("user-list: GETs the users collection with no auth header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: page([USER]) }]);
   await userList.execute({}, ctx);
 
@@ -16,7 +17,7 @@ Deno.test("user-list: GETs the users collection with no auth header of its own",
  * which are the literal parameter names (`?status[]=ACTIVE,INVITED`), not a
  * convention this app invented.
  */
-Deno.test("user-list: every filter maps to Brex's own parameter name", async () => {
+test("user-list: every filter maps to Brex's own parameter name", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await userList.execute({
     name: "Ada",
@@ -55,14 +56,14 @@ Deno.test("user-list: every filter maps to Brex's own parameter name", async () 
   });
 });
 
-Deno.test("user-list: an unset param is absent from the wire, not empty", async () => {
+test("user-list: an unset param is absent from the wire, not empty", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await userList.execute({ limit: 100 }, ctx);
 
   assertEquals(queryOf(calls[0].url), { limit: "100" });
 });
 
-Deno.test("user-list: the page comes back normalized with a count", async () => {
+test("user-list: the page comes back normalized with a count", async () => {
   const { ctx } = mockCtx([{ body: page([USER], "cursor_2") }]);
   const result = await userList.execute({}, ctx) as {
     items: Array<Record<string, unknown>>;
@@ -75,13 +76,13 @@ Deno.test("user-list: the page comes back normalized with a count", async () => 
   assertEquals(result.items[0].email, "ada@example.com");
 });
 
-Deno.test("user-list: the search type and the empty-param default are declared", () => {
+test("user-list: the search type and the empty-param default are declared", () => {
   assertEquals(userList.type, "search");
   assertEquals(userList.key, "user-list");
   assertEquals(userList.params?.find((p) => p.key === "limit")?.default, 100);
 });
 
-Deno.test("user-list: a Brex error surfaces with its type", async () => {
+test("user-list: a Brex error surfaces with its type", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("FORBIDDEN", "Not permitted") }]);
   let message = "";
   try {

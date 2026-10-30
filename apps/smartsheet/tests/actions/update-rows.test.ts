@@ -1,17 +1,18 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import action from "../../actions/update-rows.ts";
 
 const ok = () => mockCtx([{ status: 200, body: { message: "SUCCESS", result: [] } }]);
 
-Deno.test("update-rows: is an idempotent perform over the row resource", () => {
+test("update-rows: is an idempotent perform over the row resource", () => {
   assertEquals(action.key, "update-rows");
   assertEquals(action.type, "perform");
   // Absolute assignments keyed by row id converge on replay.
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("update-rows: PUTs to /sheets/{id}/rows with the row id in the body", async () => {
+test("update-rows: PUTs to /sheets/{id}/rows with the row id in the body", async () => {
   const { ctx, calls } = ok();
   await action.execute({
     sheetId: "4583173393803140",
@@ -26,13 +27,13 @@ Deno.test("update-rows: PUTs to /sheets/{id}/rows with the row id in the body", 
   }]);
 });
 
-Deno.test("update-rows: an empty-string value survives, because it CLEARS the cell", async () => {
+test("update-rows: an empty-string value survives, because it CLEARS the cell", async () => {
   const { ctx, calls } = ok();
   await action.execute({ sheetId: "1", rowId: "2", cells: { "3": "" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!)[0].cells, [{ columnId: 3, value: "" }]);
 });
 
-Deno.test("update-rows: omitting cells entirely sends no cells key, leaving values alone", async () => {
+test("update-rows: omitting cells entirely sends no cells key, leaving values alone", async () => {
   const { ctx, calls } = ok();
   await action.execute({ sheetId: "1", rowId: "2", locked: true }, ctx);
   const row = JSON.parse(calls[0].body!)[0];
@@ -40,7 +41,7 @@ Deno.test("update-rows: omitting cells entirely sends no cells key, leaving valu
   assertEquals("cells" in row, false);
 });
 
-Deno.test("update-rows: an empty cells map sends an empty cells array, not a missing key", async () => {
+test("update-rows: an empty cells map sends an empty cells array, not a missing key", async () => {
   // `{}` is an explicit "no cell changes" from the caller; it is representable
   // and distinct from omitting the param.
   const { ctx, calls } = ok();
@@ -48,7 +49,7 @@ Deno.test("update-rows: an empty cells map sends an empty cells array, not a mis
   assertEquals(JSON.parse(calls[0].body!)[0].cells, []);
 });
 
-Deno.test("update-rows: indent and outdent are sent as the literal 1 the API requires", async () => {
+test("update-rows: indent and outdent are sent as the literal 1 the API requires", async () => {
   const a = ok();
   await action.execute({ sheetId: "1", rowId: "2", indent: true }, a.ctx);
   assertEquals(JSON.parse(a.calls[0].body!)[0].indent, 1);
@@ -58,7 +59,7 @@ Deno.test("update-rows: indent and outdent are sent as the literal 1 the API req
   assertEquals(JSON.parse(b.calls[0].body!)[0].outdent, 1);
 });
 
-Deno.test("update-rows: false indent/outdent are omitted, not sent as 0", async () => {
+test("update-rows: false indent/outdent are omitted, not sent as 0", async () => {
   const { ctx, calls } = ok();
   await action.execute({ sheetId: "1", rowId: "2", indent: false, outdent: false }, ctx);
   const row = JSON.parse(calls[0].body!)[0];
@@ -66,18 +67,18 @@ Deno.test("update-rows: false indent/outdent are omitted, not sent as 0", async 
   assertEquals("outdent" in row, false);
 });
 
-Deno.test("update-rows: warns that indent/outdent are relative and break replay", () => {
+test("update-rows: warns that indent/outdent are relative and break replay", () => {
   assert(/RELATIVE|relative/.test(param(action, "indent").hint ?? ""));
   assert(/relative/i.test(param(action, "outdent").hint ?? ""));
 });
 
-Deno.test("update-rows: locked and expanded pass straight through", async () => {
+test("update-rows: locked and expanded pass straight through", async () => {
   const { ctx, calls } = ok();
   await action.execute({ sheetId: "1", rowId: "2", locked: false, expanded: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!)[0], { id: 2, locked: false, expanded: true });
 });
 
-Deno.test("update-rows: bulk rows each carry their own id and cells", async () => {
+test("update-rows: bulk rows each carry their own id and cells", async () => {
   const { ctx, calls } = ok();
   await action.execute({
     sheetId: "1",
@@ -92,7 +93,7 @@ Deno.test("update-rows: bulk rows each carry their own id and cells", async () =
   ]);
 });
 
-Deno.test("update-rows: a bulk row without an id is refused", () => {
+test("update-rows: a bulk row without an id is refused", () => {
   const { ctx } = ok();
   const err = assertThrows(
     () => action.execute({ sheetId: "1", rows: [{ cells: { "3": "a" } }] }, ctx),
@@ -101,12 +102,12 @@ Deno.test("update-rows: a bulk row without an id is refused", () => {
   assert(err.message.includes("missing id"));
 });
 
-Deno.test("update-rows: rowId is required when no bulk rows are given", () => {
+test("update-rows: rowId is required when no bulk rows are given", () => {
   const { ctx } = ok();
   assertThrows(() => action.execute({ sheetId: "1", cells: { "3": "a" } }, ctx), Error, "rowId");
 });
 
-Deno.test("update-rows: a row id that would round is refused, not silently corrupted", () => {
+test("update-rows: a row id that would round is refused, not silently corrupted", () => {
   const { ctx } = ok();
   assertThrows(
     () => action.execute({ sheetId: "1", rowId: "90071992547409911" }, ctx),
@@ -115,7 +116,7 @@ Deno.test("update-rows: a row id that would round is refused, not silently corru
   );
 });
 
-Deno.test("update-rows: sends the bulk flags only when asked for", async () => {
+test("update-rows: sends the bulk flags only when asked for", async () => {
   const a = ok();
   await action.execute({ sheetId: "1", rowId: "2" }, a.ctx);
   assertEquals(new URL(a.calls[0].url).search, "");

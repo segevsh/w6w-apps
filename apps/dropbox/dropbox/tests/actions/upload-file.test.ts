@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upload-file.ts";
 
-Deno.test("upload-file: POSTs to content endpoint with Dropbox-API-Arg and octet-stream body", async () => {
+test("upload-file: POSTs to content endpoint with Dropbox-API-Arg and octet-stream body", async () => {
   const meta = { id: "id:abc", name: "invoice_1.txt", path_display: "/invoices/invoice_1.txt" };
   const { ctx, calls } = mockCtx([{ body: meta }]);
   const result = await action.execute!(
@@ -23,7 +24,7 @@ Deno.test("upload-file: POSTs to content endpoint with Dropbox-API-Arg and octet
   assertEquals(result, meta);
 });
 
-Deno.test("upload-file: forwards mode/autorename/mute options", async () => {
+test("upload-file: forwards mode/autorename/mute options", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { path: "/a.txt", content: "x", mode: "add", autorename: true, mute: true },

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, csv, describeError, json, query, ShipStationClient } from "../../lib/client.ts";
 
-Deno.test("compact: drops undefined, null, empty string, and empty arrays", () => {
+test("compact: drops undefined, null, empty string, and empty arrays", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: [], f: "x", g: [1] }), {
     a: 1,
     f: "x",
@@ -10,7 +11,7 @@ Deno.test("compact: drops undefined, null, empty string, and empty arrays", () =
   });
 });
 
-Deno.test("query: stringifies every kept value", () => {
+test("query: stringifies every kept value", () => {
   assertEquals(query({ a: 1, b: true, c: "x", d: undefined, e: "" }), {
     a: "1",
     b: "true",
@@ -18,33 +19,33 @@ Deno.test("query: stringifies every kept value", () => {
   });
 });
 
-Deno.test("csv: splits and trims a comma-separated string", () => {
+test("csv: splits and trims a comma-separated string", () => {
   assertEquals(csv("se-1, se-2 ,se-3"), ["se-1", "se-2", "se-3"]);
 });
 
-Deno.test("csv: passes an array through, trimmed", () => {
+test("csv: passes an array through, trimmed", () => {
   assertEquals(csv([" se-1 ", "se-2"]), ["se-1", "se-2"]);
 });
 
-Deno.test("csv: undefined for blank input", () => {
+test("csv: undefined for blank input", () => {
   assertEquals(csv(""), undefined);
   assertEquals(csv(undefined), undefined);
 });
 
-Deno.test("json: parses a JSON string param", () => {
+test("json: parses a JSON string param", () => {
   assertEquals(json('{"a":1}', "field"), { a: 1 });
 });
 
-Deno.test("json: passes a live (already-parsed) value through", () => {
+test("json: passes a live (already-parsed) value through", () => {
   assertEquals(json({ a: 1 }, "field"), { a: 1 });
 });
 
-Deno.test("json: undefined for blank input", () => {
+test("json: undefined for blank input", () => {
   assertEquals(json("", "field"), undefined);
   assertEquals(json(undefined, "field"), undefined);
 });
 
-Deno.test("json: throws a field-named error on invalid JSON", () => {
+test("json: throws a field-named error on invalid JSON", () => {
   try {
     json("{not json", "shipTo");
     throw new Error("did not throw");
@@ -53,7 +54,7 @@ Deno.test("json: throws a field-named error on invalid JSON", () => {
   }
 });
 
-Deno.test("describeError: joins the errors array with source and field", () => {
+test("describeError: joins the errors array with source and field", () => {
   const text = JSON.stringify({
     request_id: "req-1",
     errors: [{
@@ -69,24 +70,24 @@ Deno.test("describeError: joins the errors array with source and field", () => {
   assert(msg.includes("req-1"));
 });
 
-Deno.test("describeError: 401 notes the V1/V2 key distinction and the identical-body caveat", () => {
+test("describeError: 401 notes the V1/V2 key distinction and the identical-body caveat", () => {
   const msg = describeError(401, JSON.stringify({ errors: [{ message: "Access denied." }] }));
   assert(msg.includes("V2"));
   assert(/identically/.test(msg));
 });
 
-Deno.test("describeError: 429 points at Retry-After and both documented limits", () => {
+test("describeError: 429 points at Retry-After and both documented limits", () => {
   const msg = describeError(429, JSON.stringify({ errors: [{ message: "Too many requests" }] }));
   assert(msg.includes("200 requests/minute"));
   assert(msg.includes("Retry-After"));
 });
 
-Deno.test("describeError: falls back gracefully on non-JSON bodies", () => {
+test("describeError: falls back gracefully on non-JSON bodies", () => {
   assertEquals(describeError(500, ""), "500");
   assertEquals(describeError(500, "oops"), "oops");
 });
 
-Deno.test("ShipStationClient: builds the URL under /v2 and sets accept/content-type", async () => {
+test("ShipStationClient: builds the URL under /v2 and sets accept/content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { ok: true } }]);
   await new ShipStationClient(ctx).request("/carriers", { method: "POST", body: { a: 1 } });
   assertEquals(calls[0].url, "https://api.shipstation.com/v2/carriers");
@@ -95,20 +96,20 @@ Deno.test("ShipStationClient: builds the URL under /v2 and sets accept/content-t
   assertEquals(JSON.parse(calls[0].body!), { a: 1 });
 });
 
-Deno.test("ShipStationClient: never sets an authorization/api-key header itself", async () => {
+test("ShipStationClient: never sets an authorization/api-key header itself", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new ShipStationClient(ctx).request("/carriers");
   assertEquals(calls[0].headers["api-key"], undefined);
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("ShipStationClient: returns undefined on a 204 with no body", async () => {
+test("ShipStationClient: returns undefined on a 204 with no body", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   const result = await new ShipStationClient(ctx).request("/shipments/se-1/cancel");
   assertEquals(result, undefined);
 });
 
-Deno.test("ShipStationClient: throws with the vendor error message on a non-2xx", async () => {
+test("ShipStationClient: throws with the vendor error message on a non-2xx", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { errors: [{ message: "carrier_id se-9 not found", field_name: "carrier_id" }] },

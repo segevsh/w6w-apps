@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/admin-api-key.ts";
 
@@ -10,7 +11,7 @@ function base64UrlDecodeJson(segment: string): unknown {
   return JSON.parse(atob(padded + pad));
 }
 
-Deno.test("admin-api-key: declares siteUrl / apiKey fields, apiKey is secret", () => {
+test("admin-api-key: declares siteUrl / apiKey fields, apiKey is secret", () => {
   assertEquals(auth.key, "admin-api-key");
   assertEquals(auth.type, "custom");
   const keys = (auth.fields ?? []).map((f) => f.key);
@@ -21,7 +22,7 @@ Deno.test("admin-api-key: declares siteUrl / apiKey fields, apiKey is secret", (
   assertEquals(apiKey?.required, true);
 });
 
-Deno.test("admin-api-key: sign injects `Ghost <jwt>` with the key id as `kid`", async () => {
+test("admin-api-key: sign injects `Ghost <jwt>` with the key id as `kid`", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -38,14 +39,14 @@ Deno.test("admin-api-key: sign injects `Ghost <jwt>` with the key id as `kid`", 
   assertEquals(header.kid, "5f3a1b2c3d4e5f6a7b8c9d0e");
 });
 
-Deno.test("admin-api-key: test reports failure without a network call when fields are missing", async () => {
+test("admin-api-key: test reports failure without a network call when fields are missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { siteUrl: "https://example.com" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("admin-api-key: test reports failure without a network call on a malformed key", async () => {
+test("admin-api-key: test reports failure without a network call on a malformed key", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test(
     { credential: { siteUrl: "https://example.com", apiKey: "not-a-key" } },
@@ -56,7 +57,7 @@ Deno.test("admin-api-key: test reports failure without a network call on a malfo
   assertEquals(calls.length, 0);
 });
 
-Deno.test("admin-api-key: test hits GET <siteUrl>/ghost/api/admin/users/?limit=1 with a Ghost JWT", async () => {
+test("admin-api-key: test hits GET <siteUrl>/ghost/api/admin/users/?limit=1 with a Ghost JWT", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { users: [{ id: "1" }] } }]);
   const result = await auth.test(
     { credential: { siteUrl: "https://example.com", apiKey: VALID_KEY } },
@@ -69,7 +70,7 @@ Deno.test("admin-api-key: test hits GET <siteUrl>/ghost/api/admin/users/?limit=1
   assert(calls[0].headers["authorization"].startsWith("Ghost "));
 });
 
-Deno.test("admin-api-key: test surfaces upstream status on failure", async () => {
+test("admin-api-key: test surfaces upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test(
     { credential: { siteUrl: "https://example.com", apiKey: VALID_KEY } },
@@ -79,7 +80,7 @@ Deno.test("admin-api-key: test surfaces upstream status on failure", async () =>
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("admin-api-key: afterConnect records siteUrl/host and fetches unauthenticated /site/", async () => {
+test("admin-api-key: afterConnect records siteUrl/host and fetches unauthenticated /site/", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { site: { title: "My Blog", version: "5.100" } } },
   ]);
@@ -95,7 +96,7 @@ Deno.test("admin-api-key: afterConnect records siteUrl/host and fetches unauthen
   });
 });
 
-Deno.test("admin-api-key: afterConnect degrades gracefully when /site/ fails", async () => {
+test("admin-api-key: afterConnect degrades gracefully when /site/ fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const result = await auth.afterConnect!(
     { credential: { siteUrl: "https://example.com", apiKey: VALID_KEY } },

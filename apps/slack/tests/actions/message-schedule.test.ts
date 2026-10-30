@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-schedule.ts";
 
-Deno.test("message-schedule: converts postAt to Unix seconds and sends payload", async () => {
+test("message-schedule: converts postAt to Unix seconds and sends payload", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, scheduled_message_id: "Q1" } }]);
   await action.execute!(
     { channel: "C1", postAt: "2030-01-01T00:00:00Z", text: "hi" },

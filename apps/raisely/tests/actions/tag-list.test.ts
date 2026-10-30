@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: GETs /v3/tags with every filter and the list params on the query", async () => {
+test("tag-list: GETs /v3/tags with every filter and the list params on the query", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ uuid: "1" }], { total: 41 }) }]);
   const out = await tagList.execute({
     "private": true,
@@ -34,19 +35,19 @@ Deno.test("tag-list: GETs /v3/tags with every filter and the list params on the 
   assertEquals(out.pagination.total, 41);
 });
 
-Deno.test("tag-list: unset filters are omitted, and private=true is asked for by default", async () => {
+test("tag-list: unset filters are omitted, and private=true is asked for by default", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await tagList.execute({ private: true }, ctx);
   assertEquals(queryOf(calls[0].url), { "private": "true" });
 });
 
-Deno.test("tag-list: the param default for private is true and the action never signs", () => {
+test("tag-list: the param default for private is true and the action never signs", () => {
   const p = tagList.params!.find((p) => p.key === "private");
   assertEquals(p?.default, true);
   assertEquals(tagList.type, "read");
 });
 
-Deno.test("tag-list: a Raisely error body surfaces its code and detail", async () => {
+test("tag-list: a Raisely error body surfaces its code and detail", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { code: "forbidden", detail: "You are not authorized to do that" },

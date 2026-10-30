@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-delete: PUTs {is_active: false} — a soft delete, not a DELETE verb", async () => {
+test("contact-delete: PUTs {is_active: false} — a soft delete, not a DELETE verb", async () => {
   const { ctx, calls } = mockCtx([{ body: { jnid: "a1", is_active: false } }]);
   const out = await contactDelete.execute({ jnid: "a1" }, ctx);
 
@@ -12,6 +13,6 @@ Deno.test("contact-delete: PUTs {is_active: false} — a soft delete, not a DELE
   assertEquals(out, { jnid: "a1", is_active: false });
 });
 
-Deno.test("contact-delete: is marked idempotent — deactivating twice is a no-op the second time", () => {
+test("contact-delete: is marked idempotent — deactivating twice is a no-op the second time", () => {
   assertEquals(contactDelete.idempotent, true);
 });

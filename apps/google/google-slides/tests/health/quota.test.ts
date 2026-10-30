@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declared unavailable, informational, no check hook", () => {
+test("quota: declared unavailable, informational, no check hook", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
   // An `unavailable` entry reports `unknown`; without `informational` it would
@@ -10,7 +11,7 @@ Deno.test("quota: declared unavailable, informational, no check hook", () => {
   assert((quota.unavailable?.reason ?? "").length > 0);
 });
 
-Deno.test("quota: the reason names the published ceilings and the 429 signal", () => {
+test("quota: the reason names the published ceilings and the 429 signal", () => {
   const reason = quota.unavailable!.reason;
   assert(reason.includes("429"));
   assert(reason.includes("no headroom endpoint"));

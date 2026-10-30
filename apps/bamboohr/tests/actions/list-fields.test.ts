@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import listFields from "../../actions/list-fields.ts";
 import { description, mockCtx } from "../_helpers.ts";
 
-Deno.test("list-fields: searches /meta/fields with no params", async () => {
+test("list-fields: searches /meta/fields with no params", async () => {
   assertEquals(listFields.type, "search");
   assertEquals(listFields.params, []);
 
@@ -13,7 +14,7 @@ Deno.test("list-fields: searches /meta/fields with no params", async () => {
   assertEquals(url.search, "");
 });
 
-Deno.test("list-fields: describes the three reference forms it unlocks", () => {
+test("list-fields: describes the three reference forms it unlocks", () => {
   // id / name / alias are exactly the numeric, standard and custom-alias forms
   // the employee reads accept in `fields`.
   const d = description(listFields);

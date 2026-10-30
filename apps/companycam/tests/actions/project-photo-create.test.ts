@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import projectPhotoCreate from "../../actions/project-photo-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
  * The photo is created from a hosted URL in a JSON body — no multipart, no
  * binary — which is what makes it expressible from the sandbox at all.
  */
-Deno.test("project-photo-create: posts a hosted URL, not file bytes", async () => {
+test("project-photo-create: posts a hosted URL, not file bytes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "5", processing_status: "pending" },
@@ -37,13 +38,13 @@ Deno.test("project-photo-create: posts a hosted URL, not file bytes", async () =
   });
 });
 
-Deno.test("project-photo-create: sends only the two required fields when nothing else is set", async () => {
+test("project-photo-create: sends only the two required fields when nothing else is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await projectPhotoCreate.execute({ projectId: "1", uri: "https://x/y.jpg", capturedAt: 1 }, ctx);
   assertEquals(bodyOf(calls[0]), { photo: { uri: "https://x/y.jpg", captured_at: 1 } });
 });
 
-Deno.test("project-photo-create: accepts a comma-separated tag list", async () => {
+test("project-photo-create: accepts a comma-separated tag list", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await projectPhotoCreate.execute(
     { projectId: "1", uri: "https://x/y.jpg", capturedAt: 1, tags: "roof, before" },
@@ -52,7 +53,7 @@ Deno.test("project-photo-create: accepts a comma-separated tag list", async () =
   assertEquals((bodyOf(calls[0]).photo as { tags: string[] }).tags, ["roof", "before"]);
 });
 
-Deno.test("project-photo-create: says captured_at is seconds, and requires it", () => {
+test("project-photo-create: says captured_at is seconds, and requires it", () => {
   const capturedAt = projectPhotoCreate.params!.find((p) => p.key === "capturedAt")!;
   assertEquals(capturedAt.required, true);
   assert(/SECONDS/.test(capturedAt.hint!), capturedAt.hint);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unclaimed-draft-create.ts";
 
-Deno.test("unclaimed-draft: a signature request draft demands signers", async () => {
+test("unclaimed-draft: a signature request draft demands signers", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -13,7 +14,7 @@ Deno.test("unclaimed-draft: a signature request draft demands signers", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("unclaimed-draft: a send_document draft needs no signers", async () => {
+test("unclaimed-draft: a send_document draft needs no signers", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { unclaimed_draft: { claim_url: "u" } } }]);
   const result = await action.execute!({
     type: "send_document",
@@ -25,13 +26,13 @@ Deno.test("unclaimed-draft: a send_document draft needs no signers", async () =>
   assertEquals(result.claim_url, "u");
 });
 
-Deno.test("unclaimed-draft: test_mode is explicit here too", async () => {
+test("unclaimed-draft: test_mode is explicit here too", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ type: "send_document", fileUrls: "https://x/a.pdf" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).test_mode, false);
 });
 
-Deno.test("unclaimed-draft: a document is required", async () => {
+test("unclaimed-draft: a document is required", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ type: "send_document" }, ctx),
@@ -41,6 +42,6 @@ Deno.test("unclaimed-draft: a document is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("unclaimed-draft: creates a second draft on a retry, and says so", () => {
+test("unclaimed-draft: creates a second draft on a retry, and says so", () => {
   assertEquals(action.idempotent, false);
 });

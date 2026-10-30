@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerList from "../../actions/customer-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-list: POSTs filters to /customers", async () => {
+test("customer-list: POSTs filters to /customers", async () => {
   const { ctx, calls } = mockCtx([
     { body: { totalCount: 1, page: 0, pageSize: 100, customers: [{ id: 1 }] } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("customer-list: POSTs filters to /customers", async () => {
 });
 
 /** `status: -1` ("all") must survive compact() the same way `status: 0` does. */
-Deno.test("customer-list: status -1 (all) survives compact()", async () => {
+test("customer-list: status -1 (all) survives compact()", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customerList.execute({ status: -1 }, ctx);
   assertEquals(JSON.parse(calls[0].body!).status, -1);

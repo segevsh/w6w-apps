@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import watchGet from "../../actions/watch-get.ts";
 import watchRunsList from "../../actions/watch-runs-list.ts";
 import watchRun from "../../actions/watch-run.ts";
@@ -6,7 +7,7 @@ import { envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
 const ok = () => mockCtx([{ body: envelope({ id: "w1" }) }]);
 
-Deno.test("watch-get, watch-runs-list, watch-run: hit the documented per-watch paths", async () => {
+test("watch-get, watch-runs-list, watch-run: hit the documented per-watch paths", async () => {
   const g = ok();
   await watchGet.execute({ watchId: "w1" }, g.ctx);
   assertEquals([g.calls[0].method, pathOf(g.calls[0].url)], ["GET", "/v1/watches/w1"]);
@@ -26,7 +27,7 @@ Deno.test("watch-get, watch-runs-list, watch-run: hit the documented per-watch p
   }
 });
 
-Deno.test("watch-run: a paused watch surfaces WATCH_PAUSED", async () => {
+test("watch-run: a paused watch surfaces WATCH_PAUSED", async () => {
   const { ctx } = mockCtx([{ status: 409, body: errorBody("WATCH_PAUSED", "Resume it first") }]);
   await assertRejects(
     async () => await watchRun.execute({ watchId: "w1" }, ctx),

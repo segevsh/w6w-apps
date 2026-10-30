@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sequence-recipient-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sequence-recipient-list: GET /sequences/s1/recipients?limit=50&offset=50", async () => {
+test("sequence-recipient-list: GET /sequences/s1/recipients?limit=50&offset=50", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ email: "a@x.com" }] }]);
   const out = await action.execute!({ sequenceId: "s1", limit: 50, offset: 50 } as never, ctx);
   assertEquals(calls[0].method, "GET");

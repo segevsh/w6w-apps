@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import ticketCreate from "../../actions/ticket-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("ticket-create: POSTs /tickets with the mapped body", async () => {
+test("ticket-create: POSTs /tickets with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await ticketCreate.execute({
     "title": "Cannot log in",
@@ -30,7 +31,7 @@ Deno.test("ticket-create: POSTs /tickets with the mapped body", async () => {
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("ticket-create: the free-form fields object is merged and typed params win", async () => {
+test("ticket-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await ticketCreate.execute(
     {
@@ -44,7 +45,7 @@ Deno.test("ticket-create: the free-form fields object is merged and typed params
   assertEquals(sent["title"], "Cannot log in");
 });
 
-Deno.test("ticket-create: fields may be a JSON string", async () => {
+test("ticket-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await ticketCreate.execute(
     { "title": "Cannot log in", "fields": '{"extraKey":1}' } as never,
@@ -53,7 +54,7 @@ Deno.test("ticket-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("ticket-create: invalid fields JSON is refused before any request", async () => {
+test("ticket-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await ticketCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -63,12 +64,12 @@ Deno.test("ticket-create: invalid fields JSON is refused before any request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("ticket-create: required params are declared", () => {
+test("ticket-create: required params are declared", () => {
   const required = (ticketCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["title"]);
 });
 
-Deno.test("ticket-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("ticket-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -90,7 +91,7 @@ Deno.test("ticket-create: a rejected key surfaces Upsales' plain-text Unauthoriz
   );
 });
 
-Deno.test("ticket-create: a JSON error envelope surfaces the vendor key", async () => {
+test("ticket-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

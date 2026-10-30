@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import kmEmptyNoteList from "../../actions/km-empty-note-list.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("km-empty-note-list: GET /v1/knowledge-management/notes/empty with the documented parameters", async () => {
+test("km-empty-note-list: GET /v1/knowledge-management/notes/empty with the documented parameters", async () => {
   const response = { notes: [], total: 0, hasNextPage: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await kmEmptyNoteList.execute({ channelIdList: "ch1,ch2" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("km-empty-note-list: GET /v1/knowledge-management/notes/empty with the
   assertEquals(out, response);
 });
 
-Deno.test("km-empty-note-list: a vendor error surfaces its own message and id", async () => {
+test("km-empty-note-list: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),
@@ -27,7 +28,7 @@ Deno.test("km-empty-note-list: a vendor error surfaces its own message and id", 
   );
 });
 
-Deno.test("km-empty-note-list: the review-state and recency filters are not offered", () => {
+test("km-empty-note-list: the review-state and recency filters are not offered", () => {
   const keys = (kmEmptyNoteList.params ?? []).map((p) => p.key);
   assertEquals(keys, ["ownerIdList", "channelIdList", "first", "cursor"]);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-folder.ts";
 
-Deno.test("list-folder: POSTs /files/list_folder with defaults", async () => {
+test("list-folder: POSTs /files/list_folder with defaults", async () => {
   const resp = { entries: [], cursor: "c1", has_more: false };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const result = await action.execute!({ path: "/invoices" }, ctx);
@@ -18,7 +19,7 @@ Deno.test("list-folder: POSTs /files/list_folder with defaults", async () => {
   assertEquals(result, resp);
 });
 
-Deno.test("list-folder: switches to continue endpoint when cursor is provided", async () => {
+test("list-folder: switches to continue endpoint when cursor is provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { entries: [], has_more: false } }]);
   await action.execute!({ cursor: "cursor-42" }, ctx);
   const url = new URL(calls[0].url);

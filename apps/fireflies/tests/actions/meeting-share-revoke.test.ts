@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, sent } from "../_helpers.ts";
 import action from "../../actions/meeting-share-revoke.ts";
 
-Deno.test("meeting-share-revoke: sends meeting id and one email in the input object", async () => {
+test("meeting-share-revoke: sends meeting id and one email in the input object", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { revokeSharedMeetingAccess: { success: true } } },
   }]);
@@ -12,6 +13,6 @@ Deno.test("meeting-share-revoke: sends meeting id and one email in the input obj
   assertEquals(variables.input, { meeting_id: "m1", email: "a@b.com" });
 });
 
-Deno.test("meeting-share-revoke: revoking twice lands on the same state", () => {
+test("meeting-share-revoke: revoking twice lands on the same state", () => {
   assertEquals(action.idempotent, true);
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import incidents from "../../health/incidents.ts";
 
@@ -35,19 +36,19 @@ async function run(latest: ReturnType<typeof entry>[], entries = latest) {
   );
 }
 
-Deno.test("incidents: message still narrates only the 7-day window (C3, unchanged)", async () => {
+test("incidents: message still narrates only the 7-day window (C3, unchanged)", async () => {
   const out = await run([RECENT_INCIDENT, OLD_INCIDENT, OLD_NOTICE]);
   assertEquals(out.state, "ok");
   assertEquals(out.message, "1 incident in the last 7 days: API errors");
 });
 
-Deno.test("incidents: timeline is the FULL folded history, not the 7-day window (DC2)", async () => {
+test("incidents: timeline is the FULL folded history, not the 7-day window (DC2)", async () => {
   const out = await run([RECENT_INCIDENT, OLD_INCIDENT, OLD_NOTICE]);
   // The DC2 gate: reusing `recent` here would return 1, not 3.
   assertEquals(out.timeline?.length, 3);
 });
 
-Deno.test("incidents: an old incident is degraded, a notice is ok, titles are stripped", async () => {
+test("incidents: an old incident is degraded, a notice is ok, titles are stripped", async () => {
   const out = await run([RECENT_INCIDENT, OLD_INCIDENT, OLD_NOTICE]);
   const byId = new Map((out.timeline ?? []).map((e) => [e.id, e]));
 
@@ -63,19 +64,19 @@ Deno.test("incidents: an old incident is degraded, a notice is ok, titles are st
   assertEquals(recent.title, "API errors");
 });
 
-Deno.test("incidents: no entry ever sets resolvedAt (C4)", async () => {
+test("incidents: no entry ever sets resolvedAt (C4)", async () => {
   const out = await run([RECENT_INCIDENT, OLD_INCIDENT, OLD_NOTICE]);
   assertEquals((out.timeline ?? []).every((e) => e.resolvedAt === undefined), true);
 });
 
-Deno.test("incidents: id equals the fixture entry's own id literal", async () => {
+test("incidents: id equals the fixture entry's own id literal", async () => {
   const out = await run([OLD_INCIDENT]);
   assertEquals(out.timeline?.[0].id, "old-1");
   assertEquals(out.timeline?.[0].link, "https://slack-status.com/old-1");
   assertEquals(out.timeline?.[0].updatedAt, OLD_INCIDENT.publishedAt);
 });
 
-Deno.test("incidents: a feed error is unknown and publishes no timeline (C5)", async () => {
+test("incidents: a feed error is unknown and publishes no timeline (C5)", async () => {
   const out = await incidents.check!(
     {
       feed: {
@@ -91,7 +92,7 @@ Deno.test("incidents: a feed error is unknown and publishes no timeline (C5)", a
   assertEquals(out.timeline, undefined);
 });
 
-Deno.test("incidents: an empty feed is ok and publishes no timeline (C5)", async () => {
+test("incidents: an empty feed is ok and publishes no timeline (C5)", async () => {
   const out = await incidents.check!(
     { feed: { entries: [], latest: [], fetchedAt: new Date(now).toISOString() } },
     mockCtx().ctx,
@@ -100,6 +101,6 @@ Deno.test("incidents: an empty feed is ok and publishes no timeline (C5)", async
   assertEquals(out.timeline, undefined);
 });
 
-Deno.test("incidents: severity stays informational", () => {
+test("incidents: severity stays informational", () => {
   assertEquals(incidents.severity, "informational");
 });

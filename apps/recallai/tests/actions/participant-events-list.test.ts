@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/participant-events-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("participant-events-list: sends every filter as the documented query name and returns the next cursor", async () => {
+test("participant-events-list: sends every filter as the documented query name and returns the next cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       next: "https://us-west-2.recall.ai/api/v1/participant_events/?cursor=CUR2",
@@ -29,7 +30,7 @@ Deno.test("participant-events-list: sends every filter as the documented query n
   assertEquals(out, { participantEvents: [{ id: "i1" }], nextCursor: "CUR2" });
 });
 
-Deno.test("participant-events-list: the last page has no nextCursor and unset filters are not sent", async () => {
+test("participant-events-list: the last page has no nextCursor and unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { next: null, previous: null, results: [] } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(out, { participantEvents: [] });
@@ -37,7 +38,7 @@ Deno.test("participant-events-list: the last page has no nextCursor and unset fi
   assertEquals([...q.keys()], []);
 });
 
-Deno.test("participant-events-list: an authentication failure is reported by code", async () => {
+test("participant-events-list: an authentication failure is reported by code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "authentication_failed", detail: "Invalid API token." },

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listContactLists from "../../actions/list-contact-lists.ts";
 
@@ -6,13 +7,13 @@ const ENVELOPE = { body: { Count: 1, Data: [{ ID: 1, Name: "Newsletter" }], Tota
 
 // ----------------------------------------------------------- list-contact-lists
 
-Deno.test("list-contact-lists: GETs /v3/REST/contactslist", async () => {
+test("list-contact-lists: GETs /v3/REST/contactslist", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listContactLists.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/REST/contactslist");
 });
 
-Deno.test("list-contact-lists: forwards Name and IsDeleted", async () => {
+test("list-contact-lists: forwards Name and IsDeleted", async () => {
   const { ctx, calls } = mockCtx([ENVELOPE]);
   await listContactLists.execute!({ name: "Newsletter", isDeleted: true, limit: 50 }, ctx);
   const p = new URL(calls[0].url).searchParams;

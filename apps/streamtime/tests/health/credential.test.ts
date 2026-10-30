@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import credential from "../../health/credential.ts";
 import { PROBE_URL } from "../../auth/api-token.ts";
 import { mockCtx, pathOf, unauthorisedResponse } from "../_helpers.ts";
 
-Deno.test("credential: it is a signed, connection-scoped credential probe", () => {
+test("credential: it is a signed, connection-scoped credential probe", () => {
   assertEquals(credential.key, "credential");
   assertEquals(credential.kind, "credential");
   assertEquals(credential.scope, "connection");
@@ -14,7 +15,7 @@ Deno.test("credential: it is a signed, connection-scoped credential probe", () =
   assertEquals(credential.covers, ["credential"]);
 });
 
-Deno.test("credential: a live token reports the organisation and stays ok", async () => {
+test("credential: a live token reports the organisation and stays ok", async () => {
   const { ctx, calls } = mockCtx([{ body: { name: "Acme Ltd", domain: "acme" } }]);
   const report = await credential.check!({}, ctx);
 
@@ -30,7 +31,7 @@ Deno.test("credential: a live token reports the organisation and stays ok", asyn
  * The vendor's rejection body is the only signal Streamtime gives, and it is the
  * same for a missing token, a revoked token and an unknown path.
  */
-Deno.test("credential: the vendor's rejection body is down, and says why", async () => {
+test("credential: the vendor's rejection body is down, and says why", async () => {
   const { ctx } = mockCtx([unauthorisedResponse()]);
   const report = await credential.check!({}, ctx);
 
@@ -39,7 +40,7 @@ Deno.test("credential: the vendor's rejection body is down, and says why", async
 });
 
 /** A 401 whose body is not the vendor's is not something this app can read. */
-Deno.test("credential: an unrecognised 401 is unknown, never a dead token", async () => {
+test("credential: an unrecognised 401 is unknown, never a dead token", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: "<html>gateway</html>", headers: { "content-type": "text/html" } },
   ]);
@@ -48,13 +49,13 @@ Deno.test("credential: an unrecognised 401 is unknown, never a dead token", asyn
   assert(report.message?.includes("does not recognise"), report.message);
 });
 
-Deno.test("credential: a 5xx says nothing about the credential", async () => {
+test("credential: a 5xx says nothing about the credential", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "maintenance" }]);
   const report = await credential.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("credential: a transport failure is unknown with a reachable message", async () => {
+test("credential: a transport failure is unknown with a reachable message", async () => {
   const { ctx } = mockCtx([]);
   const report = await credential.check!({}, ctx);
   assertEquals(report.state, "unknown");

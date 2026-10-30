@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { extractError, PerplexityClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new PerplexityClient(ctx);
   const result = await client.request("/v1/embeddings");
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error carrying the vendor's error message", async () => {
+test("client: throws a descriptive Error carrying the vendor's error message", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -28,7 +29,7 @@ Deno.test("client: throws a descriptive Error carrying the vendor's error messag
   assertEquals(err.message.includes("invalid_api_key"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new PerplexityClient(ctx);
   await client.request("/x", {
@@ -41,7 +42,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cmpl-1" } }]);
   const client = new PerplexityClient(ctx);
   await client.request("/v1/sonar", {
@@ -55,7 +56,7 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: passes an absolute URL through unchanged", async () => {
+test("client: passes an absolute URL through unchanged", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new PerplexityClient(ctx);
   await client.request("https://example.internal/foo?x=1");
@@ -64,7 +65,7 @@ Deno.test("client: passes an absolute URL through unchanged", async () => {
   assertEquals(url.pathname, "/foo");
 });
 
-Deno.test("client: defaults to GET with no body", async () => {
+test("client: defaults to GET with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [] } }]);
   const client = new PerplexityClient(ctx);
   await client.request("/v1/models");
@@ -74,7 +75,7 @@ Deno.test("client: defaults to GET with no body", async () => {
 
 // --- extractError -----------------------------------------------------------
 
-Deno.test("extractError: reads the vendor's error.message and error.type", async () => {
+test("extractError: reads the vendor's error.message and error.type", async () => {
   const res = new Response(
     JSON.stringify({ error: { message: "Invalid API key provided.", type: "invalid_api_key" } }),
     { status: 401 },
@@ -82,7 +83,7 @@ Deno.test("extractError: reads the vendor's error.message and error.type", async
   assertEquals(await extractError(res), "Invalid API key provided. (invalid_api_key)");
 });
 
-Deno.test("extractError: falls back to raw text when the body isn't the expected shape", async () => {
+test("extractError: falls back to raw text when the body isn't the expected shape", async () => {
   const res = new Response("<html>gateway error</html>", { status: 502 });
   assertEquals(await extractError(res), "<html>gateway error</html>");
 });

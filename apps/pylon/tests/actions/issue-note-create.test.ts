@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/issue-note-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("issue-note-create: POSTs an internal note to /issues/{id}/note", async () => {
+test("issue-note-create: POSTs an internal note to /issues/{id}/note", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "m2", issue_id: "i1" } } }]);
   const out = await action.execute!({
     id: "i1",
@@ -20,7 +21,7 @@ Deno.test("issue-note-create: POSTs an internal note to /issues/{id}/note", asyn
   assertEquals(out, { id: "m2", issue_id: "i1" });
 });
 
-Deno.test("issue-note-create: only the body is sent when no thread is chosen", async () => {
+test("issue-note-create: only the body is sent when no thread is chosen", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ id: "i1", bodyHtml: "x", threadName: "Triage" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { body_html: "x", thread_name: "Triage" });

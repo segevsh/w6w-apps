@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import enrollmentsCreate from "../../actions/enrollments-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("enrollments-create: POSTs course_id/user_id, omitting activatedAt creates a free trial", async () => {
+test("enrollments-create: POSTs course_id/user_id, omitting activatedAt creates a free trial", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { id: 1, user_id: 2, course_id: 3, is_free_trial: true } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("enrollments-create: POSTs course_id/user_id, omitting activatedAt cre
   assertEquals(out, { id: 1, user_id: 2, course_id: 3, is_free_trial: true });
 });
 
-Deno.test("enrollments-create: activatedAt/expiryDate map to activated_at/expiry_date", async () => {
+test("enrollments-create: activatedAt/expiryDate map to activated_at/expiry_date", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await enrollmentsCreate.execute(
     {
@@ -30,6 +31,6 @@ Deno.test("enrollments-create: activatedAt/expiryDate map to activated_at/expiry
   assertEquals(body.expiry_date, "2027-08-15T00:00:00Z");
 });
 
-Deno.test("enrollments-create: is not idempotent", () => {
+test("enrollments-create: is not idempotent", () => {
   assertEquals(enrollmentsCreate.idempotent, false);
 });

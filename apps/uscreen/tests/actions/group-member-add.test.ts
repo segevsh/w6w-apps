@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import groupMemberAdd from "../../actions/group-member-add.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-member-add: sends POST /groups/${seg(input.groupId)}/members", async () => {
+test("group-member-add: sends POST /groups/${seg(input.groupId)}/members", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7 } }]);
   const out = await groupMemberAdd.execute(
     { "groupId": 2, "email": "m@a.co", "name": "Mo", "role": "manager" } as never,
@@ -19,7 +20,7 @@ Deno.test("group-member-add: sends POST /groups/${seg(input.groupId)}/members", 
   assertEquals(out, { "id": 7 });
 });
 
-Deno.test("group-member-add: a 422 surfaces the vendor's message", async () => {
+test("group-member-add: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH, PROBE_URL } from "../../auth/api-key.ts";
 import { errorBody, mockCtx, pathOf, queryOf, UNAUTHENTICATED_BODY } from "../_helpers.ts";
 
 const KEY = "scoreapp_unitTestFixtureNotARealKey00000";
 
-Deno.test("api-key: sign stamps the bearer header and leaves the URL alone", () => {
+test("api-key: sign stamps the bearer header and leaves the URL alone", () => {
   const request = {
     method: "GET",
     url: "https://open-api.scoreapp.com/scorecards",
@@ -22,16 +23,16 @@ Deno.test("api-key: sign stamps the bearer header and leaves the URL alone", () 
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { authorization: `Bearer ${KEY}` });
 });
 
-Deno.test("api-key: the probe is the cheapest documented path, and the same call the quota check makes", () => {
+test("api-key: the probe is the cheapest documented path, and the same call the quota check makes", () => {
   assertEquals(PROBE_PATH, "/scorecards");
   assertEquals(PROBE_URL, "https://open-api.scoreapp.com/scorecards?limit=1");
 });
 
-Deno.test("api-key: test passes when the scorecards list answers", async () => {
+test("api-key: test passes when the scorecards list answers", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -44,7 +45,7 @@ Deno.test("api-key: test passes when the scorecards list answers", async () => {
   assert(!calls[0].url.includes(KEY));
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
 
   assertEquals((await apiKey.test({ credential: {} }, ctx)).ok, false);
@@ -53,7 +54,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
 });
 
 /** The documented auth failure: 401 plus `{"error":"Unauthenticated."}`. */
-Deno.test("api-key: the documented 401 body is reported as a rejected key", async () => {
+test("api-key: the documented 401 body is reported as a rejected key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: UNAUTHENTICATED_BODY }]);
   const result = await apiKey.test({ credential: { apiKey: "garbage" } }, ctx);
 
@@ -68,7 +69,7 @@ Deno.test("api-key: the documented 401 body is reported as a rejected key", asyn
  * A 401 that does NOT carry the documented body is a different failure — this app
  * must not tell someone to regenerate a key on the strength of it.
  */
-Deno.test("api-key: a 401 without the documented body is not reported as a revoked key", async () => {
+test("api-key: a 401 without the documented body is not reported as a revoked key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Something unexpected") }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -82,7 +83,7 @@ Deno.test("api-key: a 401 without the documented body is not reported as a revok
  * The trap, made operational: Laravel answers a request that does not ask for
  * JSON with a redirect to its login page. Reported as what it is.
  */
-Deno.test("api-key: a redirect is named as the missing-Accept trap, not a bad key", async () => {
+test("api-key: a redirect is named as the missing-Accept trap, not a bad key", async () => {
   const { ctx } = mockCtx([{ status: 302, headers: { location: "/login" }, body: "" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -91,7 +92,7 @@ Deno.test("api-key: a redirect is named as the missing-Accept trap, not a bad ke
   assert(/Accept: application\/json/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 422 is reported as a validation error, never as an auth failure", async () => {
+test("api-key: a 422 is reported as a validation error, never as an auth failure", async () => {
   const { ctx } = mockCtx([
     { status: 422, body: errorBody("The limit must be an integer.") },
   ]);
@@ -103,7 +104,7 @@ Deno.test("api-key: a 422 is reported as a validation error, never as an auth fa
   assert(/The limit must be an integer/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 429 is reported against the live rate-limit headers", async () => {
+test("api-key: a 429 is reported against the live rate-limit headers", async () => {
   const { ctx } = mockCtx([{ status: 429, body: errorBody("Too Many Requests") }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -112,7 +113,7 @@ Deno.test("api-key: a 429 is reported against the live rate-limit headers", asyn
   assert(/x-ratelimit-limit/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKey.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -122,7 +123,7 @@ Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential probl
 });
 
 /** The article documents no account-identity endpoint, so no label is invented. */
-Deno.test("api-key: there is no afterConnect and no connectionLabel", () => {
+test("api-key: there is no afterConnect and no connectionLabel", () => {
   assertEquals(apiKey.afterConnect, undefined);
   assertEquals(apiKey.connectionLabel, undefined);
   assertEquals(apiKey.fields?.[0].type, "secret");

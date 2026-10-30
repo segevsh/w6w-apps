@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import {
   CA,
@@ -14,7 +15,7 @@ import {
 
 const KEY = "d360_sk_unitTestFixtureNotARealKey000000";
 
-Deno.test("api-key: sign stamps X-API-Key and nothing else", () => {
+test("api-key: sign stamps X-API-Key and nothing else", () => {
   const request = {
     method: "GET",
     url: `${EU}/v3/projects`,
@@ -29,12 +30,12 @@ Deno.test("api-key: sign stamps X-API-Key and nothing else", () => {
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { "x-api-key": KEY });
   assertEquals(authHeaders({}), { "x-api-key": "" });
 });
 
-Deno.test("api-key: declares the three data centers and an optional project id", () => {
+test("api-key: declares the three data centers and an optional project id", () => {
   const fields = apiKey.fields!;
   assertEquals(fields.map((f) => f.key), ["apiKey", "region", "projectId"]);
   assertEquals(fields[0].type, "secret");
@@ -48,7 +49,7 @@ Deno.test("api-key: declares the three data centers and an optional project id",
   assertEquals(apiKey.apiKey, { in: "header", name: "X-API-Key" });
 });
 
-Deno.test("api-key: test passes on a projects envelope, and probes the credential's region", async () => {
+test("api-key: test passes on a projects envelope, and probes the credential's region", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "p1" }]) }]);
   const result = await apiKey.test({ credential: { apiKey: KEY, region: "ca" } }, ctx);
   assertEquals(result, { ok: true });
@@ -58,19 +59,19 @@ Deno.test("api-key: test passes on a projects envelope, and probes the credentia
   assertEquals(calls[0].headers["x-api-key"], KEY);
 });
 
-Deno.test("api-key: test defaults to Europe when no region is given", async () => {
+test("api-key: test defaults to Europe when no region is given", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   assertEquals((await apiKey.test({ credential: { apiKey: KEY } }, ctx)).ok, true);
   assertEquals(calls[0].url.startsWith(EU), true);
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await apiKey.test({ credential: { apiKey: "  " } }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: a 200 that is not the projects envelope fails (wrong data center, SPA shell)", async () => {
+test("api-key: a 200 that is not the projects envelope fails (wrong data center, SPA shell)", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -80,7 +81,7 @@ Deno.test("api-key: a 200 that is not the projects envelope fails (wrong data ce
   assert(r.message?.includes("us"));
 });
 
-Deno.test("api-key: an empty-body 401 is a rejection that names the region", async () => {
+test("api-key: an empty-body 401 is a rejection that names the region", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const r = await apiKey.test({ credential: { apiKey: KEY, region: "us" } }, ctx);
   assertEquals(r.ok, false);
@@ -88,7 +89,7 @@ Deno.test("api-key: an empty-body 401 is a rejection that names the region", asy
   assert(!r.message?.includes(KEY));
 });
 
-Deno.test("api-key: 403 FORBIDDEN means the key is live but lacks the probe's permission", async () => {
+test("api-key: 403 FORBIDDEN means the key is live but lacks the probe's permission", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     headers: PROBLEM_HEADERS,
@@ -99,7 +100,7 @@ Deno.test("api-key: 403 FORBIDDEN means the key is live but lacks the probe's pe
   assert(r.message?.includes("ViewProjectSettings"));
 });
 
-Deno.test("api-key: plan and entitlement 403 codes fail, whatever the status says", async () => {
+test("api-key: plan and entitlement 403 codes fail, whatever the status says", async () => {
   for (
     const code of [
       "FEATURE_NOT_IN_LICENSE",
@@ -118,7 +119,7 @@ Deno.test("api-key: plan and entitlement 403 codes fail, whatever the status say
   }
 });
 
-Deno.test("api-key: other failures are described from the body", async () => {
+test("api-key: other failures are described from the body", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { ...PROBLEM_HEADERS, "retry-after": "9" },
@@ -129,13 +130,13 @@ Deno.test("api-key: other failures are described from the body", async () => {
   assert(r.message?.includes("TOO_MANY_REQUESTS"));
 });
 
-Deno.test("api-key: afterConnect fills in the single visible project", async () => {
+test("api-key: afterConnect fills in the single visible project", async () => {
   const { ctx } = mockCtx([{ body: listEnvelope([{ id: "p1", name: "Product Docs" }]) }]);
   const out = await apiKey.afterConnect!({ credential: { apiKey: KEY, region: "us" } }, ctx);
   assertEquals(out, { region: "us", projectId: "p1", projectName: "Product Docs" });
 });
 
-Deno.test("api-key: afterConnect keeps the given project id and names it when found", async () => {
+test("api-key: afterConnect keeps the given project id and names it when found", async () => {
   const { ctx } = mockCtx([{
     body: listEnvelope([{ id: "p1", name: "A" }, { id: "p2", name: "B" }]),
   }]);
@@ -143,7 +144,7 @@ Deno.test("api-key: afterConnect keeps the given project id and names it when fo
   assertEquals(out, { region: "eu", projectId: "p2", projectName: "B" });
 });
 
-Deno.test("api-key: afterConnect does not guess among several projects", async () => {
+test("api-key: afterConnect does not guess among several projects", async () => {
   const { ctx } = mockCtx([{
     body: listEnvelope([{ id: "p1", name: "A" }, { id: "p2", name: "B" }]),
   }]);
@@ -151,7 +152,7 @@ Deno.test("api-key: afterConnect does not guess among several projects", async (
   assertEquals(out, { region: "eu", projectName: "Document360" });
 });
 
-Deno.test("api-key: afterConnect survives a failing probe and a thrown fetch", async () => {
+test("api-key: afterConnect survives a failing probe and a thrown fetch", async () => {
   const forbidden = mockCtx([{
     status: 403,
     headers: PROBLEM_HEADERS,

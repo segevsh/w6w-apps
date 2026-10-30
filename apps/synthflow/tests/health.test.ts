@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import service, { mapComponentStatus, PAGE_NAME, STATUS_URL } from "../health/service.ts";
 import quota from "../health/quota.ts";
 import { mockCtx } from "./_helpers.ts";
@@ -16,7 +17,7 @@ function page(api = "operational", e2e = "operational", site = "operational") {
   };
 }
 
-Deno.test("service: all operational is ok and hits the summary feed", async () => {
+test("service: all operational is ok and hits the summary feed", async () => {
   const { ctx, calls } = mockCtx([{ body: page() }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -24,26 +25,26 @@ Deno.test("service: all operational is ok and hits the summary feed", async () =
   assertEquals(Object.keys(r.components!).length, 4);
 });
 
-Deno.test("service: an API outage is down", async () => {
+test("service: an API outage is down", async () => {
   const { ctx } = mockCtx([{ body: page("full_outage") }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "down");
   assert(r.message!.includes("Synthflow API"));
 });
 
-Deno.test("service: degraded calling is degraded", async () => {
+test("service: degraded calling is degraded", async () => {
   const { ctx } = mockCtx([{ body: page("operational", "partial_outage") }]);
   assertEquals((await service.check!({} as never, ctx)).state, "degraded");
 });
 
-Deno.test("service: the marketing website never moves the verdict", async () => {
+test("service: the marketing website never moves the verdict", async () => {
   const { ctx } = mockCtx([{ body: page("operational", "operational", "full_outage") }]);
   const r = await service.check!({} as never, ctx);
   assertEquals(r.state, "ok");
   assertEquals(r.components!["synthflow-website"].state, "down");
 });
 
-Deno.test("service: a broken or foreign page is unknown, never down", async () => {
+test("service: a broken or foreign page is unknown, never down", async () => {
   assertEquals(
     (await service.check!({} as never, mockCtx([{ status: 503, body: "x" }]).ctx)).state,
     "unknown",
@@ -62,13 +63,13 @@ Deno.test("service: a broken or foreign page is unknown, never down", async () =
   );
 });
 
-Deno.test("service: component vocabulary", () => {
+test("service: component vocabulary", () => {
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("???"), "unknown");
 });
 
-Deno.test("quota: declared unavailable, informational", () => {
+test("quota: declared unavailable, informational", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(typeof quota.check, "undefined");
   assert((quota.unavailable?.reason?.length ?? 0) > 0);

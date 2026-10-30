@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/entry-update.ts";
 
-Deno.test("entry-update: PATCHes /forms/{formId}/entries/{entryId} with Entry.Action Update", async () => {
+test("entry-update: PATCHes /forms/{formId}/entries/{entryId} with Entry.Action Update", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "e1", Email: "new@example.com" } }]);
   const result = await action.execute({
     formId: "42",
@@ -20,12 +21,12 @@ Deno.test("entry-update: PATCHes /forms/{formId}/entries/{entryId} with Entry.Ac
   assertEquals(result, { entry: { Id: "e1", Email: "new@example.com" } });
 });
 
-Deno.test("entry-update: defaults Role to Internal when not given", async () => {
+test("entry-update: defaults Role to Internal when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ formId: "1", entryId: "2", data: {} }, ctx);
   assertEquals(JSON.parse(calls[0].body!).Entry, { Action: "Update", Role: "Internal" });
 });
 
-Deno.test("entry-update: is idempotent", () => {
+test("entry-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

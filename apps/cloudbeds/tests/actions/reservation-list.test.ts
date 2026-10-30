@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import reservationList from "../../actions/reservation-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("reservation-list: GET /getReservations with the given filters", async () => {
+test("reservation-list: GET /getReservations with the given filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ reservationID: "res1" }], { count: 1, total: 1 }),
   }]);
@@ -11,13 +12,13 @@ Deno.test("reservation-list: GET /getReservations with the given filters", async
   assertEquals(queryOf(calls[0].url), { status: "confirmed", modifiedFrom: "2026-09-01" });
 });
 
-Deno.test("reservation-list: every filter is optional — an empty call is valid", async () => {
+test("reservation-list: every filter is optional — an empty call is valid", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await reservationList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("reservation-list: booleans survive false (e.g. sortByRecent=false is meaningful)", async () => {
+test("reservation-list: booleans survive false (e.g. sortByRecent=false is meaningful)", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await reservationList.execute({ sortByRecent: false, includeGuestsDetails: true }, ctx);
   assertEquals(queryOf(calls[0].url), { sortByRecent: "false", includeGuestsDetails: "true" });

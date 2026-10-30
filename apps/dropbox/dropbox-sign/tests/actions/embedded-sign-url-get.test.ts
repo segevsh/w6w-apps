@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/embedded-sign-url-get.ts";
 
 /** The id is the signer's signature_id, not the request's. */
-Deno.test("sign-url: GETs by signature id and unwraps the embedded envelope", async () => {
+test("sign-url: GETs by signature id and unwraps the embedded envelope", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { embedded: { sign_url: "https://app.hellosign.com/e/x", expires_at: 1 } },
@@ -16,7 +17,7 @@ Deno.test("sign-url: GETs by signature id and unwraps the embedded envelope", as
   assert(hint.includes("SIGNER's id"), hint);
 });
 
-Deno.test("sign-url: a blank id fails before any request", async () => {
+test("sign-url: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`signatureId`");
   assertEquals(calls.length, 0);

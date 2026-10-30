@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, paged, STATUS } from "./_shared.ts";
 import action from "../../actions/timeline-public.ts";
 
 const feed = paged([STATUS]);
 
-Deno.test("timeline-public: reads the federated timeline by default", async () => {
+test("timeline-public: reads the federated timeline by default", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   const url = new URL(calls[0].url);
@@ -15,7 +16,7 @@ Deno.test("timeline-public: reads the federated timeline by default", async () =
   assertEquals(result.count, 1);
 });
 
-Deno.test("timeline-public: local and remote are separate scopes", async () => {
+test("timeline-public: local and remote are separate scopes", async () => {
   const local = mockCtx([feed], { display });
   await action.execute!({ scope: "local" }, local.ctx);
   assertEquals(new URL(local.calls[0].url).searchParams.get("local"), "true");
@@ -25,13 +26,13 @@ Deno.test("timeline-public: local and remote are separate scopes", async () => {
   assertEquals(new URL(remote.calls[0].url).searchParams.get("remote"), "true");
 });
 
-Deno.test("timeline-public: a hashtag changes the path, and the # is stripped", async () => {
+test("timeline-public: a hashtag changes the path, and the # is stripped", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   await action.execute!({ hashtag: "#deno" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v1/timelines/tag/deno");
 });
 
-Deno.test("timeline-public: the limit is clamped and paging ids passed", async () => {
+test("timeline-public: the limit is clamped and paging ids passed", async () => {
   const { ctx, calls } = mockCtx([feed], { display });
   await action.execute!({ limit: 500, maxId: "50", minId: "10" }, ctx);
   const url = new URL(calls[0].url);
@@ -40,7 +41,7 @@ Deno.test("timeline-public: the limit is clamped and paging ids passed", async (
   assertEquals(url.searchParams.get("min_id"), "10");
 });
 
-Deno.test("timeline-public: logs the shape of the read, never the posts", async () => {
+test("timeline-public: logs the shape of the read, never the posts", async () => {
   const { ctx, logs } = mockCtx([feed], { display });
   await action.execute!({ hashtag: "deno", scope: "local" }, ctx);
   assert(!JSON.stringify(logs).includes("hello"), JSON.stringify(logs));
@@ -48,6 +49,6 @@ Deno.test("timeline-public: logs the shape of the read, never the posts", async 
 });
 
 /** Neither scope is "the fediverse". */
-Deno.test("timeline-public: says neither scope is the whole network", () => {
+test("timeline-public: says neither scope is the whole network", () => {
   assert(/neither is the whole network/.test(action.description!), action.description);
 });

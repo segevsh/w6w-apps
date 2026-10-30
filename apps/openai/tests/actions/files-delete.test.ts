@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/files-delete.ts";
 
-Deno.test("files-delete: DELETEs /files/{id}", async () => {
+test("files-delete: DELETEs /files/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { deleted: true, id: "file-1" } }]);
   const result = await action.execute!({ fileId: "file-1" }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -10,6 +11,6 @@ Deno.test("files-delete: DELETEs /files/{id}", async () => {
   assertEquals(result, { deleted: true, id: "file-1" });
 });
 
-Deno.test("files-delete: is marked idempotent (retries safe to enable)", () => {
+test("files-delete: is marked idempotent (retries safe to enable)", () => {
   assertEquals(action.idempotent, true);
 });

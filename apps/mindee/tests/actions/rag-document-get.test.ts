@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ragDocumentGet from "../../actions/rag-document-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rag-document-get: fetches one RAG document by id", async () => {
+test("rag-document-get: fetches one RAG document by id", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "doc1", status: "Active", total_matches: 3 } },
   ]);

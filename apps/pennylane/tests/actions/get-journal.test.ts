@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-journal.ts";
 
-Deno.test("get-journal: GETs /journals/{id} and returns its four fields", async () => {
+test("get-journal: GETs /journals/{id} and returns its four fields", async () => {
   const journal = { id: 1, code: "VE", label: "Sales", type: "sales" };
   const { ctx, calls } = mockCtx([{ body: journal }]);
   const res = await action.execute({ id: "1" }, ctx);

@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/custom-attribute-create.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("custom-attribute-create: POSTs a plain attribute for the contact resource", async () => {
+test("custom-attribute-create: POSTs a plain attribute for the contact resource", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "ca_1", "name": "Plan" } }]);
   const result = await action.execute!(
     { "name": "Plan", "type": "text", "readOnly": true } as never,
@@ -34,7 +35,7 @@ Deno.test("custom-attribute-create: POSTs a plain attribute for the contact reso
   assertEquals(result, { "id": "ca_1", "name": "Plan" });
 });
 
-Deno.test("custom-attribute-create: POSTs option values for a select attribute", async () => {
+test("custom-attribute-create: POSTs option values for a select attribute", async () => {
   const { ctx, calls } = mockCtx([{ "body": { "id": "ca_2" } }]);
   const result = await action.execute!(
     { "name": "Tier", "type": "single_select", "optionValues": ["gold", "silver"] } as never,
@@ -69,7 +70,7 @@ Deno.test("custom-attribute-create: POSTs option values for a select attribute",
   assertEquals(result, { "id": "ca_2" });
 });
 
-Deno.test("custom-attribute-create: a select attribute without options throws", async () => {
+test("custom-attribute-create: a select attribute without options throws", async () => {
   const { ctx, calls } = mockCtx();
   const err = await assertRejects(
     async () => await action.execute!({ "name": "Tier", "type": "multi_select" } as never, ctx),

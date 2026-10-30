@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventCancelRequest from "../../actions/event-cancel-request.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-cancel-request: returns the short-lived cancellation token", async () => {
+test("event-cancel-request: returns the short-lived cancellation token", async () => {
   const { ctx, calls } = mockCtx([
     { body: { cancellation_token: "cnl-xyz", is_paid: true, guest_count: 12 } },
   ]);

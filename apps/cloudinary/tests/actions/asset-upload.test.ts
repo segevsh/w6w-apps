@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-upload.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("asset-upload: form-encodes the upload against the Upload API route", async () => {
+test("asset-upload: form-encodes the upload against the Upload API route", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { public_id: "hero" } }], conn);
   await action.execute!({
     file: "https://example.com/a.jpg",
@@ -21,14 +22,14 @@ Deno.test("asset-upload: form-encodes the upload against the Upload API route", 
 });
 
 /** Context is a pipe-joined key=value string, never JSON. */
-Deno.test("asset-upload: context goes out in Cloudinary's pipe form", async () => {
+test("asset-upload: context goes out in Cloudinary's pipe form", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ file: "https://x.test/a.jpg", context: '{"alt":"Hero"}' }, ctx);
   assertEquals(new URLSearchParams(calls[0].body!).get("context"), "alt=Hero");
 });
 
 /** Overwriting without invalidating keeps the old bytes on the CDN. */
-Deno.test("asset-upload: overwriting without invalidate logs a warning", async () => {
+test("asset-upload: overwriting without invalidate logs a warning", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({ file: "https://x.test/a.jpg", publicId: "hero", overwrite: true }, ctx);
   assert(
@@ -37,7 +38,7 @@ Deno.test("asset-upload: overwriting without invalidate logs a warning", async (
   );
 });
 
-Deno.test("asset-upload: invalidating alongside overwrite does not warn", async () => {
+test("asset-upload: invalidating alongside overwrite does not warn", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!(
     { file: "https://x.test/a.jpg", publicId: "hero", overwrite: true, invalidate: true },
@@ -46,14 +47,14 @@ Deno.test("asset-upload: invalidating alongside overwrite does not warn", async 
   assertEquals(logs.filter((l) => l.level === "warn").length, 0);
 });
 
-Deno.test("asset-upload: no file is refused before the wire", async () => {
+test("asset-upload: no file is refused before the wire", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "file");
   assertEquals(calls.length, 0);
 });
 
 /** Without a public id every run creates another copy. */
-Deno.test("asset-upload: declares itself non-idempotent and says why", () => {
+test("asset-upload: declares itself non-idempotent and says why", () => {
   assertEquals(action.idempotent, false);
   const p = (action.params as Array<{ key: string; hint?: string }>)
     .find((p) => p.key === "publicId")!;

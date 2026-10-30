@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import productList from "../../actions/product-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const INPUT = {
   "with_disabled": true,
 };
 
-Deno.test("product-list: GET /api/v2/products with the documented query, header and body", async () => {
+test("product-list: GET /api/v2/products with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await productList.execute(INPUT as never, ctx);
 
@@ -33,13 +34,13 @@ Deno.test("product-list: GET /api/v2/products with the documented query, header 
   assertEquals(out, { items: [{ id: 1 }, { id: 2 }], count: 2, page: 2, nextPage: 3 });
 });
 
-Deno.test("product-list: an Axonaut error surfaces its message and status", async () => {
+test("product-list: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await productList.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("product-list: an empty page ends the list and the first page is the default", async () => {
+test("product-list: an empty page ends the list and the first page is the default", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const out = await productList.execute({} as never, ctx);
   assertEquals(calls[0].headers["page"], undefined);

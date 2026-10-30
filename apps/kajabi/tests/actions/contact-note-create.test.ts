@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactNoteCreate from "../../actions/contact-note-create.ts";
 import { bodyOf, doc, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-note-create: POSTs the note with its contact relationship", async () => {
+test("contact-note-create: POSTs the note with its contact relationship", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: doc("3", "contact_notes") }]);
   await contactNoteCreate.execute({ contactId: "9", body: "Refunded via Stripe" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -22,6 +23,6 @@ Deno.test("contact-note-create: POSTs the note with its contact relationship", a
 });
 
 /** No natural key on a note, so a retry duplicates rather than converging. */
-Deno.test("contact-note-create: is not idempotent", () => {
+test("contact-note-create: is not idempotent", () => {
   assertEquals(contactNoteCreate.idempotent, false);
 });

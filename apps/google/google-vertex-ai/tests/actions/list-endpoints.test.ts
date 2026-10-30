@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import listEndpoints from "../../actions/list-endpoints.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 
-Deno.test("list-endpoints: returnAll follows nextPageToken", async () => {
+test("list-endpoints: returnAll follows nextPageToken", async () => {
   const { ctx, calls } = mockCtx([
     { body: { endpoints: [{ name: "a" }], nextPageToken: "t" } },
     { body: { endpoints: [{ name: "b" }] } },
@@ -15,7 +16,7 @@ Deno.test("list-endpoints: returnAll follows nextPageToken", async () => {
   assert(new URL(calls[0].url).pathname.endsWith("/locations/us-central1/endpoints"));
 });
 
-Deno.test("list-endpoints: an overridden location goes to that region's host", async () => {
+test("list-endpoints: an overridden location goes to that region's host", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await listEndpoints.execute!({ location: "asia-southeast1" }, ctx);
   assert(

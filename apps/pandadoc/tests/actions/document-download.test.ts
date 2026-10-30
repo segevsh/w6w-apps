@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/document-download.ts";
 
@@ -6,7 +7,7 @@ import action from "../../actions/document-download.ts";
 const PDF_BYTES = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0xff, 0x00]);
 const PDF_B64 = "JVBERi0xLjT/AA==";
 
-Deno.test("document-download: GETs /documents/{id}/download and base64-encodes the bytes", async () => {
+test("document-download: GETs /documents/{id}/download and base64-encodes the bytes", async () => {
   const { ctx, calls } = mockCtx([
     { body: PDF_BYTES, headers: { "content-type": "application/pdf" } },
   ]);
@@ -21,14 +22,14 @@ Deno.test("document-download: GETs /documents/{id}/download and base64-encodes t
   });
 });
 
-Deno.test("document-download: binary survives the round trip byte-for-byte", async () => {
+test("document-download: binary survives the round trip byte-for-byte", async () => {
   const { ctx } = mockCtx([{ body: PDF_BYTES, headers: { "content-type": "application/pdf" } }]);
   const out = await action.execute({ documentId: "d1" }, ctx);
   const decoded = Uint8Array.from(atob(out.content), (c) => c.charCodeAt(0));
   assertEquals(decoded, PDF_BYTES);
 });
 
-Deno.test("document-download: passes the watermark and separate_files params", async () => {
+test("document-download: passes the watermark and separate_files params", async () => {
   const { ctx, calls } = mockCtx([
     { body: PDF_BYTES, headers: { "content-type": "application/zip" } },
   ]);
@@ -51,19 +52,19 @@ Deno.test("document-download: passes the watermark and separate_files params", a
   assertEquals(out.contentType, "application/zip");
 });
 
-Deno.test("document-download: sends no query when no options are set", async () => {
+test("document-download: sends no query when no options are set", async () => {
   const { ctx, calls } = mockCtx([{ body: PDF_BYTES }]);
   await action.execute({ documentId: "d1" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("document-download: falls back to application/pdf when no content-type comes back", async () => {
+test("document-download: falls back to application/pdf when no content-type comes back", async () => {
   const { ctx } = mockCtx([{ body: PDF_BYTES, headers: {} }]);
   const out = await action.execute({ documentId: "d1" }, ctx);
   assertEquals(out.contentType, "application/pdf");
 });
 
-Deno.test("document-download: is a read action — it has no side effects", () => {
+test("document-download: is a read action — it has no side effects", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "document");
 });

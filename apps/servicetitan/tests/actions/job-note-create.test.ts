@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-note-create.ts";
 
 const conn = { display: { tenantId: "42", environment: "production" } };
 
-Deno.test("job-note-create: POSTs text, pinning only when asked", async () => {
+test("job-note-create: POSTs text, pinning only when asked", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { text: "hi", isPinned: true } },
     { status: 200, body: { text: "yo", isPinned: false } },

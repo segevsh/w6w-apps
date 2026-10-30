@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audience-export-list.ts";
 
 const display = { propertyId: "123" };
 
-Deno.test("audience-export-list: pages the Data API host with pageToken", async () => {
+test("audience-export-list: pages the Data API host with pageToken", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -25,7 +26,7 @@ Deno.test("audience-export-list: pages the Data API host with pageToken", async 
   assertEquals(result, [{ name: "x/1", state: "ACTIVE" }, { name: "x/2", state: "CREATING" }]);
 });
 
-Deno.test("audience-export-list: a limit truncates the collected rows", async () => {
+test("audience-export-list: a limit truncates the collected rows", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { audienceExports: [{ name: "x/1" }, { name: "x/2" }] },

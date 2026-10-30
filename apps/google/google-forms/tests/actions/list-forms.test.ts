@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-forms.ts";
 
-Deno.test("list-forms: queries Drive for the Google Forms mime type", async () => {
+test("list-forms: queries Drive for the Google Forms mime type", async () => {
   const { ctx, calls } = mockCtx([{ body: { files: [] } }]);
   const result = await action.execute({}, ctx);
 
@@ -21,7 +22,7 @@ Deno.test("list-forms: queries Drive for the Google Forms mime type", async () =
   assertEquals(result, { files: [] });
 });
 
-Deno.test("list-forms: includeTrashed drops the trashed=false clause", async () => {
+test("list-forms: includeTrashed drops the trashed=false clause", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ includeTrashed: true }, ctx);
   assertEquals(
@@ -30,7 +31,7 @@ Deno.test("list-forms: includeTrashed drops the trashed=false clause", async () 
   );
 });
 
-Deno.test("list-forms: escapes an apostrophe in the name filter", async () => {
+test("list-forms: escapes an apostrophe in the name filter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ nameContains: "Bob's form" }, ctx);
   assertEquals(
@@ -39,7 +40,7 @@ Deno.test("list-forms: escapes an apostrophe in the name filter", async () => {
   );
 });
 
-Deno.test("list-forms: forwards orderBy, pageSize and pageToken", async () => {
+test("list-forms: forwards orderBy, pageSize and pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ orderBy: "modifiedTime desc", pageSize: 5, pageToken: "tok" }, ctx);
   const url = new URL(calls[0].url);
@@ -48,6 +49,6 @@ Deno.test("list-forms: forwards orderBy, pageSize and pageToken", async () => {
   assertEquals(url.searchParams.get("pageToken"), "tok");
 });
 
-Deno.test("list-forms: is a search action (Drive, not Forms — Forms has no list method)", () => {
+test("list-forms: is a search action (Drive, not Forms — Forms has no list method)", () => {
   assertEquals(action.type, "search");
 });

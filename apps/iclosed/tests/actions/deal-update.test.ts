@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import dealUpdate from "../../actions/deal-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("deal-update: sends every input as body", async () => {
+test("deal-update: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await dealUpdate.execute(
     {
@@ -39,7 +40,7 @@ Deno.test("deal-update: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("deal-update: omits every unset optional", async () => {
+test("deal-update: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await dealUpdate.execute({ "id": 7 } as never, ctx);
 
@@ -48,7 +49,7 @@ Deno.test("deal-update: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("deal-update: declares a perform action's idempotency", () => {
+test("deal-update: declares a perform action's idempotency", () => {
   assertEquals(dealUpdate.type, "perform");
   assertEquals(dealUpdate.idempotent, true);
   assertEquals(dealUpdate.params!.filter((p) => p.required).map((p) => p.key), ["id"]);

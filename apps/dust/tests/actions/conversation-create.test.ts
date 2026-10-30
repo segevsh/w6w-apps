@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationCreate from "../../actions/conversation-create.ts";
 import { mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-create: defaults blocking to true, opposite the vendor's own default", async () => {
+test("conversation-create: defaults blocking to true, opposite the vendor's own default", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { body: { conversation: { sId: "c1" } } },
   ]);
@@ -20,7 +21,7 @@ Deno.test("conversation-create: defaults blocking to true, opposite the vendor's
   assertEquals(calls[0].method, "POST");
 });
 
-Deno.test("conversation-create: builds the Message body with mentions and context", async () => {
+test("conversation-create: builds the Message body with mentions and context", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { conversation: { sId: "c1" } } }]);
   await conversationCreate.execute(
     {
@@ -45,7 +46,7 @@ Deno.test("conversation-create: builds the Message body with mentions and contex
   assertEquals(body.message.context, { username: "alice", timezone: "America/New_York" });
 });
 
-Deno.test("conversation-create: an empty spaceId is omitted rather than sent as ''", async () => {
+test("conversation-create: an empty spaceId is omitted rather than sent as ''", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { conversation: { sId: "c1" } } }]);
   await conversationCreate.execute(
     { content: "hi", username: "workflow", timezone: "UTC", spaceId: "" },
@@ -57,6 +58,6 @@ Deno.test("conversation-create: an empty spaceId is omitted rather than sent as 
   assertEquals("spaceId" in body, false);
 });
 
-Deno.test("conversation-create: is declared non-idempotent", () => {
+test("conversation-create: is declared non-idempotent", () => {
   assertEquals(conversationCreate.idempotent, false);
 });

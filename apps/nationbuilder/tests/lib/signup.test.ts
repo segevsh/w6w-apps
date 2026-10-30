@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { signupAttributes } from "../../lib/signup.ts";
 
-Deno.test("signupAttributes: maps camelCase params to NationBuilder's snake_case names", () => {
+test("signupAttributes: maps camelCase params to NationBuilder's snake_case names", () => {
   assertEquals(
     signupAttributes({
       firstName: "Kim",
@@ -27,13 +28,13 @@ Deno.test("signupAttributes: maps camelCase params to NationBuilder's snake_case
   );
 });
 
-Deno.test("signupAttributes: merges the free-form attributes JSON last", () => {
+test("signupAttributes: merges the free-form attributes JSON last", () => {
   const out = signupAttributes({ firstName: "Kim", attributes: { church: "St. Mark's" } });
   assertEquals(out.first_name, "Kim");
   assertEquals(out.church, "St. Mark's");
 });
 
-Deno.test("signupAttributes: parses customValues into custom_values", () => {
+test("signupAttributes: parses customValues into custom_values", () => {
   const out = signupAttributes({ customValues: '{"volunteer_shirt_size":"L"}' });
   assertEquals(out.custom_values, { volunteer_shirt_size: "L" });
 });

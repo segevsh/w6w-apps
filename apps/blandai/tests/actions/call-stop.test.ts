@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callStop from "../../actions/call-stop.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-stop: posts to /v1/calls/{id}/stop and maps the response", async () => {
+test("call-stop: posts to /v1/calls/{id}/stop and maps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { status: "success", message: "Call ended successfully." },
@@ -14,6 +15,6 @@ Deno.test("call-stop: posts to /v1/calls/{id}/stop and maps the response", async
   assertEquals(out.message, "Call ended successfully.");
 });
 
-Deno.test("call-stop: is declared idempotent", () => {
+test("call-stop: is declared idempotent", () => {
   assertEquals(callStop.idempotent, true);
 });

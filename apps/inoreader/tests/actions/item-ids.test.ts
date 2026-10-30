@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import itemIds from "../../actions/item-ids.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("item-ids: stream id is the `s` QUERY parameter and ids are extracted", async () => {
+test("item-ids: stream id is the `s` QUERY parameter and ids are extracted", async () => {
   const body = {
     itemRefs: [{ id: "3614359203", timestampUsec: "1" }, { id: "3614347074", timestampUsec: "2" }],
     continuation: "aDRT",
@@ -18,7 +19,7 @@ Deno.test("item-ids: stream id is the `s` QUERY parameter and ids are extracted"
   });
 });
 
-Deno.test("item-ids: maps options to n, r, ot, xt, it, c, includeAllDirectStreamIds", async () => {
+test("item-ids: maps options to n, r, ot, xt, it, c, includeAllDirectStreamIds", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await itemIds.execute({
     streamId: "s",
@@ -44,7 +45,7 @@ Deno.test("item-ids: maps options to n, r, ot, xt, it, c, includeAllDirectStream
   assertEquals(out, { itemRefs: [], ids: [], continuation: undefined });
 });
 
-Deno.test("item-ids: requires a stream id", async () => {
+test("item-ids: requires a stream id", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await itemIds.execute({ streamId: " " }, ctx), Error, "streamId");
 });

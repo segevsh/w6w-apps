@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import a from "../../actions/list-channel-members.ts";
 import { BASE, mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-channel-members: GET channels.members with filter, sort and paging", async () => {
+test("list-channel-members: GET channels.members with filter, sort and paging", async () => {
   const { call, query } = await run(a, {
     roomName: "general",
     filter: "ali",
@@ -15,6 +16,6 @@ Deno.test("list-channel-members: GET channels.members with filter, sort and pagi
   assertEquals(query.get("sort"), '{"username":1}');
 });
 
-Deno.test("list-channel-members: refuses without a room", () => {
+test("list-channel-members: refuses without a room", () => {
   assertThrows(() => a.execute({}, mockCtx().ctx), Error, "Room ID or a Room name");
 });

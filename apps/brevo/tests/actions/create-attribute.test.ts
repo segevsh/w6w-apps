@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-attribute.ts";
 
-Deno.test("create-attribute: normal — POSTs /contacts/attributes/normal/{name} with type=boolean override", async () => {
+test("create-attribute: normal — POSTs /contacts/attributes/normal/{name} with type=boolean override", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ category: "normal", name: "FIRSTNAME", type: "text" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("create-attribute: normal — POSTs /contacts/attributes/normal/{name}
   assertEquals(JSON.parse(calls[0].body!).type, "boolean");
 });
 
-Deno.test("create-attribute: category — POSTs with type=category and enumeration array", async () => {
+test("create-attribute: category — POSTs with type=category and enumeration array", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!(
     {
@@ -35,7 +36,7 @@ Deno.test("create-attribute: category — POSTs with type=category and enumerati
   ]);
 });
 
-Deno.test("create-attribute: transactional — POSTs with type=id override", async () => {
+test("create-attribute: transactional — POSTs with type=id override", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ category: "transactional", name: "ORDER_ID" }, ctx);
   const url = new URL(calls[0].url);
@@ -43,7 +44,7 @@ Deno.test("create-attribute: transactional — POSTs with type=id override", asy
   assertEquals(JSON.parse(calls[0].body!).type, "id");
 });
 
-Deno.test("create-attribute: global — POSTs with the user-supplied value and no type override", async () => {
+test("create-attribute: global — POSTs with the user-supplied value and no type override", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ category: "global", name: "DOB", value: "1985-11-01" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -51,7 +52,7 @@ Deno.test("create-attribute: global — POSTs with the user-supplied value and n
   assertEquals("type" in body, false);
 });
 
-Deno.test("create-attribute: calculated — POSTs with the user-supplied value", async () => {
+test("create-attribute: calculated — POSTs with the user-supplied value", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ category: "calculated", name: "AGE", value: "SUB(NOW(), DOB)" }, ctx);
   const body = JSON.parse(calls[0].body!);

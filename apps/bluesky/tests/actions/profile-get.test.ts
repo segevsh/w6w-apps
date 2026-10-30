@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/profile-get.ts";
@@ -10,7 +11,7 @@ const two = ok({
   ],
 });
 
-Deno.test("profile-get: batches accounts and exposes the first for the single case", async () => {
+test("profile-get: batches accounts and exposes the first for the single case", async () => {
   const { ctx, calls } = mockCtx([two], { display });
   const result = await action.execute!({ actors: "alice.bsky.social, bob.bsky.social" }, ctx) as {
     count: number;
@@ -25,7 +26,7 @@ Deno.test("profile-get: batches accounts and exposes the first for the single ca
 });
 
 /** The caller may have given either identifier, so matching accepts both. */
-Deno.test("profile-get: an account that did not resolve is reported, by either identifier", async () => {
+test("profile-get: an account that did not resolve is reported, by either identifier", async () => {
   const { ctx } = mockCtx([two], { display });
   const byHandle = await action.execute!({
     actors: "alice.bsky.social,ghost.bsky.social",
@@ -39,13 +40,13 @@ Deno.test("profile-get: an account that did not resolve is reported, by either i
   assertEquals(byDid.missing, ["did:plc:ghost"]);
 });
 
-Deno.test("profile-get: a leading @ is stripped", async () => {
+test("profile-get: a leading @ is stripped", async () => {
   const { ctx, calls } = mockCtx([two], { display });
   await action.execute!({ actors: "@alice.bsky.social" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("actors"), "alice.bsky.social");
 });
 
-Deno.test("profile-get: the batch limit is enforced before the request", async () => {
+test("profile-get: the batch limit is enforced before the request", async () => {
   const many = Array.from({ length: 26 }, (_, i) => `a${i}.bsky.social`).join(",");
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
@@ -56,13 +57,13 @@ Deno.test("profile-get: the batch limit is enforced before the request", async (
   assertEquals(calls.length, 0);
 });
 
-Deno.test("profile-get: needs accounts", async () => {
+test("profile-get: needs accounts", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`actors` is required");
 });
 
 /** `viewer.following` is a URI or absent — never a boolean. */
-Deno.test("profile-get: the viewer block is passed through untouched", async () => {
+test("profile-get: the viewer block is passed through untouched", async () => {
   const { ctx } = mockCtx([two], { display });
   const result = await action.execute!({ actors: "alice.bsky.social" }, ctx) as {
     profiles: Array<{ viewer: { following?: string } }>;
@@ -71,6 +72,6 @@ Deno.test("profile-get: the viewer block is passed through untouched", async () 
   assertEquals(result.profiles[1].viewer.following, undefined);
 });
 
-Deno.test("profile-get: says where the relationship answers live", () => {
+test("profile-get: says where the relationship answers live", () => {
   assert(/`viewer` block/.test(action.description!), action.description);
 });

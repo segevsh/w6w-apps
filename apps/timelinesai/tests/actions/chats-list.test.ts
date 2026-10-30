@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import chatsList from "../../actions/chats-list.ts";
 
-Deno.test("chats-list: sends no filters by default", async () => {
+test("chats-list: sends no filters by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "chats": [] } } }]);
   const out = await chatsList.execute!({} as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("chats-list: sends no filters by default", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("chats-list: maps every filter to its wire name, keeping false", async () => {
+test("chats-list: maps every filter to its wire name, keeping false", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": {} } }]);
   const out = await chatsList.execute!(
     {
@@ -46,7 +47,7 @@ Deno.test("chats-list: maps every filter to its wire name, keeping false", async
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("chats-list: surfaces a vendor error envelope", async () => {
+test("chats-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

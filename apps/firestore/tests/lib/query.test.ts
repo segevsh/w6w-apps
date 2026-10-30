@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   buildFilter,
   buildLimit,
@@ -13,7 +14,7 @@ const nameOf = (path: string) => `projects/p1/databases/(default)/documents/${pa
 
 // ----------------------------------------------------------------- filters --
 
-Deno.test("buildFilter: an operator maps onto the wire enum, value included", () => {
+test("buildFilter: an operator maps onto the wire enum, value included", () => {
   assertEquals(buildFilter({ field: "age", op: ">=", value: 18 }), {
     fieldFilter: {
       field: { fieldPath: "age" },
@@ -33,20 +34,20 @@ Deno.test("buildFilter: an operator maps onto the wire enum, value included", ()
   );
 });
 
-Deno.test("buildFilter: `is-null` is a UnaryFilter, which takes no value", () => {
+test("buildFilter: `is-null` is a UnaryFilter, which takes no value", () => {
   assertEquals(buildFilter({ field: "deletedAt", op: "is-null" }), {
     unaryFilter: { op: "IS_NULL", field: { fieldPath: "deletedAt" } },
   });
 });
 
-Deno.test("buildFilter: a bad operator, a missing value and a missing field all throw", () => {
+test("buildFilter: a bad operator, a missing value and a missing field all throw", () => {
   assertThrows(() => buildFilter({ field: "a", op: "LIKE", value: 1 }), Error, "filter operator");
   assertThrows(() => buildFilter({ field: "a", op: ">=" }), Error, "value");
   assertThrows(() => buildFilter({ op: "==", value: 1 }), Error, "field");
 });
 
 /** One filter is bare; two or more are wrapped in an AND composite. */
-Deno.test("buildWhere: none, one and many", () => {
+test("buildWhere: none, one and many", () => {
   assertEquals(buildWhere("[]"), undefined);
   assertEquals(buildWhere(undefined), undefined);
   const one = buildWhere('[{"field":"a","op":"==","value":1}]') as {
@@ -66,7 +67,7 @@ Deno.test("buildWhere: none, one and many", () => {
 
 // ----------------------------------------------------------------- ordering --
 
-Deno.test("buildOrderBy: direction defaults to ascending, spelled out on the wire", () => {
+test("buildOrderBy: direction defaults to ascending, spelled out on the wire", () => {
   assertEquals(buildOrderBy('[{"field":"age"}]'), [
     { field: { fieldPath: "age" }, direction: "ASCENDING" },
   ]);
@@ -78,7 +79,7 @@ Deno.test("buildOrderBy: direction defaults to ascending, spelled out on the wir
   assertThrows(() => buildOrderBy('[{"direction":"asc"}]'), Error, "field");
 });
 
-Deno.test("buildLimit: zero is a real limit only when supplied; blank is unset", () => {
+test("buildLimit: zero is a real limit only when supplied; blank is unset", () => {
   assertEquals(buildLimit(0), 0);
   assertEquals(buildLimit(5), 5);
   assertEquals(buildLimit(undefined), undefined);
@@ -87,7 +88,7 @@ Deno.test("buildLimit: zero is a real limit only when supplied; blank is unset",
   assertThrows(() => buildLimit(1.5), Error, "non-negative");
 });
 
-Deno.test("buildStructuredQuery: from + where + orderBy + limit, assembled", () => {
+test("buildStructuredQuery: from + where + orderBy + limit, assembled", () => {
   const q = buildStructuredQuery({
     collectionId: "cities",
     allDescendants: true,
@@ -101,7 +102,7 @@ Deno.test("buildStructuredQuery: from + where + orderBy + limit, assembled", () 
   assertEquals(q.limit, 10);
 });
 
-Deno.test("buildStructuredQuery: only `from` when nothing else is given", () => {
+test("buildStructuredQuery: only `from` when nothing else is given", () => {
   assertEquals(buildStructuredQuery({ collectionId: "users" }), {
     from: [{ collectionId: "users" }],
   });
@@ -109,7 +110,7 @@ Deno.test("buildStructuredQuery: only `from` when nothing else is given", () => 
 
 // ------------------------------------------------------------------ writes --
 
-Deno.test("buildWrite: `set` replaces the whole document", () => {
+test("buildWrite: `set` replaces the whole document", () => {
   assertEquals(
     buildWrite({ op: "set", path: "users/alice", data: { name: "Ada" } }, nameOf),
     {
@@ -121,7 +122,7 @@ Deno.test("buildWrite: `set` replaces the whole document", () => {
   );
 });
 
-Deno.test("buildWrite: `update` carries the mask that makes it partial", () => {
+test("buildWrite: `update` carries the mask that makes it partial", () => {
   assertEquals(
     buildWrite({ op: "update", path: "users/alice", mask: "age", data: { age: 37 } }, nameOf),
     {
@@ -134,7 +135,7 @@ Deno.test("buildWrite: `update` carries the mask that makes it partial", () => {
   );
 });
 
-Deno.test("buildWrite: `delete` is a bare name, with a precondition when asked", () => {
+test("buildWrite: `delete` is a bare name, with a precondition when asked", () => {
   assertEquals(buildWrite({ op: "delete", path: "users/bob" }, nameOf), {
     delete: "projects/p1/databases/(default)/documents/users/bob",
   });
@@ -144,7 +145,7 @@ Deno.test("buildWrite: `delete` is a bare name, with a precondition when asked",
   });
 });
 
-Deno.test("buildWrite: the op vocabulary is enforced", () => {
+test("buildWrite: the op vocabulary is enforced", () => {
   assertThrows(
     () => buildWrite({ op: "upsert", path: "a/b", data: {} }, nameOf),
     Error,
@@ -166,7 +167,7 @@ Deno.test("buildWrite: the op vocabulary is enforced", () => {
   );
 });
 
-Deno.test("buildWrite: an update precondition reaches currentDocument", () => {
+test("buildWrite: an update precondition reaches currentDocument", () => {
   const write = buildWrite(
     { op: "update", path: "a/b", mask: "x", data: { x: 1 }, updateTime: "2026-09-22T00:00:00Z" },
     nameOf,
@@ -174,7 +175,7 @@ Deno.test("buildWrite: an update precondition reaches currentDocument", () => {
   assertEquals(write.currentDocument, { updateTime: "2026-09-22T00:00:00Z" });
 });
 
-Deno.test("buildWrites: a whole array, and an empty one is refused", () => {
+test("buildWrites: a whole array, and an empty one is refused", () => {
   const writes = buildWrites(
     '[{"op":"delete","path":"a/b"},{"op":"set","path":"a/c","data":{}}]',
     nameOf,

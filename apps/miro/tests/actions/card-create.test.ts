@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/card-create.ts";
 
-Deno.test("card-create: sends the card's data fields", async () => {
+test("card-create: sends the card's data fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "i1" } }], { display: {} });
   await action.execute!({
     boardId: "b1",
@@ -16,7 +17,7 @@ Deno.test("card-create: sends the card's data fields", async () => {
   });
 });
 
-Deno.test("card-create: a title is required", async () => {
+test("card-create: a title is required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({ boardId: "b1" }, ctx), Error, "`title`");
   assertEquals(calls.length, 0);

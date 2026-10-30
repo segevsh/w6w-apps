@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-import.ts";
 
@@ -10,7 +11,7 @@ const event = {
 };
 
 /** /import authenticates and validates, unlike /track. */
-Deno.test("event-import: posts to the ingestion host with strict validation on", async () => {
+test("event-import: posts to the ingestion host with strict validation on", async () => {
   const { ctx, calls } = mockCtx([ok], conn);
   await action.execute!({ events: JSON.stringify([event]) }, ctx);
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("event-import: posts to the ingestion host with strict validation on",
  * $insert_id is what Mixpanel deduplicates on. Without it, a retried workflow
  * double-counts — so the action refuses rather than letting Mixpanel mint one.
  */
-Deno.test("event-import: an event without $insert_id is refused, with the reason", async () => {
+test("event-import: an event without $insert_id is refused, with the reason", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const err = await assertRejects(
     async () =>
@@ -38,7 +39,7 @@ Deno.test("event-import: an event without $insert_id is refused, with the reason
   assertEquals(calls.length, 0);
 });
 
-Deno.test("event-import: missing time or distinct_id is caught with the index", async () => {
+test("event-import: missing time or distinct_id is caught with the index", async () => {
   const noTime = mockCtx([], conn);
   await assertRejects(
     async () =>
@@ -60,7 +61,7 @@ Deno.test("event-import: missing time or distinct_id is caught with the index", 
   );
 });
 
-Deno.test("event-import: a batch over 2000 is refused before the wire", async () => {
+test("event-import: a batch over 2000 is refused before the wire", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const many = Array.from({ length: 2001 }, (_, i) => ({
     event: "x",
@@ -75,11 +76,11 @@ Deno.test("event-import: a batch over 2000 is refused before the wire", async ()
 });
 
 /** Stable insert ids are exactly what make this safe to retry. */
-Deno.test("event-import: declares itself idempotent", () => {
+test("event-import: declares itself idempotent", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("event-import: strict can be turned off, and the hint says what that costs", () => {
+test("event-import: strict can be turned off, and the hint says what that costs", () => {
   const p = (action.params as Array<{ key: string; hint?: string }>).find((p) =>
     p.key === "strict"
   )!;

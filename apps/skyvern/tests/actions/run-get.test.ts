@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import runGet from "../../actions/run-get.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("run-get: GETs /v1/runs/{id}, encoding the id", async () => {
+test("run-get: GETs /v1/runs/{id}, encoding the id", async () => {
   const run = { run_id: "wr_1", status: "completed", output: { a: 1 } };
   const { ctx, calls } = mockCtx([{ body: run }]);
   assertEquals(await runGet.execute({ runId: "wr_1" }, ctx), run);
@@ -16,7 +17,7 @@ Deno.test("run-get: GETs /v1/runs/{id}, encoding the id", async () => {
   assertEquals(pathOf(odd.calls[0].url), "/v1/runs/a%2Fb");
 });
 
-Deno.test("run-get: a 404 raises with Skyvern's detail", async () => {
+test("run-get: a 404 raises with Skyvern's detail", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { detail: "Run not found" } }]);
   await assertRejects(async () => await runGet.execute({ runId: "x" }, ctx), Error, "Skyvern 404");
 });

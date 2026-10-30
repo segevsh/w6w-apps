@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactList from "../../actions/contact-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("contact-list: GET /contact/list with the mapped wire fields", async () => {
+test("contact-list: GET /contact/list with the mapped wire fields", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   const out = await contactList.execute({ "includeCount": true } as never, ctx) as Record<
     string,
@@ -16,7 +17,7 @@ Deno.test("contact-list: GET /contact/list with the mapped wire fields", async (
   assertEquals(out.items, [{ id: 1 }]);
 });
 
-Deno.test("contact-list: a vendor error is thrown with its message", async () => {
+test("contact-list: a vendor error is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { message: "Invalid API key" } }]);
   let msg = "";
   try {

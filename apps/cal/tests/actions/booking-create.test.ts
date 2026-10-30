@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/booking-create.ts";
 
-Deno.test("booking-create: POSTs /bookings with cal-api-version 2026-02-25", async () => {
+test("booking-create: POSTs /bookings with cal-api-version 2026-02-25", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { uid: "new-uid" } } }]);
   const result = await action.execute(
     {
@@ -32,7 +33,7 @@ Deno.test("booking-create: POSTs /bookings with cal-api-version 2026-02-25", asy
   });
 });
 
-Deno.test("booking-create: forwards a structured location object verbatim", async () => {
+test("booking-create: forwards a structured location object verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute(
     {
@@ -48,7 +49,7 @@ Deno.test("booking-create: forwards a structured location object verbatim", asyn
   assertEquals(body.location, { type: "integration", integration: "cal-video" });
 });
 
-Deno.test("booking-create: forwards guests, lengthInMinutes and metadata", async () => {
+test("booking-create: forwards guests, lengthInMinutes and metadata", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute(
     {
@@ -68,6 +69,6 @@ Deno.test("booking-create: forwards guests, lengthInMinutes and metadata", async
   assertEquals(body.metadata, { source: "w6w" });
 });
 
-Deno.test("booking-create: is declared non-idempotent", () => {
+test("booking-create: is declared non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

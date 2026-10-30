@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKeyAuth, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { mockCtx, pathOf, problemBody } from "../_helpers.ts";
 
 const KEY = "sio_unitTestFixtureNotARealKey00000";
 
-Deno.test("api-key: sign stamps X-API-Key and nothing else", () => {
+test("api-key: sign stamps X-API-Key and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.systeme.io/api/contacts",
@@ -21,15 +22,15 @@ Deno.test("api-key: sign stamps X-API-Key and nothing else", () => {
   assert(!signed.url.includes(KEY));
 });
 
-Deno.test("api-key: authHeaders is the single source of the wire format", () => {
+test("api-key: authHeaders is the single source of the wire format", () => {
   assertEquals(authHeaders({ apiKey: KEY }), { "x-api-key": KEY });
 });
 
-Deno.test("api-key: the probe is /api/contact_fields, never a contact-PII endpoint", () => {
+test("api-key: the probe is /api/contact_fields, never a contact-PII endpoint", () => {
   assertEquals(PROBE_PATH, "/api/contact_fields");
 });
 
-Deno.test("api-key: test passes when the probe answers", async () => {
+test("api-key: test passes when the probe answers", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [], hasMore: false } }]);
   const result = await apiKeyAuth.test({ credential: { apiKey: KEY } }, ctx);
 
@@ -38,7 +39,7 @@ Deno.test("api-key: test passes when the probe answers", async () => {
   assertEquals(calls[0].headers["x-api-key"], KEY);
 });
 
-Deno.test("api-key: test fails with no key, without making a request", async () => {
+test("api-key: test fails with no key, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKeyAuth.test({ credential: {} }, ctx);
 
@@ -51,7 +52,7 @@ Deno.test("api-key: test fails with no key, without making a request", async () 
  * carries no `WWW-Authenticate`, a wrong key does. This app must report them
  * as different problems, not collapse both into one generic message.
  */
-Deno.test("api-key: a missing-credential 401 (no WWW-Authenticate) is reported as never having arrived", async () => {
+test("api-key: a missing-credential 401 (no WWW-Authenticate) is reported as never having arrived", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -64,7 +65,7 @@ Deno.test("api-key: a missing-credential 401 (no WWW-Authenticate) is reported a
   assert(/received no key/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a wrong-key 401 (with WWW-Authenticate) is reported as a rejected key", async () => {
+test("api-key: a wrong-key 401 (with WWW-Authenticate) is reported as a rejected key", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -82,7 +83,7 @@ Deno.test("api-key: a wrong-key 401 (with WWW-Authenticate) is reported as a rej
   assert(/Invalid API Key\./.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("api-key: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await apiKeyAuth.test({ credential: { apiKey: KEY } }, ctx);
 

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import customFieldList from "../../actions/custom-field-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * `/v1` alias — `GET /v1/workspaces/{id}/custom-fields` is a router 404
  * (measured 2026-08-11) while this path answers 401.
  */
-Deno.test("custom-field-list: calls GET /beta/workspaces/{id}/custom-fields", async () => {
+test("custom-field-list: calls GET /beta/workspaces/{id}/custom-fields", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ id: "cf1", field: "select" }, { id: "cf2", field: "number" }] },
   ]);
@@ -19,7 +20,7 @@ Deno.test("custom-field-list: calls GET /beta/workspaces/{id}/custom-fields", as
   assertEquals(out, { items: [{ id: "cf1", field: "select" }, { id: "cf2", field: "number" }] });
 });
 
-Deno.test("custom-field-list: an empty body reads as an empty list", async () => {
+test("custom-field-list: an empty body reads as an empty list", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await customFieldList.execute({ workspaceId: "ws1" }, ctx), { items: [] });
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNinjaCtx } from "../_helpers.ts";
 import action from "../../actions/quote-create.ts";
 
-Deno.test("quote-create: POSTs /quotes with client_id, date, due_date and line items", async () => {
+test("quote-create: POSTs /quotes with client_id, date, due_date and line items", async () => {
   const { ctx, calls } = mockNinjaCtx([{ body: { id: "q1" } }]);
   await action.execute(
     { clientId: "cl1", date: "2026-09-05", dueDate: "2026-09-19", lineItems: [{ cost: 10 }] },

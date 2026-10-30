@@ -1,8 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile, denoStatSync } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const manifest = JSON.parse(
-  await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+  await denoReadTextFile(new URL("../package.json", import.meta.url)),
 ) as {
   w6w: {
     id: string;
@@ -15,7 +17,7 @@ const manifest = JSON.parse(
   };
 };
 
-Deno.test("index: exports 5 actions with unique kebab-case keys and valid types", () => {
+test("index: exports 5 actions with unique kebab-case keys and valid types", () => {
   assertEquals(app.actions.length, 5);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
@@ -30,13 +32,13 @@ Deno.test("index: exports 5 actions with unique kebab-case keys and valid types"
   assertEquals(keys.sort(), ["chat", "embed", "generate", "model-list", "version"]);
 });
 
-Deno.test("index: no local model management — the cloud API exposes none of it", () => {
+test("index: no local model management — the cloud API exposes none of it", () => {
   for (const forbidden of ["model-pull", "model-copy", "model-delete", "model-unload"]) {
     assertEquals(app.actions.some((a) => a.key === forbidden), false, `${forbidden} exists`);
   }
 });
 
-Deno.test("index: every perform action declares idempotent explicitly", () => {
+test("index: every perform action declares idempotent explicitly", () => {
   for (const a of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof a.idempotent, "boolean", `${a.key} does not declare idempotent`);
   }
@@ -44,7 +46,7 @@ Deno.test("index: every perform action declares idempotent explicitly", () => {
   assertEquals(notIdempotent, ["chat", "generate"]);
 });
 
-Deno.test("index: one auth method, and health checks that cannot leave the app at unknown", () => {
+test("index: one auth method, and health checks that cannot leave the app at unknown", () => {
   assertEquals(app.auth!.map((a) => a.key), ["api-key"]);
   assertEquals(app.healthChecks!.map((h) => h.key), ["service", "instance", "quota"]);
   for (const h of app.healthChecks!.filter((h) => h.unavailable)) {
@@ -56,21 +58,21 @@ Deno.test("index: one auth method, and health checks that cannot leave the app a
   }
 });
 
-Deno.test("index: the manifest is the cloud provider — llm + embedding, one host, an svg icon", () => {
+test("index: the manifest is the cloud provider — llm + embedding, one host, an svg icon", () => {
   assertEquals(manifest.w6w.id, "io.w6w.ollama-cloud");
   assertEquals(manifest.w6w.displayName, "Ollama Cloud");
   assertEquals(manifest.w6w.modelProvider.modelTypes, ["llm", "embedding"]);
   assertEquals(manifest.w6w.network.allow, ["ollama.com"]);
   assertEquals(manifest.w6w.categories, ["ai"]);
   for (const url of [manifest.w6w.appearance.icon.svg, manifest.w6w.appearance.darkMode.icon.svg]) {
-    assert(Deno.statSync(new URL(`../${url}`, import.meta.url)).isFile, url);
+    assert(denoStatSync(new URL(`../${url}`, import.meta.url)).isFile, url);
   }
 });
 
-Deno.test("index: every streaming endpoint asks for a single result, not a stream", async () => {
+test("index: every streaming endpoint asks for a single result, not a stream", async () => {
   // `/api/embed` is not a streaming endpoint at all; generate and chat are.
   for (const file of ["generate", "chat"]) {
-    const src = await Deno.readTextFile(new URL(`../actions/${file}.ts`, import.meta.url));
+    const src = await denoReadTextFile(new URL(`../actions/${file}.ts`, import.meta.url));
     assert(/stream:\s*false/.test(src), `${file} does not set stream: false`);
   }
 });
@@ -83,10 +85,10 @@ const code = (src: string) =>
       "",
     );
 
-Deno.test("index: no action reaches the network except through ctx.fetch, and never hardcodes a host", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action reaches the network except through ctx.fetch, and never hardcodes a host", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(
       !/[^.\w]fetch\(/.test(src.replace(/ctx\.fetch\(/g, "")),
       `${entry.name} calls global fetch`,
@@ -96,10 +98,10 @@ Deno.test("index: no action reaches the network except through ctx.fetch, and ne
   }
 });
 
-Deno.test("index: no action handles a credential — signing is the auth hook's job", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action handles a credential — signing is the auth hook's job", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/authorization/i.test(src), `${entry.name} sets an authorization header`);
     assert(!/credential/i.test(src), `${entry.name} reads the credential`);
     assert(!/api.?key/i.test(src), `${entry.name} handles the API key`);
@@ -107,10 +109,10 @@ Deno.test("index: no action handles a credential — signing is the auth hook's 
 });
 
 /** Prompts and replies are the user's data; a run log records the model and counts only. */
-Deno.test("index: no action logs a prompt, a message or a response", async () => {
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+test("index: no action logs a prompt, a message or a response", async () => {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (!entry.name.endsWith(".ts")) continue;
-    const src = code(await Deno.readTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
+    const src = code(await denoReadTextFile(new URL(`../actions/${entry.name}`, import.meta.url)));
     assert(!/ctx\.log\(/.test(src), `${entry.name} logs`);
   }
 });

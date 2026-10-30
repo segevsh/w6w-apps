@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/webhook-resend.ts";
 import { envelope, exec, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-resend: POSTs to the resend path with no body", async () => {
+test("webhook-resend: POSTs to the resend path with no body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 3899 }) }]);
   const out = await exec(action, { webhookId: "39", logId: "3899" }, ctx);
   assertEquals(calls[0].method, "POST");

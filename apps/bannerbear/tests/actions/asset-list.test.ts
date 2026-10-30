@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assetList from "../../actions/asset-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("asset-list: GET /assets", async () => {
+test("asset-list: GET /assets", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "a1", url: "https://cdn/a1.png" }] }]);
   const out = await assetList.execute({}, ctx) as unknown[];
 

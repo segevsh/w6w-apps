@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import documentDownload from "../../actions/document-download.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("document-download: base64-encodes the response bytes and reports content type", async () => {
+test("document-download: base64-encodes the response bytes and reports content type", async () => {
   const bytes = new TextEncoder().encode("%PDF-1.4 fake pdf bytes");
   const { ctx, calls } = mockCtx([{
     status: 200,
@@ -17,7 +18,7 @@ Deno.test("document-download: base64-encodes the response bytes and reports cont
   assertEquals(atob(out.content), "%PDF-1.4 fake pdf bytes");
 });
 
-Deno.test("document-download: forwards the optional format param", async () => {
+test("document-download: forwards the optional format param", async () => {
   const bytes = new Uint8Array([1, 2, 3]);
   const { ctx, calls } = mockCtx([{ status: 200, body: bytes }]);
   await documentDownload.execute({ documentId: "doc-1", format: "Individually" }, ctx);

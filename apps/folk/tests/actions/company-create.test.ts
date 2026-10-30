@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/company-create.ts";
 import { NETWORK_PLACEHOLDER } from "../../lib/client.ts";
 
-Deno.test("company-create: POSTs to the group's company endpoint with the built body", async () => {
+test("company-create: POSTs to the group's company endpoint with the built body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "c1" } }]);
   const out = await action.execute({ groupId: "g1", name: "Acme" }, ctx);
   assertEquals(

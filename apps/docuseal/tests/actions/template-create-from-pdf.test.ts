@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/template-create-from-pdf.ts";
 
-Deno.test("template-create-from-pdf: sends the parsed documents array and flags", async () => {
+test("template-create-from-pdf: sends the parsed documents array and flags", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute!({
     name: "Test PDF",
@@ -23,7 +24,7 @@ Deno.test("template-create-from-pdf: sends the parsed documents array and flags"
 });
 
 /** The vendor default (remove_tags: true) is honest — leaving it unset omits the field. */
-Deno.test("template-create-from-pdf: removeTags at its default is not sent", async () => {
+test("template-create-from-pdf: removeTags at its default is not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute!({ documents: "[]" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { documents: [] });

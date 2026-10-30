@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import phaseDelete from "../../actions/phase-delete.ts";
 
-Deno.test("phase-delete: deletes and returns success", async () => {
+test("phase-delete: deletes and returns success", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { deletePhase: { success: true } } } }]);
   const out = await phaseDelete.execute({ id: "1" }, ctx) as { success: boolean };
   assertEquals(out.success, true);
@@ -10,7 +11,7 @@ Deno.test("phase-delete: deletes and returns success", async () => {
   assertEquals(q, "mutation { deletePhase(input: { id: 1 }) { success } }");
 });
 
-Deno.test("phase-delete: throws when success is false", async () => {
+test("phase-delete: throws when success is false", async () => {
   const { ctx } = mockCtx([{ body: { data: { deletePhase: { success: false } } } }]);
   let threw = false;
   try {
@@ -21,7 +22,7 @@ Deno.test("phase-delete: throws when success is false", async () => {
   assert(threw);
 });
 
-Deno.test("phase-delete: type/resource/idempotency metadata", () => {
+test("phase-delete: type/resource/idempotency metadata", () => {
   assertEquals(phaseDelete.type, "perform");
   assertEquals(phaseDelete.resource, "phase");
   assertEquals(phaseDelete.idempotent, true);

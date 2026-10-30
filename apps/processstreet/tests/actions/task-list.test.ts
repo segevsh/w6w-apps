@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-list.ts";
 
-Deno.test("task-list: GETs /workflow-runs/{id}/tasks", async () => {
+test("task-list: GETs /workflow-runs/{id}/tasks", async () => {
   const task = {
     id: "t1",
     name: "Step 1",
@@ -17,7 +18,7 @@ Deno.test("task-list: GETs /workflow-runs/{id}/tasks", async () => {
   assertEquals(out.tasks, [task]);
 });
 
-Deno.test("task-list: forwards the cursor and extracts nextCursor", async () => {
+test("task-list: forwards the cursor and extracts nextCursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       tasks: [],

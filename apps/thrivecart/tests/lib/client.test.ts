@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import {
   API_BASE,
   API_PREFIX,
@@ -10,12 +11,12 @@ import {
 } from "../../lib/client.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("client: base host and prefix are the ones observed live", () => {
+test("client: base host and prefix are the ones observed live", () => {
   assertEquals(API_BASE, "https://thrivecart.com");
   assertEquals(API_PREFIX, "/api/external");
 });
 
-Deno.test("client: get() sends GET with query params and returns the parsed body", async () => {
+test("client: get() sends GET with query params and returns the parsed body", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ product_id: "1" }] }]);
   const out = await new ThriveCartClient(ctx).get("/products", { query: { affiliate_id: "x" } });
   assertEquals(calls[0].method, "GET");
@@ -24,7 +25,7 @@ Deno.test("client: get() sends GET with query params and returns the parsed body
   assertEquals(out, [{ product_id: "1" }]);
 });
 
-Deno.test("client: get() drops empty/undefined query params", async () => {
+test("client: get() drops empty/undefined query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new ThriveCartClient(ctx).get("/products", { query: { a: "", b: undefined, c: "x" } });
   const params = new URL(calls[0].url).searchParams;
@@ -33,7 +34,7 @@ Deno.test("client: get() drops empty/undefined query params", async () => {
   assertEquals(params.get("c"), "x");
 });
 
-Deno.test("client: post() with form encodes application/x-www-form-urlencoded", async () => {
+test("client: post() with form encodes application/x-www-form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await new ThriveCartClient(ctx).post("/customer", { form: { email: "a@b.com" } });
   assertEquals(calls[0].method, "POST");
@@ -41,13 +42,13 @@ Deno.test("client: post() with form encodes application/x-www-form-urlencoded", 
   assertEquals(calls[0].body, "email=a%40b.com");
 });
 
-Deno.test("client: post() form encodes an array value as repeated key[] entries", async () => {
+test("client: post() form encodes an array value as repeated key[] entries", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await new ThriveCartClient(ctx).post("/affiliates", { form: { product_ids: ["1", "2"] } });
   assertEquals(calls[0].body, "product_ids%5B%5D=1&product_ids%5B%5D=2");
 });
 
-Deno.test("client: post() form drops undefined/null/empty-string fields", async () => {
+test("client: post() form drops undefined/null/empty-string fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new ThriveCartClient(ctx).post("/cancelSubscription", {
     form: { order_id: "1", subscription_id: undefined, note: "" },
@@ -55,7 +56,7 @@ Deno.test("client: post() form drops undefined/null/empty-string fields", async 
   assertEquals(calls[0].body, "order_id=1");
 });
 
-Deno.test("client: post() with json encodes application/json", async () => {
+test("client: post() with json encodes application/json", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { subscription_id: 1 } }]);
   await new ThriveCartClient(ctx).post("/subscribe", {
     json: { event: "*", target_url: "https://example.com/hook" },
@@ -67,7 +68,7 @@ Deno.test("client: post() with json encodes application/json", async () => {
   );
 });
 
-Deno.test("client: mode is sent as X-TC-Mode only when set", async () => {
+test("client: mode is sent as X-TC-Mode only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }, { body: [] }]);
   await new ThriveCartClient(ctx).get("/products", { mode: "test" });
   await new ThriveCartClient(ctx).get("/products");
@@ -75,14 +76,14 @@ Deno.test("client: mode is sent as X-TC-Mode only when set", async () => {
   assertEquals("x-tc-mode" in calls[1].headers, false);
 });
 
-Deno.test("client: a non-JSON error body still throws with the raw text", async () => {
+test("client: a non-JSON error body still throws with the raw text", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "<html>oops</html>" }]);
   await new ThriveCartClient(ctx).get("/products").catch((err) => {
     assertEquals(err.message.includes("<html>oops</html>"), true, err.message);
   });
 });
 
-Deno.test("client: an error response throws with the vendor's error code", async () => {
+test("client: an error response throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([
     { status: 404, body: errorBody("The requested bump cannot be identified.") },
   ]);
@@ -100,7 +101,7 @@ Deno.test("client: an error response throws with the vendor's error code", async
   assertEquals(threw, true);
 });
 
-Deno.test("formatThriveCartError: includes error_description when present", () => {
+test("formatThriveCartError: includes error_description when present", () => {
   const msg = formatThriveCartError(
     401,
     "GET",
@@ -111,7 +112,7 @@ Deno.test("formatThriveCartError: includes error_description when present", () =
   assertEquals(msg.includes("The access token provided is invalid"), true, msg);
 });
 
-Deno.test("formatThriveCartError: a bare english-sentence error is not mangled", () => {
+test("formatThriveCartError: a bare english-sentence error is not mangled", () => {
   const msg = formatThriveCartError(
     400,
     "POST",
@@ -121,12 +122,12 @@ Deno.test("formatThriveCartError: a bare english-sentence error is not mangled",
   assertEquals(msg.includes("You must provide a valid order ID."), true, msg);
 });
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   const out = compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" });
   assertEquals(out, { d: false, e: 0, f: "x" });
 });
 
-Deno.test("truncate: leaves short text alone and truncates long text with a byte count", () => {
+test("truncate: leaves short text alone and truncates long text with a byte count", () => {
   assertEquals(truncate("short"), "short");
   const long = "x".repeat(700);
   const out = truncate(long, 600);
@@ -134,6 +135,6 @@ Deno.test("truncate: leaves short text alone and truncates long text with a byte
   assertEquals(out.includes("700 bytes truncated"), true, out);
 });
 
-Deno.test("encodeId: escapes a slash so it cannot escape the path segment", () => {
+test("encodeId: escapes a slash so it cannot escape the path segment", () => {
   assertEquals(encodeId("1/../../products"), "1%2F..%2F..%2Fproducts");
 });

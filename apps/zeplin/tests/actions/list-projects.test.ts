@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-projects.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-projects: GETs /projects and wraps the array with its paging position", async () => {
+test("list-projects: GETs /projects and wraps the array with its paging position", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({ workspace: "personal", status: "archived" }, ctx);
   const u = new URL(calls[0].url);
@@ -22,7 +23,7 @@ Deno.test("list-projects: GETs /projects and wraps the array with its paging pos
   });
 });
 
-Deno.test("list-projects: a full page yields next_offset; limit and offset are validated", async () => {
+test("list-projects: a full page yields next_offset; limit and offset are validated", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     ...{ workspace: "personal", status: "archived" },
@@ -43,7 +44,7 @@ Deno.test("list-projects: a full page yields next_offset; limit and offset are v
   );
 });
 
-Deno.test("list-projects: a vendor error is thrown with its message; a non-array body is an error", async () => {
+test("list-projects: a vendor error is thrown with its message; a non-array body is an error", async () => {
   const bad = mockCtx([{ status: 401, body: { message: "invalid_token" } }]);
   await assertRejects(
     async () => await action.execute({ workspace: "personal", status: "archived" }, bad.ctx),

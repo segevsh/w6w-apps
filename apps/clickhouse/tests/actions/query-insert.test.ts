@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/query-insert.ts";
 
@@ -18,7 +19,7 @@ const rows = JSON.stringify(
 );
 
 /** The whole class of quoting problems does not arise. */
-Deno.test("query-insert: puts the rows in the body as JSONEachRow, not in the SQL", async () => {
+test("query-insert: puts the rows in the body as JSONEachRow, not in the SQL", async () => {
   const { ctx, calls } = mockCtx([written("20")], D);
   const result = await action.execute({ table: "events", rows }, ctx) as Record<string, unknown>;
   const body = calls[0].body!;
@@ -31,7 +32,7 @@ Deno.test("query-insert: puts the rows in the body as JSONEachRow, not in the SQ
 });
 
 /** It is the one part that goes into the SQL, so it is checked. */
-Deno.test("query-insert: the table must be an identifier", async () => {
+test("query-insert: the table must be an identifier", async () => {
   for (const table of ["events; DROP TABLE x", "events WHERE 1", "'events'"]) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -45,14 +46,14 @@ Deno.test("query-insert: the table must be an identifier", async () => {
   }
 });
 
-Deno.test("query-insert: a qualified name is allowed", async () => {
+test("query-insert: a qualified name is allowed", async () => {
   const { ctx, calls } = mockCtx([written("20")], D);
   await action.execute({ table: "analytics.events", rows }, ctx);
   assert(calls[0].body!.startsWith("INSERT INTO analytics.events "), calls[0].body!);
 });
 
 /** Many small inserts create parts faster than merges remove them. */
-Deno.test("query-insert: a tiny batch without async inserts is warned about", async () => {
+test("query-insert: a tiny batch without async inserts is warned about", async () => {
   const { ctx, logs } = mockCtx([written("1")], D);
   await action.execute({ table: "events", rows: '[{"id":1}]' }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -64,7 +65,7 @@ Deno.test("query-insert: a tiny batch without async inserts is warned about", as
 });
 
 /** Async inserts are the supported answer for a workflow that cannot batch. */
-Deno.test("query-insert: async inserts deduplicate by default, which makes a retry safe", async () => {
+test("query-insert: async inserts deduplicate by default, which makes a retry safe", async () => {
   const { ctx, calls } = mockCtx([written("1")], D);
   await action.execute({ table: "events", rows: '[{"id":1}]', asyncInsert: true }, ctx);
   const url = new URL(calls[0].url);
@@ -79,13 +80,13 @@ Deno.test("query-insert: async inserts deduplicate by default, which makes a ret
   assertEquals(new URL(off.calls[0].url).searchParams.get("async_insert_deduplicate"), "0");
 });
 
-Deno.test("query-insert: an async insert does not warn about the batch size", async () => {
+test("query-insert: an async insert does not warn about the batch size", async () => {
   const { ctx, logs } = mockCtx([written("1")], D);
   await action.execute({ table: "events", rows: '[{"id":1}]', asyncInsert: true }, ctx);
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("query-insert: rows must be a non-empty array", async () => {
+test("query-insert: rows must be a non-empty array", async () => {
   for (const bad of [undefined, "", "[]", '{"id":1}']) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -100,7 +101,7 @@ Deno.test("query-insert: rows must be a non-empty array", async () => {
 });
 
 /** The rows are the caller's data. */
-Deno.test("query-insert: logs counts only, never the rows", async () => {
+test("query-insert: logs counts only, never the rows", async () => {
   const { ctx, logs } = mockCtx([written("1")], D);
   await action.execute(
     { table: "events", rows: '[{"secret":"do-not-log"}]', asyncInsert: true },
@@ -110,7 +111,7 @@ Deno.test("query-insert: logs counts only, never the rows", async () => {
 });
 
 /** An insert produces no result set; the count comes from the summary. */
-Deno.test("query-insert: is not idempotent and says ClickHouse wants batches", () => {
+test("query-insert: is not idempotent and says ClickHouse wants batches", () => {
   assertEquals(action.idempotent, false);
   assert(/ClickHouse wants BATCHES/.test(action.description!), action.description);
   assert(/request BODY rather than in the SQL/.test(action.description!), action.description);

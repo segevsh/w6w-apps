@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-list.ts";
 
@@ -35,7 +36,7 @@ const devices = [
 ];
 
 /** No pagination, so the filtering has to happen at Tailscale. */
-Deno.test("device-list: filters server-side, repeating tags to mean all of them", async () => {
+test("device-list: filters server-side, repeating tags to mean all of them", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { devices } }]);
   await action.execute({ tags: "tag:prod, tag:web", hostname: "web-01" }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -44,7 +45,7 @@ Deno.test("device-list: filters server-side, repeating tags to mean all of them"
   assertEquals(q.get("fields"), "default");
 });
 
-Deno.test("device-list: ephemeral and all-fields toggles reach the query", async () => {
+test("device-list: ephemeral and all-fields toggles reach the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { devices: [] } }]);
   await action.execute({ ephemeralOnly: true, allFields: true }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -53,7 +54,7 @@ Deno.test("device-list: ephemeral and all-fields toggles reach the query", async
 });
 
 /** A shared-in device is somebody else's machine. */
-Deno.test("device-list: excludes external devices by default and counts them", async () => {
+test("device-list: excludes external devices by default and counts them", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { devices } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 3);
@@ -69,7 +70,7 @@ Deno.test("device-list: excludes external devices by default and counts them", a
 });
 
 /** `lastSeen` is omitted exactly when the device is connected. */
-Deno.test("device-list: offline is computed from connectedToControl, not from lastSeen", async () => {
+test("device-list: offline is computed from connectedToControl, not from lastSeen", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { devices } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   const offline = result.offline as Array<{ nodeId: string; lastSeen?: string }>;
@@ -77,7 +78,7 @@ Deno.test("device-list: offline is computed from connectedToControl, not from la
   assertEquals(offline[0].lastSeen, "2026-08-01T00:00:00Z");
 });
 
-Deno.test("device-list: separates unauthorized, outdated and expiring devices", async () => {
+test("device-list: separates unauthorized, outdated and expiring devices", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { devices } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.unauthorized, ["new-box"]);
@@ -87,7 +88,7 @@ Deno.test("device-list: separates unauthorized, outdated and expiring devices", 
 });
 
 /** A key that never expires cannot be expiring soon. */
-Deno.test("device-list: a device with expiry disabled is never counted as expiring", async () => {
+test("device-list: a device with expiry disabled is never counted as expiring", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { devices: [{ nodeId: "n9", expires: soon, keyExpiryDisabled: true }] },
@@ -97,13 +98,13 @@ Deno.test("device-list: a device with expiry disabled is never counted as expiri
 });
 
 /** Usually a copied Tailscale state directory. */
-Deno.test("device-list: surfaces one node key live on several machines", async () => {
+test("device-list: surfaces one node key live on several machines", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { devices } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.multipleConnections, ["new-box"]);
 });
 
-Deno.test("device-list: says Tailscale has no pagination", () => {
+test("device-list: says Tailscale has no pagination", () => {
   assert(/NO PAGINATION/.test(action.description!), action.description);
   assertEquals(action.type, "search");
 });

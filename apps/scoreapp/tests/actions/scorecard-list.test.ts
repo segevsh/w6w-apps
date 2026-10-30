@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import scorecardList from "../../actions/scorecard-list.ts";
 import { mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("scorecard-list: reads the documented collection path", async () => {
+test("scorecard-list: reads the documented collection path", async () => {
   const body = page([{ id: "9e01daab-49c6-428b-9209-b5b0607acad3", status: "live" }]);
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -14,7 +15,7 @@ Deno.test("scorecard-list: reads the documented collection path", async () => {
   assertEquals(result, body as never);
 });
 
-Deno.test("scorecard-list: every documented filter is forwarded under its own name", async () => {
+test("scorecard-list: every documented filter is forwarded under its own name", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
 
   await scorecardList.execute(
@@ -37,7 +38,7 @@ Deno.test("scorecard-list: every documented filter is forwarded under its own na
   });
 });
 
-Deno.test("scorecard-list: an empty form sends no filters at all, which is the API's own default", async () => {
+test("scorecard-list: an empty form sends no filters at all, which is the API's own default", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
 
   await scorecardList.execute({ limit: undefined, search: "" }, ctx);
@@ -45,7 +46,7 @@ Deno.test("scorecard-list: an empty form sends no filters at all, which is the A
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("scorecard-list: the status param offers exactly the three documented modes", () => {
+test("scorecard-list: the status param offers exactly the three documented modes", () => {
   const status = scorecardList.params?.find((p) => p.key === "status");
 
   assertEquals(status?.type, "select");
@@ -55,7 +56,7 @@ Deno.test("scorecard-list: the status param offers exactly the three documented 
   );
 });
 
-Deno.test("scorecard-list: nothing is required and the vendor's 100-row default is stated", () => {
+test("scorecard-list: nothing is required and the vendor's 100-row default is stated", () => {
   assertEquals(scorecardList.type, "search");
   assertEquals(scorecardList.resource, "scorecard");
   assert(scorecardList.params?.every((p) => p.required !== true), "no param is required");

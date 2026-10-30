@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: informational, signed, no network.allow of its own", () => {
+test("quota: informational, signed, no network.allow of its own", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: reads x-ratelimit-remaining-minute off GET /v2/me", async () => {
+test("quota: reads x-ratelimit-remaining-minute off GET /v2/me", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { id: 1 } },
     headers: {
@@ -23,7 +24,7 @@ Deno.test("quota: reads x-ratelimit-remaining-minute off GET /v2/me", async () =
   assertEquals(out.quota?.[0].remaining, 580);
 });
 
-Deno.test("quota: zero remaining reports down", async () => {
+test("quota: zero remaining reports down", async () => {
   const { ctx } = mockCtx([{
     body: { data: {} },
     headers: { "content-type": "application/json", "x-ratelimit-remaining-minute": "0" },
@@ -32,13 +33,13 @@ Deno.test("quota: zero remaining reports down", async () => {
   assertEquals(out.state, "down");
 });
 
-Deno.test("quota: no rate-limit header reports unknown", async () => {
+test("quota: no rate-limit header reports unknown", async () => {
   const { ctx } = mockCtx([{ body: { data: {} } }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("quota: a failing probe reports unknown", async () => {
+test("quota: a failing probe reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "invalid token" } }]);
   const out = await quota.check!({} as never, ctx);
   assertEquals(out.state, "unknown");

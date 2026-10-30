@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { rpc } from "./_shared.ts";
 import action from "../../actions/geolocate.ts";
@@ -7,7 +8,7 @@ const located = rpc({ location: { lat: 51.5074, lng: -0.1278 }, accuracy: 120 })
 const wifi = '[{"macAddress":"00:25:9c:cf:1c:ac","signalStrength":-43},' +
   '{"macAddress":"00:25:9c:cf:1c:ad","signalStrength":-55}]';
 
-Deno.test("geolocate: posts the signals and returns the point with its accuracy", async () => {
+test("geolocate: posts the signals and returns the point with its accuracy", async () => {
   const { ctx, calls } = mockCtx([located]);
   const result = await action.execute!({ wifiAccessPoints: wifi }, ctx) as {
     located: boolean;
@@ -23,7 +24,7 @@ Deno.test("geolocate: posts the signals and returns the point with its accuracy"
  * The documented surprise: Google answers 404 when it cannot geolocate. That
  * is an answer, not a broken URL.
  */
-Deno.test("geolocate: a 404 is 'not enough signal', not a failure", async () => {
+test("geolocate: a 404 is 'not enough signal', not a failure", async () => {
   const { ctx } = mockCtx([rpc({ error: { code: 404, message: "Not found" } }, 404)]);
   const result = await action.execute!({ wifiAccessPoints: wifi }, ctx) as {
     located: boolean;
@@ -35,7 +36,7 @@ Deno.test("geolocate: a 404 is 'not enough signal', not a failure", async () => 
 });
 
 /** Every other error is still an error. */
-Deno.test("geolocate: a rejected key still throws", async () => {
+test("geolocate: a rejected key still throws", async () => {
   const { ctx } = mockCtx([
     rpc({
       error: {
@@ -56,7 +57,7 @@ Deno.test("geolocate: a rejected key still throws", async () => {
  * Google's default is IP fallback ON, which from a workflow runner geolocates a
  * datacentre — a confident answer to a question nobody asked.
  */
-Deno.test("geolocate: IP fallback is off by default and refuses an empty request", async () => {
+test("geolocate: IP fallback is off by default and refuses an empty request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({}, ctx),
@@ -67,14 +68,14 @@ Deno.test("geolocate: IP fallback is off by default and refuses an empty request
   assertEquals(action.params!.find((p) => p.key === "considerIp")!.default, false);
 });
 
-Deno.test("geolocate: turning IP fallback on is allowed, and flagged in the result", async () => {
+test("geolocate: turning IP fallback on is allowed, and flagged in the result", async () => {
   const { ctx, calls } = mockCtx([located]);
   const result = await action.execute!({ considerIp: true }, ctx) as { usedIpFallback: boolean };
   assertEquals(JSON.parse(calls[0].body!).considerIp, true);
   assertEquals(result.usedIpFallback, true);
 });
 
-Deno.test("geolocate: with real signals, the IP flag stays false even when fallback is on", async () => {
+test("geolocate: with real signals, the IP flag stays false even when fallback is on", async () => {
   const { ctx } = mockCtx([located]);
   const result = await action.execute!({ considerIp: true, wifiAccessPoints: wifi }, ctx) as {
     usedIpFallback: boolean;
@@ -82,7 +83,7 @@ Deno.test("geolocate: with real signals, the IP flag stays false even when fallb
   assertEquals(result.usedIpFallback, false);
 });
 
-Deno.test("geolocate: cell towers are an alternative to wifi", async () => {
+test("geolocate: cell towers are an alternative to wifi", async () => {
   const { ctx, calls } = mockCtx([located]);
   await action.execute!({
     cellTowers: '[{"cellId":42,"locationAreaCode":415,"mobileCountryCode":310,' +
@@ -96,7 +97,7 @@ Deno.test("geolocate: cell towers are an alternative to wifi", async () => {
   assertEquals(body.carrier, "Vodafone");
 });
 
-Deno.test("geolocate: malformed signal JSON names the field", async () => {
+test("geolocate: malformed signal JSON names the field", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ wifiAccessPoints: "{oops" }, ctx),
@@ -106,7 +107,7 @@ Deno.test("geolocate: malformed signal JSON names the field", async () => {
 });
 
 /** MAC addresses identify devices. */
-Deno.test("geolocate: logs accuracy, never the signals", async () => {
+test("geolocate: logs accuracy, never the signals", async () => {
   const { ctx, logs } = mockCtx([located]);
   await action.execute!({ wifiAccessPoints: wifi }, ctx);
   assert(!JSON.stringify(logs).includes("00:25:9c"), JSON.stringify(logs));

@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createVoucher from "../../actions/create-voucher.ts";
 import { envelope, errorEnvelope, fieldsOf, fnOf, mockCtx } from "../_helpers.ts";
 
 const FN = "createVoucher";
 const DATA = { "ok": "Y" };
 
-Deno.test("create-voucher: calls createVoucher with POST and returns the data payload", async () => {
+test("create-voucher: calls createVoucher with POST and returns the data payload", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   const out = await createVoucher.execute({ "code": "SAVE10" }, ctx);
   assertEquals(fnOf(calls[0].url), FN);
@@ -14,7 +15,7 @@ Deno.test("create-voucher: calls createVoucher with POST and returns the data pa
   assertEquals(out, DATA);
 });
 
-Deno.test("create-voucher: sends every optional field under the vendor's wire name", async () => {
+test("create-voucher: sends every optional field under the vendor's wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await createVoucher.execute({
     "code": "SAVE10",
@@ -46,7 +47,7 @@ Deno.test("create-voucher: sends every optional field under the vendor's wire na
   });
 });
 
-Deno.test("create-voucher: form-encodes the body and never puts arguments in the URL", async () => {
+test("create-voucher: form-encodes the body and never puts arguments in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await createVoucher.execute({
     "code": "SAVE10",
@@ -67,7 +68,7 @@ Deno.test("create-voucher: form-encodes the body and never puts arguments in the
   assert(!("x-ds-api-key" in calls[0].headers), "credential must come from sign, not the action");
 });
 
-Deno.test("create-voucher: surfaces the vendor error envelope even on HTTP 200", async () => {
+test("create-voucher: surfaces the vendor error envelope even on HTTP 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorEnvelope("The API key is invalid.", 2) }]);
   await assertRejects(
     async () => await createVoucher.execute({ "code": "SAVE10" }, ctx),
@@ -76,6 +77,6 @@ Deno.test("create-voucher: surfaces the vendor error envelope even on HTTP 200",
   );
 });
 
-Deno.test("create-voucher: declares idempotency as false", () => {
+test("create-voucher: declares idempotency as false", () => {
   assertEquals(createVoucher.idempotent, false);
 });

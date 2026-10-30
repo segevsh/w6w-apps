@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import formList from "../../actions/form-list.ts";
 import formGet from "../../actions/form-get.ts";
 import formFields from "../../actions/form-fields.ts";
@@ -14,7 +15,7 @@ import { errorBody, mockFormstackCtx } from "../_helpers.ts";
  * The pagination names differ per endpoint and the wrong pair is silently
  * ignored, so each is pinned against the vendor's own OpenAPI fragment.
  */
-Deno.test("form-list: pages with pageNumber/pageSize", async () => {
+test("form-list: pages with pageNumber/pageSize", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await formList.execute(
     { search: "intake", folder: "9", orderBy: "name", order: "asc", pageNumber: 2, pageSize: 50 },
@@ -29,7 +30,7 @@ Deno.test("form-list: pages with pageNumber/pageSize", async () => {
   assertEquals(url.searchParams.get("folder"), "9");
 });
 
-Deno.test("folder-list: pages with page/perPage — the OTHER spelling", async () => {
+test("folder-list: pages with page/perPage — the OTHER spelling", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await folderList.execute({ page: 2, perPage: 25 }, ctx);
   const url = new URL(calls[0].url);
@@ -39,7 +40,7 @@ Deno.test("folder-list: pages with page/perPage — the OTHER spelling", async (
   assertEquals(url.searchParams.get("pageNumber"), null);
 });
 
-Deno.test("form-get and form-fields: build the form-scoped paths", async () => {
+test("form-get and form-fields: build the form-scoped paths", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: {} }, { body: { data: [] } }]);
   await formGet.execute({ formId: "12345" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v2025/forms/12345");
@@ -51,7 +52,7 @@ Deno.test("form-get and form-fields: build the form-scoped paths", async () => {
  * The default that matters most: without `data=true` a submission carries only
  * metadata, and a workflow reading answers finds nothing.
  */
-Deno.test("submission-list: asks for field data by default", async () => {
+test("submission-list: asks for field data by default", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await submissionList.execute({ formId: "12345" }, ctx);
   const url = new URL(calls[0].url);
@@ -59,13 +60,13 @@ Deno.test("submission-list: asks for field data by default", async () => {
   assertEquals(url.searchParams.get("data"), "true");
 });
 
-Deno.test("submission-list: an explicit false is honoured", async () => {
+test("submission-list: an explicit false is honoured", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await submissionList.execute({ formId: "12345", data: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("data"), "false");
 });
 
-Deno.test("submission-list: maps the search, date and paging parameters", async () => {
+test("submission-list: maps the search, date and paging parameters", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await submissionList.execute({
     formId: "12345",
@@ -92,7 +93,7 @@ Deno.test("submission-list: maps the search, date and paging parameters", async 
 });
 
 /** `search` is a dynamically-named parameter per field — no form can express it. */
-Deno.test("submission-list: expands field search into search[fieldId] parameters", async () => {
+test("submission-list: expands field search into search[fieldId] parameters", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await submissionList.execute(
     { formId: "12345", fieldSearch: '{"111":"ada@example.com","222":"UK"}' },
@@ -103,7 +104,7 @@ Deno.test("submission-list: expands field search into search[fieldId] parameters
   assertEquals(url.searchParams.get("search[222]"), "UK");
 });
 
-Deno.test("submission-list: names bad field-search JSON rather than sending it", async () => {
+test("submission-list: names bad field-search JSON rather than sending it", async () => {
   const { ctx, calls } = mockFormstackCtx([]);
   await assertRejects(
     async () => {
@@ -115,7 +116,7 @@ Deno.test("submission-list: names bad field-search JSON rather than sending it",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("submission-count: hits the count path without fetching submissions", async () => {
+test("submission-count: hits the count path without fetching submissions", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { count: 42 } }]);
   const out = await submissionCount.execute({ formId: "12345" }, ctx) as { count?: number };
   assertEquals(new URL(calls[0].url).pathname, "/api/v2025/forms/12345/submissions/count");
@@ -123,7 +124,7 @@ Deno.test("submission-count: hits the count path without fetching submissions", 
 });
 
 /** Submissions are addressed globally by their own id — no form id in the path. */
-Deno.test("submission-get and submission-delete: address the submission directly", async () => {
+test("submission-get and submission-delete: address the submission directly", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { id: "77" } }, { status: 204 }]);
   await submissionGet.execute({ submissionId: "77", expandData: true }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/v2025/submissions/77");
@@ -134,7 +135,7 @@ Deno.test("submission-get and submission-delete: address the submission directly
   assertEquals(new URL(calls[1].url).pathname, "/api/v2025/submissions/77");
 });
 
-Deno.test("submission-create: posts the field object as JSON, keyed by field id", async () => {
+test("submission-create: posts the field object as JSON, keyed by field id", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { id: "88" } }]);
   await submissionCreate.execute(
     { formId: "12345", fields: '{"111":"Ada","222":"ada@example.com"}' },
@@ -146,7 +147,7 @@ Deno.test("submission-create: posts the field object as JSON, keyed by field id"
   assertEquals(JSON.parse(calls[0].body!), { "111": "Ada", "222": "ada@example.com" });
 });
 
-Deno.test("submission-create: refuses a non-object or empty payload before sending", async () => {
+test("submission-create: refuses a non-object or empty payload before sending", async () => {
   const { ctx, calls } = mockFormstackCtx([]);
   await assertRejects(
     async () => {
@@ -166,11 +167,11 @@ Deno.test("submission-create: refuses a non-object or empty payload before sendi
 });
 
 /** A form submission is a real response from a real person; a retry records two. */
-Deno.test("submission-create: is not idempotent", () => {
+test("submission-create: is not idempotent", () => {
   assertEquals(submissionCreate.idempotent, false);
 });
 
-Deno.test("actions: the daily quota surfaces as a day-long wall, not a moment's throttle", async () => {
+test("actions: the daily quota surfaces as a day-long wall, not a moment's throttle", async () => {
   const { ctx } = mockFormstackCtx([{ status: 429, body: errorBody("Rate limit exceeded") }]);
   const err = await assertRejects(async () => {
     await formList.execute({}, ctx);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updatePeopleProfile from "../../actions/update-people-profile.ts";
 
-Deno.test("update-people-profile: PATCHes only the fields set", async () => {
+test("update-people-profile: PATCHes only the fields set", async () => {
   const { ctx, calls } = mockCtx([
     { body: { error: false, reason: "updated", data: {} } },
   ], "site_1");
@@ -17,12 +18,12 @@ Deno.test("update-people-profile: PATCHes only the fields set", async () => {
   assertEquals(url.pathname, "/v1/website/site_1/people/profile/p1");
 });
 
-Deno.test("update-people-profile: omits the person object entirely when no person field is set", async () => {
+test("update-people-profile: omits the person object entirely when no person field is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, data: {} } }], "site_1");
   await updatePeopleProfile.execute({ peopleId: "p1", email: "new@b.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "new@b.com" });
 });
 
-Deno.test("update-people-profile: marked idempotent — repeating the same patch converges", () => {
+test("update-people-profile: marked idempotent — repeating the same patch converges", () => {
   assertEquals(updatePeopleProfile.idempotent, true);
 });

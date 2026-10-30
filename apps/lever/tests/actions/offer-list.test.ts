@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/offer-list.ts";
 
@@ -10,7 +11,7 @@ const offers = (latest: Record<string, unknown>) => ({
 });
 
 /** `signed` is acceptance; `approved` is an internal decision. */
-Deno.test("offer-list: distinguishes acceptance from internal approval", async () => {
+test("offer-list: distinguishes acceptance from internal approval", async () => {
   const accepted = mockCtx([offers({ id: "of1", status: "signed", signedAt: 1 })], D);
   const signed = await action.execute({ opportunityId: OPP }, accepted.ctx) as Record<
     string,
@@ -29,7 +30,7 @@ Deno.test("offer-list: distinguishes acceptance from internal approval", async (
 });
 
 /** Sent and unsigned is the state with a clock on it. */
-Deno.test("offer-list: counts the days an offer has been outstanding, and flags a week", async () => {
+test("offer-list: counts the days an offer has been outstanding, and flags a week", async () => {
   const week = Date.now() - 9 * 86_400_000;
   const { ctx, logs } = mockCtx([offers({ id: "of1", status: "sent", sentAt: week })], D);
   const result = await action.execute({ opportunityId: OPP }, ctx) as Record<string, unknown>;
@@ -41,7 +42,7 @@ Deno.test("offer-list: counts the days an offer has been outstanding, and flags 
   );
 });
 
-Deno.test("offer-list: a fresh offer is not flagged", async () => {
+test("offer-list: a fresh offer is not flagged", async () => {
   const { ctx, logs } = mockCtx([
     offers({ id: "of1", status: "sent", sentAt: Date.now() - 86_400_000 }),
   ], D);
@@ -51,7 +52,7 @@ Deno.test("offer-list: a fresh offer is not flagged", async () => {
 });
 
 /** Offer fields carry compensation about a named person. */
-Deno.test("offer-list: logs counts, never the offer fields", async () => {
+test("offer-list: logs counts, never the offer fields", async () => {
   const { ctx, logs } = mockCtx([
     offers({ id: "of1", status: "signed", fields: [{ text: "Salary", value: "120000" }] }),
   ], D);
@@ -59,7 +60,7 @@ Deno.test("offer-list: logs counts, never the offer fields", async () => {
   assert(!/120000/.test(JSON.stringify(logs)), JSON.stringify(logs));
 });
 
-Deno.test("offer-list: requires a UUID", async () => {
+test("offer-list: requires a UUID", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ opportunityId: "abc" }, ctx),

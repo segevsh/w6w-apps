@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentCopy from "../../actions/document-copy.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-copy: POST /api/documents/copy/{documentId}", async () => {
+test("document-copy: POST /api/documents/copy/{documentId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentCopy.execute({ "documentId": 7, "name": "Invoice copy" } as never, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("document-copy: POST /api/documents/copy/{documentId}", async () => {
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("document-copy: a vendor error surfaces its own message", async () => {
+test("document-copy: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -25,5 +26,5 @@ Deno.test("document-copy: a vendor error surfaces its own message", async () => 
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-copy: idempotency is declared as false", () =>
+test("document-copy: idempotency is declared as false", () =>
   assertEquals(documentCopy.idempotent, false));

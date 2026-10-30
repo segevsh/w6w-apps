@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunityCreate from "../../actions/opportunity-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const CREATED = { id: "1", opportunity_title: "Deal" };
 
-Deno.test("opportunity-create: POSTs the flat request shape", async () => {
+test("opportunity-create: POSTs the flat request shape", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await opportunityCreate.execute(
     { contactId: "9", title: "Deal", stageId: "2", userId: "7" },
@@ -24,12 +25,12 @@ Deno.test("opportunity-create: POSTs the flat request shape", async () => {
  * Three required properties, and `stage_id` is the non-obvious one: Keap has no
  * default pipeline stage, so an opportunity cannot be created unstaged.
  */
-Deno.test("opportunity-create: contact, title and stage are all declared required", () => {
+test("opportunity-create: contact, title and stage are all declared required", () => {
   const required = (opportunityCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), ["contactId", "stageId", "title"]);
 });
 
-Deno.test("opportunity-create: the revenue range and forecast flag are sent under Keap's names", async () => {
+test("opportunity-create: the revenue range and forecast flag are sent under Keap's names", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await opportunityCreate.execute(
     {
@@ -48,7 +49,7 @@ Deno.test("opportunity-create: the revenue range and forecast flag are sent unde
   assertEquals(body.include_in_forecast, true);
 });
 
-Deno.test("opportunity-create: notes map to opportunity_notes, not notes", async () => {
+test("opportunity-create: notes map to opportunity_notes, not notes", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREATED }]);
   await opportunityCreate.execute(
     { contactId: "9", title: "Deal", stageId: "2", notes: "From the trade show" },
@@ -59,6 +60,6 @@ Deno.test("opportunity-create: notes map to opportunity_notes, not notes", async
   assertEquals(body.notes, undefined);
 });
 
-Deno.test("opportunity-create: is declared non-idempotent — a retry doubles the pipeline", () => {
+test("opportunity-create: is declared non-idempotent — a retry doubles the pipeline", () => {
   assertEquals(opportunityCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageReportGet from "../../actions/message-report-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("message-report-get: calls GET /message-reports/42 and returns the documented shape", async () => {
+test("message-report-get: calls GET /message-reports/42 and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { delivery: { delivered: { count: 2 } }, links: [] } }]);
   const result = await messageReportGet.execute({ "id": "42" } as never, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("message-report-get: calls GET /message-reports/42 and returns the doc
   assertEquals(result, { "delivery": { "delivered": { "count": 2 } }, "links": [] });
 });
 
-Deno.test("message-report-get: carries no credential — auth is the sign hook's job", async () => {
+test("message-report-get: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: { delivery: { delivered: { count: 2 } }, links: [] } }]);
   await messageReportGet.execute({ "id": "42" } as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

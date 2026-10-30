@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/webhook-log-list.ts";
 import { envelope, exec, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-log-list: lists a webhook's deliveries with filters", async () => {
+test("webhook-log-list: lists a webhook's deliveries with filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope([{ id: 3 }], { hasMore: true, startingAfter: 3 }),
   }]);

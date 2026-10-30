@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   baseUrlFromConnection,
   buildBaseUrl,
@@ -13,7 +14,7 @@ import {
   think,
 } from "../../lib/client.ts";
 
-Deno.test("buildBaseUrl: defaults to http and port 11434", () => {
+test("buildBaseUrl: defaults to http and port 11434", () => {
   assertEquals(buildBaseUrl({ host: "192.168.1.50" }), "http://192.168.1.50:11434");
   assertEquals(
     buildBaseUrl({ host: "192.168.1.50", port: "", scheme: "" }),
@@ -21,7 +22,7 @@ Deno.test("buildBaseUrl: defaults to http and port 11434", () => {
   );
 });
 
-Deno.test("buildBaseUrl: scheme, hostname and port come from the three fields", () => {
+test("buildBaseUrl: scheme, hostname and port come from the three fields", () => {
   assertEquals(
     buildBaseUrl({ scheme: "HTTPS", host: " Ollama.Example.COM ", port: "443" }),
     "https://ollama.example.com:443",
@@ -30,13 +31,13 @@ Deno.test("buildBaseUrl: scheme, hostname and port come from the three fields", 
   assertEquals(buildBaseUrl({ host: "localhost" }), "http://localhost:11434");
 });
 
-Deno.test("buildBaseUrl: IPv6 is bracketed whether or not the user brackets it", () => {
+test("buildBaseUrl: IPv6 is bracketed whether or not the user brackets it", () => {
   assertEquals(buildBaseUrl({ host: "::1" }), "http://[::1]:11434");
   assertEquals(buildBaseUrl({ host: "[::1]", port: 9 }), "http://[::1]:9");
   assertEquals(endpointLabel({ host: "::1", port: 11434 }), "[::1]:11434");
 });
 
-Deno.test("buildBaseUrl: the port must be a whole number from 1 to 65535", () => {
+test("buildBaseUrl: the port must be a whole number from 1 to 65535", () => {
   for (const port of ["0", "65536", "-1", "11434.5", "abc", "1e3", "0x50"]) {
     assertThrows(() => buildBaseUrl({ host: "h", port }), Error, "port", port);
   }
@@ -44,12 +45,12 @@ Deno.test("buildBaseUrl: the port must be a whole number from 1 to 65535", () =>
   assertEquals(buildBaseUrl({ host: "h", port: 65535 }), "http://h:65535");
 });
 
-Deno.test("buildBaseUrl: only http and https", () => {
+test("buildBaseUrl: only http and https", () => {
   assertThrows(() => buildBaseUrl({ host: "h", scheme: "ftp" }), Error, "scheme");
   assertThrows(() => buildBaseUrl({ host: "h", scheme: "javascript:" }), Error, "scheme");
 });
 
-Deno.test("buildBaseUrl: a path, credentials, a query or a second host cannot ride in the host", () => {
+test("buildBaseUrl: a path, credentials, a query or a second host cannot ride in the host", () => {
   const bad = [
     "http://192.168.1.50",
     "192.168.1.50/api",
@@ -76,21 +77,21 @@ Deno.test("buildBaseUrl: a path, credentials, a query or a second host cannot ri
   }
 });
 
-Deno.test("buildBaseUrl: an address the URL parser would read differently is refused", () => {
+test("buildBaseUrl: an address the URL parser would read differently is refused", () => {
   // `192.168.1.050` would silently become 192.168.1.40; `1234` becomes 0.0.4.210.
   assertThrows(() => buildBaseUrl({ host: "192.168.1.050" }), Error, "is read as");
   assertThrows(() => buildBaseUrl({ host: "1234" }), Error, "is read as");
   assertThrows(() => buildBaseUrl({ host: "999.1.1.1" }), Error);
 });
 
-Deno.test("parseEndpoint: the messages say which field each part belongs in", () => {
+test("parseEndpoint: the messages say which field each part belongs in", () => {
   assertThrows(() => parseEndpoint({ host: "http://x" }), Error, "Scheme field");
   assertThrows(() => parseEndpoint({ host: "x:1" }), Error, "Port field");
   assertThrows(() => parseEndpoint({ host: "u@x" }), Error, "API key");
   assertThrows(() => parseEndpoint({}), Error, "host");
 });
 
-Deno.test("baseUrlFromConnection: rebuilds and re-validates from the display record", () => {
+test("baseUrlFromConnection: rebuilds and re-validates from the display record", () => {
   const url = baseUrlFromConnection({
     display: { scheme: "https", host: "o.example.com", port: 8443 },
   } as never);
@@ -102,7 +103,7 @@ Deno.test("baseUrlFromConnection: rebuilds and re-validates from the display rec
   );
 });
 
-Deno.test("isPrivateHost: LAN, loopback, CGNAT and bare names are private; public hosts are not", () => {
+test("isPrivateHost: LAN, loopback, CGNAT and bare names are private; public hosts are not", () => {
   for (
     const h of [
       "localhost",
@@ -127,7 +128,7 @@ Deno.test("isPrivateHost: LAN, loopback, CGNAT and bare names are private; publi
   }
 });
 
-Deno.test("keepAlive: bare numbers become numbers, durations stay strings", () => {
+test("keepAlive: bare numbers become numbers, durations stay strings", () => {
   assertEquals(keepAlive("0"), 0);
   assertEquals(keepAlive("-1"), -1);
   assertEquals(keepAlive(300), 300);
@@ -136,7 +137,7 @@ Deno.test("keepAlive: bare numbers become numbers, durations stay strings", () =
   assertEquals(keepAlive(undefined), undefined);
 });
 
-Deno.test("images: strips data-URI prefixes and accepts arrays, JSON and line lists", () => {
+test("images: strips data-URI prefixes and accepts arrays, JSON and line lists", () => {
   assertEquals(images(["data:image/jpeg;base64,AAA", " BBB "]), ["AAA", "BBB"]);
   assertEquals(images('["AAA","BBB"]'), ["AAA", "BBB"]);
   assertEquals(images("AAA\nBBB"), ["AAA", "BBB"]);
@@ -144,7 +145,7 @@ Deno.test("images: strips data-URI prefixes and accepts arrays, JSON and line li
   assertEquals(images([]), undefined);
 });
 
-Deno.test("format: blank, json, or a schema object — nothing else", () => {
+test("format: blank, json, or a schema object — nothing else", () => {
   assertEquals(format(""), undefined);
   assertEquals(format("JSON"), "json");
   assertEquals(format('{"type":"object"}'), { type: "object" });
@@ -152,7 +153,7 @@ Deno.test("format: blank, json, or a schema object — nothing else", () => {
   assertThrows(() => format("{nope"), Error, "not valid JSON");
 });
 
-Deno.test("think: booleans, effort levels, blank", () => {
+test("think: booleans, effort levels, blank", () => {
   assertEquals(think(""), undefined);
   assertEquals(think("true"), true);
   assertEquals(think(false), false);
@@ -160,7 +161,7 @@ Deno.test("think: booleans, effort levels, blank", () => {
   assertThrows(() => think("loud"), Error);
 });
 
-Deno.test("modelOptions: named options win over the free-form object", () => {
+test("modelOptions: named options win over the free-form object", () => {
   assertEquals(
     modelOptions({ options: { top_k: 5, seed: 1 }, seed: 42, numPredict: 100 }),
     { top_k: 5, seed: 42, num_predict: 100 },
@@ -171,7 +172,7 @@ Deno.test("modelOptions: named options win over the free-form object", () => {
   assertThrows(() => modelOptions({ temperature: "hot" }), Error, "number");
 });
 
-Deno.test("describeError: reads Ollama's error field and names the likely cause", () => {
+test("describeError: reads Ollama's error field and names the likely cause", () => {
   assert(/not found/.test(describeError(404, '{"error":"model \'x\' not found"}')));
   assert(/model-pull/.test(describeError(404, "{}")));
   assert(/reverse proxy/.test(describeError(401, "")));

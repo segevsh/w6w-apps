@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/folder-list.ts";
 
 const conn = { display: { cloudName: "acme", region: "us" } };
 
-Deno.test("folder-list: the top level and a sub-path are different routes", async () => {
+test("folder-list: the top level and a sub-path are different routes", async () => {
   const top = mockCtx([{ status: 200, body: { folders: [] } }], conn);
   await action.execute!({}, top.ctx);
   assertEquals(new URL(top.calls[0].url).pathname, "/v1_1/acme/folders");

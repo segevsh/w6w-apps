@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/event-search.ts";
 
-Deno.test("event-search: GETs .../search with searchtext/calendaruid/start/end", async () => {
+test("event-search: GETs .../search with searchtext/calendaruid/start/end", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { events: [{ uid: "e1" }] } }]);
   await action.execute(
     {

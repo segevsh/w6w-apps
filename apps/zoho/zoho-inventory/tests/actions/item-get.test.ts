@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/item-get.ts";
 
-Deno.test("item-get: GETs /items/{id} with organization_id and unwraps item", async () => {
+test("item-get: GETs /items/{id} with organization_id and unwraps item", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", item: { item_id: "1", name: "Hard Drive" } } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("item-get: GETs /items/{id} with organization_id and unwraps item", as
 });
 
 /** Item is a SINGULAR key on a get and PLURAL on a list — mixing them throws. */
-Deno.test("item-get: unwraps the singular `item` key, not `items`", async () => {
+test("item-get: unwraps the singular `item` key, not `items`", async () => {
   const { ctx } = mockInventoryCtx([
     { body: { code: 0, message: "success", items: [{ item_id: "1" }] } },
   ]);

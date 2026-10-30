@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userUpsert from "../../actions/user-upsert.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("user-upsert: posts to /v1/users/create_or_update, never find_or_create", async () => {
+test("user-upsert: posts to /v1/users/create_or_update, never find_or_create", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1" } }]);
   const out = await userUpsert.execute(
     { name: "Sally Doe", email: "sally@example.com", companies: '[{"id":"co1","name":"Acme"}]' },
@@ -18,6 +19,6 @@ Deno.test("user-upsert: posts to /v1/users/create_or_update, never find_or_creat
   assertEquals(out.id, "u1");
 });
 
-Deno.test("user-upsert: is idempotent", () => {
+test("user-upsert: is idempotent", () => {
   assertEquals(userUpsert.idempotent, true);
 });

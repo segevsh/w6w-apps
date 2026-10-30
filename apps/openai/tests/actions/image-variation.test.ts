@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/image-variation.ts";
 
 const PNG_B64 = "aGVsbG8=";
 
-Deno.test("image-variation: POSTs multipart to /images/variations with defaults", async () => {
+test("image-variation: POSTs multipart to /images/variations with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ image: PNG_B64 }, ctx);
 

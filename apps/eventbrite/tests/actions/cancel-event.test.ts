@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cancel-event.ts";
 
-Deno.test("cancel-event: POSTs /events/{id}/cancel/", async () => {
+test("cancel-event: POSTs /events/{id}/cancel/", async () => {
   const { ctx, calls } = mockCtx([{ body: { canceled: true } }]);
   const out = await action.execute!({ eventId: "a/b" }, ctx);
   assertEquals(calls[0].method, "POST");

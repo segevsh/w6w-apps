@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionUpdateMetadata from "../../actions/transaction-update-metadata.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transaction-update-metadata: POST /transactions/update_metadata, merges metadata", async () => {
+test("transaction-update-metadata: POST /transactions/update_metadata, merges metadata", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -17,7 +18,7 @@ Deno.test("transaction-update-metadata: POST /transactions/update_metadata, merg
   assertEquals(body, { id: "t1", metadata: { verified: true } });
 });
 
-Deno.test("transaction-update-metadata: omits metadata entirely when not given", async () => {
+test("transaction-update-metadata: omits metadata entirely when not given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: "t1" } } }]);
   await transactionUpdateMetadata.execute({ id: "t1" }, ctx);
   const body = JSON.parse(calls[0].body ?? "{}");

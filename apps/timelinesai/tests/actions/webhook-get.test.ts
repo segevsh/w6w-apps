@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import webhookGet from "../../actions/webhook-get.ts";
 
-Deno.test("webhook-get: gets the webhook", async () => {
+test("webhook-get: gets the webhook", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "id": 12 } } }]);
   const out = await webhookGet.execute!({ "webhookId": "12" } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("webhook-get: gets the webhook", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("webhook-get: refuses an empty path id before the network", async () => {
+test("webhook-get: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await webhookGet.execute!({ "webhookId": "" } as never, ctx);
@@ -26,7 +27,7 @@ Deno.test("webhook-get: refuses an empty path id before the network", async () =
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("webhook-get: surfaces a vendor error envelope", async () => {
+test("webhook-get: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

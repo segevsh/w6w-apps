@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceCreate from "../../actions/sequence-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("sequence-create: POSTs name (and scheduleId when given), never a partial settings object", async () => {
+test("sequence-create: POSTs name (and scheduleId when given), never a partial settings object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, name: "Cold outreach" } }]);
   await sequenceCreate.execute({ name: "Cold outreach", scheduleId: 5 }, ctx);
 
@@ -13,12 +14,12 @@ Deno.test("sequence-create: POSTs name (and scheduleId when given), never a part
   assertEquals("settings" in body, false);
 });
 
-Deno.test("sequence-create: name alone is a valid call", async () => {
+test("sequence-create: name alone is a valid call", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await sequenceCreate.execute({ name: "Cold outreach" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Cold outreach" });
 });
 
-Deno.test("sequence-create: is not idempotent", () => {
+test("sequence-create: is not idempotent", () => {
   assertEquals(sequenceCreate.idempotent, false);
 });

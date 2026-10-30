@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import workflowAttributesUpdate from "../../actions/workflow-attributes-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("workflow-attributes-update: PATCH /workflows/{id}/attributes", async () => {
+test("workflow-attributes-update: PATCH /workflows/{id}/attributes", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1" } }]);
   const updates = [{ action: "set", path: "contractValue", value: "100" }];
   await workflowAttributesUpdate.execute({ workflowId: "w1", updates, comment: "fix" }, ctx);
@@ -11,7 +12,7 @@ Deno.test("workflow-attributes-update: PATCH /workflows/{id}/attributes", async 
   assertEquals(JSON.parse(calls[0].body!), { updates, comment: "fix" });
 });
 
-Deno.test("workflow-attributes-update: an empty update list is refused", async () => {
+test("workflow-attributes-update: an empty update list is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await workflowAttributesUpdate.execute({ workflowId: "w1", updates: [] }, ctx)

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectDuplicate from "../../actions/project-duplicate.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-duplicate: POST /projects/:id/duplicate stringifies boolean flags", async () => {
+test("project-duplicate: POST /projects/:id/duplicate stringifies boolean flags", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 9, name: "Copy" } }]);
   const out = await projectDuplicate.execute(
     { id: 8, includeTasks: true, includeLabels: false },

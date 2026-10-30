@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getChannelChatBadges from "../../actions/get-channel-chat-badges.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-channel-chat-badges: calls GET /helix/chat/badges", async () => {
+test("get-channel-chat-badges: calls GET /helix/chat/badges", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ set_id: "subscriber", versions: [{ id: "0", title: "Subscriber" }] }] },
   }]);
@@ -15,7 +16,7 @@ Deno.test("get-channel-chat-badges: calls GET /helix/chat/badges", async () => {
   assertEquals(out.data[0].set_id, "subscriber");
 });
 
-Deno.test("get-channel-chat-badges: an empty list is the ordinary answer for a small channel", async () => {
+test("get-channel-chat-badges: an empty list is the ordinary answer for a small channel", async () => {
   const { ctx } = mockCtx([{ body: { data: [] } }]);
   const out = await getChannelChatBadges.execute({ broadcasterId: "1" }, ctx) as {
     data: unknown[];

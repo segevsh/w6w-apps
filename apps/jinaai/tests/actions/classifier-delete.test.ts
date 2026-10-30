@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import classifierDelete from "../../actions/classifier-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("classifier-delete: calls DELETE /v1/classifiers/{id} and reports deleted", async () => {
+test("classifier-delete: calls DELETE /v1/classifiers/{id} and reports deleted", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { deleted: true } }]);
   const out = await classifierDelete.execute({ classifierId: "clf-1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("classifier-delete: calls DELETE /v1/classifiers/{id} and reports dele
   assertEquals(out, { deleted: true });
 });
 
-Deno.test("classifier-delete: escapes the classifier id in the path", async () => {
+test("classifier-delete: escapes the classifier id in the path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await classifierDelete.execute({ classifierId: "a/b c" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/classifiers/a%2Fb%20c");

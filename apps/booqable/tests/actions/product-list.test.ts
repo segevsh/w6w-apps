@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/product-list.ts";
 
-Deno.test("product-list: GETs /products with filter/include/sort/page", async () => {
+test("product-list: GETs /products with filter/include/sort/page", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: [] } }]);
   await action.execute({ filter: JSON.stringify({ product_group_id: { eq: "pg1" } }) }, ctx);
   const url = new URL(calls[0].url);

@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/order-status-list.ts";
 
 const input = {} as never;
 
-Deno.test("order-status-list: GET /orders/statuses", async () => {
+test("order-status-list: GET /orders/statuses", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": 200, "success": true, "data": { "id": 1 } },
@@ -21,7 +22,7 @@ Deno.test("order-status-list: GET /orders/statuses", async () => {
   assertEquals(result, { "status": 200, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("order-status-list: a Salla error envelope throws with its message", async () => {
+test("order-status-list: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

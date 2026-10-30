@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-folder-items.ts";
 
-Deno.test("list-folder-items: GETs /folders/{id}/items with defaults", async () => {
+test("list-folder-items: GETs /folders/{id}/items with defaults", async () => {
   const resp = { entries: [], total_count: 0, offset: 0, limit: 100 };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const result = await action.execute!({}, ctx);
@@ -15,7 +16,7 @@ Deno.test("list-folder-items: GETs /folders/{id}/items with defaults", async () 
   assertEquals(result, resp);
 });
 
-Deno.test("list-folder-items: uses the given folderId and forwards sort/direction", async () => {
+test("list-folder-items: uses the given folderId and forwards sort/direction", async () => {
   const { ctx, calls } = mockCtx([{ body: { entries: [] } }]);
   await action.execute!({ folderId: "42", sort: "name", direction: "ASC" }, ctx);
   const url = new URL(calls[0].url);

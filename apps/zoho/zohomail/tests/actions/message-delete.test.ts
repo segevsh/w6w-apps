@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageDelete from "../../actions/message-delete.ts";
 import { envelope, mockCtx, pathOf, queryOf, usConnection } from "../_helpers.ts";
 
-Deno.test("message-delete: DELETEs the message, no expunge by default", async () => {
+test("message-delete: DELETEs the message, no expunge by default", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: envelope({ cId: "c1" }) }],
     usConnection({ accountId: "acc-1" }),
@@ -15,12 +16,12 @@ Deno.test("message-delete: DELETEs the message, no expunge by default", async ()
   assertEquals(out, { cId: "c1" });
 });
 
-Deno.test("message-delete: expunge=true is passed through as a permanent delete", async () => {
+test("message-delete: expunge=true is passed through as a permanent delete", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ cId: "c2" }) }], usConnection());
   await messageDelete.execute({ folderId: "f1", messageId: "m1", expunge: true }, ctx);
   assertEquals(queryOf(calls[0].url), { expunge: "true" });
 });
 
-Deno.test("message-delete: is idempotent", () => {
+test("message-delete: is idempotent", () => {
   assertEquals(messageDelete.idempotent, true);
 });

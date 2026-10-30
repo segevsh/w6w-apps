@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is an apiKey method with a single apiKey field, header-located", () => {
+test("api-key: is an apiKey method with a single apiKey field, header-located", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "apiKey");
   assertEquals(auth.apiKey?.in, "header");
@@ -13,7 +14,7 @@ Deno.test("api-key: is an apiKey method with a single apiKey field, header-locat
   assertEquals(field.type, "secret");
 });
 
-Deno.test("api-key: sign stamps X-Api-Key with no prefix", async () => {
+test("api-key: sign stamps X-Api-Key with no prefix", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.clockify.me/api/v1/workspaces",
@@ -24,7 +25,7 @@ Deno.test("api-key: sign stamps X-Api-Key with no prefix", async () => {
   assertEquals(out.headers["x-api-key"], "key-abc");
 });
 
-Deno.test("api-key: test hits GET /workspaces with the header and reports ok", async () => {
+test("api-key: test hits GET /workspaces with the header and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   const result = await auth.test({ credential: { apiKey: "key-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -34,7 +35,7 @@ Deno.test("api-key: test hits GET /workspaces with the header and reports ok", a
   assertEquals(calls[0].headers["x-api-key"], "key-abc");
 });
 
-Deno.test("api-key: test reports failure with status code when Clockify rejects", async () => {
+test("api-key: test reports failure with status code when Clockify rejects", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { message: "Multiple or none auth tokens present" },
@@ -44,7 +45,7 @@ Deno.test("api-key: test reports failure with status code when Clockify rejects"
   assert(result.message?.includes("401"));
 });
 
-Deno.test("api-key: test reports failure when the field is missing", async () => {
+test("api-key: test reports failure when the field is missing", async () => {
   const { ctx } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);

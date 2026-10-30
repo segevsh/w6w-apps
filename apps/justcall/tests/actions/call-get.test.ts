@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import callGet from "../../actions/call-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("call-get: hits GET /v2.1/calls/{id} and unwraps data", async () => {
+test("call-get: hits GET /v2.1/calls/{id} and unwraps data", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 123456, call_sid: "CA0247..." }) }]);
   const out = await callGet.execute({ id: 123456 }, ctx) as Record<string, unknown>;
 

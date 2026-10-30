@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listSpaces from "../../actions/list-spaces.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-spaces: GETs /v1/spaces with search and pagination", async () => {
+test("list-spaces: GETs /v1/spaces with search and pagination", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope({ spaces: [{ id: "sp1" }] }, { total: 1 }),

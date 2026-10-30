@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderList from "../../actions/folder-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("folder-list: GETs /user/folder", async () => {
+test("folder-list: GETs /user/folder", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "root", name: "Root" } }]);
   const out = await folderList.execute({}, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "GET");

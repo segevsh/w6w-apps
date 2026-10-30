@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadCreate from "../../actions/lead-create.ts";
 import { dataEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-create: posts to /v2/leads with meta.type", async () => {
+test("lead-create: posts to /v2/leads with meta.type", async () => {
   const { ctx, calls } = mockCtx([{ body: dataEnvelope({ id: 1, status: "New" }) }]);
   const out = await leadCreate.execute({
     lastName: "Johnson",

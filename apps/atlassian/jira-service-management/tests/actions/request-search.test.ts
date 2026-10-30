@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/request-search.ts";
 
-Deno.test("request-search: GETs /request with pagination defaults", async () => {
+test("request-search: GETs /request with pagination defaults", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [] } }]);
   await action.execute({}, ctx);
   assertEquals(
@@ -11,7 +12,7 @@ Deno.test("request-search: GETs /request with pagination defaults", async () => 
   );
 });
 
-Deno.test("request-search: forwards filters when set", async () => {
+test("request-search: forwards filters when set", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: {} }]);
   await action.execute(
     { searchTerm: "mouse", requestStatus: "OPEN_REQUESTS", serviceDeskId: "10" },

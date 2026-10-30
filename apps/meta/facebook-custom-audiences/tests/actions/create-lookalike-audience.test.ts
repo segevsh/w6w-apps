@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-lookalike-audience.ts";
 
 const form = (body: string | null) => new URLSearchParams(body ?? "");
 
-Deno.test("create-lookalike-audience: POSTs subtype=LOOKALIKE with a lookalike_spec", async () => {
+test("create-lookalike-audience: POSTs subtype=LOOKALIKE with a lookalike_spec", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "901" } }]);
   await action.execute({
     adAccountId: "act_12",
@@ -20,7 +21,7 @@ Deno.test("create-lookalike-audience: POSTs subtype=LOOKALIKE with a lookalike_s
   assertEquals(JSON.parse(f.get("lookalike_spec")!), { country: "US", type: "similarity" });
 });
 
-Deno.test("create-lookalike-audience: ratio form with a starting ratio", async () => {
+test("create-lookalike-audience: ratio form with a starting ratio", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "902" } }]);
   await action.execute({
     adAccountId: "12",
@@ -39,7 +40,7 @@ Deno.test("create-lookalike-audience: ratio form with a starting ratio", async (
   });
 });
 
-Deno.test("create-lookalike-audience: needs exactly one of type or ratio, and a sane band", async () => {
+test("create-lookalike-audience: needs exactly one of type or ratio, and a sane band", async () => {
   const { ctx, calls } = mockCtx();
   const base = { adAccountId: "1", name: "n", originAudienceId: "2", country: "US" };
   await assertRejects(() => Promise.resolve(action.execute(base, ctx)), Error, "exactly one");

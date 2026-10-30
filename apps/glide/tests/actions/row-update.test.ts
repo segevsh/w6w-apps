@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import rowUpdate from "../../actions/row-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("row-update: PATCHes field values verbatim, including explicit nulls", async () => {
+test("row-update: PATCHes field values verbatim, including explicit nulls", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await rowUpdate.execute(
     { tableId: "t1", rowId: "r1", fields: { totalAmount: 40, notes: null } },
@@ -15,7 +16,7 @@ Deno.test("row-update: PATCHes field values verbatim, including explicit nulls",
   assertEquals(JSON.parse(calls[0].body!), { totalAmount: 40, notes: null });
 });
 
-Deno.test("row-update: forwards a valid If-Match, rejects a malformed one before the request", async () => {
+test("row-update: forwards a valid If-Match, rejects a malformed one before the request", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await rowUpdate.execute({ tableId: "t1", rowId: "r1", fields: {}, ifMatch: '"3"' }, ctx);
   assertEquals(calls[0].headers["if-match"], '"3"');
@@ -25,6 +26,6 @@ Deno.test("row-update: forwards a valid If-Match, rejects a malformed one before
   );
 });
 
-Deno.test("row-update: marked idempotent — explicit field values converge", () => {
+test("row-update: marked idempotent — explicit field values converge", () => {
   assertEquals(rowUpdate.idempotent, true);
 });

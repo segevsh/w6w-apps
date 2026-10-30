@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import deleteProductVariant from "../../actions/delete-product-variant.ts";
 import { API_ROOT, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("delete-product-variant: DELETE .../variants/{variantId} answers 204", async () => {
+test("delete-product-variant: DELETE .../variants/{variantId} answers 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await deleteProductVariant.execute!({ productId: "P1", variantId: "V1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("delete-product-variant: DELETE .../variants/{variantId} answers 204",
   assertEquals(out, { ok: true });
 });
 
-Deno.test("delete-product-variant: the vendor refusing the last variant is surfaced", async () => {
+test("delete-product-variant: the vendor refusing the last variant is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

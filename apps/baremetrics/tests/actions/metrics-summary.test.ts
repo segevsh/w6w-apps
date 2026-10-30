@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import metricsSummary from "../../actions/metrics-summary.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("metrics-summary: GET /v1/metrics with the documented query/body", async () => {
+test("metrics-summary: GET /v1/metrics with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { metrics: [] } }]);
   const out = await metricsSummary.execute(
     { start_date: "2026-01-01", end_date: "2026-01-31" },
@@ -25,13 +26,13 @@ Deno.test("metrics-summary: GET /v1/metrics with the documented query/body", asy
   assert("metrics" in out);
 });
 
-Deno.test("metrics-summary: declares type read and every required param", () => {
+test("metrics-summary: declares type read and every required param", () => {
   assertEquals(metricsSummary.type, "read");
   const required = (metricsSummary.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["end_date", "start_date"]);
 });
 
-Deno.test("metrics-summary: surfaces a vendor error as a thrown message", async () => {
+test("metrics-summary: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

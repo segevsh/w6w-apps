@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 import { READ_SOURCE_TYPES } from "../lib/client.ts";
 
-Deno.test("index: exports 14 actions with unique kebab-case keys", () => {
+test("index: exports 14 actions with unique kebab-case keys", () => {
   assertEquals(app.actions.length, 14);
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "action keys must be unique");
@@ -11,7 +12,7 @@ Deno.test("index: exports 14 actions with unique kebab-case keys", () => {
   }
 });
 
-Deno.test("index: every action declares a type, title, description and output", () => {
+test("index: every action declares a type, title, description and output", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key} has a bad type`);
     assert(a.title, `${a.key} has no title`);
@@ -21,7 +22,7 @@ Deno.test("index: every action declares a type, title, description and output", 
   }
 });
 
-Deno.test("index: every `perform` action declares `idempotent` honestly", () => {
+test("index: every `perform` action declares `idempotent` honestly", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   assertEquals(performs.length, 7);
   for (const a of performs) {
@@ -33,7 +34,7 @@ Deno.test("index: every `perform` action declares `idempotent` honestly", () => 
   assertEquals(notIdempotent, ["create-contact", "create-contact-group"]);
 });
 
-Deno.test("index: ships oauth2 only, with sign + test hooks", () => {
+test("index: ships oauth2 only, with sign + test hooks", () => {
   assertEquals(app.auth?.length, 1);
   const [oauth2] = app.auth!;
   assertEquals(oauth2.key, "oauth2");
@@ -42,12 +43,12 @@ Deno.test("index: ships oauth2 only, with sign + test hooks", () => {
   assertEquals(typeof oauth2.test, "function");
 });
 
-Deno.test("index: declares the service and quota health checks", () => {
+test("index: declares the service and quota health checks", () => {
   const keys = app.healthChecks?.map((h) => h.key) ?? [];
   assertEquals(keys, ["service", "quota"]);
 });
 
-Deno.test("index: no action names a `sources` option outside the documented enum", () => {
+test("index: no action names a `sources` option outside the documented enum", () => {
   const documented = new Set<string>(READ_SOURCE_TYPES);
   for (const a of app.actions) {
     const sources = a.params?.find((p) => p.key === "sources");

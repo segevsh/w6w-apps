@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import calendarEventsAdd from "../../actions/calendar-events-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("calendar-events-add: luma platform sends only event_id + submission_mode", async () => {
+test("calendar-events-add: luma platform sends only event_id + submission_mode", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "calev-1", status: "approved" } }]);
   await calendarEventsAdd.execute(
     { platform: "luma", eventId: "evt-1", submissionMode: "auto" },
@@ -14,7 +15,7 @@ Deno.test("calendar-events-add: luma platform sends only event_id + submission_m
   assertEquals(body, { platform: "luma", submission_mode: "auto", event_id: "evt-1" });
 });
 
-Deno.test("calendar-events-add: external platform sends the external event fields", async () => {
+test("calendar-events-add: external platform sends the external event fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "calev-2", status: "pending" } }]);
   await calendarEventsAdd.execute(
     {

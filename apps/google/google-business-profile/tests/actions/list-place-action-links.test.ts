@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-place-action-links.ts";
 
-Deno.test("list-place-action-links: GETs /v1/locations/{id}/placeActionLinks", async () => {
+test("list-place-action-links: GETs /v1/locations/{id}/placeActionLinks", async () => {
   const body = { placeActionLinks: [{ name: "locations/1/placeActionLinks/2" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ locationId: "1" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("list-place-action-links: GETs /v1/locations/{id}/placeActionLinks", a
   assertEquals(result, body);
 });
 
-Deno.test("list-place-action-links: placeActionType filters using the documented filter grammar", async () => {
+test("list-place-action-links: placeActionType filters using the documented filter grammar", async () => {
   const { ctx, calls } = mockCtx([{ body: { placeActionLinks: [] } }]);
   await action.execute!({ locationId: "1", placeActionType: "FOOD_ORDERING" }, ctx);
   assertEquals(
@@ -22,7 +23,7 @@ Deno.test("list-place-action-links: placeActionType filters using the documented
   );
 });
 
-Deno.test("list-place-action-links: omits the filter when no type is supplied", async () => {
+test("list-place-action-links: omits the filter when no type is supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { placeActionLinks: [] } }]);
   await action.execute!({ locationId: "1" }, ctx);
   assert(!new URL(calls[0].url).searchParams.has("filter"));

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionPause from "../../actions/subscription-pause.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-pause: defaults pause_at to 'now'", async () => {
+test("subscription-pause: defaults pause_at to 'now'", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sub_1", status: "paused" } }]);
   await subscriptionPause.execute({ id: "sub_1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("subscription-pause: defaults pause_at to 'now'", async () => {
   assertEquals(JSON.parse(calls[0].body!), { pause_at: "now" });
 });
 
-Deno.test("subscription-pause: honours an explicit cycle_end", async () => {
+test("subscription-pause: honours an explicit cycle_end", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "sub_1" } }]);
   await subscriptionPause.execute({ id: "sub_1", pauseAt: "cycle_end" }, ctx);
 

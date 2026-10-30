@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import showcaseVideoAdd from "../../actions/showcase-video-add.ts";
 import { mockCtx, url } from "../_helpers.ts";
 
-Deno.test("showcase-video-add: PUTs the single-video endpoint with no body", async () => {
+test("showcase-video-add: PUTs the single-video endpoint with no body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await showcaseVideoAdd.execute(
     { showcaseId: "/showcases/3706071", videoIds: "258684937" },
@@ -20,7 +21,7 @@ Deno.test("showcase-video-add: PUTs the single-video endpoint with no body", asy
  * silently delete everything else, so this action loops the additive endpoint
  * instead. If someone "optimises" it into one bulk call, this fails.
  */
-Deno.test("showcase-video-add: several videos are several additive requests, never a replace", async () => {
+test("showcase-video-add: several videos are several additive requests, never a replace", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }, { status: 204 }]);
   const out = await showcaseVideoAdd.execute(
     { showcaseId: "3706071", videoIds: "1, /videos/2" },
@@ -38,7 +39,7 @@ Deno.test("showcase-video-add: several videos are several additive requests, nev
   assertEquals(out.videoIds, ["1", "2"]);
 });
 
-Deno.test("showcase-video-add: a blank video list is refused before any request", async () => {
+test("showcase-video-add: a blank video list is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await showcaseVideoAdd.execute({ showcaseId: "1", videoIds: "" }, ctx),
@@ -48,7 +49,7 @@ Deno.test("showcase-video-add: a blank video list is refused before any request"
   assertEquals(calls.length, 0);
 });
 
-Deno.test("showcase-video-add: is a convergent perform", () => {
+test("showcase-video-add: is a convergent perform", () => {
   assertEquals(showcaseVideoAdd.type, "perform");
   assertEquals(showcaseVideoAdd.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/form-get-questions.ts";
 
-Deno.test("form-get-questions: GETs /form/{formID}/questions, keyed by qid", async () => {
+test("form-get-questions: GETs /form/{formID}/questions, keyed by qid", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -17,7 +18,7 @@ Deno.test("form-get-questions: GETs /form/{formID}/questions, keyed by qid", asy
   assertEquals(Object.keys((result as { questions: object }).questions), ["1", "2"]);
 });
 
-Deno.test("form-get-questions: an empty content falls back to an empty map", async () => {
+test("form-get-questions: an empty content falls back to an empty map", async () => {
   const { ctx } = mockCtx([{ body: envelope(undefined) }]);
   assertEquals(await action.execute({ formId: "1" }, ctx), { questions: {} });
 });

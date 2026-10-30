@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/clean-school.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("clean-school: GETs /v5/school/clean", async () => {
+test("clean-school: GETs /v5/school/clean", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: 200, id: "s1", name: "harvard university" } }]);
   const out = await action.execute!({ website: "harvard.edu" } as never, ctx) as Record<
     string,
@@ -14,7 +15,7 @@ Deno.test("clean-school: GETs /v5/school/clean", async () => {
   assertEquals(out.found, true);
 });
 
-Deno.test("clean-school: needs an input; 404 is found: false", async () => {
+test("clean-school: needs an input; 404 is found: false", async () => {
   await assertRejects(
     async () => await action.execute!({} as never, mockCtx([]).ctx),
     Error,

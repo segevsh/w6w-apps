@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-email-campaign.ts";
 
-Deno.test("get-email-campaign: GETs /v3/emails/{campaign_id}", async () => {
+test("get-email-campaign: GETs /v3/emails/{campaign_id}", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       campaign_id: "e1",
@@ -20,7 +21,7 @@ Deno.test("get-email-campaign: GETs /v3/emails/{campaign_id}", async () => {
   );
 });
 
-Deno.test("get-email-campaign: url-encodes the campaign id", async () => {
+test("get-email-campaign: url-encodes the campaign id", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ campaignId: "a b/c" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/emails/a%20b%2Fc");

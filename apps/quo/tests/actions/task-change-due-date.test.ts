@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskChangeDueDate from "../../actions/task-change-due-date.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-change-due-date: POSTs /v1/tasks/{taskId}/change-due-date with dueDate", async () => {
+test("task-change-due-date: POSTs /v1/tasks/{taskId}/change-due-date with dueDate", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: { taskId: "TK1", revision: "2" } },
@@ -13,7 +14,7 @@ Deno.test("task-change-due-date: POSTs /v1/tasks/{taskId}/change-due-date with d
   assertEquals(JSON.parse(calls[0].body!), { dueDate: "2026-09-01T00:00:00Z" });
 });
 
-Deno.test("task-change-due-date: is an idempotent perform action", () => {
+test("task-change-due-date: is an idempotent perform action", () => {
   assertEquals(taskChangeDueDate.type, "perform");
   assertEquals(taskChangeDueDate.idempotent, true);
 });

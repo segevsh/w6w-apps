@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionList from "../../actions/transaction-list.ts";
 import { mockCtx, pageEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("transaction-list: forwards filters to /transactions", async () => {
+test("transaction-list: forwards filters to /transactions", async () => {
   const { ctx, calls } = mockCtx([{ body: pageEnvelope([]) }]);
   await transactionList.execute({ method: "card", scope: "all" }, ctx);
 

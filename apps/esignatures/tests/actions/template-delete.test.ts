@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import templateDelete from "../../actions/template-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("template-delete: calls POST /api/templates/t1/delete with the documented body", async () => {
+test("template-delete: calls POST /api/templates/t1/delete with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "deleted" } }]);
   const out = await templateDelete.execute({ templateId: "t1" } as never, ctx) as Record<
     string,
@@ -18,7 +19,7 @@ Deno.test("template-delete: calls POST /api/templates/t1/delete with the documen
   assert(out.status === "deleted", JSON.stringify(out));
 });
 
-Deno.test("template-delete: a vendor error surfaces its error_code and message", async () => {
+test("template-delete: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   graphError,
@@ -8,7 +9,7 @@ import {
   requireString,
 } from "../../lib/client.ts";
 
-Deno.test("client: GET builds the URL on the v26.0 Graph host and drops empty query values", async () => {
+test("client: GET builds the URL on the v26.0 Graph host and drops empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   await new MessengerClient(ctx).request("/me/x", { query: { a: "1", b: "", c: undefined } });
   assertEquals(calls[0].url, "https://graph.facebook.com/v26.0/me/x?a=1");
@@ -17,14 +18,14 @@ Deno.test("client: GET builds the URL on the v26.0 Graph host and drops empty qu
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("client: JSON body sets content-type", async () => {
+test("client: JSON body sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new MessengerClient(ctx).request("/me/x", { method: "POST", body: { a: 1 } });
   assertEquals(calls[0].headers["content-type"], "application/json");
   assertEquals(calls[0].body, '{"a":1}');
 });
 
-Deno.test("client: HTTP error is raised with Graph code, subcode and message", async () => {
+test("client: HTTP error is raised with Graph code, subcode and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { error: { message: "bad recipient", code: 100, error_subcode: 2018001 } },
@@ -35,17 +36,17 @@ Deno.test("client: HTTP error is raised with Graph code, subcode and message", a
   assert(err.message.includes("bad recipient"));
 });
 
-Deno.test("client: an error envelope on a 200 is still an error", async () => {
+test("client: an error envelope on a 200 is still an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { error: { message: "nope", code: 10 } } }]);
   await assertRejects(() => new MessengerClient(ctx).request("/me/messages"), Error, "nope");
 });
 
-Deno.test("client: non-Graph error body falls back to the text", async () => {
+test("client: non-Graph error body falls back to the text", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "bad gateway", statusText: "Bad Gateway" }]);
   await assertRejects(() => new MessengerClient(ctx).request("/x"), Error, "bad gateway");
 });
 
-Deno.test("client: refuses a non-Graph host", async () => {
+test("client: refuses a non-Graph host", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => new MessengerClient(ctx).request("https://evil.example.com/x"),
@@ -55,14 +56,14 @@ Deno.test("client: refuses a non-Graph host", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("client: pageSegment defaults to me and encodes", () => {
+test("client: pageSegment defaults to me and encodes", () => {
   assertEquals(pageSegment(), "me");
   assertEquals(pageSegment("  "), "me");
   assertEquals(pageSegment("123"), "123");
   assertEquals(pageSegment("a/b"), "a%2Fb");
 });
 
-Deno.test("client: jsonParam accepts objects and strings, rejects junk and absence", () => {
+test("client: jsonParam accepts objects and strings, rejects junk and absence", () => {
   assertEquals(jsonParam("x", [1]), [1]);
   assertEquals(jsonParam("x", "[1]"), [1]);
   try {
@@ -79,7 +80,7 @@ Deno.test("client: jsonParam accepts objects and strings, rejects junk and absen
   }
 });
 
-Deno.test("client: requireString and graphError", () => {
+test("client: requireString and graphError", () => {
   assertEquals(requireString("a", "v"), "v");
   try {
     requireString("a", " ");

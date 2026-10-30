@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import messageHookCreate from "../../actions/message-hook-create.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-hook-create: POST /channels/7/message_hooks/ with the documented query and body", async () => {
+test("message-hook-create: POST /channels/7/message_hooks/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {
@@ -28,7 +29,7 @@ Deno.test("message-hook-create: POST /channels/7/message_hooks/ with the documen
   assertEquals(out, { "id": 4, "url": "https://x.co/h", "token": "[redacted]", "name": "crm" });
 });
 
-Deno.test("message-hook-create: a Landbot error surfaces its status and message", async () => {
+test("message-hook-create: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 412, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () =>
@@ -44,7 +45,7 @@ Deno.test("message-hook-create: a Landbot error surfaces its status and message"
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("message-hook-create: declares perform", () => {
+test("message-hook-create: declares perform", () => {
   assertEquals(messageHookCreate.type, "perform");
   assertEquals(detailBody("x"), { detail: "x" });
 });

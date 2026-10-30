@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-contact.ts";
 
-Deno.test("create-contact: POSTs the Person body with the REQUIRED personFields query", async () => {
+test("create-contact: POSTs the Person body with the REQUIRED personFields query", async () => {
   const { ctx, calls } = mockCtx([{ body: { resourceName: "people/c9", etag: "%Eg" } }]);
   const person = { names: [{ givenName: "Ada", familyName: "Lovelace" }] };
   const result = await action.execute({ person }, ctx);
@@ -17,7 +18,7 @@ Deno.test("create-contact: POSTs the Person body with the REQUIRED personFields 
   assertEquals(result, { resourceName: "people/c9", etag: "%Eg" });
 });
 
-Deno.test("create-contact: the person body is sent verbatim, not wrapped", async () => {
+test("create-contact: the person body is sent verbatim, not wrapped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     person: { emailAddresses: [{ value: "ada@example.com" }] },
@@ -27,13 +28,13 @@ Deno.test("create-contact: the person body is sent verbatim, not wrapped", async
   assertEquals(new URL(calls[0].url).searchParams.get("personFields"), "emailAddresses");
 });
 
-Deno.test("create-contact: forwards sources as repeated params", async () => {
+test("create-contact: forwards sources as repeated params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ person: { names: [] }, sources: ["READ_SOURCE_TYPE_CONTACT"] }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.getAll("sources"), ["READ_SOURCE_TYPE_CONTACT"]);
 });
 
-Deno.test("create-contact: rejects a missing person before making a request", () => {
+test("create-contact: rejects a missing person before making a request", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(
     () => action.execute({ person: undefined as never }, ctx),
@@ -43,7 +44,7 @@ Deno.test("create-contact: rejects a missing person before making a request", ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-contact: is declared non-idempotent — a retry duplicates the contact", () => {
+test("create-contact: is declared non-idempotent — a retry duplicates the contact", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

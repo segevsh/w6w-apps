@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunityCreate from "../../actions/opportunity-create.ts";
 import { bodyOf, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("opportunity-create: POSTs an opportunity with its stage relationship", async () => {
+test("opportunity-create: POSTs an opportunity with its stage relationship", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: single("opportunity", 2) }]);
   await opportunityCreate.execute({
     name: "Acme renewal",

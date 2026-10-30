@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/worker-list.ts";
 
 const D = { display: { host: "wd2-impl-services1.workday.com", tenant: "acme_impl1" } };
 
-Deno.test("worker-list: calls the documented URL and returns a page", async () => {
+test("worker-list: calls the documented URL and returns a page", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { total: 1, data: [{ id: "x1", descriptor: "One" }] } }],
     D,
@@ -29,7 +30,7 @@ Deno.test("worker-list: calls the documented URL and returns a page", async () =
   assertEquals(result.hasMore, false);
 });
 
-Deno.test("worker-list: surfaces a Workday error body", async () => {
+test("worker-list: surfaces a Workday error body", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "Access denied" } }], D);
   await assertRejects(
     async () =>
@@ -46,13 +47,13 @@ Deno.test("worker-list: surfaces a Workday error body", async () => {
   );
 });
 
-Deno.test("worker-list: a limit above Workday's maximum is refused", async () => {
+test("worker-list: a limit above Workday's maximum is refused", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(async () => await action.execute({ limit: 101 }, ctx), Error, "1 to 100");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("worker-list: reports hasMore from total and offset", async () => {
+test("worker-list: reports hasMore from total and offset", async () => {
   const body = { total: 45, data: [{ id: "a" }, { id: "b" }] };
   const more = await action.execute({ limit: 2, offset: 40 }, mockCtx([{ body }], D).ctx);
   assertEquals((more as Record<string, unknown>).hasMore, true);

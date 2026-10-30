@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userLimitsGet from "../../actions/user-limits-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-limits-get: calls GET /v2/user/limits", async () => {
+test("user-limits-get: calls GET /v2/user/limits", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ user: { follows: { limit: 200, remaining: 199 } } }) },
   ]);

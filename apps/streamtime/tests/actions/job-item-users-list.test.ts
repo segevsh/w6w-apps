@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobItemUsersList from "../../actions/job-item-users-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-item-users-list: reads the schedule entries on an item", async () => {
+test("job-item-users-list: reads the schedule entries on an item", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 7, userId: 42, totalPlannedMinutes: 240 }] }]);
   const result = await jobItemUsersList.execute({ jobItemId: 88 }, ctx) as {
     jobItemUsers: unknown[];
@@ -13,6 +14,6 @@ Deno.test("job-item-users-list: reads the schedule entries on an item", async ()
 });
 
 /** A zero here is ambiguous, and the description has to say so. */
-Deno.test("job-item-users-list: the description warns about pooled planned time", () => {
+test("job-item-users-list: the description warns about pooled planned time", () => {
   assertEquals(/pools its time at item level/.test(jobItemUsersList.description ?? ""), true);
 });

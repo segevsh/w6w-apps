@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/query.ts";
 
-Deno.test("query: forwards the raw statement verbatim to /query", async () => {
+test("query: forwards the raw statement verbatim to /query", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { QueryResponse: {} } }]);
   await action.execute({ query: "SELECT * FROM JournalEntry MAXRESULTS 50" }, ctx);
   const url = new URL(calls[0].url);

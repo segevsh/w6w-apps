@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createWebhook from "../../actions/create-webhook.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-webhook: USER_JOIN sends no filter", async () => {
+test("create-webhook: USER_JOIN sends no filter", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1" } }]);
   await createWebhook.execute({ action: "USER_JOIN", url: "https://example.com/hook" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -13,7 +14,7 @@ Deno.test("create-webhook: USER_JOIN sends no filter", async () => {
   });
 });
 
-Deno.test("create-webhook: MENTION builds a filter with userSelection", async () => {
+test("create-webhook: MENTION builds a filter with userSelection", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1" } }]);
   await createWebhook.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("create-webhook: MENTION builds a filter with userSelection", async ()
   });
 });
 
-Deno.test("create-webhook: THREAD_CREATE builds a filter from its own params only", async () => {
+test("create-webhook: THREAD_CREATE builds a filter from its own params only", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1" } }]);
   await createWebhook.execute(
     { action: "THREAD_CREATE", url: "https://example.com/hook", threadChannelID: "ch1" },
@@ -40,6 +41,6 @@ Deno.test("create-webhook: THREAD_CREATE builds a filter from its own params onl
   assertEquals(body.action, { name: "THREAD_CREATE", filter: { channelID: "ch1" } });
 });
 
-Deno.test("create-webhook: is not idempotent — no idempotency key is documented", () => {
+test("create-webhook: is not idempotent — no idempotency key is documented", () => {
   assertEquals(createWebhook.idempotent, false);
 });

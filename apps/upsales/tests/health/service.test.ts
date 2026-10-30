@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   mapComponentStatus,
   mapIndicator,
@@ -21,13 +22,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host with no credential", () => {
+test("service: probes the status host with no credential", () => {
   assertEquals(STATUS_URL, "https://status.upsales.com/api/v2/summary.json");
   assertEquals(service.credential, "none");
   assertEquals(service.severity, "informational");
 });
 
-Deno.test("service: all operational reports ok and skips group rows", async () => {
+test("service: all operational reports ok and skips group rows", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const r = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -35,7 +36,7 @@ Deno.test("service: all operational reports ok and skips group rows", async () =
   assertEquals(Object.keys(r.components ?? {}).sort(), ["1gr032v9zz1j", "357mcybkpg11"]);
 });
 
-Deno.test("service: a minor indicator is degraded and names the affected component", async () => {
+test("service: a minor indicator is degraded and names the affected component", async () => {
   const body = summary({
     status: { indicator: "minor", description: "Minor Service Outage" },
     components: [{ id: "a", name: "Upsales App", status: "partial_outage" }],
@@ -48,17 +49,17 @@ Deno.test("service: a minor indicator is degraded and names the affected compone
   assert(r.message?.includes("1 open incident"));
 });
 
-Deno.test("service: a critical indicator is down", async () => {
+test("service: a critical indicator is down", async () => {
   const { ctx } = mockCtx([{ body: summary({ status: { indicator: "critical" } }) }]);
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: a page that is not Upsales' is unknown", async () => {
+test("service: a page that is not Upsales' is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ page: { id: "zzz", name: "Other" } }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a non-200 or unreadable page is unknown, never down", async () => {
+test("service: a non-200 or unreadable page is unknown, never down", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ status: 500, body: "x" }]).ctx)).state,
     "unknown",
@@ -66,12 +67,12 @@ Deno.test("service: a non-200 or unreadable page is unknown, never down", async 
   assertEquals((await service.check!({}, mockCtx([{ body: "<html>" }]).ctx)).state, "unknown");
 });
 
-Deno.test("service: no components is unknown", async () => {
+test("service: no components is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: status vocabularies map", () => {
+test("service: status vocabularies map", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

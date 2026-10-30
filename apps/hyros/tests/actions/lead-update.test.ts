@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, OK, pathOf, queryOf } from "../_helpers.ts";
 import leadUpdate from "../../actions/lead-update.ts";
 
-Deno.test("lead-update: PUT /leads with the documented body", async () => {
+test("lead-update: PUT /leads with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   const out = await leadUpdate.execute({
     findEmail: "j@x.io",
@@ -19,13 +20,13 @@ Deno.test("lead-update: PUT /leads with the documented body", async () => {
   assertEquals(out, { requestId: "req1", result: "OK" });
 });
 
-Deno.test("lead-update: finders go in the query, not the body", async () => {
+test("lead-update: finders go in the query, not the body", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await leadUpdate.execute({ findEmail: "j@x.io", findId: "L1", findPhone: "5" }, ctx);
   assertEquals(queryOf(calls[0].url), { email: "j@x.io", id: "L1", phone: "5" });
 });
 
-Deno.test("lead-update: refuses without a finder", async () => {
+test("lead-update: refuses without a finder", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await leadUpdate.execute({ firstName: "x" }, ctx),

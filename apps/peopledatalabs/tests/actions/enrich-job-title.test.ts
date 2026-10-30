@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-job-title.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-job-title: GETs /v5/job_title/enrich", async () => {
+test("enrich-job-title: GETs /v5/job_title/enrich", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       cleaned_job_title: "pastry chef",
@@ -24,7 +25,7 @@ Deno.test("enrich-job-title: GETs /v5/job_title/enrich", async () => {
   assertEquals(out.cleaned_job_title, "pastry chef");
 });
 
-Deno.test("enrich-job-title: job_title is required; 404 is found: false", async () => {
+test("enrich-job-title: job_title is required; 404 is found: false", async () => {
   await assertRejects(
     async () => await action.execute!({} as never, mockCtx([]).ctx),
     Error,

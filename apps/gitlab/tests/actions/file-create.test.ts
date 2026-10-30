@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-create.ts";
 
-Deno.test("file-create: POSTs the encoded file path with branch/content/message", async () => {
+test("file-create: POSTs the encoded file path with branch/content/message", async () => {
   const { ctx, calls } = mockCtx([{ body: { file_path: "docs/a.md" } }]);
   await action.execute(
     { projectId: "1", filePath: "docs/a.md", branch: "main", content: "hi", commitMessage: "add" },

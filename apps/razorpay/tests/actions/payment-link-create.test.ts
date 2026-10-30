@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentLinkCreate from "../../actions/payment-link-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-link-create: posts to /payment_links, nesting customer/notify objects", async () => {
+test("payment-link-create: posts to /payment_links, nesting customer/notify objects", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "plink_1", short_url: "https://rzp.io/i/abc" } }]);
   const out = await paymentLinkCreate.execute(
     {
@@ -24,7 +25,7 @@ Deno.test("payment-link-create: posts to /payment_links, nesting customer/notify
   assertEquals(out, { id: "plink_1", short_url: "https://rzp.io/i/abc" });
 });
 
-Deno.test("payment-link-create: omits customer/notify entirely when no sub-fields are set", async () => {
+test("payment-link-create: omits customer/notify entirely when no sub-fields are set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "plink_2" } }]);
   await paymentLinkCreate.execute({ amount: 10000 }, ctx);
 

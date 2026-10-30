@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/submission-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("submission-delete: DELETE /api/v3/submissions/691911 with the documented shape", async () => {
+test("submission-delete: DELETE /api/v3/submissions/691911 with the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "message": "ok" } }]);
   const out = await action.execute({ "submissionId": "691911" } as never, ctx);
   assertEquals(calls.length, 1);

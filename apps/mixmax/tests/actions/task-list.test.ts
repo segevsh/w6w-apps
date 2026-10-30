@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/task-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("task-list: GET /tasks?query=status%3Aopen&search=all&limit=5", async () => {
+test("task-list: GET /tasks?query=status%3Aopen&search=all&limit=5", async () => {
   const { ctx, calls } = mockCtx([{
     body: { results: [{ _id: "k1" }], next: "n", hasNext: false },
   }]);

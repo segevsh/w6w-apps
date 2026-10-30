@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   AirbyteClient,
@@ -19,14 +20,14 @@ import {
 const UUID = "e735894a-e773-4938-969f-45f53957b75b";
 const D = { display: { host: CLOUD_HOST } };
 
-Deno.test("request: builds the v1 path under the connection's host", async () => {
+test("request: builds the v1 path under the connection's host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], D);
   await new AirbyteClient(ctx).request("/connections");
   assertEquals(calls[0].url, "https://api.airbyte.com/v1/connections");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("hostFromConnection and normalizeHost default to Airbyte Cloud", () => {
+test("hostFromConnection and normalizeHost default to Airbyte Cloud", () => {
   assertEquals(hostFromConnection(undefined), CLOUD_HOST);
   assertEquals(hostFromConnection({ display: {} }), CLOUD_HOST);
   assertEquals(
@@ -40,7 +41,7 @@ Deno.test("hostFromConnection and normalizeHost default to Airbyte Cloud", () =>
 });
 
 /** `succeeded` is the only status that means the data all arrived. */
-Deno.test("isJobHealthy: incomplete is not success", () => {
+test("isJobHealthy: incomplete is not success", () => {
   assertEquals(isJobHealthy("succeeded"), true);
   for (const status of UNHEALTHY_JOB_STATUSES) {
     assertEquals(isJobHealthy(status), false, status);
@@ -49,7 +50,7 @@ Deno.test("isJobHealthy: incomplete is not success", () => {
   assertEquals(isJobHealthy(undefined), false);
 });
 
-Deno.test("assertUuid: every Airbyte id is a UUID, and says where to find one", () => {
+test("assertUuid: every Airbyte id is a UUID, and says where to find one", () => {
   assertEquals(assertUuid(UUID.toUpperCase(), "connectionId"), UUID);
   const err = assertThrows(() => assertUuid("12345", "connectionId"), Error);
   assert(/must be a UUID/.test(err.message), err.message);
@@ -57,7 +58,7 @@ Deno.test("assertUuid: every Airbyte id is a UUID, and says where to find one", 
   assertThrows(() => assertUuid("", "connectionId"), Error, "required");
 });
 
-Deno.test("jobDurationSeconds: computes what Airbyte does not report", () => {
+test("jobDurationSeconds: computes what Airbyte does not report", () => {
   assertEquals(
     jobDurationSeconds({
       startTime: "2026-08-19T10:00:00Z",
@@ -69,7 +70,7 @@ Deno.test("jobDurationSeconds: computes what Airbyte does not report", () => {
   assertEquals(jobDurationSeconds({}), undefined);
 });
 
-Deno.test("compact, csv, json and query behave as the actions assume", () => {
+test("compact, csv, json and query behave as the actions assume", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [] }), { a: 1 });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(json('{"a":1}', "x"), { a: 1 });
@@ -78,27 +79,27 @@ Deno.test("compact, csv, json and query behave as the actions assume", () => {
 });
 
 /** Three minutes, so a 401 is nearly always expiry. */
-Deno.test("describeError: a 401 names the three-minute token life", () => {
+test("describeError: a 401 names the three-minute token life", () => {
   const message = describeError(401, JSON.stringify({ message: "Unauthorized" }));
   assert(/THREE MINUTES/.test(message), message);
   assert(/expired token than a wrong one/.test(message), message);
 });
 
 /** Verified live: the token endpoint answers with only an error id. */
-Deno.test("describeError: carries the opaque errorId when that is all there is", () => {
+test("describeError: carries the opaque errorId when that is all there is", () => {
   const message = describeError(401, JSON.stringify({ errorId: "125f562d-3870" }));
   assert(/125f562d-3870/.test(message), message);
 });
 
 /** Airbyte runs one job per connection and refuses the second. */
-Deno.test("describeError: a 409 names the already-running sync", () => {
+test("describeError: a 409 names the already-running sync", () => {
   const message = describeError(409, JSON.stringify({ message: "conflict" }));
   assert(/ALREADY RUNNING/.test(message), message);
   assert(/refused rather than queued/.test(message), message);
 });
 
 /** Airbyte's error envelope nests the useful message. */
-Deno.test("describeError: reads the HAL-style embedded error", () => {
+test("describeError: reads the HAL-style embedded error", () => {
   const message = describeError(
     500,
     JSON.stringify({ _embedded: { errors: [{ message: "internal boom" }] } }),
@@ -106,7 +107,7 @@ Deno.test("describeError: reads the HAL-style embedded error", () => {
   assert(/internal boom/.test(message), message);
 });
 
-Deno.test("request: an error names the method, the path and the reason", async () => {
+test("request: an error names the method, the path and the reason", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Not found" } }], D);
   let message = "";
   try {
@@ -119,7 +120,7 @@ Deno.test("request: an error names the method, the path and the reason", async (
 });
 
 /** /health answers plain text, so text mode has to exist. */
-Deno.test("request: text mode returns the body verbatim", async () => {
+test("request: text mode returns the body verbatim", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "Successful operation" }], D);
   const body = await new AirbyteClient(ctx).request<string>("/health", { text: true });
   assertEquals(body, "Successful operation");

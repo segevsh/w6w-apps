@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/universal-bulk-lookup-people.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("universal-bulk-lookup-people: POSTs the queries to /universal/person/bulk_lookup and returns the request id", async () => {
+test("universal-bulk-lookup-people: POSTs the queries to /universal/person/bulk_lookup and returns the request id", async () => {
   const { ctx, calls } = mockCtx([{
     headers: { "RR-Request-ID": "req-1" },
     body: { status: "accepted" },
@@ -22,13 +23,13 @@ Deno.test("universal-bulk-lookup-people: POSTs the queries to /universal/person/
   assertEquals([out.accepted, out.queries, out.requestId], [true, 2, "req-1"]);
 });
 
-Deno.test("universal-bulk-lookup-people: an array object is accepted, an empty body is tolerated", async () => {
+test("universal-bulk-lookup-people: an array object is accepted, an empty body is tolerated", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   const out = await run(action, { queries: [{ id: 1 }] }, ctx);
   assertEquals([out.accepted, out.requestId, out.response], [true, null, null]);
 });
 
-Deno.test("universal-bulk-lookup-people: rejects 0 or 101 queries, bad JSON and non-objects before any request", async () => {
+test("universal-bulk-lookup-people: rejects 0 or 101 queries, bad JSON and non-objects before any request", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, { queries: [] }, none.ctx), Error, "1 to 100");
   await assertRejects(
@@ -41,7 +42,7 @@ Deno.test("universal-bulk-lookup-people: rejects 0 or 101 queries, bad JSON and 
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("universal-bulk-lookup-people: a 429 throws with Retry-After", async () => {
+test("universal-bulk-lookup-people: a 429 throws with Retry-After", async () => {
   const bad = mockCtx([{
     status: 429,
     headers: { "retry-after": "60" },

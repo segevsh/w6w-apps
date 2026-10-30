@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionList from "../../actions/collection-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("collection-list: no params sends no query; a bare array is folded too", async () => {
+test("collection-list: no params sends no query; a bare array is folded too", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "c1" }] }]);
   const out = await collectionList.execute({}, ctx) as { data: unknown[] };
   assertEquals(out.data, [{ id: "c1" }]);
@@ -10,7 +11,7 @@ Deno.test("collection-list: no params sends no query; a bare array is folded too
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("collection-list: per_page and cursor paginate", async () => {
+test("collection-list: per_page and cursor paginate", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ id: "c1" }],

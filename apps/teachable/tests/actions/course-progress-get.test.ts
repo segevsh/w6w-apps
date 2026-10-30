@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import courseProgressGet from "../../actions/course-progress-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("course-progress-get: requires user_id in the query and defaults per to 20", async () => {
+test("course-progress-get: requires user_id in the query and defaults per to 20", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("course_progress", { id: 1 }) }]);
   await courseProgressGet.execute({ courseId: 3, userId: 9 }, ctx);
 

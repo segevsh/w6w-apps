@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-lock.ts";
 
@@ -13,7 +14,7 @@ const locked = {
   },
 };
 
-Deno.test("workspace-lock: posts to the lock action with a reason", async () => {
+test("workspace-lock: posts to the lock action with a reason", async () => {
   const { ctx, calls } = mockCtx([locked]);
   const result = await action.execute(
     { workspaceId: "ws-1", reason: "database migration" },
@@ -27,7 +28,7 @@ Deno.test("workspace-lock: posts to the lock action with a reason", async () => 
 });
 
 /** Without one, nobody can decide whether the lock is still needed. */
-Deno.test("workspace-lock: a reason is required and nothing is locked without one", async () => {
+test("workspace-lock: a reason is required and nothing is locked without one", async () => {
   for (const reason of [undefined, "", "   "]) {
     const { ctx, calls } = mockCtx([]);
     let message = "";
@@ -42,7 +43,7 @@ Deno.test("workspace-lock: a reason is required and nothing is locked without on
 });
 
 /** Runs are accepted and queue; the workflow waits for a state that never comes. */
-Deno.test("workspace-lock: warns that runs will queue rather than fail", async () => {
+test("workspace-lock: warns that runs will queue rather than fail", async () => {
   const { ctx, logs } = mockCtx([locked]);
   await action.execute({ workspaceId: "ws-1", reason: "maintenance" }, ctx);
   assertEquals(logs[0].level, "warn");
@@ -50,7 +51,7 @@ Deno.test("workspace-lock: warns that runs will queue rather than fail", async (
   assert(/queue in `pending`/.test(action.description!), action.description);
 });
 
-Deno.test("workspace-lock: resolves a workspace named by organisation", async () => {
+test("workspace-lock: resolves a workspace named by organisation", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: { id: "ws-9", attributes: { name: "prod" } } } },
     locked,
@@ -60,7 +61,7 @@ Deno.test("workspace-lock: resolves a workspace named by organisation", async ()
 });
 
 /** Locking an already-locked workspace is a 409, not a no-op. */
-Deno.test("workspace-lock: an existing lock surfaces the conflict", async () => {
+test("workspace-lock: an existing lock surfaces the conflict", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: { errors: [{ title: "conflict", detail: "workspace already locked" }] },
@@ -75,6 +76,6 @@ Deno.test("workspace-lock: an existing lock surfaces the conflict", async () => 
   assert(/A locked workspace/.test(message), message);
 });
 
-Deno.test("workspace-lock: is not idempotent, because a second lock is a conflict", () => {
+test("workspace-lock: is not idempotent, because a second lock is a conflict", () => {
   assertEquals(action.idempotent, false);
 });

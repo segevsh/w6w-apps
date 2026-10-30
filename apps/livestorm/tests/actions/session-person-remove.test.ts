@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sessionPersonRemove from "../../actions/session-person-remove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("session-person-remove: DELETEs /sessions/{id}/people/{peopleId}", async () => {
+test("session-person-remove: DELETEs /sessions/{id}/people/{peopleId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const result = await sessionPersonRemove.execute({ id: "s1", peopleId: "p1" }, ctx);
 

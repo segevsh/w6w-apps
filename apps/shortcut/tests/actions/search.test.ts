@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import search from "../../actions/search.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search: calls GET /search with the query and entity types", async () => {
+test("search: calls GET /search with the query and entity types", async () => {
   const { ctx, calls } = mockCtx([{ body: { stories: { data: [], next: null, total: 0 } } }]);
   await search.execute(
     { query: "is:story owner:jane", entityTypes: ["story"], pageSize: 25 },
@@ -22,7 +23,7 @@ Deno.test("search: calls GET /search with the query and entity types", async () 
  * must reuse it directly rather than re-deriving a query from the other
  * params, and must not double the `/api/v3` prefix the client already adds.
  */
-Deno.test("search: a next cursor is followed directly, without re-adding the API prefix", async () => {
+test("search: a next cursor is followed directly, without re-adding the API prefix", async () => {
   const { ctx, calls } = mockCtx([{ body: { stories: { data: [], next: null, total: 0 } } }]);
   await search.execute(
     { query: "ignored", next: "/api/v3/search?query=is%3Astory&next=abc123" },
@@ -35,7 +36,7 @@ Deno.test("search: a next cursor is followed directly, without re-adding the API
   );
 });
 
-Deno.test("search: a next cursor without the /api/v3 prefix still works", async () => {
+test("search: a next cursor without the /api/v3 prefix still works", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await search.execute({ query: "ignored", next: "/search?next=abc123" }, ctx);
 

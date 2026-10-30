@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth, { modeOf } from "../../auth/api-key.ts";
 
@@ -8,7 +9,7 @@ const user = (modes: string[]) => ({
 });
 
 /** The key is the username and the password is EMPTY — a trailing colon. */
-Deno.test("api-key: sign sends Basic auth with an empty password", () => {
+test("api-key: sign sends Basic auth with an empty password", () => {
   const request = { url: "https://api.easypost.com/v2/users", method: "GET", headers: {} };
   const signed = auth.sign!({ request, credential: { apiKey: "EZTK1" } }, mockCtx().ctx) as {
     headers: Record<string, string>;
@@ -20,7 +21,7 @@ Deno.test("api-key: sign sends Basic auth with an empty password", () => {
  * The failure this reporting exists for: a test key succeeds at everything and
  * buys nothing, and no response says which kind made it.
  */
-Deno.test("api-key: test names the environment in plain words", async () => {
+test("api-key: test names the environment in plain words", async () => {
   const prod = mockCtx([user(["production"])]);
   const prodResult = await auth.test!({ credential: { apiKey: "EZAK1" } }, prod.ctx);
   assertEquals(prod.calls[0].url, "https://api.easypost.com/v2/users");
@@ -36,14 +37,14 @@ Deno.test("api-key: test names the environment in plain words", async () => {
 });
 
 /** Guessing the mode would be worse than not knowing. */
-Deno.test("api-key: an ambiguous account is reported as unstated, not guessed", async () => {
+test("api-key: an ambiguous account is reported as unstated, not guessed", async () => {
   const { ctx } = mockCtx([user(["test", "production"])]);
   const result = await auth.test!({ credential: { apiKey: "EZ1" } }, ctx);
   assertEquals(result.ok, true);
   assert(/did not state/.test(result.message!), result.message);
 });
 
-Deno.test("modeOf: reports a single mode and refuses to guess otherwise", () => {
+test("modeOf: reports a single mode and refuses to guess otherwise", () => {
   assertEquals(modeOf([{ mode: "test" }, { mode: "test" }], "k"), "test");
   assertEquals(modeOf([{ mode: "test" }, { mode: "production" }], "k"), "unknown");
   assertEquals(modeOf([], "k"), "unknown");
@@ -51,7 +52,7 @@ Deno.test("modeOf: reports a single mode and refuses to guess otherwise", () => 
 });
 
 /** A wrong key is a typo; a deactivated one is a dashboard visit. */
-Deno.test("api-key: a deactivated key is distinguished from a wrong one", async () => {
+test("api-key: a deactivated key is distinguished from a wrong one", async () => {
   const dead = mockCtx([{
     status: 403,
     body: { error: { code: "APIKEY.INACTIVE", message: "This api key is no longer active." } },
@@ -66,33 +67,33 @@ Deno.test("api-key: a deactivated key is distinguished from a wrong one", async 
   assert(/rejected this API key/.test(wrongResult.message!), wrongResult.message);
 });
 
-Deno.test("api-key: any other failure reports the status", async () => {
+test("api-key: any other failure reports the status", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const result = await auth.test!({ credential: { apiKey: "EZ1" } }, ctx);
   assertEquals(result.ok, false);
   assert(result.message!.includes("503"), result.message);
 });
 
-Deno.test("api-key: a missing credential is refused before a request is made", async () => {
+test("api-key: a missing credential is refused before a request is made", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals((await auth.test!({ credential: {} }, ctx)).ok, false);
   assertEquals(calls.length, 0);
 });
 
 /** The mode is public metadata; the key never is. */
-Deno.test("api-key: afterConnect records the mode and account, not the key", async () => {
+test("api-key: afterConnect records the mode and account, not the key", async () => {
   const { ctx } = mockCtx([user(["production"])]);
   const display = await auth.afterConnect!({ credential: { apiKey: "EZAK_secret" } }, ctx);
   assertEquals(display, { mode: "production", account: "Acme" });
   assert(!JSON.stringify(display).includes("EZAK_secret"));
 });
 
-Deno.test("api-key: afterConnect degrades quietly when the account cannot be read", async () => {
+test("api-key: afterConnect degrades quietly when the account cannot be read", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: { apiKey: "EZ1" } }, ctx), {});
 });
 
-Deno.test("api-key: is basic auth with one secret field", () => {
+test("api-key: is basic auth with one secret field", () => {
   assertEquals(auth.type, "basic");
   assertEquals(auth.fields!.map((f) => f.key), ["apiKey"]);
   assertEquals(auth.fields![0].type, "secret");

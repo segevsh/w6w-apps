@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/domain-check-availability.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("domain-check-availability: sends GET /domains/status with the mapped input", async () => {
+test("domain-check-availability: sends GET /domains/status with the mapped input", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "domain": "a.link", "available": true }] }]);
   const out = await action.execute!({ "domains": "a.link, b.link" }, ctx);
   const url = new URL(calls[0].url);
@@ -14,13 +15,13 @@ Deno.test("domain-check-availability: sends GET /domains/status with the mapped 
   assertEquals(out, { "domains": [{ "domain": "a.link", "available": true }] });
 });
 
-Deno.test("domain-check-availability: sends no authorization header of its own", async () => {
+test("domain-check-availability: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "domain": "a.link", "available": true }] }]);
   await action.execute!({ "domains": "a.link, b.link" }, ctx);
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("domain-check-availability: surfaces Dub's error envelope as a thrown error", async () => {
+test("domain-check-availability: surfaces Dub's error envelope as a thrown error", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { error: { code: "unprocessable_entity", message: "bad input" } },
@@ -32,7 +33,7 @@ Deno.test("domain-check-availability: surfaces Dub's error envelope as a thrown 
   );
 });
 
-Deno.test("domain-check-availability: declares type, idempotency and output", () => {
+test("domain-check-availability: declares type, idempotency and output", () => {
   assert(["read", "search", "perform"].includes(action.type));
   assert(action.params!.length > 0);
   assert(Array.isArray(action.output) && action.output.length > 0);

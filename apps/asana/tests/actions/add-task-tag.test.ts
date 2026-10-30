@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-task-tag.ts";
 
-Deno.test("add-task-tag: POSTs /tasks/{id}/addTag with tag", async () => {
+test("add-task-tag: POSTs /tasks/{id}/addTag with tag", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ id: "t-1", tag: "tag-9" }, ctx);
   assertEquals(calls[0].method, "POST");

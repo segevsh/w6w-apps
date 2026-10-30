@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import activityUpdate from "../../actions/activity-update.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("activity-update: PUTs /activities/:id, e.g. to mark it complete", async () => {
+test("activity-update: PUTs /activities/:id, e.g. to mark it complete", async () => {
   const { ctx, calls } = mockCtx([{ body: { activity: { id: 263, percentdone: 100 } } }]);
   const out = await activityUpdate.execute(
     { activityId: 263, percentdone: 100, completed: true },

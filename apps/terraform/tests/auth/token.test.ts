@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/token.ts";
 
@@ -15,7 +16,7 @@ const account = {
   },
 };
 
-Deno.test("token: signs as a bearer", () => {
+test("token: signs as a bearer", () => {
   const request = {
     url: "https://app.terraform.io/api/v2/organizations",
     headers: {} as Record<string, string>,
@@ -29,7 +30,7 @@ Deno.test("token: signs as a bearer", () => {
 });
 
 /** /api/v2/ping answers 204 unauthenticated, so it proves nothing here. */
-Deno.test("token: tests against account details, not the ping that needs no token", async () => {
+test("token: tests against account details, not the ping that needs no token", async () => {
   const { ctx, calls } = mockCtx([account]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/account/details");
@@ -39,7 +40,7 @@ Deno.test("token: tests against account details, not the ping that needs no toke
   assert(/service account/.test(result.message!), result.message);
 });
 
-Deno.test("token: defaults to the managed service and accepts a self-hosted host", async () => {
+test("token: defaults to the managed service and accepts a self-hosted host", async () => {
   const { ctx, calls } = mockCtx([account]);
   await auth.test!({ credential: { token: "x" } } as never, ctx);
   assertEquals(calls[0].url, "https://app.terraform.io/api/v2/account/details");
@@ -53,7 +54,7 @@ Deno.test("token: defaults to the managed service and accepts a self-hosted host
 });
 
 /** A token is valid on the instance that issued it and nowhere else. */
-Deno.test("token: a rejection points at the instance as well as the token", async () => {
+test("token: a rejection points at the instance as well as the token", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { errors: [{ status: "401", title: "unauthorized" }] },
@@ -63,7 +64,7 @@ Deno.test("token: a rejection points at the instance as well as the token", asyn
   assert(/a token from a different Terraform Enterprise/.test(result.message!), result.message);
 });
 
-Deno.test("token: a missing token or an unreachable host fails cleanly", async () => {
+test("token: a missing token or an unreachable host fails cleanly", async () => {
   const none = mockCtx([]);
   assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);
@@ -78,7 +79,7 @@ Deno.test("token: a missing token or an unreachable host fails cleanly", async (
 });
 
 /** A proxy or a landing page answers 200 with HTML. */
-Deno.test("token: a non-JSON:API body fails rather than throwing", async () => {
+test("token: a non-JSON:API body fails rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html/>" }]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -89,7 +90,7 @@ Deno.test("token: a non-JSON:API body fails rather than throwing", async () => {
  * The ping is unauthenticated on purpose: the version headers are worth
  * recording even when the token turns out to be wrong.
  */
-Deno.test("token: afterConnect records the host, product and API version", async () => {
+test("token: afterConnect records the host, product and API version", async () => {
   const { ctx, calls } = mockCtx([
     { status: 204, headers: { "tfp-appname": "HCP Terraform", "tfp-api-version": "2.6" } },
     account,
@@ -105,7 +106,7 @@ Deno.test("token: afterConnect records the host, product and API version", async
 });
 
 /** Terraform Enterprise reports its own product name. */
-Deno.test("token: afterConnect records a self-hosted instance as such", async () => {
+test("token: afterConnect records a self-hosted instance as such", async () => {
   const { ctx } = mockCtx([
     { status: 204, headers: { "tfp-appname": "Terraform Enterprise", "tfp-api-version": "2.5" } },
     { status: 200, body: { data: { attributes: { username: "svc" } } } },
@@ -118,7 +119,7 @@ Deno.test("token: afterConnect records a self-hosted instance as such", async ()
   assertEquals(display.host, "https://tfe.example.com");
 });
 
-Deno.test("token: afterConnect survives either call failing", async () => {
+test("token: afterConnect survives either call failing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }, { status: 401, body: "{}" }]);
   const display = await auth.afterConnect!({ credential: cred }, ctx) as Record<string, unknown>;
   assertEquals(display.host, "https://app.terraform.io");
@@ -126,7 +127,7 @@ Deno.test("token: afterConnect survives either call failing", async () => {
 });
 
 /** The three token kinds fail in ways that mention nothing about token kinds. */
-Deno.test("token: the description and hint name the organization-token trap", () => {
+test("token: the description and hint name the organization-token trap", () => {
   assert(
     /organization token cannot create runs or read state/.test(auth.description!),
     auth.description,

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
@@ -11,7 +12,7 @@ const summary = (
   components,
 });
 
-Deno.test("service: declares an app-scoped, unsigned check that widens egress to the status host only", () => {
+test("service: declares an app-scoped, unsigned check that widens egress to the status host only", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.copper.com"]);
   // Unsigned is what makes widening egress safe: a status host must never see
@@ -21,14 +22,14 @@ Deno.test("service: declares an app-scoped, unsigned check that widens egress to
   assert(!service.network!.allow!.includes("api.copper.com"));
 });
 
-Deno.test("service: probes summary.json on status.copper.com, not the copper.statuspage.io decoy", async () => {
+test("service: probes summary.json on status.copper.com, not the copper.statuspage.io decoy", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: summary("none") }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.copper.com/api/v2/summary.json");
   assert(!calls[0].url.includes("statuspage.io"));
 });
 
-Deno.test("service: maps every Statuspage rollup indicator", async () => {
+test("service: maps every Statuspage rollup indicator", async () => {
   const cases: Array<[string, string]> = [
     ["none", "ok"],
     ["minor", "degraded"],
@@ -43,12 +44,12 @@ Deno.test("service: maps every Statuspage rollup indicator", async () => {
   }
 });
 
-Deno.test("service: an unrecognised indicator is unknown, not ok", async () => {
+test("service: an unrecognised indicator is unknown, not ok", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("brand-new-word") }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: reports per-component state, slugged, skipping group headers", async () => {
+test("service: reports per-component state, slugged, skipping group headers", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary("minor", [
@@ -70,7 +71,7 @@ Deno.test("service: reports per-component state, slugged, skipping group headers
   assert(!("everything" in (out.components ?? {})));
 });
 
-Deno.test("service: an unknown component status is unknown, not silently ok", async () => {
+test("service: an unknown component status is unknown, not silently ok", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary("none", [{ name: "Forms Builder", status: "something_new" }]),
@@ -79,7 +80,7 @@ Deno.test("service: an unknown component status is unknown, not silently ok", as
   assertEquals(out.components, { "forms-builder": { state: "unknown" } });
 });
 
-Deno.test("service: a failing status page reports unknown, never down", async () => {
+test("service: a failing status page reports unknown, never down", async () => {
   // A status page that itself breaks says nothing about Copper; calling that an
   // outage would be a lie.
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
@@ -88,7 +89,7 @@ Deno.test("service: a failing status page reports unknown, never down", async ()
   assert(out.message?.includes("503"));
 });
 
-Deno.test("service: an unparseable body reports unknown rather than throwing", async () => {
+test("service: an unparseable body reports unknown rather than throwing", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: "<html>not json</html>", headers: { "content-type": "text/html" } },
   ]);

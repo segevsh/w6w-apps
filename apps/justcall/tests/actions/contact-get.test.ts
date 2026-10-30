@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-get: hits GET /v2.1/contacts/{id} and unwraps a bare object", async () => {
+test("contact-get: hits GET /v2.1/contacts/{id} and unwraps a bare object", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 1234, name: "Rachel Green" }) }]);
   const out = await contactGet.execute({ id: 1234 }, ctx) as Record<string, unknown>;
 

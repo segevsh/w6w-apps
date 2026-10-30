@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import matterList from "../../actions/matter-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("matter-list: calls GET /matters.json with id(asc) cursor ordering", async () => {
+test("matter-list: calls GET /matters.json with id(asc) cursor ordering", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1 }, { id: 2 }]) }]);
   const out = await matterList.execute({}, ctx) as { items: unknown[] };
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("matter-list: calls GET /matters.json with id(asc) cursor ordering", a
   assertEquals(out.items.length, 2);
 });
 
-Deno.test("matter-list: forwards filters using Clio's own snake_case query names", async () => {
+test("matter-list: forwards filters using Clio's own snake_case query names", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await matterList.execute(
     { status: "open", clientId: 42, practiceAreaId: 7, query: "smith", limit: 25 },
@@ -25,13 +26,13 @@ Deno.test("matter-list: forwards filters using Clio's own snake_case query names
   assertEquals(q.limit, "25");
 });
 
-Deno.test("matter-list: an empty pageToken input sends no page_token", async () => {
+test("matter-list: an empty pageToken input sends no page_token", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await matterList.execute({}, ctx);
   assertEquals("page_token" in queryOf(calls[0].url), false);
 });
 
-Deno.test("matter-list: a returned nextPageToken is a short token, not a vendor URL", async () => {
+test("matter-list: a returned nextPageToken is a short token, not a vendor URL", async () => {
   const { ctx } = mockCtx([{
     body: listEnvelope([{ id: 1 }], { next: "https://app.clio.com/api/v4/matters?page_token=xyz" }),
   }]);

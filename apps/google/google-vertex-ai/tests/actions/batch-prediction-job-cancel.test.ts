@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-prediction-job-cancel.ts";
 
 const display = { projectId: "p1", location: "us-central1" };
 
-Deno.test("batch-prediction-job-cancel: POSTs an empty body to :cancel in the name's own region", async () => {
+test("batch-prediction-job-cancel: POSTs an empty body to :cancel in the name's own region", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   const out = await action.execute!(
     { jobId: "projects/p2/locations/europe-west4/batchPredictionJobs/9" },
@@ -22,7 +23,7 @@ Deno.test("batch-prediction-job-cancel: POSTs an empty body to :cancel in the na
   });
 });
 
-Deno.test("batch-prediction-job-cancel: surfaces a failure instead of claiming success", async () => {
+test("batch-prediction-job-cancel: surfaces a failure instead of claiming success", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: { status: "NOT_FOUND", message: "gone" } },

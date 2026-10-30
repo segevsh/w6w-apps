@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import analyticsPostsList from "../../actions/analytics-posts-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("analytics-posts-list: fetches per-post metrics for a platform and date range", async () => {
+test("analytics-posts-list: fetches per-post metrics for a platform and date range", async () => {
   const { ctx, calls } = mockCtx([{
     body: listEnvelope([{ platform: "x", post_id: "1", metrics: { impressions: 100 } }]),
   }]);
@@ -23,7 +24,7 @@ Deno.test("analytics-posts-list: fetches per-post metrics for a platform and dat
   assertEquals(q.limit, "25");
 });
 
-Deno.test("analytics-posts-list: only X is offered, per the vendor's own current limitation", () => {
+test("analytics-posts-list: only X is offered, per the vendor's own current limitation", () => {
   const platform = analyticsPostsList.params?.find((p) => p.key === "platform");
   assertEquals(platform?.options, [{ value: "x", label: "X" }]);
 });

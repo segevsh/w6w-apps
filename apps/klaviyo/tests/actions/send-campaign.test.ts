@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-campaign.ts";
 
-Deno.test("send-campaign: POSTs a campaign-send-job carrying the campaign id", async () => {
+test("send-campaign: POSTs a campaign-send-job carrying the campaign id", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { data: { id: "c-1" } } }]);
   await action.execute!({ campaignId: "c-1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/campaign-send-jobs/");

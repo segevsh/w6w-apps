@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/domain-finder.ts";
 
-Deno.test("domain-finder: GETs /domain-finder with the company name", async () => {
+test("domain-finder: GETs /domain-finder with the company name", async () => {
   const body = envelope([{ domain: "stripe.com", company_name: "Stripe", email_count: 281 }], {
     results: 1,
   });
@@ -13,7 +14,7 @@ Deno.test("domain-finder: GETs /domain-finder with the company name", async () =
   assertEquals(result, body);
 });
 
-Deno.test("domain-finder: forwards limit and perfectMatch", async () => {
+test("domain-finder: forwards limit and perfectMatch", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await action.execute!({ company: "stripe", limit: 3, perfectMatch: true }, ctx);
   const q = queryOf(calls[0].url);

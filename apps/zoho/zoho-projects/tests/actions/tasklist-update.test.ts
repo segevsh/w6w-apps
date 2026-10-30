@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tasklistUpdate from "../../actions/tasklist-update.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("tasklist-update: PATCH /api/v3/portal/1/projects/2/tasklists/30", async () => {
+test("tasklist-update: PATCH /api/v3/portal/1/projects/2/tasklists/30", async () => {
   const { ctx, calls } = mockProjectsCtx([{ body: { "id": "30" } }]);
   const res = await tasklistUpdate.execute(
     { "portalId": "1", "projectId": "2", "tasklistId": "30", "status": "completed" } as never,

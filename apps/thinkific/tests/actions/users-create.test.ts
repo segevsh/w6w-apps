@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usersCreate from "../../actions/users-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("users-create: POSTs the required fields and maps camelCase params to the vendor's snake_case body", async () => {
+test("users-create: POSTs the required fields and maps camelCase params to the vendor's snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1, email: "bob@example.com" } }]);
   const out = await usersCreate.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("users-create: POSTs the required fields and maps camelCase params to 
   assertEquals(out, { id: 1, email: "bob@example.com" });
 });
 
-Deno.test("users-create: omitted optional fields are dropped from the JSON body, not sent as null", async () => {
+test("users-create: omitted optional fields are dropped from the JSON body, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await usersCreate.execute({ first_name: "Bob", last_name: "Smith", email: "b@x.com" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -33,6 +34,6 @@ Deno.test("users-create: omitted optional fields are dropped from the JSON body,
   assertEquals("roles" in body, false);
 });
 
-Deno.test("users-create: is not idempotent (creating twice makes two users)", () => {
+test("users-create: is not idempotent (creating twice makes two users)", () => {
   assertEquals(usersCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/unsubscribe-get-many.ts";
 
-Deno.test("unsubscribe-get-many: GETs /v3/{domain}/unsubscribes", async () => {
+test("unsubscribe-get-many: GETs /v3/{domain}/unsubscribes", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ domain: "mg.example.com", limit: 5 }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("unsubscribe-get-many: GETs /v3/{domain}/unsubscribes", async () => {
   assertEquals(url.searchParams.get("limit"), "5");
 });
 
-Deno.test("unsubscribe-get-many: missing domain rejects", async () => {
+test("unsubscribe-get-many: missing domain rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(async () => await action.execute!({ domain: "" }, ctx), Error, "`domain`");
 });

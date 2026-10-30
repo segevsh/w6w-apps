@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockMocoCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
-Deno.test("project-create: POSTs /projects with the mapped body", async () => {
+test("project-create: POSTs /projects with the mapped body", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 9, name: "Website Relaunch" } }]);
   const out = await action.execute({
     name: "Website Relaunch",
@@ -20,7 +21,7 @@ Deno.test("project-create: POSTs /projects with the mapped body", async () => {
   assertEquals(out, { id: 9, name: "Website Relaunch" });
 });
 
-Deno.test("project-create: only name is required; other fields are omitted when unset", async () => {
+test("project-create: only name is required; other fields are omitted when unset", async () => {
   const { ctx, calls } = mockMocoCtx([{ body: { id: 9, name: "Website Relaunch" } }]);
   await action.execute({ name: "Website Relaunch" }, ctx);
   const body = JSON.parse(calls[0].body!);

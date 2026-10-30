@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: maps 'none' indicator with all-operational components to ok", async () => {
+test("service: maps 'none' indicator with all-operational components to ok", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "none", description: "All Systems Operational" },
@@ -18,7 +19,7 @@ Deno.test("service: maps 'none' indicator with all-operational components to ok"
   assertEquals(report.components?.["Vote Processing"], { state: "ok" });
 });
 
-Deno.test("service: a major_outage component reports down without pulling the whole app down (severity: degraded)", async () => {
+test("service: a major_outage component reports down without pulling the whole app down (severity: degraded)", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "critical", description: "Major outage" },
@@ -31,7 +32,7 @@ Deno.test("service: a major_outage component reports down without pulling the wh
   assertEquals(service.severity, "degraded");
 });
 
-Deno.test("service: maps a degraded_performance component", async () => {
+test("service: maps a degraded_performance component", async () => {
   const { ctx } = mockCtx([{
     body: {
       status: { indicator: "minor", description: "Partial degradation" },
@@ -42,13 +43,13 @@ Deno.test("service: maps a degraded_performance component", async () => {
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("service: reports unknown when the status API itself errors", async () => {
+test("service: reports unknown when the status API itself errors", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: declares credential: none and app scope, so it runs unsigned once for everyone", () => {
+test("service: declares credential: none and app scope, so it runs unsigned once for everyone", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.network?.allow, ["www.redditstatus.com"]);

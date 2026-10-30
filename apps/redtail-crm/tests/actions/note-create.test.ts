@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import noteCreate from "../../actions/note-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("note-create: POSTs /contacts/:id/notes with a compacted body", async () => {
+test("note-create: POSTs /contacts/:id/notes with a compacted body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { note: { id: 6, body: "Test", category_id: 2 } },
@@ -17,6 +18,6 @@ Deno.test("note-create: POSTs /contacts/:id/notes with a compacted body", async 
   assertEquals(out.note.id, 6);
 });
 
-Deno.test("note-create: is not idempotent — a retry logs a second note", () => {
+test("note-create: is not idempotent — a retry logs a second note", () => {
   assertEquals(noteCreate.idempotent, false);
 });

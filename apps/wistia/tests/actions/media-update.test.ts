@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaUpdate from "../../actions/media-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("media-update: calls PUT /modern/medias/abc with the version header", async () => {
+test("media-update: calls PUT /modern/medias/abc with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await mediaUpdate.execute(
     { "mediaId": "abc", "name": "New", "tags": "x,y", "newStillMediaId": "img1" } as never,
@@ -25,7 +26,7 @@ Deno.test("media-update: calls PUT /modern/medias/abc with the version header", 
   assert(out.ok === true);
 });
 
-Deno.test("media-update: surfaces a Wistia error with its code", async () => {
+test("media-update: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -43,7 +44,7 @@ Deno.test("media-update: surfaces a Wistia error with its code", async () => {
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("media-update: refuses an empty update without calling Wistia", async () => {
+test("media-update: refuses an empty update without calling Wistia", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

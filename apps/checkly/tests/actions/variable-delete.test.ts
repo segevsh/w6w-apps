@@ -1,9 +1,10 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/variable-delete.ts";
 
 /** A script reading a missing variable often passes while testing nothing. */
-Deno.test("variable-delete: refuses to run without an explicit confirmation", async () => {
+test("variable-delete: refuses to run without an explicit confirmation", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ key: "BASE_URL" }, ctx),
@@ -13,7 +14,7 @@ Deno.test("variable-delete: refuses to run without an explicit confirmation", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("variable-delete: with confirmation it DELETEs, logging at warn", async () => {
+test("variable-delete: with confirmation it DELETEs, logging at warn", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 204 }]);
   const result = await action.execute!({ key: "BASE_URL", confirm: true }, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -22,7 +23,7 @@ Deno.test("variable-delete: with confirmation it DELETEs, logging at warn", asyn
   assertEquals(logs[0].level, "warn");
 });
 
-Deno.test("variable-delete: a blank key fails before any request", async () => {
+test("variable-delete: a blank key fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ confirm: true }, ctx),

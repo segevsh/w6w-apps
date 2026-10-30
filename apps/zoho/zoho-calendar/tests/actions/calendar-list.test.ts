@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCalendarCtx } from "../_helpers.ts";
 import action from "../../actions/calendar-list.ts";
 
-Deno.test("calendar-list: GETs /calendars with no filters by default", async () => {
+test("calendar-list: GETs /calendars with no filters by default", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { calendars: [{ uid: "abc" }] } }]);
   const out = await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("calendar-list: GETs /calendars with no filters by default", async () 
   assertEquals(out, { calendars: [{ uid: "abc" }] });
 });
 
-Deno.test("calendar-list: passes category and showHiddenCal through", async () => {
+test("calendar-list: passes category and showHiddenCal through", async () => {
   const { ctx, calls } = mockCalendarCtx([{ body: { calendars: [] } }]);
   await action.execute({ category: "own", showHiddenCal: true }, ctx);
   const url = new URL(calls[0].url);

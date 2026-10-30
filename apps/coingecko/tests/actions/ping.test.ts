@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/ping.ts";
 
-Deno.test("ping: calls the documented path with the mapped query", async () => {
+test("ping: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { gecko_says: "(V3) To the Moon!" } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("ping: calls the documented path with the mapped query", async () => {
   assert(out !== undefined);
 });
 
-Deno.test("ping: a vendor error body becomes a readable error", async () => {
+test("ping: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },

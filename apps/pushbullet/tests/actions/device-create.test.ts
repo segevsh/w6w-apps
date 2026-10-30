@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deviceCreate from "../../actions/device-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("device-create: POSTs mapped fields to /v2/devices", async () => {
+test("device-create: POSTs mapped fields to /v2/devices", async () => {
   const { ctx, calls } = mockCtx([{ body: { iden: "d1", nickname: "Workflow Device" } }]);
   const out = await deviceCreate.execute(
     { nickname: "Workflow Device", icon: "system", hasSms: false },
@@ -16,6 +17,6 @@ Deno.test("device-create: POSTs mapped fields to /v2/devices", async () => {
   assertEquals(out.iden, "d1");
 });
 
-Deno.test("device-create: is declared non-idempotent — no server-side dedupe key", () => {
+test("device-create: is declared non-idempotent — no server-side dedupe key", () => {
   assertEquals(deviceCreate.idempotent, false);
 });

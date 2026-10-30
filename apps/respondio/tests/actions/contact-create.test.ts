@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs /contact/{identifier} with compacted fields", async () => {
+test("contact-create: POSTs /contact/{identifier} with compacted fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { code: "0", message: "created" } }]);
   const out = await contactCreate.execute(
     { identifier: "email:ada@example.com", firstName: "Ada", lastName: "" },
@@ -16,7 +17,7 @@ Deno.test("contact-create: POSTs /contact/{identifier} with compacted fields", a
   assertEquals(out.message, "created");
 });
 
-Deno.test("contact-create: maps customFields to the wire's custom_fields", async () => {
+test("contact-create: maps customFields to the wire's custom_fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { code: "0", message: "created" } }]);
   await contactCreate.execute(
     {
@@ -30,7 +31,7 @@ Deno.test("contact-create: maps customFields to the wire's custom_fields", async
   assertEquals(body.custom_fields, [{ name: "Plan", value: "Pro" }]);
 });
 
-Deno.test("contact-create: an id: identifier is refused — you cannot choose a contact's own id", async () => {
+test("contact-create: an id: identifier is refused — you cannot choose a contact's own id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await contactCreate.execute({ identifier: "id:1", firstName: "Ada" }, ctx),
@@ -40,6 +41,6 @@ Deno.test("contact-create: an id: identifier is refused — you cannot choose a 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: is not idempotent", () => {
+test("contact-create: is not idempotent", () => {
   assertEquals(contactCreate.idempotent, false);
 });

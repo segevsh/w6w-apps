@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/order-get.ts";
 
-Deno.test("order-get: retrieves an order via Object Query", async () => {
+test("order-get: retrieves an order via Object Query", async () => {
   const { ctx, calls } = mockCtx([one({ id: "ord1", orderNumber: "O-00000001" })], { display });
   const result = await action.execute!({ orderKey: "O-00000001" }, ctx) as {
     order: { orderNumber: string };

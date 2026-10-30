@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -6,7 +7,7 @@ import { envelope, errorBody, mockCtx } from "../_helpers.ts";
 
 const run = (ctx: ReturnType<typeof mockCtx>["ctx"]) => api.check!({} as never, ctx);
 
-Deno.test("api: unsigned, app-scoped, probes only the API host", async () => {
+test("api: unsigned, app-scoped, probes only the API host", async () => {
   assertEquals(api.credential, "none");
   assertEquals(api.scope, "app");
   assertEquals(api.network, undefined);
@@ -16,12 +17,12 @@ Deno.test("api: unsigned, app-scoped, probes only the API host", async () => {
   assertEquals(calls[0].headers["x-perspective-api-key"], undefined);
 });
 
-Deno.test("api: a schema-correct 401 is a PASS, not an outage", async () => {
+test("api: a schema-correct 401 is a PASS, not an outage", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key is required", 401) }]);
   assertEquals((await run(ctx)).state, "ok");
 });
 
-Deno.test("api: HTML, 5xx and 429 map to down, down, degraded", async () => {
+test("api: HTML, 5xx and 429 map to down, down, degraded", async () => {
   const html = mockCtx([{ status: 200, body: "<html>shell</html>" }]);
   assertEquals((await run(html.ctx)).state, "down");
   const five = mockCtx([{ status: 503, body: errorBody("unavailable", 503) }]);
@@ -30,12 +31,12 @@ Deno.test("api: HTML, 5xx and 429 map to down, down, degraded", async () => {
   assertEquals((await run(limited.ctx)).state, "degraded");
 });
 
-Deno.test("api: a JSON body that is not Perspective's envelope is unknown", async () => {
+test("api: a JSON body that is not Perspective's envelope is unknown", async () => {
   const { ctx } = mockCtx([{ status: 200, body: envelope([]) }]);
   assertEquals((await run(ctx)).state, "unknown");
 });
 
-Deno.test("service and quota: declared absences, informational, with a reason", () => {
+test("service and quota: declared absences, informational, with a reason", () => {
   for (const h of [service, quota]) {
     assertEquals(h.severity, "informational");
     assertEquals(h.check, undefined);

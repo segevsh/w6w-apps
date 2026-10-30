@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-reviews.ts";
 
-Deno.test("list-reviews: GETs /v1/reviews with scalar filters", async () => {
+test("list-reviews: GETs /v1/reviews with scalar filters", async () => {
   const { ctx, calls } = mockCtx([envelope([{ id: 1 }], { count: 1 })]);
   await action.execute(
     {
@@ -28,7 +29,7 @@ Deno.test("list-reviews: GETs /v1/reviews with scalar filters", async () => {
   assertEquals(url.searchParams.get("sortBy"), "submittedAt");
 });
 
-Deno.test("list-reviews: the documented array filters serialize as key[] params", async () => {
+test("list-reviews: the documented array filters serialize as key[] params", async () => {
   const { ctx, calls } = mockCtx([envelope([])]);
   await action.execute({ listingMapIds: [1, 2], statuses: ["awaiting", "published"] }, ctx);
 
@@ -37,7 +38,7 @@ Deno.test("list-reviews: the documented array filters serialize as key[] params"
   assertEquals(url.searchParams.getAll("statuses[]"), ["awaiting", "published"]);
 });
 
-Deno.test("list-reviews: empty arrays are omitted rather than sent as nothing", async () => {
+test("list-reviews: empty arrays are omitted rather than sent as nothing", async () => {
   const { ctx, calls } = mockCtx([envelope([])]);
   await action.execute({ listingMapIds: [], statuses: [] }, ctx);
   const url = new URL(calls[0].url);

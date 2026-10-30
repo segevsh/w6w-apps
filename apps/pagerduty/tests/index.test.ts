@@ -1,13 +1,14 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertExists } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 14 actions, both auth methods, and both health checks", () => {
+test("index: exports 14 actions, both auth methods, and both health checks", () => {
   assertEquals(app.actions.length, 14);
   assertEquals(app.auth?.map((a) => a.key), ["api-token", "oauth2"]);
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: every action key is unique kebab-case", () => {
+test("index: every action key is unique kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) {
@@ -15,20 +16,20 @@ Deno.test("index: every action key is unique kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares execute and a valid type", () => {
+test("index: every action declares execute and a valid type", () => {
   for (const action of app.actions) {
     assertExists(action.execute, `${action.key} is missing execute`);
     assertEquals(["read", "search", "perform", "control"].includes(action.type), true);
   }
 });
 
-Deno.test("index: perform actions declare `idempotent` explicitly", () => {
+test("index: perform actions declare `idempotent` explicitly", () => {
   for (const action of app.actions.filter((a) => a.type === "perform")) {
     assertEquals(typeof action.idempotent, "boolean", `${action.key} must declare idempotent`);
   }
 });
 
-Deno.test("index: no param is buried in a `group` the studio renders as JSON", () => {
+test("index: no param is buried in a `group` the studio renders as JSON", () => {
   // `ParamsForm` routes `type: "group"` to the JSON editor, so a group's
   // children never render as fields — the defect that made SendGrid look like
   // it had no CC/BCC. Sections are layout-only and render their children as

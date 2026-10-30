@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import candidateCreate from "../../actions/candidate-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("candidate-create: nests fields under `candidate`, keeps `offers` a sibling", async () => {
+test("candidate-create: nests fields under `candidate`, keeps `offers` a sibling", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { candidate: { id: 1 }, references: [] } }]);
   await candidateCreate.execute({
     name: "Jane Doe",
@@ -26,6 +27,6 @@ Deno.test("candidate-create: nests fields under `candidate`, keeps `offers` a si
   });
 });
 
-Deno.test("candidate-create: is declared not idempotent — retries can create duplicates", () => {
+test("candidate-create: is declared not idempotent — retries can create duplicates", () => {
   assertEquals(candidateCreate.idempotent, false);
 });

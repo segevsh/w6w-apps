@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-comment.ts";
 
-Deno.test("create-comment: POSTs /{postId}/comments with message as a query param", async () => {
+test("create-comment: POSTs /{postId}/comments with message as a query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   const result = await action.execute!({ postId: "post-1", message: "nice post" }, ctx);
 
@@ -14,12 +15,12 @@ Deno.test("create-comment: POSTs /{postId}/comments with message as a query para
   assertEquals(result, { id: "c1" });
 });
 
-Deno.test("create-comment: omits authorization (runtime injects it)", async () => {
+test("create-comment: omits authorization (runtime injects it)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1" } }]);
   await action.execute!({ postId: "post-1", message: "hi" }, ctx);
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("create-comment: declares idempotent: false", () => {
+test("create-comment: declares idempotent: false", () => {
   assertEquals(action.idempotent, false);
 });

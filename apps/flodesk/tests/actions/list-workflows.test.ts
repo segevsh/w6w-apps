@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues } from "../_helpers.ts";
 
 import listWorkflows from "../../actions/list-workflows.ts";
 
-Deno.test("list-workflows: uses camelCase `perPage`, not `per_page`", async () => {
+test("list-workflows: uses camelCase `perPage`, not `per_page`", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], meta: {} } }]);
   await listWorkflows.execute({ page: 2, perPage: 25 }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("list-workflows: uses camelCase `perPage`, not `per_page`", async () =
   assertEquals(url.searchParams.get("per_page"), null, "snake_case would be silently ignored");
 });
 
-Deno.test("list-workflows: comma-joins statuses, and omits the param when empty", async () => {
+test("list-workflows: comma-joins statuses, and omits the param when empty", async () => {
   const a = mockCtx([{ body: { data: [] } }]);
   await listWorkflows.execute({ statuses: ["active", "paused"] }, a.ctx);
   assertEquals(new URL(a.calls[0].url).searchParams.get("statuses"), "active,paused");
@@ -24,7 +25,7 @@ Deno.test("list-workflows: comma-joins statuses, and omits the param when empty"
   assertEquals(b.calls[0].url, "https://api.flodesk.com/v1/workflows");
 });
 
-Deno.test("list-workflows: offers exactly the documented status enum", () => {
+test("list-workflows: offers exactly the documented status enum", () => {
   const statuses = listWorkflows.params!.find((p) => p.key === "statuses")!;
   assertEquals(statuses.type, "multiselect");
   assertEquals(optionValues(statuses), [

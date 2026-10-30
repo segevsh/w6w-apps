@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/site-info-get.ts";
 
-Deno.test("site-info-get: GETs /site.json and returns it whole", async () => {
+test("site-info-get: GETs /site.json and returns it whole", async () => {
   const body = {
     categories: [{ id: 1 }],
     trust_levels: { newuser: 0 },
@@ -16,6 +17,6 @@ Deno.test("site-info-get: GETs /site.json and returns it whole", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("site-info-get: takes no parameters", () => {
+test("site-info-get: takes no parameters", () => {
   assertEquals(action.params, []);
 });

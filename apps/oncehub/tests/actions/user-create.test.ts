@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-create.ts";
 
-Deno.test("user-create: POSTs /users with the mapped body", async () => {
+test("user-create: POSTs /users with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "USR-1" } }]);
   await action.execute(
     {

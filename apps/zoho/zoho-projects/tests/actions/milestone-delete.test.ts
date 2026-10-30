@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import milestoneDelete from "../../actions/milestone-delete.ts";
 import { mockProjectsCtx } from "../_helpers.ts";
 
-Deno.test("milestone-delete: DELETE /api/v3.1/portal/1/projects/2/phases/50", async () => {
+test("milestone-delete: DELETE /api/v3.1/portal/1/projects/2/phases/50", async () => {
   const { ctx, calls } = mockProjectsCtx([{ status: 204 }]);
   const res = await milestoneDelete.execute(
     { "portalId": "1", "projectId": "2", "milestoneId": "50" } as never,

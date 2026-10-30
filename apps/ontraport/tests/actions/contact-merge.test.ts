@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactMerge from "../../actions/contact-merge.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-merge: calls POST /1/Contacts/saveorupdate, form-urlencoded", async () => {
+test("contact-merge: calls POST /1/Contacts/saveorupdate, form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ attrs: { id: "7" } }) }]);
   await contactMerge.execute({ email: "msmith@ontraport.com", firstname: "Marie" }, ctx);
 
@@ -13,14 +14,14 @@ Deno.test("contact-merge: calls POST /1/Contacts/saveorupdate, form-urlencoded",
   assertEquals(form.get("firstname"), "Marie");
 });
 
-Deno.test("contact-merge: ignoreBlanks is sent as '1', matching the vendor's binary flag", async () => {
+test("contact-merge: ignoreBlanks is sent as '1', matching the vendor's binary flag", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await contactMerge.execute({ email: "a@b.com", ignoreBlanks: true }, ctx);
   const form = new URLSearchParams(calls[0].body!);
   assertEquals(form.get("ignore_blanks"), "1");
 });
 
-Deno.test("contact-merge: ignoreBlanks is omitted, not sent as '0', when left off", async () => {
+test("contact-merge: ignoreBlanks is omitted, not sent as '0', when left off", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await contactMerge.execute({ email: "a@b.com" }, ctx);
   const form = new URLSearchParams(calls[0].body!);

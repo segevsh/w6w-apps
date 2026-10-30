@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-absence-balance.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-absence-balance: distinguishes balance from availableBalance", async () => {
+test("get-absence-balance: distinguishes balance from availableBalance", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

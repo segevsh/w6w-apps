@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import folderUpdate from "../../actions/folder-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("folder-update: PUTs only the given fields and strips the response token", async () => {
+test("folder-update: PUTs only the given fields and strips the response token", async () => {
   const { ctx, calls } = mockCtx([{
     body: { id: "f1", title: "New title", collection: { token: "t" } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("folder-update: PUTs only the given fields and strips the response tok
   assertEquals(result, { id: "f1", title: "New title", collection: {} });
 });
 
-Deno.test("folder-update: never exposes a way to move to a new parent — see the action's own doc", async () => {
+test("folder-update: never exposes a way to move to a new parent — see the action's own doc", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "f1" } }]);
   await folderUpdate.execute({ folderId: "f1", description: "d" }, ctx);
   assertEquals("parentFolderId" in JSON.parse(calls[0].body!), false);

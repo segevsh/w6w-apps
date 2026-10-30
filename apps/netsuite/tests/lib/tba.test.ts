@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import {
   baseString,
   realmOf,
@@ -19,7 +20,7 @@ const URL_ = "https://123456.suitetalk.api.netsuite.com/services/rest/record/v1/
 const NONCE = "fjaLirsIcCGVZWzBX0pg";
 const TS = "1508242306";
 
-Deno.test("tba: base string matches Oracle's REST web services example byte for byte", () => {
+test("tba: base string matches Oracle's REST web services example byte for byte", () => {
   const bs = baseString("GET", URL_, {
     oauth_consumer_key: CRED.consumerKey,
     oauth_nonce: NONCE,
@@ -39,7 +40,7 @@ Deno.test("tba: base string matches Oracle's REST web services example byte for 
   );
 });
 
-Deno.test("tba: known-answer — the signature is Oracle's published B5OIWznZ…", async () => {
+test("tba: known-answer — the signature is Oracle's published B5OIWznZ…", async () => {
   const header = await tbaAuthorization("GET", URL_, CRED, NONCE, TS);
   // Oracle's published "REST Web Services Header Example", verbatim.
   assertEquals(
@@ -52,7 +53,7 @@ Deno.test("tba: known-answer — the signature is Oracle's published B5OIWznZ…
   );
 });
 
-Deno.test("tba: a different method, secret or URL changes the signature", async () => {
+test("tba: a different method, secret or URL changes the signature", async () => {
   const sig = (h: string) => h.match(/oauth_signature="([^"]+)"/)![1];
   const base = sig(await tbaAuthorization("GET", URL_, CRED, NONCE, TS));
   assert(sig(await tbaAuthorization("POST", URL_, CRED, NONCE, TS)) !== base);
@@ -62,7 +63,7 @@ Deno.test("tba: a different method, secret or URL changes the signature", async 
   );
 });
 
-Deno.test("tba: query parameters join the base string, sorted and percent-encoded", () => {
+test("tba: query parameters join the base string, sorted and percent-encoded", () => {
   const bs = baseString(
     "GET",
     "https://a.suitetalk.api.netsuite.com/p?q=email%20IS%20%22a%22&limit=5",
@@ -77,7 +78,7 @@ Deno.test("tba: query parameters join the base string, sorted and percent-encode
   );
 });
 
-Deno.test("tba: realm is NetSuite's own form, rfc3986 escapes what encodeURIComponent leaves", () => {
+test("tba: realm is NetSuite's own form, rfc3986 escapes what encodeURIComponent leaves", () => {
   assertEquals(realmOf("1234567-sb1"), "1234567_SB1");
   assertEquals(realmOf("tstdrv9"), "TSTDRV9");
   assertEquals(rfc3986("a!'()*b"), "a%21%27%28%29%2Ab");

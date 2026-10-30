@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryOf, TEST_DISPLAY } from "../_helpers.ts";
 import action from "../../actions/client-get-many.ts";
 
-Deno.test("client-get-many: GETs /admin/clients and returns the wrapped shape", async () => {
+test("client-get-many: GETs /admin/clients and returns the wrapped shape", async () => {
   const { ctx, calls } = mockCtx([
     { body: { data: [{ id: 1, name: "Jane" }], metadata: { items_count: 1, pages_count: 1 } } },
   ], { display: TEST_DISPLAY });
@@ -14,7 +15,7 @@ Deno.test("client-get-many: GETs /admin/clients and returns the wrapped shape", 
   assertEquals(result.metadata?.pages_count, 1);
 });
 
-Deno.test("client-get-many: passes pagination through", async () => {
+test("client-get-many: passes pagination through", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }], { display: TEST_DISPLAY });
   await action.execute({ page: 2, onPage: 25 }, ctx);
   const query = queryOf(calls[0].url);

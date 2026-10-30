@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/channel-list.ts";
 
-Deno.test("channel-list: reads /channels — the ids Send Message needs", async () => {
+test("channel-list: reads /channels — the ids Send Message needs", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _results: [{ id: "cha_1", address: "support@acme.test", type: "smtp" }] },

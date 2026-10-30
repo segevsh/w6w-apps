@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkSlotsGet from "../../actions/link-slots-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("link-slots-get: wraps the bare-array response under `slots`", async () => {
+test("link-slots-get: wraps the bare-array response under `slots`", async () => {
   const slot = {
     start_at: "2026-10-20T14:00:00Z",
     end_at: "2026-10-20T14:30:00Z",
@@ -19,7 +20,7 @@ Deno.test("link-slots-get: wraps the bare-array response under `slots`", async (
   assertEquals(out.slots, [slot]);
 });
 
-Deno.test("link-slots-get: a non-array body yields an empty list", async () => {
+test("link-slots-get: a non-array body yields an empty list", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await linkSlotsGet.execute({ linkId: "l" }, ctx) as { slots: unknown[] };
   assertEquals(out.slots, []);

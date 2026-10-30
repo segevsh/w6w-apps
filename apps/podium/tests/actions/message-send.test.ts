@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import messageSend from "../../actions/message-send.ts";
 
-Deno.test("message-send: sends every documented field in its documented place", async () => {
+test("message-send: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -34,7 +35,7 @@ Deno.test("message-send: sends every documented field in its documented place", 
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("message-send: a minimal call sends only what was set", async () => {
+test("message-send: a minimal call sends only what was set", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -61,7 +62,7 @@ Deno.test("message-send: a minimal call sends only what was set", async () => {
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("message-send: declares its params and kind", () => {
+test("message-send: declares its params and kind", () => {
   assertEquals((messageSend.params ?? []).map((p) => p.key), [
     "body",
     "locationUid",

@@ -1,13 +1,15 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: exports 7 actions, one auth method and two health checks", () => {
+test("index: exports 7 actions, one auth method and two health checks", () => {
   assertEquals(app.actions.length, 7);
   assertEquals(app.auth.map((a) => a.key), ["api-key"]);
   assertEquals(app.healthChecks.map((h) => h.key), ["service", "quota"]);
 });
 
-Deno.test("index: action keys are unique kebab-case with type, description, execute and output", () => {
+test("index: action keys are unique kebab-case with type, description, execute and output", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const a of app.actions) {
@@ -19,27 +21,27 @@ Deno.test("index: action keys are unique kebab-case with type, description, exec
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) assert(p.key && p.label, `${a.key}/${p.key}`);
   }
 });
 
-Deno.test("index: the only perform action is research-start, and it is not idempotent", () => {
+test("index: the only perform action is research-start, and it is not idempotent", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   assertEquals(performs.map((a) => a.key), ["research-start"]);
   assertEquals(performs[0].idempotent, false);
 });
 
-Deno.test("index: no action carries credentials or uses global fetch", async () => {
-  for await (const e of Deno.readDir(new URL("../actions", import.meta.url))) {
-    const src = await Deno.readTextFile(new URL(`../actions/${e.name}`, import.meta.url));
+test("index: no action carries credentials or uses global fetch", async () => {
+  for await (const e of denoReadDir(new URL("../actions", import.meta.url))) {
+    const src = await denoReadTextFile(new URL(`../actions/${e.name}`, import.meta.url));
     assert(!/authorization/i.test(src), `${e.name}: Authorization header in an action`);
     assert(!/(^|[^.\w])fetch\(/.test(src), `${e.name}: global fetch`);
   }
 });
 
-Deno.test("index: manifest allows only api.tavily.com", async () => {
-  const pkg = JSON.parse(await Deno.readTextFile(new URL("../package.json", import.meta.url)));
+test("index: manifest allows only api.tavily.com", async () => {
+  const pkg = JSON.parse(await denoReadTextFile(new URL("../package.json", import.meta.url)));
   assertEquals(pkg.w6w.network.allow, ["api.tavily.com"]);
 });

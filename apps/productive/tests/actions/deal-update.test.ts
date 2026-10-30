@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import dealUpdate from "../../actions/deal-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("deal-update: PATCH /deals/{id} sends a JSON:API document of attributes", async () => {
+test("deal-update: PATCH /deals/{id} sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "deals", "attributes": { "name": "x" } } },
@@ -55,7 +56,7 @@ Deno.test("deal-update: PATCH /deals/{id} sends a JSON:API document of attribute
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("deal-update: only the fields set are sent", async () => {
+test("deal-update: only the fields set are sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "deals", "attributes": { "name": "x" } } },
@@ -66,7 +67,7 @@ Deno.test("deal-update: only the fields set are sent", async () => {
   });
 });
 
-Deno.test("deal-update: naming no field to change fails before any request", async () => {
+test("deal-update: naming no field to change fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(dealUpdate.execute({ id: "42" }, ctx)),
@@ -76,7 +77,7 @@ Deno.test("deal-update: naming no field to change fails before any request", asy
   assertEquals(calls.length, 0);
 });
 
-Deno.test("deal-update: a vendor error surfaces its status, title and detail", async () => {
+test("deal-update: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -89,7 +90,7 @@ Deno.test("deal-update: a vendor error surfaces its status, title and detail", a
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("deal-update: declares perform and idempotent=true", () => {
+test("deal-update: declares perform and idempotent=true", () => {
   assertEquals(dealUpdate.type, "perform");
   assertEquals(dealUpdate.idempotent, true);
   assertEquals(dealUpdate.key, "deal-update");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberList from "../../actions/subscriber-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-list: GETs /v2/subscribers and keeps the meta/links envelope", async () => {
+test("subscriber-list: GETs /v2/subscribers and keeps the meta/links envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "o1" }]) }]);
   const out = await subscriberList.execute({ limit: 20 }, ctx) as {
     data: unknown[];

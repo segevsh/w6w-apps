@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-update.ts";
 
-Deno.test("contact-update: sends the contactUpdate operation and returns the result", async () => {
+test("contact-update: sends the contactUpdate operation and returns the result", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { contactUpdate: { id: "8", phone: "555" } } },
   }]);
@@ -17,7 +18,7 @@ Deno.test("contact-update: sends the contactUpdate operation and returns the res
   assertEquals(sent.variables, { id: "8", input: { phone: "555" } });
 });
 
-Deno.test("contact-update: surfaces a GraphQL error returned with HTTP 200", async () => {
+test("contact-update: surfaces a GraphQL error returned with HTTP 200", async () => {
   const { ctx } = mockCtx([{ body: { errors: [{ message: "Unauthorized" }], data: null } }]);
   let message = "";
   try {

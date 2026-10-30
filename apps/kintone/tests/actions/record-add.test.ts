@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-add.ts";
 
 const conn = { display: { baseUrl: "https://acme.cybozu.com" } };
 
-Deno.test("record-add: POSTs the record object and returns id/revision", async () => {
+test("record-add: POSTs the record object and returns id/revision", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "1", revision: "1" } }], conn);
   const out = await action.execute(
     { appId: "1", record: { Text: { value: "Sample" }, Number: { value: 1 } } },
@@ -19,12 +20,12 @@ Deno.test("record-add: POSTs the record object and returns id/revision", async (
   assertEquals(out, { id: "1", revision: "1" });
 });
 
-Deno.test("record-add: accepts `record` as a JSON string param", async () => {
+test("record-add: accepts `record` as a JSON string param", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "2", revision: "1" } }], conn);
   await action.execute({ appId: "1", record: '{"Text":{"value":"x"}}' }, ctx);
   assertEquals(JSON.parse(calls[0].body!).record, { Text: { value: "x" } });
 });
 
-Deno.test("record-add: is declared not idempotent", () => {
+test("record-add: is declared not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

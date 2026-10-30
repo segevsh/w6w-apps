@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { API_REVISION, KlaviyoClient } from "../../lib/client.ts";
 
-Deno.test("client: sends revision + accept headers on every request", async () => {
+test("client: sends revision + accept headers on every request", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   const client = new KlaviyoClient(ctx);
   await client.request("/profiles/");
@@ -12,7 +13,7 @@ Deno.test("client: sends revision + accept headers on every request", async () =
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("client: adds content-type on writes and serializes JSON body", async () => {
+test("client: adds content-type on writes and serializes JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   const client = new KlaviyoClient(ctx);
   await client.request("/profiles/", { method: "POST", body: { hello: "world" } });
@@ -22,14 +23,14 @@ Deno.test("client: adds content-type on writes and serializes JSON body", async 
   assertEquals(calls[0].body, '{"hello":"world"}');
 });
 
-Deno.test("client: 204 returns undefined without parsing", async () => {
+test("client: 204 returns undefined without parsing", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new KlaviyoClient(ctx);
   const result = await client.request("/lists/xyz/", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws with a descriptive error on non-2xx", async () => {
+test("client: throws with a descriptive error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"errors":[{"detail":"gone"}]}' },
   ]);
@@ -42,7 +43,7 @@ Deno.test("client: throws with a descriptive error on non-2xx", async () => {
   assertEquals(err.message.includes("/api/profiles/missing/"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   const client = new KlaviyoClient(ctx);
   await client.request("/profiles/", {

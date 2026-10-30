@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/email-templates-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("email-templates-list: GET /email/templates maps status and filters", async () => {
+test("email-templates-list: GET /email/templates maps status and filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: 1 }] } }]);
   const out = await action.execute({
     keyword: "otp",
@@ -24,13 +25,13 @@ Deno.test("email-templates-list: GET /email/templates maps status and filters", 
   assertEquals(out, { templates: { data: [{ id: 1 }] } });
 });
 
-Deno.test("email-templates-list: defaults to verified templates", async () => {
+test("email-templates-list: defaults to verified templates", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), { status_id: "2" });
 });
 
-Deno.test("email-templates-list: puts no credential on the request (sign owns that)", async () => {
+test("email-templates-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute({}, ctx);
   assertEquals(calls[0].headers.authkey, undefined);
@@ -38,7 +39,7 @@ Deno.test("email-templates-list: puts no credential on the request (sign owns th
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("email-templates-list: a vendor error surfaces its own message", async () => {
+test("email-templates-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () => await action.execute({}, ctx)) as Error;
   assert(err.message.includes("Auth Key missing"));

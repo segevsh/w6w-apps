@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { page } from "./_shared.ts";
 import action from "../../actions/transformation-list.ts";
 
-Deno.test("transformation-list: separates the failing ones", async () => {
+test("transformation-list: separates the failing ones", async () => {
   const { ctx, calls } = mockCtx([page([
     { id: "t1", status: "SUCCEEDED" },
     { id: "t2", status: "FAILED" },
@@ -16,6 +17,6 @@ Deno.test("transformation-list: separates the failing ones", async () => {
 });
 
 /** Fivetran versions its Quickstart packages and can upgrade them. */
-Deno.test("transformation-list: says Fivetran can upgrade its own packages", () => {
+test("transformation-list: says Fivetran can upgrade its own packages", () => {
   assert(/upgrade under you/.test(action.description!), action.description);
 });

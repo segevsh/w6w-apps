@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/get-campaign-summary-report.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-campaign-summary-report: GETs the summary report", async () => {
+test("get-campaign-summary-report: GETs the summary report", async () => {
   const body = {
     id: "cmp1",
     sent: 100,
@@ -18,7 +19,7 @@ Deno.test("get-campaign-summary-report: GETs the summary report", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("get-campaign-summary-report: declares the nested counters as objects", () => {
+test("get-campaign-summary-report: declares the nested counters as objects", () => {
   const output = action.output as Array<{ key: string; type: string }>;
   const byKey = new Map(output.map((o) => [o.key, o.type]));
   // `bounced`, `opened` and `clicked` are objects; the rest are plain numbers.

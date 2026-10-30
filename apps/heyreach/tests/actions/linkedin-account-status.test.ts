@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/linkedin-account-status.ts";
 
-Deno.test("linkedin-account-status: the account id is a PATH segment, not a query param", async () => {
+test("linkedin-account-status: the account id is a PATH segment, not a query param", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { accountId: "42", status: "Connected", failureReason: "" },
@@ -16,7 +17,7 @@ Deno.test("linkedin-account-status: the account id is a PATH segment, not a quer
   assertEquals((result as { status: string }).status, "Connected");
 });
 
-Deno.test("linkedin-account-status: the Sales Navigator and Recruiter flags survive", async () => {
+test("linkedin-account-status: the Sales Navigator and Recruiter flags survive", async () => {
   const body = {
     accountId: "42",
     status: "Connected",

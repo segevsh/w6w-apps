@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/candidate-set-stage.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("candidate-set-stage: PUTs stage_id and handles the empty 204", async () => {
+test("candidate-set-stage: PUTs stage_id and handles the empty 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute!(
     { companyId: "c1", positionId: "p1", candidateId: "k1", stageId: "interview" },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import attachmentList from "../../actions/attachment-list.ts";
 import { envelope, mockWrikeCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("attachment-list: GETs /tasks/{taskId}/attachments", async () => {
+test("attachment-list: GETs /tasks/{taskId}/attachments", async () => {
   const { ctx, calls } = mockWrikeCtx([
     { status: 200, body: envelope([{ id: "A1", name: "spec.pdf" }]) },
   ]);

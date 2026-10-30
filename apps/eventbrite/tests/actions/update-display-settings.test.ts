@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-display-settings.ts";
 
-Deno.test("update-display-settings: POST /events/e1/display_settings/", async () => {
+test("update-display-settings: POST /events/e1/display_settings/", async () => {
   const resp = { "show_map": false };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const result = await action.execute!({
@@ -24,7 +25,7 @@ Deno.test("update-display-settings: POST /events/e1/display_settings/", async ()
   assertEquals(result, resp);
 });
 
-Deno.test("update-display-settings: sends only supplied fields and deep-merges extra", async () => {
+test("update-display-settings: sends only supplied fields and deep-merges extra", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ "eventId": "e1", "extra": { "zzz": { "a": 1 } } }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { "display_settings": { "zzz": { "a": 1 } } });

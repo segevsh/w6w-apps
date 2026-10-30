@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { API_ROOT, listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import customObjectRecordList from "../../actions/custom-object-record-list.ts";
 
-Deno.test("custom-object-record-list: sends only limit and cursor, the two parameters this endpoint takes", async () => {
+test("custom-object-record-list: sends only limit and cursor, the two parameters this endpoint takes", async () => {
   const next = `${API_ROOT}/custom-objects/asset/records/?cursor=n2`;
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([{ id: "r1" }], next) }]);
   const out = await customObjectRecordList.execute(
@@ -20,7 +21,7 @@ Deno.test("custom-object-record-list: sends only limit and cursor, the two param
   ]);
 });
 
-Deno.test("custom-object-record-list: requires the object api name", async () => {
+test("custom-object-record-list: requires the object api name", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () =>

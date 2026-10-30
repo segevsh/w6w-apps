@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import organizationDelete from "../../actions/organization-delete.ts";
 import { mockCtx, pathOf, successBody } from "../_helpers.ts";
 
-Deno.test("organization-delete: DELETEs the organization", async () => {
+test("organization-delete: DELETEs the organization", async () => {
   const { ctx, calls } = mockCtx([{ body: successBody() }]);
   const out = await organizationDelete.execute({ organizationKey: "o1" }, ctx);
   assertEquals(calls[0].method, "DELETE");

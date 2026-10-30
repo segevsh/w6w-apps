@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import highlightTagCreate from "../../actions/highlight-tag-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("highlight-tag-create: POSTs to the collection WITH a trailing slash", async () => {
+test("highlight-tag-create: POSTs to the collection WITH a trailing slash", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, name: "philosophy" } }]);
   await highlightTagCreate.execute({ highlightId: "59767830", name: "philosophy" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("highlight-tag-create: POSTs to the collection WITH a trailing slash",
   assertEquals(JSON.parse(calls[0].body!), { name: "philosophy" });
 });
 
-Deno.test("highlight-tag-create: is not idempotent — no vendor de-dupe is documented", () => {
+test("highlight-tag-create: is not idempotent — no vendor de-dupe is documented", () => {
   assertEquals(highlightTagCreate.idempotent, false);
 });

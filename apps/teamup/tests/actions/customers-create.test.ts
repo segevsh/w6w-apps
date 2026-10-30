@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/customers-create.ts";
 
 const sample = { id: 99, object: "customer", first_name: "Ada" };
 
-Deno.test("customers-create: posts the documented body to /customers", async () => {
+test("customers-create: posts the documented body to /customers", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: sample }]);
   const result = await action.execute!({
     first_name: "Ada",
@@ -28,7 +29,7 @@ Deno.test("customers-create: posts the documented body to /customers", async () 
   assertEquals(result.id, 99);
 });
 
-Deno.test("customers-create: omits unset body fields instead of sending nulls", async () => {
+test("customers-create: omits unset body fields instead of sending nulls", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: sample }]);
   await action.execute!({ first_name: "Ada", last_name: "Lovelace" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -36,7 +37,7 @@ Deno.test("customers-create: omits unset body fields instead of sending nulls", 
   assertEquals(Object.keys(JSON.parse(calls[0].body!)), ["first_name", "last_name"]);
 });
 
-Deno.test("customers-create: is a non-idempotent perform with two required fields", () => {
+test("customers-create: is a non-idempotent perform with two required fields", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   for (const key of ["first_name", "last_name"]) {

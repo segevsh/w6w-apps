@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT,
   componentKey,
@@ -41,7 +42,7 @@ function components(overrides: Array<Record<string, unknown>> | undefined = unde
   };
 }
 
-Deno.test("service: probes the Instatus host, unsigned, off the app's own allowlist", () => {
+test("service: probes the Instatus host, unsigned, off the app's own allowlist", () => {
   assertEquals(STATUS_URL, "https://status.splitwise.com/v2/components.json");
   assertEquals(service.network?.allow, ["status.splitwise.com"]);
   assertEquals(service.credential, "none");
@@ -55,12 +56,12 @@ Deno.test("service: probes the Instatus host, unsigned, off the app's own allowl
  * there would read `status.indicator`, find nothing, and report unknown
  * forever.
  */
-Deno.test("service: does not use the Statuspage-shaped path this host also serves", () => {
+test("service: does not use the Statuspage-shaped path this host also serves", () => {
   assert(!STATUS_URL.includes("/api/v2/"), "pointed at the Instatus alias of the Statuspage path");
   assert(!STATUS_URL.includes("statuspage.io"), "pointed at the unclaimed Atlassian page");
 });
 
-Deno.test("service: an all-operational page reports ok with every component named", async () => {
+test("service: an all-operational page reports ok with every component named", async () => {
   const { ctx, calls } = mockCtx([{ body: components() }]);
   const report = await service.check!({}, ctx);
 
@@ -76,7 +77,7 @@ Deno.test("service: an all-operational page reports ok with every component name
  * being down is not this app's problem, and folding it in would fail every
  * workflow over a broken landing page.
  */
-Deno.test("service: a Website outage is reported but does not move the verdict", async () => {
+test("service: a Website outage is reported but does not move the verdict", async () => {
   const body = components();
   body.components[0].status = "MAJOROUTAGE";
   const { ctx } = mockCtx([{ body }]);
@@ -90,7 +91,7 @@ Deno.test("service: a Website outage is reported but does not move the verdict",
   );
 });
 
-Deno.test("service: an API outage is the verdict", async () => {
+test("service: an API outage is the verdict", async () => {
   const body = components();
   body.components[1].status = "MAJOROUTAGE";
   const { ctx } = mockCtx([{ body }]);
@@ -100,7 +101,7 @@ Deno.test("service: an API outage is the verdict", async () => {
   assert(/API: MAJOROUTAGE/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a degraded API is degraded, not down", async () => {
+test("service: a degraded API is degraded, not down", async () => {
   const body = components();
   body.components[1].status = "DEGRADEDPERFORMANCE";
   const { ctx } = mockCtx([{ body }]);
@@ -112,7 +113,7 @@ Deno.test("service: a degraded API is degraded, not down", async () => {
  * OPERATIONAL components carried "One of our upstream providers is having a
  * system outage".
  */
-Deno.test("service: an alarming description on an OPERATIONAL component is ignored", async () => {
+test("service: an alarming description on an OPERATIONAL component is ignored", async () => {
   const { ctx } = mockCtx([{ body: components() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -123,7 +124,7 @@ Deno.test("service: an alarming description on an OPERATIONAL component is ignor
 });
 
 /** Renamed or regrouped: say so rather than silently using another component. */
-Deno.test("service: a missing API component reports unknown and names what it found", async () => {
+test("service: a missing API component reports unknown and names what it found", async () => {
   const { ctx } = mockCtx([{
     body: components([{ id: "a", name: "Website", status: "OPERATIONAL" }]),
   }]);
@@ -135,12 +136,12 @@ Deno.test("service: a missing API component reports unknown and names what it fo
 });
 
 /** A broken status page says nothing about Splitwise — never `down`. */
-Deno.test("service: a failing status page reports unknown", async () => {
+test("service: a failing status page reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable or component-less body reports unknown", async () => {
+test("service: an unreadable or component-less body reports unknown", async () => {
   const html = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, html.ctx)).state, "unknown");
 
@@ -153,7 +154,7 @@ Deno.test("service: an unreadable or component-less body reports unknown", async
   assert(/no component list/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: Instatus's vocabulary maps to the four health states", () => {
+test("service: Instatus's vocabulary maps to the four health states", () => {
   assertEquals(mapComponentStatus("OPERATIONAL"), "ok");
   assertEquals(mapComponentStatus("DEGRADEDPERFORMANCE"), "degraded");
   assertEquals(mapComponentStatus("PARTIALOUTAGE"), "degraded");
@@ -167,13 +168,13 @@ Deno.test("service: Instatus's vocabulary maps to the four health states", () =>
   assertEquals(mapComponentStatus("operational"), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id and falls back to a slug", () => {
+test("service: componentKey prefers the vendor id and falls back to a slug", () => {
   assertEquals(componentKey({ id: "abc", name: "API" }, 0), "abc");
   assertEquals(componentKey({ name: "Splitwise Pay" }, 3), "splitwise-pay-3");
   assertEquals(componentKey({}, 7), "component-7");
   assertEquals(slug("API (v3.0)"), "api-v3-0");
 });
 
-Deno.test("service: the API component name is pinned", () => {
+test("service: the API component name is pinned", () => {
   assertEquals(API_COMPONENT, "API");
 });

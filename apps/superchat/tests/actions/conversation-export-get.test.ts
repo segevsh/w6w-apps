@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-export-get.ts";
 
 const BASE = "https://api.superchat.com/v1.0";
 
-Deno.test("conversation-export-get: GETs the export", async () => {
+test("conversation-export-get: GETs the export", async () => {
   const { ctx, calls } = mockCtx([{
     "body": { "id": "e_1", "status": "done", "link": { "url": "https://x", "valid_until": "t" } },
   }]);

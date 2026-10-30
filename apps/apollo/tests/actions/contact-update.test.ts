@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCHes /contacts/{contact_id}", async () => {
+test("contact-update: PATCHes /contacts/{contact_id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact: { id: "c1", title: "VP Sales" } } }]);
   const out = await contactUpdate.execute({ contact_id: "c1", title: "VP Sales" }, ctx) as {
     contact: { title: string };
@@ -12,6 +13,6 @@ Deno.test("contact-update: PATCHes /contacts/{contact_id}", async () => {
   assertEquals(out.contact.title, "VP Sales");
 });
 
-Deno.test("contact-update: idempotent — a PATCH of absolute values converges on retry", () => {
+test("contact-update: idempotent — a PATCH of absolute values converges on retry", () => {
   assertEquals(contactUpdate.idempotent, true);
 });

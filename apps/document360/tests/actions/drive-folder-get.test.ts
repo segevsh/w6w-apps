@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import driveFolderGet from "../../actions/drive-folder-get.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("drive-folder-get: GETs the folder with file paging", async () => {
+test("drive-folder-get: GETs the folder with file paging", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "f1", files: [] }) }]);
   const out = await driveFolderGet.execute({ folderId: "f1", page: 2, pageSize: 5 }, ctx) as {
     id: string;
@@ -16,7 +17,7 @@ Deno.test("drive-folder-get: GETs the folder with file paging", async () => {
   assertEquals(out.id, "f1");
 });
 
-Deno.test("drive-folder-get: a vendor error surfaces its code and message", async () => {
+test("drive-folder-get: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

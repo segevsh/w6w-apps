@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/tag-subscriber.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("tag-subscriber: POSTs the email to /v4/tags/{tag_id}/subscribers", async () => {
+test("tag-subscriber: POSTs the email to /v4/tags/{tag_id}/subscribers", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscriber: { id: 1276 } } }]);
   await action.execute!({ tagId: 284, emailAddress: "ada@example.com" }, ctx);
   assertEquals(calls[0].url, "https://api.kit.com/v4/tags/284/subscribers");
@@ -10,11 +11,11 @@ Deno.test("tag-subscriber: POSTs the email to /v4/tags/{tag_id}/subscribers", as
   assertEquals(JSON.parse(calls[0].body!), { email_address: "ada@example.com" });
 });
 
-Deno.test("tag-subscriber: is idempotent — re-tagging returns 200, not an error", () => {
+test("tag-subscriber: is idempotent — re-tagging returns 200, not an error", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("tag-subscriber: surfaces a 404 for a subscriber Kit does not know", async () => {
+test("tag-subscriber: surfaces a 404 for a subscriber Kit does not know", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     statusText: "Not Found",

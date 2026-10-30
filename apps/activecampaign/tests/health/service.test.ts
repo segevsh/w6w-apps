@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: service / app / none posture, widened only for the status host", () => {
+test("service: service / app / none posture, widened only for the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.activecampaign.com"]);
 });
 
-Deno.test("service: maps Statuspage's indicator and per-component statuses", async () => {
+test("service: maps Statuspage's indicator and per-component statuses", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: { indicator: "minor", description: "Partial API Degradation" },
@@ -28,7 +29,7 @@ Deno.test("service: maps Statuspage's indicator and per-component statuses", asy
   assertEquals(result.components?.["us"], undefined);
 });
 
-Deno.test("service: unknown (never down) when the status API itself fails", async () => {
+test("service: unknown (never down) when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");

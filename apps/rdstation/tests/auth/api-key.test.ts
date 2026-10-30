@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 
 import apiKey, { classifyTokenCheck, TOKEN_CHECK_PATH } from "../../auth/api-key.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
@@ -6,11 +7,11 @@ import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 /** Not a real credential — shaped like one only so a leak would be visible. */
 const TOKEN = "unitTestFixtureTokenThatIsNotReal0000";
 
-Deno.test("api-key: the probe is GET /token/check", () => {
+test("api-key: the probe is GET /token/check", () => {
   assertEquals(TOKEN_CHECK_PATH, "/token/check");
 });
 
-Deno.test("api-key: sign appends token to a URL that already carries filters", () => {
+test("api-key: sign appends token to a URL that already carries filters", () => {
   const request = {
     method: "GET",
     url: `${API_ROOT}/contacts?limit=20&page=2`,
@@ -27,7 +28,7 @@ Deno.test("api-key: sign appends token to a URL that already carries filters", (
   assertEquals(signed.headers, {});
 });
 
-Deno.test("api-key: the credential config is the vendor's own scheme", () => {
+test("api-key: the credential config is the vendor's own scheme", () => {
   assertEquals(apiKey.key, "api-key");
   assertEquals(apiKey.type, "apiKey");
   assertEquals(apiKey.apiKey, { in: "query", name: "token" });
@@ -37,7 +38,7 @@ Deno.test("api-key: the credential config is the vendor's own scheme", () => {
   assertEquals(apiKey.fields?.[0].required, true);
 });
 
-Deno.test("api-key: test calls /token/check with the token in the query string", async () => {
+test("api-key: test calls /token/check with the token in the query string", async () => {
   const { ctx, calls } = mockCtx([
     { body: { email: "ada@example.com", name: "Ada", organization: "Acme" } },
   ]);
@@ -49,7 +50,7 @@ Deno.test("api-key: test calls /token/check with the token in the query string",
   assertEquals(queryOf(calls[0].url), { token: TOKEN });
 });
 
-Deno.test("api-key: a refusal is reported without echoing the token", async () => {
+test("api-key: a refusal is reported without echoing the token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { error: "Permission denied." } }]);
 
   const result = await apiKey.test({ credential: { apiKey: TOKEN } }, ctx);
@@ -59,7 +60,7 @@ Deno.test("api-key: a refusal is reported without echoing the token", async () =
   assert(!(result.message ?? "").includes(TOKEN), "the message must not carry the credential");
 });
 
-Deno.test("api-key: a 200 without the documented email field is not a live token", async () => {
+test("api-key: a 200 without the documented email field is not a live token", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { ok: true } }]);
 
   const result = await apiKey.test({ credential: { apiKey: TOKEN } }, ctx);
@@ -68,7 +69,7 @@ Deno.test("api-key: a 200 without the documented email field is not a live token
   assert(/email/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("api-key: no token means no request at all", async () => {
+test("api-key: no token means no request at all", async () => {
   const { ctx, calls } = mockCtx([]);
 
   const result = await apiKey.test({ credential: {} }, ctx);
@@ -77,7 +78,7 @@ Deno.test("api-key: no token means no request at all", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: the classification is body-driven, per the vendor's shapes", () => {
+test("api-key: the classification is body-driven, per the vendor's shapes", () => {
   assertEquals(classifyTokenCheck(200, { email: "ada@example.com" }), { ok: true });
   assertEquals(classifyTokenCheck(200, {}).ok, false);
   assertEquals(classifyTokenCheck(200, undefined).ok, false);

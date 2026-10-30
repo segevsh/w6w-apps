@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import planCreate from "../../actions/plan-create.ts";
 import { mockCtxWithAccount, pathOf } from "../_helpers.ts";
 
-Deno.test("plan-create: POSTs plan_type, product_id and pricing", async () => {
+test("plan-create: POSTs plan_type, product_id and pricing", async () => {
   const { ctx, calls } = mockCtxWithAccount([{ body: { id: "plan_1" } }], "biz_conn");
   await planCreate.execute(
     { productId: "prod_1", planType: "renewal", renewalPrice: 59, billingPeriod: 30 },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deleteWebhook from "../../actions/delete-webhook.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-webhook: DELETEs /webhooks with key/url in the body, not the path", async () => {
+test("delete-webhook: DELETEs /webhooks with key/url in the body, not the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await deleteWebhook.execute(
     { key: "review/created", url: "https://example.com/hook" },
@@ -18,6 +19,6 @@ Deno.test("delete-webhook: DELETEs /webhooks with key/url in the body, not the p
   assertEquals(out, { ok: true });
 });
 
-Deno.test("delete-webhook: is marked idempotent — deleting an already-gone subscription is a no-op", () => {
+test("delete-webhook: is marked idempotent — deleting an already-gone subscription is a no-op", () => {
   assertEquals(deleteWebhook.idempotent, true);
 });

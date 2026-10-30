@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/voice-languages-list.ts";
 
-Deno.test("voice-languages-list: returns the raw language array, GET /voice/lang", async () => {
+test("voice-languages-list: returns the raw language array, GET /voice/lang", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

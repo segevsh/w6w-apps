@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import matterCreate from "../../actions/matter-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("matter-create: POSTs /matters.json with client/description wrapped correctly", async () => {
+test("matter-create: POSTs /matters.json with client/description wrapped correctly", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: envelope({ id: 9, description: "New matter" }),
@@ -15,7 +16,7 @@ Deno.test("matter-create: POSTs /matters.json with client/description wrapped co
   });
 });
 
-Deno.test("matter-create: optional nested refs are only sent when provided", async () => {
+test("matter-create: optional nested refs are only sent when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 9 }) }]);
   await matterCreate.execute(
     { clientId: 1, description: "d", practiceAreaId: 3, billable: false },
@@ -27,6 +28,6 @@ Deno.test("matter-create: optional nested refs are only sent when provided", asy
   assertEquals("responsible_attorney" in body, false);
 });
 
-Deno.test("matter-create: is declared non-idempotent (a retry starts a second matter)", () => {
+test("matter-create: is declared non-idempotent (a retry starts a second matter)", () => {
   assertEquals(matterCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectDocumentList from "../../actions/project-document-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-document-list: lists documents with their sizes and URLs", async () => {
+test("project-document-list: lists documents with their sizes and URLs", async () => {
   const { ctx, calls } = mockCtx([{
     body: [{ id: "115", name: "measurements.pdf", byte_size: 3457903 }],
   }]);

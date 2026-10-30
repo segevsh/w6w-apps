@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationOpen from "../../actions/conversation-open.ts";
 import { API_ROOT, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("conversation-open: sends the documented request and returns the answer", async () => {
+test("conversation-open: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await conversationOpen.execute({ "conversation": 99 }, ctx) as { id: number };
 
@@ -13,12 +14,12 @@ Deno.test("conversation-open: sends the documented request and returns the answe
   assertEquals(result.id, 1);
 });
 
-Deno.test("conversation-open: declares idempotent = true", () => {
+test("conversation-open: declares idempotent = true", () => {
   assertEquals(conversationOpen.idempotent, true);
   assertEquals(conversationOpen.type, "perform");
 });
 
-Deno.test("conversation-open: a refused token surfaces the vendor message", async () => {
+test("conversation-open: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("user-list: reads the V1 systemusers collection", async () => {
+test("user-list: reads the V1 systemusers collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [{ _id: "u1" }] } }], display);
   const result = await action.execute!({ limit: 5 }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/systemusers");
@@ -13,7 +14,7 @@ Deno.test("user-list: reads the V1 systemusers collection", async () => {
 });
 
 /** JumpCloud's sort and fields are space-separated; the form is comma-separated. */
-Deno.test("user-list: sort and fields are converted to spaces, filter is passed as given", async () => {
+test("user-list: sort and fields are converted to spaces, filter is passed as given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], display);
   await action.execute!({
     filter: "department:$eq:Engineering",
@@ -28,7 +29,7 @@ Deno.test("user-list: sort and fields are converted to spaces, filter is passed 
   assertEquals(q.get("search"), "ada");
 });
 
-Deno.test("user-list: the connection's region decides the host", async () => {
+test("user-list: the connection's region decides the host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }], {
     display: { region: "eu" },
   });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roleGet from "../../actions/role-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("role-get: reads GET /v2/roles/{id}", async () => {
+test("role-get: reads GET /v2/roles/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 4, name: "Art Director", active: true } }]);
   const result = await roleGet.execute({ roleId: 4 }, ctx) as Record<string, unknown>;
 

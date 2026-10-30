@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/export-reports.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
@@ -6,7 +7,7 @@ import { assertWire, sent } from "../_job.ts";
 const TEMPLATE = "<#list reports as report>${report.reportName}</#list>";
 const TEXT = { "content-type": "text/plain" };
 
-Deno.test("export-reports: by report IDs, posts file/combinedReportData with the template as its own field", async () => {
+test("export-reports: by report IDs, posts file/combinedReportData with the template as its own field", async () => {
   const { ctx, calls } = mockCtx([{ body: "export_8c1d.csv", headers: TEXT }]);
   const out = await action.execute!({
     template: TEMPLATE,
@@ -28,7 +29,7 @@ Deno.test("export-reports: by report IDs, posts file/combinedReportData with the
   assertEquals(out, { fileName: "export_8c1d.csv" });
 });
 
-Deno.test("export-reports: a date-range export with finish actions matches the documented shape", async () => {
+test("export-reports: a date-range export with finish actions matches the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: "myExport_1.xlsx", headers: TEXT }]);
   await action.execute!({
     template: TEMPLATE,
@@ -70,7 +71,7 @@ Deno.test("export-reports: a date-range export with finish actions matches the d
   });
 });
 
-Deno.test("export-reports: needs a report selector, a valid format, valid states and a template", async () => {
+test("export-reports: needs a report selector, a valid format, valid states and a template", async () => {
   const { ctx, calls } = mockCtx([]);
   const base = { template: TEMPLATE, fileExtension: "csv" };
   await assertRejects(
@@ -103,7 +104,7 @@ Deno.test("export-reports: needs a report selector, a valid format, valid states
   assertEquals(calls.length, 0);
 });
 
-Deno.test("export-reports: approvedAfter alone is a valid selector", async () => {
+test("export-reports: approvedAfter alone is a valid selector", async () => {
   const { ctx, calls } = mockCtx([{ body: "export_x.json", headers: TEXT }]);
   await action.execute!(
     { template: TEMPLATE, fileExtension: "json", approvedAfter: "2026-02-01" },
@@ -112,7 +113,7 @@ Deno.test("export-reports: approvedAfter alone is a valid selector", async () =>
   assertEquals(sent(calls[0]).job.inputSettings.filters, { approvedAfter: "2026-02-01" });
 });
 
-Deno.test("export-reports: surfaces an error envelope instead of treating it as a file name", async () => {
+test("export-reports: surfaces an error envelope instead of treating it as a file name", async () => {
   const { ctx } = mockCtx([{
     body: { responseMessage: "Date range exceeds one year", responseCode: 410 },
   }]);
@@ -127,7 +128,7 @@ Deno.test("export-reports: surfaces an error envelope instead of treating it as 
   );
 });
 
-Deno.test("export-reports: declares a non-idempotent perform", () => {
+test("export-reports: declares a non-idempotent perform", () => {
   assertEquals([action.type, action.idempotent], ["perform", false]);
   assert(action.params!.find((p) => p.key === "template")!.required);
 });

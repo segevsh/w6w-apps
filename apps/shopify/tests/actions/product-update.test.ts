@@ -1,19 +1,20 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockShopifyCtx } from "../_helpers.ts";
 import action from "../../actions/product-update.ts";
 
-Deno.test("product-update: PUTs the id plus only the supplied fields", async () => {
+test("product-update: PUTs the id plus only the supplied fields", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: {} } }]);
   await action.execute({ productId: 5, status: "archived" }, ctx);
   assertEquals(calls[0].method, "PUT");
   assertEquals(JSON.parse(calls[0].body!), { product: { id: 5, status: "archived" } });
 });
 
-Deno.test("product-update: warns that tags replace rather than append", () => {
+test("product-update: warns that tags replace rather than append", () => {
   assert(action.params?.find((p) => p.key === "tags")?.hint?.includes("REPLACES"));
 });
 
-Deno.test("product-update: images and handle pass straight through", async () => {
+test("product-update: images and handle pass straight through", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: {} } }]);
   await action.execute({
     productId: 5,
@@ -25,7 +26,7 @@ Deno.test("product-update: images and handle pass straight through", async () =>
   assertEquals(p.handle, "mug");
 });
 
-Deno.test("product-update: published=true sends an ISO published_at, no `published` key", async () => {
+test("product-update: published=true sends an ISO published_at, no `published` key", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: {} } }]);
   await action.execute({ productId: 5, published: true }, ctx);
   const p = JSON.parse(calls[0].body!).product;
@@ -33,7 +34,7 @@ Deno.test("product-update: published=true sends an ISO published_at, no `publish
   assertEquals("published" in p, false);
 });
 
-Deno.test("product-update: published=false sends a null published_at, no `published` key", async () => {
+test("product-update: published=false sends a null published_at, no `published` key", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: {} } }]);
   await action.execute({ productId: 5, published: false }, ctx);
   const p = JSON.parse(calls[0].body!).product;
@@ -41,18 +42,18 @@ Deno.test("product-update: published=false sends a null published_at, no `publis
   assertEquals("published" in p, false);
 });
 
-Deno.test("product-update: publishedScope forwards as published_scope", async () => {
+test("product-update: publishedScope forwards as published_scope", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: {} } }]);
   await action.execute({ productId: 5, publishedScope: "web" }, ctx);
   const p = JSON.parse(calls[0].body!).product;
   assertEquals(p.published_scope, "web");
 });
 
-Deno.test("product-update: does not ship metafields (deferred to a dedicated resource)", () => {
+test("product-update: does not ship metafields (deferred to a dedicated resource)", () => {
   assertEquals(action.params?.find((p) => p.key === "metafields"), undefined);
 });
 
-Deno.test("product-update: omits the new fields entirely when unset", async () => {
+test("product-update: omits the new fields entirely when unset", async () => {
   const { ctx, calls } = mockShopifyCtx([{ body: { product: {} } }]);
   await action.execute({ productId: 5, status: "archived" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { product: { id: 5, status: "archived" } });

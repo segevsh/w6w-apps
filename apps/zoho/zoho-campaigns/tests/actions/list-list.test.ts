@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/list-list.ts";
 
-Deno.test("list-list: GETs getmailinglists and returns list_of_details as lists", async () => {
+test("list-list: GETs getmailinglists and returns list_of_details as lists", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     {
       body: {
@@ -20,7 +21,7 @@ Deno.test("list-list: GETs getmailinglists and returns list_of_details as lists"
   assertEquals(out, { lists: [{ listkey: "abc", listname: "My List" }] });
 });
 
-Deno.test("list-list: returns an empty array when the vendor omits list_of_details", async () => {
+test("list-list: returns an empty array when the vendor omits list_of_details", async () => {
   const { ctx } = mockCampaignsCtx([{ body: { status: "success", code: "0" } }]);
   const out = await action.execute({}, ctx);
   assertEquals(out, { lists: [] });

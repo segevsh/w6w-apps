@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/folder-media-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("folder-media-list: calls GET /folders/{folderId}/medias", async () => {
+test("folder-media-list: calls GET /folders/{folderId}/medias", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, items: [{ id: "x1" }, { id: "x2" }] } }]);
   const out = await action.execute!({ "folderId": "folderId-1" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "GET");
@@ -10,7 +11,7 @@ Deno.test("folder-media-list: calls GET /folders/{folderId}/medias", async () =>
   assertEquals(out.count, 2);
 });
 
-Deno.test("folder-media-list: a failure envelope is an error", async () => {
+test("folder-media-list: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

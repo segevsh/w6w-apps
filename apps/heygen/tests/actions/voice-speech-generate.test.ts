@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voiceSpeechGenerate from "../../actions/voice-speech-generate.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("voice-speech-generate: is synchronous — the response is a ready audio_url, not a job id", async () => {
+test("voice-speech-generate: is synchronous — the response is a ready audio_url, not a job id", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ audio_url: "https://files.heygen.ai/audio/tts1.mp3", duration: 4.5 }) },
   ]);
@@ -15,7 +16,7 @@ Deno.test("voice-speech-generate: is synchronous — the response is a ready aud
   assertEquals(out, { audio_url: "https://files.heygen.ai/audio/tts1.mp3", duration: 4.5 });
 });
 
-Deno.test("voice-speech-generate: forwards speed, locale and input type", async () => {
+test("voice-speech-generate: forwards speed, locale and input type", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ audio_url: "https://x", duration: 1 }) }]);
   await voiceSpeechGenerate.execute(
     { text: "Hola", voiceId: "v1", speed: 1.5, locale: "es-ES", inputType: "ssml" },

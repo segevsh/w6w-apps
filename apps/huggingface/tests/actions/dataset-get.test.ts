@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/dataset-get.ts";
 
-Deno.test("dataset-get: reads one dataset", async () => {
+test("dataset-get: reads one dataset", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: "rajpurkar/squad", cardData: { license: "cc-by-sa-4.0" }, sha: "abc" },
@@ -14,7 +15,7 @@ Deno.test("dataset-get: reads one dataset", async () => {
 });
 
 /** Nothing enforces the licence at download time. */
-Deno.test("dataset-get: the card carries the licence, and the description points at it", async () => {
+test("dataset-get: the card carries the licence, and the description points at it", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { id: "rajpurkar/squad", cardData: { license: "cc-by-sa-4.0", configs: ["plain_text"] } },
@@ -25,13 +26,13 @@ Deno.test("dataset-get: the card carries the licence, and the description points
   assert(/license/.test(action.description!), action.description);
 });
 
-Deno.test("dataset-get: a gated dataset reads its metadata fine", async () => {
+test("dataset-get: a gated dataset reads its metadata fine", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "closed/one", gated: "manual" } }]);
   const result = await action.execute({ id: "closed/one" }, ctx) as Record<string, unknown>;
   assertEquals(result.gated, true, "the gate blocks files, not the card");
 });
 
-Deno.test("dataset-get: a revision pins the read", async () => {
+test("dataset-get: a revision pins the read", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "rajpurkar/squad" } }]);
   await action.execute({ id: "rajpurkar/squad", revision: "refs/convert/parquet" }, ctx);
   assertEquals(
@@ -40,7 +41,7 @@ Deno.test("dataset-get: a revision pins the read", async () => {
   );
 });
 
-Deno.test("dataset-get: the output is keyed by its kind", () => {
+test("dataset-get: the output is keyed by its kind", () => {
   const outputs = action.output as Array<{ key: string }>;
   assertEquals(outputs.some((entry) => entry.key === "dataset"), true);
   assertEquals(action.type, "read");

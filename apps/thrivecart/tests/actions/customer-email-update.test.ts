@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerEmailUpdate from "../../actions/customer-email-update.ts";
 import { jsonBodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("customer-email-update: calls POST /customerEmailUpdate with a JSON body", async () => {
+test("customer-email-update: calls POST /customerEmailUpdate with a JSON body", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, message: "Customer email updated successfully" } },
   ]);
@@ -20,7 +21,7 @@ Deno.test("customer-email-update: calls POST /customerEmailUpdate with a JSON bo
   });
 });
 
-Deno.test("customer-email-update: allowMerge is sent when explicitly true", async () => {
+test("customer-email-update: allowMerge is sent when explicitly true", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await customerEmailUpdate.execute(
     { currentEmail: "old@example.com", newEmail: "new@example.com", allowMerge: true },
@@ -29,6 +30,6 @@ Deno.test("customer-email-update: allowMerge is sent when explicitly true", asyn
   assertEquals((jsonBodyOf(calls[0]) as { allow_merge: boolean }).allow_merge, true);
 });
 
-Deno.test("customer-email-update: is idempotent", () => {
+test("customer-email-update: is idempotent", () => {
   assertEquals(customerEmailUpdate.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-update-profile.ts";
 
-Deno.test("user-update-profile: nests fields under `profile` and sets status_expiration=0 by default", async () => {
+test("user-update-profile: nests fields under `profile` and sets status_expiration=0 by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, profile: { first_name: "CJ" } } }]);
   const result = await action.execute!({ firstName: "CJ", statusText: "away" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/users.profile.set");
@@ -13,7 +14,7 @@ Deno.test("user-update-profile: nests fields under `profile` and sets status_exp
   assertEquals(result, { first_name: "CJ" });
 });
 
-Deno.test("user-update-profile: converts customFields[] into a keyed fields map", async () => {
+test("user-update-profile: converts customFields[] into a keyed fields map", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, profile: {} } }]);
   await action.execute!(
     {

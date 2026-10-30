@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/parcel-create.ts";
 
-Deno.test("parcel-create: dimensions and weight are sent as strings, not numbers", async () => {
+test("parcel-create: dimensions and weight are sent as strings, not numbers", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { object_id: "prc_1" } }]);
   await action.execute!(
     { length: 10, width: 8, height: 4, distanceUnit: "in", weight: 16, massUnit: "oz" },
@@ -19,7 +20,7 @@ Deno.test("parcel-create: dimensions and weight are sent as strings, not numbers
   });
 });
 
-Deno.test("parcel-create: every dimension is required", async () => {
+test("parcel-create: every dimension is required", async () => {
   for (const missing of ["length", "width", "height", "weight"]) {
     const input: Record<string, unknown> = {
       length: 10,
@@ -36,7 +37,7 @@ Deno.test("parcel-create: every dimension is required", async () => {
   }
 });
 
-Deno.test("parcel-create: logs the parcel id only", async () => {
+test("parcel-create: logs the parcel id only", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { object_id: "prc_1" } }]);
   await action.execute!(
     { length: 10, width: 8, height: 4, distanceUnit: "in", weight: 16, massUnit: "oz" },

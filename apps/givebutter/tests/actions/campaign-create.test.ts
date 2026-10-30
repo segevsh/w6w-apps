@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignCreate from "../../actions/campaign-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-create: POSTs the compacted body to /campaigns", async () => {
+test("campaign-create: POSTs the compacted body to /campaigns", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1", slug: "gala" }) }]);
   await campaignCreate.execute({ type: "fundraise", title: "Gala", slug: "gala" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("campaign-create: POSTs the compacted body to /campaigns", async () =>
   assertEquals(body, { type: "fundraise", title: "Gala", slug: "gala" });
 });
 
-Deno.test("campaign-create: settings JSON is parsed into an array before sending", async () => {
+test("campaign-create: settings JSON is parsed into an array before sending", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1" }) }]);
   await campaignCreate.execute(
     {

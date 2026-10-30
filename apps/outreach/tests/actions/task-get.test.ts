@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import taskGet from "../../actions/task-get.ts";
 import { errorsBody, mockCtx, pathOf, queryOf, single } from "../_helpers.ts";
 
-Deno.test("task-get: GET /tasks/{id} returns the resource and included", async () => {
+test("task-get: GET /tasks/{id} returns the resource and included", async () => {
   const { ctx, calls } = mockCtx([{
     body: { ...single("task", 42, { name: "x" }), included: [{ type: "user", id: 1 }] },
   }]);
@@ -18,13 +19,13 @@ Deno.test("task-get: GET /tasks/{id} returns the resource and included", async (
   assertEquals(out.included.length, 1);
 });
 
-Deno.test("task-get: include and sparse fields are forwarded", async () => {
+test("task-get: include and sparse fields are forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: single("task", 1) }]);
   await taskGet.execute({ id: "1", include: "owner", fields: "name" }, ctx);
   assertEquals(queryOf(calls[0].url), { include: "owner", "fields[task]": "name" });
 });
 
-Deno.test("task-get: a non-integer id is refused before any request", async () => {
+test("task-get: a non-integer id is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await taskGet.execute({ id: "../users" }, ctx),
@@ -34,7 +35,7 @@ Deno.test("task-get: a non-integer id is refused before any request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("task-get: 404 resourceNotFound is reported", async () => {
+test("task-get: 404 resourceNotFound is reported", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorsBody("resourceNotFound", "Resource Not Found", "Could not find it."),

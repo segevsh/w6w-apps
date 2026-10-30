@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deleteFormWebhook from "../../actions/delete-form-webhook.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-form-webhook: DELETEs /v1/webhooks/{id}", async () => {
+test("delete-form-webhook: DELETEs /v1/webhooks/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: "ok" } }]);
   const out = await deleteFormWebhook.execute({ id: "w1" }, ctx) as { deleted: boolean };
   assertEquals(calls[0].method, "DELETE");

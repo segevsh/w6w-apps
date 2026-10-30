@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { actionCtx } from "../_helpers.ts";
 import describeDoc from "../../actions/describe-doc.ts";
 
-Deno.test("describe-doc: GETs the single-doc path and returns its workspace", async () => {
+test("describe-doc: GETs the single-doc path and returns its workspace", async () => {
   const { ctx, calls } = actionCtx([{
     body: {
       id: "9PJhBDZ",

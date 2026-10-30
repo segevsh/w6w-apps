@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import commentRemove from "../../actions/comment-remove.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-remove: POST /api/v3/comments/remove with every documented parameter", async () => {
+test("comment-remove: POST /api/v3/comments/remove with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await commentRemove.execute({ "commentId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,7 +15,7 @@ Deno.test("comment-remove: POST /api/v3/comments/remove with every documented pa
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("comment-remove: sends a form body, never a query string", async () => {
+test("comment-remove: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await commentRemove.execute({ "commentId": 100 }, ctx);
 
@@ -22,18 +23,18 @@ Deno.test("comment-remove: sends a form body, never a query string", async () =>
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("comment-remove: is declared idempotent", () => {
+test("comment-remove: is declared idempotent", () => {
   assertEquals(commentRemove.idempotent, true);
 });
 
-Deno.test("comment-remove: sends no credential of its own", async () => {
+test("comment-remove: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await commentRemove.execute({ "commentId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("comment-remove: surfaces Twist's error body", async () => {
+test("comment-remove: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

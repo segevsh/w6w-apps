@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-unclaim.ts";
 
@@ -8,7 +9,7 @@ const device = (cellular = false) => ({
   body: { id: ID, name: "gateway", cellular },
 });
 
-Deno.test("device-unclaim: reads the device, then deletes the claim", async () => {
+test("device-unclaim: reads the device, then deletes the claim", async () => {
   const { ctx, calls } = mockCtx([device(), { status: 200, body: { ok: true } }]);
   const result = await action.execute(
     { deviceId: ID, confirmName: "gateway" },
@@ -19,7 +20,7 @@ Deno.test("device-unclaim: reads the device, then deletes the claim", async () =
   assertEquals(result.name, "gateway");
 });
 
-Deno.test("device-unclaim: the confirmation is the name, not the id", async () => {
+test("device-unclaim: the confirmation is the name, not the id", async () => {
   for (const confirm of [undefined, "", ID, "GATEWAY"]) {
     const { ctx, calls } = mockCtx([device()]);
     let message = "";
@@ -34,7 +35,7 @@ Deno.test("device-unclaim: the confirmation is the name, not the id", async () =
 });
 
 /** The opposite of what "delete" suggests. */
-Deno.test("device-unclaim: warns that the device is untouched and still connecting", async () => {
+test("device-unclaim: warns that the device is untouched and still connecting", async () => {
   const { ctx, logs } = mockCtx([device(), { status: 200, body: {} }]);
   const result = await action.execute(
     { deviceId: ID, confirmName: "gateway" },
@@ -47,7 +48,7 @@ Deno.test("device-unclaim: warns that the device is untouched and still connecti
 });
 
 /** On cellular, a device in a drawer keeps using data. */
-Deno.test("device-unclaim: a cellular device gets the data warning too", async () => {
+test("device-unclaim: a cellular device gets the data warning too", async () => {
   const { ctx, logs } = mockCtx([device(true), { status: 200, body: {} }]);
   await action.execute({ deviceId: ID, confirmName: "gateway" }, ctx);
   assert(/including using cellular data/.test(logs[0].message), logs[0].message);

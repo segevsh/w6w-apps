@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "./_assert.ts";
 import type { ActionDefinition } from "@w6w/types";
 import { KEY, LICENSE, OUT } from "./_fixtures.ts";
 import { mockCtx, pathOf } from "./_helpers.ts";
@@ -6,7 +7,7 @@ import { mockCtx, pathOf } from "./_helpers.ts";
 /** The checks every PUT license action must pass: path, form body, v1 variant, empty reply. */
 // deno-lint-ignore no-explicit-any
 export function putSuite(name: string, action: ActionDefinition<any>, op: string) {
-  Deno.test(`${name}: PUT /api/v2/license/${op} with a form body`, async () => {
+  test(`${name}: PUT /api/v2/license/${op} with a form body`, async () => {
     const { ctx, calls } = mockCtx([{ body: { data: LICENSE } }]);
     const out = await action.execute(KEY, ctx);
     assertEquals(calls[0].method, "PUT");
@@ -17,7 +18,7 @@ export function putSuite(name: string, action: ActionDefinition<any>, op: string
     assertEquals(out, OUT);
   });
 
-  Deno.test(`${name}: legacy v1 adds product_link to the body`, async () => {
+  test(`${name}: legacy v1 adds product_link to the body`, async () => {
     const { ctx, calls } = mockCtx([{ body: { data: LICENSE } }]);
     await action.execute({ ...KEY, apiVersion: "v1", productLink: "mVT0" }, ctx);
     assertEquals(pathOf(calls[0].url), `/api/v1/license/${op}`);
@@ -27,7 +28,7 @@ export function putSuite(name: string, action: ActionDefinition<any>, op: string
     });
   });
 
-  Deno.test(`${name}: an empty response throws (the update did not happen)`, async () => {
+  test(`${name}: an empty response throws (the update did not happen)`, async () => {
     const { ctx } = mockCtx([{ body: "" }]);
     await assertRejects(() => Promise.resolve(action.execute(KEY, ctx)), Error, "empty response");
   });

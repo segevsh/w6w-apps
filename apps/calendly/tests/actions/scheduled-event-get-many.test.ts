@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/scheduled-event-get-many.ts";
 
-Deno.test("scheduled-event-get-many: GETs /scheduled_events with mapped filters", async () => {
+test("scheduled-event-get-many: GETs /scheduled_events with mapped filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { collection: [] } }]);
   await action.execute(
     {

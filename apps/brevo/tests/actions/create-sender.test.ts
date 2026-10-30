@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-sender.ts";
 
-Deno.test("create-sender: POSTs /v3/senders with name and email", async () => {
+test("create-sender: POSTs /v3/senders with name and email", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 42 } }]);
   await action.execute!({ name: "Ada", email: "ada@x.com" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("create-sender: POSTs /v3/senders with name and email", async () => {
   assertEquals(JSON.parse(calls[0].body!), { name: "Ada", email: "ada@x.com" });
 });
 
-Deno.test("create-sender: forwards dedicated IPs when provided", async () => {
+test("create-sender: forwards dedicated IPs when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 42 } }]);
   await action.execute!(
     {

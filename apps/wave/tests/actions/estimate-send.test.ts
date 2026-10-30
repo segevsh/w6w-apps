@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import estimateSend from "../../actions/estimate-send.ts";
 
-Deno.test("estimate-send: splits a comma-separated `to` into a list and defaults attachPDF", async () => {
+test("estimate-send: splits a comma-separated `to` into a list and defaults attachPDF", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { estimateSend: { didSucceed: true, inputErrors: [] } } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("estimate-send: splits a comma-separated `to` into a list and defaults
   assertEquals(body.variables.input.attachPDF, true);
 });
 
-Deno.test("estimate-send: a rejected send throws", async () => {
+test("estimate-send: a rejected send throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {
@@ -36,7 +37,7 @@ Deno.test("estimate-send: a rejected send throws", async () => {
   if (!threw) throw new Error("expected a rejection");
 });
 
-Deno.test("estimate-send: type/resource/idempotency metadata", () => {
+test("estimate-send: type/resource/idempotency metadata", () => {
   assertEquals(estimateSend.type, "perform");
   assertEquals(estimateSend.resource, "estimate");
   assertEquals(estimateSend.idempotent, false);

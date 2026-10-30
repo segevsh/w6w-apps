@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tokenInformationGet from "../../actions/token-information-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("token-information-get: hits GET /token_information and unwraps the envelope", async () => {
+test("token-information-get: hits GET /token_information and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope("token_information", {
@@ -21,6 +22,6 @@ Deno.test("token-information-get: hits GET /token_information and unwraps the en
   });
 });
 
-Deno.test("token-information-get: takes no parameters and requires no scope", () => {
+test("token-information-get: takes no parameters and requires no scope", () => {
   assertEquals(tokenInformationGet.params?.length, 0);
 });

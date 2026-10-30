@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import emailTemplateList from "../../actions/email-template-list.ts";
 import { errorEnvelope, mockCtx, okEnvelope, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("email-template-list: GETs emailmarketing/getemailtemplates.json with the documented parameters", async () => {
+test("email-template-list: GETs emailmarketing/getemailtemplates.json with the documented parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "templates": {} }) }]);
   const out = await emailTemplateList.execute({} as never, ctx);
 
@@ -14,14 +15,14 @@ Deno.test("email-template-list: GETs emailmarketing/getemailtemplates.json with 
   assertEquals(out, { "templates": {} });
 });
 
-Deno.test("email-template-list: is a read with no request body", async () => {
+test("email-template-list: is a read with no request body", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ "templates": {} }) }]);
   await emailTemplateList.execute({} as never, ctx);
   assertEquals(calls[0].body, null);
   assertEquals(emailTemplateList.type, "read");
 });
 
-Deno.test("email-template-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
+test("email-template-list: an error envelope rejects with the vendor's message, whatever the status", async () => {
   for (const status of [200, 401]) {
     const { ctx } = mockCtx([{ status, body: errorEnvelope(1002, "bad thing") }]);
     const err = await assertRejects(async () => await emailTemplateList.execute({} as never, ctx));

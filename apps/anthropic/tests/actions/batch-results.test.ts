@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-results.ts";
 
-Deno.test("batch-results: GETs /v1/messages/batches/{id}/results and decodes JSONL into an array", async () => {
+test("batch-results: GETs /v1/messages/batches/{id}/results and decodes JSONL into an array", async () => {
   const jsonl = [
     `{"custom_id":"req-1","result":{"type":"succeeded","message":{"id":"msg_a"}}}`,
     `{"custom_id":"req-2","result":{"type":"errored","error":{"type":"invalid_request_error"}}}`,
@@ -27,7 +28,7 @@ Deno.test("batch-results: GETs /v1/messages/batches/{id}/results and decodes JSO
   assertEquals(result.results[1].result.type, "errored");
 });
 
-Deno.test("batch-results: tolerates trailing newline / blank lines", async () => {
+test("batch-results: tolerates trailing newline / blank lines", async () => {
   const jsonl = `{"custom_id":"a","result":{"type":"succeeded"}}\n\n`;
   const { ctx } = mockCtx([{ body: jsonl }]);
   const result = await action.execute!({ batchId: "batch_1" }, ctx) as {

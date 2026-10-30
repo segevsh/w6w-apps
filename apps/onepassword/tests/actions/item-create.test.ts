@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, eventsDisplay, ok } from "./_shared.ts";
 import action from "../../actions/item-create.ts";
@@ -6,7 +7,7 @@ import action from "../../actions/item-create.ts";
 const created = ok({ id: "i9", title: "Rotated key" });
 
 /** A value stored as STRING is visible in the UI and is not audited. */
-Deno.test("item-create: fields default to CONCEALED", async () => {
+test("item-create: fields default to CONCEALED", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({
     vaultId: "v1",
@@ -19,7 +20,7 @@ Deno.test("item-create: fields default to CONCEALED", async () => {
   assertEquals(body.category, "LOGIN");
 });
 
-Deno.test("item-create: an explicit type is respected", async () => {
+test("item-create: an explicit type is respected", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   const result = await action.execute!({
     vaultId: "v1",
@@ -33,7 +34,7 @@ Deno.test("item-create: an explicit type is respected", async () => {
   assertEquals(result.concealedCount, 1);
 });
 
-Deno.test("item-create: the category is upper-cased and tags are split", async () => {
+test("item-create: the category is upper-cased and tags are split", async () => {
   const { ctx, calls } = mockCtx([created], { display });
   await action.execute!({
     vaultId: "v1",
@@ -47,7 +48,7 @@ Deno.test("item-create: the category is upper-cased and tags are split", async (
   assertEquals(body.tags, ["automation", "rotated"]);
 });
 
-Deno.test("item-create: a field with no label or id is refused", async () => {
+test("item-create: a field with no label or id is refused", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -62,7 +63,7 @@ Deno.test("item-create: a field with no label or id is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("item-create: needs a vault, a title and fields", async () => {
+test("item-create: needs a vault, a title and fields", async () => {
   for (
     const input of [
       { title: "a", fields: '[{"label":"b","value":"c"}]' },
@@ -77,7 +78,7 @@ Deno.test("item-create: needs a vault, a title and fields", async () => {
 });
 
 /** Neither the title nor any value reaches a log. */
-Deno.test("item-create: logs counts only", async () => {
+test("item-create: logs counts only", async () => {
   const { ctx, logs } = mockCtx([created], { display });
   await action.execute!({
     vaultId: "v1",
@@ -90,7 +91,7 @@ Deno.test("item-create: logs counts only", async () => {
   assertEquals(logs[0].data, { fieldCount: 1, concealedCount: 1 });
 });
 
-Deno.test("item-create: an Events connection is refused", async () => {
+test("item-create: an Events connection is refused", async () => {
   const { ctx } = mockCtx([], { display: eventsDisplay });
   await assertRejects(
     async () =>
@@ -103,7 +104,7 @@ Deno.test("item-create: an Events connection is refused", async () => {
   );
 });
 
-Deno.test("item-create: is non-idempotent and says the type is what makes a value secret", () => {
+test("item-create: is non-idempotent and says the type is what makes a value secret", () => {
   assertEquals(action.idempotent, false);
   assert(/`CONCEALED` is hidden and audited/.test(action.description!), action.description);
 });

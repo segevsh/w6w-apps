@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-cancel.ts";
 
-Deno.test("workflow-cancel: POSTs to /workflow/{id}/cancel", async () => {
+test("workflow-cancel: POSTs to /workflow/{id}/cancel", async () => {
   const { ctx, calls } = mockCtx([
     { status: 202, body: { message: "Accepted." } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("workflow-cancel: POSTs to /workflow/{id}/cancel", async () => {
   assertEquals(result, { message: "Accepted." });
 });
 
-Deno.test("workflow-cancel: requires workflowId", async () => {
+test("workflow-cancel: requires workflowId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "workflowId");
 });

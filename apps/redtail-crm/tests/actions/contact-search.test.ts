@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactSearch from "../../actions/contact-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-search: fetches GET /contacts/search with the docs' documented parameters", async () => {
+test("contact-search: fetches GET /contacts/search with the docs' documented parameters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { contacts: [{ id: 9222, company_name: "Abernathy Inc" }] },
   }]);
@@ -22,7 +23,7 @@ Deno.test("contact-search: fetches GET /contacts/search with the docs' documente
   assertEquals(out.contacts[0].company_name, "Abernathy Inc");
 });
 
-Deno.test("contact-search: omits unset filters entirely", async () => {
+test("contact-search: omits unset filters entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await contactSearch.execute({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

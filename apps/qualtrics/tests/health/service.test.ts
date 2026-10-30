@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -17,14 +18,14 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the status host, not the API host", () => {
+test("service: probes the status host, not the API host", () => {
   assertEquals(STATUS_URL, "https://status.qualtrics.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.qualtrics.com"]);
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
 });
 
-Deno.test("service: a healthy API component reports ok, keyed by its vendor id", async () => {
+test("service: a healthy API component reports ok, keyed by its vendor id", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -37,7 +38,7 @@ Deno.test("service: a healthy API component reports ok, keyed by its vendor id",
  * The page-level indicator is a worst-of across all 36 components; a degraded
  * `Canada Endpoint` must not report the REST API degraded.
  */
-Deno.test("service: another component's degradation does not move the verdict", async () => {
+test("service: another component's degradation does not move the verdict", async () => {
   const body = summary({ status: { indicator: "minor", description: "Partial outage" } });
   const { ctx } = mockCtx([{ body }]);
   const report = await service.check!({}, ctx);
@@ -45,7 +46,7 @@ Deno.test("service: another component's degradation does not move the verdict", 
   assertEquals(report.state, "ok");
 });
 
-Deno.test("service: the API component's own degradation does move the verdict", async () => {
+test("service: the API component's own degradation does move the verdict", async () => {
   const body = summary();
   body.components[2].status = "major_outage";
   const { ctx } = mockCtx([{ body }]);
@@ -55,7 +56,7 @@ Deno.test("service: the API component's own degradation does move the verdict", 
   assert(/major_outage/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page missing the API component reports unknown", async () => {
+test("service: a page missing the API component reports unknown", async () => {
   const body = summary({ components: [{ id: "x", name: "Logins", status: "operational" }] });
   const { ctx } = mockCtx([{ body }]);
   const report = await service.check!({}, ctx);
@@ -65,18 +66,18 @@ Deno.test("service: a page missing the API component reports unknown", async () 
 });
 
 /** A broken status API says nothing about Qualtrics — never `down`. */
-Deno.test("service: a failing status page reports unknown, not down", async () => {
+test("service: a failing status page reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
 /** A healthy but wrongly-pointed page must not be trusted. */
-Deno.test("service: a page that stops self-identifying as Qualtrics' reports unknown", async () => {
+test("service: a page that stops self-identifying as Qualtrics' reports unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary({ page: { id: "x", name: "Other", url: "https://status.other.com" } }) },
   ]);
@@ -86,7 +87,7 @@ Deno.test("service: a page that stops self-identifying as Qualtrics' reports unk
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: Statuspage's vocabulary maps to the four health states", () => {
+test("service: Statuspage's vocabulary maps to the four health states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");

@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { SEMANTIC_PATCH_CONTENT_TYPE } from "../../lib/client.ts";
 import action from "../../actions/segment-update.ts";
 
 const conn = { display: { projectKey: "default", environmentKey: "production" } };
 
-Deno.test("segment-update: turns the add and remove fields into instructions", async () => {
+test("segment-update: turns the add and remove fields into instructions", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { key: "s" } }], conn);
   await action.execute!({ segmentKey: "s", addKeys: "u1, u2", removeKeys: "u3" }, ctx);
   assertEquals(
@@ -19,7 +20,7 @@ Deno.test("segment-update: turns the add and remove fields into instructions", a
   ]);
 });
 
-Deno.test("segment-update: extra instructions are merged after the two fields", async () => {
+test("segment-update: extra instructions are merged after the two fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], conn);
   await action.execute!({
     segmentKey: "s",
@@ -31,7 +32,7 @@ Deno.test("segment-update: extra instructions are merged after the two fields", 
   assertEquals(instructions[1].kind, "addExcludedTargets");
 });
 
-Deno.test("segment-update: a change with nothing set is refused, not sent", async () => {
+test("segment-update: a change with nothing set is refused, not sent", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ segmentKey: "s" }, ctx),
@@ -41,7 +42,7 @@ Deno.test("segment-update: a change with nothing set is refused, not sent", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("segment-update: a non-array instructions value is refused", async () => {
+test("segment-update: a non-array instructions value is refused", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ segmentKey: "s", instructions: '{"kind":"x"}' }, ctx),

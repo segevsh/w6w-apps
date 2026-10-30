@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-send.ts";
 
 const OK = { ok: true, result: { message_id: 11, chat: { id: 1 } } };
 
-Deno.test("message-send: POSTs sendMessage with the text and chat", async () => {
+test("message-send: POSTs sendMessage with the text and chat", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   const out = await action.execute({ chatId: "@acme", text: "hi" }, ctx);
   assertEquals(out, OK.result);
@@ -12,14 +13,14 @@ Deno.test("message-send: POSTs sendMessage with the text and chat", async () => 
   assertEquals(JSON.parse(calls[0].body!), { chat_id: "@acme", text: "hi" });
 });
 
-Deno.test("message-send: omits every option the user left blank", async () => {
+test("message-send: omits every option the user left blank", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({ chatId: "1", text: "hi", parseMode: "" }, ctx);
   const body = JSON.parse(calls[0].body!);
   assertEquals(Object.keys(body).sort(), ["chat_id", "text"]);
 });
 
-Deno.test("message-send: maps the delivery options onto Bot API field names", async () => {
+test("message-send: maps the delivery options onto Bot API field names", async () => {
   const { ctx, calls } = mockCtx([{ body: OK }]);
   await action.execute({
     chatId: "1",
@@ -45,7 +46,7 @@ Deno.test("message-send: maps the delivery options onto Bot API field names", as
   });
 });
 
-Deno.test("message-send: is a non-idempotent perform (a retry posts twice)", () => {
+test("message-send: is a non-idempotent perform (a retry posts twice)", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assert(action.params?.some((p) => p.key === "text" && p.required));

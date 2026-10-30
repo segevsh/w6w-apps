@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   compact,
@@ -11,14 +12,14 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: strList splits, trims and drops empties", () => {
+test("client: strList splits, trims and drops empties", () => {
   assertEquals(strList("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(strList(["x", " y "]), ["x", "y"]);
   assertEquals(strList(" , "), undefined);
   assertEquals(strList(undefined), undefined);
 });
 
-Deno.test("client: intList parses integers and rejects the rest", () => {
+test("client: intList parses integers and rejects the rest", () => {
   assertEquals(intList("1, 2", "IDs"), [1, 2]);
   assertEquals(intList(undefined, "IDs"), undefined);
   try {
@@ -29,21 +30,21 @@ Deno.test("client: intList parses integers and rejects the rest", () => {
   }
 });
 
-Deno.test("client: jsonValue parses JSON text and passes other text through", () => {
+test("client: jsonValue parses JSON text and passes other text through", () => {
   assertEquals(jsonValue('{"a":1}'), { a: 1 });
   assertEquals(jsonValue("not json"), "not json");
   assertEquals(jsonValue(" "), undefined);
   assertEquals(jsonValue({ a: 1 }), { a: 1 });
 });
 
-Deno.test("client: compact drops undefined only; buildQuery skips unset", () => {
+test("client: compact drops undefined only; buildQuery skips unset", () => {
   assertEquals(compact({ a: 1, b: undefined, c: false, d: null }), { a: 1, c: false, d: null });
   assertEquals(buildQuery({ a: "1", b: undefined, c: "", d: 0 }), "?a=1&d=0");
   assertEquals(buildQuery({}), "");
   assertEquals(seg("a/b"), "a%2Fb");
 });
 
-Deno.test("client: errorText covers error, message and validation shapes", () => {
+test("client: errorText covers error, message and validation shapes", () => {
   assertEquals(errorText({ error: "Not enough credits" }), "Not enough credits");
   assertEquals(errorText({ message: "Unauthenticated." }), "Unauthenticated.");
   assertEquals(
@@ -53,7 +54,7 @@ Deno.test("client: errorText covers error, message and validation shapes", () =>
   assertEquals(errorText(null, "  plain  "), "plain");
 });
 
-Deno.test("client: sends accept JSON, a JSON body with content-type, and no credential", async () => {
+test("client: sends accept JSON, a JSON body with content-type, and no credential", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   const out = await new FindymailClient(ctx).request("POST", "/api/x", { body: { a: 1 } });
   assertEquals(out, { ok: 1 });
@@ -62,7 +63,7 @@ Deno.test("client: sends accept JSON, a JSON body with content-type, and no cred
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: an empty success body becomes {} and a failure carries status and text", async () => {
+test("client: an empty success body becomes {} and a failure carries status and text", async () => {
   const ok = mockCtx([{ status: 204 }]);
   assertEquals(await new FindymailClient(ok.ctx).request("DELETE", "/api/x"), {});
   const bad = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);

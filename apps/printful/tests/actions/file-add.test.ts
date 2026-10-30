@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/file-add.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("file-add: POST /files and unwraps the envelope", async () => {
+test("file-add: POST /files and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "code": 200, "result": { "id": 7, "status": "waiting" } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("file-add: POST /files and unwraps the envelope", async () => {
   assertEquals(JSON.parse(calls[0].body!), { "url": "https://x/y.png", "filename": "y.png" });
 });
 
-Deno.test("file-add: a Printful error is surfaced with its reason and message", async () => {
+test("file-add: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

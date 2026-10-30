@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { AcuityClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new AcuityClient(ctx);
   const result = await client.request("/appointments/1/cancel", { method: "PUT" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"message":"Appointment not found"}' },
   ]);
@@ -22,7 +23,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/appointments/999"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new AcuityClient(ctx);
   await client.request("/clients", {
@@ -33,7 +34,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("other"), false);
 });
 
-Deno.test("client: serializes array query params as repeated key[] pairs", async () => {
+test("client: serializes array query params as repeated key[] pairs", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const client = new AcuityClient(ctx);
   await client.request("/availability/times", {
@@ -43,7 +44,7 @@ Deno.test("client: serializes array query params as repeated key[] pairs", async
   assertEquals(url.searchParams.getAll("addonIDs[]"), ["10", "20"]);
 });
 
-Deno.test("client: JSON body sets content-type and serializes", async () => {
+test("client: JSON body sets content-type and serializes", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new AcuityClient(ctx);
   await client.request("/appointments", {
@@ -57,13 +58,13 @@ Deno.test("client: JSON body sets content-type and serializes", async () => {
   );
 });
 
-Deno.test("client: never sets Authorization (sign does)", async () => {
+test("client: never sets Authorization (sign does)", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new AcuityClient(ctx).request("/calendars");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: builds requests against the documented base URL", async () => {
+test("client: builds requests against the documented base URL", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await new AcuityClient(ctx).request("/calendars");
   const url = new URL(calls[0].url);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import customerList from "../../actions/customer-list.ts";
 
-Deno.test("customer-list: returns the customers connection", async () => {
+test("customer-list: returns the customers connection", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -23,7 +24,7 @@ Deno.test("customer-list: returns the customers connection", async () => {
   assertEquals(body.variables.email, "santa@example.com");
 });
 
-Deno.test("customer-list: builds a [KEY_DIR] sort list only when sortKey is given", async () => {
+test("customer-list: builds a [KEY_DIR] sort list only when sortKey is given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { business: { customers: { edges: [], pageInfo: {} } } } },
   }]);
@@ -35,7 +36,7 @@ Deno.test("customer-list: builds a [KEY_DIR] sort list only when sortKey is give
   assertEquals(body.variables.sort, ["NAME_ASC"]);
 });
 
-Deno.test("customer-list: type/resource metadata", () => {
+test("customer-list: type/resource metadata", () => {
   assertEquals(customerList.type, "search");
   assertEquals(customerList.resource, "customer");
 });

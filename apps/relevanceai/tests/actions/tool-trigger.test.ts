@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import toolTrigger from "../../actions/tool-trigger.ts";
 import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-trigger: POSTs params and the version selectors to /studios/{id}/trigger", async () => {
+test("tool-trigger: POSTs params and the version selectors to /studios/{id}/trigger", async () => {
   const { ctx, calls } = mockRelevanceCtx([
     {
       body: {
@@ -36,7 +37,7 @@ Deno.test("tool-trigger: POSTs params and the version selectors to /studios/{id}
   assertEquals(out.output, { answer: 42 });
 });
 
-Deno.test("tool-trigger: a JSON string for params is parsed, and `version` is never sent", async () => {
+test("tool-trigger: a JSON string for params is parsed, and `version` is never sent", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ body: { status: "complete" } }]);
   await toolTrigger.execute({ toolId: "s1", params: '{"a":[1,2]}' }, ctx);
 
@@ -48,13 +49,13 @@ Deno.test("tool-trigger: a JSON string for params is parsed, and `version` is ne
   assertEquals("tool_version" in body, false);
 });
 
-Deno.test("tool-trigger: an in-progress tool is reported as such rather than as an error", async () => {
+test("tool-trigger: an in-progress tool is reported as such rather than as an error", async () => {
   const { ctx } = mockRelevanceCtx([{ body: { status: "inprogress", output: {}, errors: [] } }]);
   const out = await toolTrigger.execute({ toolId: "s1" }, ctx) as Record<string, unknown>;
   assertEquals(out.status, "inprogress");
 });
 
-Deno.test("tool-trigger: is a non-idempotent perform with the tool's params exposed", () => {
+test("tool-trigger: is a non-idempotent perform with the tool's params exposed", () => {
   assertEquals(toolTrigger.type, "perform");
   assertEquals(toolTrigger.idempotent, false);
   assertEquals(toolTrigger.params?.map((p) => p.key), [

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountWarmupAnalyticsGet from "../../actions/account-warmup-analytics-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("account-warmup-analytics-get: POSTs /accounts/warmup-analytics with the email list", async () => {
+test("account-warmup-analytics-get: POSTs /accounts/warmup-analytics with the email list", async () => {
   const { ctx, calls } = mockCtx([{ body: { aggregate_data: {} } }]);
   await accountWarmupAnalyticsGet.execute({ emails: ["a@b.com"] }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("account-warmup-analytics-get: POSTs /accounts/warmup-analytics with t
   assertEquals(JSON.parse(calls[0].body!), { emails: ["a@b.com"] });
 });
 
-Deno.test("account-warmup-analytics-get: is a read action despite the POST verb", () => {
+test("account-warmup-analytics-get: is a read action despite the POST verb", () => {
   assertEquals(accountWarmupAnalyticsGet.type, "read");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { bodyOf, doc, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCHes only the fields that were filled in", async () => {
+test("contact-update: PATCHes only the fields that were filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: doc("5") }]);
   await contactUpdate.execute({ id: "5", email: "new@x.com" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -17,7 +18,7 @@ Deno.test("contact-update: PATCHes only the fields that were filled in", async (
   assertEquals(Object.keys(body.data.attributes), ["email"]);
 });
 
-Deno.test("contact-update: offers external_user_id, which create cannot", async () => {
+test("contact-update: offers external_user_id, which create cannot", async () => {
   const { ctx, calls } = mockCtx([{ body: doc("5") }]);
   await contactUpdate.execute({ id: "5", externalUserId: "ext-1" }, ctx);
   const attrs = (bodyOf(calls[0]) as { data: { attributes: Record<string, unknown> } })
@@ -25,7 +26,7 @@ Deno.test("contact-update: offers external_user_id, which create cannot", async 
   assertEquals(attrs.external_user_id, "ext-1");
 });
 
-Deno.test("contact-update: a false boolean is a value, not an absence", async () => {
+test("contact-update: a false boolean is a value, not an absence", async () => {
   const { ctx, calls } = mockCtx([{ body: doc("5") }]);
   await contactUpdate.execute({ id: "5", subscribed: false }, ctx);
   const attrs = (bodyOf(calls[0]) as { data: { attributes: Record<string, unknown> } })
@@ -39,7 +40,7 @@ Deno.test("contact-update: a false boolean is a value, not an absence", async ()
  * unambiguous relationship endpoints are used instead, which also keeps the
  * additive and destructive operations visibly separate.
  */
-Deno.test("contact-update: does not accept tags — those go through the relationship routes", () => {
+test("contact-update: does not accept tags — those go through the relationship routes", () => {
   const keys = contactUpdate.params!.map((p) => p.key);
   assertEquals(keys.includes("tagIds"), false);
   assertEquals(keys.includes("tags"), false);

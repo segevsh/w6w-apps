@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import groupGet from "../../actions/group-get.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("group-get: calls GET /contact-groups/3 and returns the documented shape", async () => {
+test("group-get: calls GET /contact-groups/3 and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "3", name: "VIP", contactsCount: 12 } }]);
   const result = await groupGet.execute({ "id": "3" } as never, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("group-get: calls GET /contact-groups/3 and returns the documented sha
   assertEquals(result, { "id": "3", "name": "VIP", "contactsCount": 12 });
 });
 
-Deno.test("group-get: carries no credential — auth is the sign hook's job", async () => {
+test("group-get: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "3", name: "VIP", contactsCount: 12 } }]);
   await groupGet.execute({ "id": "3" } as never, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);

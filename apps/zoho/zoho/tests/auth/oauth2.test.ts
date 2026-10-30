@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: US data centre endpoints, offline access so a refresh token comes back", () => {
+test("oauth2: US data centre endpoints, offline access so a refresh token comes back", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://accounts.zoho.com/oauth/v2/auth");
   assertEquals(auth.oauth2?.tokenUrl, "https://accounts.zoho.com/oauth/v2/token");
   assertEquals(auth.oauth2?.extraAuthParams, { access_type: "offline", prompt: "consent" });
@@ -10,7 +11,7 @@ Deno.test("oauth2: US data centre endpoints, offline access so a refresh token c
   assert(auth.oauth2?.scopes?.includes("ZohoCRM.org.READ"));
 });
 
-Deno.test("sign: stamps Zoho's own auth scheme, not a bare Bearer", async () => {
+test("sign: stamps Zoho's own auth scheme, not a bare Bearer", async () => {
   const request = {
     url: "https://www.zohoapis.com/crm/v6/Leads",
     method: "GET",
@@ -20,7 +21,7 @@ Deno.test("sign: stamps Zoho's own auth scheme, not a bare Bearer", async () => 
   assertEquals(out.headers["authorization"], "Zoho-oauthtoken t");
 });
 
-Deno.test("test: fails fast when the credential carries no access token", async () => {
+test("test: fails fast when the credential carries no access token", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -28,7 +29,7 @@ Deno.test("test: fails fast when the credential carries no access token", async 
   });
 });
 
-Deno.test("test: probes GET /crm/v6/org on the recorded api_domain", async () => {
+test("test: probes GET /crm/v6/org on the recorded api_domain", async () => {
   const { ctx, calls } = mockCtx([{ body: { org: [{ id: "1", company_name: "Acme" }] } }]);
   const result = await auth.test(
     { credential: { accessToken: "t", apiDomain: "https://www.zohoapis.com" } },
@@ -39,7 +40,7 @@ Deno.test("test: probes GET /crm/v6/org on the recorded api_domain", async () =>
   assertEquals(calls[0].headers["authorization"], "Zoho-oauthtoken t");
 });
 
-Deno.test("test: accepts either spelling of the api domain field", async () => {
+test("test: accepts either spelling of the api domain field", async () => {
   const { ctx } = mockCtx([{ body: { org: [{ id: "1" }] } }]);
   assertEquals(
     await auth.test(
@@ -50,7 +51,7 @@ Deno.test("test: accepts either spelling of the api domain field", async () => {
   );
 });
 
-Deno.test("test: reports a non-2xx as a failed credential", async () => {
+test("test: reports a non-2xx as a failed credential", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   assertEquals(
     await auth.test(
@@ -61,7 +62,7 @@ Deno.test("test: reports a non-2xx as a failed credential", async () => {
   );
 });
 
-Deno.test("afterConnect: lifts api_domain and the org name onto the connection", async () => {
+test("afterConnect: lifts api_domain and the org name onto the connection", async () => {
   const { ctx, calls } = mockCtx([{ body: { org: [{ id: "org1", company_name: "Acme Inc" }] } }]);
   const out = await auth.afterConnect!(
     { credential: { api_domain: "https://www.zohoapis.com" } },
@@ -72,7 +73,7 @@ Deno.test("afterConnect: lifts api_domain and the org name onto the connection",
   assertEquals(calls[0].url, "https://www.zohoapis.com/crm/v6/org");
 });
 
-Deno.test("afterConnect: still records the api domain if /org fails", async () => {
+test("afterConnect: still records the api domain if /org fails", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { apiDomain: "https://www.zohoapis.com" } },
@@ -81,7 +82,7 @@ Deno.test("afterConnect: still records the api domain if /org fails", async () =
   assertEquals(out, { apiDomain: "https://www.zohoapis.com" });
 });
 
-Deno.test("afterConnect: no-ops when the credential carries no api domain at all", async () => {
+test("afterConnect: no-ops when the credential carries no api domain at all", async () => {
   const { ctx } = mockCtx();
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "t" } }, ctx), {});
 });

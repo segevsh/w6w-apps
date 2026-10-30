@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-tiers.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("list-tiers: GETs /tiers/ with default paging", async () => {
+test("list-tiers: GETs /tiers/ with default paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { tiers: [{ id: "1", name: "Free" }] } }], { display });
   const result = await action.execute({}, ctx);
   const url = new URL(calls[0].url);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectConflictsGet from "../../actions/project-conflicts-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "projectId": "x-projectId" };
 
-Deno.test("project-conflicts-get: sends GET /projects/{id}/conflicts with the mapped fields", async () => {
+test("project-conflicts-get: sends GET /projects/{id}/conflicts with the mapped fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   const out = await projectConflictsGet.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -16,20 +17,20 @@ Deno.test("project-conflicts-get: sends GET /projects/{id}/conflicts with the ma
   assertEquals(out, { id: "r1", marker: "m" });
 });
 
-Deno.test("project-conflicts-get: sends only what was supplied", async () => {
+test("project-conflicts-get: sends only what was supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await projectConflictsGet.execute({ "projectId": "x-projectId" } as never, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("project-conflicts-get: percent-encodes path ids", async () => {
+test("project-conflicts-get: percent-encodes path ids", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "r1", marker: "m" } }]);
   await projectConflictsGet.execute({ ...INPUT, ...{ "projectId": "a/b" } }, ctx);
   const segs = pathOf(calls[0].url).split("/");
   assertEquals(segs.includes("a%2Fb"), true);
 });
 
-Deno.test("project-conflicts-get: surfaces the API error type and message", async () => {
+test("project-conflicts-get: surfaces the API error type and message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody("HBObjectNotFoundError", "not found") }]);
   await assertRejects(
     async () => await projectConflictsGet.execute(INPUT, ctx),

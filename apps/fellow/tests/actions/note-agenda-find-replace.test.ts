@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteAgendaFindReplace from "../../actions/note-agenda-find-replace.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("note-agenda-find-replace: POST /api/v1/note/n1/agenda/find-replace on the workspace host", async () => {
+test("note-agenda-find-replace: POST /api/v1/note/n1/agenda/find-replace on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { agenda: { note_id: "n1", title: "T", content_fellow_markdown: "x" } },
@@ -22,7 +23,7 @@ Deno.test("note-agenda-find-replace: POST /api/v1/note/n1/agenda/find-replace on
   assertEquals((out as { note_id: string }).note_id, "n1");
 });
 
-Deno.test("note-agenda-find-replace: a Fellow error surfaces its detail and status", async () => {
+test("note-agenda-find-replace: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () =>

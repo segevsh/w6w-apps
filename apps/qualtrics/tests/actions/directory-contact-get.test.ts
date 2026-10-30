@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import directoryContactGet from "../../actions/directory-contact-get.ts";
 import { API_ROOT, envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("directory-contact-get: calls GET /directories/{id}/contacts/{id}", async () => {
+test("directory-contact-get: calls GET /directories/{id}/contacts/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ contactId: "CID_1", email: "a@b.example" }) },
   ]);
@@ -15,7 +16,7 @@ Deno.test("directory-contact-get: calls GET /directories/{id}/contacts/{id}", as
   assertEquals(out.contactId, "CID_1");
 });
 
-Deno.test("directory-contact-get: path-escapes both ids", async () => {
+test("directory-contact-get: path-escapes both ids", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await directoryContactGet.execute({ directoryId: "POOL 1", contactId: "CID/1" }, ctx);
 

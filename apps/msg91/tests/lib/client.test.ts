@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   buildUrl,
   call,
@@ -10,39 +11,39 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("normalizeMobile strips +, spaces and dashes; rejects non-numbers", () => {
+test("normalizeMobile strips +, spaces and dashes; rejects non-numbers", () => {
   assertEquals(normalizeMobile("m", "+91 98765-43210"), "919876543210");
   assertThrows(() => normalizeMobile("m", "abc"));
   assertThrows(() => normalizeMobile("m", ""));
 });
 
-Deno.test("buildUrl drops blank query values", () => {
+test("buildUrl drops blank query values", () => {
   const u = buildUrl("/x", { a: 1, b: "", c: undefined, d: "z" });
   assertEquals(u, "https://control.msg91.com/api/v5/x?a=1&d=z");
 });
 
-Deno.test("parseList accepts arrays, JSON text and comma text", () => {
+test("parseList accepts arrays, JSON text and comma text", () => {
   assertEquals(parseList("l", "a, b ,,c"), ["a", "b", "c"]);
   assertEquals(parseList("l", '["a","b"]'), ["a", "b"]);
   assertEquals(parseList("l", ["x", " y "]), ["x", "y"]);
   assertEquals(parseList("l", ""), []);
 });
 
-Deno.test("isFailureBody recognises both MSG91 error envelopes", () => {
+test("isFailureBody recognises both MSG91 error envelopes", () => {
   assert(isFailureBody({ type: "error", message: "x" }));
   assert(isFailureBody({ status: "fail", hasError: true, errors: "Unauthorized" }));
   assert(!isFailureBody({ type: "success", message: "ok" }));
   assert(!isFailureBody({ status: "success", hasError: false }));
 });
 
-Deno.test("isAuthRejection: code 201 or the vendor's wording", () => {
+test("isAuthRejection: code 201 or the vendor's wording", () => {
   assert(isAuthRejection({ message: "Invalid authkey", type: "error", code: "201" }));
   assert(isAuthRejection({ message: "Auth Key missing", type: "error" }));
   assert(isAuthRejection({ status: "fail", errors: "Unauthorized", apiError: "201" }));
   assert(!isAuthRejection({ message: "OTP not match", type: "error" }));
 });
 
-Deno.test("call: a 200 with type error is a failure carrying the vendor's message", async () => {
+test("call: a 200 with type error is a failure carrying the vendor's message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(() => call(ctx, "GET", "/otp/verify")) as Msg91Error;
   assert(err instanceof Msg91Error);
@@ -50,7 +51,7 @@ Deno.test("call: a 200 with type error is a failure carrying the vendor's messag
   assertEquals(err.vendorMessage, "Auth Key missing");
 });
 
-Deno.test("call: a 401 fail envelope is a failure", async () => {
+test("call: a 401 fail envelope is a failure", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { status: "fail", hasError: true, errors: "Unauthorized", code: "401" },
@@ -60,7 +61,7 @@ Deno.test("call: a 401 fail envelope is a failure", async () => {
   assert(err.message.includes("Unauthorized"));
 });
 
-Deno.test("call: sends JSON only when a body is given and never an authkey", async () => {
+test("call: sends JSON only when a body is given and never an authkey", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "success" } }, { body: { type: "success" } }]);
   await call(ctx, "GET", "/a");
   await call(ctx, "POST", "/b", { body: { k: 1 } });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { compact, formatError, seg, sortByPriority, WorkflowyClient } from "../../lib/client.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client: formatError reads the vendor's string `errors` body", () => {
+test("client: formatError reads the vendor's string `errors` body", () => {
   assertEquals(
     formatError(401, { errors: "Invalid Credentials, try again." }),
     "Workflowy API error 401: Invalid Credentials, try again.",
@@ -11,7 +12,7 @@ Deno.test("client: formatError reads the vendor's string `errors` body", () => {
   assertEquals(formatError(502, "bad gateway"), "Workflowy API error 502: bad gateway");
 });
 
-Deno.test("client: compact drops undefined, null and empty strings but keeps false/0", () => {
+test("client: compact drops undefined, null and empty strings but keeps false/0", () => {
   assertEquals(compact({ a: "x", b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: "x",
     e: false,
@@ -19,19 +20,19 @@ Deno.test("client: compact drops undefined, null and empty strings but keeps fal
   });
 });
 
-Deno.test("client: seg encodes ids and rejects blanks", () => {
+test("client: seg encodes ids and rejects blanks", () => {
   assertEquals(seg("2026-01-15"), "2026-01-15");
   assertEquals(seg("a/b"), "a%2Fb");
   assertThrows(() => seg("  "), Error, "id is required");
 });
 
-Deno.test("client: sortByPriority orders ascending without mutating", () => {
+test("client: sortByPriority orders ascending without mutating", () => {
   const input = [{ priority: 300 }, { priority: 100 }, { priority: 200 }];
   assertEquals(sortByPriority(input).map((n) => n.priority), [100, 200, 300]);
   assertEquals(input[0].priority, 300);
 });
 
-Deno.test("client: request builds the URL, query and JSON body; no auth header", async () => {
+test("client: request builds the URL, query and JSON body; no auth header", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: 1 } }]);
   await new WorkflowyClient(ctx).request("/nodes", {
     method: "POST",
@@ -45,7 +46,7 @@ Deno.test("client: request builds the URL, query and JSON body; no auth header",
   assertEquals(calls[0].body, '{"name":"x"}');
 });
 
-Deno.test("client: a failure throws with the vendor message", async () => {
+test("client: a failure throws with the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Credentials, try again." } }]);
   await assertRejects(
     () => new WorkflowyClient(ctx).request("/targets"),

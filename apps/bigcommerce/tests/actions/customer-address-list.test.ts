@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerAddressList from "../../actions/customer-address-list.ts";
 import { mockCtx, pathOf, queryOf, v3Page } from "../_helpers.ts";
 
-Deno.test("customer-address-list: is addressed at the TOP level, not under a customer", async () => {
+test("customer-address-list: is addressed at the TOP level, not under a customer", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([{ id: 3, customer_id: 12 }]) }]);
   const out = await customerAddressList.execute({ customerIds: "12,13" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("customer-address-list: is addressed at the TOP level, not under a cus
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("customer-address-list: include has exactly one legal value here", async () => {
+test("customer-address-list: include has exactly one legal value here", async () => {
   const { ctx, calls } = mockCtx([{ body: v3Page([]) }]);
   await customerAddressList.execute({ includeFormFields: true }, ctx);
   assertEquals(queryOf(calls[0].url), { include: "formfields" });

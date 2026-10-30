@@ -1,7 +1,8 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { asObject, commonBody, parseRecipients } from "../../lib/mail.ts";
 
-Deno.test("parseRecipients: strings, display names, arrays and objects", () => {
+test("parseRecipients: strings, display names, arrays and objects", () => {
   assertEquals(parseRecipients('a@x.com, Jane Smith <j@x.com>;\n"Bob" <b@x.com>', "to"), [
     { address: "a@x.com" },
     { address: "j@x.com", display_name: "Jane Smith" },
@@ -15,13 +16,13 @@ Deno.test("parseRecipients: strings, display names, arrays and objects", () => {
   assertThrows(() => parseRecipients([{ display_name: "x" }], "to"), Error, "no address");
 });
 
-Deno.test("asObject: accepts objects and JSON strings, rejects arrays", () => {
+test("asObject: accepts objects and JSON strings, rejects arrays", () => {
   assertEquals(asObject('{"a":1}', "tags"), { a: 1 });
   assertEquals(asObject("", "tags"), undefined);
   assertThrows(() => asObject("[1]", "tags"), Error, "JSON object");
 });
 
-Deno.test("commonBody: shapes the vendor body and validates limits", () => {
+test("commonBody: shapes the vendor body and validates limits", () => {
   const body = commonBody({
     fromAddress: "me@d.com",
     fromName: "Me",

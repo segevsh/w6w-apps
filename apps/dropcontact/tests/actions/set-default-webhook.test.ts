@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import setHook from "../../actions/set-default-webhook.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("set-default-webhook: PUTs callback_url", async () => {
+test("set-default-webhook: PUTs callback_url", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: false, success: true } }]);
   const out = await run(setHook, { callbackUrl: " https://h.example/cb " }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("set-default-webhook: PUTs callback_url", async () => {
   assertEquals(out.callbackUrl, "https://h.example/cb");
 });
 
-Deno.test("set-default-webhook: a non-http URL throws before any request", async () => {
+test("set-default-webhook: a non-http URL throws before any request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(() => run(setHook, { callbackUrl: "ftp://x" }, ctx), Error, "http(s)");
   assertEquals(calls.length, 0);

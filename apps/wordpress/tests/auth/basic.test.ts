@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
-import { encodeBase64 } from "@std/encoding";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
+const encodeBase64 = ((d: string | ArrayBuffer | Uint8Array) => typeof d === "string" ? Buffer.from(d, "utf8").toString("base64") : Buffer.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d).toString("base64"));
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/basic.ts";
 
-Deno.test("basic: declares siteUrl / username / password fields", () => {
+test("basic: declares siteUrl / username / password fields", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const keys = (auth.fields ?? []).map((f) => f.key);
@@ -15,7 +16,7 @@ Deno.test("basic: declares siteUrl / username / password fields", () => {
   assertEquals(pw?.required, true);
 });
 
-Deno.test("basic: sign injects a Basic Authorization header from username+password", async () => {
+test("basic: sign injects a Basic Authorization header from username+password", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -29,7 +30,7 @@ Deno.test("basic: sign injects a Basic Authorization header from username+passwo
   assertEquals(out.headers["authorization"], `Basic ${encodeBase64("alice:app-pass")}`);
 });
 
-Deno.test("basic: test hits <siteUrl>/wp-json/wp/v2/users/me with Basic auth", async () => {
+test("basic: test hits <siteUrl>/wp-json/wp/v2/users/me with Basic auth", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   const result = await auth.test(
     { credential: { siteUrl: "https://example.com", username: "alice", password: "app-pass" } },
@@ -40,14 +41,14 @@ Deno.test("basic: test hits <siteUrl>/wp-json/wp/v2/users/me with Basic auth", a
   assertEquals(calls[0].headers["authorization"], `Basic ${encodeBase64("alice:app-pass")}`);
 });
 
-Deno.test("basic: test reports failure without a network call when fields are missing", async () => {
+test("basic: test reports failure without a network call when fields are missing", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { username: "alice" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("basic: test surfaces upstream status on failure", async () => {
+test("basic: test surfaces upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test(
     { credential: { siteUrl: "https://example.com", username: "u", password: "p" } },

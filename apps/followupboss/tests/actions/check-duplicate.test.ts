@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import checkDuplicate from "../../actions/check-duplicate.ts";
 
-Deno.test("check-duplicate: GETs /people/checkDuplicate with email and phone", async () => {
+test("check-duplicate: GETs /people/checkDuplicate with email and phone", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { found: true, matchedBy: "email", assignedTo: "Agent Smith" },
@@ -22,7 +23,7 @@ Deno.test("check-duplicate: GETs /people/checkDuplicate with email and phone", a
 /** Its whole value is answering account-wide, past the key's own visibility. */
 
 /** Its whole value is answering account-wide, past the key's own visibility. */
-Deno.test("check-duplicate: explains why it beats a scoped search", () => {
+test("check-duplicate: explains why it beats a scoped search", () => {
   assertEquals(checkDuplicate.type, "read");
   assert(/account-wide|cannot otherwise see/i.test(checkDuplicate.description!));
 });

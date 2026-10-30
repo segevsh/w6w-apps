@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-download.ts";
 
-Deno.test("file-download: resolves a model file, with no kind prefix", async () => {
+test("file-download: resolves a model file, with no kind prefix", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: '{"model_type":"gpt2"}' }]);
   await action.execute({ id: "openai-community/gpt2", path: "config.json" }, ctx);
   assertEquals(
@@ -13,7 +14,7 @@ Deno.test("file-download: resolves a model file, with no kind prefix", async () 
 });
 
 /** Datasets and Spaces carry a prefix in the resolve URL; models do not. */
-Deno.test("file-download: datasets and Spaces are prefixed", async () => {
+test("file-download: datasets and Spaces are prefixed", async () => {
   const dataset = mockCtx([{ status: 200, body: "a,b" }]);
   await action.execute({ kind: "datasets", id: "d/s", path: "/data.csv" }, dataset.ctx);
   assertEquals(dataset.calls[0].url, "https://huggingface.co/datasets/d/s/resolve/main/data.csv");
@@ -23,7 +24,7 @@ Deno.test("file-download: datasets and Spaces are prefixed", async () => {
   assertEquals(space.calls[0].url, "https://huggingface.co/spaces/a/demo/resolve/main/app.py");
 });
 
-Deno.test("file-download: JSON is parsed as well as returned verbatim", async () => {
+test("file-download: JSON is parsed as well as returned verbatim", async () => {
   const { ctx } = mockCtx([{ status: 200, body: '{"model_type":"gpt2"}' }]);
   const result = await action.execute({ id: "a/b", path: "config.json" }, ctx) as Record<
     string,
@@ -35,7 +36,7 @@ Deno.test("file-download: JSON is parsed as well as returned verbatim", async ()
 });
 
 /** Most files are not JSON, which is not an error. */
-Deno.test("file-download: a non-JSON file comes back as text with no json field", async () => {
+test("file-download: a non-JSON file comes back as text with no json field", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "# A model card\n" }]);
   const result = await action.execute({ id: "a/b", path: "README.md" }, ctx) as Record<
     string,
@@ -46,7 +47,7 @@ Deno.test("file-download: a non-JSON file comes back as text with no json field"
 });
 
 /** Weights are gigabytes and do not belong in a workflow's data. */
-Deno.test("file-download: a file over the ceiling is refused, saying why", async () => {
+test("file-download: a file over the ceiling is refused, saying why", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "x".repeat(2_000_001) }]);
   let message = "";
   try {
@@ -59,7 +60,7 @@ Deno.test("file-download: a file over the ceiling is refused, saying why", async
 });
 
 /** A gate is felt here and nowhere else, and no token can accept one. */
-Deno.test("file-download: a gated repository 403s, and the error says a person must accept", async () => {
+test("file-download: a gated repository 403s, and the error says a person must accept", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "Access to model is restricted" } }]);
   let message = "";
   try {
@@ -71,13 +72,13 @@ Deno.test("file-download: a gated repository 403s, and the error says a person m
   assert(/GATED/.test(action.description!), action.description);
 });
 
-Deno.test("file-download: a revision is pinned into the path", async () => {
+test("file-download: a revision is pinned into the path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "{}" }]);
   await action.execute({ id: "a/b", path: "config.json", revision: "e7da7f2" }, ctx);
   assertEquals(calls[0].url, "https://huggingface.co/a/b/resolve/e7da7f2/config.json");
 });
 
-Deno.test("file-download: a path is required and nothing is requested without one", async () => {
+test("file-download: a path is required and nothing is requested without one", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -89,7 +90,7 @@ Deno.test("file-download: a path is required and nothing is requested without on
   assertEquals(calls.length, 0);
 });
 
-Deno.test("file-download: logs the path and size, never the contents", async () => {
+test("file-download: logs the path and size, never the contents", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: "secret-ish" }]);
   await action.execute({ id: "a/b", path: "notes.txt" }, ctx);
   assertEquals(logs[0].data, { path: "notes.txt", size: 10 });

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cluster-update.ts";
 
 const state = (stateName: string) => ({ status: 200, body: { name: "prod", stateName } });
 const patched = { status: 200, body: { name: "prod", stateName: "UPDATING" } };
 
-Deno.test("cluster-update: reads the state first, then PATCHes", async () => {
+test("cluster-update: reads the state first, then PATCHes", async () => {
   const { ctx, calls } = mockCtx([state("IDLE"), patched]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod", instanceSize: "M20" },
@@ -18,7 +19,7 @@ Deno.test("cluster-update: reads the state first, then PATCHes", async () => {
 });
 
 /** Atlas answers 409 during UPDATING; saying which state is more use. */
-Deno.test("cluster-update: refuses while the cluster is not IDLE, before sending", async () => {
+test("cluster-update: refuses while the cluster is not IDLE, before sending", async () => {
   for (const busy of ["UPDATING", "CREATING", "DELETING", "REPAIRING"]) {
     const { ctx, calls } = mockCtx([state(busy)]);
     let message = "";
@@ -37,7 +38,7 @@ Deno.test("cluster-update: refuses while the cluster is not IDLE, before sending
   }
 });
 
-Deno.test("cluster-update: a size becomes a replication spec", async () => {
+test("cluster-update: a size becomes a replication spec", async () => {
   const { ctx, calls } = mockCtx([state("IDLE"), patched]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -49,7 +50,7 @@ Deno.test("cluster-update: a size becomes a replication spec", async () => {
 });
 
 /** Scaling rebuilds nodes with a primary election in the middle. */
-Deno.test("cluster-update: a resize warns and other changes do not", async () => {
+test("cluster-update: a resize warns and other changes do not", async () => {
   const resize = mockCtx([state("IDLE"), patched]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -69,7 +70,7 @@ Deno.test("cluster-update: a resize warns and other changes do not", async () =>
 });
 
 /** Turning it off is the first half of deleting the cluster. */
-Deno.test("cluster-update: removing termination protection needs an acknowledgement", async () => {
+test("cluster-update: removing termination protection needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -85,7 +86,7 @@ Deno.test("cluster-update: removing termination protection needs an acknowledgem
   assertEquals(calls.length, 0, "not even the state was read");
 });
 
-Deno.test("cluster-update: turning protection on is not gated", async () => {
+test("cluster-update: turning protection on is not gated", async () => {
   const { ctx, calls } = mockCtx([state("IDLE"), patched]);
   await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod", terminationProtection: "true" },
@@ -94,7 +95,7 @@ Deno.test("cluster-update: turning protection on is not gated", async () => {
   assertEquals(JSON.parse(calls[1].body!).terminationProtectionEnabled, true);
 });
 
-Deno.test("cluster-update: unchanged selects are not sent", async () => {
+test("cluster-update: unchanged selects are not sent", async () => {
   const { ctx, calls } = mockCtx([state("IDLE"), patched]);
   await action.execute({
     projectId: "5f8d0d55b54eff0f2b2c3d4e",
@@ -107,7 +108,7 @@ Deno.test("cluster-update: unchanged selects are not sent", async () => {
   assertEquals("terminationProtectionEnabled" in body, false);
 });
 
-Deno.test("cluster-update: a PATCH with nothing in it is refused", async () => {
+test("cluster-update: a PATCH with nothing in it is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

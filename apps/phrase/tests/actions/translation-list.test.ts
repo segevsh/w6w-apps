@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import translationList from "../../actions/translation-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("translation-list: sends GET /v2/projects/project%201%2Fx/translations", async () => {
+test("translation-list: sends GET /v2/projects/project%201%2Fx/translations", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "x1" }] }]);
   const input = {
     "projectId": "project 1/x",
@@ -33,7 +34,7 @@ Deno.test("translation-list: sends GET /v2/projects/project%201%2Fx/translations
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("translation-list: surfaces Phrase's validation message on a 422", async () => {
+test("translation-list: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await translationList.execute({
@@ -51,7 +52,7 @@ Deno.test("translation-list: surfaces Phrase's validation message on a 422", asy
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("translation-list: declares key, type and every param it reads", () => {
+test("translation-list: declares key, type and every param it reads", () => {
   assertEquals(translationList.key, "translation-list");
   assertEquals(translationList.type, "search");
   const declared = new Set((translationList.params ?? []).map((p) => p.key));
@@ -70,7 +71,7 @@ Deno.test("translation-list: declares key, type and every param it reads", () =>
   ) assert(declared.has(k), `missing param ${k}`);
 });
 
-Deno.test("translation-list: lifts the Pagination header into the output", async () => {
+test("translation-list: lifts the Pagination header into the output", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",
@@ -104,7 +105,7 @@ Deno.test("translation-list: lifts the Pagination header into the output", async
   ]);
 });
 
-Deno.test("translation-list: falls back to the Link header for the next page", async () => {
+test("translation-list: falls back to the Link header for the next page", async () => {
   const { ctx } = mockCtx([{
     headers: {
       "content-type": "application/json",

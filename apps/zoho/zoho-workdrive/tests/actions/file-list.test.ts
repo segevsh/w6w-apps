@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileList from "../../actions/file-list.ts";
 import { mockWorkDriveCtx } from "../_helpers.ts";
 
-Deno.test("file-list: GET /workdrive/api/v1/files/d1/files", async () => {
+test("file-list: GET /workdrive/api/v1/files/d1/files", async () => {
   const { ctx, calls } = mockWorkDriveCtx([{
     body: {
       "data": [{ "id": "a1", "type": "files" }, { "id": "a2", "type": "files" }],
@@ -28,7 +29,7 @@ Deno.test("file-list: GET /workdrive/api/v1/files/d1/files", async () => {
   assertEquals(res.next, "https://x/next");
 });
 
-Deno.test("file-list: a vendor error id surfaces in the message", async () => {
+test("file-list: a vendor error id surfaces in the message", async () => {
   const { ctx } = mockWorkDriveCtx([{
     status: 404,
     body: { errors: [{ id: "R008", title: "Authorization check failed" }] },

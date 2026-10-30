@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskUpdate from "../../actions/task-update.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-update: PUTs the full replacement body to the specific task", async () => {
+test("task-update: PUTs the full replacement body to the specific task", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "task_1", status: "completed", droppedUserIds: [] }) },
   ]);
@@ -20,6 +21,6 @@ Deno.test("task-update: PUTs the full replacement body to the specific task", as
   assertEquals(out, { id: "task_1", status: "completed", droppedUserIds: [] });
 });
 
-Deno.test("task-update: idempotent", () => {
+test("task-update: idempotent", () => {
   assertEquals(taskUpdate.idempotent, true);
 });

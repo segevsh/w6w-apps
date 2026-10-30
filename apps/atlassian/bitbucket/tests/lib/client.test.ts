@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BitbucketClient } from "../../lib/client.ts";
 
-Deno.test("client: 204 returns undefined without parsing a body", async () => {
+test("client: 204 returns undefined without parsing a body", async () => {
   const { ctx } = mockCtx([{ status: 204, headers: {} }]);
   const client = new BitbucketClient(ctx);
   const result = await client.request("/repositories/acme/foo/hooks/abc", { method: "DELETE" });
   assertEquals(result, undefined);
 });
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 404, statusText: "Not Found", body: '{"error":{"message":"Not found"}}' },
   ]);
@@ -23,7 +24,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/2.0/repositories/acme/missing"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new BitbucketClient(ctx);
   await client.request("/x", {
@@ -36,7 +37,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: passes an absolute URL through unchanged (Bitbucket paginates via full `next` URLs)", async () => {
+test("client: passes an absolute URL through unchanged (Bitbucket paginates via full `next` URLs)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new BitbucketClient(ctx);
   await client.request("https://api.bitbucket.org/2.0/repositories/acme?page=2");
@@ -46,7 +47,7 @@ Deno.test("client: passes an absolute URL through unchanged (Bitbucket paginates
   assertEquals(url.searchParams.get("page"), "2");
 });
 
-Deno.test("client: JSON-encodes bodies and sets content-type", async () => {
+test("client: JSON-encodes bodies and sets content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { uuid: "{abc}" } }]);
   const client = new BitbucketClient(ctx);
   await client.request("/workspaces/acme/hooks", {

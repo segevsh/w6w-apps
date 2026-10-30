@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/entry-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("entry-list: GETs the year's entries with paging", async () => {
+test("entry-list: GETs the year's entries with paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: { collection: [{ entryNumber: 1 }], pagination: { results: 1 } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("entry-list: GETs the year's entries with paging", async () => {
   assertEquals(out, { items: [{ entryNumber: 1 }], count: 1, total: 1, hasMore: false });
 });
 
-Deno.test("entry-list: encodes the year segment", async () => {
+test("entry-list: encodes the year segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { collection: [] } }]);
   await action.execute!({ accountingYear: "2021/22" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/accounting-years/2021%2F22/entries");

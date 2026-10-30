@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadPatch from "../../actions/lead-patch.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-patch: PATCHes /leads/{id}", async () => {
+test("lead-patch: PATCHes /leads/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "l1", first_name: "Jon" } }]);
   await leadPatch.execute({ id: "l1", first_name: "Jon" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("lead-patch: PATCHes /leads/{id}", async () => {
   assertEquals(JSON.parse(calls[0].body!).first_name, "Jon");
 });
 
-Deno.test("lead-patch: is declared idempotent", () => {
+test("lead-patch: is declared idempotent", () => {
   assertEquals(leadPatch.idempotent, true);
 });

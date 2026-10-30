@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import extractList from "../../actions/extract-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("extract-list: paginates with the documented query names", async () => {
+test("extract-list: paginates with the documented query names", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "a" }], metadata: { total: 1 } } }]);
   const out = await extractList.execute(
     { page: 2, pageSize: 50, sortBy: "updatedAt", sortDirection: "desc" },

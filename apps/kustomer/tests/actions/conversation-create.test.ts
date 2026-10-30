@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockKustomerCtx } from "../_helpers.ts";
 import action from "../../actions/conversation-create.ts";
 
-Deno.test("conversation-create: POSTs /conversations with customer as the only required field", async () => {
+test("conversation-create: POSTs /conversations with customer as the only required field", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: { id: "1" } } }]);
   const out = await action.execute({ customer: "cust-1" }, ctx);
   assertEquals(calls[0].url, "https://acme.api.kustomerapp.com/v1/conversations");
@@ -11,7 +12,7 @@ Deno.test("conversation-create: POSTs /conversations with customer as the only r
   assertEquals(out, { id: "1" });
 });
 
-Deno.test("conversation-create: splits assignedUsers/assignedTeams on commas", async () => {
+test("conversation-create: splits assignedUsers/assignedTeams on commas", async () => {
   const { ctx, calls } = mockKustomerCtx([{ body: { data: {} } }]);
   await action.execute(
     { customer: "cust-1", assignedUsers: "u1, u2", assignedTeams: "t1" },

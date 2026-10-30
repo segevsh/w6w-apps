@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshsalesCtx } from "../_helpers.ts";
 import action from "../../actions/account-update.ts";
 
-Deno.test("account-update: PUTs to /sales_accounts/:id with only the set fields", async () => {
+test("account-update: PUTs to /sales_accounts/:id with only the set fields", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { sales_account: { id: 1 } } }]);
   const out = await action.execute({ accountId: 1, phone: "555-0100" }, ctx);
   assertEquals(calls[0].url, "https://acme.myfreshworks.com/crm/sales/api/sales_accounts/1");
@@ -11,7 +12,7 @@ Deno.test("account-update: PUTs to /sales_accounts/:id with only the set fields"
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("account-update: parses the customField JSON param", async () => {
+test("account-update: parses the customField JSON param", async () => {
   const { ctx, calls } = mockFreshsalesCtx([{ body: { sales_account: {} } }]);
   await action.execute({ accountId: 1, customField: { cf_domain_name: "acme.com" } }, ctx);
   assertEquals(

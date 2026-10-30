@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("service: mapComponentStatus covers the documented Statuspage vocabulary", () => {
+test("service: mapComponentStatus covers the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -12,7 +13,7 @@ Deno.test("service: mapComponentStatus covers the documented Statuspage vocabula
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("service: mapIndicator covers the page-level roll-up vocabulary", () => {
+test("service: mapIndicator covers the page-level roll-up vocabulary", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -21,13 +22,13 @@ Deno.test("service: mapIndicator covers the page-level roll-up vocabulary", () =
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id, falls back to a name slug", () => {
+test("service: componentKey prefers the vendor id, falls back to a name slug", () => {
   assertEquals(componentKey({ id: "abc123" }, 0), "abc123");
   assertEquals(componentKey({ name: "APIs" }, 2), "apis-2");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service: an all-operational page reports ok", async () => {
+test("service: an all-operational page reports ok", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -45,7 +46,7 @@ Deno.test("service: an all-operational page reports ok", async () => {
   assertEquals(report.components?.c1.state, "ok");
 });
 
-Deno.test("service: a major outage on one component reports down at the page level", async () => {
+test("service: a major outage on one component reports down at the page level", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -61,13 +62,13 @@ Deno.test("service: a major outage on one component reports down at the page lev
   assertEquals(report.message?.includes("Major outage"), true);
 });
 
-Deno.test("service: a broken status API is unknown, never down", async () => {
+test("service: a broken status API is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as Trustpilot's is unknown", async () => {
+test("service: a page that no longer self-identifies as Trustpilot's is unknown", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -78,7 +79,7 @@ Deno.test("service: a page that no longer self-identifies as Trustpilot's is unk
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: group container rows are excluded from the component map", async () => {
+test("service: group container rows are excluded from the component map", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -97,7 +98,7 @@ Deno.test("service: group container rows are excluded from the component map", a
   assertEquals(report.components?.c1.state, "ok");
 });
 
-Deno.test("service: is unsigned and app-scoped, and only widens egress to its own status host", () => {
+test("service: is unsigned and app-scoped, and only widens egress to its own status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.scope, "app");
   assertEquals(service.network?.allow, ["status.trustpilot.com"]);

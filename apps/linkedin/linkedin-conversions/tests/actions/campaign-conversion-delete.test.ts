@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignConversionDelete from "../../actions/campaign-conversion-delete.ts";
 import { mockCtx, noContentResponse } from "../_helpers.ts";
 
-Deno.test("campaign-conversion-delete: DELETEs the compound key, no body", async () => {
+test("campaign-conversion-delete: DELETEs the compound key, no body", async () => {
   const { ctx, calls } = mockCtx([noContentResponse()]);
   const result = await campaignConversionDelete.execute(
     { campaignId: "337643194", conversionId: "70203" },
@@ -19,6 +20,6 @@ Deno.test("campaign-conversion-delete: DELETEs the compound key, no body", async
   assertEquals(result, { ok: true });
 });
 
-Deno.test("campaign-conversion-delete: is not idempotent", () => {
+test("campaign-conversion-delete: is not idempotent", () => {
   assertEquals(campaignConversionDelete.idempotent, false);
 });

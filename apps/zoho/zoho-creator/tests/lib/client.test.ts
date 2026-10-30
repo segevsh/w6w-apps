@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   environmentHeaders,
   formatCreatorError,
@@ -8,7 +9,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCreatorCtx, mockCtx } from "../_helpers.ts";
 
-Deno.test("formatCreatorError: uses the vendor's code/description when present", () => {
+test("formatCreatorError: uses the vendor's code/description when present", () => {
   const err = formatCreatorError(
     401,
     "GET",
@@ -24,19 +25,19 @@ Deno.test("formatCreatorError: uses the vendor's code/description when present",
   assert(err.message.includes("Authorization Failure"));
 });
 
-Deno.test("formatCreatorError: falls back to the raw body when it is not the documented shape", () => {
+test("formatCreatorError: falls back to the raw body when it is not the documented shape", () => {
   const err = formatCreatorError(500, "GET", "/x", "<html>upstream exploded</html>");
   assert(err.message.includes("500"));
   assert(err.message.includes("upstream exploded"));
   assertEquals(err.code, undefined);
 });
 
-Deno.test("environmentHeaders: empty when environment is unset", () => {
+test("environmentHeaders: empty when environment is unset", () => {
   assertEquals(environmentHeaders({}), {});
   assertEquals(environmentHeaders({ demoUserName: "demouser_1" }), {});
 });
 
-Deno.test("environmentHeaders: sends environment and optional demo_user_name", () => {
+test("environmentHeaders: sends environment and optional demo_user_name", () => {
   assertEquals(environmentHeaders({ environment: "development" }), {
     environment: "development",
   });
@@ -46,17 +47,17 @@ Deno.test("environmentHeaders: sends environment and optional demo_user_name", (
   );
 });
 
-Deno.test("parseJsonObject: parses a JSON string and passes through an object", () => {
+test("parseJsonObject: parses a JSON string and passes through an object", () => {
   assertEquals(parseJsonObject('{"a":1}', "data"), { a: 1 });
   assertEquals(parseJsonObject({ a: 1 }, "data"), { a: 1 });
 });
 
-Deno.test("parseJsonObject: rejects missing/empty/array input", () => {
+test("parseJsonObject: rejects missing/empty/array input", () => {
   assertThrows(() => parseJsonObject(undefined, "data"), Error, "required");
   assertThrows(() => parseJsonObject([1, 2], "data"), Error, "JSON object");
 });
 
-Deno.test("ZohoCreatorClient#request: resolves the host from the connection and unwraps JSON", async () => {
+test("ZohoCreatorClient#request: resolves the host from the connection and unwraps JSON", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { code: 3000, applications: [{ link_name: "zylker-store" }] } },
   ]);
@@ -69,7 +70,7 @@ Deno.test("ZohoCreatorClient#request: resolves the host from the connection and 
   assertEquals(out.applications, [{ link_name: "zylker-store" }]);
 });
 
-Deno.test("ZohoCreatorClient#request: drops undefined/empty query params", async () => {
+test("ZohoCreatorClient#request: drops undefined/empty query params", async () => {
   const { ctx, calls } = mockCreatorCtx([{ body: { code: 3000, data: [] } }]);
   await new ZohoCreatorClient(ctx).request("/data/owner/app/report/R", {
     query: { from: undefined, limit: 100, criteria: "" },
@@ -80,7 +81,7 @@ Deno.test("ZohoCreatorClient#request: drops undefined/empty query params", async
   assertEquals(url.searchParams.get("limit"), "100");
 });
 
-Deno.test("ZohoCreatorClient#request: JSON-serializes a body and sets content-type", async () => {
+test("ZohoCreatorClient#request: JSON-serializes a body and sets content-type", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { result: [{ code: 3000, data: { ID: "1" } }], code: 3000 } },
   ]);
@@ -92,7 +93,7 @@ Deno.test("ZohoCreatorClient#request: JSON-serializes a body and sets content-ty
   assertEquals(JSON.parse(calls[0].body!), { data: { Email: "a@b.com" } });
 });
 
-Deno.test("ZohoCreatorClient#request: sends extra headers, dropping unset ones", async () => {
+test("ZohoCreatorClient#request: sends extra headers, dropping unset ones", async () => {
   const { ctx, calls } = mockCreatorCtx([{ body: { code: 3000, data: [] } }]);
   await new ZohoCreatorClient(ctx).request("/data/owner/app/report/R", {
     headers: { environment: "development", demo_user_name: undefined },
@@ -101,7 +102,7 @@ Deno.test("ZohoCreatorClient#request: sends extra headers, dropping unset ones",
   assertEquals(calls[0].headers["demo_user_name"], undefined);
 });
 
-Deno.test("ZohoCreatorClient#request: throws ZohoCreatorApiError with the parsed code on failure", async () => {
+test("ZohoCreatorClient#request: throws ZohoCreatorApiError with the parsed code on failure", async () => {
   const { ctx } = mockCreatorCtx([
     { status: 401, body: { code: 1030, description: "Authorization Failure." } },
   ]);
@@ -112,7 +113,7 @@ Deno.test("ZohoCreatorClient#request: throws ZohoCreatorApiError with the parsed
   assertEquals(err.code, 1030);
 });
 
-Deno.test("ZohoCreatorClient#request: sends a multipart form body as-is", async () => {
+test("ZohoCreatorClient#request: sends a multipart form body as-is", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { body: { code: 3000, filename: "a.png", filepath: "1_a.png", message: "ok" } },
   ]);
@@ -126,7 +127,7 @@ Deno.test("ZohoCreatorClient#request: sends a multipart form body as-is", async 
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("ZohoCreatorClient#requestRaw: returns text content as-is for a text content type", async () => {
+test("ZohoCreatorClient#requestRaw: returns text content as-is for a text content type", async () => {
   const { ctx, calls } = mockCreatorCtx([
     { status: 200, headers: { "content-type": "text/plain" }, body: "hello world" },
   ]);
@@ -139,7 +140,7 @@ Deno.test("ZohoCreatorClient#requestRaw: returns text content as-is for a text c
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("ZohoCreatorClient#requestRaw: base64-encodes a binary content type", async () => {
+test("ZohoCreatorClient#requestRaw: base64-encodes a binary content type", async () => {
   const { ctx } = mockCreatorCtx([
     { status: 200, headers: { "content-type": "image/png" }, body: "\x89PNG\r\n" },
   ]);
@@ -151,7 +152,7 @@ Deno.test("ZohoCreatorClient#requestRaw: base64-encodes a binary content type", 
   assert(out.content.length > 0);
 });
 
-Deno.test("ZohoCreatorClient#requestRaw: throws the formatted error on a non-ok response", async () => {
+test("ZohoCreatorClient#requestRaw: throws the formatted error on a non-ok response", async () => {
   const { ctx } = mockCreatorCtx([
     { status: 404, body: { code: 3190, description: 'No record with ID "1" found.' } },
   ]);
@@ -161,7 +162,7 @@ Deno.test("ZohoCreatorClient#requestRaw: throws the formatted error on a non-ok 
   );
 });
 
-Deno.test("mockCtx: an unqueued fetch throws loudly rather than hanging", () => {
+test("mockCtx: an unqueued fetch throws loudly rather than hanging", () => {
   const { ctx } = mockCtx([]);
   assertThrows(() => ctx.fetch("https://example.com/"));
 });

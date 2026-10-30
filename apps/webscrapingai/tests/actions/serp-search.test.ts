@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/serp-search.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const serp = {
   pagination: { current: 1, next: 2 },
 };
 
-Deno.test("serp-search: GETs /serp with q and engine=google; optional fields only when set", async () => {
+test("serp-search: GETs /serp with q and engine=google; optional fields only when set", async () => {
   const { ctx, calls } = mockCtx([{ body: serp }, { body: serp }]);
   assertEquals(await action.execute({ q: "coffee" }, ctx), serp);
   const first = new URL(calls[0].url);
@@ -21,7 +22,7 @@ Deno.test("serp-search: GETs /serp with q and engine=google; optional fields onl
   assertEquals(q.get("page"), "3");
 });
 
-Deno.test("serp-search: a blank query makes no call; a 400 from the vendor is surfaced", async () => {
+test("serp-search: a blank query makes no call; a 400 from the vendor is surfaced", async () => {
   const none = mockCtx();
   await assertRejects(async () => await action.execute({ q: " " }, none.ctx), Error, "required");
   assertEquals(none.calls.length, 0);

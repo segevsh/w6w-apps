@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-job-info.ts";
 
 const display = { endpoint: "https://ci.example.com" };
 
-Deno.test("get-job-info: GETs /job/<name>/api/json", async () => {
+test("get-job-info: GETs /job/<name>/api/json", async () => {
   const { ctx, calls } = mockCtx([
     { body: { name: "my-job", url: "x", buildable: true, color: "blue", nextBuildNumber: 5 } },
   ], { display });
@@ -20,7 +21,7 @@ Deno.test("get-job-info: GETs /job/<name>/api/json", async () => {
   });
 });
 
-Deno.test("get-job-info: expands a folder-nested job path", async () => {
+test("get-job-info: expands a folder-nested job path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute({ job: "my-folder/my-pipeline" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/job/my-folder/job/my-pipeline/api/json");

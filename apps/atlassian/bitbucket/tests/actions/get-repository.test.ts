@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-repository.ts";
 
-Deno.test("get-repository: GETs /repositories/{workspace}/{repo_slug}", async () => {
+test("get-repository: GETs /repositories/{workspace}/{repo_slug}", async () => {
   const { ctx, calls } = mockCtx([{ body: { slug: "backend" } }]);
   const result = await action.execute({ workspace: "acme", repoSlug: "backend" }, ctx);
   assertEquals(calls[0].method, "GET");

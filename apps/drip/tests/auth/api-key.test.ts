@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: collects the account id alongside the credential", () => {
+test("api-key: collects the account id alongside the credential", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "basic");
   const keys = auth.fields?.map((f) => f.key);
@@ -11,7 +12,7 @@ Deno.test("api-key: collects the account id alongside the credential", () => {
   assertEquals(auth.fields?.find((f) => f.key === "accountId")?.type, "string");
 });
 
-Deno.test("api-key: sign uses Drip's `token:` Basic scheme (empty password)", async () => {
+test("api-key: sign uses Drip's `token:` Basic scheme (empty password)", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.getdrip.com/v2/1234567/subscribers",
@@ -22,7 +23,7 @@ Deno.test("api-key: sign uses Drip's `token:` Basic scheme (empty password)", as
   assertEquals(out.headers["authorization"], `Basic ${btoa("tok:")}`);
 });
 
-Deno.test("api-key: test refuses a half-filled credential without a request", async () => {
+test("api-key: test refuses a half-filled credential without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: { accountId: "1234567" } }, ctx), {
     ok: false,
@@ -31,7 +32,7 @@ Deno.test("api-key: test refuses a half-filled credential without a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: test probes GET /v2/user, signed itself", async () => {
+test("api-key: test probes GET /v2/user, signed itself", async () => {
   const ok = mockCtx([{ body: { users: [{ email: "john@acme.com" }] } }]);
   assertEquals(
     await auth.test({ credential: { accountId: "1234567", apiKey: "tok" } }, ok.ctx),
@@ -41,7 +42,7 @@ Deno.test("api-key: test probes GET /v2/user, signed itself", async () => {
   assertEquals(ok.calls[0].headers["authorization"], `Basic ${btoa("tok:")}`);
 });
 
-Deno.test("api-key: test classifies by the response body, not just the status", async () => {
+test("api-key: test classifies by the response body, not just the status", async () => {
   // A 200 with a body that isn't shaped like Drip's `users` envelope (e.g. an
   // auth-proxy's generic success page) must not be read as a live credential.
   const { ctx } = mockCtx([{ status: 200, body: { ok: true } }]);
@@ -51,7 +52,7 @@ Deno.test("api-key: test classifies by the response body, not just the status", 
   );
 });
 
-Deno.test("api-key: test fails on a non-2xx status", async () => {
+test("api-key: test fails on a non-2xx status", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   assertEquals(
     await auth.test({ credential: { accountId: "1234567", apiKey: "bad" } }, ctx),
@@ -59,7 +60,7 @@ Deno.test("api-key: test fails on a non-2xx status", async () => {
   );
 });
 
-Deno.test("api-key: afterConnect records the account id and the user for the client to use", async () => {
+test("api-key: afterConnect records the account id and the user for the client to use", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [{ email: "john@acme.com", name: "John" }] } }]);
   const out = await auth.afterConnect!(
     { credential: { accountId: "1234567", apiKey: "tok" } },
@@ -71,7 +72,7 @@ Deno.test("api-key: afterConnect records the account id and the user for the cli
   assertEquals(calls[0].headers["authorization"], `Basic ${btoa("tok:")}`);
 });
 
-Deno.test("api-key: afterConnect still records the account id if the probe fails", async () => {
+test("api-key: afterConnect still records the account id if the probe fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: {} }]);
   const out = await auth.afterConnect!(
     { credential: { accountId: "1234567", apiKey: "tok" } },

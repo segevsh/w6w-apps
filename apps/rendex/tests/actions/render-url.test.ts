@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import renderUrl from "../../actions/render-url.ts";
 import renderHtml from "../../actions/render-html.ts";
 import renderMarkdown from "../../actions/render-markdown.ts";
@@ -13,7 +14,7 @@ const shot = {
   format: "png",
 };
 
-Deno.test("render-url: POSTs /screenshot/json with url and capture options", async () => {
+test("render-url: POSTs /screenshot/json with url and capture options", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope(shot, { requestId: "r", usage: { credits: 1 } }),
   }]);
@@ -39,14 +40,14 @@ Deno.test("render-url: POSTs /screenshot/json with url and capture options", asy
   assertEquals((out.meta as { usage: { credits: number } }).usage.credits, 1);
 });
 
-Deno.test("render-url: never sends template data (rejected by the API with a url)", async () => {
+test("render-url: never sends template data (rejected by the API with a url)", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(shot) }]);
   await renderUrl.execute({ source: "https://e.com", data: { a: 1 } }, ctx);
   assertEquals("data" in bodyOf(calls[0]), false);
   assertEquals(renderUrl.params!.some((p) => p.key === "data"), false);
 });
 
-Deno.test("render: blank source and bad JSON fail before any request", async () => {
+test("render: blank source and bad JSON fail before any request", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await renderUrl.execute({ source: "  " }, ctx),

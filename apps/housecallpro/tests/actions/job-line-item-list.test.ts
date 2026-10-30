@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobLineItemList from "../../actions/job-line-item-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("job-line-item-list: reads the unenveloped {url, data} shape", async () => {
+test("job-line-item-list: reads the unenveloped {url, data} shape", async () => {
   const { ctx, calls } = mockCtx([
     { body: { url: "/jobs/j1/line_items", data: [{ id: "li1", amount: 9900 }] } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("job-line-item-list: reads the unenveloped {url, data} shape", async (
   assertEquals(out.totalItems, undefined);
 });
 
-Deno.test("job-line-item-list: an empty body reads as no items, not as a crash", async () => {
+test("job-line-item-list: an empty body reads as no items, not as a crash", async () => {
   const { ctx } = mockCtx([{ body: { url: "/jobs/j1/line_items" } }]);
   assertEquals((await jobLineItemList.execute({ jobId: "j1" }, ctx)).items, []);
 });

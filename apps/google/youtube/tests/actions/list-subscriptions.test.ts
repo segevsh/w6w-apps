@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-subscriptions.ts";
 
-Deno.test("list-subscriptions: hits /youtube/v3/subscriptions with part and mine", async () => {
+test("list-subscriptions: hits /youtube/v3/subscriptions with part and mine", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!({ part: "snippet", mine: true }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("list-subscriptions: hits /youtube/v3/subscriptions with part and mine
   assertEquals(url.searchParams.get("mine"), "true");
 });
 
-Deno.test("list-subscriptions: mine and mySubscribers are opposite directions", async () => {
+test("list-subscriptions: mine and mySubscribers are opposite directions", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "subscriberSnippet", mySubscribers: true }, ctx);
   const p = new URL(calls[0].url).searchParams;
@@ -19,7 +20,7 @@ Deno.test("list-subscriptions: mine and mySubscribers are opposite directions", 
   assertEquals(p.get("mine"), null);
 });
 
-Deno.test("list-subscriptions: forChannelId is a filter, not a selector", async () => {
+test("list-subscriptions: forChannelId is a filter, not a selector", async () => {
   // Combined with mine=true this answers "am I subscribed?" for one unit.
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ part: "id", mine: true, forChannelId: "UC1" }, ctx);
@@ -28,7 +29,7 @@ Deno.test("list-subscriptions: forChannelId is a filter, not a selector", async 
   assertEquals(p.get("forChannelId"), "UC1");
 });
 
-Deno.test("list-subscriptions: rejects zero or several selectors", async () => {
+test("list-subscriptions: rejects zero or several selectors", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -55,7 +56,7 @@ Deno.test("list-subscriptions: rejects zero or several selectors", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-subscriptions: forwards paging and ordering", async () => {
+test("list-subscriptions: forwards paging and ordering", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     part: "snippet",

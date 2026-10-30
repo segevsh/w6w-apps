@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import listWebhookConfigure from "../../actions/list-webhook-configure.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-webhook-configure: POST /api/1/configListWebhook/ with the documented form fields", async () => {
+test("list-webhook-configure: POST /api/1/configListWebhook/ with the documented form fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   const out = await listWebhookConfigure.execute(
     {
@@ -41,7 +42,7 @@ Deno.test("list-webhook-configure: POST /api/1/configListWebhook/ with the docum
   assertEquals(out, { id: "123" });
 });
 
-Deno.test("list-webhook-configure: a vendor error surfaces its status and body", async () => {
+test("list-webhook-configure: a vendor error surfaces its status and body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Invalid argument" }]);
   const err = await assertRejects(async () =>
     await listWebhookConfigure.execute(
@@ -64,7 +65,7 @@ Deno.test("list-webhook-configure: a vendor error surfaces its status and body",
   assert(String((err as Error).message).includes("Invalid argument"));
 });
 
-Deno.test("list-webhook-configure: an empty list_id fails before any request", async () => {
+test("list-webhook-configure: an empty list_id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -89,7 +90,7 @@ Deno.test("list-webhook-configure: an empty list_id fails before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("list-webhook-configure: unset optional fields are not sent", async () => {
+test("list-webhook-configure: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: 123 }]);
   await listWebhookConfigure.execute(
     { "list_id": 7, "callback_url": "https://example.com/hook" } as never,

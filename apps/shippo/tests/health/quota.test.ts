@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declared as an informational, connection-scoped absence", () => {
+test("quota: declared as an informational, connection-scoped absence", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.scope, "connection");
@@ -10,7 +11,7 @@ Deno.test("quota: declared as an informational, connection-scoped absence", () =
 });
 
 /** The reasoning must actually be legible, not a placeholder string. */
-Deno.test("quota: the reason names the rate-limits doc, not a made-up header", () => {
+test("quota: the reason names the rate-limits doc, not a made-up header", () => {
   assertEquals(
     quota.unavailable!.reason.includes("docs.goshippo.com/api-concepts/rate-limits"),
     true,

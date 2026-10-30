@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track-event.ts";
 
-Deno.test("track-event: metadata", () => {
+test("track-event: metadata", () => {
   assertEquals(action.key, "track-event");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -19,7 +20,7 @@ Deno.test("track-event: metadata", () => {
   ]);
 });
 
-Deno.test("track-event: calls POST /events/track on the US host", async () => {
+test("track-event: calls POST /events/track on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }]);
   const out = await action.execute({
     "eventName": "abc",
@@ -50,7 +51,7 @@ Deno.test("track-event: calls POST /events/track on the US host", async () => {
   assertEquals(out, { "code": "Success", "msg": "ok" });
 });
 
-Deno.test("track-event: uses the EU host when the connection region is eu", async () => {
+test("track-event: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "code": "Success", "msg": "ok" } }], {
     connection: { display: { region: "eu" } },
   });
@@ -68,7 +69,7 @@ Deno.test("track-event: uses the EU host when the connection region is eu", asyn
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/events/track");
 });
 
-Deno.test("track-event: rejects a missing `eventName` without calling Iterable", async () => {
+test("track-event: rejects a missing `eventName` without calling Iterable", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -89,7 +90,7 @@ Deno.test("track-event: rejects a missing `eventName` without calling Iterable",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("track-event: surfaces an HTTP error with Iterable's own code", async () => {
+test("track-event: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -110,7 +111,7 @@ Deno.test("track-event: surfaces an HTTP error with Iterable's own code", async 
   );
 });
 
-Deno.test("track-event: treats a 200 carrying a non-Success code as a failure", async () => {
+test("track-event: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

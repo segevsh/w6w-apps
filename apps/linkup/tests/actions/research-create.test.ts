@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import researchCreate from "../../actions/research-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("research-create: posts mode, depth and filters", async () => {
+test("research-create: posts mode, depth and filters", async () => {
   const task = { id: "r1", status: "pending" };
   const { ctx, calls } = mockCtx([{ body: task }]);
   const out = await researchCreate.execute({
@@ -26,7 +27,7 @@ Deno.test("research-create: posts mode, depth and filters", async () => {
   assertEquals(researchCreate.idempotent, false);
 });
 
-Deno.test("research-create: structured needs a schema, sent as a string", async () => {
+test("research-create: structured needs a schema, sent as a string", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r2", status: "pending" } }]);
   await assertRejects(
     async () => await researchCreate.execute({ q: "q", outputType: "structured" }, ctx),

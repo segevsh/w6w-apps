@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webinarCancel from "../../actions/webinar-cancel.ts";
 import { mockCtxWithOrganizer, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webinar-cancel: DELETEs /organizers/{organizerKey}/webinars/{webinarKey}", async () => {
+test("webinar-cancel: DELETEs /organizers/{organizerKey}/webinars/{webinarKey}", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([{ status: 204 }], "org-1");
   const out = await webinarCancel.execute({ webinarKey: "9" }, ctx);
   assertEquals(pathOf(calls[0].url), "/G2W/rest/v2/organizers/org-1/webinars/9");
@@ -10,7 +11,7 @@ Deno.test("webinar-cancel: DELETEs /organizers/{organizerKey}/webinars/{webinarK
   assertEquals(out, { status: 204 });
 });
 
-Deno.test("webinar-cancel: omitting sendCancellationEmails/deleteAll leaves them off the wire, letting GoTo's own documented defaults apply", async () => {
+test("webinar-cancel: omitting sendCancellationEmails/deleteAll leaves them off the wire, letting GoTo's own documented defaults apply", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([{ status: 204 }], "org-1");
   await webinarCancel.execute({ webinarKey: "9" }, ctx);
   const q = queryOf(calls[0].url);
@@ -18,7 +19,7 @@ Deno.test("webinar-cancel: omitting sendCancellationEmails/deleteAll leaves them
   assertEquals("deleteAll" in q, false);
 });
 
-Deno.test("webinar-cancel: explicit values are forwarded verbatim", async () => {
+test("webinar-cancel: explicit values are forwarded verbatim", async () => {
   const { ctx, calls } = mockCtxWithOrganizer([{ status: 204 }], "org-1");
   await webinarCancel.execute(
     { webinarKey: "9", sendCancellationEmails: true, deleteAll: false },

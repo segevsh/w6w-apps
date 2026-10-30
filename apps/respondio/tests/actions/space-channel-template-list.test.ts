@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import spaceChannelTemplateList from "../../actions/space-channel-template-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("space-channel-template-list: GETs /space/channel/{channelId}/template", async () => {
+test("space-channel-template-list: GETs /space/channel/{channelId}/template", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1, name: "order_confirmation" }]) }]);
   const out = await spaceChannelTemplateList.execute(
     { channelId: 12345 },
@@ -13,7 +14,7 @@ Deno.test("space-channel-template-list: GETs /space/channel/{channelId}/template
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("space-channel-template-list: a missing channelId is refused before any request", async () => {
+test("space-channel-template-list: a missing channelId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

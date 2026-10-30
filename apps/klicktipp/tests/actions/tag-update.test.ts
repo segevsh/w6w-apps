@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tag-update.ts";
 
-Deno.test("tag-update: PUTs only the given keys", async () => {
+test("tag-update: PUTs only the given keys", async () => {
   const { ctx, calls } = mockCtx([{ body: [true] }]);
   const out = await action.execute({ tagId: 21, name: "renamed" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,7 +12,7 @@ Deno.test("tag-update: PUTs only the given keys", async () => {
   assertEquals(out, { success: true });
 });
 
-Deno.test("tag-update: refuses an empty update", async () => {
+test("tag-update: refuses an empty update", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({ tagId: 21 }, ctx), Error, "new name");
   assertEquals(calls.length, 0);

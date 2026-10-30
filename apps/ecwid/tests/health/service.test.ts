@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   API_COMPONENT_NAME,
@@ -28,13 +29,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: the status URL is Ecwid's own Statuspage", () => {
+test("service: the status URL is Ecwid's own Statuspage", () => {
   assertEquals(STATUS_URL, "https://status.ecwid.com/api/v2/summary.json");
   assertEquals(API_COMPONENT_ID, "7qn5f4cpf4g8");
   assertEquals(API_COMPONENT_NAME, "API");
 });
 
-Deno.test("service: component statuses map to the Statuspage vocabulary", () => {
+test("service: component statuses map to the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -43,7 +44,7 @@ Deno.test("service: component statuses map to the Statuspage vocabulary", () => 
   assertEquals(mapComponentStatus(undefined), "unknown");
 });
 
-Deno.test("service: the page indicator maps separately from a component's status", () => {
+test("service: the page indicator maps separately from a component's status", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("major"), "degraded");
@@ -52,7 +53,7 @@ Deno.test("service: the page indicator maps separately from a component's status
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: the API component is found by id, then by exact name", () => {
+test("service: the API component is found by id, then by exact name", () => {
   const byId = findApiComponent([
     { id: "other", name: "Renamed", status: "major_outage" },
     { id: API_COMPONENT_ID, name: "API v2", status: "operational" },
@@ -66,7 +67,7 @@ Deno.test("service: the API component is found by id, then by exact name", () =>
   assertEquals(findApiComponent([{ id: "x", name: "Third-party services" }]), undefined);
 });
 
-Deno.test("service: a healthy API reads ok even when another component is down", async () => {
+test("service: a healthy API reads ok even when another component is down", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -89,7 +90,7 @@ Deno.test("service: a healthy API reads ok even when another component is down",
   assertEquals(report.ttlSeconds, 60);
 });
 
-Deno.test("service: an API outage is the verdict", async () => {
+test("service: an API outage is the verdict", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -107,7 +108,7 @@ Deno.test("service: an API outage is the verdict", async () => {
   assertEquals(report.components?.[API_COMPONENT_ID].message, "API: major_outage");
 });
 
-Deno.test("service: a degraded API reads degraded", async () => {
+test("service: a degraded API reads degraded", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -121,7 +122,7 @@ Deno.test("service: a degraded API reads degraded", async () => {
   assert(report.message?.includes("1 open incident(s)"), report.message);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failing = mockCtx([{ status: 503, body: undefined }]);
   assertEquals((await service.check!({}, failing.ctx)).state, "unknown");
 
@@ -129,7 +130,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
   assertEquals((await service.check!({}, unreadable.ctx)).state, "unknown");
 });
 
-Deno.test("service: a status page that is no longer Ecwid's is unknown", async () => {
+test("service: a status page that is no longer Ecwid's is unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary({ page: { name: "Other", url: "https://status.example.com" } }) },
   ]);
@@ -138,7 +139,7 @@ Deno.test("service: a status page that is no longer Ecwid's is unknown", async (
   assert(report.message?.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("service: a page without an API component is unknown, not ok", async () => {
+test("service: a page without an API component is unknown, not ok", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -151,7 +152,7 @@ Deno.test("service: a page without an API component is unknown, not ok", async (
   assert(report.message?.includes("API` component"), report.message);
 });
 
-Deno.test("service: the probe is unsigned and only reaches the status host", () => {
+test("service: the probe is unsigned and only reaches the status host", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.ecwid.com"]);

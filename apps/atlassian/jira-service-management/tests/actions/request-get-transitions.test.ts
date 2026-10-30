@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockJsmCtx } from "../_helpers.ts";
 import action from "../../actions/request-get-transitions.ts";
 
-Deno.test("request-get-transitions: GETs the available transitions", async () => {
+test("request-get-transitions: GETs the available transitions", async () => {
   const { ctx, calls } = mockJsmCtx([{ body: { values: [{ id: "1", name: "Resolve" }] } }]);
   const out = await action.execute({ issueIdOrKey: "HD-1" }, ctx);
   assertEquals(

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { currentStatusWord, severityFromTitle } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -21,25 +22,25 @@ const OPEN_INCIDENT_TEXT = "Major incident - Apps, General, Data, Glide Tables, 
   "We are seeing an increased level of errors and latency with our primary data provider " +
   "powering Glide apps and Glide tables.";
 
-Deno.test("currentStatusWord: reads the newest (first) status word — Resolved, in the real incident text", () => {
+test("currentStatusWord: reads the newest (first) status word — Resolved, in the real incident text", () => {
   assertEquals(currentStatusWord(RESOLVED_INCIDENT_TEXT), "resolved");
 });
 
-Deno.test("currentStatusWord: an incident with no Resolved update yet reads as Issue", () => {
+test("currentStatusWord: an incident with no Resolved update yet reads as Issue", () => {
   assertEquals(currentStatusWord(OPEN_INCIDENT_TEXT), "issue");
 });
 
-Deno.test("currentStatusWord: unrecognised text returns undefined", () => {
+test("currentStatusWord: unrecognised text returns undefined", () => {
   assertEquals(currentStatusWord("Scheduled maintenance window next week."), undefined);
 });
 
-Deno.test("severityFromTitle: Major incident maps to down, Minor to degraded", () => {
+test("severityFromTitle: Major incident maps to down, Minor to degraded", () => {
   assertEquals(severityFromTitle("Major incident - Apps"), "down");
   assertEquals(severityFromTitle("Minor incident - Website"), "degraded");
   assertEquals(severityFromTitle("no leading severity word"), "degraded");
 });
 
-Deno.test("service: ok when the only incident's latest entry is Resolved", async () => {
+test("service: ok when the only incident's latest entry is Resolved", async () => {
   const out = await service.check!(
     {
       feed: {
@@ -53,7 +54,7 @@ Deno.test("service: ok when the only incident's latest entry is Resolved", async
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: down when a Major incident is still open", async () => {
+test("service: down when a Major incident is still open", async () => {
   const out = await service.check!(
     {
       feed: {
@@ -68,7 +69,7 @@ Deno.test("service: down when a Major incident is still open", async () => {
   assert(out.message?.includes("Glide Classic increased error rate"));
 });
 
-Deno.test("service: unknown when the feed failed to fetch", async () => {
+test("service: unknown when the feed failed to fetch", async () => {
   const out = await service.check!(
     { feed: { entries: [], latest: [], fetchedAt: "now", error: "fetch failed" } },
     mockCtx().ctx,
@@ -76,12 +77,12 @@ Deno.test("service: unknown when the feed failed to fetch", async () => {
   assertEquals(out.state, "unknown");
 });
 
-Deno.test("service: ok with no feed input at all (defensive default)", async () => {
+test("service: ok with no feed input at all (defensive default)", async () => {
   const out = await service.check!({}, mockCtx().ctx);
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: ok with no open incidents at all (empty latest)", async () => {
+test("service: ok with no open incidents at all (empty latest)", async () => {
   const out = await service.check!(
     { feed: { entries: [], latest: [], fetchedAt: "now" } },
     mockCtx().ctx,
@@ -89,7 +90,7 @@ Deno.test("service: ok with no open incidents at all (empty latest)", async () =
   assertEquals(out.state, "ok");
 });
 
-Deno.test("service: an unrecognised status word reports unknown rather than a guessed verdict", async () => {
+test("service: an unrecognised status word reports unknown rather than a guessed verdict", async () => {
   const out = await service.check!(
     {
       feed: {

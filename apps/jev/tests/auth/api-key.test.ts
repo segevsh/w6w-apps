@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: bearer method exposing a required secret `apiKey`", () => {
+test("api-key: bearer method exposing a required secret `apiKey`", () => {
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiKey");
   assert(field);
@@ -10,7 +11,7 @@ Deno.test("api-key: bearer method exposing a required secret `apiKey`", () => {
   assertEquals(field.required, true);
 });
 
-Deno.test("api-key: sign sets Bearer header", async () => {
+test("api-key: sign sets Bearer header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -21,7 +22,7 @@ Deno.test("api-key: sign sets Bearer header", async () => {
   assertEquals(out.headers["authorization"], "Bearer k");
 });
 
-Deno.test("api-key: test hits /v1/models; failure reports status", async () => {
+test("api-key: test hits /v1/models; failure reports status", async () => {
   const ok = mockCtx([{ body: { models: [] } }]);
   assertEquals((await auth.test({ credential: { apiKey: "k" } }, ok.ctx)).ok, true);
   assertEquals(ok.calls[0].url, "https://api.typesafe.ai/v1/models");

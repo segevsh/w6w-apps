@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 
 import {
   API_BASE,
@@ -12,11 +13,11 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: the base URL is the only server the CRM v1 reference declares", () => {
+test("client: the base URL is the only server the CRM v1 reference declares", () => {
   assertEquals(API_BASE, "https://crm.rdstation.com/api/v1");
 });
 
-Deno.test("applyQuery: drops unset values, keeps false and 0, never touches the path", () => {
+test("applyQuery: drops unset values, keeps false and 0, never touches the path", () => {
   const url = new URL(`${API_BASE}/deal_pipelines`);
 
   applyQuery(url, {
@@ -33,14 +34,14 @@ Deno.test("applyQuery: drops unset values, keeps false and 0, never touches the 
   assertEquals(url.search, "?page=2&win=false&rating=0&active=true");
 });
 
-Deno.test("compact: drops empty values but keeps false and 0 (a rating of 0 is a rating)", () => {
+test("compact: drops empty values but keeps false and 0 (a rating of 0 is a rating)", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }),
     { a: 1, e: false, f: 0 },
   );
 });
 
-Deno.test("messageFromErrorBody: reads both documented error envelopes", () => {
+test("messageFromErrorBody: reads both documented error envelopes", () => {
   assertEquals(messageFromErrorBody({ error: "Permission denied." }), "Permission denied.");
   assertEquals(
     messageFromErrorBody({
@@ -56,7 +57,7 @@ Deno.test("messageFromErrorBody: reads both documented error envelopes", () => {
   assertEquals(messageFromErrorBody("nope"), undefined);
 });
 
-Deno.test("formatRdStationError: keeps the vendor's message and adds the fix for the code", () => {
+test("formatRdStationError: keeps the vendor's message and adds the fix for the code", () => {
   const unauthorized = formatRdStationError(
     401,
     "GET",
@@ -79,7 +80,7 @@ Deno.test("formatRdStationError: keeps the vendor's message and adds the fix for
   assert(/120 requests\/minute/.test(throttled), throttled);
 });
 
-Deno.test("formatRdStationError: survives a non-JSON body and truncates a huge one", () => {
+test("formatRdStationError: survives a non-JSON body and truncates a huge one", () => {
   assert(
     formatRdStationError(502, "GET", "/x", "<html>Bad gateway</html>").includes("Bad gateway"),
   );
@@ -89,7 +90,7 @@ Deno.test("formatRdStationError: survives a non-JSON body and truncates a huge o
   assert(huge.includes("truncated"), huge);
 });
 
-Deno.test("jsonInit: JSON content type and a serialized body", () => {
+test("jsonInit: JSON content type and a serialized body", () => {
   const init = jsonInit("PUT", { contact: { name: "Ada" } });
 
   assertEquals(init.method, "PUT");
@@ -97,7 +98,7 @@ Deno.test("jsonInit: JSON content type and a serialized body", () => {
   assertEquals((init.headers as Record<string, string>)["content-type"], "application/json");
 });
 
-Deno.test("sendJson: returns the parsed body and always asks for JSON", async () => {
+test("sendJson: returns the parsed body and always asks for JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { users: [] } }]);
 
   const out = await sendJson(ctx, new URL(`${API_BASE}/users`));
@@ -107,13 +108,13 @@ Deno.test("sendJson: returns the parsed body and always asks for JSON", async ()
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("sendJson: an empty body parses to undefined rather than throwing", async () => {
+test("sendJson: an empty body parses to undefined rather than throwing", async () => {
   const { ctx } = mockCtx([{ status: 204, body: undefined }]);
 
   assertEquals(await sendJson(ctx, new URL(`${API_BASE}/contacts/x`)), undefined);
 });
 
-Deno.test("sendJson: a failure carries the vendor's own message", async () => {
+test("sendJson: a failure carries the vendor's own message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: { name: ["can't be blank"] } } }]);
 
   const error = await sendJson(ctx, new URL(`${API_BASE}/contacts`)).catch((e: Error) => e);
@@ -123,7 +124,7 @@ Deno.test("sendJson: a failure carries the vendor's own message", async () => {
   assert(/name: can't be blank/.test(error.message), error.message);
 });
 
-Deno.test("asArray: accepts an array, a JSON string and a single object", () => {
+test("asArray: accepts an array, a JSON string and a single object", () => {
   const value = [{ email: "a@b.com" }];
 
   assertEquals(asArray(value), value);
@@ -134,6 +135,6 @@ Deno.test("asArray: accepts an array, a JSON string and a single object", () => 
   assertEquals(asArray(""), undefined);
 });
 
-Deno.test("asArray: invalid JSON is refused loudly, not silently dropped", () => {
+test("asArray: invalid JSON is refused loudly, not silently dropped", () => {
   assertThrows(() => asArray("{not json"), Error, "not valid JSON");
 });

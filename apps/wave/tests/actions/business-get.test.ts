@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import businessGet from "../../actions/business-get.ts";
 
-Deno.test("business-get: returns the business by id", async () => {
+test("business-get: returns the business by id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { business: { id: "b1", name: "Smith Consulting", isPersonal: false } } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("business-get: returns the business by id", async () => {
   assertEquals(body.variables.id, "b1");
 });
 
-Deno.test("business-get: a NOT_FOUND error surfaces as a rejection", async () => {
+test("business-get: a NOT_FOUND error surfaces as a rejection", async () => {
   const { ctx } = mockCtx([{
     body: {
       errors: [{
@@ -31,7 +32,7 @@ Deno.test("business-get: a NOT_FOUND error surfaces as a rejection", async () =>
   );
 });
 
-Deno.test("business-get: type/resource metadata", () => {
+test("business-get: type/resource metadata", () => {
   assertEquals(businessGet.type, "read");
   assertEquals(businessGet.resource, "business");
 });

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import emailUpdate from "../../actions/email-update.ts";
 import { errBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const run = (
   input: Record<string, unknown> = sample,
 ) => emailUpdate.execute(input as never, ctx) as Promise<unknown>;
 
-Deno.test("email-update: declares a perform action with a description, params and output", () => {
+test("email-update: declares a perform action with a description, params and output", () => {
   assertEquals(emailUpdate.key, "email-update");
   assertEquals(emailUpdate.type, "perform");
   assert((emailUpdate.description ?? "").length > 0);
@@ -16,7 +17,7 @@ Deno.test("email-update: declares a perform action with a description, params an
   assertEquals(emailUpdate.idempotent, true);
 });
 
-Deno.test("email-update: sends the documented request and returns the documented shape", async () => {
+test("email-update: sends the documented request and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true } }]);
   const out = await run(ctx);
   assertEquals(out, { "ok": true });
@@ -29,12 +30,12 @@ Deno.test("email-update: sends the documented request and returns the documented
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("email-update: an Aidbase failure body is thrown with its message", async () => {
+test("email-update: an Aidbase failure body is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errBody("API key is missing a scope") }]);
   await assertRejects(() => run(ctx), Error, "API key is missing a scope");
 });
 
-Deno.test("email-update: refuses an empty update without calling Aidbase", async () => {
+test("email-update: refuses an empty update without calling Aidbase", async () => {
   const { ctx, calls } = mockCtx([]);
   const input = { "emailInboxId": "i1", "emailId": "e1" };
   await assertRejects(() => run(ctx, input), Error, "at least one");

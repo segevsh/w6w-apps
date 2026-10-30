@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import distribution from "../../actions/analytics-distribution.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -19,7 +20,7 @@ const WIRE = {
   subject: "account",
 };
 
-Deno.test("analytics-distribution: GET /v2/analytics/distribution", async () => {
+test("analytics-distribution: GET /v2/analytics/distribution", async () => {
   const rows = [{ key: "ES", value: 4 }];
   const { ctx, calls } = mockCtx([{ body: envelope(rows) }]);
   assertEquals(await distribution.execute(M, ctx), { items: rows, count: 1 });

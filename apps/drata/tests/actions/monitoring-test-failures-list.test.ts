@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import monitoringTestFailuresList from "../../actions/monitoring-test-failures-list.ts";
 import { errorBody, mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
 const BASE = { "workspaceId": 7, "testId": 42 };
 
-Deno.test("monitoring-test-failures-list: GET /workspaces/7/monitoring-tests/42/failures sends only the page defaults and flattens the envelope", async () => {
+test("monitoring-test-failures-list: GET /workspaces/7/monitoring-tests/42/failures sends only the page defaults and flattens the envelope", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1 }, { id: 2 }], "next-abc", 2) }]);
   const out = await monitoringTestFailuresList.execute({
     ...BASE,
@@ -28,7 +29,7 @@ Deno.test("monitoring-test-failures-list: GET /workspaces/7/monitoring-tests/42/
   assertEquals(out.totalCount, 2);
 });
 
-Deno.test("monitoring-test-failures-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
+test("monitoring-test-failures-list: filters and expand go out under their wire names; a cursor is forwarded", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   const out = await monitoringTestFailuresList.execute({
     ...BASE,
@@ -49,7 +50,7 @@ Deno.test("monitoring-test-failures-list: filters and expand go out under their 
   assertEquals(out.nextCursor, null);
 });
 
-Deno.test("monitoring-test-failures-list: a 403 names the permission problem and keeps Drata's message", async () => {
+test("monitoring-test-failures-list: a 403 names the permission problem and keeps Drata's message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden resource", 5) }]);
   const err = await assertRejects(
     () => Promise.resolve(monitoringTestFailuresList.execute({ ...BASE }, ctx)),

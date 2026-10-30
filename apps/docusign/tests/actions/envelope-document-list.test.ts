@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { ACCOUNT_BASE, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/envelope-document-list.ts";
 
-Deno.test("envelope-document-list: GETs /envelopes/{id}/documents", async () => {
+test("envelope-document-list: GETs /envelopes/{id}/documents", async () => {
   const { ctx, calls } = mockCtx([{
     body: { envelopeDocuments: [{ documentId: "1", name: "NDA.pdf" }] },
   }]);
@@ -15,7 +16,7 @@ Deno.test("envelope-document-list: GETs /envelopes/{id}/documents", async () => 
   assertEquals(out.envelopeDocuments[0].documentId, "1");
 });
 
-Deno.test("envelope-document-list: maps its flags to snake_case", async () => {
+test("envelope-document-list: maps its flags to snake_case", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { envelopeId: "e1", includeMetadata: true, includeTabs: true, recipientId: "2" },
@@ -27,7 +28,7 @@ Deno.test("envelope-document-list: maps its flags to snake_case", async () => {
   assertEquals(q.get("recipient_id"), "2");
 });
 
-Deno.test("envelope-document-list: is a read action grouped under document", () => {
+test("envelope-document-list: is a read action grouped under document", () => {
   assertEquals(action.type, "read");
   assertEquals(action.resource, "document");
 });

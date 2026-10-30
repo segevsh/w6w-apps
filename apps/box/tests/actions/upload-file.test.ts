@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upload-file.ts";
 import type { FileRef } from "@w6w/types";
@@ -53,7 +54,7 @@ const REF: FileRef = {
   expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
 };
 
-Deno.test("upload-file: POSTs to the upload host with a multipart body, attributes before file, real bytes", async () => {
+test("upload-file: POSTs to the upload host with a multipart body, attributes before file, real bytes", async () => {
   const entries = { entries: [{ id: "1", name: "invoice.txt" }] };
   const { ctx: base, calls } = mockCtx([{ body: entries }]);
   const { file, reads } = fakeFileCapability(REF, BINARY);
@@ -84,7 +85,7 @@ Deno.test("upload-file: POSTs to the upload host with a multipart body, attribut
   assertEquals(result, entries);
 });
 
-Deno.test("upload-file: forwards a given parentId", async () => {
+test("upload-file: forwards a given parentId", async () => {
   const { ctx: base, calls } = mockCtx([{ body: {} }]);
   const { file } = fakeFileCapability(REF, BINARY);
   const ctx = { ...base, file };
@@ -93,7 +94,7 @@ Deno.test("upload-file: forwards a given parentId", async () => {
   assert(indexOfBytes(bytes, new TextEncoder().encode('"parent":{"id":"42"}')) >= 0);
 });
 
-Deno.test("upload-file: accepts a bare FileRef id string and still reads real bytes via ctx.file.read", async () => {
+test("upload-file: accepts a bare FileRef id string and still reads real bytes via ctx.file.read", async () => {
   const { ctx: base, calls } = mockCtx([{ body: {} }]);
   const { file, reads } = fakeFileCapability(REF, BINARY);
   const ctx = { ...base, file };
@@ -111,7 +112,7 @@ Deno.test("upload-file: accepts a bare FileRef id string and still reads real by
   );
 });
 
-Deno.test("upload-file: fails with a clear message, not a TypeError, when ctx.file is absent", async () => {
+test("upload-file: fails with a clear message, not a TypeError, when ctx.file is absent", async () => {
   const { ctx } = mockCtx([]);
   const err = await assertRejects(
     () =>

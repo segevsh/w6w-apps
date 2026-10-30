@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import chatCreate from "../../actions/chat-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("chat-create: POSTs {email} to /v2/chats", async () => {
+test("chat-create: POSTs {email} to /v2/chats", async () => {
   const { ctx, calls } = mockCtx([
     { body: { iden: "c1", with: { email: "john@example.com", type: "user" } } },
   ]);
@@ -17,6 +18,6 @@ Deno.test("chat-create: POSTs {email} to /v2/chats", async () => {
   assertEquals(out.with.email, "john@example.com");
 });
 
-Deno.test("chat-create: is declared idempotent — the vendor documents get-or-create", () => {
+test("chat-create: is declared idempotent — the vendor documents get-or-create", () => {
   assertEquals(chatCreate.idempotent, true);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createSubscription from "../../actions/create-subscription.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("create-subscription: nests type/token under `subscription`, path targets the alias", async () => {
+test("create-subscription: nests type/token under `subscription`, path targets the alias", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ status: 200, body: { subscription: {} } }]);
   await createSubscription.execute(
     { aliasId: "user_123", type: "Email", token: "a@example.com", enabled: true },

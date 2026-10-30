@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/board-list.ts";
 
-Deno.test("board-list: uses the OFFSET pager, which is what /v2/boards takes", async () => {
+test("board-list: uses the OFFSET pager, which is what /v2/boards takes", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: [{ id: "b1" }], total: 2, size: 1 } },
     { status: 200, body: { data: [{ id: "b2" }], total: 2, size: 1 } },
@@ -15,7 +16,7 @@ Deno.test("board-list: uses the OFFSET pager, which is what /v2/boards takes", a
   assertEquals(result, [{ id: "b1" }, { id: "b2" }]);
 });
 
-Deno.test("board-list: passes the search and scope filters", async () => {
+test("board-list: passes the search and scope filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], total: 0 } }], { display: {} });
   await action.execute!({ query: "roadmap", teamId: "t1", sort: "last_modified" }, ctx);
   const q = new URL(calls[0].url).searchParams;

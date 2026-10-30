@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import publishScheduleCancel from "../../actions/publish-schedule-cancel.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("publish-schedule-cancel: DELETEs the schedule", async () => {
+test("publish-schedule-cancel: DELETEs the schedule", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({}) }]);
   const out = await publishScheduleCancel.execute({ scheduleId: "sch1" }, ctx) as {
     canceled: boolean;
@@ -13,6 +14,6 @@ Deno.test("publish-schedule-cancel: DELETEs the schedule", async () => {
   assertEquals(out.canceled, true);
 });
 
-Deno.test("publish-schedule-cancel: is declared idempotent", () => {
+test("publish-schedule-cancel: is declared idempotent", () => {
   assertEquals(publishScheduleCancel.idempotent, true);
 });

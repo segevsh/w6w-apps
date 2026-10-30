@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactTagAdd from "../../actions/contact-tag-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-tag-add: POSTs {tagId} to /api/contacts/{id}/tags", async () => {
+test("contact-tag-add: POSTs {tagId} to /api/contacts/{id}/tags", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await contactTagAdd.execute({ id: "1", tagId: 7 }, ctx);
 

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-task.ts";
 
-Deno.test("update-task: is idempotent, and requires taskId, name and dueDate", () => {
+test("update-task: is idempotent, and requires taskId, name and dueDate", () => {
   // Wealthbox's docs mark name/due_date required on the update endpoint too,
   // unlike Contact's genuinely-partial PUT — this pins that quirk.
   assertEquals(action.type, "perform");
@@ -13,7 +14,7 @@ Deno.test("update-task: is idempotent, and requires taskId, name and dueDate", (
   assert(required.includes("dueDate"));
 });
 
-Deno.test("update-task: PUTs /tasks/{id} with the mapped body", async () => {
+test("update-task: PUTs /tasks/{id} with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute(
     { taskId: 1, name: "Follow up", dueDate: "2025-01-01", complete: true },

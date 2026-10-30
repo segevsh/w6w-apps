@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import content from "../../actions/content.ts";
 import { mockCtx, region } from "../_helpers.ts";
 
-Deno.test("content: returns rendered HTML with its type and size", async () => {
+test("content: returns rendered HTML with its type and size", async () => {
   const { ctx, calls } = mockCtx(
     [{ headers: { "content-type": "text/html; charset=utf-8" }, body: "<html>é</html>" }],
     { connection: region("ams") },
@@ -17,7 +18,7 @@ Deno.test("content: returns rendered HTML with its type and size", async () => {
   assertEquals(JSON.parse(calls[0].body!), { url: "https://example.com", bestAttempt: true });
 });
 
-Deno.test("content: viewport needs both dimensions", async () => {
+test("content: viewport needs both dimensions", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await content.execute({ url: "https://a.com", viewportWidth: 800 }, ctx),
@@ -27,7 +28,7 @@ Deno.test("content: viewport needs both dimensions", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("content: wait options, headers and viewport map to the vendor body", async () => {
+test("content: wait options, headers and viewport map to the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ headers: { "content-type": "text/html" }, body: "x" }]);
   await content.execute(
     {
@@ -53,7 +54,7 @@ Deno.test("content: wait options, headers and viewport map to the vendor body", 
   });
 });
 
-Deno.test("content: a 401 names the rejected token", async () => {
+test("content: a 401 names the rejected token", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Invalid API key. Please check your API key." }]);
   await assertRejects(
     async () => await content.execute({ url: "https://a.com" }, ctx),

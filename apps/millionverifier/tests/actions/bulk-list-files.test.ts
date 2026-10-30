@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bulkListFiles from "../../actions/bulk-list-files.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("bulk-list-files: sends the filters under the vendor's names and pages by offset", async () => {
+test("bulk-list-files: sends the filters under the vendor's names and pages by offset", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       files: [{ file_id: "1", status: "finished" }, { file_id: "2", status: "paused" }],
@@ -34,14 +35,14 @@ Deno.test("bulk-list-files: sends the filters under the vendor's names and pages
   assertEquals((out.files as Array<{ fileId: string }>).map((f) => f.fileId), ["1", "2"]);
 });
 
-Deno.test("bulk-list-files: the last page has no nextOffset; defaults are offset 0 limit 50", async () => {
+test("bulk-list-files: the last page has no nextOffset; defaults are offset 0 limit 50", async () => {
   const { ctx, calls } = mockCtx([{ body: { files: [{ file_id: "9" }], total: 3 } }]);
   const out = await run(bulkListFiles, { offset: 2 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "50");
   assertEquals(out.nextOffset, null);
 });
 
-Deno.test("bulk-list-files: limit above 50 is refused locally; an error body throws", async () => {
+test("bulk-list-files: limit above 50 is refused locally; an error body throws", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: "empty_api_key" } }]);
   await assertRejects(() => run(bulkListFiles, { limit: 51 }, ctx), Error, "limit");
   assertEquals(calls.length, 0);

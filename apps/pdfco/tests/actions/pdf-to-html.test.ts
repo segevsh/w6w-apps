@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pdfToHtml from "../../actions/pdf-to-html.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("pdf-to-html: posts to /v1/pdf/convert/to/html and returns the HTML body", async () => {
+test("pdf-to-html: posts to /v1/pdf/convert/to/html and returns the HTML body", async () => {
   const { ctx, calls } = mockCtx([{ body: { body: "<h1>hi</h1>", pageCount: 1 } }]);
   const out = await pdfToHtml.execute({ url: "https://example.com/a.pdf" }, ctx);
 

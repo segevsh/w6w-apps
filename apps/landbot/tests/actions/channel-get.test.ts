@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import channelGet from "../../actions/channel-get.ts";
 import { detailBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("channel-get: GET /channels/7/ with the documented query and body", async () => {
+test("channel-get: GET /channels/7/ with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "success": true, "channel": { "id": 7, "name": "Web", "token": "tok" } },
@@ -18,7 +19,7 @@ Deno.test("channel-get: GET /channels/7/ with the documented query and body", as
   assertEquals(out, { "id": 7, "name": "Web", "token": "[redacted]" });
 });
 
-Deno.test("channel-get: a Landbot error surfaces its status and message", async () => {
+test("channel-get: a Landbot error surfaces its status and message", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { errors: { detail: ["nope"] } } }]);
   const err = await assertRejects(
     () => Promise.resolve(channelGet.execute({ "channelId": 7 } as never, ctx)),
@@ -28,7 +29,7 @@ Deno.test("channel-get: a Landbot error surfaces its status and message", async 
   assertEquals(err.message.includes("detail: nope"), true, err.message);
 });
 
-Deno.test("channel-get: declares read", () => {
+test("channel-get: declares read", () => {
   assertEquals(channelGet.type, "read");
   assertEquals(detailBody("x"), { detail: "x" });
 });

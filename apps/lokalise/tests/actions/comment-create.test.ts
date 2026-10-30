@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-create: wraps each string into a {comment} object", async () => {
+test("comment-create: wraps each string into a {comment} object", async () => {
   const { ctx, calls } = mockCtx([{ body: { comments: [{ comment_id: 1 }, { comment_id: 2 }] } }]);
   await commentCreate.execute(
     { projectId: "p1", keyId: 5, comments: ["This is a test.", "Adding multiple comments."] },
@@ -20,6 +21,6 @@ Deno.test("comment-create: wraps each string into a {comment} object", async () 
  * app's `idempotent: false` declarations, since a retry does not just risk
  * duplication, it guarantees it.
  */
-Deno.test("comment-create: is not idempotent — a retry WILL duplicate the comment", () => {
+test("comment-create: is not idempotent — a retry WILL duplicate the comment", () => {
   assertEquals(commentCreate.idempotent, false);
 });

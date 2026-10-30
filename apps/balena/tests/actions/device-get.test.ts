@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-get.ts";
 
@@ -24,7 +25,7 @@ const device = (extra: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("device-get: fetches by uuid and compares running against target", async () => {
+test("device-get: fetches by uuid and compares running against target", async () => {
   const { ctx, calls } = mockCtx([device()]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).searchParams.get("$filter"), `uuid eq '${UUID}'`);
@@ -33,14 +34,14 @@ Deno.test("device-get: fetches by uuid and compares running against target", asy
   assertEquals(result.statusMeaning, "online and running what it should be");
 });
 
-Deno.test("device-get: a device running something else is off target", async () => {
+test("device-get: a device running something else is off target", async () => {
   const { ctx } = mockCtx([device({ is_running__release: { __id: 800 } })]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.onTargetRelease, false);
 });
 
 /** An offline device keeps returning its last reading, with nothing marking it. */
-Deno.test("device-get: reports how stale the metrics are, and says so when very", async () => {
+test("device-get: reports how stale the metrics are, and says so when very", async () => {
   const fresh = mockCtx([device()]);
   const online = await action.execute({ uuid: UUID }, fresh.ctx) as Record<string, unknown>;
   assertEquals(online.metricsAgeSeconds, 0);
@@ -59,7 +60,7 @@ Deno.test("device-get: reports how stale the metrics are, and says so when very"
 });
 
 /** A hardware problem wearing a software costume. */
-Deno.test("device-get: warns about undervoltage in the terms it presents as", async () => {
+test("device-get: warns about undervoltage in the terms it presents as", async () => {
   const { ctx, logs } = mockCtx([device({ is_undervolted: true })]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.isUndervolted, true);
@@ -69,7 +70,7 @@ Deno.test("device-get: warns about undervoltage in the terms it presents as", as
   );
 });
 
-Deno.test("device-get: an unmatched uuid names the short-uuid trap", async () => {
+test("device-get: an unmatched uuid names the short-uuid trap", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { d: [] } }]);
   const err = await assertRejects(
     async () => await action.execute({ uuid: UUID }, ctx),
@@ -78,13 +79,13 @@ Deno.test("device-get: an unmatched uuid names the short-uuid trap", async () =>
   assert(/first 7 characters/.test(err.message), err.message);
 });
 
-Deno.test("device-get: a short uuid is refused before any request", async () => {
+test("device-get: a short uuid is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute({ uuid: "a1b2c3d" }, ctx), Error, "SHORT");
   assertEquals(calls.length, 0);
 });
 
-Deno.test("device-get: a pinned device says so", async () => {
+test("device-get: a pinned device says so", async () => {
   const { ctx } = mockCtx([device({ is_pinned_on__release: { __id: 800 } })]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
   assertEquals(result.isPinned, true);

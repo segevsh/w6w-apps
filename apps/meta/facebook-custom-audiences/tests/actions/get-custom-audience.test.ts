@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-custom-audience.ts";
 
-Deno.test("get-custom-audience: GET /<id> with the default field list", async () => {
+test("get-custom-audience: GET /<id> with the default field list", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "77", name: "VIPs" } }]);
   const out = await action.execute({ audienceId: "77" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("get-custom-audience: GET /<id> with the default field list", async ()
   assertEquals(out.name, "VIPs");
 });
 
-Deno.test("get-custom-audience: honours an explicit field list; reports Meta's error", async () => {
+test("get-custom-audience: honours an explicit field list; reports Meta's error", async () => {
   const { ctx, calls } = mockCtx([
     { body: { id: "77" } },
     { status: 403, body: { error: { message: "(#200) Permissions error", code: 200 } } },

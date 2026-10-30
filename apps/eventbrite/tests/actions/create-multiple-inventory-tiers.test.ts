@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-multiple-inventory-tiers.ts";
 
-Deno.test("create-multiple-inventory-tiers: posts inventory_tiers array", async () => {
+test("create-multiple-inventory-tiers: posts inventory_tiers array", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory_tiers: [] } }]);
   const result = await action.execute!({
     eventId: "e1",
@@ -17,7 +18,7 @@ Deno.test("create-multiple-inventory-tiers: posts inventory_tiers array", async 
   assertEquals(result, { inventory_tiers: [] });
 });
 
-Deno.test("create-multiple-inventory-tiers: accepts a JSON string", async () => {
+test("create-multiple-inventory-tiers: accepts a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory_tiers: [] } }]);
   const result = await action.execute!({ eventId: "e1", tiers: '[{"name":"A"}]' }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { inventory_tiers: [{ name: "A" }] });

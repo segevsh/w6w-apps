@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { data, gqlOf, mockCtx, param } from "../_helpers.ts";
 import postMetricsAggregate from "../../actions/post-metrics-aggregate.ts";
 
 const empty = () => data({ aggregatedPostMetrics: { metrics: [], metricsUpdatedAt: null } });
 
-Deno.test("post-metrics-aggregate: both window bounds are required", () => {
+test("post-metrics-aggregate: both window bounds are required", () => {
   assertEquals(param(postMetricsAggregate, "startDateTime").required, true);
   assertEquals(param(postMetricsAggregate, "endDateTime").required, true);
 });
 
-Deno.test("post-metrics-aggregate: the window goes out verbatim", async () => {
+test("post-metrics-aggregate: the window goes out verbatim", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await postMetricsAggregate.execute({
     organizationId: "o1",
@@ -30,7 +31,7 @@ Deno.test("post-metrics-aggregate: the window goes out verbatim", async () => {
  * rather than `[]` for a blank field: Buffer spans every channel when
  * `channelIds` is omitted, and matches NONE when it is an empty array.
  */
-Deno.test("post-metrics-aggregate: a blank channel field is omitted, never sent as []", async () => {
+test("post-metrics-aggregate: a blank channel field is omitted, never sent as []", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await postMetricsAggregate.execute({
     organizationId: "o1",
@@ -42,7 +43,7 @@ Deno.test("post-metrics-aggregate: a blank channel field is omitted, never sent 
   assertEquals("channelIds" in input, false);
 });
 
-Deno.test("post-metrics-aggregate: supplied channel ids are sent as an array", async () => {
+test("post-metrics-aggregate: supplied channel ids are sent as an array", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await postMetricsAggregate.execute({
     organizationId: "o1",
@@ -56,7 +57,7 @@ Deno.test("post-metrics-aggregate: supplied channel ids are sent as an array", a
   );
 });
 
-Deno.test("post-metrics-aggregate: freshness is selected alongside the numbers", async () => {
+test("post-metrics-aggregate: freshness is selected alongside the numbers", async () => {
   const { ctx, calls } = mockCtx([empty()]);
   await postMetricsAggregate.execute({
     organizationId: "o1",
@@ -66,7 +67,7 @@ Deno.test("post-metrics-aggregate: freshness is selected alongside the numbers",
   assert(/metricsUpdatedAt/.test(gqlOf(calls[0]).query));
 });
 
-Deno.test("post-metrics-aggregate: the output promises rows, not named metric fields", () => {
+test("post-metrics-aggregate: the output promises rows, not named metric fields", () => {
   // Which metrics come back depends on the channels in scope — only the
   // postCount/reactions/comments baseline is guaranteed.
   const keys = (postMetricsAggregate.output as Array<{ key: string }>).map((f) => f.key);
@@ -74,7 +75,7 @@ Deno.test("post-metrics-aggregate: the output promises rows, not named metric fi
   assert(!keys.some((k) => /impressions|reach|saves/.test(k)));
 });
 
-Deno.test("post-metrics-aggregate: the hints carry the 365-day cap and the inclusive end", () => {
+test("post-metrics-aggregate: the hints carry the 365-day cap and the inclusive end", () => {
   assert(/365 days/.test(String(param(postMetricsAggregate, "startDateTime").hint)));
   assert(/inclusive/.test(String(param(postMetricsAggregate, "endDateTime").hint)));
 });

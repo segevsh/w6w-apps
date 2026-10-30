@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: reports ok when the REST API component is operational", async () => {
+test("service: reports ok when the REST API component is operational", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -23,7 +24,7 @@ Deno.test("service: reports ok when the REST API component is operational", asyn
   assertEquals(calls[0].url, "https://status.clicksend.com/api/v2/summary.json");
 });
 
-Deno.test("service: weights the REST API component over the page-wide indicator", async () => {
+test("service: weights the REST API component over the page-wide indicator", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -42,7 +43,7 @@ Deno.test("service: weights the REST API component over the page-wide indicator"
   assertEquals(report.components?.["voice"].state, "down");
 });
 
-Deno.test("service: falls back to the page-wide indicator if REST API is absent from the board", async () => {
+test("service: falls back to the page-wide indicator if REST API is absent from the board", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -55,7 +56,7 @@ Deno.test("service: falls back to the page-wide indicator if REST API is absent 
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: reports unknown (never down) when the status API itself fails", async () => {
+test("service: reports unknown (never down) when the status API itself fails", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({} as never, ctx);
   assertEquals(report.state, "unknown");

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/query-run.ts";
 
@@ -15,7 +16,7 @@ const STREAM = [
   { readTime: "2026-09-22T00:00:01Z" },
 ];
 
-Deno.test("query-run: POSTs a StructuredQuery to the parent and decodes the stream", async () => {
+test("query-run: POSTs a StructuredQuery to the parent and decodes the stream", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: STREAM }], { display: DISPLAY });
 
   const result = await action.execute({
@@ -49,7 +50,7 @@ Deno.test("query-run: POSTs a StructuredQuery to the parent and decodes the stre
   assertEquals(result.readTime, "2026-09-22T00:00:01Z");
 });
 
-Deno.test("query-run: a parentPath scopes a subcollection, allDescendants a collection group", async () => {
+test("query-run: a parentPath scopes a subcollection, allDescendants a collection group", async () => {
   const sub = mockCtx([{ status: 200, body: [] }], { display: DISPLAY });
   await action.execute({ collectionId: "orders", parentPath: "users/alice" }, sub.ctx);
   assertEquals(
@@ -64,7 +65,7 @@ Deno.test("query-run: a parentPath scopes a subcollection, allDescendants a coll
   ]);
 });
 
-Deno.test("query-run: `collectionId` is required and a bad limit never reaches the wire", async () => {
+test("query-run: `collectionId` is required and a bad limit never reaches the wire", async () => {
   const none = mockCtx([], { display: DISPLAY });
   await assertRejects(async () => await action.execute({}, none.ctx), Error, "collectionId");
 

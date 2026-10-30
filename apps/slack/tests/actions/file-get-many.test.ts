@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/file-get-many.ts";
 
-Deno.test("file-get-many: GETs /files.list with count default and forwarded filters", async () => {
+test("file-get-many: GETs /files.list with count default and forwarded filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, files: [] } }]);
   await action.execute!({ channel: "C1", user: "U1", types: "images", page: 2 }, ctx);
   const url = new URL(calls[0].url);

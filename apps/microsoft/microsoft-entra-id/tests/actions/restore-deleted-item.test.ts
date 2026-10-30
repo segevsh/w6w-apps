@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/restore-deleted-item.ts";
 
-Deno.test("restore-deleted-item: POSTs /directory/deletedItems/{id}/restore with no body by default", async () => {
+test("restore-deleted-item: POSTs /directory/deletedItems/{id}/restore with no body by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { "@odata.type": "#microsoft.graph.user", id: "u1" } }]);
   const out = await action.execute({ itemId: "u1" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("restore-deleted-item: POSTs /directory/deletedItems/{id}/restore with
   assertEquals(out.id, "u1");
 });
 
-Deno.test("restore-deleted-item: sends the documented user-only options when set", async () => {
+test("restore-deleted-item: sends the documented user-only options when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "u1" } }]);
   await action.execute({
     itemId: "u1",
@@ -24,7 +25,7 @@ Deno.test("restore-deleted-item: sends the documented user-only options when set
   });
 });
 
-Deno.test("restore-deleted-item: a purged item is Graph's 404, surfaced", async () => {
+test("restore-deleted-item: a purged item is Graph's 404, surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: { code: "Request_ResourceNotFound", message: "not in deleted items" } },

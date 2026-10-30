@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import windowFileInput from "../../actions/window-file-input.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-file-input: attaches a file by id", async () => {
+test("window-file-input: attaches a file by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: aiEnvelope("File attached.") }]);
   await windowFileInput.execute(
     { sessionId: "s1", windowId: "w1", fileId: "f1", elementDescription: "the file input" },
@@ -13,7 +14,7 @@ Deno.test("window-file-input: attaches a file by id", async () => {
   assertEquals(JSON.parse(calls[0].body!), { fileId: "f1", elementDescription: "the file input" });
 });
 
-Deno.test("window-file-input: requires fileId or fileName, checked before any request", async () => {
+test("window-file-input: requires fileId or fileName, checked before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await windowFileInput.execute({ sessionId: "s1", windowId: "w1" }, ctx),
@@ -23,6 +24,6 @@ Deno.test("window-file-input: requires fileId or fileName, checked before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("window-file-input: is declared non-idempotent", () => {
+test("window-file-input: is declared non-idempotent", () => {
   assert(windowFileInput.idempotent === false);
 });

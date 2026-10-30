@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/audit-log-list.ts";
 
@@ -8,7 +9,7 @@ const page = (data: unknown[]) => ({
   body: { data, extra: { pagination: { count: data.length, total_count: data.length } } },
 });
 
-Deno.test("audit-log-list: reads the recent events", async () => {
+test("audit-log-list: reads the recent events", async () => {
   const { ctx, calls } = mockCtx([page([{ id: "e1", event_type: "job.update" }])], { display });
   const result = await action.execute!({}, ctx) as { count: number; available: boolean };
   assertEquals(
@@ -23,7 +24,7 @@ Deno.test("audit-log-list: reads the recent events", async () => {
  * Enterprise-only. A plan that will never have it should degrade rather than
  * error every hour.
  */
-Deno.test("audit-log-list: a 403 reports unavailability instead of failing", async () => {
+test("audit-log-list: a 403 reports unavailability instead of failing", async () => {
   const { ctx, logs } = mockCtx(
     [{ status: 403, body: { status: { user_message: "Forbidden" } } }],
     {
@@ -41,12 +42,12 @@ Deno.test("audit-log-list: a 403 reports unavailability instead of failing", asy
   assert(logs.some((l) => /not available/.test(l.message)), JSON.stringify(logs));
 });
 
-Deno.test("audit-log-list: any other failure is still raised", async () => {
+test("audit-log-list: any other failure is still raised", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "500");
 });
 
 /** A monitor, not an archive — older events need dbt's separate export. */
-Deno.test("audit-log-list: says it is Enterprise-only", () => {
+test("audit-log-list: says it is Enterprise-only", () => {
   assert(/Enterprise-only/.test(action.description!), action.description);
 });

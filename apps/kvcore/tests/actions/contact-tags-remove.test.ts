@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactTagsRemove from "../../actions/contact-tags-remove.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { mockCtx, pathOf } from "../_helpers.ts";
  * a bare JSON array body — unlike the sibling PUT, which wraps tags in an
  * object. This pins that asymmetry rather than "fixing" it to match the PUT.
  */
-Deno.test("contact-tags-remove: DELETEs with a bare array body of tag names", async () => {
+test("contact-tags-remove: DELETEs with a bare array body of tag names", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact_id: 1, tags: [] } }]);
   await contactTagsRemove.execute({ contact_id: "1", tags: ["hotlead", "stale"] }, ctx);
 

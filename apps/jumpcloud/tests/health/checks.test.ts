@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
@@ -19,7 +20,7 @@ const ALL_REGIONS = {
   ],
 };
 
-Deno.test("service: probes the status page unsigned, with the host declared", async () => {
+test("service: probes the status page unsigned, with the host declared", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ALL_REGIONS }], { display: {} });
   await service.check!({}, ctx);
   assertEquals(calls[0].url, "https://status.jumpcloud.com/api/v2/components.json");
@@ -29,7 +30,7 @@ Deno.test("service: probes the status page unsigned, with the host declared", as
   assertEquals(service.scope, "connection");
 });
 
-Deno.test("service: reads the three components this app rides on", async () => {
+test("service: reads the three components this app rides on", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ALL_REGIONS }], { display: { region: "us" } });
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -41,13 +42,13 @@ Deno.test("service: reads the three components this app rides on", async () => {
 });
 
 /** LDAP, RADIUS, SSO and billing are real services no action here touches. */
-Deno.test("service: an outage in a service this app does not use is not its outage", async () => {
+test("service: an outage in a service this app does not use is not its outage", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ALL_REGIONS }], { display: { region: "us" } });
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
 /** The whole point of the per-region design. */
-Deno.test("service: an EU outage does not touch a US connection, and vice versa", async () => {
+test("service: an EU outage does not touch a US connection, and vice versa", async () => {
   const body = {
     components: [
       component("General Access API - US Region", "operational"),
@@ -63,13 +64,13 @@ Deno.test("service: an EU outage does not touch a US connection, and vice versa"
   assert(report.message!.includes("EU Region"), report.message);
 });
 
-Deno.test("service: an unset region reads as US", async () => {
+test("service: an unset region reads as US", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ALL_REGIONS }], { display: {} });
   const report = await service.check!({}, ctx);
   assert(report.components!["general-access-api-us-region"]);
 });
 
-Deno.test("service: degraded performance is degraded, not down", async () => {
+test("service: degraded performance is degraded, not down", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { components: [component("General Access API - US Region", "degraded_performance")] },
@@ -78,7 +79,7 @@ Deno.test("service: degraded performance is degraded, not down", async () => {
 });
 
 /** A group heading's status rolls up every region at once. */
-Deno.test("service: the group headings are skipped", async () => {
+test("service: the group headings are skipped", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -91,7 +92,7 @@ Deno.test("service: the group headings are skipped", async () => {
   assertEquals((await service.check!({}, ctx)).state, "ok");
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const failed = mockCtx([{ status: 503, body: "" }], { display: {} });
   assertEquals((await service.check!({}, failed.ctx)).state, "unknown");
 
@@ -110,7 +111,7 @@ Deno.test("service: a broken status page is unknown, never down", async () => {
  * A declared absence, not a gap: JumpCloud rate limits but publishes no header
  * and no usage endpoint.
  */
-Deno.test("quota: is a declared absence, with the measurement in the reason", () => {
+test("quota: is a declared absence, with the measurement in the reason", () => {
   assertEquals(quota.check, undefined);
   assertEquals(quota.severity, "informational");
   const reason = quota.unavailable!.reason;

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/account.ts";
 
-Deno.test("account: ok with a name list when carriers are connected and funded", async () => {
+test("account: ok with a name list when carriers are connected and funded", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -24,13 +25,13 @@ Deno.test("account: ok with a name list when carriers are connected and funded",
   assert(result.message?.includes("UPS"), result.message);
 });
 
-Deno.test("account: degraded when no carrier is connected", async () => {
+test("account: degraded when no carrier is connected", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { carriers: [] } }]);
   const result = await check.check!({}, ctx);
   assertEquals(result.state, "degraded");
 });
 
-Deno.test("account: degraded when a funded carrier has a zero balance", async () => {
+test("account: degraded when a funded carrier has a zero balance", async () => {
   const { ctx } = mockCtx([
     {
       status: 200,
@@ -51,13 +52,13 @@ Deno.test("account: degraded when a funded carrier has a zero balance", async ()
   assert(result.message?.includes("zero balance"), result.message);
 });
 
-Deno.test("account: 401 is unknown, not down — the derived auth check owns that", async () => {
+test("account: 401 is unknown, not down — the derived auth check owns that", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: [] } }]);
   const result = await check.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("account: a 5xx is down", async () => {
+test("account: a 5xx is down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await check.check!({}, ctx);
   assertEquals(result.state, "down");

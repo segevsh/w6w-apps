@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userUpdateAvailability from "../../actions/user-update-availability.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-update-availability: PUTs to /v2.1/users/availability", async () => {
+test("user-update-availability: PUTs to /v2.1/users/availability", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await userUpdateAvailability.execute({
     agent_id: 1,

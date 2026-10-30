@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 
-Deno.test("webhook-create: creates the subscription", async () => {
+test("webhook-create: creates the subscription", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "id": 1 } } }]);
   const out = await webhookCreate.execute!(
     { "eventType": "message:received:new", "url": "https://x.test/h", "enabled": true } as never,
@@ -24,7 +25,7 @@ Deno.test("webhook-create: creates the subscription", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("webhook-create: surfaces a vendor error envelope", async () => {
+test("webhook-create: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

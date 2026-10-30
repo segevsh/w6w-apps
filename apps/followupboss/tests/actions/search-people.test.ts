@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param, run } from "../_helpers.ts";
 import searchPeople from "../../actions/search-people.ts";
 
@@ -7,7 +8,7 @@ const listBody = (people: unknown[] = []) => ({
   people,
 });
 
-Deno.test("search-people: GETs /people with the documented query names", async () => {
+test("search-people: GETs /people with the documented query names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([{ id: 1 }]) }]);
   const result = await run<{ records: unknown[] }>(searchPeople, {
     email: "john@example.com",
@@ -38,13 +39,13 @@ Deno.test("search-people: GETs /people with the documented query names", async (
   assertEquals(result.records.length, 1);
 });
 
-Deno.test("search-people: sends nothing but the path when no filter is given", async () => {
+test("search-people: sends nothing but the path when no filter is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody() }]);
   await searchPeople.execute({}, ctx);
   assertEquals(calls[0].url, "https://api.followupboss.com/v1/people");
 });
 
-Deno.test("search-people: exposes the trash and cursor controls the API needs", () => {
+test("search-people: exposes the trash and cursor controls the API needs", () => {
   assertEquals(searchPeople.type, "search");
   assert(param(searchPeople, "includeTrash").hint?.includes("excluded by default"));
   assert(param(searchPeople, "next").hint?.includes("recommended"));

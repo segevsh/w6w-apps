@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import runCancel from "../../actions/run-cancel.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("run-cancel: POSTs /v1/runs/{id}/cancel and reports success", async () => {
+test("run-cancel: POSTs /v1/runs/{id}/cancel and reports success", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   assertEquals(await runCancel.execute({ runId: "tsk_1" }, ctx), {
     success: true,

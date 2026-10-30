@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/verify-email.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("verify-email: POSTs the email and maps the vendor fields", async () => {
+test("verify-email: POSTs the email and maps the vendor fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -33,7 +34,7 @@ Deno.test("verify-email: POSTs the email and maps the vendor fields", async () =
   assertEquals(out.timeTaken, 120);
 });
 
-Deno.test("verify-email: omits timeout when unset; blank email throws before a request", async () => {
+test("verify-email: omits timeout when unset; blank email throws before a request", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: {} } }]);
   await run(action, { email: "a@b.co" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { email: "a@b.co" });
@@ -42,7 +43,7 @@ Deno.test("verify-email: omits timeout when unset; blank email throws before a r
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("verify-email: 402, 429 and a 200 failed envelope throw with the vendor message", async () => {
+test("verify-email: 402, 429 and a 200 failed envelope throw with the vendor message", async () => {
   const poor = mockCtx([{
     status: 402,
     body: { status: "failed", error: { code: 1002, message: "exhausted" } },

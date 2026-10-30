@@ -1,17 +1,18 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pull-request-create-review.ts";
 
 const PR = { owner: "acme", repository: "api", pullRequestNumber: 12 };
 
-Deno.test("pull-request-create-review: POSTs the review with its event", async () => {
+test("pull-request-create-review: POSTs the review with its event", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, state: "APPROVED" } }]);
   await action.execute({ ...PR, event: "APPROVE" }, ctx);
   assertEquals(calls[0].url, "https://api.github.com/repos/acme/api/pulls/12/reviews");
   assertEquals(JSON.parse(calls[0].body!), { event: "APPROVE" });
 });
 
-Deno.test("pull-request-create-review: PENDING is expressed by omitting `event`", async () => {
+test("pull-request-create-review: PENDING is expressed by omitting `event`", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ ...PR, event: "PENDING", body: "wip" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -20,7 +21,7 @@ Deno.test("pull-request-create-review: PENDING is expressed by omitting `event`"
   assertEquals(body.body, "wip");
 });
 
-Deno.test("pull-request-create-review: passes diff-anchored comments through", async () => {
+test("pull-request-create-review: passes diff-anchored comments through", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const comments = [{ path: "src/a.ts", line: 12, body: "typo" }];
   await action.execute({ ...PR, event: "COMMENT", body: "see notes", comments }, ctx);

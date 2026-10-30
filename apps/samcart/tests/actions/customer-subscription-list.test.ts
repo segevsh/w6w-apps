@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customerSubscriptionList from "../../actions/customer-subscription-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const INPUT = {
 };
 const RESPONSE = [{ "id": 1 }];
 
-Deno.test("customer-subscription-list: sends GET /v1/customers/1337/subscriptions with the mapped parameters", async () => {
+test("customer-subscription-list: sends GET /v1/customers/1337/subscriptions with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await customerSubscriptionList.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -37,12 +38,12 @@ Deno.test("customer-subscription-list: sends GET /v1/customers/1337/subscription
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("customer-subscription-list: returns the documented result shape", async () => {
+test("customer-subscription-list: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await customerSubscriptionList.execute(INPUT, ctx), { "data": [{ "id": 1 }] });
 });
 
-Deno.test("customer-subscription-list: an error surfaces SamCart's own message", async () => {
+test("customer-subscription-list: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(customerSubscriptionList.execute(INPUT, ctx)),
@@ -51,7 +52,7 @@ Deno.test("customer-subscription-list: an error surfaces SamCart's own message",
   assertEquals(err.message.includes("Object could not be found"), true, err.message);
 });
 
-Deno.test("customer-subscription-list: a non-integer customerId is refused before any request", async () => {
+test("customer-subscription-list: a non-integer customerId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/account-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("account-list: GETs /accounts with cursor and limit", async () => {
+test("account-list: GETs /accounts with cursor and limit", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "a1" }], pagination: { cursor: "n", has_next_page: true } },
   }]);
@@ -13,7 +14,7 @@ Deno.test("account-list: GETs /accounts with cursor and limit", async () => {
   assertEquals(out, { accounts: [{ id: "a1" }], hasNextPage: true, nextCursor: "n" });
 });
 
-Deno.test("account-list: the last page has no nextCursor", async () => {
+test("account-list: the last page has no nextCursor", async () => {
   const { ctx } = mockCtx([{ body: { data: [], pagination: { has_next_page: false } } }]);
   assertEquals(await action.execute!({}, ctx), { accounts: [], hasNextPage: false });
 });

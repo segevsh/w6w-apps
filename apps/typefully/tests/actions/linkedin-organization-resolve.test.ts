@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import linkedinOrganizationResolve from "../../actions/linkedin-organization-resolve.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("linkedin-organization-resolve: resolves a company URL into mention data", async () => {
+test("linkedin-organization-resolve: resolves a company URL into mention data", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "86779668",

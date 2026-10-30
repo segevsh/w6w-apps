@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/resolve-mx.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("resolve-mx: POSTs the domain to /domain/resolve/mx and passes data through", async () => {
+test("resolve-mx: POSTs the domain to /domain/resolve/mx and passes data through", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: { records: ["x"] } } }]);
   const out = await run(action, { domain: " example.com ", timeout: 5000 }, ctx);
   assertEquals(calls[0].url, "https://api.clearout.io/v2/domain/resolve/mx");
@@ -10,7 +11,7 @@ Deno.test("resolve-mx: POSTs the domain to /domain/resolve/mx and passes data th
   assertEquals(out.result, { records: ["x"] });
 });
 
-Deno.test("resolve-mx: blank domain throws without a request; 402 throws", async () => {
+test("resolve-mx: blank domain throws without a request; 402 throws", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, { domain: "" }, none.ctx), Error, "domain is required");
   assertEquals(none.calls.length, 0);

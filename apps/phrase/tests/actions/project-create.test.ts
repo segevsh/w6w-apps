@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create: sends POST /v2/projects", async () => {
+test("project-create: sends POST /v2/projects", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x1", name: "n" } }]);
   const input = {
     "name": "v_name",
@@ -28,7 +29,7 @@ Deno.test("project-create: sends POST /v2/projects", async () => {
   assert(!("authorization" in calls[0].headers), "credentials belong to sign, not the action");
 });
 
-Deno.test("project-create: surfaces Phrase's validation message on a 422", async () => {
+test("project-create: surfaces Phrase's validation message on a 422", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("Validation failed") }]);
   const err = await assertRejects(async () => {
     await projectCreate.execute({
@@ -43,7 +44,7 @@ Deno.test("project-create: surfaces Phrase's validation message on a 422", async
   assert((err as Error).message.includes("Validation failed"), (err as Error).message);
 });
 
-Deno.test("project-create: declares key, type and every param it reads", () => {
+test("project-create: declares key, type and every param it reads", () => {
   assertEquals(projectCreate.key, "project-create");
   assertEquals(projectCreate.type, "perform");
   const declared = new Set((projectCreate.params ?? []).map((p) => p.key));

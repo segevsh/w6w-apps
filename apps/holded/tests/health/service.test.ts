@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { API_COMPONENT_ID, mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -16,14 +17,14 @@ function summary(apiStatus: string, extra: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: metadata", () => {
+test("service: metadata", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.credential, "none");
   assertEquals(STATUS_URL, "https://holded.statuspage.io/api/v2/summary.json");
 });
 
-Deno.test("mapComponentStatus: the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -33,7 +34,7 @@ Deno.test("mapComponentStatus: the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("something-new"), "unknown");
 });
 
-Deno.test("check: operational Holded API -> ok, ignores an unrelated component's status", async () => {
+test("check: operational Holded API -> ok, ignores an unrelated component's status", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: summary("operational", {
@@ -47,26 +48,26 @@ Deno.test("check: operational Holded API -> ok, ignores an unrelated component's
   assertEquals(result.state, "ok");
 });
 
-Deno.test("check: degraded Holded API -> degraded, with a message", async () => {
+test("check: degraded Holded API -> degraded, with a message", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("partial_outage") }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assertEquals(result.message?.includes("partial_outage"), true);
 });
 
-Deno.test("check: major outage -> down", async () => {
+test("check: major outage -> down", async () => {
   const { ctx } = mockCtx([{ status: 200, body: summary("major_outage") }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "down");
 });
 
-Deno.test("check: broken status API -> unknown, never down", async () => {
+test("check: broken status API -> unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("check: unreadable body -> unknown", async () => {
+test("check: unreadable body -> unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: "not json",
@@ -76,7 +77,7 @@ Deno.test("check: unreadable body -> unknown", async () => {
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("check: page no longer self-identifies as Holded's -> unknown", async () => {
+test("check: page no longer self-identifies as Holded's -> unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -88,7 +89,7 @@ Deno.test("check: page no longer self-identifies as Holded's -> unknown", async 
   assertEquals(result.state, "unknown");
 });
 
-Deno.test("check: component list no longer carries a Holded API entry -> unknown", async () => {
+test("check: component list no longer carries a Holded API entry -> unknown", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {

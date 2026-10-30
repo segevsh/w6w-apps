@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/sms-opt-in.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("sms-opt-in: POSTs /sms/opt-in and tolerates the empty 200 body", async () => {
+test("sms-opt-in: POSTs /sms/opt-in and tolerates the empty 200 body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await action.execute!({ phoneNumber: "+33612345678" }, ctx);
   assertEquals(calls[0].url, "https://public-api.ringover.com/v2/sms/opt-in");

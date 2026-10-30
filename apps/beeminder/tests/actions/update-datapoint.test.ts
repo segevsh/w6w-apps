@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-datapoint.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("update-datapoint: PUTs only the changed fields", async () => {
+test("update-datapoint: PUTs only the changed fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "abc", value: 2, comment: "real" } }]);
   const out = await run(action, { slug: "w", id: "abc", comment: "real" }, ctx);
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("update-datapoint: PUTs only the changed fields", async () => {
   assertEquals(out.comment, "real");
 });
 
-Deno.test("update-datapoint: a missing id throws; errors surface", async () => {
+test("update-datapoint: a missing id throws; errors surface", async () => {
   await assertRejects(() => run(action, { slug: "w" }, mockCtx().ctx), Error, "id is required");
   const bad = mockCtx([{ status: 404, body: { errors: "no point" } }]);
   await assertRejects(() => run(action, { slug: "w", id: "z" }, bad.ctx), Error, "no point");

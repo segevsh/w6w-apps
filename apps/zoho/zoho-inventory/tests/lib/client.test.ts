@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import {
   apiHostFromConnection,
   compact,
@@ -10,33 +11,33 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, mockInventoryCtx } from "../_helpers.ts";
 
-Deno.test("apiHostFromConnection: reads the recorded region host", () => {
+test("apiHostFromConnection: reads the recorded region host", () => {
   assertEquals(
     apiHostFromConnection({ display: { apiHost: "www.zohoapis.eu" } } as never),
     "www.zohoapis.eu",
   );
 });
 
-Deno.test("apiHostFromConnection: falls back to the US host when unrecorded", () => {
+test("apiHostFromConnection: falls back to the US host when unrecorded", () => {
   assertEquals(apiHostFromConnection(undefined), "www.zohoapis.com");
 });
 
-Deno.test("organizationIdFrom: prefers the explicit input over the connection default", () => {
+test("organizationIdFrom: prefers the explicit input over the connection default", () => {
   const { ctx } = mockInventoryCtx([], "www.zohoapis.com", "111");
   assertEquals(organizationIdFrom({ organizationId: "222" }, ctx), "222");
 });
 
-Deno.test("organizationIdFrom: falls back to the connection's recorded organization id", () => {
+test("organizationIdFrom: falls back to the connection's recorded organization id", () => {
   const { ctx } = mockInventoryCtx([], "www.zohoapis.com", "111");
   assertEquals(organizationIdFrom({}, ctx), "111");
 });
 
-Deno.test("organizationIdFrom: throws with an actionable message when neither is set", () => {
+test("organizationIdFrom: throws with an actionable message when neither is set", () => {
   const { ctx } = mockInventoryCtx([], "www.zohoapis.com", "");
   assertThrows(() => organizationIdFrom({}, ctx), Error, "List Organizations");
 });
 
-Deno.test("formatInventoryError: includes the vendor code and message", () => {
+test("formatInventoryError: includes the vendor code and message", () => {
   const msg = formatInventoryError(
     401,
     "GET",
@@ -50,12 +51,12 @@ Deno.test("formatInventoryError: includes the vendor code and message", () => {
   );
 });
 
-Deno.test("formatInventoryError: falls back to the raw body when it is not JSON", () => {
+test("formatInventoryError: falls back to the raw body when it is not JSON", () => {
   const msg = formatInventoryError(500, "GET", "/inventory/v1/items", "<html>oops</html>");
   assertEquals(msg, "Zoho Inventory 500 for GET /inventory/v1/items: <html>oops</html>");
 });
 
-Deno.test("unwrapResource: pulls the named key out of the envelope", () => {
+test("unwrapResource: pulls the named key out of the envelope", () => {
   const out = unwrapResource<{ id: string }>(
     { code: 0, message: "success", contact: { id: "1" } },
     "contact",
@@ -63,7 +64,7 @@ Deno.test("unwrapResource: pulls the named key out of the envelope", () => {
   assertEquals(out, { id: "1" });
 });
 
-Deno.test("unwrapResource: throws when the key is absent", () => {
+test("unwrapResource: throws when the key is absent", () => {
   assertThrows(
     () => unwrapResource({ code: 0, message: "success" }, "contact"),
     Error,
@@ -71,20 +72,20 @@ Deno.test("unwrapResource: throws when the key is absent", () => {
   );
 });
 
-Deno.test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
+test("compact: drops undefined/null/empty-string but keeps false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("parseFields: parses a JSON string and rejects non-objects", () => {
+test("parseFields: parses a JSON string and rejects non-objects", () => {
   assertEquals(parseFields('{"contact_name":"Acme"}'), { contact_name: "Acme" });
   assertThrows(() => parseFields(undefined), Error, "required");
   assertThrows(() => parseFields("[1,2]"), Error, "JSON object");
 });
 
-Deno.test("ZohoInventoryClient: builds the request against the connection's region host and sends the body", async () => {
+test("ZohoInventoryClient: builds the request against the connection's region host and sends the body", async () => {
   const { ctx, calls } = mockInventoryCtx(
     [
       { body: { code: 0, message: "success", contact: { contact_id: "1" } } },
@@ -111,7 +112,7 @@ Deno.test("ZohoInventoryClient: builds the request against the connection's regi
  * The vendor's own cURL example passes the organization as a QUERY parameter
  * on the request URL, not in the body — a body-shaped id is silently ignored.
  */
-Deno.test("ZohoInventoryClient: sends organization_id as a query parameter", async () => {
+test("ZohoInventoryClient: sends organization_id as a query parameter", async () => {
   const { ctx, calls } = mockInventoryCtx([{ body: { code: 0, message: "success" } }]);
   await new ZohoInventoryClient(ctx).request("/contacts", {
     method: "POST",
@@ -123,7 +124,7 @@ Deno.test("ZohoInventoryClient: sends organization_id as a query parameter", asy
   assertEquals(JSON.parse(calls[0].body!), { contact_name: "Acme" });
 });
 
-Deno.test("ZohoInventoryClient: throws a formatted error on a non-ok response", async () => {
+test("ZohoInventoryClient: throws a formatted error on a non-ok response", async () => {
   const { ctx } = mockInventoryCtx([
     { status: 400, body: { code: 1002, message: "Item does not exist." } },
   ]);
@@ -133,14 +134,14 @@ Deno.test("ZohoInventoryClient: throws a formatted error on a non-ok response", 
   );
 });
 
-Deno.test("ZohoInventoryClient: never sets an Authorization header itself", async () => {
+test("ZohoInventoryClient: never sets an Authorization header itself", async () => {
   const { ctx, calls } = mockInventoryCtx([{ body: { code: 0, message: "success" } }]);
   await new ZohoInventoryClient(ctx).request("/items");
   assertEquals(calls[0].headers.authorization, undefined);
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("ZohoInventoryClient: a connection-less ctx addresses the US host", async () => {
+test("ZohoInventoryClient: a connection-less ctx addresses the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 0, message: "success" } }]);
   await new ZohoInventoryClient(ctx).request("/organizations");
   assertEquals(new URL(calls[0].url).host, "www.zohoapis.com");

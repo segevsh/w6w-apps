@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/product-create.ts";
 
@@ -22,7 +23,7 @@ const input = {
   "additionalFields": { "extra_field": "x" },
 } as never;
 
-Deno.test("product-create: POST /products", async () => {
+test("product-create: POST /products", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { "status": 201, "success": true, "data": { "id": 1 } },
@@ -57,7 +58,7 @@ Deno.test("product-create: POST /products", async () => {
   assertEquals(result, { "status": 201, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("product-create: sends only the fields that were set", async () => {
+test("product-create: sends only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!(
     { "name": "v-name", "price": 123, "product_type": "product" } as never,
@@ -70,7 +71,7 @@ Deno.test("product-create: sends only the fields that were set", async () => {
   });
 });
 
-Deno.test("product-create: a Salla error envelope throws with its message", async () => {
+test("product-create: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

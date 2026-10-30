@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listStorePages from "../../actions/list-store-pages.ts";
 import { API_ROOT, errorBody, mockCtx, pagination, queryOf } from "../_helpers.ts";
 
-Deno.test("list-store-pages: GET /1.0/commerce/store_pages with the cursor", async () => {
+test("list-store-pages: GET /1.0/commerce/store_pages with the cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       pagination: pagination({ hasNextPage: true, nextPageCursor: "CUR2" }),
@@ -17,7 +18,7 @@ Deno.test("list-store-pages: GET /1.0/commerce/store_pages with the cursor", asy
   assertEquals(out.storePages?.[0].urlSlug, "shop");
 });
 
-Deno.test("list-store-pages: no cursor means no query string at all", async () => {
+test("list-store-pages: no cursor means no query string at all", async () => {
   const { ctx, calls } = mockCtx([{ body: { pagination: pagination(), storePages: [] } }]);
   await listStorePages.execute!({}, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("list-store-pages: no cursor means no query string at all", async () =
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("list-store-pages: a vendor 400 is surfaced with its subtype", async () => {
+test("list-store-pages: a vendor 400 is surfaced with its subtype", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

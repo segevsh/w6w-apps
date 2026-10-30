@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   asOptionalJson,
   compact,
@@ -10,7 +11,7 @@ import {
 import { captureBody } from "../../lib/capture.ts";
 import { envelope, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("compact: drops unset, blank and empty-array values but keeps false and 0", () => {
+test("compact: drops unset, blank and empty-array values but keeps false and 0", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: [], e: false, f: 0, g: "x" }), {
     e: false,
     f: 0,
@@ -18,7 +19,7 @@ Deno.test("compact: drops unset, blank and empty-array values but keeps false an
   });
 });
 
-Deno.test("asOptionalJson: parses strings, passes values, rejects junk", () => {
+test("asOptionalJson: parses strings, passes values, rejects junk", () => {
   assertEquals(asOptionalJson('{"a":1}', "x"), { a: 1 });
   assertEquals(asOptionalJson({ a: 1 }, "x"), { a: 1 });
   assertEquals(asOptionalJson("", "x"), undefined);
@@ -30,17 +31,17 @@ Deno.test("asOptionalJson: parses strings, passes values, rejects junk", () => {
   }
 });
 
-Deno.test("encodeId: escapes path characters", () => {
+test("encodeId: escapes path characters", () => {
   assertEquals(encodeId(" a/b "), "a%2Fb");
 });
 
-Deno.test("unwrap: spreads object data with meta, wraps arrays, passes bare bodies", () => {
+test("unwrap: spreads object data with meta, wraps arrays, passes bare bodies", () => {
   assertEquals(unwrap(envelope({ a: 1 })), { a: 1, meta: { requestId: "req_1" } });
   assertEquals(unwrap(envelope([1, 2])), { items: [1, 2], meta: { requestId: "req_1" } });
   assertEquals(unwrap({ plain: true }), { plain: true });
 });
 
-Deno.test("formatRendexError: keeps the vendor code, message, details and request id", () => {
+test("formatRendexError: keeps the vendor code, message, details and request id", () => {
   const msg = formatRendexError(
     400,
     "POST",
@@ -61,7 +62,7 @@ Deno.test("formatRendexError: keeps the vendor code, message, details and reques
   );
 });
 
-Deno.test("RendexClient: builds URL and JSON body, never sets credentials", async () => {
+test("RendexClient: builds URL and JSON body, never sets credentials", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ ok: 1 }) }]);
   const out = await new RendexClient(ctx).json("/watches", {
     method: "POST",
@@ -74,7 +75,7 @@ Deno.test("RendexClient: builds URL and JSON body, never sets credentials", asyn
   assertEquals(out, { ok: 1, meta: { requestId: "req_1" } });
 });
 
-Deno.test("RendexClient: an error status throws the formatted vendor error", async () => {
+test("RendexClient: an error status throws the formatted vendor error", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("INVALID_KEY", "Invalid API key.") }]);
   await assertRejects(
     async () => await new RendexClient(ctx).json("/account"),
@@ -83,12 +84,12 @@ Deno.test("RendexClient: an error status throws the formatted vendor error", asy
   );
 });
 
-Deno.test("RendexClient: an empty body yields an empty object", async () => {
+test("RendexClient: an empty body yields an empty object", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new RendexClient(ctx).json("/watches/x", { method: "DELETE" }), {});
 });
 
-Deno.test("captureBody: parses JSON params and drops unset fields", () => {
+test("captureBody: parses JSON params and drops unset fields", () => {
   assertEquals(
     captureBody({
       format: "pdf",

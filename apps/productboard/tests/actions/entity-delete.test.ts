@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/entity-delete.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * subfeatures. The vendor's own suggested workaround is a pre-deletion check,
  * and these tests pin that it is on by default and that it actually blocks.
  */
-Deno.test("entity-delete: the children check is on by default and lists children first", async () => {
+test("entity-delete: the children check is on by default and lists children first", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([]) },
     { status: 204, body: undefined },
@@ -21,7 +22,7 @@ Deno.test("entity-delete: the children check is on by default and lists children
   assertEquals(out, { status: 204, deleted: true });
 });
 
-Deno.test("entity-delete: a parent with children is refused, and the DELETE is never sent", async () => {
+test("entity-delete: a parent with children is refused, and the DELETE is never sent", async () => {
   const { ctx, calls } = mockCtx([
     { body: listEnvelope([{ id: "c-1", type: "subfeature" }, { id: "c-2", type: "subfeature" }]) },
   ]);
@@ -36,7 +37,7 @@ Deno.test("entity-delete: a parent with children is refused, and the DELETE is n
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("entity-delete: one child is reported in the singular", async () => {
+test("entity-delete: one child is reported in the singular", async () => {
   const { ctx } = mockCtx([{ body: listEnvelope([{ id: "c-1", type: "subfeature" }]) }]);
   const err = await assertRejects(
     () => Promise.resolve(action.execute({ entityId: "e-1" }, ctx)),
@@ -45,7 +46,7 @@ Deno.test("entity-delete: one child is reported in the singular", async () => {
   assert(err.message.includes("1 child entity"), err.message);
 });
 
-Deno.test("entity-delete: turning the check off deletes the subtree in one request", async () => {
+test("entity-delete: turning the check off deletes the subtree in one request", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await action.execute({ entityId: "e-1", checkChildrenFirst: false }, ctx);
   assertEquals(calls.length, 1);
@@ -53,12 +54,12 @@ Deno.test("entity-delete: turning the check off deletes the subtree in one reque
   assertEquals(out.deleted, true);
 });
 
-Deno.test("entity-delete: the check default is declared true on the param, not just in code", () => {
+test("entity-delete: the check default is declared true on the param, not just in code", () => {
   const p = action.params?.find((p) => p.key === "checkChildrenFirst");
   assertEquals(p?.default, true);
 });
 
-Deno.test("entity-delete: logs a warning that the delete cascades", async () => {
+test("entity-delete: logs a warning that the delete cascades", async () => {
   const { ctx, logs } = mockCtx([{ status: 204, body: undefined }]);
   await action.execute({ entityId: "e-1", checkChildrenFirst: false }, ctx);
   assertEquals(logs[0].level, "warn");

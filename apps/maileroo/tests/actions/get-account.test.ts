@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-account.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-account: maps identity, plan, usage, subscription and billing", async () => {
+test("get-account: maps identity, plan, usage, subscription and billing", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -24,7 +25,7 @@ Deno.test("get-account: maps identity, plan, usage, subscription and billing", a
   assertEquals(out.billingInformation, { country_code: "US" });
 });
 
-Deno.test("get-account: a 403 for a missing scope throws with the vendor message", async () => {
+test("get-account: a 403 for a missing scope throws with the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: { error: { message: "does not have the required scope" } },

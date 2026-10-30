@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import logCall from "../../actions/log-call.ts";
 import { CALL_OUTCOMES } from "../../lib/client.ts";
 
-Deno.test("log-call: POSTs /calls with the documented body", async () => {
+test("log-call: POSTs /calls with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 7 } }]);
   await logCall.execute({
     personId: 12254,
@@ -26,18 +27,18 @@ Deno.test("log-call: POSTs /calls with the documented body", async () => {
 /** `isIncoming` is a REQUIRED boolean — the API models no unknown direction. */
 
 /** `isIncoming` is a REQUIRED boolean — the API models no unknown direction. */
-Deno.test("log-call: requires personId, phone and isIncoming", () => {
+test("log-call: requires personId, phone and isIncoming", () => {
   assertEquals(
     (logCall.params ?? []).filter((p) => p.required).map((p) => p.key),
     ["personId", "phone", "isIncoming"],
   );
 });
 
-Deno.test("log-call: offers exactly the six documented outcomes", () => {
+test("log-call: offers exactly the six documented outcomes", () => {
   assertEquals(optionValues(logCall, "outcome"), [...CALL_OUTCOMES]);
   assertEquals(CALL_OUTCOMES.length, 6);
 });
 
-Deno.test("log-call: flags that only an admin key can set userId", () => {
+test("log-call: flags that only an admin key can set userId", () => {
   assert(param(logCall, "userId").hint?.includes("administrator"));
 });

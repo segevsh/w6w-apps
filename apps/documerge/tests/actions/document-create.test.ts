@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentCreate from "../../actions/document-create.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-create: POST /api/documents", async () => {
+test("document-create: POST /api/documents", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentCreate.execute(
     {
@@ -35,7 +36,7 @@ Deno.test("document-create: POST /api/documents", async () => {
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("document-create: unset optional fields are not sent", async () => {
+test("document-create: unset optional fields are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   await documentCreate.execute(
     { "name": "Invoice", "type": "docx", "output": "pdf" } as never,
@@ -44,7 +45,7 @@ Deno.test("document-create: unset optional fields are not sent", async () => {
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), ["name", "output", "type"]);
 });
 
-Deno.test("document-create: a vendor error surfaces its own message", async () => {
+test("document-create: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -70,5 +71,5 @@ Deno.test("document-create: a vendor error surfaces its own message", async () =
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-create: idempotency is declared as false", () =>
+test("document-create: idempotency is declared as false", () =>
   assertEquals(documentCreate.idempotent, false));

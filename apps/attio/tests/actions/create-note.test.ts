@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import createNote from "../../actions/create-note.ts";
 
-Deno.test("create-note: POSTs the five required fields with plaintext as the default format", async () => {
+test("create-note: POSTs the five required fields with plaintext as the default format", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: { note_id: "n1" } } } }]);
   await createNote.execute({
     parentObject: "people",
@@ -26,7 +27,7 @@ Deno.test("create-note: POSTs the five required fields with plaintext as the def
   });
 });
 
-Deno.test("create-note: passes markdown through and backdates when asked", async () => {
+test("create-note: passes markdown through and backdates when asked", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: {} } }]);
   await createNote.execute({
     parentObject: "companies",
@@ -43,23 +44,23 @@ Deno.test("create-note: passes markdown through and backdates when asked", async
   assertEquals(body.meeting_id, "m1");
 });
 
-Deno.test("create-note: the format enum is exactly the two Attio documents", () => {
+test("create-note: the format enum is exactly the two Attio documents", () => {
   assertEquals(optionValues(createNote, "format"), ["plaintext", "markdown"]);
   assertEquals(param(createNote, "format").default, "plaintext");
 });
 
 /** The markdown subset is small and the exclusions are the surprising part. */
-Deno.test("create-note: enumerates the markdown subset and its exclusions", () => {
+test("create-note: enumerates the markdown subset and its exclusions", () => {
   const hint = param(createNote, "format").hint!;
   assert(hint.includes("==highlight=="), hint);
   assert(/[Ii]mages, tables and code blocks are not supported/.test(hint), hint);
   assert(/headings `#` to `###` only/i.test(hint), hint);
 });
 
-Deno.test("create-note: says the title is never formatted", () => {
+test("create-note: says the title is never formatted", () => {
   assert(/[Pp]laintext only/.test(param(createNote, "title").hint!));
 });
 
-Deno.test("create-note: says backdating is bounded by rejection, not clamping", () => {
+test("create-note: says backdating is bounded by rejection, not clamping", () => {
   assert(/rejected\*\*, not clamped/.test(param(createNote, "createdAt").hint!));
 });

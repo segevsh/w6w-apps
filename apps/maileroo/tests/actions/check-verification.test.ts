@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/check-verification.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("check-verification: approved is flagged and the nested verification is returned", async () => {
+test("check-verification: approved is flagged and the nested verification is returned", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -19,7 +20,7 @@ Deno.test("check-verification: approved is flagged and the nested verification i
   assertEquals([out.status, out.approved, out.verification.status], ["approved", true, "verified"]);
 });
 
-Deno.test("check-verification: a wrong code is a normal result (200 incorrect), not an error", async () => {
+test("check-verification: a wrong code is a normal result (200 incorrect), not an error", async () => {
   const { ctx } = mockCtx([{
     body: { data: { status: "incorrect", attempts_remaining: 2, verification: {} } },
   }]);
@@ -27,7 +28,7 @@ Deno.test("check-verification: a wrong code is a normal result (200 incorrect), 
   assertEquals([out.status, out.approved, out.attemptsRemaining], ["incorrect", false, 2]);
 });
 
-Deno.test("check-verification: a non-digit code fails locally; a malformed length is the vendor's 400", async () => {
+test("check-verification: a non-digit code fails locally; a malformed length is the vendor's 400", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { error: { message: "code must be 6 digits" } },

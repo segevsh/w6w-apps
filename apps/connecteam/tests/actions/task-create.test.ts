@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import taskCreate from "../../actions/task-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("task-create: POSTs userIds as [] when unset (the vendor field is required)", async () => {
+test("task-create: POSTs userIds as [] when unset (the vendor field is required)", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "task_1" }) }]);
   await taskCreate.execute({ taskBoardId: "tb_1", title: "Sweep floor", status: "draft" }, ctx);
   assertEquals(pathOf(calls[0].url), "/tasks/v1/taskboards/tb_1/tasks");
@@ -10,7 +11,7 @@ Deno.test("task-create: POSTs userIds as [] when unset (the vendor field is requ
   assertEquals(JSON.parse(calls[0].body!), { userIds: [], title: "Sweep floor", status: "draft" });
 });
 
-Deno.test("task-create: passes userIds and wraps description as {content}", async () => {
+test("task-create: passes userIds and wraps description as {content}", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "task_1" }) }]);
   await taskCreate.execute(
     {
@@ -30,6 +31,6 @@ Deno.test("task-create: passes userIds and wraps description as {content}", asyn
   });
 });
 
-Deno.test("task-create: not idempotent", () => {
+test("task-create: not idempotent", () => {
   assertEquals(taskCreate.idempotent, false);
 });

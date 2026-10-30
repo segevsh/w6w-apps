@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/data-create.ts";
 
 const display = { baseUrl: "https://myapp.bubbleapps.io" };
 
-Deno.test("data-create: POSTs the fields as JSON and returns {status, id}", async () => {
+test("data-create: POSTs the fields as JSON and returns {status, id}", async () => {
   const { ctx, calls } = mockCtx([
     { status: 201, body: { status: "success", id: "1x1" } },
   ], { display });
@@ -21,13 +22,13 @@ Deno.test("data-create: POSTs the fields as JSON and returns {status, id}", asyn
   assertEquals(out, { status: "success", id: "1x1" });
 });
 
-Deno.test("data-create: rejects fields that are not a JSON object", async () => {
+test("data-create: rejects fields that are not a JSON object", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(async () => {
     await action.execute({ type: "thing", fields: "[1,2,3]" }, ctx);
   });
 });
 
-Deno.test("data-create: is declared not idempotent", () => {
+test("data-create: is declared not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/channel-archive.ts";
 
-Deno.test("channel-archive: POSTs /conversations.archive with { channel }", async () => {
+test("channel-archive: POSTs /conversations.archive with { channel }", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const result = await action.execute!({ channelId: "C1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/api/conversations.archive");

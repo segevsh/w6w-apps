@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/validate-name.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("validate-name: nests the threshold under settings and maps the flags", async () => {
+test("validate-name: nests the threshold under settings and maps the flags", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       status: "success",
@@ -35,7 +36,7 @@ Deno.test("validate-name: nests the threshold under settings and maps the flags"
   });
 });
 
-Deno.test("validate-name: settings omitted when no threshold; blank name throws", async () => {
+test("validate-name: settings omitted when no threshold; blank name throws", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", data: {} } }]);
   await run(action, { name: "Ann" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Ann" });

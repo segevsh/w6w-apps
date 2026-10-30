@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { generateTestKeyPair, mockCtx } from "../_helpers.ts";
 import auth from "../../auth/key-pair.ts";
 
-Deno.test("key-pair: declares expected shape and required fields", () => {
+test("key-pair: declares expected shape and required fields", () => {
   assertEquals(auth.key, "key-pair");
   assertEquals(auth.type, "custom");
   const fieldKeys = (auth.fields ?? []).map((f) => f.key);
@@ -11,7 +12,7 @@ Deno.test("key-pair: declares expected shape and required fields", () => {
   assertEquals(auth.fields?.find((f) => f.key === "privateKey")?.type, "secret");
 });
 
-Deno.test("key-pair: sign mints a Bearer JWT and stamps the token-type header", async () => {
+test("key-pair: sign mints a Bearer JWT and stamps the token-type header", async () => {
   const { privateKeyPem } = await generateTestKeyPair();
   const { ctx } = mockCtx();
   const request = {
@@ -28,14 +29,14 @@ Deno.test("key-pair: sign mints a Bearer JWT and stamps the token-type header", 
   assertEquals(out.headers["x-snowflake-authorization-token-type"], "KEYPAIR_JWT");
 });
 
-Deno.test("key-pair: test reports missing fields without a network call", async () => {
+test("key-pair: test reports missing fields without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { account: "acme" } }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("key-pair: test passes on a 401/403-free response (JWT accepted, statement processed)", async () => {
+test("key-pair: test passes on a 401/403-free response (JWT accepted, statement processed)", async () => {
   const { privateKeyPem } = await generateTestKeyPair();
   // 422 = "SELECT 1" reached the SQL layer but hit e.g. "no active warehouse" —
   // still proves the JWT itself was accepted.
@@ -52,7 +53,7 @@ Deno.test("key-pair: test passes on a 401/403-free response (JWT accepted, state
   assert(calls[0].headers["authorization"]?.startsWith("Bearer "));
 });
 
-Deno.test("key-pair: test fails on 401 — the JWT itself was rejected", async () => {
+test("key-pair: test fails on 401 — the JWT itself was rejected", async () => {
   const { privateKeyPem } = await generateTestKeyPair();
   const { ctx } = mockCtx([{
     status: 401,
@@ -65,7 +66,7 @@ Deno.test("key-pair: test fails on 401 — the JWT itself was rejected", async (
   assertEquals(result.ok, false);
 });
 
-Deno.test("key-pair: afterConnect records account and username on the connection display", () => {
+test("key-pair: afterConnect records account and username on the connection display", () => {
   const out = auth.afterConnect!(
     { credential: { account: " acme ", username: " svc_user " } },
     mockCtx().ctx,

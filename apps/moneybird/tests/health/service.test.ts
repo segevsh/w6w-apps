@@ -1,7 +1,8 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: declared unavailable, at informational severity", () => {
+test("service: declared unavailable, at informational severity", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.severity, "informational");
   assertEquals(typeof service.check, "undefined");

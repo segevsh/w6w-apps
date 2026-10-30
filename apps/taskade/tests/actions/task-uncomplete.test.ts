@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/task-uncomplete.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("task-uncomplete: calls POST /projects/{projectId}/tasks/{taskId}/uncomplete", async () => {
+test("task-uncomplete: calls POST /projects/{projectId}/tasks/{taskId}/uncomplete", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, item: { id: "x1" } } }]);
   const out = await action.execute!(
     { "projectId": "projectId-1", "taskId": "taskId-1" },
@@ -16,7 +17,7 @@ Deno.test("task-uncomplete: calls POST /projects/{projectId}/tasks/{taskId}/unco
   assertEquals(out.item, { id: "x1" });
 });
 
-Deno.test("task-uncomplete: a failure envelope is an error", async () => {
+test("task-uncomplete: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/entry-create.ts";
 
-Deno.test("entry-create: POSTs to /forms/{formId}/entries with Entry.Action fixed to Submit", async () => {
+test("entry-create: POSTs to /forms/{formId}/entries with Entry.Action fixed to Submit", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "e1", Email: "jane@example.com" } }]);
   const result = await action.execute({
     formId: "42",
@@ -20,12 +21,12 @@ Deno.test("entry-create: POSTs to /forms/{formId}/entries with Entry.Action fixe
   assertEquals(result, { entry: { Id: "e1", Email: "jane@example.com" } });
 });
 
-Deno.test("entry-create: defaults Role to Public when not given", async () => {
+test("entry-create: defaults Role to Public when not given", async () => {
   const { ctx, calls } = mockCtx([{ body: { Id: "e2" } }]);
   await action.execute({ formId: "1", data: { Name: "x" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).Entry, { Action: "Submit", Role: "Public" });
 });
 
-Deno.test("entry-create: is not idempotent", () => {
+test("entry-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

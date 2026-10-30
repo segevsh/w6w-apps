@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/insurance-create.ts";
 
 const created = { status: 200, body: { id: "ins_1", status: "purchased" } };
 const addr = '{"street1":"1 Main St","zip":"90277"}';
 
-Deno.test("insurance-create: posts a wrapped policy with both addresses", async () => {
+test("insurance-create: posts a wrapped policy with both addresses", async () => {
   const { ctx, calls } = mockCtx([created]);
   await action.execute!({
     trackingCode: "1Z999",
@@ -21,7 +22,7 @@ Deno.test("insurance-create: posts a wrapped policy with both addresses", async 
   assertEquals(body.from_address, { id: "adr_home" });
 });
 
-Deno.test("insurance-create: a zero or missing value is refused", async () => {
+test("insurance-create: a zero or missing value is refused", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () =>
@@ -35,7 +36,7 @@ Deno.test("insurance-create: a zero or missing value is refused", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("insurance-create: needs a tracking number and both addresses", async () => {
+test("insurance-create: needs a tracking number and both addresses", async () => {
   const base = { trackingCode: "1Z999", amount: 10, toAddress: addr, fromAddress: addr };
   for (const missing of ["trackingCode", "toAddress", "fromAddress"]) {
     const input = { ...base, [missing]: "" };
@@ -45,7 +46,7 @@ Deno.test("insurance-create: needs a tracking number and both addresses", async 
   }
 });
 
-Deno.test("insurance-create: logs the policy, not the parcel's owner", async () => {
+test("insurance-create: logs the policy, not the parcel's owner", async () => {
   const { ctx, logs } = mockCtx([created]);
   await action.execute!({
     trackingCode: "1Z999",
@@ -57,6 +58,6 @@ Deno.test("insurance-create: logs the policy, not the parcel's owner", async () 
 });
 
 /** "Insure it after it goes missing" is not a workflow. */
-Deno.test("insurance-create: says the window closes", () => {
+test("insurance-create: says the window closes", () => {
   assert(/cannot be insured retroactively/.test(action.description!), action.description);
 });

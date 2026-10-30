@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/send-voice.ts";
 
@@ -9,7 +10,7 @@ const okEnvelope = (data: unknown) => ({
   data,
 });
 
-Deno.test("send-voice: sends lang/voice and only includes require_input/machine_detection when set", async () => {
+test("send-voice: sends lang/voice and only includes require_input/machine_detection when set", async () => {
   const { ctx, calls } = mockCtx([
     { body: okEnvelope({ messages: [{ message_id: "V1", status: "SUCCESS" }] }) },
   ]);
@@ -26,7 +27,7 @@ Deno.test("send-voice: sends lang/voice and only includes require_input/machine_
   assertEquals("machine_detection" in sent.messages[0], false);
 });
 
-Deno.test("send-voice: require_input/machine_detection are sent as 1 when true", async () => {
+test("send-voice: require_input/machine_detection are sent as 1 when true", async () => {
   const { ctx, calls } = mockCtx([{ body: okEnvelope({ messages: [] }) }]);
   await action.execute(
     {
@@ -44,7 +45,7 @@ Deno.test("send-voice: require_input/machine_detection are sent as 1 when true",
   assertEquals(sent.messages[0].machine_detection, 1);
 });
 
-Deno.test("send-voice: requires either `to` or `listId`", async () => {
+test("send-voice: requires either `to` or `listId`", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ body: "hi", lang: "en-au", voice: "female" } as never, ctx),

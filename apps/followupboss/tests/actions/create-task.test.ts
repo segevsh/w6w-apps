@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, optionValues, param } from "../_helpers.ts";
 import createTask from "../../actions/create-task.ts";
 import { TASK_TYPES } from "../../lib/client.ts";
 
-Deno.test("create-task: POSTs /tasks with the documented body", async () => {
+test("create-task: POSTs /tasks with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 4066 } }]);
   await createTask.execute({
     personId: 15013,
@@ -24,7 +25,7 @@ Deno.test("create-task: POSTs /tasks with the documented body", async () => {
   });
 });
 
-Deno.test("create-task: offers exactly the nine documented task types", () => {
+test("create-task: offers exactly the nine documented task types", () => {
   assertEquals(optionValues(createTask, "type"), [...TASK_TYPES]);
 });
 
@@ -37,13 +38,13 @@ Deno.test("create-task: offers exactly the nine documented task types", () => {
  * Neither assignee field is individually `required`, but the API needs one of
  * them. The only place that can be said is the hints and the description.
  */
-Deno.test("create-task: explains the one-of-two assignee rule", () => {
+test("create-task: explains the one-of-two assignee rule", () => {
   assertEquals((createTask.params ?? []).filter((p) => p.required).map((p) => p.key), ["personId"]);
   assert(param(createTask, "assignedUserId").hint?.includes("Required unless"));
   assert(param(createTask, "assignedTo").hint?.includes("Required unless"));
   assert(/exactly one/i.test(createTask.description!), createTask.description);
 });
 
-Deno.test("create-task: notes that reminders need a due TIME, not just a date", () => {
+test("create-task: notes that reminders need a due TIME, not just a date", () => {
   assert(param(createTask, "remindSecondsBefore").hint?.includes("Due date/time"));
 });

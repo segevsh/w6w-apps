@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDiscourseCtx, SITE_URL } from "../_helpers.ts";
 import action from "../../actions/group-add-members.ts";
 
-Deno.test("group-add-members: PUTs /groups/{id}/members.json", async () => {
+test("group-add-members: PUTs /groups/{id}/members.json", async () => {
   const { ctx, calls } = mockDiscourseCtx([{ body: { success: "OK" } }]);
   const out = await action.execute({ groupId: 7, usernames: "alice,bob" }, ctx);
   assertEquals(calls[0].url, `${SITE_URL}/groups/7/members.json`);
@@ -11,7 +12,7 @@ Deno.test("group-add-members: PUTs /groups/{id}/members.json", async () => {
   assertEquals(out, { success: "OK" });
 });
 
-Deno.test("group-add-members: usernames go on the wire as a comma-separated STRING", async () => {
+test("group-add-members: usernames go on the wire as a comma-separated STRING", async () => {
   // The schema types this `string` with the example `username1,username2`.
   // Sending an array is a silent no-op on some Discourse versions.
   const { ctx, calls } = mockDiscourseCtx([{ body: {} }]);

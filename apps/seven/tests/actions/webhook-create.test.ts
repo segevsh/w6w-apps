@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookCreate from "../../actions/webhook-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const INPUT = {
   "request_method": "JSON",
 } as Parameters<typeof webhookCreate.execute>[0];
 
-Deno.test("webhook-create: POST /api/hooks with the documented fields", async () => {
+test("webhook-create: POST /api/hooks with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "code": null, "id": 12345, "error_message": null },
   }]);
@@ -30,14 +31,14 @@ Deno.test("webhook-create: POST /api/hooks with the documented fields", async ()
   assertEquals(out.id, 12345);
 });
 
-Deno.test("webhook-create: declares type perform and every required param", () => {
+test("webhook-create: declares type perform and every required param", () => {
   const required = (webhookCreate.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["event_type", "target_url"]);
   assert(["read", "search", "perform"].includes(webhookCreate.type));
   assertEquals(webhookCreate.type, "perform");
 });
 
-Deno.test("webhook-create: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("webhook-create: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {
@@ -48,7 +49,7 @@ Deno.test("webhook-create: a refused key (bare code 900 in an HTTP 200) is throw
   assert(message.includes("900") && message.includes("authentication failed"), message);
 });
 
-Deno.test("webhook-create: event_filter is dropped for any event other than sms_mo", async () => {
+test("webhook-create: event_filter is dropped for any event other than sms_mo", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, id: 1 } }]);
   await webhookCreate.execute({
     target_url: "https://acme.inc/h",
@@ -61,7 +62,7 @@ Deno.test("webhook-create: event_filter is dropped for any event other than sms_
   });
 });
 
-Deno.test("webhook-create: success false is thrown with the vendor's error_message", async () => {
+test("webhook-create: success false is thrown with the vendor's error_message", async () => {
   const { ctx } = mockCtx([{ body: { success: false, error_message: "invalid target" } }]);
   let message = "";
   try {

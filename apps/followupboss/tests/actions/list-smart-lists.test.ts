@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param, run } from "../_helpers.ts";
 import listSmartLists from "../../actions/list-smart-lists.ts";
 
-Deno.test("list-smart-lists: unwraps the lower-cased `smartlists` key", async () => {
+test("list-smart-lists: unwraps the lower-cased `smartlists` key", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _metadata: { collection: "smartlists" }, smartlists: [{ id: 14 }] },
@@ -17,7 +18,7 @@ Deno.test("list-smart-lists: unwraps the lower-cased `smartlists` key", async ()
 /** The default returns only classic-UI lists, which on a modern account is often none. */
 
 /** The default returns only classic-UI lists, which on a modern account is often none. */
-Deno.test("list-smart-lists: warns that the default hides current-UI lists", () => {
+test("list-smart-lists: warns that the default hides current-UI lists", () => {
   assert(/classic/i.test(listSmartLists.description!), listSmartLists.description);
   assert(param(listSmartLists, "all").hint?.includes("Almost always what you want"));
 });

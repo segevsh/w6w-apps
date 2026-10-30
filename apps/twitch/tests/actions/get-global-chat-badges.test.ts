@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getGlobalChatBadges from "../../actions/get-global-chat-badges.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-global-chat-badges: calls GET /helix/chat/badges/global with no query", async () => {
+test("get-global-chat-badges: calls GET /helix/chat/badges/global with no query", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{

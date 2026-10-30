@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-state.ts";
 
@@ -8,7 +9,7 @@ const D = { display: { organizationId: ORG, plane: "control" } };
 
 const state = (s: string) => ({ status: 200, body: { result: { state: s } } });
 
-Deno.test("service-state: reads the state, then PATCHes it", async () => {
+test("service-state: reads the state, then PATCHes it", async () => {
   const { ctx, calls } = mockCtx([state("stopped"), state("starting")], D);
   const result = await action.execute(
     { serviceId: SVC, command: "start" },
@@ -22,7 +23,7 @@ Deno.test("service-state: reads the state, then PATCHes it", async () => {
 });
 
 /** A stopped service does not wake on a query the way an idle one does. */
-Deno.test("service-state: stopping needs an acknowledgement, and points at idle scaling", async () => {
+test("service-state: stopping needs an acknowledgement, and points at idle scaling", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -36,7 +37,7 @@ Deno.test("service-state: stopping needs an acknowledgement, and points at idle 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-state: an acknowledged stop goes through and warns", async () => {
+test("service-state: an acknowledged stop goes through and warns", async () => {
   const { ctx, logs } = mockCtx([state("running"), state("stopping")], D);
   const result = await action.execute(
     { serviceId: SVC, command: "stop", confirmStop: true },
@@ -48,7 +49,7 @@ Deno.test("service-state: an acknowledged stop goes through and warns", async ()
 });
 
 /** A scheduled stop hitting an already-stopped service is not a failure. */
-Deno.test("service-state: an already-settled service is a no-op, not a 409", async () => {
+test("service-state: an already-settled service is a no-op, not a 409", async () => {
   const stopped = mockCtx([state("stopped")], D);
   const already = await action.execute(
     { serviceId: SVC, command: "stop", confirmStop: true },
@@ -68,7 +69,7 @@ Deno.test("service-state: an already-settled service is a no-op, not a 409", asy
 });
 
 /** A change during a transition is a 409 rather than a queue. */
-Deno.test("service-state: a service in flight surfaces the conflict", async () => {
+test("service-state: a service in flight surfaces the conflict", async () => {
   const { ctx } = mockCtx([state("starting"), {
     status: 409,
     body: { error: "service is starting" },

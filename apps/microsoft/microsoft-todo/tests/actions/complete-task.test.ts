@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/complete-task.ts";
 
-Deno.test("complete-task: PATCHes status=completed and lets Graph stamp the time", async () => {
+test("complete-task: PATCHes status=completed and lets Graph stamp the time", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "T1", status: "completed" } }]);
   await action.execute!({ taskList: "L1", task: "T1" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -10,7 +11,7 @@ Deno.test("complete-task: PATCHes status=completed and lets Graph stamp the time
   assertEquals(JSON.parse(calls[0].body!), { status: "completed" });
 });
 
-Deno.test("complete-task: an explicit completion time is nested as a dateTimeTimeZone", async () => {
+test("complete-task: an explicit completion time is nested as a dateTimeTimeZone", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     taskList: "L1",
@@ -24,6 +25,6 @@ Deno.test("complete-task: an explicit completion time is nested as a dateTimeTim
   });
 });
 
-Deno.test("complete-task: is idempotent — completing a done task leaves it done", () => {
+test("complete-task: is idempotent — completing a done task leaves it done", () => {
   assertEquals(action.idempotent, true);
 });

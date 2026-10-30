@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-role-list.ts";
 
 const conn = { display: { domain: "acme.us.auth0.com" } };
 
-Deno.test("user-role-list: reads the user's tenant-level roles", async () => {
+test("user-role-list: reads the user's tenant-level roles", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { roles: [{ id: "rol_1" }], total: 1 } }],
     conn,
@@ -14,6 +15,6 @@ Deno.test("user-role-list: reads the user's tenant-level roles", async () => {
 });
 
 /** Organization roles are separate and invisible here. */
-Deno.test("user-role-list: says organization roles are not included", () => {
+test("user-role-list: says organization roles are not included", () => {
   assert(/organization/i.test(action.description!), action.description);
 });

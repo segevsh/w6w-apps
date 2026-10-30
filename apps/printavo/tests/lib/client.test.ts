@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, csv, idRef, PrintavoClient, toPage } from "../../lib/client.ts";
 
-Deno.test("client: POSTs the document to the single endpoint without credentials", async () => {
+test("client: POSTs the document to the single endpoint without credentials", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { user: { id: "1" } } } }]);
   const out = await new PrintavoClient(ctx).query("{ user { id } }");
   assertEquals(out, { user: { id: "1" } });
@@ -11,7 +12,7 @@ Deno.test("client: POSTs the document to the single endpoint without credentials
   assertEquals("email" in calls[0].headers || "token" in calls[0].headers, false);
 });
 
-Deno.test("client: drops unset variables but keeps false and 0", async () => {
+test("client: drops unset variables but keeps false and 0", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await new PrintavoClient(ctx).query("q", {
     a: "x",
@@ -24,7 +25,7 @@ Deno.test("client: drops unset variables but keeps false and 0", async () => {
   assertEquals(JSON.parse(calls[0].body!).variables, { a: "x", e: false, f: 0 });
 });
 
-Deno.test("client: treats GraphQL errors as failures even on HTTP 200", async () => {
+test("client: treats GraphQL errors as failures even on HTTP 200", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { errors: [{ message: "Unauthorized" }], data: null },
@@ -36,7 +37,7 @@ Deno.test("client: treats GraphQL errors as failures even on HTTP 200", async ()
   );
 });
 
-Deno.test("client: rejects non-JSON bodies, HTTP failures and empty data", async () => {
+test("client: rejects non-JSON bodies, HTTP failures and empty data", async () => {
   await assertRejects(
     () => new PrintavoClient(mockCtx([{ status: 502, body: "<html>" }]).ctx).query("q"),
     Error,
@@ -54,7 +55,7 @@ Deno.test("client: rejects non-JSON bodies, HTTP failures and empty data", async
   );
 });
 
-Deno.test("helpers: csv, idRef, compact and toPage", () => {
+test("helpers: csv, idRef, compact and toPage", () => {
   assertEquals(csv(" a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv(" , "), undefined);

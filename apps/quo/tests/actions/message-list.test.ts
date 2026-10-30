@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import messageList from "../../actions/message-list.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("message-list: GETs /v1/messages, repeating participants and passing filters", async () => {
+test("message-list: GETs /v1/messages, repeating participants and passing filters", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [], totalItems: 0, nextPageToken: null },
@@ -23,6 +24,6 @@ Deno.test("message-list: GETs /v1/messages, repeating participants and passing f
   assertEquals(queryOf(calls[0].url).createdAfter, "2026-01-01T00:00:00Z");
 });
 
-Deno.test("message-list: is a search action", () => {
+test("message-list: is a search action", () => {
   assertEquals(messageList.type, "search");
 });

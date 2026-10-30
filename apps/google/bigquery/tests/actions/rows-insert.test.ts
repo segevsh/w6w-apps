@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rows-insert.ts";
 
 const display = { projectId: "p1", datasetId: "d1" };
 
-Deno.test("rows-insert: wraps plain objects in BigQuery's json envelope", async () => {
+test("rows-insert: wraps plain objects in BigQuery's json envelope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ tableId: "t1", rows: '[{"name":"ada"}]' }, ctx);
   assertEquals(
@@ -14,7 +15,7 @@ Deno.test("rows-insert: wraps plain objects in BigQuery's json envelope", async 
   assertEquals(JSON.parse(calls[0].body!).rows, [{ json: { name: "ada" } }]);
 });
 
-Deno.test("rows-insert: a row that already carries insertId/json is passed through", async () => {
+test("rows-insert: a row that already carries insertId/json is passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     tableId: "t1",
@@ -24,7 +25,7 @@ Deno.test("rows-insert: a row that already carries insertId/json is passed throu
 });
 
 /** insertId is BigQuery's de-dup key — this is what makes a retry safe. */
-Deno.test("rows-insert: the opt-in derives a stable insertId per row", async () => {
+test("rows-insert: the opt-in derives a stable insertId per row", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   (ctx as { invocation?: unknown }).invocation = { invocationId: "inv1" };
   await action.execute!({
@@ -41,7 +42,7 @@ Deno.test("rows-insert: the opt-in derives a stable insertId per row", async () 
  * insertAll answers 200 even when rows were rejected — a caller that only
  * checks for an exception would silently drop them.
  */
-Deno.test("rows-insert: a partial failure is counted, not hidden", async () => {
+test("rows-insert: a partial failure is counted, not hidden", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { insertErrors: [{ index: 1, errors: [{ reason: "invalid" }] }] },
@@ -54,7 +55,7 @@ Deno.test("rows-insert: a partial failure is counted, not hidden", async () => {
   assertEquals(result.insertErrors.length, 1);
 });
 
-Deno.test("rows-insert: is honestly non-idempotent, and needs rows", async () => {
+test("rows-insert: is honestly non-idempotent, and needs rows", async () => {
   assertEquals(action.idempotent, false);
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(

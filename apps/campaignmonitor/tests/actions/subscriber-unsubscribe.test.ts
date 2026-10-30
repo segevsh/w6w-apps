@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberUnsubscribe from "../../actions/subscriber-unsubscribe.ts";
 import subscriberDelete from "../../actions/subscriber-delete.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 /** The address goes in the BODY here — unlike delete, which uses the query. */
-Deno.test("subscriber-unsubscribe: POSTs the address in the body", async () => {
+test("subscriber-unsubscribe: POSTs the address in the body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }]);
   const out = await subscriberUnsubscribe.execute({ listId: "lid", email: "a@example.com" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -18,7 +19,7 @@ Deno.test("subscriber-unsubscribe: POSTs the address in the body", async () => {
  * The pair, side by side, because the asymmetry is the point: unsubscribe is a
  * POST with a body, delete is a DELETE with a query parameter.
  */
-Deno.test("subscriber-unsubscribe vs subscriber-delete: different verb and different slot", async () => {
+test("subscriber-unsubscribe vs subscriber-delete: different verb and different slot", async () => {
   const { ctx, calls } = mockCtx([{ status: 200 }, { status: 200 }]);
   await subscriberUnsubscribe.execute({ listId: "lid", email: "a@b.com" }, ctx);
   await subscriberDelete.execute({ listId: "lid", email: "a@b.com" }, ctx);
@@ -31,6 +32,6 @@ Deno.test("subscriber-unsubscribe vs subscriber-delete: different verb and diffe
   assertEquals(queryOf(calls[1].url), { email: "a@b.com" });
 });
 
-Deno.test("subscriber-unsubscribe: is declared idempotent", () => {
+test("subscriber-unsubscribe: is declared idempotent", () => {
   assertEquals(subscriberUnsubscribe.idempotent, true);
 });

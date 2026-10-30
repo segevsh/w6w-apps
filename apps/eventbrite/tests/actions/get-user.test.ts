@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-user.ts";
 
-Deno.test("get-user: defaults to me", async () => {
+test("get-user: defaults to me", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await action.execute!({}, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("get-user: defaults to me", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("get-user: uses userId and expand", async () => {
+test("get-user: uses userId and expand", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await action.execute!({ userId: "42", expand: "assortment" }, ctx);
   assertEquals(calls.length, 1);

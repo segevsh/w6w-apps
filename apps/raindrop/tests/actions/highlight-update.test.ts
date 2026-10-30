@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import highlightUpdate from "../../actions/highlight-update.ts";
 import { bodyOf, item, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("highlight-update: PUTs the parent raindrop with an _id-bearing element", async () => {
+test("highlight-update: PUTs the parent raindrop with an _id-bearing element", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ highlights: [{ _id: "h1", note: "New" }] }) }]);
   const out = await highlightUpdate.execute(
     { raindropId: 373777232, highlightId: "62388e9e48b63606f41e44a6", note: "New" },
@@ -23,7 +24,7 @@ Deno.test("highlight-update: PUTs the parent raindrop with an _id-bearing elemen
  * field could destroy the record by having its box cleared. The parameter list is
  * the guard, and this asserts it directly rather than trusting the doc comment.
  */
-Deno.test("highlight-update: exposes no text parameter and never sends one", async () => {
+test("highlight-update: exposes no text parameter and never sends one", async () => {
   assertEquals(highlightUpdate.params?.some((p) => p.key === "text"), false);
 
   const { ctx, calls } = mockCtx([{ body: item({ highlights: [] }) }]);
@@ -35,7 +36,7 @@ Deno.test("highlight-update: exposes no text parameter and never sends one", asy
   assertEquals(sent, { _id: "h1", color: "blue", note: "" });
 });
 
-Deno.test("highlight-update: refuses a request with nothing to change", async () => {
+test("highlight-update: refuses a request with nothing to change", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(highlightUpdate.execute({ raindropId: 1, highlightId: "h1" }, ctx)),
@@ -44,7 +45,7 @@ Deno.test("highlight-update: refuses a request with nothing to change", async ()
   assertEquals(calls.length, 0);
 });
 
-Deno.test("highlight-update: refuses an empty highlight id", async () => {
+test("highlight-update: refuses an empty highlight id", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -54,7 +55,7 @@ Deno.test("highlight-update: refuses an empty highlight id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("highlight-update: is idempotent and says why text is not editable", () => {
+test("highlight-update: is idempotent and says why text is not editable", () => {
   assertEquals(highlightUpdate.idempotent, true);
   assert(/delete signal/i.test(highlightUpdate.description ?? ""), highlightUpdate.description);
 });

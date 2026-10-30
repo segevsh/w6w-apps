@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares one auth method and the expected action/health-check counts", () => {
+test("index: declares one auth method and the expected action/health-check counts", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
   assertEquals(app.actions.length, 4);
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: every action key is unique", () => {
+test("index: every action key is unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   assertEquals(
@@ -17,7 +18,7 @@ Deno.test("index: every action key is unique", () => {
   );
 });
 
-Deno.test("index: every action has a title, type and execute hook", () => {
+test("index: every action has a title, type and execute hook", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(typeof action.execute, "function");
@@ -25,7 +26,7 @@ Deno.test("index: every action has a title, type and execute hook", () => {
   }
 });
 
-Deno.test("index: health checks are service (live) and quota (live), both with a check hook", () => {
+test("index: health checks are service (live) and quota (live), both with a check hook", () => {
   const keys = app.healthChecks?.map((h) => h.key);
   assertEquals(keys, ["service", "quota"]);
   for (const check of app.healthChecks ?? []) {

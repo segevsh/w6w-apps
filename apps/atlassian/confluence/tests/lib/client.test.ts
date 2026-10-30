@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   compact,
@@ -14,14 +15,14 @@ const page = (results: unknown[], next?: string) => ({
   _links: next ? { next } : {},
 });
 
-Deno.test("hostFromConnection: an API-token connection talks to the site host", () => {
+test("hostFromConnection: an API-token connection talks to the site host", () => {
   assertEquals(
     hostFromConnection({ display: { site: "acme" } } as never),
     "https://acme.atlassian.net",
   );
 });
 
-Deno.test("hostFromConnection: an OAuth connection talks to the gateway, and wins", () => {
+test("hostFromConnection: an OAuth connection talks to the gateway, and wins", () => {
   // An OAuth connection has a cloud id and no usable site host, so the cloud
   // id is checked first — the same precedence the jira app uses.
   assertEquals(
@@ -30,12 +31,12 @@ Deno.test("hostFromConnection: an OAuth connection talks to the gateway, and win
   );
 });
 
-Deno.test("hostFromConnection: neither one is a directive error, not a bad URL", () => {
+test("hostFromConnection: neither one is a directive error, not a bad URL", () => {
   const err = assertThrows(() => hostFromConnection({ display: {} } as never), Error);
   assert(err.message.includes("reconnect"), err.message);
 });
 
-Deno.test("compact: drops unset keys but keeps false and zero", () => {
+test("compact: drops unset keys but keeps false and zero", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -43,20 +44,20 @@ Deno.test("compact: drops unset keys but keeps false and zero", () => {
   });
 });
 
-Deno.test("csv: splits, trims and drops blanks; blank input stays unset", () => {
+test("csv: splits, trims and drops blanks; blank input stays unset", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(csv(7), undefined);
 });
 
-Deno.test("contentBody: wraps a string, defaulting to Confluence's own storage format", () => {
+test("contentBody: wraps a string, defaulting to Confluence's own storage format", () => {
   assertEquals(contentBody("hello"), { representation: "storage", value: "hello" });
   assertEquals(contentBody("hi", "wiki"), { representation: "wiki", value: "hi" });
   assertEquals(contentBody(""), undefined);
   assertEquals(contentBody(undefined), undefined);
 });
 
-Deno.test("cursorFromNext: extracts the cursor out of the relative next URL", () => {
+test("cursorFromNext: extracts the cursor out of the relative next URL", () => {
   // Extracted rather than followed: the relative URL is written for the site
   // host, and an OAuth connection talks to the gateway instead.
   assertEquals(
@@ -67,7 +68,7 @@ Deno.test("cursorFromNext: extracts the cursor out of the relative next URL", ()
   assertEquals(cursorFromNext("/wiki/api/v2/pages"), undefined);
 });
 
-Deno.test("client: v2 and v1 requests use their own base paths on the same host", async () => {
+test("client: v2 and v1 requests use their own base paths on the same host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }, { status: 200, body: {} }], {
     display: { site: "acme" },
   });
@@ -78,7 +79,7 @@ Deno.test("client: v2 and v1 requests use their own base paths on the same host"
   assertEquals(calls[1].url, "https://acme.atlassian.net/wiki/rest/api/user/current");
 });
 
-Deno.test("client: an OAuth connection routes both bases through the gateway", async () => {
+test("client: an OAuth connection routes both bases through the gateway", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: { cloudId: "cid" } });
   await new ConfluenceClient(ctx).requestV1("/user/current");
   assertEquals(
@@ -87,14 +88,14 @@ Deno.test("client: an OAuth connection routes both bases through the gateway", a
   );
 });
 
-Deno.test("client: never sends an Authorization header — signing is the host's job", async () => {
+test("client: never sends an Authorization header — signing is the host's job", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: { site: "acme" } });
   await new ConfluenceClient(ctx).request("/pages");
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: array query values repeat the key, and blanks are dropped", async () => {
+test("client: array query values repeat the key, and blanks are dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: { site: "acme" } });
   await new ConfluenceClient(ctx).request("/pages", {
     query: { "space-id": ["1", "2"], title: "", status: "current" },
@@ -105,7 +106,7 @@ Deno.test("client: array query values repeat the key, and blanks are dropped", a
   assertEquals(q.get("status"), "current");
 });
 
-Deno.test("client: a failure surfaces the status and Confluence's own error body", async () => {
+test("client: a failure surfaces the status and Confluence's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { errors: [{ status: 404, code: "NOT_FOUND", title: "No such page" }] },
@@ -118,7 +119,7 @@ Deno.test("client: a failure surfaces the status and Confluence's own error body
   assert(err.message.includes("No such page"), err.message);
 });
 
-Deno.test("client: 204 and an empty body both come back as undefined", async () => {
+test("client: 204 and an empty body both come back as undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }], {
     display: { site: "acme" },
   });
@@ -127,7 +128,7 @@ Deno.test("client: 204 and an empty body both come back as undefined", async () 
   assertEquals(await client.request("/pages/1"), undefined);
 });
 
-Deno.test("client: requestAll follows _links.next until it is absent", async () => {
+test("client: requestAll follows _links.next until it is absent", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page([{ id: "1" }], "/wiki/api/v2/pages?cursor=c2") },
     { status: 200, body: page([{ id: "2" }]) },
@@ -140,7 +141,7 @@ Deno.test("client: requestAll follows _links.next until it is absent", async () 
   assertEquals(new URL(calls[1].url).searchParams.get("cursor"), "c2");
 });
 
-Deno.test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
+test("client: requestAll stops at wantTotal even with a next page waiting", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,

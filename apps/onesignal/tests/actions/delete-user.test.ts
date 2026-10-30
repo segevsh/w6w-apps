@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import deleteUser from "../../actions/delete-user.ts";
 import { APP_ID, mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("delete-user: DELETEs and returns the vendor's identity body, not a bare boolean", async () => {
+test("delete-user: DELETEs and returns the vendor's identity body, not a bare boolean", async () => {
   const { ctx, calls } = mockCtxWithConnection([
     { status: 202, body: { identity: { onesignal_id: "os-1" } } },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import latestTimeEntryGet from "../../actions/latest-time-entry-get.ts";
 import { hostOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("latest-time-entry-get: calls People(id)/LatestTimeEntry on the time-tracking host", async () => {
+test("latest-time-entry-get: calls People(id)/LatestTimeEntry on the time-tracking host", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", type: "In" } }]);
   const out = await latestTimeEntryGet.execute({ personId: "p1" }, ctx) as { type: string };
   assertEquals(hostOf(calls[0].url), "https://time-tracking.prod.jibble.io");
@@ -10,7 +11,7 @@ Deno.test("latest-time-entry-get: calls People(id)/LatestTimeEntry on the time-t
   assertEquals(out.type, "In");
 });
 
-Deno.test("latest-time-entry-get: requires personId", async () => {
+test("latest-time-entry-get: requires personId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(latestTimeEntryGet.execute({ personId: "" }, ctx)),

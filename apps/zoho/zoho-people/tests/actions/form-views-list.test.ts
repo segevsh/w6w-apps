@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockPeopleCtx } from "../_helpers.ts";
 import action from "../../actions/form-views-list.ts";
 
-Deno.test("form-views-list: GETs the form's views", async () => {
+test("form-views-list: GETs the form's views", async () => {
   const { ctx, calls } = mockPeopleCtx([{
     body: { response: { result: [{ viewName: "P_EmployeeView" }], status: 0 } },
   }]);
@@ -11,7 +12,7 @@ Deno.test("form-views-list: GETs the form's views", async () => {
   assertEquals(out.result, [{ viewName: "P_EmployeeView" }]);
 });
 
-Deno.test("form-views-list: an invalid form surfaces code 7011", async () => {
+test("form-views-list: an invalid form surfaces code 7011", async () => {
   const { ctx } = mockPeopleCtx([{
     status: 400,
     body: { response: { errors: { code: 7011, message: "Form name 'x' is invalid" }, status: 1 } },

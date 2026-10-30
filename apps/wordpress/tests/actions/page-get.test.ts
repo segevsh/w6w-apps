@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/page-get.ts";
 
 const display = { siteUrl: "https://example.com" };
 
-Deno.test("page-get: GETs /pages/{id} and returns the response", async () => {
+test("page-get: GETs /pages/{id} and returns the response", async () => {
   const body = { id: 5, title: { rendered: "About" } };
   const { ctx, calls } = mockCtx([{ body }], { display });
   const result = await action.execute!({ pageId: "5" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("page-get: GETs /pages/{id} and returns the response", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("page-get: forwards password and context", async () => {
+test("page-get: forwards password and context", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await action.execute!({ pageId: "5", password: "sekret", context: "edit" }, ctx);
   const params = new URL(calls[0].url).searchParams;

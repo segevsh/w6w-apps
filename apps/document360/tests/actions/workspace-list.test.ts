@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workspaceList from "../../actions/workspace-list.ts";
 import {
   listEnvelope,
@@ -10,7 +11,7 @@ import {
   queryOf,
 } from "../_helpers.ts";
 
-Deno.test("workspace-list: lists workspaces", async () => {
+test("workspace-list: lists workspaces", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: listEnvelope([{ id: "w1", is_default: true }]),
@@ -25,7 +26,7 @@ Deno.test("workspace-list: lists workspaces", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("workspace-list: a vendor error surfaces its code and message", async () => {
+test("workspace-list: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

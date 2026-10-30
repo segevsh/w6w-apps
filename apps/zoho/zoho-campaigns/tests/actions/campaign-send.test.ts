@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-send.ts";
 
-Deno.test("campaign-send: POSTs sendcampaign and unwraps the nested response envelope", async () => {
+test("campaign-send: POSTs sendcampaign and unwraps the nested response envelope", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     {
       body: {
@@ -23,7 +24,7 @@ Deno.test("campaign-send: POSTs sendcampaign and unwraps the nested response env
   assertEquals(out, { message: "", campaignStatus: "inprogress" });
 });
 
-Deno.test("campaign-send: also reads a flat (non-nested) envelope", async () => {
+test("campaign-send: also reads a flat (non-nested) envelope", async () => {
   const { ctx } = mockCampaignsCtx([
     { body: { message: "ok", campaign_status: "inprogress", code: "200" } },
   ]);

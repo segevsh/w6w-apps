@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionContentRemove from "../../actions/collection-content-remove.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("collection-content-remove: POSTs the fixed q plus ids to the delete path", async () => {
+test("collection-content-remove: POSTs the fixed q plus ids to the delete path", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope("success") }]);
   const out = await collectionContentRemove.execute(
     { collectionId: "col1", contentId: "P1.C1" },

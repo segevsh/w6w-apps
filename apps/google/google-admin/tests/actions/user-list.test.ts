@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-list.ts";
 
-Deno.test("user-list: GETs /users with customer=my_customer by default", async () => {
+test("user-list: GETs /users with customer=my_customer by default", async () => {
   const body = { users: [{ id: "u-1" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({}, ctx);
@@ -16,7 +17,7 @@ Deno.test("user-list: GETs /users with customer=my_customer by default", async (
   assertEquals(result, body);
 });
 
-Deno.test("user-list: domain overrides the customer default", async () => {
+test("user-list: domain overrides the customer default", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ domain: "example.com" }, ctx);
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("user-list: domain overrides the customer default", async () => {
   assertEquals(url.searchParams.get("customer"), null);
 });
 
-Deno.test("user-list: forwards query, paging and showDeleted", async () => {
+test("user-list: forwards query, paging and showDeleted", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     query: "orgUnitPath=/Sales",

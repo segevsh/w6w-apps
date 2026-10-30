@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { classifyAuthFailure, formatError, PlanningCenterClient } from "../../lib/client.ts";
 import { collection, errorBody, mockCtx, pathOf, queryOf, single } from "../_helpers.ts";
 
-Deno.test("get: builds the product-scoped URL and unwraps the JSON body", async () => {
+test("get: builds the product-scoped URL and unwraps the JSON body", async () => {
   const { ctx, calls } = mockCtx([{ body: single("Person", "1", { first_name: "Jane" }) }]);
   const client = new PlanningCenterClient(ctx);
   const body = await client.get("people", "/people/1");
@@ -11,7 +12,7 @@ Deno.test("get: builds the product-scoped URL and unwraps the JSON body", async 
   assertEquals(body, { data: { type: "Person", id: "1", attributes: { first_name: "Jane" } } });
 });
 
-Deno.test("get: every product resolves to its own /v2 path prefix", async () => {
+test("get: every product resolves to its own /v2 path prefix", async () => {
   const { ctx, calls } = mockCtx([
     { body: collection("Event", []) },
     { body: collection("Donation", []) },
@@ -27,7 +28,7 @@ Deno.test("get: every product resolves to its own /v2 path prefix", async () => 
   assertEquals(pathOf(calls[2].url), "/check-ins/v2/check_ins");
 });
 
-Deno.test("get: sends a User-Agent on every request", async () => {
+test("get: sends a User-Agent on every request", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Person", []) }]);
   const client = new PlanningCenterClient(ctx);
   await client.get("people", "/people");
@@ -35,7 +36,7 @@ Deno.test("get: sends a User-Agent on every request", async () => {
   assert(calls[0].headers["user-agent"]!.length > 0);
 });
 
-Deno.test("get: never sets an Authorization header itself — that is `sign`'s job alone", async () => {
+test("get: never sets an Authorization header itself — that is `sign`'s job alone", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Person", []) }]);
   const client = new PlanningCenterClient(ctx);
   await client.get("people", "/people");
@@ -43,7 +44,7 @@ Deno.test("get: never sets an Authorization header itself — that is `sign`'s j
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("where: a plain value renders as where[key]=value", async () => {
+test("where: a plain value renders as where[key]=value", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Person", []) }]);
   const client = new PlanningCenterClient(ctx);
   await client.get("people", "/people", { where: { status: "active" } });
@@ -57,7 +58,7 @@ Deno.test("where: a plain value renders as where[key]=value", async () => {
  * `donation_where_received_at_gte_parameter` -> `"where[received_at][gte]"`) —
  * not the flat `where[attr_op]` a naive implementation would guess at.
  */
-Deno.test("where: an operator object renders as where[key][op]=value", async () => {
+test("where: an operator object renders as where[key][op]=value", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Donation", []) }]);
   const client = new PlanningCenterClient(ctx);
   await client.get("giving", "/donations", {
@@ -69,7 +70,7 @@ Deno.test("where: an operator object renders as where[key][op]=value", async () 
   assertEquals(q["where[received_at][lte]"], "2026-02-01");
 });
 
-Deno.test("where: an undefined operator value is omitted entirely, not sent empty", async () => {
+test("where: an undefined operator value is omitted entirely, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: collection("Donation", []) }]);
   const client = new PlanningCenterClient(ctx);
   await client.get("giving", "/donations", { where: { received_at: { gte: "2026-01-01" } } });
@@ -79,7 +80,7 @@ Deno.test("where: an undefined operator value is omitted entirely, not sent empt
   assertEquals("where[received_at][lte]" in q, false);
 });
 
-Deno.test("post: sends a JSON content-type and body", async () => {
+test("post: sends a JSON content-type and body", async () => {
   const { ctx, calls } = mockCtx([{ body: single("Person", "9", { first_name: "New" }) }]);
   const client = new PlanningCenterClient(ctx);
   await client.post("people", "/people", { body: { data: { type: "Person" } } });
@@ -88,13 +89,13 @@ Deno.test("post: sends a JSON content-type and body", async () => {
   assertEquals(calls[0].body, JSON.stringify({ data: { type: "Person" } }));
 });
 
-Deno.test("classifyAuthFailure: 401 and 403 read distinctly; other statuses are unclassified", () => {
+test("classifyAuthFailure: 401 and 403 read distinctly; other statuses are unclassified", () => {
   assert(classifyAuthFailure(401)!.includes("did not use the"));
   assert(classifyAuthFailure(403)!.includes("role lacks access"));
   assertEquals(classifyAuthFailure(500), undefined);
 });
 
-Deno.test("formatError: a 422 JSON-API error body surfaces its `detail`", () => {
+test("formatError: a 422 JSON-API error body surfaces its `detail`", () => {
   const msg = formatError(
     422,
     "POST",
@@ -104,12 +105,12 @@ Deno.test("formatError: a 422 JSON-API error body surfaces its `detail`", () => 
   assert(msg.includes("First name can't be blank"), msg);
 });
 
-Deno.test("formatError: 401 is classified even with no body at all", () => {
+test("formatError: 401 is classified even with no body at all", () => {
   const msg = formatError(401, "GET", "/current/v2/me", "");
   assert(msg.includes("did not use the"), msg);
 });
 
-Deno.test("get: a non-ok response throws with the formatted message", async () => {
+test("get: a non-ok response throws with the formatted message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: errorBody("429", "Rate limit exceeded: 118 of 100 requests per 20 seconds"),

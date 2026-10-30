@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/tag-faq-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("tag-faq-list: GETs /tags/python;c%2B%2B/faq and returns the wrapper", async () => {
+test("tag-faq-list: GETs /tags/python;c%2B%2B/faq and returns the wrapper", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -34,7 +35,7 @@ Deno.test("tag-faq-list: GETs /tags/python;c%2B%2B/faq and returns the wrapper",
   });
 });
 
-Deno.test("tag-faq-list: optional paging, filter and a different site", async () => {
+test("tag-faq-list: optional paging, filter and a different site", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   const out = await action.execute({
     ...{ "tags": "python,c++" },
@@ -53,7 +54,7 @@ Deno.test("tag-faq-list: optional paging, filter and a different site", async ()
   assertEquals(page.hasMore, false);
 });
 
-Deno.test("tag-faq-list: surfaces the API error body", async () => {
+test("tag-faq-list: surfaces the API error body", async () => {
   const { ctx } = mockCtx([
     { status: 400, body: { error_id: 400, error_name: "bad_parameter", error_message: "site" } },
   ]);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionDelete from "../../actions/subscription-delete.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("subscription-delete: DELETEs /agreements/{id}", async () => {
+test("subscription-delete: DELETEs /agreements/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { error: null } }]);
   const out = await subscriptionDelete.execute({ id: 7 }, ctx);
 
@@ -12,11 +13,11 @@ Deno.test("subscription-delete: DELETEs /agreements/{id}", async () => {
   assertEquals(out, { deleted: true, id: 7 });
 });
 
-Deno.test("subscription-delete: is marked idempotent", () => {
+test("subscription-delete: is marked idempotent", () => {
   assertEquals(subscriptionDelete.idempotent, true);
 });
 
-Deno.test("subscription-delete: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("subscription-delete: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -25,7 +26,7 @@ Deno.test("subscription-delete: a rejected key surfaces Upsales' plain-text Unau
   await assertRejects(async () => await subscriptionDelete.execute({ id: 7 }, ctx), Error, "401");
 });
 
-Deno.test("subscription-delete: a JSON error envelope surfaces the vendor key", async () => {
+test("subscription-delete: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

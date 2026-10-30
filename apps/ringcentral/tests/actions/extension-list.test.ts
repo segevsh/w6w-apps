@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import extensionList from "../../actions/extension-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("extension-list: hits the account-level extension collection", async () => {
+test("extension-list: hits the account-level extension collection", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "1" }]) }]);
   const out = await extensionList.execute({}, ctx) as { records: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("extension-list: hits the account-level extension collection", async (
   assertEquals(out.records, [{ id: "1" }]);
 });
 
-Deno.test("extension-list: multi-valued status/type filters repeat the query key", async () => {
+test("extension-list: multi-valued status/type filters repeat the query key", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await extensionList.execute(
     { status: ["Enabled", "Disabled"], type: ["User"], page: 2, perPage: 50 },
@@ -22,7 +23,7 @@ Deno.test("extension-list: multi-valued status/type filters repeat the query key
   assertEquals(queryOf(calls[0].url).perPage, "50");
 });
 
-Deno.test("extension-list: omitted filters are absent from the query, not sent empty", async () => {
+test("extension-list: omitted filters are absent from the query, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await extensionList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transferFund from "../../actions/transfer-fund.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("transfer-fund: POSTs the funding type and balanceId for BALANCE funding", async () => {
+test("transfer-fund: POSTs the funding type and balanceId for BALANCE funding", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "COMPLETED", type: "BALANCE" } }]);
   const out = await transferFund.execute(
     { profileId: 1, transferId: 9, type: "BALANCE", balanceId: 100 },
@@ -15,7 +16,7 @@ Deno.test("transfer-fund: POSTs the funding type and balanceId for BALANCE fundi
   assertEquals(out.status, "COMPLETED");
 });
 
-Deno.test("transfer-fund: rejects BALANCE funding with no balanceId, before any request", async () => {
+test("transfer-fund: rejects BALANCE funding with no balanceId, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await transferFund.execute({ profileId: 1, transferId: 9, type: "BALANCE" }, ctx),
@@ -25,10 +26,10 @@ Deno.test("transfer-fund: rejects BALANCE funding with no balanceId, before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("transfer-fund: is not declared idempotent", () => {
+test("transfer-fund: is not declared idempotent", () => {
   assertEquals(transferFund.idempotent, false);
 });
 
-Deno.test("transfer-fund: describes the SCA/country restriction rather than hiding it", () => {
+test("transfer-fund: describes the SCA/country restriction rather than hiding it", () => {
   assertEquals(transferFund.description?.includes("SCA-protected"), true);
 });

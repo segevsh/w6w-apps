@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { FacebookClient } from "../../lib/client.ts";
 
-Deno.test("client: throws a descriptive Error on non-2xx", async () => {
+test("client: throws a descriptive Error on non-2xx", async () => {
   const { ctx } = mockCtx([
     { status: 400, statusText: "Bad Request", body: '{"error":{"message":"boom"}}' },
   ]);
@@ -15,7 +16,7 @@ Deno.test("client: throws a descriptive Error on non-2xx", async () => {
   assertEquals(err.message.includes("/v19.0/12345/leads"), true);
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FacebookClient(ctx);
   await client.request("/x", { query: { a: "kept", b: undefined, c: null, d: "" } });
@@ -26,7 +27,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: never sets an Authorization header (credentials belong to `sign`)", async () => {
+test("client: never sets an Authorization header (credentials belong to `sign`)", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const client = new FacebookClient(ctx);
   await client.request("/x");

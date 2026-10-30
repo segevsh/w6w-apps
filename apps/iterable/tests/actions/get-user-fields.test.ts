@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-user-fields.ts";
 
-Deno.test("get-user-fields: metadata", () => {
+test("get-user-fields: metadata", () => {
   assertEquals(action.key, "get-user-fields");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), []);
 });
 
-Deno.test("get-user-fields: calls GET /users/getFields on the US host", async () => {
+test("get-user-fields: calls GET /users/getFields on the US host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "fields": { "firstName": "string" } } }]);
   const out = await action.execute({}, ctx);
   assertEquals(calls.length, 1);
@@ -19,7 +20,7 @@ Deno.test("get-user-fields: calls GET /users/getFields on the US host", async ()
   assertEquals(out, { "fields": { "firstName": "string" } });
 });
 
-Deno.test("get-user-fields: uses the EU host when the connection region is eu", async () => {
+test("get-user-fields: uses the EU host when the connection region is eu", async () => {
   const { ctx, calls } = mockCtx([{ body: { "fields": { "firstName": "string" } } }], {
     connection: { display: { region: "eu" } },
   });
@@ -27,7 +28,7 @@ Deno.test("get-user-fields: uses the EU host when the connection region is eu", 
   assertEquals(calls[0].url, "https://api.eu.iterable.com/api/users/getFields");
 });
 
-Deno.test("get-user-fields: surfaces an HTTP error with Iterable's own code", async () => {
+test("get-user-fields: surfaces an HTTP error with Iterable's own code", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "BadParams", msg: "nope" } }]);
   await assertRejects(
     async () => {
@@ -38,7 +39,7 @@ Deno.test("get-user-fields: surfaces an HTTP error with Iterable's own code", as
   );
 });
 
-Deno.test("get-user-fields: treats a 200 carrying a non-Success code as a failure", async () => {
+test("get-user-fields: treats a 200 carrying a non-Success code as a failure", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { code: "RateLimitExceeded", msg: "slow down" } }]);
   await assertRejects(
     async () => {

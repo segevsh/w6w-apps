@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/chart-draft-from-text.ts";
 import { exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("chart-draft-from-text: POSTs /natural/config and trims the chart string", async () => {
+test("chart-draft-from-text: POSTs /natural/config and trims the chart string", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       success: true,
@@ -20,7 +21,7 @@ Deno.test("chart-draft-from-text: POSTs /natural/config and trims the chart stri
   assertEquals(out.warnings, ["check it"]);
 });
 
-Deno.test("chart-draft-from-text: missing warnings become an empty list; errors throw", async () => {
+test("chart-draft-from-text: missing warnings become an empty list; errors throw", async () => {
   const { ctx } = mockCtx([{ body: { success: true, chart: "{}" } }]);
   assertEquals((await exec(action, { description: "x" }, ctx)).warnings, []);
   const bad = mockCtx([{ status: 400, body: { error: "no description" } }]);

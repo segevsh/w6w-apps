@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-record.ts";
 
-Deno.test("create-record: POSTs to {baseId}/{table} with fields + typecast", async () => {
+test("create-record: POSTs to {baseId}/{table} with fields + typecast", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec1", fields: { Name: "Jane" } } }]);
   const result = await action.execute!(
     { baseId: "appABC", table: "Users", fields: { Name: "Jane" }, typecast: true },
@@ -15,13 +16,13 @@ Deno.test("create-record: POSTs to {baseId}/{table} with fields + typecast", asy
   assertEquals(result, { id: "rec1", fields: { Name: "Jane" } });
 });
 
-Deno.test("create-record: defaults typecast to false", async () => {
+test("create-record: defaults typecast to false", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ baseId: "appABC", table: "Users", fields: { Name: "X" } }, ctx);
   assertEquals(JSON.parse(calls[0].body!).typecast, false);
 });
 
-Deno.test("create-record: URI-encodes the table segment", async () => {
+test("create-record: URI-encodes the table segment", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { baseId: "appABC", table: "My Table", fields: {} },

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/droplet-get.ts";
 
@@ -27,7 +28,7 @@ const droplet = (attributes: Record<string, unknown> = {}) => ({
 });
 
 /** Indexing v4[0] gets whichever came first, often the private one. */
-Deno.test("droplet-get: returns the public and private addresses separately", async () => {
+test("droplet-get: returns the public and private addresses separately", async () => {
   const { ctx } = mockCtx([droplet()]);
   const result = await action.execute({ dropletId: "3164444" }, ctx) as Record<string, unknown>;
   assertEquals(result.publicIp, "203.0.113.10");
@@ -35,7 +36,7 @@ Deno.test("droplet-get: returns the public and private addresses separately", as
   assert(/often the private one/.test(action.description!), action.description);
 });
 
-Deno.test("droplet-get: a droplet with only a public address has no private one", async () => {
+test("droplet-get: a droplet with only a public address has no private one", async () => {
   const { ctx } = mockCtx([droplet({
     networks: { v4: [{ ip_address: "203.0.113.10", type: "public" }] },
   })]);
@@ -44,27 +45,27 @@ Deno.test("droplet-get: a droplet with only a public address has no private one"
 });
 
 /** These survive the droplet and keep billing. */
-Deno.test("droplet-get: reports the volumes that would be left behind", async () => {
+test("droplet-get: reports the volumes that would be left behind", async () => {
   const { ctx } = mockCtx([droplet()]);
   const result = await action.execute({ dropletId: "3164444" }, ctx) as Record<string, unknown>;
   assertEquals(result.volumeIds, ["vol-a"]);
   assertEquals(result.diskGb, 25);
 });
 
-Deno.test("droplet-get: a powered-off droplet is noted as still billing", async () => {
+test("droplet-get: a powered-off droplet is noted as still billing", async () => {
   const { ctx, logs } = mockCtx([droplet({ status: "off" })]);
   const result = await action.execute({ dropletId: "3164444" }, ctx) as Record<string, unknown>;
   assertEquals(result.billing, true);
   assert(/still billing/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("droplet-get: an archived droplet is the one that is not billing", async () => {
+test("droplet-get: an archived droplet is the one that is not billing", async () => {
   const { ctx } = mockCtx([droplet({ status: "archive" })]);
   const result = await action.execute({ dropletId: "3164444" }, ctx) as Record<string, unknown>;
   assertEquals(result.billing, false);
 });
 
-Deno.test("droplet-get: a UUID where a number belongs is refused before the request", async () => {
+test("droplet-get: a UUID where a number belongs is refused before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

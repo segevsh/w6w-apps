@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alias-upsert.ts";
 
@@ -9,7 +10,7 @@ const existing = { status: 200, body: { name: "products", collection_name: "prod
 const updated = { status: 200, body: { name: "products", collection_name: "products_v4" } };
 
 /** The swap in a zero-downtime reindex. */
-Deno.test("alias-upsert: points the alias at the new collection", async () => {
+test("alias-upsert: points the alias at the new collection", async () => {
   const { ctx, calls } = mockCtx([populated, collections, existing, updated], D);
   const result = await action.execute(
     { alias: "products", collection: "products_v4" },
@@ -25,7 +26,7 @@ Deno.test("alias-upsert: points the alias at the new collection", async () => {
 });
 
 /** Searches keep working, return nothing, and look like a search problem. */
-Deno.test("alias-upsert: refuses to point at an empty collection", async () => {
+test("alias-upsert: refuses to point at an empty collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { num_documents: 0 } }], D);
   const err = await assertRejects(
     async () => await action.execute({ alias: "products", collection: "products_v4" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("alias-upsert: refuses to point at an empty collection", async () => {
   assertEquals(calls.length, 1, "it must not swap");
 });
 
-Deno.test("alias-upsert: allowEmpty lets a deliberately empty target through", async () => {
+test("alias-upsert: allowEmpty lets a deliberately empty target through", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { num_documents: 0 } },
     collections,
@@ -51,7 +52,7 @@ Deno.test("alias-upsert: allowEmpty lets a deliberately empty target through", a
 });
 
 /** Typesense resolves the collection first, so the alias does nothing. */
-Deno.test("alias-upsert: warns when a collection shares the alias's name", async () => {
+test("alias-upsert: warns when a collection shares the alias's name", async () => {
   const { ctx, logs } = mockCtx([
     populated,
     { status: 200, body: [{ name: "products" }, { name: "products_v4" }] },
@@ -70,7 +71,7 @@ Deno.test("alias-upsert: warns when a collection shares the alias's name", async
 });
 
 /** A new alias has no previous target, and the 404 is the normal case. */
-Deno.test("alias-upsert: a brand new alias is created without a previous collection", async () => {
+test("alias-upsert: a brand new alias is created without a previous collection", async () => {
   const { ctx } = mockCtx([
     populated,
     collections,
@@ -85,7 +86,7 @@ Deno.test("alias-upsert: a brand new alias is created without a previous collect
   assertEquals(result.changed, true);
 });
 
-Deno.test("alias-upsert: requires both names", async () => {
+test("alias-upsert: requires both names", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ collection: "products_v4" }, ctx),

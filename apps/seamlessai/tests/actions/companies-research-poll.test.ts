@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/companies-research-poll.ts";
 
 const RESPONSE = { "success": true, "data": [{ "requestId": "c1", "status": "researching" }] };
 
-Deno.test("companies-research-poll: calls GET /api/client/v2/companies/research/poll and returns the vendor body", async () => {
+test("companies-research-poll: calls GET /api/client/v2/companies/research/poll and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({ "requestIds": ["c1"] }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("companies-research-poll: calls GET /api/client/v2/companies/research/
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("companies-research-poll: sends nothing for fields left unset", async () => {
+test("companies-research-poll: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "requestIds": ["c1"] }, ctx);
   const url = new URL(calls[0].url);
@@ -26,13 +27,13 @@ Deno.test("companies-research-poll: sends nothing for fields left unset", async 
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("companies-research-poll: refuses a missing requestIds before any request", async () => {
+test("companies-research-poll: refuses a missing requestIds before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("companies-research-poll: surfaces the vendor's error body", async () => {
+test("companies-research-poll: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import subscriptionCancel from "../../actions/subscription-cancel.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-cancel: PUT /v1/src1/subscriptions/o%201/cancel with the documented query/body", async () => {
+test("subscription-cancel: PUT /v1/src1/subscriptions/o%201/cancel with the documented query/body", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscription: {} } }]);
   const out = await subscriptionCancel.execute(
     { source_id: "src1", oid: "o 1", canceled_at: 5 },
@@ -17,20 +18,20 @@ Deno.test("subscription-cancel: PUT /v1/src1/subscriptions/o%201/cancel with the
   assert("subscription" in out);
 });
 
-Deno.test("subscription-cancel: omits unset optional body fields", async () => {
+test("subscription-cancel: omits unset optional body fields", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await subscriptionCancel.execute({ source_id: "src1", oid: "o 1", canceled_at: 5 }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body ?? "{}")).sort(), ["canceled_at"].sort());
 });
 
-Deno.test("subscription-cancel: declares type perform and every required param", () => {
+test("subscription-cancel: declares type perform and every required param", () => {
   assertEquals(subscriptionCancel.type, "perform");
   const required = (subscriptionCancel.params ?? []).filter((p) => p.required).map((p) => p.key)
     .sort();
   assertEquals(required, ["canceled_at", "oid", "source_id"]);
 });
 
-Deno.test("subscription-cancel: surfaces a vendor error as a thrown message", async () => {
+test("subscription-cancel: surfaces a vendor error as a thrown message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: "Unauthorized. API Key not found (001)" },

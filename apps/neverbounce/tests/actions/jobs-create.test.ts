@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobsCreate from "../../actions/jobs-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("jobs-create: supplied rows become an array of {id, email, name} objects", async () => {
+test("jobs-create: supplied rows become an array of {id, email, name} objects", async () => {
   const body = { status: "success", job_id: 150970, execution_time: 712 };
   const { ctx, calls } = mockCtx([{ body }]);
 
@@ -30,7 +31,7 @@ Deno.test("jobs-create: supplied rows become an array of {id, email, name} objec
   assertEquals(result, body);
 });
 
-Deno.test("jobs-create: remote_url input sends the URL as `input` directly", async () => {
+test("jobs-create: remote_url input sends the URL as `input` directly", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", job_id: 1, execution_time: 1 } },
   ]);
@@ -45,7 +46,7 @@ Deno.test("jobs-create: remote_url input sends the URL as `input` directly", asy
   assertEquals(sentBody.input, "https://mydomain.com/my_file.csv");
 });
 
-Deno.test("jobs-create: rows without a name/id omit those keys", async () => {
+test("jobs-create: rows without a name/id omit those keys", async () => {
   const { ctx, calls } = mockCtx([
     { body: { status: "success", job_id: 1, execution_time: 1 } },
   ]);

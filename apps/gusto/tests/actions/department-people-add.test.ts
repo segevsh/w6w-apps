@@ -1,11 +1,12 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/department-people-add.ts";
 
 const conn = { display: { environment: "production", companyId: "co-1" } };
 
 /** Employees and contractors are separate lists, as everywhere in Gusto. */
-Deno.test("department-people-add: sends the two lists separately", async () => {
+test("department-people-add: sends the two lists separately", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { uuid: "d1" } }], conn);
   await action.execute!({
     departmentId: "d1",
@@ -22,7 +23,7 @@ Deno.test("department-people-add: sends the two lists separately", async () => {
   });
 });
 
-Deno.test("department-people-add: the version is required", async () => {
+test("department-people-add: the version is required", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ departmentId: "d1", employeeIds: "e1" }, ctx),
@@ -32,7 +33,7 @@ Deno.test("department-people-add: the version is required", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("department-people-add: adding nobody is refused", async () => {
+test("department-people-add: adding nobody is refused", async () => {
   const { ctx } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ departmentId: "d1", version: "v" }, ctx),

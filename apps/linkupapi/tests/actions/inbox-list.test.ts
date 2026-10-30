@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import inboxList from "../../actions/inbox-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("inbox-list: sends every input, unwraps data and credits", async () => {
+test("inbox-list: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -33,7 +34,7 @@ Deno.test("inbox-list: sends every input, unwraps data and credits", async () =>
   });
 });
 
-Deno.test("inbox-list: omits optional inputs that were not given", async () => {
+test("inbox-list: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -47,7 +48,7 @@ Deno.test("inbox-list: omits optional inputs that were not given", async () => {
   });
 });
 
-Deno.test("inbox-list: an error envelope is thrown with the vendor code", async () => {
+test("inbox-list: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

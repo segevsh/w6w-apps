@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/events-leave-waitlist.ts";
 
 const sample = { customer: 12 };
 
-Deno.test("events-leave-waitlist: posts the documented body to /events/8/leave_waitlist", async () => {
+test("events-leave-waitlist: posts the documented body to /events/8/leave_waitlist", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({ id: 8, customer: 12 }, ctx) as typeof sample;
   const url = new URL(calls[0].url);
@@ -14,7 +15,7 @@ Deno.test("events-leave-waitlist: posts the documented body to /events/8/leave_w
   assertEquals(result.customer, 12);
 });
 
-Deno.test("events-leave-waitlist: sends only the fields the caller supplied", async () => {
+test("events-leave-waitlist: sends only the fields the caller supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 8, customer: 12 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -23,7 +24,7 @@ Deno.test("events-leave-waitlist: sends only the fields the caller supplied", as
   assertEquals(Object.keys(JSON.parse(calls[0].body!)), ["customer"]);
 });
 
-Deno.test("events-leave-waitlist: is a required-customer perform", () => {
+test("events-leave-waitlist: is a required-customer perform", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.params!.find((p) => p.key === "customer")!.required, true);
 });

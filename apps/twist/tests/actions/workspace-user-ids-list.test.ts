@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import workspaceUserIdsList from "../../actions/workspace-user-ids-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("workspace-user-ids-list: GET /api/v4/workspace_users/get_ids with every documented parameter", async () => {
+test("workspace-user-ids-list: GET /api/v4/workspace_users/get_ids with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await workspaceUserIdsList.execute({ "workspaceId": 100 }, ctx) as Record<
     string,
@@ -17,14 +18,14 @@ Deno.test("workspace-user-ids-list: GET /api/v4/workspace_users/get_ids with eve
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }] });
 });
 
-Deno.test("workspace-user-ids-list: sends no credential of its own", async () => {
+test("workspace-user-ids-list: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ "id": 1 }, { "id": 2 }] }]);
   await workspaceUserIdsList.execute({ "workspaceId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("workspace-user-ids-list: surfaces Twist's error body", async () => {
+test("workspace-user-ids-list: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

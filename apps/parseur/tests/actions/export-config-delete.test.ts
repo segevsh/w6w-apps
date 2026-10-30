@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import exportConfigDelete from "../../actions/export-config-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("export-config-delete: DELETEs /parser/{mailboxId}/export_config/{id}", async () => {
+test("export-config-delete: DELETEs /parser/{mailboxId}/export_config/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await exportConfigDelete.execute(
     { mailboxId: "42", exportConfigId: "1" },
@@ -14,6 +15,6 @@ Deno.test("export-config-delete: DELETEs /parser/{mailboxId}/export_config/{id}"
   assertEquals(out, { exportConfigId: "1", status: 204 });
 });
 
-Deno.test("export-config-delete: is idempotent", () => {
+test("export-config-delete: is idempotent", () => {
   assertEquals(exportConfigDelete.idempotent, true);
 });

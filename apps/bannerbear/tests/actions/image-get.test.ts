@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageGet from "../../actions/image-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-get: GET /images/{uid}", async () => {
+test("image-get: GET /images/{uid}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { uid: "i1", status: "completed", files: { jpg: "https://cdn/x.jpg" } } },
   ]);
@@ -12,7 +13,7 @@ Deno.test("image-get: GET /images/{uid}", async () => {
   assertEquals(out.status, "completed");
 });
 
-Deno.test("image-get: requires uid", async () => {
+test("image-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => imageGet.execute({ uid: "" }, ctx));
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import appointmentCreate from "../../actions/appointment-create.ts";
 import { API_ROOT, envelope, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("appointment-create: POSTs /appointments with the mapped body", async () => {
+test("appointment-create: POSTs /appointments with the mapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   const out = await appointmentCreate.execute({
     "description": "Requirements analysis",
@@ -33,7 +34,7 @@ Deno.test("appointment-create: POSTs /appointments with the mapped body", async 
   assertEquals(out, { data: { id: 7 } });
 });
 
-Deno.test("appointment-create: the free-form fields object is merged and typed params win", async () => {
+test("appointment-create: the free-form fields object is merged and typed params win", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await appointmentCreate.execute(
     {
@@ -47,7 +48,7 @@ Deno.test("appointment-create: the free-form fields object is merged and typed p
   assertEquals(sent["description"], "Requirements analysis");
 });
 
-Deno.test("appointment-create: fields may be a JSON string", async () => {
+test("appointment-create: fields may be a JSON string", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: 7 }) }]);
   await appointmentCreate.execute(
     { "description": "Requirements analysis", "fields": '{"extraKey":1}' } as never,
@@ -56,7 +57,7 @@ Deno.test("appointment-create: fields may be a JSON string", async () => {
   assertEquals(JSON.parse(calls[0].body!).extraKey, 1);
 });
 
-Deno.test("appointment-create: invalid fields JSON is refused before any request", async () => {
+test("appointment-create: invalid fields JSON is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await appointmentCreate.execute({ "fields": "{nope" } as never, ctx),
@@ -66,12 +67,12 @@ Deno.test("appointment-create: invalid fields JSON is refused before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("appointment-create: required params are declared", () => {
+test("appointment-create: required params are declared", () => {
   const required = (appointmentCreate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["description", "date", "endDate"]);
 });
 
-Deno.test("appointment-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
+test("appointment-create: a rejected key surfaces Upsales' plain-text Unauthorized", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     headers: { "content-type": "text/plain" },
@@ -94,7 +95,7 @@ Deno.test("appointment-create: a rejected key surfaces Upsales' plain-text Unaut
   );
 });
 
-Deno.test("appointment-create: a JSON error envelope surfaces the vendor key", async () => {
+test("appointment-create: a JSON error envelope surfaces the vendor key", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { key: "ThrottleLimit", code: 429, errorCode: 4, msg: "Too many requests" } },

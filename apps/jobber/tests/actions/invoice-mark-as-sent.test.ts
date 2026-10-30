@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-mark-as-sent.ts";
 
-Deno.test("invoice-mark-as-sent: the argument is plain `id`", async () => {
+test("invoice-mark-as-sent: the argument is plain `id`", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -16,7 +17,7 @@ Deno.test("invoice-mark-as-sent: the argument is plain `id`", async () => {
   assertEquals(sent.variables, { id: "i1" });
 });
 
-Deno.test("invoice-mark-as-sent: sends no email — nothing in the document asks for one", async () => {
+test("invoice-mark-as-sent: sends no email — nothing in the document asks for one", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { invoiceMarkAsSent: { invoice: { id: "i1" }, userErrors: [] } } },
   }]);
@@ -24,7 +25,7 @@ Deno.test("invoice-mark-as-sent: sends no email — nothing in the document asks
   assert(!/SendEmail|sendEmail/.test(JSON.parse(calls[0].body!).query));
 });
 
-Deno.test("invoice-mark-as-sent: userErrors throws", async () => {
+test("invoice-mark-as-sent: userErrors throws", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: {

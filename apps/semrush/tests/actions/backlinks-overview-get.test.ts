@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import backlinksOverviewGet from "../../actions/backlinks-overview-get.ts";
 import { envelope, errorEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-overview-get: GETs the overview and unwraps data", async () => {
+test("backlinks-overview-get: GETs the overview and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -26,7 +27,7 @@ Deno.test("backlinks-overview-get: GETs the overview and unwraps data", async ()
   assertEquals(out.data.score, 42);
 });
 
-Deno.test("backlinks-overview-get: joins `fields` into one comma-separated value", async () => {
+test("backlinks-overview-get: joins `fields` into one comma-separated value", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ backlinks_count: 1 }) }]);
 
   await backlinksOverviewGet.execute(
@@ -37,7 +38,7 @@ Deno.test("backlinks-overview-get: joins `fields` into one comma-separated value
   assertEquals(queryOf(calls[0].url).fields, "backlinks_count,score");
 });
 
-Deno.test("backlinks-overview-get: a documented error envelope becomes one readable line", async () => {
+test("backlinks-overview-get: a documented error envelope becomes one readable line", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorEnvelope(401, "Unauthorized") }]);
 
   const err = await assertRejects(async () => {
@@ -49,7 +50,7 @@ Deno.test("backlinks-overview-get: a documented error envelope becomes one reada
   );
 });
 
-Deno.test("backlinks-overview-get: `scope` is required and offers four choices", () => {
+test("backlinks-overview-get: `scope` is required and offers four choices", () => {
   const scope = backlinksOverviewGet.params?.find((p) => p.key === "scope");
   assertEquals(scope?.required, true);
   const values = Array.isArray(scope?.options) ? scope.options.map((o) => o.value) : [];

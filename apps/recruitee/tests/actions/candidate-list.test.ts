@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import candidateList from "../../actions/candidate-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("candidate-list: builds the query from every filter", async () => {
+test("candidate-list: builds the query from every filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { candidates: [], references: [] } }]);
   await candidateList.execute({
     query: "jane",
@@ -32,20 +33,20 @@ Deno.test("candidate-list: builds the query from every filter", async () => {
   });
 });
 
-Deno.test("candidate-list: a false boolean is omitted, not sent as 'false'", async () => {
+test("candidate-list: a false boolean is omitted, not sent as 'false'", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { candidates: [] } }]);
   await candidateList.execute({ deleted: false }, ctx);
   assertEquals(queryOf(calls[0].url).deleted, undefined);
 });
 
-Deno.test("candidate-list: returns the response body verbatim", async () => {
+test("candidate-list: returns the response body verbatim", async () => {
   const candidates = [{ id: 1, name: "Jane Doe" }];
   const { ctx } = mockCtx([{ status: 200, body: { candidates, references: [] } }]);
   const out = await candidateList.execute({}, ctx) as { candidates: unknown };
   assertEquals(out.candidates, candidates);
 });
 
-Deno.test("candidate-list: surfaces the vendor's bare-string error", async () => {
+test("candidate-list: surfaces the vendor's bare-string error", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("Token not found.", "invalid_token") },
   ]);

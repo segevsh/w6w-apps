@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import orgResourcesGet from "../../actions/org-resources-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("org-resources-get: calls GET /orgs/fetch-resources and returns the body verbatim", async () => {
+test("org-resources-get: calls GET /orgs/fetch-resources and returns the body verbatim", async () => {
   const resources = { dailyExecutionTime: 1000, plan: { dailyExecutionTime: 3600 } };
   const { ctx, calls } = mockCtx([{ status: 200, body: resources }]);
 
@@ -12,6 +13,6 @@ Deno.test("org-resources-get: calls GET /orgs/fetch-resources and returns the bo
   assertEquals(out.resources, resources);
 });
 
-Deno.test("org-resources-get: takes no params", () => {
+test("org-resources-get: takes no params", () => {
   assertEquals(orgResourcesGet.params, []);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingList from "../../actions/booking-list.ts";
 import { envelope, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("booking-list: calls GET /api/bookings", async () => {
+test("booking-list: calls GET /api/bookings", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([{ id: 1 }]) }]);
   const out = await bookingList.execute({}, ctx) as { data: unknown[] };
 
@@ -18,7 +19,7 @@ Deno.test("booking-list: calls GET /api/bookings", async () => {
  * parameters — the path template `/bookings` has no placeholder to bind them
  * to — and this is the assertion that keeps them there.
  */
-Deno.test("booking-list: the mislabelled filters go in the query string, not the path", async () => {
+test("booking-list: the mislabelled filters go in the query string, not the path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await bookingList.execute(
     { starts_at: "2026-01-01", ends_at: "2026-02-01", cancelled: true, page: 3 },
@@ -35,7 +36,7 @@ Deno.test("booking-list: the mislabelled filters go in the query string, not the
 });
 
 /** `include_teams` is what turns "my bookings" into "my bookings plus my teams'". */
-Deno.test("booking-list: include_teams is sent only when asked for", async () => {
+test("booking-list: include_teams is sent only when asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }, { body: envelope([]) }]);
   await bookingList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url).include_teams, undefined);
@@ -48,13 +49,13 @@ Deno.test("booking-list: include_teams is sent only when asked for", async () =>
  * `false` survives rather than being dropped. TidyCal documents three distinct
  * states for `cancelled`; collapsing `false` into absence would lose one.
  */
-Deno.test("booking-list: cancelled=false is sent, not dropped", async () => {
+test("booking-list: cancelled=false is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   await bookingList.execute({ cancelled: false }, ctx);
   assertEquals(queryOf(calls[0].url).cancelled, "false");
 });
 
-Deno.test("booking-list: an error surfaces TidyCal's own message", async () => {
+test("booking-list: an error surfaces TidyCal's own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(() => Promise.resolve(bookingList.execute({}, ctx)), Error);
   assertEquals(err.message.includes("401"), true, err.message);

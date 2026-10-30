@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import createProductVariant from "../../actions/create-product-variant.ts";
 import { API_ROOT, bodyOf, errorBody, mockCtx } from "../_helpers.ts";
 
@@ -15,7 +16,7 @@ const MINIMAL_BODY = {
   pricing: { basePrice: { currency: "USD", value: 29.99 } },
 };
 
-Deno.test("create-product-variant: POST /v2/commerce/products/{productId}/variants", async () => {
+test("create-product-variant: POST /v2/commerce/products/{productId}/variants", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "V1", sku: "TSHIRT-M" } }]);
   const out = await createProductVariant.execute!({ ...MINIMAL }, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("create-product-variant: POST /v2/commerce/products/{productId}/varian
   assertEquals(out.id, "V1");
 });
 
-Deno.test("create-product-variant: the physical-only members are passed through", async () => {
+test("create-product-variant: the physical-only members are passed through", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "V1" } }]);
   await createProductVariant.execute!({
     ...MINIMAL,
@@ -46,7 +47,7 @@ Deno.test("create-product-variant: the physical-only members are passed through"
   });
 });
 
-Deno.test("create-product-variant: json params accept a typed string", async () => {
+test("create-product-variant: json params accept a typed string", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "V1" } }]);
   await createProductVariant.execute!({
     ...MINIMAL,
@@ -56,7 +57,7 @@ Deno.test("create-product-variant: json params accept a typed string", async () 
   assertEquals(bodyOf(calls[0]).stock, { quantity: 4, unlimited: false });
 });
 
-Deno.test("create-product-variant: a 400 SKU_UNAVAILABLE body is surfaced", async () => {
+test("create-product-variant: a 400 SKU_UNAVAILABLE body is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

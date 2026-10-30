@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/history-get.ts";
@@ -10,7 +11,7 @@ const history = ok([
   ],
 ]);
 
-Deno.test("history-get: requires entity ids and sends them as the filter", async () => {
+test("history-get: requires entity ids and sends them as the filter", async () => {
   const { ctx, calls } = mockCtx([history], { display });
   const result = await action.execute!({ entityId: "sensor.temp" }, ctx) as {
     count: number;
@@ -27,14 +28,14 @@ Deno.test("history-get: requires entity ids and sends them as the filter", async
  * The docs call the filter optional. Omitting it asks the recorder for every
  * entity, which can occupy a small instance for minutes.
  */
-Deno.test("history-get: refuses to query without entities, unlike the API", async () => {
+test("history-get: refuses to query without entities, unlike the API", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`entityId` is required");
   assertEquals(calls.length, 0);
 });
 
 /** The un-flagged response is rarely what anyone wants. */
-Deno.test("history-get: the three size flags default on", async () => {
+test("history-get: the three size flags default on", async () => {
   const { ctx, calls } = mockCtx([history], { display });
   await action.execute!({ entityId: "sensor.temp" }, ctx);
   const url = new URL(calls[0].url);
@@ -43,7 +44,7 @@ Deno.test("history-get: the three size flags default on", async () => {
   assertEquals(url.searchParams.has("significant_changes_only"), true);
 });
 
-Deno.test("history-get: each flag can be turned off individually", async () => {
+test("history-get: each flag can be turned off individually", async () => {
   const { ctx, calls } = mockCtx([history], { display });
   await action.execute!({
     entityId: "sensor.temp",
@@ -57,7 +58,7 @@ Deno.test("history-get: each flag can be turned off individually", async () => {
   assertEquals(url.searchParams.has("significant_changes_only"), false);
 });
 
-Deno.test("history-get: the start time goes in the path and the end in the query", async () => {
+test("history-get: the start time goes in the path and the end in the query", async () => {
   const { ctx, calls } = mockCtx([history], { display });
   await action.execute!({
     entityId: "sensor.temp",
@@ -70,7 +71,7 @@ Deno.test("history-get: the start time goes in the path and the end in the query
 });
 
 /** The recorder's retention is ten days by default, and entities can be excluded. */
-Deno.test("history-get: entities with no recorded history are reported", async () => {
+test("history-get: entities with no recorded history are reported", async () => {
   const { ctx } = mockCtx([history], { display });
   const result = await action.execute!({ entityId: "sensor.temp, sensor.excluded" }, ctx) as {
     missing: string[];
@@ -78,7 +79,7 @@ Deno.test("history-get: entities with no recorded history are reported", async (
   assertEquals(result.missing, ["sensor.excluded"]);
 });
 
-Deno.test("history-get: a friendly name is refused", async () => {
+test("history-get: a friendly name is refused", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ entityId: "Temperature" }, ctx),
@@ -87,7 +88,7 @@ Deno.test("history-get: a friendly name is refused", async () => {
   );
 });
 
-Deno.test("history-get: logs counts", async () => {
+test("history-get: logs counts", async () => {
   const { ctx, logs } = mockCtx([history], { display });
   await action.execute!({ entityId: "sensor.temp" }, ctx);
   assertEquals(logs[0].data, { entities: 1, count: 2, missing: 0 });

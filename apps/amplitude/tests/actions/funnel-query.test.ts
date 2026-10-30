@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/funnel-query.ts";
@@ -14,7 +15,7 @@ const steps =
   '[{"event_type":"Signup Started"},{"event_type":"Signup Completed"},{"event_type":"First Purchase"}]';
 
 /** Each step is its own `e` parameter. */
-Deno.test("funnel-query: sends one `e` parameter per step, in order", async () => {
+test("funnel-query: sends one `e` parameter per step, in order", async () => {
   const { ctx, calls } = mockCtx([funnel], { display });
   await action.execute!({ events: steps, start: "20260801", end: "20260818" }, ctx);
   const url = new URL(calls[0].url);
@@ -27,7 +28,7 @@ Deno.test("funnel-query: sends one `e` parameter per step, in order", async () =
  * stepFunction is cumulative — step 3 is everyone who reached it, not everyone
  * who went from 2 to 3.
  */
-Deno.test("funnel-query: computes drop-off from the cumulative counts", async () => {
+test("funnel-query: computes drop-off from the cumulative counts", async () => {
   const { ctx } = mockCtx([funnel], { display });
   const result = await action.execute!({
     events: steps,
@@ -47,7 +48,7 @@ Deno.test("funnel-query: computes drop-off from the cumulative counts", async ()
 });
 
 /** The window changes the answer more than anything else. */
-Deno.test("funnel-query: the conversion window defaults to Amplitude's 7 days and is sent", async () => {
+test("funnel-query: the conversion window defaults to Amplitude's 7 days and is sent", async () => {
   const defaulted = mockCtx([funnel], { display });
   await action.execute!({ events: steps, start: "20260801", end: "20260818" }, defaulted.ctx);
   assertEquals(new URL(defaulted.calls[0].url).searchParams.get("cs"), "604800");
@@ -62,7 +63,7 @@ Deno.test("funnel-query: the conversion window defaults to Amplitude's 7 days an
   assertEquals(new URL(narrow.calls[0].url).searchParams.get("cs"), "3600");
 });
 
-Deno.test("funnel-query: the order mode reaches the wire", async () => {
+test("funnel-query: the order mode reaches the wire", async () => {
   const { ctx, calls } = mockCtx([funnel], { display });
   await action.execute!({
     events: steps,
@@ -73,7 +74,7 @@ Deno.test("funnel-query: the order mode reaches the wire", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("mode"), "unordered");
 });
 
-Deno.test("funnel-query: fewer than two steps is not a funnel", async () => {
+test("funnel-query: fewer than two steps is not a funnel", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () =>
@@ -88,7 +89,7 @@ Deno.test("funnel-query: fewer than two steps is not a funnel", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("funnel-query: needs both dates", async () => {
+test("funnel-query: needs both dates", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ events: steps, start: "20260801" }, ctx),
@@ -97,7 +98,7 @@ Deno.test("funnel-query: needs both dates", async () => {
   );
 });
 
-Deno.test("funnel-query: a first step of zero does not produce a divide-by-zero rate", async () => {
+test("funnel-query: a first step of zero does not produce a divide-by-zero rate", async () => {
   const { ctx } = mockCtx([ok({ data: [{ cumulativeRaw: [0, 0] }] })], { display });
   const result = await action.execute!({
     events: '[{"event_type":"a"},{"event_type":"b"}]',
@@ -107,7 +108,7 @@ Deno.test("funnel-query: a first step of zero does not produce a divide-by-zero 
   assertEquals(result.conversionRate, undefined);
 });
 
-Deno.test("funnel-query: warns about the window and the cumulative counts", () => {
+test("funnel-query: warns about the window and the cumulative counts", () => {
   assert(/conversion WINDOW/.test(action.description!), action.description);
   assert(/cumulative/.test(action.description!), action.description);
 });

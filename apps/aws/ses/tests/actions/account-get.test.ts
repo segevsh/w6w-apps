@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockConnection, mockCtx } from "../_helpers.ts";
 import action from "../../actions/account-get.ts";
 
-Deno.test("account-get: GET /v2/email/account and maps the response", async () => {
+test("account-get: GET /v2/email/account and maps the response", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -32,7 +33,7 @@ Deno.test("account-get: GET /v2/email/account and maps the response", async () =
   });
 });
 
-Deno.test("account-get: uses the connection's region for the host", async () => {
+test("account-get: uses the connection's region for the host", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -52,7 +53,7 @@ Deno.test("account-get: uses the connection's region for the host", async () => 
   assertEquals(new URL(calls[0].url).host, "email.eu-west-1.amazonaws.com");
 });
 
-Deno.test("account-get: surfaces the vendor's error type and message", async () => {
+test("account-get: surfaces the vendor's error type and message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: { message: "Identity is not verified" },

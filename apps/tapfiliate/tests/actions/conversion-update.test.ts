@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversionUpdate from "../../actions/conversion-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversion-update: PATCHes with recalculate_commissions as a query param", async () => {
+test("conversion-update: PATCHes with recalculate_commissions as a query param", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, amount: 17.95 } }]);
   const out = await conversionUpdate.execute(
     { conversionId: 1, amount: 17.95, externalId: "ORD123", recalculateCommissions: true },

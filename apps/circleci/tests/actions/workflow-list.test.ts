@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-list.ts";
 
-Deno.test("workflow-list: GETs /pipeline/{id}/workflow", async () => {
+test("workflow-list: GETs /pipeline/{id}/workflow", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { items: [{ id: "wf1" }] } },
   ]);
@@ -13,14 +14,14 @@ Deno.test("workflow-list: GETs /pipeline/{id}/workflow", async () => {
   assertEquals(result, { items: [{ id: "wf1" }] });
 });
 
-Deno.test("workflow-list: forwards page-token", async () => {
+test("workflow-list: forwards page-token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { items: [] } }]);
   await action.execute!({ pipelineId: "pipe-uuid-1", pageToken: "cursor123" }, ctx);
 
   assertStringIncludes(calls[0].url, "page-token=cursor123");
 });
 
-Deno.test("workflow-list: requires pipelineId", async () => {
+test("workflow-list: requires pipelineId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "pipelineId");
 });

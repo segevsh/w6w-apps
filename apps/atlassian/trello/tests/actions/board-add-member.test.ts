@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/board-add-member.ts";
 
-Deno.test("board-add-member: PUTs the member route with the role", async () => {
+test("board-add-member: PUTs the member route with the role", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "b1" } }]);
   await action.execute({ id: "b1", idMember: "m1", type: "admin" }, ctx);
   assertEquals(calls[0].method, "PUT");

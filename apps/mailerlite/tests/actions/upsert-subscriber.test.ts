@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upsert-subscriber.ts";
 
-Deno.test("upsert-subscriber: POSTs /api/subscribers with just the email", async () => {
+test("upsert-subscriber: POSTs /api/subscribers with just the email", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "1" } } }]);
   await action.execute!({ email: "dummy@example.com" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -10,7 +11,7 @@ Deno.test("upsert-subscriber: POSTs /api/subscribers with just the email", async
   assertEquals(JSON.parse(calls[0].body!), { email: "dummy@example.com" });
 });
 
-Deno.test("upsert-subscriber: maps camelCase params onto MailerLite's snake_case body", async () => {
+test("upsert-subscriber: maps camelCase params onto MailerLite's snake_case body", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({
     email: "dummy@example.com",
@@ -32,17 +33,17 @@ Deno.test("upsert-subscriber: maps camelCase params onto MailerLite's snake_case
   });
 });
 
-Deno.test("upsert-subscriber: omits every unset optional key", async () => {
+test("upsert-subscriber: omits every unset optional key", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ email: "a@b.com" }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)), ["email"]);
 });
 
-Deno.test("upsert-subscriber: is declared idempotent — the upsert is non-destructive", () => {
+test("upsert-subscriber: is declared idempotent — the upsert is non-destructive", () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("upsert-subscriber: returns the envelope for both the 201 and 200 outcomes", async () => {
+test("upsert-subscriber: returns the envelope for both the 201 and 200 outcomes", async () => {
   for (const status of [201, 200]) {
     const { ctx } = mockCtx([{ status, body: { data: { id: "1" } } }]);
     assertEquals(await action.execute!({ email: "a@b.com" }, ctx), { data: { id: "1" } });

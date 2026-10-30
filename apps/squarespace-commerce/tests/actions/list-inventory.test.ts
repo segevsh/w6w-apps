@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listInventory from "../../actions/list-inventory.ts";
 import { API_ROOT, errorBody, mockCtx, pagination, queryOf } from "../_helpers.ts";
 
-Deno.test("list-inventory: GET /1.0/commerce/inventory with the cursor", async () => {
+test("list-inventory: GET /1.0/commerce/inventory with the cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       pagination: pagination({ hasNextPage: true, nextPageCursor: "CUR2" }),
@@ -17,7 +18,7 @@ Deno.test("list-inventory: GET /1.0/commerce/inventory with the cursor", async (
   assertEquals(out.pagination?.nextPageCursor, "CUR2");
 });
 
-Deno.test("list-inventory: an empty inventory array is a valid answer, not an error", async () => {
+test("list-inventory: an empty inventory array is a valid answer, not an error", async () => {
   const { ctx, calls } = mockCtx([{ body: { inventory: [], pagination: pagination() } }]);
   const out = await listInventory.execute!({}, ctx);
 
@@ -25,7 +26,7 @@ Deno.test("list-inventory: an empty inventory array is a valid answer, not an er
   assertEquals(out.inventory, []);
 });
 
-Deno.test("list-inventory: a vendor 400 is surfaced verbatim", async () => {
+test("list-inventory: a vendor 400 is surfaced verbatim", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: errorBody("INVALID_REQUEST_ERROR", {

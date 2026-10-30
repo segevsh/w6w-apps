@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import modelsList from "../../actions/models-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("models-list: calls GET /v1/models and does not require auth", async () => {
+test("models-list: calls GET /v1/models and does not require auth", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "jina-ai/jina-embeddings-v3" }] } }]);
   const out = await modelsList.execute({}, ctx) as { data: unknown[] };
 

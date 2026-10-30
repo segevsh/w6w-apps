@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import membersList from "../../actions/members-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("members-list: calls GET /teams/members and returns teamMembers", async () => {
+test("members-list: calls GET /teams/members and returns teamMembers", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -18,12 +19,12 @@ Deno.test("members-list: calls GET /teams/members and returns teamMembers", asyn
   assertEquals(out.teamMembers.length, 1);
 });
 
-Deno.test("members-list: defaults to an empty array when teamMembers is missing", async () => {
+test("members-list: defaults to an empty array when teamMembers is missing", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await membersList.execute({}, ctx) as { teamMembers: unknown[] };
   assertEquals(out.teamMembers, []);
 });
 
-Deno.test("members-list: takes no parameters", () => {
+test("members-list: takes no parameters", () => {
   assertEquals(membersList.params?.length, 0);
 });

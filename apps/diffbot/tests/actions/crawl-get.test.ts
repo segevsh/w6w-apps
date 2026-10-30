@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import action from "../../actions/crawl-get.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import { CRAWL_JOB } from "../_fixtures.ts";
 
-Deno.test("crawl-get: no name lists every job; finished is derived from the status code", async () => {
+test("crawl-get: no name lists every job; finished is derived from the status code", async () => {
   const done = {
     ...CRAWL_JOB,
     name: "b",
@@ -21,7 +22,7 @@ Deno.test("crawl-get: no name lists every job; finished is derived from the stat
   assertEquals(jobs[1].statusCode, 9);
 });
 
-Deno.test("crawl-get: a name reads one job and strips token-bearing URLs; none found is null", async () => {
+test("crawl-get: a name reads one job and strips token-bearing URLs; none found is null", async () => {
   const one = mockCtx([{ body: { jobs: [CRAWL_JOB] } }]);
   const out = await run(action, { name: "test-crawl" }, one.ctx);
   assertEquals(new URL(one.calls[0].url).searchParams.get("name"), "test-crawl");

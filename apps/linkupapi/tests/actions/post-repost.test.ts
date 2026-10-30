@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postRepost from "../../actions/post-repost.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("post-repost: sends every input, unwraps data and credits", async () => {
+test("post-repost: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("post-repost: sends every input, unwraps data and credits", async () =
   });
 });
 
-Deno.test("post-repost: an error envelope is thrown with the vendor code", async () => {
+test("post-repost: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

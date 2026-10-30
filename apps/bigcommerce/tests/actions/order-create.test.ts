@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import orderCreate from "../../actions/order-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const MINIMAL = {
   products: [{ product_id: 77, quantity: 1 }],
 };
 
-Deno.test("order-create: POSTs to the v2 path with the guide's minimum body", async () => {
+test("order-create: POSTs to the v2 path with the guide's minimum body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 100, status: "Pending" } }]);
   const out = await orderCreate.execute(MINIMAL, ctx) as { id: number };
 
@@ -20,7 +21,7 @@ Deno.test("order-create: POSTs to the v2 path with the guide's minimum body", as
   assertEquals(out.id, 100);
 });
 
-Deno.test("order-create: extraFields merge in for shipping_addresses and the rest", async () => {
+test("order-create: extraFields merge in for shipping_addresses and the rest", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await orderCreate.execute({
     ...MINIMAL,
@@ -35,13 +36,13 @@ Deno.test("order-create: extraFields merge in for shipping_addresses and the res
   assertEquals(body.shipping_addresses, [{ city: "Austin" }]);
 });
 
-Deno.test("order-create: warns that it does NOT send the store's order email", () => {
+test("order-create: warns that it does NOT send the store's order email", () => {
   // The vendor states this outright and its remedy is to create a cart instead.
   assert(orderCreate.description?.includes("does NOT send"), orderCreate.description);
   assertEquals(orderCreate.idempotent, false);
 });
 
-Deno.test("order-create: names the M-MIG code for historical migrations", () => {
+test("order-create: names the M-MIG code for historical migrations", () => {
   // Getting this wrong inflates the store's GMV, which BigCommerce prices on.
   const external = orderCreate.params?.find((p) => p.key === "externalSource");
   assert(external?.hint?.includes("M-MIG"), external?.hint);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import payoutList from "../../actions/payout-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("payout-list: GET /v2/payouts with include and paging", async () => {
+test("payout-list: GET /v2/payouts with include and paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await payoutList.execute({ include: "transactions", per_page: 25 }, ctx);
   assertEquals(pathOf(calls[0].url), "/v2/payouts");

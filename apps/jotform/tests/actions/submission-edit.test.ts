@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-edit.ts";
 
-Deno.test("submission-edit: POSTs to /submission/{id} with submission[...] fields", async () => {
+test("submission-edit: POSTs to /submission/{id} with submission[...] fields", async () => {
   const { ctx, calls, logs } = mockCtx([
     {
       body: envelope({
@@ -28,7 +29,7 @@ Deno.test("submission-edit: POSTs to /submission/{id} with submission[...] field
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("submission-edit: a field-set update is idempotent", () => {
+test("submission-edit: a field-set update is idempotent", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

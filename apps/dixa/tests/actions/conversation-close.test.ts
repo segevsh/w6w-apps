@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationClose from "../../actions/conversation-close.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-close: calls PUT /v1/conversations/4711/close", async () => {
+test("conversation-close: calls PUT /v1/conversations/4711/close", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await conversationClose.execute(
     { "conversationId": "4711", "userId": "11111111-2222-3333-4444-555555555555" } as never,
@@ -20,7 +21,7 @@ Deno.test("conversation-close: calls PUT /v1/conversations/4711/close", async ()
   assertEquals(out, { ok: true, conversationId: "4711" });
 });
 
-Deno.test("conversation-close: surfaces a Dixa error message with the status", async () => {
+test("conversation-close: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -35,7 +36,7 @@ Deno.test("conversation-close: surfaces a Dixa error message with the status", a
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("conversation-close: rejects bad input before any request", async () => {
+test("conversation-close: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

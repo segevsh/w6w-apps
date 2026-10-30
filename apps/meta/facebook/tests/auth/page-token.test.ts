@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/page-token.ts";
 
-Deno.test("page-token: declares a required secret accessToken field", () => {
+test("page-token: declares a required secret accessToken field", () => {
   assertEquals(auth.key, "page-token");
   assertEquals(auth.type, "bearer");
   assertEquals(auth.fields?.length, 1);
@@ -11,7 +12,7 @@ Deno.test("page-token: declares a required secret accessToken field", () => {
   assertEquals(auth.fields?.[0].required, true);
 });
 
-Deno.test("page-token: sign appends Bearer access token", async () => {
+test("page-token: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("page-token: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer page-tok");
 });
 
-Deno.test("page-token: test with missing accessToken reports the failure without a network call", async () => {
+test("page-token: test with missing accessToken reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -30,7 +31,7 @@ Deno.test("page-token: test with missing accessToken reports the failure without
   assertEquals(calls.length, 0);
 });
 
-Deno.test("page-token: test issues GET /me?fields=id,name with Bearer token", async () => {
+test("page-token: test issues GET /me?fields=id,name with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "p1", name: "My Page" } }]);
   const result = await auth.test({ credential: { accessToken: "page-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -41,7 +42,7 @@ Deno.test("page-token: test issues GET /me?fields=id,name with Bearer token", as
   assertEquals(calls[0].headers["authorization"], "Bearer page-abc");
 });
 
-Deno.test("page-token: afterConnect labels the connection with the Page's id/name", async () => {
+test("page-token: afterConnect labels the connection with the Page's id/name", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "p1", name: "My Page" } }]);
   const result = await auth.afterConnect!({ credential: { accessToken: "page-abc" } }, ctx);
   assertEquals(result, { page: { id: "p1", name: "My Page" } });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
-import { mockCtx } from "../_helpers.ts";
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { mockCtx, rejects } from "../_helpers.ts";
 import contactCreate from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: sends contact_detail built from the typed fields", async () => {
+test("contact-create: sends contact_detail built from the typed fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { "success": true, "contact": { "uuid": "CON1" } } }]);
   await contactCreate.execute!(
     {
@@ -15,10 +16,10 @@ Deno.test("contact-create: sends contact_detail built from the typed fields", as
     } as never,
     ctx,
   );
-  assertEquals(calls.length, 1);
-  assertEquals(calls[0].method, "POST");
-  assertEquals(calls[0].url, "https://api.p.2chat.io/open/contacts");
-  assertEquals(JSON.parse(calls[0].body!), {
+  assert.deepStrictEqual(calls.length, 1);
+  assert.deepStrictEqual(calls[0].method, "POST");
+  assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/contacts");
+  assert.deepStrictEqual(JSON.parse(calls[0].body!), {
     "first_name": "2Chat",
     "last_name": "Support",
     "channel_uuid": "WPN1",
@@ -29,20 +30,20 @@ Deno.test("contact-create: sends contact_detail built from the typed fields", as
   });
 });
 
-Deno.test("contact-create: refuses a contact with no details", async () => {
+test("contact-create: refuses a contact with no details", async () => {
   const { ctx, calls } = mockCtx([]);
-  const err = await assertRejects(async () => {
+  const err = await rejects(async () => {
     await contactCreate.execute!({ "firstName": "A" } as never, ctx);
-  }, Error);
-  assert(err.message.includes("at least one"), err.message);
-  assertEquals(calls.length, 0, "must not reach the network");
+  });
+  assert.ok(err.message.includes("at least one"), err.message);
+  assert.deepStrictEqual(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("contact-create: refuses a contact with no first name", async () => {
+test("contact-create: refuses a contact with no first name", async () => {
   const { ctx, calls } = mockCtx([]);
-  const err = await assertRejects(async () => {
+  const err = await rejects(async () => {
     await contactCreate.execute!({ "phone": "+1" } as never, ctx);
-  }, Error);
-  assert(err.message.includes("first name"), err.message);
-  assertEquals(calls.length, 0, "must not reach the network");
+  });
+  assert.ok(err.message.includes("first name"), err.message);
+  assert.deepStrictEqual(calls.length, 0, "must not reach the network");
 });

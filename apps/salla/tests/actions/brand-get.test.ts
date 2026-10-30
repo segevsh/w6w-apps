@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/brand-get.ts";
 
 const input = { "brand_id": 123, "with": "translations" } as never;
 
-Deno.test("brand-get: GET /brands/{brand_id}", async () => {
+test("brand-get: GET /brands/{brand_id}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": 200, "success": true, "data": { "id": 1 } },
@@ -21,13 +22,13 @@ Deno.test("brand-get: GET /brands/{brand_id}", async () => {
   assertEquals(result, { "status": 200, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("brand-get: unset filters add no query string", async () => {
+test("brand-get: unset filters add no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!({ "brand_id": 123 } as never, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("brand-get: a Salla error envelope throws with its message", async () => {
+test("brand-get: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

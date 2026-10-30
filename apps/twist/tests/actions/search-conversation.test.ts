@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import searchConversation from "../../actions/search-conversation.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("search-conversation: GET /api/v3/search/conversation with every documented parameter", async () => {
+test("search-conversation: GET /api/v3/search/conversation with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await searchConversation.execute({
     "conversationId": 100,
@@ -26,14 +27,14 @@ Deno.test("search-conversation: GET /api/v3/search/conversation with every docum
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("search-conversation: omits optional parameters that are not set", async () => {
+test("search-conversation: omits optional parameters that are not set", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await searchConversation.execute({ "conversationId": 100, "query": "sample query" }, ctx);
 
   assertEquals(queryOf(calls[0].url), { "conversation_id": "100", "query": "sample query" });
 });
 
-Deno.test("search-conversation: sends no credential of its own", async () => {
+test("search-conversation: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await searchConversation.execute({
     "conversationId": 100,
@@ -46,7 +47,7 @@ Deno.test("search-conversation: sends no credential of its own", async () => {
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("search-conversation: surfaces Twist's error body", async () => {
+test("search-conversation: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

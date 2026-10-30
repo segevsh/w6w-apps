@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-type-get-many.ts";
 
-Deno.test("appointment-type-get-many: GETs /appointment-types", async () => {
+test("appointment-type-get-many: GETs /appointment-types", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1 }] }]);
   const result = await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("appointment-type-get-many: GETs /appointment-types", async () => {
   assertEquals(result, [{ id: 1 }]);
 });
 
-Deno.test("appointment-type-get-many: passes includeDeleted through", async () => {
+test("appointment-type-get-many: passes includeDeleted through", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({ includeDeleted: true }, ctx);
   const url = new URL(calls[0].url);

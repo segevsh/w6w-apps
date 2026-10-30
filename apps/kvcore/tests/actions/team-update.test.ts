@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamUpdate from "../../actions/team-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("team-update: PUTs to /team/{id} without the id in the body", async () => {
+test("team-update: PUTs to /team/{id} without the id in the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 2, name: "Renamed Team" } }]);
   await teamUpdate.execute({ team_id: "2", name: "Renamed Team" }, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("team-update: PUTs to /team/{id} without the id in the body", async ()
 });
 
 /** Unlike office-update, the vendor's schema requires `name` even on team update. */
-Deno.test("team-update: name is required, unlike office-update", () => {
+test("team-update: name is required, unlike office-update", () => {
   const required = (teamUpdate.params ?? []).filter((p) => p.required).map((p) => p.key);
   assertEquals(required.sort(), ["name", "team_id"]);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/namespace-list.ts";
 
 const describe = { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } };
 
-Deno.test("namespace-list: reads the index's namespaces", async () => {
+test("namespace-list: reads the index's namespaces", async () => {
   const { ctx, calls } = mockCtx([
     describe,
     { status: 200, body: { namespaces: [{ name: "tenant-1" }] } },
@@ -14,7 +15,7 @@ Deno.test("namespace-list: reads the index's namespaces", async () => {
   assertEquals(new URL(calls[1].url).pathname, "/namespaces");
 });
 
-Deno.test("namespace-list: pages when asked to return all", async () => {
+test("namespace-list: pages when asked to return all", async () => {
   const { ctx, calls } = mockCtx([
     describe,
     { status: 200, body: { namespaces: [{ name: "a" }], pagination: { next: "tok" } } },

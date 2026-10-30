@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tag-list.ts";
 
 /** Company tags, deliberately — not one teammate's private labels. */
-Deno.test("tag-list: reads the COMPANY tag collection", async () => {
+test("tag-list: reads the COMPANY tag collection", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { _results: [{ id: "tag_1", name: "vip" }] },

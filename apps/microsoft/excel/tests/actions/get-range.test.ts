@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-range.ts";
 
-Deno.test("get-range: builds the range(address='…') function path", async () => {
+test("get-range: builds the range(address='…') function path", async () => {
   const { ctx, calls } = mockCtx([{ body: { address: "Sheet1!A1:B2", values: [["a", "b"]] } }]);
   const out = await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "A1:B2" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("get-range: builds the range(address='…') function path", async () =
   assertEquals(out.address, "Sheet1!A1:B2");
 });
 
-Deno.test("get-range: keeps a sheet-qualified address inside the function parameter", async () => {
+test("get-range: keeps a sheet-qualified address inside the function parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "Sheet1!A1:B2" }, ctx);
   assertEquals(
@@ -22,7 +23,7 @@ Deno.test("get-range: keeps a sheet-qualified address inside the function parame
   );
 });
 
-Deno.test("get-range: falls back to the bare /range when no address is given", async () => {
+test("get-range: falls back to the bare /range when no address is given", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1" }, ctx);
   assertEquals(
@@ -31,7 +32,7 @@ Deno.test("get-range: falls back to the bare /range when no address is given", a
   );
 });
 
-Deno.test("get-range: doubles an apostrophe in a quoted sheet name", async () => {
+test("get-range: doubles an apostrophe in a quoted sheet name", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", address: "'Bob''s'!A1" }, ctx);
   assertEquals(
@@ -40,7 +41,7 @@ Deno.test("get-range: doubles an apostrophe in a quoted sheet name", async () =>
   );
 });
 
-Deno.test("get-range: passes $select through so a big range can be trimmed", async () => {
+test("get-range: passes $select through so a big range can be trimmed", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     itemId: "ITEM1",
@@ -51,13 +52,13 @@ Deno.test("get-range: passes $select through so a big range can be trimmed", asy
   assertEquals(new URL(calls[0].url).searchParams.get("$select"), "values,address");
 });
 
-Deno.test("get-range: forwards the session header", async () => {
+test("get-range: forwards the session header", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet1", sessionId: "s1" }, ctx);
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("get-range: refuses an unaddressed workbook", async () => {
+test("get-range: refuses an unaddressed workbook", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ worksheet: "Sheet1" }, ctx),

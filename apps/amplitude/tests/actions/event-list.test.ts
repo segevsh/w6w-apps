@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/event-list.ts";
@@ -11,7 +12,7 @@ const events = ok({
   ],
 });
 
-Deno.test("event-list: returns the taxonomy with hidden and deleted counted", async () => {
+test("event-list: returns the taxonomy with hidden and deleted counted", async () => {
   const { ctx, calls } = mockCtx([events], { display });
   const result = await action.execute!({}, ctx) as {
     count: number;
@@ -25,7 +26,7 @@ Deno.test("event-list: returns the taxonomy with hidden and deleted counted", as
 });
 
 /** The only way to notice a chart's event was quietly tidied away. */
-Deno.test("event-list: inactive events can be filtered out, and are still counted", async () => {
+test("event-list: inactive events can be filtered out, and are still counted", async () => {
   const { ctx } = mockCtx([events], { display });
   const result = await action.execute!({ includeInactive: false }, ctx) as {
     count: number;
@@ -38,19 +39,19 @@ Deno.test("event-list: inactive events can be filtered out, and are still counte
 });
 
 /** The endpoint has answered both bare and wrapped over its life. */
-Deno.test("event-list: a bare array works as well as a wrapped one", async () => {
+test("event-list: a bare array works as well as a wrapped one", async () => {
   const { ctx } = mockCtx([ok([{ value: "A" }, { value: "B" }])], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(result.count, 2);
 });
 
-Deno.test("event-list: an empty taxonomy is a count of zero", async () => {
+test("event-list: an empty taxonomy is a count of zero", async () => {
   const { ctx } = mockCtx([ok({ data: [] })], { display });
   const result = await action.execute!({}, ctx) as { count: number };
   assertEquals(result.count, 0);
 });
 
-Deno.test("event-list: says hidden events keep collecting", () => {
+test("event-list: says hidden events keep collecting", () => {
   assert(
     /Hidden and deleted events are still listed/.test(action.description!),
     action.description,

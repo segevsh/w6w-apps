@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/alias-update.ts";
@@ -8,7 +9,7 @@ import action from "../../actions/alias-update.ts";
  * operations go in one batch, which Qdrant applies atomically — no reader ever
  * sees the alias resolving to nothing.
  */
-Deno.test("alias-update: sends the delete and the create in one atomic batch", async () => {
+test("alias-update: sends the delete and the create in one atomic batch", async () => {
   const { ctx, calls } = mockCtx([ok(true)], { display });
   const result = await action.execute!({ alias: "docs", collection: "docs_v4" }, ctx);
   assertEquals(calls[0].url, "https://xyz.cloud.qdrant.io:6333/collections/aliases");
@@ -20,7 +21,7 @@ Deno.test("alias-update: sends the delete and the create in one atomic batch", a
   assertEquals(result, { alias: "docs", collection: "docs_v4", moved: true });
 });
 
-Deno.test("alias-update: the delete comes first, so the create is not undone", async () => {
+test("alias-update: the delete comes first, so the create is not undone", async () => {
   const { ctx, calls } = mockCtx([ok(true)], { display });
   await action.execute!({ alias: "docs", collection: "docs_v4" }, ctx);
   const actions = JSON.parse(calls[0].body!).actions as Array<Record<string, unknown>>;
@@ -28,14 +29,14 @@ Deno.test("alias-update: the delete comes first, so the create is not undone", a
   assert("create_alias" in actions[1], JSON.stringify(actions));
 });
 
-Deno.test("alias-update: a first-time alias can skip the delete", async () => {
+test("alias-update: a first-time alias can skip the delete", async () => {
   const { ctx, calls } = mockCtx([ok(true)], { display });
   await action.execute!({ alias: "docs", collection: "docs_v1", deleteOthers: false }, ctx);
   const actions = JSON.parse(calls[0].body!).actions as unknown[];
   assertEquals(actions.length, 1);
 });
 
-Deno.test("alias-update: needs both names", async () => {
+test("alias-update: needs both names", async () => {
   const noAlias = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ collection: "docs_v4" }, noAlias.ctx),
@@ -51,13 +52,13 @@ Deno.test("alias-update: needs both names", async () => {
   assertEquals(noCollection.calls.length, 0);
 });
 
-Deno.test("alias-update: logs where the alias now points", async () => {
+test("alias-update: logs where the alias now points", async () => {
   const { ctx, logs } = mockCtx([ok(true)], { display });
   await action.execute!({ alias: "docs", collection: "docs_v4" }, ctx);
   assertEquals(logs[0].data, { alias: "docs", collection: "docs_v4" });
 });
 
 /** The old collection is not deleted — it keeps costing memory until someone acts. */
-Deno.test("alias-update: says the old collection stays behind", () => {
+test("alias-update: says the old collection stays behind", () => {
   assert(/old collection stays/.test(action.description!), action.description);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import videoGet from "../../actions/video-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("video-get: a completed job is done with its settled cost", async () => {
+test("video-get: a completed job is done with its settled cost", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       id: "v1",
@@ -23,7 +24,7 @@ Deno.test("video-get: a completed job is done with its settled cost", async () =
   assertEquals(out.completedAt, 20);
 });
 
-Deno.test("video-get: a failed job is done and carries its error", async () => {
+test("video-get: a failed job is done and carries its error", async () => {
   const { ctx } = mockCtx([{
     body: { id: "v2", status: "failed", error: { code: "policy", message: "blocked" }, cost: 0 },
   }]);
@@ -32,14 +33,14 @@ Deno.test("video-get: a failed job is done and carries its error", async () => {
   assertEquals(out.error, { code: "policy", message: "blocked" });
 });
 
-Deno.test("video-get: an in-progress job is not done", async () => {
+test("video-get: an in-progress job is not done", async () => {
   const { ctx } = mockCtx([{ body: { id: "v3", status: "in_progress", progress: 40 } }]);
   const out = await videoGet.execute({ videoId: "v3" }, ctx) as Record<string, unknown>;
   assertEquals(out.done, false);
   assertEquals(out.progress, 40);
 });
 
-Deno.test("video-get: the id is path-encoded", async () => {
+test("video-get: the id is path-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await videoGet.execute({ videoId: "a/b" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v3/videos/a%2Fb");

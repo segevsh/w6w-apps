@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeList from "../../actions/route-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-list: GET /api/routes", async () => {
+test("route-list: GET /api/routes", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeList.execute({} as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("route-list: GET /api/routes", async () => {
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("route-list: a vendor error surfaces its own message", async () => {
+test("route-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () => Promise.resolve(routeList.execute({} as never, ctx)),

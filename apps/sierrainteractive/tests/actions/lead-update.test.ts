@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadUpdate from "../../actions/lead-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-update: PUT /zapier/leads/{id} encodes the id and omits it from the body", async () => {
+test("lead-update: PUT /zapier/leads/{id} encodes the id and omits it from the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await leadUpdate.execute({
     leadIdOrEmailOrPhone: "a+b@x.com",

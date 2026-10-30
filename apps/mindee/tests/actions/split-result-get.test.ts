@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import splitResultGet from "../../actions/split-result-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("split-result-get: fetches the split results route, page ranges and document type", async () => {
+test("split-result-get: fetches the split results route, page ranges and document type", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

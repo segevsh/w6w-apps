@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("user-list: sends every input as query", async () => {
+test("user-list: sends every input as query", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await userList.execute(
     { "limit": 7, "page": 7, "search": "x-search", "ids": "x-ids" } as never,
@@ -22,7 +23,7 @@ Deno.test("user-list: sends every input as query", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("user-list: omits every unset optional", async () => {
+test("user-list: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await userList.execute({} as never, ctx);
 
@@ -31,7 +32,7 @@ Deno.test("user-list: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("user-list: declares a read-only shape", () => {
+test("user-list: declares a read-only shape", () => {
   assertEquals(userList.type, "read");
   assertEquals(userList.idempotent, undefined);
   assertEquals(userList.params!.filter((p) => p.required).map((p) => p.key), []);

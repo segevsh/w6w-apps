@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import categoryList from "../../actions/category-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("category-list: GETs /categories", async () => {
+test("category-list: GETs /categories", async () => {
   const { ctx, calls } = mockCtx([{
     body: { categories: [{ id: "cat_1", name: "Software" }], page: {} },
   }]);

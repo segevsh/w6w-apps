@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/identify-person.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("identify-person: GETs /v5/person/identify and returns the candidates", async () => {
+test("identify-person: GETs /v5/person/identify and returns the candidates", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: 200, matches: [{ match_score: 90, data: { id: "a" } }] },
   }]);
@@ -27,7 +28,7 @@ Deno.test("identify-person: GETs /v5/person/identify and returns the candidates"
   assertEquals(out.matches.length, 1);
 });
 
-Deno.test("identify-person: 404 is found: false with no matches", async () => {
+test("identify-person: 404 is found: false with no matches", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { status: 404, error: { type: ["not_found"] } } }]);
   const out = await action.execute!({ name: "zz" } as never, ctx) as Record<string, unknown>;
   assertEquals(out.found, false);

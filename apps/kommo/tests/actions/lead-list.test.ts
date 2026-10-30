@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-list.ts";
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("lead-list: GETs /leads with page and limit", async () => {
+test("lead-list: GETs /leads with page and limit", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 1 }] } } }],
     conn,
@@ -16,7 +17,7 @@ Deno.test("lead-list: GETs /leads with page and limit", async () => {
   assertEquals(out.page, 2);
 });
 
-Deno.test("lead-list: joins withEmbed and applies id/responsible filters", async () => {
+test("lead-list: joins withEmbed and applies id/responsible filters", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [] } } }],
     conn,
@@ -31,7 +32,7 @@ Deno.test("lead-list: joins withEmbed and applies id/responsible filters", async
   assertEquals(url.searchParams.getAll("filter[responsible_user_id][]"), ["9"]);
 });
 
-Deno.test("lead-list: orderBy adds order[<field>]=<direction> only when set", async () => {
+test("lead-list: orderBy adds order[<field>]=<direction> only when set", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [] } } }],
     conn,
@@ -41,7 +42,7 @@ Deno.test("lead-list: orderBy adds order[<field>]=<direction> only when set", as
   assertEquals(url.searchParams.get("order[created_at]"), "asc");
 });
 
-Deno.test("lead-list: hasMore is true only when the page is exactly full", async () => {
+test("lead-list: hasMore is true only when the page is exactly full", async () => {
   const full = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 1 }, { id: 2 }] } } }],
     conn,
@@ -55,7 +56,7 @@ Deno.test("lead-list: hasMore is true only when the page is exactly full", async
   assertEquals((await action.execute!({ limit: 2 }, short.ctx)).hasMore, false);
 });
 
-Deno.test("lead-list: type is search, and resource is lead", () => {
+test("lead-list: type is search, and resource is lead", () => {
   assertEquals(action.type, "search");
   assertEquals(action.resource, "lead");
 });

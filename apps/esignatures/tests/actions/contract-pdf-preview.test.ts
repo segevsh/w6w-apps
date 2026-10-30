@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contractPdfPreview from "../../actions/contract-pdf-preview.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contract-pdf-preview: calls POST /api/contracts/c1/generate_pdf_preview with the documented body", async () => {
+test("contract-pdf-preview: calls POST /api/contracts/c1/generate_pdf_preview with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "queued" } }]);
   const out = await contractPdfPreview.execute({ contractId: "c1" } as never, ctx) as Record<
     string,
@@ -18,7 +19,7 @@ Deno.test("contract-pdf-preview: calls POST /api/contracts/c1/generate_pdf_previ
   assert(out.status === "queued", JSON.stringify(out));
 });
 
-Deno.test("contract-pdf-preview: a vendor error surfaces its error_code and message", async () => {
+test("contract-pdf-preview: a vendor error surfaces its error_code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: errorBody("forbidden", "Invalid or missing Secret token"),
@@ -33,7 +34,7 @@ Deno.test("contract-pdf-preview: a vendor error surfaces its error_code and mess
   );
 });
 
-Deno.test("contract-pdf-preview: a slash pasted into an id cannot escape the path segment", async () => {
+test("contract-pdf-preview: a slash pasted into an id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "queued" } }]);
   await contractPdfPreview.execute(
     { ...({ contractId: "c1" }), contractId: "a/../b" } as never,

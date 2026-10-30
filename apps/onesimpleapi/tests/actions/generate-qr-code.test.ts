@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/generate-qr-code.ts";
 
-Deno.test("generate-qr-code: GETs /qr_code with the message query param", async () => {
+test("generate-qr-code: GETs /qr_code with the message query param", async () => {
   const body = { url: "https://cdn.opq.to/x.png" };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ message: "https://example.com" }, ctx);
@@ -13,7 +14,7 @@ Deno.test("generate-qr-code: GETs /qr_code with the message query param", async 
   assertEquals(result, body);
 });
 
-Deno.test("generate-qr-code: forwards size/format/color/background", async () => {
+test("generate-qr-code: forwards size/format/color/background", async () => {
   const { ctx, calls } = mockCtx([{ body: { url: "x" } }]);
   await action.execute!(
     { message: "hi", size: "Large", format: "svg", color: "#ff0000", background: "#ffffff" },

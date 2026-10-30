@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   componentKey,
@@ -17,12 +18,12 @@ function summary(components: Array<Record<string, unknown>>, extra: Record<strin
 }
 const API = { id: API_COMPONENT_ID, name: "Wiza API", status: "operational" };
 
-Deno.test("service: allowlists only the status host, on the check itself", () => {
+test("service: allowlists only the status host, on the check itself", () => {
   assertEquals(service.network, { allow: ["status.wiza.co"] });
   assertEquals(service.credential, "none");
 });
 
-Deno.test("mapComponentStatus and componentKey follow the Statuspage vocabulary", () => {
+test("mapComponentStatus and componentKey follow the Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
@@ -32,7 +33,7 @@ Deno.test("mapComponentStatus and componentKey follow the Statuspage vocabulary"
   assertEquals(componentKey({}, 7), "component-7");
 });
 
-Deno.test("service: ok when the API component is operational", async () => {
+test("service: ok when the API component is operational", async () => {
   const { ctx, calls } = mockCtx([{
     body: summary([API, { id: "w", name: "Wiza Web Application", status: "operational" }]),
   }]);
@@ -42,7 +43,7 @@ Deno.test("service: ok when the API component is operational", async () => {
   assertEquals(calls[0].url, "https://status.wiza.co/api/v2/summary.json");
 });
 
-Deno.test("service: an unrelated degraded component does not move the verdict", async () => {
+test("service: an unrelated degraded component does not move the verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary([API, { id: "p", name: "Wiza LinkedIn Plugin", status: "major_outage" }]),
   }]);
@@ -51,7 +52,7 @@ Deno.test("service: an unrelated degraded component does not move the verdict", 
   assert(report.message!.includes("Wiza LinkedIn Plugin"));
 });
 
-Deno.test("service: the API component's own outage is down; an open incident is noted", async () => {
+test("service: the API component's own outage is down; an open incident is noted", async () => {
   const { ctx } = mockCtx([{
     body: summary([{ ...API, status: "major_outage" }], { incidents: [{ name: "x" }] }),
   }]);
@@ -60,7 +61,7 @@ Deno.test("service: the API component's own outage is down; an open incident is 
   assert(report.message!.includes("1 open incident"));
 });
 
-Deno.test("service: a missing API component, a foreign page or a broken feed is unknown, never down", async () => {
+test("service: a missing API component, a foreign page or a broken feed is unknown, never down", async () => {
   const noApi = await service.check!(
     {} as never,
     mockCtx([{ body: summary([{ id: "w", name: "Web", status: "operational" }]) }]).ctx,

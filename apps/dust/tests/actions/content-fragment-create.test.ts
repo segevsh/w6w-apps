@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contentFragmentCreate from "../../actions/content-fragment-create.ts";
 import { mockCtxWithConnection, pathOf } from "../_helpers.ts";
 
-Deno.test("content-fragment-create: posts title/content/contentType, defaulting contentType", async () => {
+test("content-fragment-create: posts title/content/contentType, defaulting contentType", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: { title: "Notes" } }]);
   await contentFragmentCreate.execute(
     { cId: "c1", title: "Notes", content: "some text" },
@@ -17,7 +18,7 @@ Deno.test("content-fragment-create: posts title/content/contentType, defaulting 
   assertEquals(body, { title: "Notes", content: "some text", contentType: "text/plain" });
 });
 
-Deno.test("content-fragment-create: honours an explicit contentType and url", async () => {
+test("content-fragment-create: honours an explicit contentType and url", async () => {
   const { ctx, calls } = mockCtxWithConnection([{ body: {} }]);
   await contentFragmentCreate.execute(
     {
@@ -35,6 +36,6 @@ Deno.test("content-fragment-create: honours an explicit contentType and url", as
   assertEquals(body.url, "https://example.com/report.csv");
 });
 
-Deno.test("content-fragment-create: is declared non-idempotent", () => {
+test("content-fragment-create: is declared non-idempotent", () => {
   assertEquals(contentFragmentCreate.idempotent, false);
 });

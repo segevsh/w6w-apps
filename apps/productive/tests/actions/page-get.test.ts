@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import pageGet from "../../actions/page-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("page-get: GET /pages/{id} flattens the resource", async () => {
+test("page-get: GET /pages/{id} flattens the resource", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "pages", "attributes": { "name": "x" } } },
@@ -23,7 +24,7 @@ Deno.test("page-get: GET /pages/{id} flattens the resource", async () => {
   assertEquals(out.name, "x");
 });
 
-Deno.test("page-get: an id cannot change the path", async () => {
+test("page-get: an id cannot change the path", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "pages", "attributes": { "name": "x" } } },
@@ -33,7 +34,7 @@ Deno.test("page-get: an id cannot change the path", async () => {
   assertEquals(pathOf(calls[0].url), "/api/v2/pages/4%2F..%2Fx");
 });
 
-Deno.test("page-get: a vendor error surfaces its status, title and detail", async () => {
+test("page-get: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -46,7 +47,7 @@ Deno.test("page-get: a vendor error surfaces its status, title and detail", asyn
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("page-get: declares read", () => {
+test("page-get: declares read", () => {
   assertEquals(pageGet.type, "read");
   assertEquals(pageGet.idempotent, undefined);
   assertEquals(pageGet.key, "page-get");

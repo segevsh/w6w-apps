@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createPerson from "../../actions/create-person.ts";
 import { bodyOf, mockCtx, pathOf, single } from "../_helpers.ts";
 
-Deno.test("create-person: POSTs the JSON-API envelope with the given attributes", async () => {
+test("create-person: POSTs the JSON-API envelope with the given attributes", async () => {
   const { ctx, calls } = mockCtx([
     { body: single("Person", "9", { first_name: "New", last_name: "Person", name: "New Person" }) },
   ]);
@@ -21,11 +22,11 @@ Deno.test("create-person: POSTs the JSON-API envelope with the given attributes"
   assertEquals(out, { id: "9", firstName: "New", lastName: "Person", name: "New Person" });
 });
 
-Deno.test("create-person: is declared non-idempotent", () => {
+test("create-person: is declared non-idempotent", () => {
   assertEquals(createPerson.idempotent, false);
 });
 
-Deno.test("create-person: requires firstName", () => {
+test("create-person: requires firstName", () => {
   const firstName = createPerson.params?.find((p) => p.key === "firstName");
   assertEquals(firstName?.required, true);
 });

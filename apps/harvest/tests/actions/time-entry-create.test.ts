@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/time-entry-create.ts";
 
-Deno.test("time-entry-create: POSTs /time_entries with a duration body", async () => {
+test("time-entry-create: POSTs /time_entries with a duration body", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, hours: 2 } }]);
   await action.execute(
     { projectId: "1", taskId: "2", spentDate: "2026-07-01", hours: 2, notes: "wrote code" },
@@ -20,7 +21,7 @@ Deno.test("time-entry-create: POSTs /time_entries with a duration body", async (
   });
 });
 
-Deno.test("time-entry-create: a start/end body omits hours", async () => {
+test("time-entry-create: a start/end body omits hours", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute(
     {
@@ -41,7 +42,7 @@ Deno.test("time-entry-create: a start/end body omits hours", async () => {
   });
 });
 
-Deno.test("time-entry-create: omitting hours and times starts a running timer", async () => {
+test("time-entry-create: omitting hours and times starts a running timer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, is_running: true } }]);
   await action.execute({ projectId: "1", taskId: "2", spentDate: "2026-07-01" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {

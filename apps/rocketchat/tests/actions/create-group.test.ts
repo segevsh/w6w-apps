@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import a from "../../actions/create-group.ts";
 import { BASE, run } from "../_helpers.ts";
 
-Deno.test("create-group: POSTs name, members and flags to groups.create", async () => {
+test("create-group: POSTs name, members and flags to groups.create", async () => {
   const { call, json } = await run(a, { name: "secret", members: "alice,bob", readOnly: false }, {
     group: { _id: "G" },
   });
@@ -10,7 +11,7 @@ Deno.test("create-group: POSTs name, members and flags to groups.create", async 
   assertEquals(json, { name: "secret", members: ["alice", "bob"], readOnly: false });
 });
 
-Deno.test("create-group: no members key when none given; custom fields parsed", async () => {
+test("create-group: no members key when none given; custom fields parsed", async () => {
   const { json } = await run(a, { name: "s", customFields: '{"k":"v"}' });
   assertEquals(json, { name: "s", customFields: { k: "v" } });
 });

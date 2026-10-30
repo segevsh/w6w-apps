@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockGorgiasCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-add-reply.ts";
 
-Deno.test("ticket-add-reply: POSTs a public, from-agent message", async () => {
+test("ticket-add-reply: POSTs a public, from-agent message", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: { id: 1 } }]);
   await action.execute(
     { ticketId: 12, channel: "email", bodyText: "We shipped it!" },
@@ -16,7 +17,7 @@ Deno.test("ticket-add-reply: POSTs a public, from-agent message", async () => {
   assertEquals(body.body_text, "We shipped it!");
 });
 
-Deno.test("ticket-add-reply: prefers a receiver id over an email", async () => {
+test("ticket-add-reply: prefers a receiver id over an email", async () => {
   const { ctx, calls } = mockGorgiasCtx([{ body: {} }]);
   await action.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("ticket-add-reply: prefers a receiver id over an email", async () => {
   assertEquals(JSON.parse(calls[0].body!).receiver, { id: 7 });
 });
 
-Deno.test("ticket-add-reply: falls back to a receiver email, and to none", async () => {
+test("ticket-add-reply: falls back to a receiver email, and to none", async () => {
   const withEmail = mockGorgiasCtx([{ body: {} }]);
   await action.execute(
     { ticketId: 12, channel: "email", bodyText: "hi", receiverEmail: "jo@acme.test" },

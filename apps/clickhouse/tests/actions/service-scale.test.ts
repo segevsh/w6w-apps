@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/service-scale.ts";
 
@@ -7,7 +8,7 @@ const SVC = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
 const D = { display: { organizationId: ORG, plane: "control" } };
 const scaled = (idleScaling = true) => ({ status: 200, body: { result: { idleScaling } } });
 
-Deno.test("service-scale: PATCHes the replica scaling endpoint", async () => {
+test("service-scale: PATCHes the replica scaling endpoint", async () => {
   const { ctx, calls } = mockCtx([scaled()], D);
   const result = await action.execute(
     { serviceId: SVC, minReplicaMemoryGb: 16 },
@@ -20,7 +21,7 @@ Deno.test("service-scale: PATCHes the replica scaling endpoint", async () => {
 });
 
 /** Only the expensive direction is gated. */
-Deno.test("service-scale: turning idle scaling off needs an acknowledgement", async () => {
+test("service-scale: turning idle scaling off needs an acknowledgement", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -33,14 +34,14 @@ Deno.test("service-scale: turning idle scaling off needs an acknowledgement", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-scale: turning it on is not gated", async () => {
+test("service-scale: turning it on is not gated", async () => {
   const { ctx, calls, logs } = mockCtx([scaled(true)], D);
   await action.execute({ serviceId: SVC, idleScaling: "true" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).idleScaling, true);
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("service-scale: an acknowledged always-on warns", async () => {
+test("service-scale: an acknowledged always-on warns", async () => {
   const { ctx, calls, logs } = mockCtx([scaled(false)], D);
   const result = await action.execute(
     { serviceId: SVC, idleScaling: "false", confirmAlwaysOn: true },
@@ -53,7 +54,7 @@ Deno.test("service-scale: an acknowledged always-on warns", async () => {
 });
 
 /** Zero means unchanged, so a partial scale does not reset the rest. */
-Deno.test("service-scale: zeros are left unchanged rather than sent", async () => {
+test("service-scale: zeros are left unchanged rather than sent", async () => {
   const { ctx, calls } = mockCtx([scaled()], D);
   await action.execute({
     serviceId: SVC,
@@ -69,7 +70,7 @@ Deno.test("service-scale: zeros are left unchanged rather than sent", async () =
   assertEquals("idleTimeoutMinutes" in body, false);
 });
 
-Deno.test("service-scale: a call with nothing to change is refused", async () => {
+test("service-scale: a call with nothing to change is refused", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -81,7 +82,7 @@ Deno.test("service-scale: a call with nothing to change is refused", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-scale: says this is where the bill is decided", () => {
+test("service-scale: says this is where the bill is decided", () => {
   assert(/where the bill is decided/.test(action.description!), action.description);
   assert(/only that direction is gated/.test(action.description!), action.description);
 });

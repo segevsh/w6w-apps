@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadDelete from "../../actions/lead-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lead-delete: DELETEs /v2/leads/:id", async () => {
+test("lead-delete: DELETEs /v2/leads/:id", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await leadDelete.execute({ id: 1 }, ctx);
 

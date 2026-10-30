@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getLeadEvents from "../../actions/get-lead-events.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-lead-events: no optional params sends no query", async () => {
+test("get-lead-events: no optional params sends no query", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [] } }]);
   await getLeadEvents.execute({ leadId: "abc" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("get-lead-events: no optional params sends no query", async () => {
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("get-lead-events: forwards limit and cursor params", async () => {
+test("get-lead-events: forwards limit and cursor params", async () => {
   const { ctx, calls } = mockCtx([{ body: { events: [] } }]);
   await getLeadEvents.execute(
     { leadId: "abc", limit: 2, olderThanCursor: "cursor5", newerThanCursor: "cursor1" },
@@ -24,7 +25,7 @@ Deno.test("get-lead-events: forwards limit and cursor params", async () => {
   });
 });
 
-Deno.test("get-lead-events: returns the events array untouched", async () => {
+test("get-lead-events: returns the events array untouched", async () => {
   const events = [
     {
       id: "e1",

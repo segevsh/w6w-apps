@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import job from "../../actions/transcript-job-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("transcript-job-get: GETs /transcript/{jobId} and returns the job document", async () => {
+test("transcript-job-get: GETs /transcript/{jobId} and returns the job document", async () => {
   const body = { status: "completed", content: "hello", lang: "en", availableLangs: ["en"] };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(await job.execute({ jobId: "a/b c" }, ctx), body);
@@ -10,7 +11,7 @@ Deno.test("transcript-job-get: GETs /transcript/{jobId} and returns the job docu
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("transcript-job-get: a failed job is returned with its error; an HTTP 404 is thrown", async () => {
+test("transcript-job-get: a failed job is returned with its error; an HTTP 404 is thrown", async () => {
   const failed = {
     status: "failed",
     error: { error: "internal-error", message: "m", details: "d" },

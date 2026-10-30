@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/voice-cancel.ts";
 
-Deno.test("voice-cancel: PUTs to /voice/{message_id}/cancel", async () => {
+test("voice-cancel: PUTs to /voice/{message_id}/cancel", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {

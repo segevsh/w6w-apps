@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   base64ToBytes,
   buildMultipart,
@@ -8,7 +9,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: isVendorError reads the body, ignores a file record's own error", () => {
+test("client: isVendorError reads the body, ignores a file record's own error", () => {
   assertEquals(isVendorError({ error: "x" }), true);
   assertEquals(isVendorError({ error: "" }), false);
   assertEquals(isVendorError({ file_id: "1", error: "file broke" }), false);
@@ -16,7 +17,7 @@ Deno.test("client: isVendorError reads the body, ignores a file record's own err
   assertEquals(isVendorError("text"), false);
 });
 
-Deno.test("client: HTTP 200 + error throws; non-2xx without JSON error throws with the status", async () => {
+test("client: HTTP 200 + error throws; non-2xx without JSON error throws with the status", async () => {
   const a = mockCtx([{ body: { error: "invalid_api_key" } }]);
   const err = await assertRejects(() =>
     new MillionVerifierClient(a.ctx).request("/bulkapi/stop", { api: "bulk" })
@@ -30,7 +31,7 @@ Deno.test("client: HTTP 200 + error throws; non-2xx without JSON error throws wi
   );
 });
 
-Deno.test("client: base64, list splitting and multipart helpers", () => {
+test("client: base64, list splitting and multipart helpers", () => {
   assertEquals([...base64ToBytes("data:text/plain;base64," + btoa("hi"))], [104, 105]);
   assertEquals(splitList("a@b.com; c@d.com\n e@f.com,"), ["a@b.com", "c@d.com", "e@f.com"]);
   const { body, contentType } = buildMultipart([{

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/events-register.ts";
 
 const sample = { attendance: 501 };
 
-Deno.test("events-register: posts the documented body to /events/8/register", async () => {
+test("events-register: posts the documented body to /events/8/register", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({
     id: 8,
@@ -21,7 +22,7 @@ Deno.test("events-register: posts the documented body to /events/8/register", as
   assertEquals(result.attendance, 501);
 });
 
-Deno.test("events-register: sends only the fields the caller supplied", async () => {
+test("events-register: sends only the fields the caller supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({ id: 8, customer: 12 }, ctx);
   assertEquals(new URL(calls[0].url).search, "");
@@ -30,7 +31,7 @@ Deno.test("events-register: sends only the fields the caller supplied", async ()
   assertEquals(Object.keys(JSON.parse(calls[0].body!)), ["customer"]);
 });
 
-Deno.test("events-register: is idempotent — one attendance per customer per event", () => {
+test("events-register: is idempotent — one attendance per customer per event", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
   assertEquals(action.params!.find((p) => p.key === "customer")!.required, true);

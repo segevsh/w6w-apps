@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   ApolloClient,
   appendQuery,
@@ -9,7 +10,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx, pathOf, queryAllOf, queryOf } from "../_helpers.ts";
 
-Deno.test("compact: drops undefined, null and empty-string values", () => {
+test("compact: drops undefined, null and empty-string values", () => {
   assertEquals(compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }), {
     a: 1,
     e: false,
@@ -17,27 +18,27 @@ Deno.test("compact: drops undefined, null and empty-string values", () => {
   });
 });
 
-Deno.test("toList: splits a comma string and trims", () => {
+test("toList: splits a comma string and trims", () => {
   assertEquals(toList("a, b ,c"), ["a", "b", "c"]);
   assertEquals(toList(["x", "y"]), ["x", "y"]);
   assertEquals(toList(undefined), undefined);
   assertEquals(toList(""), undefined);
 });
 
-Deno.test("appendQuery: an array becomes repeated key[] entries", () => {
+test("appendQuery: an array becomes repeated key[] entries", () => {
   const usp = new URLSearchParams();
   appendQuery(usp, "person_titles", ["CEO", "CTO"]);
   assertEquals(usp.getAll("person_titles[]"), ["CEO", "CTO"]);
 });
 
-Deno.test("appendQuery: a scalar is sent plain, with no bracket suffix", () => {
+test("appendQuery: a scalar is sent plain, with no bracket suffix", () => {
   const usp = new URLSearchParams();
   appendQuery(usp, "q_keywords", "apollo");
   assertEquals(usp.get("q_keywords"), "apollo");
   assertEquals(usp.has("q_keywords[]"), false);
 });
 
-Deno.test("appendQuery: undefined, null and empty string are dropped, not stringified", () => {
+test("appendQuery: undefined, null and empty string are dropped, not stringified", () => {
   const usp = new URLSearchParams();
   appendQuery(usp, "a", undefined);
   appendQuery(usp, "b", null);
@@ -45,7 +46,7 @@ Deno.test("appendQuery: undefined, null and empty string are dropped, not string
   assertEquals(usp.toString(), "");
 });
 
-Deno.test("appendQuery: false and 0 survive — both are meaningful values", () => {
+test("appendQuery: false and 0 survive — both are meaningful values", () => {
   const usp = new URLSearchParams();
   appendQuery(usp, "sort_ascending", false);
   appendQuery(usp, "page", 0);
@@ -53,21 +54,21 @@ Deno.test("appendQuery: false and 0 survive — both are meaningful values", () 
   assertEquals(usp.get("page"), "0");
 });
 
-Deno.test("appendRange: emits key[min] and key[max]", () => {
+test("appendRange: emits key[min] and key[max]", () => {
   const usp = new URLSearchParams();
   appendRange(usp, "revenue_range", { min: 100, max: 200 });
   assertEquals(usp.get("revenue_range[min]"), "100");
   assertEquals(usp.get("revenue_range[max]"), "200");
 });
 
-Deno.test("appendRange: a one-sided range only emits the side that's set", () => {
+test("appendRange: a one-sided range only emits the side that's set", () => {
   const usp = new URLSearchParams();
   appendRange(usp, "revenue_range", { min: 100 });
   assertEquals(usp.get("revenue_range[min]"), "100");
   assertEquals(usp.has("revenue_range[max]"), false);
 });
 
-Deno.test("appendRange: undefined range emits nothing", () => {
+test("appendRange: undefined range emits nothing", () => {
   const usp = new URLSearchParams();
   appendRange(usp, "revenue_range", undefined);
   assertEquals(usp.toString(), "");
@@ -75,7 +76,7 @@ Deno.test("appendRange: undefined range emits nothing", () => {
 
 // --- formatApolloError: the three documented shapes -------------------------
 
-Deno.test("formatApolloError: a 422 JSON {error} body surfaces the message", () => {
+test("formatApolloError: a 422 JSON {error} body surfaces the message", () => {
   const msg = formatApolloError(
     422,
     "POST",
@@ -87,7 +88,7 @@ Deno.test("formatApolloError: a 422 JSON {error} body surfaces the message", () 
   assertEquals(msg.includes("Parameters misconfigured"), true);
 });
 
-Deno.test("formatApolloError: a 429 JSON {message} body surfaces the message", () => {
+test("formatApolloError: a 429 JSON {message} body surfaces the message", () => {
   const msg = formatApolloError(
     429,
     "POST",
@@ -99,7 +100,7 @@ Deno.test("formatApolloError: a 429 JSON {message} body surfaces the message", (
   assertEquals(msg.includes("maximum number of api calls"), true);
 });
 
-Deno.test("formatApolloError: a 401 plain-text body (no JSON at all) is used verbatim", () => {
+test("formatApolloError: a 401 plain-text body (no JSON at all) is used verbatim", () => {
   const msg = formatApolloError(
     401,
     "GET",
@@ -111,7 +112,7 @@ Deno.test("formatApolloError: a 401 plain-text body (no JSON at all) is used ver
   assertEquals(msg.includes("Invalid API key"), true);
 });
 
-Deno.test("formatApolloError: a body with neither error nor message still keeps the raw text", () => {
+test("formatApolloError: a body with neither error nor message still keeps the raw text", () => {
   const msg = formatApolloError(
     500,
     "GET",
@@ -123,14 +124,14 @@ Deno.test("formatApolloError: a body with neither error nor message still keeps 
   assertEquals(msg.includes("oops"), true);
 });
 
-Deno.test("formatApolloError: an empty body produces a bare status line, not a trailing colon", () => {
+test("formatApolloError: an empty body produces a bare status line, not a trailing colon", () => {
   const msg = formatApolloError(500, "GET", "/x", "text/plain", "");
   assertEquals(msg, "Apollo 500 for GET /x");
 });
 
 // --- ApolloClient ------------------------------------------------------------
 
-Deno.test("ApolloClient.get: hits the right host, path and query, with no auth header of its own", async () => {
+test("ApolloClient.get: hits the right host, path and query, with no auth header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { account: { id: "a1" } } }]);
   const body = await new ApolloClient(ctx).get<{ account: { id: string } }>("/accounts/a1", {
     include_credit_usage: true,
@@ -143,7 +144,7 @@ Deno.test("ApolloClient.get: hits the right host, path and query, with no auth h
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("ApolloClient.post: JSON-encodes the body with the right content-type", async () => {
+test("ApolloClient.post: JSON-encodes the body with the right content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { contact: { id: "c1" } } }]);
   await new ApolloClient(ctx).post("/contacts", { body: { first_name: "Ada" } });
   assertEquals(calls[0].method, "POST");
@@ -151,7 +152,7 @@ Deno.test("ApolloClient.post: JSON-encodes the body with the right content-type"
   assertEquals(JSON.parse(calls[0].body!), { first_name: "Ada" });
 });
 
-Deno.test("ApolloClient.post: query and body can both be set on the same request", async () => {
+test("ApolloClient.post: query and body can both be set on the same request", async () => {
   const { ctx, calls } = mockCtx([{ body: { matches: [] } }]);
   await new ApolloClient(ctx).post("/people/bulk_match", {
     query: { reveal_phone_number: true },
@@ -161,7 +162,7 @@ Deno.test("ApolloClient.post: query and body can both be set on the same request
   assertEquals(JSON.parse(calls[0].body!), { details: [{ email: "a@b.com" }] });
 });
 
-Deno.test("ApolloClient: an array query value is sent bracket-form across multiple entries", async () => {
+test("ApolloClient: an array query value is sent bracket-form across multiple entries", async () => {
   const { ctx, calls } = mockCtx([{ body: { people: [] } }]);
   await new ApolloClient(ctx).post("/mixed_people/api_search", {
     query: { person_titles: ["CEO", "CTO"] },
@@ -169,7 +170,7 @@ Deno.test("ApolloClient: an array query value is sent bracket-form across multip
   assertEquals(queryAllOf(calls[0].url, "person_titles[]"), ["CEO", "CTO"]);
 });
 
-Deno.test("ApolloClient: a non-ok response rejects with the formatted error", async () => {
+test("ApolloClient: a non-ok response rejects with the formatted error", async () => {
   const { ctx } = mockCtx([
     { status: 422, body: { error: "Api key required" } },
   ]);
@@ -177,7 +178,7 @@ Deno.test("ApolloClient: a non-ok response rejects with the formatted error", as
   assertEquals(err.message.includes("Api key required"), true, err.message);
 });
 
-Deno.test("ApolloClient: a 204 response resolves to undefined, not a JSON parse error", async () => {
+test("ApolloClient: a 204 response resolves to undefined, not a JSON parse error", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await new ApolloClient(ctx).request("/labels/x", { method: "DELETE" });
   assertEquals(result, undefined);

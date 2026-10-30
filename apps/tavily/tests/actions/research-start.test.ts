@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import researchStart from "../../actions/research-start.ts";
 import { mockCtx, pathOf, rejection } from "../_helpers.ts";
 
-Deno.test("research-start: 201 pending body is returned; schema string is parsed", async () => {
+test("research-start: 201 pending body is returned; schema string is parsed", async () => {
   const queued = { request_id: "r1", status: "pending", model: "mini", created_at: "t" };
   const { ctx, calls } = mockCtx([{ status: 201, body: queued }]);
   const out = await researchStart.execute({
@@ -22,7 +23,7 @@ Deno.test("research-start: 201 pending body is returned; schema string is parsed
   });
 });
 
-Deno.test("research-start: not idempotent, invalid schema JSON fails before a request", async () => {
+test("research-start: not idempotent, invalid schema JSON fails before a request", async () => {
   assertEquals(researchStart.idempotent, false);
   const { ctx, calls } = mockCtx([]);
   const err = await rejection(() =>
@@ -32,6 +33,6 @@ Deno.test("research-start: not idempotent, invalid schema JSON fails before a re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("research-start: stream is not exposed", () => {
+test("research-start: stream is not exposed", () => {
   assertEquals(researchStart.params!.some((p) => p.key === "stream"), false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-asset-upload-job.ts";
 
-Deno.test("get-asset-upload-job: GETs /rest/v1/asset-uploads/{jobId} and unwraps job", async () => {
+test("get-asset-upload-job: GETs /rest/v1/asset-uploads/{jobId} and unwraps job", async () => {
   const { ctx, calls } = mockCtx([{
     body: { job: { id: "job1", status: "success", asset: { id: "A1" } } },
   }]);

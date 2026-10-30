@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/record-count.ts";
 
 const D = { display: { host: "https://nocodb.internal" } };
 
 /** One request instead of four hundred. */
-Deno.test("record-count: asks the count endpoint", async () => {
+test("record-count: asks the count endpoint", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { count: 412 },
@@ -19,7 +20,7 @@ Deno.test("record-count: asks the count endpoint", async () => {
 });
 
 /** Zero is a plausible answer, which is what makes the filter trap quiet here. */
-Deno.test("record-count: a filtered zero gets a second look", async () => {
+test("record-count: a filtered zero gets a second look", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { count: 0 } }], D);
   const result = await action.execute(
     { tableId: "mtbl1", where: "(Status,eq,Nope)" },
@@ -32,13 +33,13 @@ Deno.test("record-count: a filtered zero gets a second look", async () => {
   );
 });
 
-Deno.test("record-count: an unfiltered zero says nothing", async () => {
+test("record-count: an unfiltered zero says nothing", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { count: 0 } }], D);
   await action.execute({ tableId: "mtbl1" }, ctx);
   assertEquals(logs.length, 0);
 });
 
-Deno.test("record-count: refuses a spaced filter", async () => {
+test("record-count: refuses a spaced filter", async () => {
   const { ctx, calls } = mockCtx([], D);
   await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", where: "(A, eq, b)" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomMemberUpdate from "../../actions/room-member-update.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-member-update: PUTs the full member-role lists", async () => {
+test("room-member-update: PUTs the full member-role lists", async () => {
   const result = { admin: [1], member: [2, 3], readonly: [] };
   const { ctx, calls } = mockCtx([{ body: result }]);
   const out = await roomMemberUpdate.execute({
@@ -16,6 +17,6 @@ Deno.test("room-member-update: PUTs the full member-role lists", async () => {
   assertEquals(out, result);
 });
 
-Deno.test("room-member-update: is a full replace — this is documented, not inferred", () => {
+test("room-member-update: is a full replace — this is documented, not inferred", () => {
   assertEquals((roomMemberUpdate.description ?? "").includes("entire member list"), true);
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-comment-replies.ts";
 
-Deno.test("list-comment-replies: GET /c1/replies with the documented query params", async () => {
+test("list-comment-replies: GET /c1/replies with the documented query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "r1", data: [] } }]);
   await action.execute!({ commentId: "c1" }, ctx);
   assertEquals(calls.length, 1);
@@ -18,7 +19,7 @@ Deno.test("list-comment-replies: GET /c1/replies with the documented query param
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("list-comment-replies: surfaces a Graph error body", async () => {
+test("list-comment-replies: surfaces a Graph error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { error: { message: "bad", code: 100 } } }]);
   let msg = "";
   try {

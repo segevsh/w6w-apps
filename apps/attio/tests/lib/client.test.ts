@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_URL,
@@ -14,11 +15,11 @@ import {
   unwrapList,
 } from "../../lib/client.ts";
 
-Deno.test("API_URL: the servers[0].url from both OpenAPI documents, plus /v2", () => {
+test("API_URL: the servers[0].url from both OpenAPI documents, plus /v2", () => {
   assertEquals(API_URL, "https://api.attio.com/v2");
 });
 
-Deno.test("client: GETs with an accept header and no content-type", async () => {
+test("client: GETs with an accept header and no content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: 1 } } }]);
   await new AttioClient(ctx).data("/objects");
   assertEquals(calls[0].method, "GET");
@@ -33,13 +34,13 @@ Deno.test("client: GETs with an accept header and no content-type", async () => 
  * The one guarantee the whole app rests on: nothing in the client builds an
  * `Authorization` header. Only the auth `sign` hook is handed the credential.
  */
-Deno.test("client: never sends an Authorization header of its own", async () => {
+test("client: never sends an Authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await new AttioClient(ctx).list("/objects");
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("client: POSTs JSON with a content-type", async () => {
+test("client: POSTs JSON with a content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: 1 } } }]);
   await new AttioClient(ctx).data("/objects/people/records", {
     method: "POST",
@@ -50,7 +51,7 @@ Deno.test("client: POSTs JSON with a content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { data: { values: { name: "Smith, John" } } });
 });
 
-Deno.test("client: drops undefined, null and empty-string query params", async () => {
+test("client: drops undefined, null and empty-string query params", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await new AttioClient(ctx).list("/tasks", {
     query: { limit: 10, offset: undefined, assignee: null, is_completed: "" },
@@ -64,7 +65,7 @@ Deno.test("client: drops undefined, null and empty-string query params", async (
   assertEquals(url.searchParams.has("is_completed"), false);
 });
 
-Deno.test("client: `false` and `0` survive the query builder", async () => {
+test("client: `false` and `0` survive the query builder", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await new AttioClient(ctx).list("/tasks", { query: { is_completed: false, offset: 0 } });
   const url = new URL(calls[0].url);
@@ -72,20 +73,20 @@ Deno.test("client: `false` and `0` survive the query builder", async () => {
   assertEquals(url.searchParams.get("offset"), "0");
 });
 
-Deno.test("client: `data()` unwraps the envelope", async () => {
+test("client: `data()` unwraps the envelope", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: { id: { record_id: "r1" } } } }]);
   const record = await new AttioClient(ctx).data<{ id: { record_id: string } }>("/x");
   assertEquals(record.id.record_id, "r1");
 });
 
 /** Every delete on this API is a 200 with `{}`, not a 204. */
-Deno.test("client: a 200 with an empty object body is not an error", async () => {
+test("client: a 200 with an empty object body is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await new AttioClient(ctx).request("/notes/n1", { method: "DELETE" });
   assertEquals(out, {});
 });
 
-Deno.test("client: a 204 with no body yields undefined", async () => {
+test("client: a 204 with no body yields undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new AttioClient(ctx).request("/x", { method: "DELETE" }), undefined);
 });
@@ -94,11 +95,11 @@ Deno.test("client: a 204 with no body yields undefined", async () => {
  * ── unwrapList ───────────────────────────────────────────────────────────────
  */
 
-Deno.test("unwrapList: pulls the `data` array out", () => {
+test("unwrapList: pulls the `data` array out", () => {
   assertEquals(unwrapList({ data: [{ a: 1 }, { a: 2 }] }), { records: [{ a: 1 }, { a: 2 }] });
 });
 
-Deno.test("unwrapList: carries `pagination` through untouched when present", () => {
+test("unwrapList: carries `pagination` through untouched when present", () => {
   assertEquals(
     unwrapList({ data: [], pagination: { next_cursor: "opaque-cursor-value-here" } }),
     { records: [], pagination: { next_cursor: "opaque-cursor-value-here" } },
@@ -106,11 +107,11 @@ Deno.test("unwrapList: carries `pagination` through untouched when present", () 
 });
 
 /** An object `data` is wrapped rather than dropped — silently returning [] would lie. */
-Deno.test("unwrapList: an object `data` becomes a one-element list", () => {
+test("unwrapList: an object `data` becomes a one-element list", () => {
   assertEquals(unwrapList({ data: { id: 1 } }), { records: [{ id: 1 }] });
 });
 
-Deno.test("unwrapList: a missing or malformed envelope yields an empty list, never a throw", () => {
+test("unwrapList: a missing or malformed envelope yields an empty list, never a throw", () => {
   assertEquals(unwrapList({}), { records: [] });
   assertEquals(unwrapList(null), { records: [] });
   assertEquals(unwrapList("nope"), { records: [] });
@@ -126,7 +127,7 @@ Deno.test("unwrapList: a missing or malformed envelope yields an empty list, nev
  *   -> {"status_code":401,"type":"auth_error","code":"unauthorized",
  *       "message":"The Authorization header was not provided. …"}
  */
-Deno.test("client: an error message names the status, the type/code and the vendor message", async () => {
+test("client: an error message names the status, the type/code and the vendor message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     statusText: "Unauthorized",
@@ -144,7 +145,7 @@ Deno.test("client: an error message names the status, the type/code and the vend
   assert(err.message.includes("GET /v2/objects"), err.message);
 });
 
-Deno.test("client: a non-JSON error body still produces a usable message", async () => {
+test("client: a non-JSON error body still produces a usable message", async () => {
   const { ctx } = mockCtx([{
     status: 502,
     statusText: "Bad Gateway",
@@ -160,7 +161,7 @@ Deno.test("client: a non-JSON error body still produces a usable message", async
  * The three codes whose remedy is not obvious from Attio's own sentence. Each
  * appends a clause; a code with no clause must append nothing at all.
  */
-Deno.test("explainCode: adds a remedy for the codes that need one", () => {
+test("explainCode: adds a remedy for the codes that need one", () => {
   assert(explainCode("multiple_match_results").includes("unique"));
   assert(explainCode("merge_in_progress").includes("mid-merge"));
   assert(explainCode("quota_exceeded").includes("PLAN limit"));
@@ -169,13 +170,13 @@ Deno.test("explainCode: adds a remedy for the codes that need one", () => {
   assert(explainCode("immutable_value").includes("system-managed"));
 });
 
-Deno.test("explainCode: says nothing for a code that speaks for itself", () => {
+test("explainCode: says nothing for a code that speaks for itself", () => {
   assertEquals(explainCode("not_found"), "");
   assertEquals(explainCode(undefined), "");
   assertEquals(explainCode("some_future_code"), "");
 });
 
-Deno.test("client: a 429 error message survives, since nothing special-cases it", async () => {
+test("client: a 429 error message survives, since nothing special-cases it", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     statusText: "Too Many Requests",
@@ -194,7 +195,7 @@ Deno.test("client: a 429 error message survives, since nothing special-cases it"
  * ── Small helpers ────────────────────────────────────────────────────────────
  */
 
-Deno.test("compact: drops undefined but keeps a deliberate null", () => {
+test("compact: drops undefined but keeps a deliberate null", () => {
   // The distinction is load-bearing on Update Task: `null` clears the deadline,
   // omission leaves it alone.
   assertEquals(compact({ a: 1, b: undefined, c: null, d: false, e: 0 }), {
@@ -205,7 +206,7 @@ Deno.test("compact: drops undefined but keeps a deliberate null", () => {
   });
 });
 
-Deno.test("optionsFrom: turns a tuple into value/label options", () => {
+test("optionsFrom: turns a tuple into value/label options", () => {
   assertEquals(optionsFrom(["asc", "desc"]), [
     { value: "asc", label: "asc" },
     { value: "desc", label: "desc" },
@@ -217,27 +218,27 @@ Deno.test("optionsFrom: turns a tuple into value/label options", () => {
  * query endpoints, 10 on notes — so the hint has to say which, and the maximum
  * has to be enforced where one exists.
  */
-Deno.test("pageParams: states the endpoint's own default and maximum in the hint", () => {
+test("pageParams: states the endpoint's own default and maximum in the hint", () => {
   const [limit] = pageParams({ defaultLimit: NOTES_DEFAULT_LIMIT, maxLimit: NOTES_MAX_LIMIT });
   assert(limit.hint.includes("defaults to 10"), limit.hint);
   assert(limit.hint.includes("maximum is 50"), limit.hint);
   assertEquals((limit.validation as Record<string, unknown>).max, 50);
 });
 
-Deno.test("pageParams: omits a maximum when the endpoint documents none", () => {
+test("pageParams: omits a maximum when the endpoint documents none", () => {
   const [limit] = pageParams({ defaultLimit: QUERY_DEFAULT_LIMIT });
   assert(limit.hint.includes("defaults to 500"), limit.hint);
   assertEquals("max" in limit.validation, false);
 });
 
-Deno.test("pageParams: offset is advanced and starts at zero", () => {
+test("pageParams: offset is advanced and starts at zero", () => {
   const [, offset] = pageParams();
   assertEquals(offset.key, "offset");
   assertEquals(offset.advanced, true);
   assertEquals(offset.validation.min, 0);
 });
 
-Deno.test("documented limits match the spec", () => {
+test("documented limits match the spec", () => {
   assertEquals(QUERY_DEFAULT_LIMIT, 500);
   assertEquals(SEARCH_MAX_LIMIT, 25);
   assertEquals(NOTES_DEFAULT_LIMIT, 10);

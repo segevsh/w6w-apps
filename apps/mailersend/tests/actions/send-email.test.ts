@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/send-email.ts";
 import { bodyOf, exec, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const queued = {
   headers: { "x-message-id": "5e42957d51f1d94a1070a733" },
 };
 
-Deno.test("send-email: POSTs /v1/email and returns the x-message-id header", async () => {
+test("send-email: POSTs /v1/email and returns the x-message-id header", async () => {
   const { ctx, calls } = mockCtx([queued]);
   const out = await exec(action, {
     fromEmail: "hello@example.com",
@@ -37,7 +38,7 @@ Deno.test("send-email: POSTs /v1/email and returns the x-message-id header", asy
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("send-email: accepts bare strings and comma-separated recipients", async () => {
+test("send-email: accepts bare strings and comma-separated recipients", async () => {
   const { ctx, calls } = mockCtx([queued]);
   await exec(action, {
     fromEmail: "a@x.com",
@@ -53,7 +54,7 @@ Deno.test("send-email: accepts bare strings and comma-separated recipients", asy
   assertEquals(b.template_id, "tpl1");
 });
 
-Deno.test("send-email: maps every optional field to its wire name and omits unset ones", async () => {
+test("send-email: maps every optional field to its wire name and omits unset ones", async () => {
   const { ctx, calls } = mockCtx([queued]);
   await exec(action, {
     fromEmail: "a@x.com",
@@ -94,7 +95,7 @@ Deno.test("send-email: maps every optional field to its wire name and omits unse
   });
 });
 
-Deno.test("send-email: reports a paused domain from x-send-paused", async () => {
+test("send-email: reports a paused domain from x-send-paused", async () => {
   const { ctx } = mockCtx([{
     status: 202,
     body: undefined,
@@ -110,7 +111,7 @@ Deno.test("send-email: reports a paused domain from x-send-paused", async () => 
   assertEquals(out.messageId, "m1");
 });
 
-Deno.test("send-email: some-suppressed warnings come back, all-suppressed has a null messageId", async () => {
+test("send-email: some-suppressed warnings come back, all-suppressed has a null messageId", async () => {
   const warnings = [{
     type: "ALL_SUPPRESSED",
     message: "All of the recipients provided have been suppressed.",
@@ -129,7 +130,7 @@ Deno.test("send-email: some-suppressed warnings come back, all-suppressed has a 
   assertEquals(out.warnings, warnings);
 });
 
-Deno.test("send-email: a 422 carries the field errors and the MS code", async () => {
+test("send-email: a 422 carries the field errors and the MS code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {
@@ -148,7 +149,7 @@ Deno.test("send-email: a 422 carries the field errors and the MS code", async ()
   assert(msg.includes("422") && msg.includes("from.email") && msg.includes("#MS42207"), msg);
 });
 
-Deno.test("send-email: a 429 names the retry delay", async () => {
+test("send-email: a 429 names the retry delay", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { message: "Your account reached its rate limit of 120 requests/min. #MS42903" },
@@ -160,7 +161,7 @@ Deno.test("send-email: a 429 names the retry delay", async () => {
   assert(String(err).includes("retry after 42s"));
 });
 
-Deno.test("send-email: is a non-idempotent perform (the API has no idempotency key)", () => {
+test("send-email: is a non-idempotent perform (the API has no idempotency key)", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   assertEquals(action.params!.find((p) => p.key === "to")?.required, true);

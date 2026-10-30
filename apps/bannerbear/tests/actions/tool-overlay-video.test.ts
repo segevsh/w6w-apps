@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolOverlayVideo from "../../actions/tool-overlay-video.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-overlay-video: POST /tools/overlay_video", async () => {
+test("tool-overlay-video: POST /tools/overlay_video", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { uid: "j1", tool: "overlay_video" } }]);
   await toolOverlayVideo.execute(
     {
@@ -21,7 +22,7 @@ Deno.test("tool-overlay-video: POST /tools/overlay_video", async () => {
   });
 });
 
-Deno.test("tool-overlay-video: requires both video URLs", async () => {
+test("tool-overlay-video: requires both video URLs", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() =>
     toolOverlayVideo.execute({ baseVideoUrl: "https://x/base.mp4", overlayVideoUrl: "" }, ctx)

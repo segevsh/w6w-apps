@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 
 import updateContact from "../../actions/update-contact.ts";
 import { API_ROOT, bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("update-contact: PUT /contacts/{id} with the same body shape as create", async () => {
+test("update-contact: PUT /contacts/{id} with the same body shape as create", async () => {
   const { ctx, calls } = mockCtx([{ body: { _id: "c1" } }]);
 
   await updateContact.execute(
@@ -22,7 +23,7 @@ Deno.test("update-contact: PUT /contacts/{id} with the same body shape as create
   });
 });
 
-Deno.test("update-contact: the id is URL-encoded", async () => {
+test("update-contact: the id is URL-encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
 
   await updateContact.execute({ contactId: "a b" }, ctx);
@@ -30,7 +31,7 @@ Deno.test("update-contact: the id is URL-encoded", async () => {
   assertEquals(calls[0].url, `${API_ROOT}/contacts/a%20b`);
 });
 
-Deno.test("update-contact: contactId is required and the action is idempotent", () => {
+test("update-contact: contactId is required and the action is idempotent", () => {
   const param = updateContact.params?.find((p) => p.key === "contactId");
   assertEquals(param?.required, true);
   assertEquals(updateContact.idempotent, true);

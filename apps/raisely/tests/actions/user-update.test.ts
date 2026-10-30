@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userUpdate from "../../actions/user-update.ts";
 import { bodyOf, envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-update: PATCH /v3/users/u-1 with the documented wrapped body", async () => {
+test("user-update: PATCH /v3/users/u-1 with the documented wrapped body", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ uuid: "r-1" }) }]);
   const out = await userUpdate.execute({
     "uuid": "u-1",
@@ -29,18 +30,18 @@ Deno.test("user-update: PATCH /v3/users/u-1 with the documented wrapped body", a
   assertEquals(out, { uuid: "r-1" });
 });
 
-Deno.test("user-update: is a perform action marked idempotent=true", () => {
+test("user-update: is a perform action marked idempotent=true", () => {
   assertEquals(userUpdate.type, "perform");
   assertEquals(userUpdate.idempotent, true);
 });
 
-Deno.test("user-update: only the fields given are sent", async () => {
+test("user-update: only the fields given are sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await userUpdate.execute({ "uuid": "u" }, ctx);
   assertEquals(bodyOf(calls[0]), { "data": {} });
 });
 
-Deno.test("user-update: malformed JSON in a custom-field param fails before any request", async () => {
+test("user-update: malformed JSON in a custom-field param fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -60,7 +61,7 @@ Deno.test("user-update: malformed JSON in a custom-field param fails before any 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("user-update: an HTTP error becomes a readable Raisely error", async () => {
+test("user-update: an HTTP error becomes a readable Raisely error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized", detail: "You must login again" },

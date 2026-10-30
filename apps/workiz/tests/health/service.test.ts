@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -37,13 +38,13 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("service: probes the statuspage host, not status.workiz.com", () => {
+test("service: probes the statuspage host, not status.workiz.com", () => {
   assertEquals(STATUS_URL, "https://workiz.statuspage.io/api/v2/summary.json");
   assertEquals(service.network?.allow, ["workiz.statuspage.io"]);
   assertEquals(service.credential, "none");
 });
 
-Deno.test("service: an all-operational page reports ok", async () => {
+test("service: an all-operational page reports ok", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -52,7 +53,7 @@ Deno.test("service: an all-operational page reports ok", async () => {
   assertEquals(report.message, "All Systems Operational");
 });
 
-Deno.test("service: the api.workiz.com component is reported under its own name", async () => {
+test("service: the api.workiz.com component is reported under its own name", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.components?.api?.message, "api.workiz.com");
@@ -60,20 +61,20 @@ Deno.test("service: the api.workiz.com component is reported under its own name"
 });
 
 /** `group: true` rows are containers whose status mirrors their children. */
-Deno.test("service: group containers are excluded from the component report", async () => {
+test("service: group containers are excluded from the component report", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(Object.keys(report.components ?? {}).length, 4);
   assertEquals("group1" in (report.components ?? {}), false);
 });
 
-Deno.test("service: components are keyed by vendor id", async () => {
+test("service: components are keyed by vendor id", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals("calls" in (report.components ?? {}), true);
 });
 
-Deno.test("service: an incident on one component degrades and names it", async () => {
+test("service: an incident on one component degrades and names it", async () => {
   const body = summary({
     status: { indicator: "major", description: "Partial System Outage" },
     incidents: [{ name: "Elevated API errors", status: "investigating" }],
@@ -90,21 +91,21 @@ Deno.test("service: an incident on one component degrades and names it", async (
 });
 
 /** A status API that itself fails says nothing about Workiz — never `down`. */
-Deno.test("service: a broken status API reports unknown, never down", async () => {
+test("service: a broken status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "nope" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(/Status page returned 500/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "not json", headers: { "content-type": "text/plain" } }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
 /** A redirect or rebrand that pointed this probe at another product's page. */
-Deno.test("service: a page that is no longer Workiz's reports unknown", async () => {
+test("service: a page that is no longer Workiz's reports unknown", async () => {
   const body = summary();
   body.page.url = "https://status.someone-else.example";
   const { ctx } = mockCtx([{ body }]);
@@ -113,13 +114,13 @@ Deno.test("service: a page that is no longer Workiz's reports unknown", async ()
   assert(/self-identifies/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a page with no components reports unknown", async () => {
+test("service: a page with no components reports unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: the indicator rolls the page up when it is stated", () => {
+test("service: the indicator rolls the page up when it is stated", () => {
   assertEquals(mapIndicator("none"), "ok");
   assertEquals(mapIndicator("minor"), "degraded");
   assertEquals(mapIndicator("critical"), "down");
@@ -127,7 +128,7 @@ Deno.test("service: the indicator rolls the page up when it is stated", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: the component vocabulary maps one-to-one", () => {
+test("service: the component vocabulary maps one-to-one", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -136,7 +137,7 @@ Deno.test("service: the component vocabulary maps one-to-one", () => {
   assertEquals(mapComponentStatus("who-knows"), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id and slugs a name as fallback", () => {
+test("service: componentKey prefers the vendor id and slugs a name as fallback", () => {
   assertEquals(componentKey({ id: "abc", name: "API" }, 0), "abc");
   assertEquals(componentKey({ name: "Calls service" }, 3), "calls-service-3");
   assertEquals(componentKey({}, 7), "component-7");

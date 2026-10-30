@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import giftcardBrandList from "../../actions/giftcard-brand-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("giftcard-brand-list: calls GET /api/v2/giftcard-brands-list and shapes the output", async () => {
+test("giftcard-brand-list: calls GET /api/v2/giftcard-brands-list and shapes the output", async () => {
   const { ctx, calls } = mockCtx([{ body: { "brands": [{ "brand_code": "amazonus" }] } }]);
   const out = await giftcardBrandList.execute({} as never, ctx) as Record<string, unknown>;
 
@@ -16,7 +17,7 @@ Deno.test("giftcard-brand-list: calls GET /api/v2/giftcard-brands-list and shape
   assert((out.brands as unknown[]).length === 1, JSON.stringify(out));
 });
 
-Deno.test("giftcard-brand-list: a vendor error surfaces the HTTP status and message", async () => {
+test("giftcard-brand-list: a vendor error surfaces the HTTP status and message", async () => {
   const { ctx } = mockCtx([{ status: 500, body: { "message": "Server Error" } }]);
   const err = await assertRejects(
     () => Promise.resolve(giftcardBrandList.execute({} as never, ctx)),
@@ -25,7 +26,7 @@ Deno.test("giftcard-brand-list: a vendor error surfaces the HTTP status and mess
   assert(err.message.includes("HTTP 500") && err.message.includes("Server Error"), err.message);
 });
 
-Deno.test("giftcard-brand-list: also accepts the bare array the OpenAPI declares", async () => {
+test("giftcard-brand-list: also accepts the bare array the OpenAPI declares", async () => {
   const { ctx } = mockCtx([{ body: [{ brand_code: "amazonus" }] }]);
   const out = await giftcardBrandList.execute({} as never, ctx) as { brands: unknown[] };
   assertEquals(out.brands.length, 1);

@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/ref-create.ts";
 
-Deno.test("ref-create: POSTs the plural git/refs route with a JSON body of ref + sha", async () => {
+test("ref-create: POSTs the plural git/refs route with a JSON body of ref + sha", async () => {
   const { ctx, calls } = mockCtx([{ body: { ref: "refs/heads/main", object: { sha: "abc" } } }]);
   await action.execute({ owner: "acme", repository: "api", branch: "main", fromSha: "abc" }, ctx);
   assertEquals(calls[0].url, "https://api.github.com/repos/acme/api/git/refs");
@@ -10,7 +11,7 @@ Deno.test("ref-create: POSTs the plural git/refs route with a JSON body of ref +
   assertEquals(JSON.parse(calls[0].body!), { ref: "refs/heads/main", sha: "abc" });
 });
 
-Deno.test("ref-create: a branch name containing a slash renders in the body, not the URL", async () => {
+test("ref-create: a branch name containing a slash renders in the body, not the URL", async () => {
   const { ctx, calls } = mockCtx([{
     body: { ref: "refs/heads/feat/x", object: { sha: "abc" } },
   }]);
@@ -22,7 +23,7 @@ Deno.test("ref-create: a branch name containing a slash renders in the body, not
   assertEquals(JSON.parse(calls[0].body!), { ref: "refs/heads/feat/x", sha: "abc" });
 });
 
-Deno.test("ref-create: a dot-segment branch name is refused with no fetch made", () => {
+test("ref-create: a dot-segment branch name is refused with no fetch made", () => {
   const { ctx, calls } = mockCtx([]);
   assertThrows(() =>
     action.execute({ owner: "acme", repository: "api", branch: "..", fromSha: "abc" }, ctx)
@@ -30,7 +31,7 @@ Deno.test("ref-create: a dot-segment branch name is refused with no fetch made",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("ref-create: returns GitHub's envelope verbatim — no top-level sha", async () => {
+test("ref-create: returns GitHub's envelope verbatim — no top-level sha", async () => {
   const { ctx } = mockCtx([{
     body: { ref: "refs/heads/main", object: { sha: "abc", type: "commit" } },
   }]);

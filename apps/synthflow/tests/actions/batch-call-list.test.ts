@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import batchCallList from "../../actions/batch-call-list.ts";
 import { mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
 const PAGE = { total_records: 1, limit: 20, offset: 0 };
 
-Deno.test("batch-call-list: GET /calls/batch -> batch_calls", async () => {
+test("batch-call-list: GET /calls/batch -> batch_calls", async () => {
   const { ctx, calls } = mockCtx([{
     body: ok({ pagination: PAGE, batch_calls: [{ batch_call_id: "b1" }] }),
   }]);

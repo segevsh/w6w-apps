@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const INPUT = { "muralId": "ws12345.1600" };
 
-Deno.test("tag-list: GET /murals/{muralId}/tags", async () => {
+test("tag-list: GET /murals/{muralId}/tags", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "t", "text": "x" }] },
@@ -20,7 +21,7 @@ Deno.test("tag-list: GET /murals/{muralId}/tags", async () => {
   assertEquals((out.items as unknown[]).length, 1);
 });
 
-Deno.test("tag-list: puts no credential on the request (sign owns that)", async () => {
+test("tag-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "value": [{ "id": "t", "text": "x" }] },
@@ -29,7 +30,7 @@ Deno.test("tag-list: puts no credential on the request (sign owns that)", async 
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("tag-list: a vendor error surfaces its own code and message", async () => {
+test("tag-list: a vendor error surfaces its own code and message", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "TOKEN_EXPIRED", message: "Your token has expired." },
@@ -40,7 +41,7 @@ Deno.test("tag-list: a vendor error surfaces its own code and message", async ()
   assertEquals(err.message.includes("Your token has expired."), true);
 });
 
-Deno.test("tag-list: an empty muralId is refused before any request", async () => {
+test("tag-list: an empty muralId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await tagList.execute({ ...INPUT, muralId: "  " as never }, ctx));
   assertEquals(calls.length, 0);

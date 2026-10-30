@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/variable-get.ts";
 
@@ -21,7 +22,7 @@ const value = {
   },
 };
 
-Deno.test("variable-get: checks the device first, then reads the value", async () => {
+test("variable-get: checks the device first, then reads the value", async () => {
   const { ctx, calls } = mockCtx([device(), value]);
   const result = await action.execute(
     { deviceId: ID, variable: "temperature" },
@@ -33,7 +34,7 @@ Deno.test("variable-get: checks the device first, then reads the value", async (
 });
 
 /** A timeout from an unreachable device says nothing useful on its own. */
-Deno.test("variable-get: an offline device is explained rather than left to time out", async () => {
+test("variable-get: an offline device is explained rather than left to time out", async () => {
   const { ctx, calls } = mockCtx([device({ connected: false })]);
   let message = "";
   try {
@@ -48,7 +49,7 @@ Deno.test("variable-get: an offline device is explained rather than left to time
 });
 
 /** A name that is not declared is a 404 that looks like a missing device. */
-Deno.test("variable-get: an undeclared variable names what the firmware does declare", async () => {
+test("variable-get: an undeclared variable names what the firmware does declare", async () => {
   const { ctx, calls } = mockCtx([device()]);
   let message = "";
   try {
@@ -61,14 +62,14 @@ Deno.test("variable-get: an undeclared variable names what the firmware does dec
   assertEquals(calls.length, 1);
 });
 
-Deno.test("variable-get: the check can be skipped, and then there is one call", async () => {
+test("variable-get: the check can be skipped, and then there is one call", async () => {
   const { ctx, calls } = mockCtx([value]);
   await action.execute({ deviceId: ID, variable: "temperature", checkFirst: false }, ctx);
   assertEquals(calls.length, 1);
 });
 
 /** Sensor readings are the caller's data. */
-Deno.test("variable-get: logs the name, never the value", async () => {
+test("variable-get: logs the name, never the value", async () => {
   const { ctx, logs } = mockCtx([device(), {
     status: 200,
     body: { name: "temperature", result: "sensitive-reading", coreInfo: {} },
@@ -78,7 +79,7 @@ Deno.test("variable-get: logs the name, never the value", async () => {
   assertEquals(logs[0].data, { name: "temperature" });
 });
 
-Deno.test("variable-get: a variable name is required", async () => {
+test("variable-get: a variable name is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

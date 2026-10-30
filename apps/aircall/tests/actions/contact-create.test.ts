@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { bodyOf, entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs /v1/contacts with structured channels", async () => {
+test("contact-create: POSTs /v1/contacts with structured channels", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: entityBody("contact", { id: 719 }) }]);
   const out = await contactCreate.execute({
     firstName: "Gary",
@@ -24,7 +25,7 @@ Deno.test("contact-create: POSTs /v1/contacts with structured channels", async (
   assertEquals(out.id, 719);
 });
 
-Deno.test("contact-create: a JSON string of channels is parsed", async () => {
+test("contact-create: a JSON string of channels is parsed", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: entityBody("contact", {}) }]);
   await contactCreate.execute({
     phoneNumbers: JSON.stringify([{ label: "Work", value: "+19001112222" }]),
@@ -33,7 +34,7 @@ Deno.test("contact-create: a JSON string of channels is parsed", async () => {
 });
 
 /** `phone_numbers` is mandatory, and each entry needs BOTH halves. */
-Deno.test("contact-create: no phone number is rejected before the request", async () => {
+test("contact-create: no phone number is rejected before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(contactCreate.execute({ phoneNumbers: [] }, ctx)),
@@ -43,7 +44,7 @@ Deno.test("contact-create: no phone number is rejected before the request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: a channel missing its label names the offending row", async () => {
+test("contact-create: a channel missing its label names the offending row", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -58,7 +59,7 @@ Deno.test("contact-create: a channel missing its label names the offending row",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: an empty emails list is omitted rather than sent", async () => {
+test("contact-create: an empty emails list is omitted rather than sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: entityBody("contact", {}) }]);
   await contactCreate.execute({ phoneNumbers: [{ label: "Work", value: "+1900" }] }, ctx);
   assert(!("emails" in bodyOf(calls[0])), JSON.stringify(bodyOf(calls[0])));

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/feature-flag-list.ts";
 
 const conn = { display: { region: "us", projectId: "999" } };
 
-Deno.test("feature-flag-list: GETs /api/projects/{id}/feature_flags/", async () => {
+test("feature-flag-list: GETs /api/projects/{id}/feature_flags/", async () => {
   const { ctx, calls } = mockCtx(
     [{ body: { count: 0, results: [] } }],
     { connection: conn },
@@ -13,7 +14,7 @@ Deno.test("feature-flag-list: GETs /api/projects/{id}/feature_flags/", async () 
   assertEquals(calls[0].url, "https://us.posthog.com/api/projects/999/feature_flags/");
 });
 
-Deno.test("feature-flag-list: active/archived booleans map to query params", async () => {
+test("feature-flag-list: active/archived booleans map to query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { results: [] } }], { connection: conn });
   await action.execute!({ active: true, archived: false }, ctx);
   const url = new URL(calls[0].url);

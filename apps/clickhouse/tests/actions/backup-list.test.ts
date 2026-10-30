@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/backup-list.ts";
 
@@ -17,7 +18,7 @@ const backups = {
   },
 };
 
-Deno.test("backup-list: reads a service's backups", async () => {
+test("backup-list: reads a service's backups", async () => {
   const { ctx, calls } = mockCtx([backups], D);
   const result = await action.execute({ serviceId: SVC }, ctx) as Record<string, unknown>;
   assert(calls[0].url.endsWith(`/services/${SVC}/backups`), calls[0].url);
@@ -26,7 +27,7 @@ Deno.test("backup-list: reads a service's backups", async () => {
 });
 
 /** A backup in progress is listed and cannot be restored from. */
-Deno.test("backup-list: counts only the finished ones as usable", async () => {
+test("backup-list: counts only the finished ones as usable", async () => {
   const { ctx } = mockCtx([backups], D);
   const result = await action.execute({ serviceId: SVC }, ctx) as Record<string, unknown>;
   assertEquals(result.usableCount, 2);
@@ -35,13 +36,13 @@ Deno.test("backup-list: counts only the finished ones as usable", async () => {
 });
 
 /** A restore provisions a new service, so it is not offered as a button. */
-Deno.test("backup-list: says what restoring actually involves, and offers no restore", () => {
+test("backup-list: says what restoring actually involves, and offers no restore", () => {
   assert(/restoring one provisions a NEW service/.test(action.description!), action.description);
   assert(/DELETED WITH THE SERVICE/.test(action.description!), action.description);
   assertEquals(action.type, "read");
 });
 
-Deno.test("backup-list: a service with no backups is not an error", async () => {
+test("backup-list: a service with no backups is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { result: [] } }], D);
   const result = await action.execute({ serviceId: SVC }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

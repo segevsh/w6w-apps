@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/application-update.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("application-update: PUTs /application/{id} with name always present", async () => {
+test("application-update: PUTs /application/{id} with name always present", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 3, name: "Backup v2" } }], conn);
   await action.execute!({ id: 3, name: "Backup v2", defaultPriority: 2 }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -14,7 +15,7 @@ Deno.test("application-update: PUTs /application/{id} with name always present",
   assertEquals(body.defaultPriority, 2);
 });
 
-Deno.test("application-update: requires name — Gotify's PUT has no partial form", async () => {
+test("application-update: requires name — Gotify's PUT has no partial form", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {

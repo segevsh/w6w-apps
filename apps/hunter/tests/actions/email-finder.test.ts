@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/email-finder.ts";
 
-Deno.test("email-finder: GETs /email-finder with domain + first/last name", async () => {
+test("email-finder: GETs /email-finder with domain + first/last name", async () => {
   const body = envelope({ email: "alexis@reddit.com", score: 97 });
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({
@@ -18,7 +19,7 @@ Deno.test("email-finder: GETs /email-finder with domain + first/last name", asyn
   assertEquals(result, body);
 });
 
-Deno.test("email-finder: forwards linkedinHandle and maxDuration", async () => {
+test("email-finder: forwards linkedinHandle and maxDuration", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await action.execute!({ linkedinHandle: "aohanian", maxDuration: 15 }, ctx);
   const q = queryOf(calls[0].url);

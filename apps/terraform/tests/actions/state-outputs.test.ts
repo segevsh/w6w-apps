@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/state-outputs.ts";
 
@@ -25,7 +26,7 @@ const mixed = stateVersion([
 ]);
 
 /** The outputs are sideloaded siblings, not children of the state version. */
-Deno.test("state-outputs: reads the current state version with its outputs included", async () => {
+test("state-outputs: reads the current state version with its outputs included", async () => {
   const { ctx, calls } = mockCtx([mixed]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   const url = new URL(calls[0].url);
@@ -37,14 +38,14 @@ Deno.test("state-outputs: reads the current state version with its outputs inclu
 });
 
 /** This is the plug-and-play seam: name → value, ready to configure against. */
-Deno.test("state-outputs: returns readable outputs as a plain name-to-value map", async () => {
+test("state-outputs: returns readable outputs as a plain name-to-value map", async () => {
   const { ctx } = mockCtx([mixed]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.outputs, { db_endpoint: "db.internal:5432", instance_count: 3 });
 });
 
 /** A workflow reading `undefined` should be able to tell why it is undefined. */
-Deno.test("state-outputs: a sensitive output is named but its value is not carried", async () => {
+test("state-outputs: a sensitive output is named but its value is not carried", async () => {
   const { ctx } = mockCtx([mixed]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.sensitiveNames, ["db_password"]);
@@ -57,7 +58,7 @@ Deno.test("state-outputs: a sensitive output is named but its value is not carri
   assertEquals("value" in secret, false, "no value key at all, not a null one");
 });
 
-Deno.test("state-outputs: names can be narrowed to the ones a workflow wants", async () => {
+test("state-outputs: names can be narrowed to the ones a workflow wants", async () => {
   const { ctx } = mockCtx([mixed]);
   const result = await action.execute(
     { workspaceId: "ws-1", names: "db_endpoint, missing_one" },
@@ -71,7 +72,7 @@ Deno.test("state-outputs: names can be narrowed to the ones a workflow wants", a
  * Terraform does not know what is secret: a connection string or a generated
  * password that nobody marked comes back in full.
  */
-Deno.test("state-outputs: logs counts only, never a name or a value", async () => {
+test("state-outputs: logs counts only, never a name or a value", async () => {
   const { ctx, logs } = mockCtx([mixed]);
   await action.execute({ workspaceId: "ws-1" }, ctx);
   const data = JSON.stringify(logs[0].data);
@@ -81,7 +82,7 @@ Deno.test("state-outputs: logs counts only, never a name or a value", async () =
   assert(/may still be secrets/.test(action.description!), action.description);
 });
 
-Deno.test("state-outputs: a workspace with no outputs is not an error", async () => {
+test("state-outputs: a workspace with no outputs is not an error", async () => {
   const { ctx } = mockCtx([stateVersion([])]);
   const result = await action.execute({ workspaceId: "ws-1" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
@@ -90,7 +91,7 @@ Deno.test("state-outputs: a workspace with no outputs is not an error", async ()
 });
 
 /** A workspace that has never applied has no state version at all. */
-Deno.test("state-outputs: a workspace with no state surfaces the 404", async () => {
+test("state-outputs: a workspace with no state surfaces the 404", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { errors: [{ title: "not found" }] } }]);
   let message = "";
   try {
@@ -101,7 +102,7 @@ Deno.test("state-outputs: a workspace with no state surfaces the 404", async () 
   assert(/404/.test(message), message);
 });
 
-Deno.test("state-outputs: resolves a workspace named by organisation", async () => {
+test("state-outputs: resolves a workspace named by organisation", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: { id: "ws-5", attributes: { name: "prod" } } } },
     mixed,

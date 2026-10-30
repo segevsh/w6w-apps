@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import collectionChildrenList from "../../actions/collection-children-list.ts";
 import { items, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { items, mockCtx, pathOf } from "../_helpers.ts";
  * unauthenticated probe cannot tell you so — the API answers the same 401 for
  * every path, real or not.
  */
-Deno.test("collection-children-list: uses the vendor's `childrens` spelling", async () => {
+test("collection-children-list: uses the vendor's `childrens` spelling", async () => {
   const { ctx, calls } = mockCtx([{ body: items([{ _id: 1, parent: { $id: 8492393 } }]) }]);
   const out = await collectionChildrenList.execute({}, ctx) as { items: unknown[] };
 
@@ -15,7 +16,7 @@ Deno.test("collection-children-list: uses the vendor's `childrens` spelling", as
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("collection-children-list: an account with no nesting returns an empty array", async () => {
+test("collection-children-list: an account with no nesting returns an empty array", async () => {
   const { ctx } = mockCtx([{ body: items([]) }]);
   assertEquals(await collectionChildrenList.execute({}, ctx), { items: [] });
 });

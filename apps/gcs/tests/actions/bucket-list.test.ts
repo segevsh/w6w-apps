@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/bucket-list.ts";
 
@@ -13,7 +14,7 @@ const page = {
   },
 };
 
-Deno.test("bucket-list: lists a project's buckets", async () => {
+test("bucket-list: lists a project's buckets", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ project: "p1" }, ctx) as Record<string, unknown>;
   const url = new URL(calls[0].url);
@@ -24,7 +25,7 @@ Deno.test("bucket-list: lists a project's buckets", async () => {
 });
 
 /** Measured: the project is validated before the credential. */
-Deno.test("bucket-list: a project is required, and the hint says why", async () => {
+test("bucket-list: a project is required, and the hint says why", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -39,7 +40,7 @@ Deno.test("bucket-list: a project is required, and the hint says why", async () 
 });
 
 /** A service account with no role lists successfully and sees nothing. */
-Deno.test("bucket-list: an empty result is reported as probably a missing role", async () => {
+test("bucket-list: an empty result is reported as probably a missing role", async () => {
   const { ctx, logs } = mockCtx([{ status: 200, body: { items: [] } }]);
   const result = await action.execute({ project: "p1" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);
@@ -48,7 +49,7 @@ Deno.test("bucket-list: an empty result is reported as probably a missing role",
   assert(/no IAM role lists successfully and sees nothing/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("bucket-list: an empty page of a filtered or paged listing does not warn", async () => {
+test("bucket-list: an empty page of a filtered or paged listing does not warn", async () => {
   const filtered = mockCtx([{ status: 200, body: { items: [] } }]);
   await action.execute({ project: "p1", prefix: "temp-" }, filtered.ctx);
   assertEquals(filtered.logs.length, 0);
@@ -59,13 +60,13 @@ Deno.test("bucket-list: an empty page of a filtered or paged listing does not wa
 });
 
 /** With uniform access on, per-object ACLs do not exist at all. */
-Deno.test("bucket-list: counts the buckets where per-object ACLs are disabled", async () => {
+test("bucket-list: counts the buckets where per-object ACLs are disabled", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({ project: "p1" }, ctx) as Record<string, unknown>;
   assertEquals(result.uniformAccessCount, 1);
 });
 
-Deno.test("bucket-list: the page size is clamped", async () => {
+test("bucket-list: the page size is clamped", async () => {
   const { ctx, calls } = mockCtx([page]);
   await action.execute({ project: "p1", maxResults: 9999 }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("maxResults"), "1000");

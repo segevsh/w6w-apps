@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_URL,
@@ -8,12 +9,12 @@ import {
   datasetFromConnection,
 } from "../../lib/client.ts";
 
-Deno.test("client: is pinned to the documented Graph API version", () => {
+test("client: is pinned to the documented Graph API version", () => {
   assertEquals(API_VERSION, "v25.0");
   assertEquals(API_URL, "https://graph.facebook.com/v25.0");
 });
 
-Deno.test("client: builds a GET with query params, dropping empties", async () => {
+test("client: builds a GET with query params, dropping empties", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   await new ConversionsClient(ctx).request("/123", {
     params: { fields: "id,name", after: undefined, q: "" },
@@ -25,7 +26,7 @@ Deno.test("client: builds a GET with query params, dropping empties", async () =
   assertEquals(url.searchParams.get("q"), null);
 });
 
-Deno.test("client: sends a POST body as JSON", async () => {
+test("client: sends a POST body as JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { events_received: 1 } }]);
   await new ConversionsClient(ctx).request("/123/events", {
     method: "POST",
@@ -36,14 +37,14 @@ Deno.test("client: sends a POST body as JSON", async () => {
   assertEquals(calls[0].body, '{"data":[]}');
 });
 
-Deno.test("client: never stamps a credential — not as a header, not in the URL", async () => {
+test("client: never stamps a credential — not as a header, not in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await new ConversionsClient(ctx).request("/me");
   assert(!("authorization" in calls[0].headers));
   assertEquals(new URL(calls[0].url).searchParams.get("access_token"), null);
 });
 
-Deno.test("client: raises Meta's error message, preferring the user-facing one", async () => {
+test("client: raises Meta's error message, preferring the user-facing one", async () => {
   const { ctx } = mockCtx([
     {
       status: 400,
@@ -59,25 +60,25 @@ Deno.test("client: raises Meta's error message, preferring the user-facing one",
   assertEquals(err.message.includes("400"), true);
 });
 
-Deno.test("client: falls back to the raw body when the error is not JSON", async () => {
+test("client: falls back to the raw body when the error is not JSON", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }]);
   const err = await new ConversionsClient(ctx).request("/me").then(() => null, (e: Error) => e);
   assert(err instanceof Error);
   assertEquals(err.message.includes("bad gateway"), true);
 });
 
-Deno.test("datasetFromConnection: prefers the explicit override", () => {
+test("datasetFromConnection: prefers the explicit override", () => {
   const { ctx } = mockCtx();
   assertEquals(datasetFromConnection(ctx.connection, "999"), "999");
   assertEquals(datasetFromConnection(ctx.connection, "  "), "1234567890");
 });
 
-Deno.test("datasetFromConnection: falls back to the connection's stored dataset", () => {
+test("datasetFromConnection: falls back to the connection's stored dataset", () => {
   const { ctx } = mockCtx([], { dataset: { id: "77" } });
   assertEquals(datasetFromConnection(ctx.connection), "77");
 });
 
-Deno.test("datasetFromConnection: explains what to do when there is no dataset anywhere", () => {
+test("datasetFromConnection: explains what to do when there is no dataset anywhere", () => {
   const { ctx } = mockCtx([], { dataset: null, auth: "oauth2" });
   assertThrows(
     () => datasetFromConnection(ctx.connection),
@@ -87,7 +88,7 @@ Deno.test("datasetFromConnection: explains what to do when there is no dataset a
   assertThrows(() => datasetFromConnection(undefined), Error, "No dataset (pixel) id");
 });
 
-Deno.test("asJsonValue: passes objects through and parses strings", () => {
+test("asJsonValue: passes objects through and parses strings", () => {
   assertEquals(asJsonValue({ a: 1 }, "X"), { a: 1 });
   assertEquals(asJsonValue('{"a":1}', "X"), { a: 1 });
   assertEquals(asJsonValue(undefined, "X"), undefined);

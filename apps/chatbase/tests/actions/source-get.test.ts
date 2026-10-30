@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sourceGet from "../../actions/source-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("source-get: GET .../sources/{id}", async () => {
+test("source-get: GET .../sources/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "s1", type: "text", status: "trained" } }]);
   const out = await sourceGet.execute({ agentId: "a1", sourceId: "s1" }, ctx) as { status: string };
 

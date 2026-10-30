@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import fontDelete from "../../actions/font-delete.ts";
 import { errorBody, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("font-delete: force passes force=1; a 409 surfaces the vendor message", async () => {
+test("font-delete: force passes force=1; a 409 surfaces the vendor message", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   assertEquals(await fontDelete.execute({ uuid: "f1", force: true }, ctx), {
     uuid: "f1",

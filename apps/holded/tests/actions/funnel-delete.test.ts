@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import funnelDelete from "../../actions/funnel-delete.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("funnel-delete: metadata — idempotent", () => {
+test("funnel-delete: metadata — idempotent", () => {
   assertEquals(funnelDelete.type, "perform");
   assertEquals(funnelDelete.idempotent, true);
 });
 
-Deno.test("funnel-delete: DELETE /funnels/{funnelId}, no body", async () => {
+test("funnel-delete: DELETE /funnels/{funnelId}, no body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: writeResult("Successfully deleted", "f1"),

@@ -6,8 +6,9 @@
  *     { status: 200, body: { success: true, data: {} } },
  *   ]);
  *   const result = await action.execute({ ... }, ctx);
- *   assertEquals(calls[0].url, "https://api.p.2chat.io/open/users");
+ *   assert.deepStrictEqual(calls[0].url, "https://api.p.2chat.io/open/users");
  */
+import assert from "node:assert/strict";
 import type { HookContext } from "@w6w/types";
 
 export interface MockResponse {
@@ -88,4 +89,19 @@ export function mockCtx(responses: MockResponse[] = []): MockCtx {
   };
 
   return { ctx, calls, logs };
+}
+
+/**
+ * Await a call that must reject with an `Error`, and return that error so the
+ * test can inspect its message (the `assertRejects(fn, Error)` of the Deno
+ * suite, which returned the caught error too).
+ */
+export async function rejects(fn: () => Promise<unknown>): Promise<Error> {
+  try {
+    await fn();
+  } catch (e) {
+    assert.ok(e instanceof Error, `expected an Error, got ${String(e)}`);
+    return e;
+  }
+  assert.fail("expected the call to reject, but it resolved");
 }

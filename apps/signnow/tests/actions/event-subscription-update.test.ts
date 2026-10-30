@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSubscriptionUpdate from "../../actions/event-subscription-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-subscription-update: PUTs to /api/v2/events/{id}", async () => {
+test("event-subscription-update: PUTs to /api/v2/events/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "sub-1" } }]);
   const out = await eventSubscriptionUpdate.execute(
     {

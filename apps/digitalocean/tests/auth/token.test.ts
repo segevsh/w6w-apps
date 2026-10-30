@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/token.ts";
 
@@ -16,7 +17,7 @@ const account = (attributes: Record<string, unknown> = {}) => ({
   },
 });
 
-Deno.test("token: signs as a bearer", () => {
+test("token: signs as a bearer", () => {
   const request = {
     url: "https://api.digitalocean.com/v2/account",
     headers: {} as Record<string, string>,
@@ -30,7 +31,7 @@ Deno.test("token: signs as a bearer", () => {
 });
 
 /** Listing works for a read-only token, so the test cannot tell them apart. */
-Deno.test("token: the test says what it cannot determine", async () => {
+test("token: the test says what it cannot determine", async () => {
   const { ctx, calls } = mockCtx([account()]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(calls[0].url, "https://api.digitalocean.com/v2/account");
@@ -43,7 +44,7 @@ Deno.test("token: the test says what it cannot determine", async () => {
 });
 
 /** A locked account authenticates and refuses everything else. */
-Deno.test("token: an inactive account fails the test with the reason", async () => {
+test("token: an inactive account fails the test with the reason", async () => {
   const { ctx } = mockCtx([account({ status: "locked" })]);
   const result = await auth.test!({ credential: cred } as never, ctx);
   assertEquals(result.ok, false);
@@ -51,7 +52,7 @@ Deno.test("token: an inactive account fails the test with the reason", async () 
   assert(/the token works/.test(result.message!), result.message);
 });
 
-Deno.test("token: a rejected token surfaces the explanation", async () => {
+test("token: a rejected token surfaces the explanation", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { id: "unauthorized", message: "Unable to authenticate you" },
@@ -61,7 +62,7 @@ Deno.test("token: a rejected token surfaces the explanation", async () => {
   assert(/scoped read-only/.test(result.message!), result.message);
 });
 
-Deno.test("token: a missing token or an unreachable API fails cleanly", async () => {
+test("token: a missing token or an unreachable API fails cleanly", async () => {
   const none = mockCtx([]);
   assertEquals((await auth.test!({ credential: {} } as never, none.ctx)).ok, false);
   assertEquals(none.calls.length, 0);
@@ -73,7 +74,7 @@ Deno.test("token: a missing token or an unreachable API fails cleanly", async ()
   assertEquals((await auth.test!({ credential: cred } as never, offline)).ok, false);
 });
 
-Deno.test("token: afterConnect records the account and its droplet limit", async () => {
+test("token: afterConnect records the account and its droplet limit", async () => {
   const { ctx } = mockCtx([account()]);
   const display = await auth.afterConnect!({ credential: cred }, ctx) as Record<string, unknown>;
   assertEquals(display.email, "ops@example.com");
@@ -82,13 +83,13 @@ Deno.test("token: afterConnect records the account and its droplet limit", async
   assertEquals("token" in display, false);
 });
 
-Deno.test("token: afterConnect survives the call failing", async () => {
+test("token: afterConnect survives the call failing", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: cred }, ctx), {});
 });
 
 /** There is no per-resource scoping on a personal access token. */
-Deno.test("token: says the token is the whole account", () => {
+test("token: says the token is the whole account", () => {
   assert(/carries the WHOLE account/.test(auth.description!), auth.description);
   assert(/READ-ONLY token is indistinguishable/.test(auth.description!), auth.description);
   const field = auth.fields!.find((f) => f.key === "token")!;

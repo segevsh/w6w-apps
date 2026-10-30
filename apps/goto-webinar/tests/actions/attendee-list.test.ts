@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import attendeeList from "../../actions/attendee-list.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("attendee-list: unwraps _embedded.attendeeParticipationResponses", async () => {
+test("attendee-list: unwraps _embedded.attendeeParticipationResponses", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{ body: { _embedded: { attendeeParticipationResponses: [{ registrantKey: 1 }] } } }],
     "org-1",
@@ -12,7 +13,7 @@ Deno.test("attendee-list: unwraps _embedded.attendeeParticipationResponses", asy
   assertEquals(out.attendees, [{ registrantKey: 1 }]);
 });
 
-Deno.test("attendee-list: defaults to an empty array when _embedded is absent", async () => {
+test("attendee-list: defaults to an empty array when _embedded is absent", async () => {
   const { ctx } = mockCtxWithOrganizer([{ body: {} }], "org-1");
   const out = await attendeeList.execute({ webinarKey: "9" }, ctx) as { attendees: unknown[] };
   assertEquals(out.attendees, []);

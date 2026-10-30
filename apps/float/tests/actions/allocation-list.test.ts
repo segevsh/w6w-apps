@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import allocationList from "../../actions/allocation-list.ts";
 import { asListResult, mockCtx, paginationHeaders, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("allocation-list - GETs /tasks (Float's own name for an allocation)", async () => {
+test("allocation-list - GETs /tasks (Float's own name for an allocation)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ task_id: 1 }],

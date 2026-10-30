@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/container-create.ts";
 
 const D = { display: { account: "myaccount" } };
 const created = { status: 201, body: "", headers: { etag: '"0x8D"' } };
 
-Deno.test("container-create: PUTs with restype=container", async () => {
+test("container-create: PUTs with restype=container", async () => {
   const { ctx, calls } = mockCtx([created], D);
   const result = await action.execute({ container: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].method, "PUT");
@@ -15,7 +16,7 @@ Deno.test("container-create: PUTs with restype=container", async () => {
 });
 
 /** Private is the default, and the header is simply absent for it. */
-Deno.test("container-create: sends no public-access header by default", async () => {
+test("container-create: sends no public-access header by default", async () => {
   const { ctx, calls, logs } = mockCtx([created], D);
   const result = await action.execute({ container: "uploads" }, ctx) as Record<string, unknown>;
   assertEquals(calls[0].headers["x-ms-blob-public-access"], undefined);
@@ -24,7 +25,7 @@ Deno.test("container-create: sends no public-access header by default", async ()
 });
 
 /** The difference between private and enumerable is one dropdown. */
-Deno.test("container-create: either public level needs an acknowledgement", async () => {
+test("container-create: either public level needs an acknowledgement", async () => {
   for (const level of ["blob", "container"]) {
     const { ctx, calls } = mockCtx([], D);
     let message = "";
@@ -40,7 +41,7 @@ Deno.test("container-create: either public level needs an acknowledgement", asyn
 });
 
 /** `container` is worse than `blob` and the message says how. */
-Deno.test("container-create: the refusal distinguishes the two levels", async () => {
+test("container-create: the refusal distinguishes the two levels", async () => {
   const listable = mockCtx([], D);
   let message = "";
   try {
@@ -60,7 +61,7 @@ Deno.test("container-create: the refusal distinguishes the two levels", async ()
   assert(/URL is then the only thing protecting it/.test(urlMessage), urlMessage);
 });
 
-Deno.test("container-create: an acknowledged public container is created and warned about", async () => {
+test("container-create: an acknowledged public container is created and warned about", async () => {
   const { ctx, calls, logs } = mockCtx([created], D);
   const result = await action.execute(
     { container: "uploads", publicAccess: "blob", confirmPublic: true },
@@ -73,7 +74,7 @@ Deno.test("container-create: an acknowledged public container is created and war
 });
 
 /** Azure requires C# identifiers and rejects a hyphen. */
-Deno.test("container-create: metadata names are validated before sending", async () => {
+test("container-create: metadata names are validated before sending", async () => {
   const { ctx, calls } = mockCtx([], D);
   let message = "";
   try {
@@ -86,12 +87,12 @@ Deno.test("container-create: metadata names are validated before sending", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("container-create: valid metadata becomes x-ms-meta headers", async () => {
+test("container-create: valid metadata becomes x-ms-meta headers", async () => {
   const { ctx, calls } = mockCtx([created], D);
   await action.execute({ container: "uploads", metadata: '{"uploaded_by":"workflow"}' }, ctx);
   assertEquals(calls[0].headers["x-ms-meta-uploaded_by"], "workflow");
 });
 
-Deno.test("container-create: is not idempotent", () => {
+test("container-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/meeting-import.ts";
 
 const RESPONSE = { success: true, jobId: "job-1", message: "Import started" };
 
-Deno.test("meeting-import: POSTs to /meetings/import with the documented body shape", async () => {
+test("meeting-import: POSTs to /meetings/import with the documented body shape", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const out = await action.execute({
     name: "1:1 John x Sarah",
@@ -25,7 +26,7 @@ Deno.test("meeting-import: POSTs to /meetings/import with the documented body sh
   assertEquals(out, RESPONSE);
 });
 
-Deno.test("meeting-import: omits happenedAt entirely rather than sending an empty string", async () => {
+test("meeting-import: omits happenedAt entirely rather than sending an empty string", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute({ name: "x", url: "https://example.com/rec.mp3" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -34,6 +35,6 @@ Deno.test("meeting-import: omits happenedAt entirely rather than sending an empt
   assertEquals("dryRun" in body, false);
 });
 
-Deno.test("meeting-import: is declared not idempotent — every call starts a new job", () => {
+test("meeting-import: is declared not idempotent — every call starts a new job", () => {
   assertEquals(action.idempotent, false);
 });

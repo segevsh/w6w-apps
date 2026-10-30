@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/env-var-list.ts";
 
-Deno.test("env-var-list: GETs /accounts/{id}/env", async () => {
+test("env-var-list: GETs /accounts/{id}/env", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ key: "API_URL" }] }]);
   const result = await action.execute!({ accountId: "acct1" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("env-var-list: GETs /accounts/{id}/env", async () => {
   assertEquals(result, [{ key: "API_URL" }]);
 });
 
-Deno.test("env-var-list: filters by siteId, context and scope", async () => {
+test("env-var-list: filters by siteId, context and scope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     { accountId: "acct1", siteId: "site1", context: "production", scope: "builds" },
@@ -22,7 +23,7 @@ Deno.test("env-var-list: filters by siteId, context and scope", async () => {
   assertStringIncludes(calls[0].url, "scope=builds");
 });
 
-Deno.test("env-var-list: requires accountId", async () => {
+test("env-var-list: requires accountId", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({}, ctx)), Error, "accountId");
 });

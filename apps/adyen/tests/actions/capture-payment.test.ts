@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import capturePayment from "../../actions/capture-payment.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const INPUT = {
   "reference": "cap-1",
 } as Parameters<typeof capturePayment.execute>[0];
 
-Deno.test("capture-payment: sends POST to the documented path and returns the response", async () => {
+test("capture-payment: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },
@@ -26,7 +27,7 @@ Deno.test("capture-payment: sends POST to the documented path and returns the re
   assertEquals(out, { "pspReference": "9", "status": "received" });
 });
 
-Deno.test("capture-payment: targets the connection's base URL and carries no credential", async () => {
+test("capture-payment: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },
@@ -41,7 +42,7 @@ Deno.test("capture-payment: targets the connection's base URL and carries no cre
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("capture-payment: surfaces Adyen's error code, type and message", async () => {
+test("capture-payment: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -59,7 +60,7 @@ Deno.test("capture-payment: surfaces Adyen's error code, type and message", asyn
   );
 });
 
-Deno.test("capture-payment: sends the invocation id as Idempotency-Key", async () => {
+test("capture-payment: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },
@@ -69,11 +70,11 @@ Deno.test("capture-payment: sends the invocation id as Idempotency-Key", async (
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("capture-payment: declares idempotency as false", () => {
+test("capture-payment: declares idempotency as false", () => {
   assertEquals(capturePayment.idempotent, false);
 });
 
-Deno.test("capture-payment: an explicit merchantAccount beats the connection's", async () => {
+test("capture-payment: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "pspReference": "9", "status": "received" },

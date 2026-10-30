@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import statsAccountGet from "../../actions/stats-account-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("stats-account-get: calls GET /modern/stats/account with the version header", async () => {
+test("stats-account-get: calls GET /modern/stats/account with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await statsAccountGet.execute({} as never, ctx) as Record<string, unknown>;
 
@@ -17,7 +18,7 @@ Deno.test("stats-account-get: calls GET /modern/stats/account with the version h
   assert(out.ok === true);
 });
 
-Deno.test("stats-account-get: surfaces a Wistia error with its code", async () => {
+test("stats-account-get: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },

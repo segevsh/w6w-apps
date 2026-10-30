@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import auth from "../../auth/api-key.ts";
 import { basicPayload } from "../../auth/token.ts";
 import { errorBody, mockCtx, TRANSITION_TOKEN_URL } from "../_helpers.ts";
@@ -9,7 +10,7 @@ function tokenResponse(accessToken = "JWT") {
   return { body: { token_type: "Bearer", access_token: accessToken, expires: "3600" } };
 }
 
-Deno.test("api-key: the key field is a secret and the method names its own sunset", () => {
+test("api-key: the key field is a secret and the method names its own sunset", () => {
   const field = (auth.fields ?? []).find((f) => f.key === "apiKey");
   assertEquals(field?.type, "secret");
   assertEquals(field?.required, true);
@@ -24,7 +25,7 @@ Deno.test("api-key: the key field is a secret and the method names its own sunse
  * the username position with an EMPTY password, so the payload is
  * `base64("key:")`.
  */
-Deno.test("api-key exchange: presents the key as Basic with an empty password", async () => {
+test("api-key exchange: presents the key as Basic with an empty password", async () => {
   const { ctx, calls } = mockCtx([tokenResponse()]);
   const credential = await auth.exchange!({ fields: { apiKey: "harvest-key" } }, ctx) as Record<
     string,
@@ -43,7 +44,7 @@ Deno.test("api-key exchange: presents the key as Basic with an empty password", 
  * this app makes to a Harvest resource carries the API key itself, which is what
  * keeps this method on v3 rather than on the API that is being removed.
  */
-Deno.test("api-key sign: sends the minted token, never the key", () => {
+test("api-key sign: sends the minted token, never the key", () => {
   const request = { url: "https://harvest.greenhouse.io/v3/jobs", method: "GET", headers: {} };
   const signed = auth.sign!(
     { request, credential: { apiKey: "harvest-key", accessToken: "JWT" } },
@@ -53,7 +54,7 @@ Deno.test("api-key sign: sends the minted token, never the key", () => {
   assert(!JSON.stringify(signed).includes("harvest-key"));
 });
 
-Deno.test("api-key exchange: refuses an empty key before spending a request", async () => {
+test("api-key exchange: refuses an empty key before spending a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(auth.exchange!({ fields: {} }, ctx)),
@@ -63,7 +64,7 @@ Deno.test("api-key exchange: refuses an empty key before spending a request", as
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key refresh: re-mints from the stored key", async () => {
+test("api-key refresh: re-mints from the stored key", async () => {
   const { ctx, calls } = mockCtx([tokenResponse("JWT2")]);
   const credential = await auth.refresh!(
     { credential: { apiKey: "harvest-key", accessToken: "OLD" } },
@@ -73,7 +74,7 @@ Deno.test("api-key refresh: re-mints from the stored key", async () => {
   assertEquals(credential.accessToken, "JWT2");
 });
 
-Deno.test("api-key test: a mint plus a clean probe is a pass", async () => {
+test("api-key test: a mint plus a clean probe is a pass", async () => {
   const { ctx, calls } = mockCtx([tokenResponse(), { body: [{ id: 1 }] }]);
   assertEquals(await auth.test({ credential: { apiKey: "k" } }, ctx), { ok: true });
   assertEquals(calls.length, 2);
@@ -84,7 +85,7 @@ Deno.test("api-key test: a mint plus a clean probe is a pass", async () => {
  * to grant only what is needed, so a 403 is a normal configuration rather than a
  * broken key.
  */
-Deno.test("api-key test: an endpoint the key is not permitted on is still a pass", async () => {
+test("api-key test: an endpoint the key is not permitted on is still a pass", async () => {
   const { ctx } = mockCtx([tokenResponse(), { status: 403, body: errorBody("Forbidden") }]);
   const result = await auth.test({ credential: { apiKey: "k" } }, ctx);
   assertEquals(result.ok, true);
@@ -92,7 +93,7 @@ Deno.test("api-key test: an endpoint the key is not permitted on is still a pass
 });
 
 /** The measured rejection body for a wrong key at the transition endpoint. */
-Deno.test("api-key test: a rejected key is reported as a bad key, not an outage", async () => {
+test("api-key test: a rejected key is reported as a bad key, not an outage", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Invalid credentials") }]);
   const result = await auth.test({ credential: { apiKey: "wrong-key" } }, ctx);
   assertEquals(result.ok, false);
@@ -100,7 +101,7 @@ Deno.test("api-key test: a rejected key is reported as a bad key, not an outage"
   assert(!result.message?.includes("wrong-key"), result.message);
 });
 
-Deno.test("api-key test: an empty credential fails without touching the network", async () => {
+test("api-key test: an empty credential fails without touching the network", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,

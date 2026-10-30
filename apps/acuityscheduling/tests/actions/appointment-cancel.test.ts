@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-cancel.ts";
 
-Deno.test("appointment-cancel: PUTs /appointments/{id}/cancel with note and query flags", async () => {
+test("appointment-cancel: PUTs /appointments/{id}/cancel with note and query flags", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42, noShow: false } }]);
   await action.execute(
     { id: 42, cancelNote: "Client requested", admin: true, noEmail: true },
@@ -17,6 +18,6 @@ Deno.test("appointment-cancel: PUTs /appointments/{id}/cancel with note and quer
   assertEquals(body.cancelNote, "Client requested");
 });
 
-Deno.test("appointment-cancel: is marked idempotent", () => {
+test("appointment-cancel: is marked idempotent", () => {
   assertEquals(action.idempotent, true);
 });

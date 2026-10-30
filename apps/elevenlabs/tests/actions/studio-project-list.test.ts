@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import studioProjectList from "../../actions/studio-project-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("studio-project-list: reads every project in one call", async () => {
+test("studio-project-list: reads every project in one call", async () => {
   const body = { projects: [{ project_id: "p1", name: "Chapter One", state: "default" }] };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(await studioProjectList.execute({}, ctx), body);
@@ -10,7 +11,7 @@ Deno.test("studio-project-list: reads every project in one call", async () => {
 });
 
 /** The endpoint declares no query parameters at all — there is nothing to page. */
-Deno.test("studio-project-list: sends no query, because the endpoint accepts none", async () => {
+test("studio-project-list: sends no query, because the endpoint accepts none", async () => {
   const { ctx, calls } = mockCtx([{ body: { projects: [] } }]);
   await studioProjectList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

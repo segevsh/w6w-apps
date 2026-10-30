@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service from "../../health/service.ts";
 
-Deno.test("service: is unsigned and widens egress only to the status host", () => {
+test("service: is unsigned and widens egress only to the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.network?.allow, ["status.pandadoc.com"]);
   // `credential` defaults to "none" for kind "service" — never declared signed.
   assertEquals(service.credential, undefined);
 });
 
-Deno.test("service: maps the Statuspage indicator and namespaces components by group", async () => {
+test("service: maps the Statuspage indicator and namespaces components by group", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -37,7 +38,7 @@ Deno.test("service: maps the Statuspage indicator and namespaces components by g
   assertEquals(Object.keys(report.components ?? {}).length, 3);
 });
 
-Deno.test("service: an ungrouped component keeps its bare slug", async () => {
+test("service: an ungrouped component keeps its bare slug", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -51,14 +52,14 @@ Deno.test("service: an ungrouped component keeps its bare slug", async () => {
   assertEquals(report.components?.["web-application"].state, "ok");
 });
 
-Deno.test("service: major and critical map to down", async () => {
+test("service: major and critical map to down", async () => {
   for (const indicator of ["major", "critical"]) {
     const { ctx } = mockCtx([{ body: { status: { indicator }, components: [] } }]);
     assertEquals((await service.check!({}, ctx)).state, "down", indicator);
   }
 });
 
-Deno.test("service: an unrecognised component status is unknown, not ok", async () => {
+test("service: an unrecognised component status is unknown, not ok", async () => {
   const { ctx } = mockCtx([
     {
       body: {
@@ -70,12 +71,12 @@ Deno.test("service: an unrecognised component status is unknown, not ok", async 
   assertEquals((await service.check!({}, ctx)).components?.api.state, "unknown");
 });
 
-Deno.test("service: a failing status API reports unknown, never down", async () => {
+test("service: a failing status API reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "oops" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: an unrecognised indicator reports unknown", async () => {
+test("service: an unrecognised indicator reports unknown", async () => {
   const { ctx } = mockCtx([{ body: { status: { indicator: "wat" } } }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });

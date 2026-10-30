@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-channel.ts";
 
-Deno.test("create-channel: POSTs /guilds/{id}/channels with name + default type=0", async () => {
+test("create-channel: POSTs /guilds/{id}/channels with name + default type=0", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "chan-1" } }]);
   await action.execute!({ guildId: "g1", name: "new-channel" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -12,7 +13,7 @@ Deno.test("create-channel: POSTs /guilds/{id}/channels with name + default type=
   assertEquals(body.type, 0);
 });
 
-Deno.test("create-channel: forwards optional fields with snake_case keys", async () => {
+test("create-channel: forwards optional fields with snake_case keys", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "chan-2" } }]);
   await action.execute!(
     {

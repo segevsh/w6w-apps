@@ -1,19 +1,20 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
-Deno.test("index: declares one auth method and the expected action/health-check counts", () => {
+test("index: declares one auth method and the expected action/health-check counts", () => {
   assertEquals(app.auth?.length, 1);
   assertEquals(app.auth?.[0].key, "api-key");
   assertEquals(app.actions.length, 14);
   assertEquals(app.healthChecks?.length, 2);
 });
 
-Deno.test("index: every action key is unique", () => {
+test("index: every action key is unique", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
 });
 
-Deno.test("index: every action has a title, type and execute hook", () => {
+test("index: every action has a title, type and execute hook", () => {
   for (const action of app.actions) {
     assertEquals(typeof action.title, "string");
     assertEquals(typeof action.type, "string");
@@ -21,12 +22,12 @@ Deno.test("index: every action has a title, type and execute hook", () => {
   }
 });
 
-Deno.test("index: health checks are keyed service and quota", () => {
+test("index: health checks are keyed service and quota", () => {
   const keys = app.healthChecks?.map((h) => h.key);
   assertEquals(keys, ["service", "quota"]);
 });
 
-Deno.test("index: no param is buried in a `group` the studio renders as JSON", () => {
+test("index: no param is buried in a `group` the studio renders as JSON", () => {
   // `ParamsForm` routes `type: "group"` to the JSON editor, so a group's
   // children never render as fields — the defect that made SendGrid look like
   // it had no CC/BCC. Sections are layout-only and render their children as

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeEntryArchive from "../../actions/time-entry-archive.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("time-entry-archive: soft-deletes via PATCH status Archived on the plain path", async () => {
+test("time-entry-archive: soft-deletes via PATCH status Archived on the plain path", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await timeEntryArchive.execute({ timeEntryId: "t1" }, ctx) as { ok: boolean };
   assertEquals(pathOf(calls[0].url), "/v1/TimeEntries/t1");

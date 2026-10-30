@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksScoreProfileGet from "../../actions/backlinks-score-profile-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-score-profile-get: GETs the score distribution and unwraps data", async () => {
+test("backlinks-score-profile-get: GETs the score distribution and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([{ domain_score: 0, domains_count: 12 }, {
@@ -28,7 +29,7 @@ Deno.test("backlinks-score-profile-get: GETs the score distribution and unwraps 
  * `filter` for this endpoint — its row set is fixed by the 0-100 score range.
  * Exposing one anyway would be inventing a parameter.
  */
-Deno.test("backlinks-score-profile-get: exposes only url and scope", () => {
+test("backlinks-score-profile-get: exposes only url and scope", () => {
   assertEquals(
     backlinksScoreProfileGet.params?.map((p) => p.key),
     ["url", "scope"],

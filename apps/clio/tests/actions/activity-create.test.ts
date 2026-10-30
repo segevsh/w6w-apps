@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import activityCreate from "../../actions/activity-create.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("activity-create: POSTs a TimeEntry with quantity in the field named for seconds", async () => {
+test("activity-create: POSTs a TimeEntry with quantity in the field named for seconds", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ id: 1 }) }]);
   await activityCreate.execute(
     { type: "TimeEntry", date: "2026-08-24", matterId: 3, quantitySeconds: 5400, note: "Drafting" },
@@ -15,6 +16,6 @@ Deno.test("activity-create: POSTs a TimeEntry with quantity in the field named f
   assertEquals(body.note, "Drafting");
 });
 
-Deno.test("activity-create: is declared non-idempotent", () => {
+test("activity-create: is declared non-idempotent", () => {
   assertEquals(activityCreate.idempotent, false);
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockZohoCtx } from "../_helpers.ts";
 import action from "../../actions/lead-list.ts";
 
-Deno.test("lead-list: GETs /Leads with the field list and paging params", async () => {
+test("lead-list: GETs /Leads with the field list and paging params", async () => {
   const { ctx, calls } = mockZohoCtx([{ body: { data: [{ id: "1" }], info: { count: 1 } } }]);
   const out = await action.execute({
     fields: "id,Last_Name",

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import update from "../../actions/data-record-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("data-record-update: PUTs { data } to the record path", async () => {
+test("data-record-update: PUTs { data } to the record path", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "rec_1" } }]);
   await update.execute({ tableKey: "products", recordId: "rec_1", data: { price: 39.99 } }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -10,7 +11,7 @@ Deno.test("data-record-update: PUTs { data } to the record path", async () => {
   assertEquals(JSON.parse(calls[0].body!), { data: { price: 39.99 } });
 });
 
-Deno.test("data-record-update: an empty data object is refused locally", async () => {
+test("data-record-update: an empty data object is refused locally", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(update.execute({ tableKey: "t", recordId: "r", data: {} }, ctx)),

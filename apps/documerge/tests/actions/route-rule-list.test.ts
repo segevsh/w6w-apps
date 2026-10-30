@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import routeRuleList from "../../actions/route-rule-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("route-rule-list: GET /api/routes/{routeId}/rules", async () => {
+test("route-rule-list: GET /api/routes/{routeId}/rules", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await routeRuleList.execute({ "routeId": 13 } as never, ctx);
   assertEquals(calls[0].method, "GET");
@@ -11,7 +12,7 @@ Deno.test("route-rule-list: GET /api/routes/{routeId}/rules", async () => {
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("route-rule-list: a vendor error surfaces its own message", async () => {
+test("route-rule-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () => Promise.resolve(routeRuleList.execute({ "routeId": 13 } as never, ctx)),

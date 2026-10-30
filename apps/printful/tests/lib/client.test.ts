@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   errorText,
@@ -9,33 +10,33 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: seg encodes, buildQuery skips empties", () => {
+test("client: seg encodes, buildQuery skips empties", () => {
   assertEquals(seg("@a b"), "%40a%20b");
   assertEquals(buildQuery({ a: 1, b: "", c: undefined, d: false }), "?a=1&d=false");
   assertEquals(buildQuery(undefined), "");
 });
 
-Deno.test("client: jsonValue parses text and passes through the rest", () => {
+test("client: jsonValue parses text and passes through the rest", () => {
   assertEquals(jsonValue('{"a":1}'), { a: 1 });
   assertEquals(jsonValue("  "), undefined);
   assertEquals(jsonValue("nope"), "nope");
   assertEquals(jsonValue([1]), [1]);
 });
 
-Deno.test("client: typeList takes arrays, JSON text and comma text", () => {
+test("client: typeList takes arrays, JSON text and comma text", () => {
   assertEquals(typeList(["a", "b"]), ["a", "b"]);
   assertEquals(typeList('["a","b"]'), ["a", "b"]);
   assertEquals(typeList("a, b,,"), ["a", "b"]);
   assertEquals(typeList(""), undefined);
 });
 
-Deno.test("client: errorText prefers error.reason/message, then result text, then raw", () => {
+test("client: errorText prefers error.reason/message, then result text, then raw", () => {
   assertEquals(errorText({ error: { reason: "R", message: "M" } }), "R: M");
   assertEquals(errorText({ result: "plain" }), "plain");
   assertEquals(errorText(undefined, "  raw body "), "raw body");
 });
 
-Deno.test("client: send unwraps result and paging, request returns result", async () => {
+test("client: send unwraps result and paging, request returns result", async () => {
   const { ctx } = mockCtx([{
     body: { code: 200, result: [{ id: 1 }], paging: { total: 1, offset: 0, limit: 1 } },
   }]);
@@ -43,12 +44,12 @@ Deno.test("client: send unwraps result and paging, request returns result", asyn
   assertEquals(out, { items: [{ id: 1 }], paging: { total: 1, offset: 0, limit: 1 } });
 });
 
-Deno.test("client: a non-array list result becomes an empty list", async () => {
+test("client: a non-array list result becomes an empty list", async () => {
   const { ctx } = mockCtx([{ body: { code: 200, result: {} } }]);
   assertEquals(await new PrintfulClient(ctx).list("/orders"), { items: [] });
 });
 
-Deno.test("client: a non-JSON failure reports the raw text", async () => {
+test("client: a non-JSON failure reports the raw text", async () => {
   const { ctx } = mockCtx([{ status: 502, headers: {}, body: "Bad gateway" }]);
   await assertRejects(
     async () => await new PrintfulClient(ctx).request("GET", "/x"),
@@ -57,7 +58,7 @@ Deno.test("client: a non-JSON failure reports the raw text", async () => {
   );
 });
 
-Deno.test("client: a JSON body is sent with a content-type", async () => {
+test("client: a JSON body is sent with a content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { code: 200, result: {} } }]);
   await new PrintfulClient(ctx).request("POST", "/files", { body: { url: "u" } });
   assertEquals(calls[0].headers["content-type"], "application/json");

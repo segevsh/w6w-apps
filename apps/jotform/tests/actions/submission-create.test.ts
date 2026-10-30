@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-create.ts";
 
-Deno.test("submission-create: POSTs form-encoded submission[...] fields", async () => {
+test("submission-create: POSTs form-encoded submission[...] fields", async () => {
   const { ctx, calls, logs } = mockCtx([
     {
       body: envelope({
@@ -29,12 +30,12 @@ Deno.test("submission-create: POSTs form-encoded submission[...] fields", async 
   assertEquals(logs[0].level, "info");
 });
 
-Deno.test("submission-create: is not idempotent — each POST mints a new submission", () => {
+test("submission-create: is not idempotent — each POST mints a new submission", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("submission-create: rejects a nested-object answer before calling out", async () => {
+test("submission-create: rejects a nested-object answer before calling out", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ formId: "1", answers: { "2": { first: "x" } } }, ctx),

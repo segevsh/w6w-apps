@@ -1,15 +1,16 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/rate-list-for-shipment.ts";
 
-Deno.test("rate-list-for-shipment: GETs /v2/shipments/:id/rates", async () => {
+test("rate-list-for-shipment: GETs /v2/shipments/:id/rates", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!({ shipmentId: "se-1" }, ctx);
   assertEquals(calls[0].url, "https://api.shipstation.com/v2/shipments/se-1/rates");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("rate-list-for-shipment: flattens rates across every rate-result entry, sorted", async () => {
+test("rate-list-for-shipment: flattens rates across every rate-result entry, sorted", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: [
@@ -25,7 +26,7 @@ Deno.test("rate-list-for-shipment: flattens rates across every rate-result entry
   assertEquals(result.cheapestRate.rate_id, "r2");
 });
 
-Deno.test("rate-list-for-shipment: requires shipmentId", async () => {
+test("rate-list-for-shipment: requires shipmentId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "shipmentId");
   assertEquals(calls.length, 0);

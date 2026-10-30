@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-task.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-task: sends the documented request and maps the answer", async () => {
+test("get-task: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "id": "11111111-1111-4111-8111-111111111111",
@@ -31,7 +32,7 @@ Deno.test("get-task: sends the documented request and maps the answer", async ()
   });
 });
 
-Deno.test("get-task: a 401 surfaces Runway's error text", async () => {
+test("get-task: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },
@@ -43,7 +44,7 @@ Deno.test("get-task: a 401 surfaces Runway's error text", async () => {
   );
 });
 
-Deno.test("get-task: RUNNING is not done; FAILED carries the failure code", async () => {
+test("get-task: RUNNING is not done; FAILED carries the failure code", async () => {
   const running = mockCtx([{
     body: { id: "t", status: "RUNNING", progress: 0.4, estimatedCost: { credits: 20 } },
   }]);

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionCreate from "../../actions/transaction-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("transaction-create: sends every input as body", async () => {
+test("transaction-create: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await transactionCreate.execute(
     {
@@ -33,7 +34,7 @@ Deno.test("transaction-create: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("transaction-create: omits every unset optional", async () => {
+test("transaction-create: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await transactionCreate.execute({ "value": 49.5 } as never, ctx);
 
@@ -42,7 +43,7 @@ Deno.test("transaction-create: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("transaction-create: declares a perform action's idempotency", () => {
+test("transaction-create: declares a perform action's idempotency", () => {
   assertEquals(transactionCreate.type, "perform");
   assertEquals(transactionCreate.idempotent, false);
   assertEquals(transactionCreate.params!.filter((p) => p.required).map((p) => p.key), ["value"]);

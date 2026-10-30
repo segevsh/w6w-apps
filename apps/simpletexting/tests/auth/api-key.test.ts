@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import apiKey, { authHeaders, PROBE_PATH } from "../../auth/api-key.ts";
 import { API_ROOT, mockCtx, problem } from "../_helpers.ts";
@@ -12,7 +13,7 @@ const CREDENTIAL = { apiKey: "st-token-abc123" };
  * scheme, but a token sent without the scheme is rejected as an INVALID token,
  * which reads as "your key is wrong" rather than "your header is wrong".
  */
-Deno.test("api-key: sign stamps an Authorization header with the Bearer scheme", () => {
+test("api-key: sign stamps an Authorization header with the Bearer scheme", () => {
   const request = {
     url: "https://api-app2.simpletexting.com/v2/api/tenant",
     method: "GET",
@@ -29,7 +30,7 @@ Deno.test("api-key: sign stamps an Authorization header with the Bearer scheme",
   assertEquals(signed.url.includes("st-token-abc123"), false);
 });
 
-Deno.test("api-key: declares the apiKey scheme the document declares, header and prefix", () => {
+test("api-key: declares the apiKey scheme the document declares, header and prefix", () => {
   assertEquals(apiKey.type, "apiKey");
   assertEquals(apiKey.apiKey, { in: "header", name: "Authorization", prefix: "Bearer " });
   for (const field of apiKey.fields ?? []) {
@@ -40,11 +41,11 @@ Deno.test("api-key: declares the apiKey scheme the document declares, header and
 
 // --- the probe --------------------------------------------------------------
 
-Deno.test("api-key: the probe is the tenant endpoint, with no parameters", () => {
+test("api-key: the probe is the tenant endpoint, with no parameters", () => {
   assertEquals(PROBE_PATH, "/api/tenant");
 });
 
-Deno.test("api-key: a 200 with a TenantInfo object is a live credential", async () => {
+test("api-key: a 200 with a TenantInfo object is a live credential", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { email: "owner@example.com" } }]);
   const result = await apiKey.test({ credential: CREDENTIAL }, ctx);
 
@@ -56,7 +57,7 @@ Deno.test("api-key: a 200 with a TenantInfo object is a live credential", async 
 /**
  * HTTP 200 is not the answer: the endpoint has to answer its documented shape.
  */
-Deno.test("api-key: a 200 without a JSON object is not treated as a live credential", async () => {
+test("api-key: a 200 without a JSON object is not treated as a live credential", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>hello</html>" }]);
   const result = await apiKey.test({ credential: CREDENTIAL }, ctx);
   assertEquals(result.ok, false);
@@ -68,7 +69,7 @@ Deno.test("api-key: a 200 without a JSON object is not treated as a live credent
  * thing that separates them — verified live on 2026-09-22. The messages must not
  * be interchangeable: one means "reconnect", the other "re-mint".
  */
-Deno.test("api-key: 401 ERR_AUTH_TOKEN_INVALID is a rejected token", async () => {
+test("api-key: 401 ERR_AUTH_TOKEN_INVALID is a rejected token", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -81,7 +82,7 @@ Deno.test("api-key: 401 ERR_AUTH_TOKEN_INVALID is a rejected token", async () =>
   assert(result.message!.includes("rejected"), result.message);
 });
 
-Deno.test("api-key: 401 ERR_AUTH_TOKEN_MISSING is a credential that never arrived", async () => {
+test("api-key: 401 ERR_AUTH_TOKEN_MISSING is a credential that never arrived", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: problem("ERR_AUTH_TOKEN_MISSING", "Auth token is missing") },
   ]);
@@ -92,7 +93,7 @@ Deno.test("api-key: 401 ERR_AUTH_TOKEN_MISSING is a credential that never arrive
 });
 
 /** An unrecognised 401 body is still a credential statement, not an outage. */
-Deno.test("api-key: an undocumented 401 body is reported as a credential rejection", async () => {
+test("api-key: an undocumented 401 body is reported as a credential rejection", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "<html>401</html>" }]);
   const result = await apiKey.test({ credential: CREDENTIAL }, ctx);
   assertEquals(result.ok, false);
@@ -101,7 +102,7 @@ Deno.test("api-key: an undocumented 401 body is reported as a credential rejecti
 });
 
 /** A server error says nothing about the credential, and the message must not pretend otherwise. */
-Deno.test("api-key: a 5xx is reported as a status, not as a bad token", async () => {
+test("api-key: a 5xx is reported as a status, not as a bad token", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "<html>maintenance</html>" }]);
   const result = await apiKey.test({ credential: CREDENTIAL }, ctx);
   assertEquals(result.ok, false);
@@ -110,7 +111,7 @@ Deno.test("api-key: a 5xx is reported as a status, not as a bad token", async ()
 });
 
 /** The network-less signer and the network caller are the same credential, in one place. */
-Deno.test("api-key: the probe never echoes the credential back", async () => {
+test("api-key: the probe never echoes the credential back", async () => {
   const secret = "st-super-secret-value";
   const { ctx } = mockCtx([
     { status: 401, body: problem("ERR_AUTH_TOKEN_INVALID", "Tenant not found for provided token") },
@@ -123,7 +124,7 @@ Deno.test("api-key: the probe never echoes the credential back", async () => {
   assert(!calls[0].url.includes(secret), "the credential leaked into the request URL");
 });
 
-Deno.test("api-key: an unreachable host is not a statement about the credential", async () => {
+test("api-key: an unreachable host is not a statement about the credential", async () => {
   let fetched = false;
   const ctx = {
     fetch: () => {
@@ -139,7 +140,7 @@ Deno.test("api-key: an unreachable host is not a statement about the credential"
   assert(result.message!.includes("not a statement about the credential"), result.message);
 });
 
-Deno.test("api-key: a missing token is refused before any request", async () => {
+test("api-key: a missing token is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: { apiKey: "  " } }, ctx);
   assertEquals(result.ok, false);

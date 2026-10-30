@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/add-team-member.ts";
 
-Deno.test("add-team-member: POSTs the aadUserConversationMember binding", async () => {
+test("add-team-member: POSTs the aadUserConversationMember binding", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "m1", userId: "u1" } }]);
   const out = await action.execute({ teamId: "t1", user: "8b081ef6-4792" }, ctx);
 
@@ -17,25 +18,25 @@ Deno.test("add-team-member: POSTs the aadUserConversationMember binding", async 
   assertEquals(out.id, "m1");
 });
 
-Deno.test("add-team-member: a plain member gets an empty roles array, as documented", async () => {
+test("add-team-member: a plain member gets an empty roles array, as documented", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ teamId: "t1", user: "u1", role: "member" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).roles, []);
 });
 
-Deno.test("add-team-member: an owner gets roles: ['owner']", async () => {
+test("add-team-member: an owner gets roles: ['owner']", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ teamId: "t1", user: "u1", role: "owner" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).roles, ["owner"]);
 });
 
-Deno.test("add-team-member: defaults to member when no role is given", async () => {
+test("add-team-member: defaults to member when no role is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ teamId: "t1", user: "u1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).roles, []);
 });
 
-Deno.test("add-team-member: accepts a UPN as well as an object id", async () => {
+test("add-team-member: accepts a UPN as well as an object id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ teamId: "t1", user: "jacob@contoso.com" }, ctx);
   assertEquals(
@@ -44,7 +45,7 @@ Deno.test("add-team-member: accepts a UPN as well as an object id", async () => 
   );
 });
 
-Deno.test("add-team-member: escapes a quote so it cannot break out of the OData literal", async () => {
+test("add-team-member: escapes a quote so it cannot break out of the OData literal", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({ teamId: "t1", user: "o'brien@contoso.com" }, ctx);
   assertEquals(
@@ -53,7 +54,7 @@ Deno.test("add-team-member: escapes a quote so it cannot break out of the OData 
   );
 });
 
-Deno.test("add-team-member: rejects an empty user locally, before any request", async () => {
+test("add-team-member: rejects an empty user locally, before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await action.execute({ teamId: "t1", user: "  " }, ctx)
@@ -62,7 +63,7 @@ Deno.test("add-team-member: rejects an empty user locally, before any request", 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("add-team-member: is honestly non-idempotent — Graph has no dedupe key here", () => {
+test("add-team-member: is honestly non-idempotent — Graph has no dedupe key here", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

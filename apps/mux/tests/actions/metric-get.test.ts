@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/metric-get.ts";
 
-Deno.test("metric-get: asks the Data API for an overall value", async () => {
+test("metric-get: asks the Data API for an overall value", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { value: 1.2 } } }]);
   await action.execute!({ metric: "video_startup_time", timeframe: "24:hours" }, ctx);
   const url = new URL(calls[0].url);
@@ -11,7 +12,7 @@ Deno.test("metric-get: asks the Data API for an overall value", async () => {
 });
 
 /** An overall number rarely says anything; the same number sliced does. */
-Deno.test("metric-get: filters go out as indexed parameters", async () => {
+test("metric-get: filters go out as indexed parameters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!(
     { metric: "rebuffer_percentage", filters: "browser:Chrome, country:GB" },
@@ -22,11 +23,11 @@ Deno.test("metric-get: filters go out as indexed parameters", async () => {
   assertEquals(q.get("filters[1]"), "country:GB");
 });
 
-Deno.test("metric-get: says it needs the Data product", () => {
+test("metric-get: says it needs the Data product", () => {
   assert(/Mux Data product/.test(action.description!), action.description);
 });
 
-Deno.test("metric-get: a missing metric is refused", async () => {
+test("metric-get: a missing metric is refused", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute!({ metric: "" }, ctx), Error, "metric");
 });

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriptionList from "../../actions/subscription-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscription-list: GETs /v2/subscriptions", async () => {
+test("subscription-list: GETs /v2/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{ body: { subscriptions: [{ iden: "s1" }] } }]);
   const out = await subscriptionList.execute({}, ctx) as { subscriptions: unknown[] };
 

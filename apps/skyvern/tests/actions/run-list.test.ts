@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf, queryAll, queryOf } from "../_helpers.ts";
 import runList from "../../actions/run-list.ts";
 
-Deno.test("run-list: sends repeated status/agent keys and page params, wraps the array", async () => {
+test("run-list: sends repeated status/agent keys and page params, wraps the array", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ run_id: "a" }, { run_id: "b" }] }]);
   const out = await runList.execute({
     page: 2,
@@ -22,7 +23,7 @@ Deno.test("run-list: sends repeated status/agent keys and page params, wraps the
   assertEquals(queryOf(calls[0].url).tags, "env:prod");
 });
 
-Deno.test("run-list: no filters sends no query", async () => {
+test("run-list: no filters sends no query", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   assertEquals(await runList.execute({}, ctx), { runs: [], count: 0 });
   assertEquals(new URL(calls[0].url).search, "");

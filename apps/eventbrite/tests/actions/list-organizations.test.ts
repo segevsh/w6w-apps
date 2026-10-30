@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-organizations.ts";
 
-Deno.test("list-organizations: GETs /users/me/organizations/ with page", async () => {
+test("list-organizations: GETs /users/me/organizations/ with page", async () => {
   const body = { organizations: [{ id: "org1" }], pagination: { object_count: 1 } };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ page: 2 }, ctx);
@@ -15,14 +16,14 @@ Deno.test("list-organizations: GETs /users/me/organizations/ with page", async (
   assertEquals(result, body);
 });
 
-Deno.test("list-organizations: omits page when undefined", async () => {
+test("list-organizations: omits page when undefined", async () => {
   const { ctx, calls } = mockCtx([{ body: { organizations: [], pagination: {} } }]);
   await action.execute!({}, ctx);
   const url = new URL(calls[0].url);
   assert(!url.searchParams.has("page"), "page must not be sent when undefined");
 });
 
-Deno.test("list-organizations: userId routes to /users/{id}/organizations/", async () => {
+test("list-organizations: userId routes to /users/{id}/organizations/", async () => {
   const { ctx, calls } = mockCtx([{ body: { organizations: [], pagination: {} } }]);
   await action.execute!({ userId: "u-9" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v3/users/u-9/organizations/");

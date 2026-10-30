@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import activityList from "../../actions/activity-list.ts";
 import { listPage, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("activity-list: hits /activities and returns {count, results}", async () => {
+test("activity-list: hits /activities and returns {count, results}", async () => {
   const { ctx, calls } = mockCtx([{ body: listPage([{ jnid: "n1" }]) }]);
   const out = await activityList.execute({}, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import noteChildrenList from "../../actions/note-children-list.ts";
 import { mockCtx, pathOf, queryOf, slError } from "../_helpers.ts";
 
-Deno.test("note-children-list: GET /v1/notes/n1/children with the documented parameters", async () => {
+test("note-children-list: GET /v1/notes/n1/children with the documented parameters", async () => {
   const response = { notes: [], total: 0, hasNextPage: false, nextCursor: null };
   const { ctx, calls } = mockCtx([{ body: response }]);
   const out = await noteChildrenList.execute({
@@ -26,7 +27,7 @@ Deno.test("note-children-list: GET /v1/notes/n1/children with the documented par
   assertEquals(out, response);
 });
 
-Deno.test("note-children-list: a vendor error surfaces its own message and id", async () => {
+test("note-children-list: a vendor error surfaces its own message and id", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: slError("field-validation", "Validation Failed"),

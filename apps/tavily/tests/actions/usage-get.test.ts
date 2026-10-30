@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import usageGet from "../../actions/usage-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("usage-get: GET /usage returns the body as-is", async () => {
+test("usage-get: GET /usage returns the body as-is", async () => {
   const body = { key: { usage: 1, limit: null }, account: { current_plan: "Free" } };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(await usageGet.execute({}, ctx), body);

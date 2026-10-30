@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
-Deno.test("contact-list: GETs /contacts with organization_id and pagination", async () => {
+test("contact-list: GETs /contacts with organization_id and pagination", async () => {
   const { ctx, calls } = mockInventoryCtx([
     {
       body: {
@@ -24,7 +25,7 @@ Deno.test("contact-list: GETs /contacts with organization_id and pagination", as
 });
 
 /** No pass-through filters: `contact_type`/`search_text` never reach the URL. */
-Deno.test("contact-list: sends no query parameters beyond organization and pagination", async () => {
+test("contact-list: sends no query parameters beyond organization and pagination", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", contacts: [] } },
   ]);
@@ -33,7 +34,7 @@ Deno.test("contact-list: sends no query parameters beyond organization and pagin
   assertEquals(keys, ["organization_id"]);
 });
 
-Deno.test("contact-list: an explicit organizationId beats the connection default", async () => {
+test("contact-list: an explicit organizationId beats the connection default", async () => {
   const { ctx, calls } = mockInventoryCtx([
     { body: { code: 0, message: "success", contacts: [] } },
   ]);
@@ -41,7 +42,7 @@ Deno.test("contact-list: an explicit organizationId beats the connection default
   assertEquals(new URL(calls[0].url).searchParams.get("organization_id"), "222");
 });
 
-Deno.test("contact-list: uses the connection's region host", async () => {
+test("contact-list: uses the connection's region host", async () => {
   const { ctx, calls } = mockInventoryCtx(
     [{ body: { code: 0, message: "success", contacts: [] } }],
     "www.zohoapis.com.au",

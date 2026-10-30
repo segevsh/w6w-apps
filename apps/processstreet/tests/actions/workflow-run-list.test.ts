@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-run-list.ts";
 
-Deno.test("workflow-run-list: GETs /workflow-runs/list and reads the `data` envelope", async () => {
+test("workflow-run-list: GETs /workflow-runs/list and reads the `data` envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "run1", status: "Active", workflowId: "w1" }] },
   }]);
@@ -14,7 +15,7 @@ Deno.test("workflow-run-list: GETs /workflow-runs/list and reads the `data` enve
   assertEquals(out.workflowRuns, [{ id: "run1", status: "Active", workflowId: "w1" }]);
 });
 
-Deno.test("workflow-run-list: extracts nextCursor from the 'next' link", async () => {
+test("workflow-run-list: extracts nextCursor from the 'next' link", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: [],

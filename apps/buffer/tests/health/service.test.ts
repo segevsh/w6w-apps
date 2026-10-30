@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, {
   API_COMPONENT_NAME,
@@ -32,7 +33,7 @@ const HEALTHY = [
   { name: "Instagram", status: "operational" },
 ];
 
-Deno.test("service: probes Buffer's own status host, unauthenticated", async () => {
+test("service: probes Buffer's own status host, unauthenticated", async () => {
   const { ctx, calls } = mockCtx([summary(HEALTHY)]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -40,20 +41,20 @@ Deno.test("service: probes Buffer's own status host, unauthenticated", async () 
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("service: the check declares only the status host, and stays credential-free", () => {
+test("service: the check declares only the status host, and stays credential-free", () => {
   assertEquals(service.network?.allow, ["status.buffer.com"]);
   assertEquals(service.credential, undefined);
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
 });
 
-Deno.test("service: severity stays at the default degraded — Buffer is fully vendor-hosted", () => {
+test("service: severity stays at the default degraded — Buffer is fully vendor-hosted", () => {
   // No self-hosted Buffer exists, so an API outage is true for every Connection.
   // The narrowing to one component is what makes that weight defensible.
   assertEquals(service.severity, undefined);
 });
 
-Deno.test("service: all operational is ok, and every component is reported", async () => {
+test("service: all operational is ok, and every component is reported", async () => {
   const { ctx } = mockCtx([summary(HEALTHY)]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -66,7 +67,7 @@ Deno.test("service: all operational is ok, and every component is reported", asy
   ]);
 });
 
-Deno.test("service: the verdict tracks Buffer API alone, not the global indicator", async () => {
+test("service: the verdict tracks Buffer API alone, not the global indicator", async () => {
   const { ctx } = mockCtx([
     summary(
       [
@@ -82,7 +83,7 @@ Deno.test("service: the verdict tracks Buffer API alone, not the global indicato
   assertEquals(report.state, "down");
 });
 
-Deno.test("service: a degraded Login does NOT degrade the app", async () => {
+test("service: a degraded Login does NOT degrade the app", async () => {
   const { ctx } = mockCtx([
     summary(
       [
@@ -107,7 +108,7 @@ Deno.test("service: a degraded Login does NOT degrade the app", async () => {
  * into the verdict would make the check answer a question a host could not
  * distinguish from the one it asked.
  */
-Deno.test("service: Publishing is reported and named, but does not drive the verdict", async () => {
+test("service: Publishing is reported and named, but does not drive the verdict", async () => {
   const { ctx } = mockCtx([
     summary([
       { name: "Buffer API", status: "operational" },
@@ -121,7 +122,7 @@ Deno.test("service: Publishing is reported and named, but does not drive the ver
   assert(/API calls are unaffected/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: a per-network outage is attribution only", async () => {
+test("service: a per-network outage is attribution only", async () => {
   const { ctx } = mockCtx([
     summary([
       { name: "Buffer API", status: "operational" },
@@ -133,7 +134,7 @@ Deno.test("service: a per-network outage is attribution only", async () => {
   assertEquals(report.components?.instagram?.state, "down");
 });
 
-Deno.test("service: a renamed API component falls back LOUDLY to the global indicator", async () => {
+test("service: a renamed API component falls back LOUDLY to the global indicator", async () => {
   const { ctx } = mockCtx([
     summary([{ name: "Core API", status: "operational" }], "minor", "Partially Degraded Service"),
   ]);
@@ -142,7 +143,7 @@ Deno.test("service: a renamed API component falls back LOUDLY to the global indi
   assert(/no `Buffer API` component/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: group rows are skipped — they restate their children", async () => {
+test("service: group rows are skipped — they restate their children", async () => {
   const { ctx } = mockCtx([
     summary([
       { name: "Developer", status: "operational", group: true },
@@ -153,27 +154,27 @@ Deno.test("service: group rows are skipped — they restate their children", asy
   assertEquals(Object.keys(report.components ?? {}), ["buffer-api"]);
 });
 
-Deno.test("service: a broken status page is unknown, never down", async () => {
+test("service: a broken status page is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(/503/.test(report.message ?? ""));
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>nope</html>" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: a page with no named components is unknown, not ok", async () => {
+test("service: a page with no named components is unknown, not ok", async () => {
   const { ctx } = mockCtx([summary([])]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assert(/no named components/.test(report.message ?? ""));
 });
 
-Deno.test("service: incidents and maintenance windows are counted into the message", async () => {
+test("service: incidents and maintenance windows are counted into the message", async () => {
   const { ctx } = mockCtx([{
     body: {
       page: { name: "Buffer", url: "https://status.buffer.com/" },
@@ -189,7 +190,7 @@ Deno.test("service: incidents and maintenance windows are counted into the messa
   assert(/1 scheduled maintenance/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("service: the Statuspage vocabularies map as documented", () => {
+test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(componentState("operational"), "ok");
   assertEquals(componentState("degraded_performance"), "degraded");
   assertEquals(componentState("partial_outage"), "degraded");
@@ -201,7 +202,7 @@ Deno.test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(indicatorState(undefined), "unknown");
 });
 
-Deno.test("service: component lookup is punctuation- and case-insensitive", () => {
+test("service: component lookup is punctuation- and case-insensitive", () => {
   assertEquals(slug("Google Business profile"), "google-business-profile");
   const found = findComponent(
     [{ name: "buffer  api", status: "operational" }],

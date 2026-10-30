@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import historyList from "../../actions/history-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,13 +10,13 @@ const PAGE = {
   scanned_until: 1738356858,
 };
 
-Deno.test("history-list: reads the history endpoint and returns the page verbatim", async () => {
+test("history-list: reads the history endpoint and returns the page verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   assertEquals(await historyList.execute({}, ctx), PAGE);
   assertEquals(pathOf(calls[0].url), "/v1/history");
 });
 
-Deno.test("history-list: every filter reaches the query", async () => {
+test("history-list: every filter reaches the query", async () => {
   const { ctx, calls } = mockCtx([{ body: PAGE }]);
   await historyList.execute({
     pageSize: 10,
@@ -46,14 +47,14 @@ Deno.test("history-list: every filter reaches the query", async () => {
  * step that silently returns a thousand records is a footgun, so this prefills
  * small — deliberately not the vendor's default.
  */
-Deno.test("history-list: prefills a small page size below the vendor's own default", () => {
+test("history-list: prefills a small page size below the vendor's own default", () => {
   const size = (historyList.params ?? []).find((p) => p.key === "pageSize");
   assertEquals(size?.default, 50);
   assertEquals(size?.validation?.max, 1000);
 });
 
 /** Paging is by cursor id, not page number — the two are not interchangeable. */
-Deno.test("history-list: the cursor is the previous page's last item id", () => {
+test("history-list: the cursor is the previous page's last item id", () => {
   const keys = (historyList.output as Array<{ key: string }>).map((o) => o.key);
   assertEquals(keys.includes("last_history_item_id"), true);
   assertEquals((historyList.params ?? []).some((p) => p.key === "page"), false);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-list.ts";
 
-Deno.test("contacts-list: POSTs contacts.list with filter + page, returns items and matches", async () => {
+test("contacts-list: POSTs contacts.list with filter + page, returns items and matches", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { data: [{ id: "1" }], meta: { page: { size: 20, number: 1 }, matches: 1 } },
@@ -15,7 +16,7 @@ Deno.test("contacts-list: POSTs contacts.list with filter + page, returns items 
   assertEquals(out, { items: [{ id: "1" }], matches: 1 });
 });
 
-Deno.test("contacts-list: omits filter and page entirely when nothing was provided", async () => {
+test("contacts-list: omits filter and page entirely when nothing was provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await action.execute({}, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -23,7 +24,7 @@ Deno.test("contacts-list: omits filter and page entirely when nothing was provid
   assertEquals("page" in body, false);
 });
 
-Deno.test("contacts-list: returns an empty array (not undefined) when data is absent", async () => {
+test("contacts-list: returns an empty array (not undefined) when data is absent", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }]);
   const out = await action.execute({}, ctx) as { items: unknown[] };
   assertEquals(out.items, []);

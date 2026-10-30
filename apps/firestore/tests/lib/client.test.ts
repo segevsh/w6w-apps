@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_URL,
@@ -21,7 +22,7 @@ import {
 
 // ------------------------------------------------------------------ paths --
 
-Deno.test("client: a database name and the documents root are assembled once", () => {
+test("client: a database name and the documents root are assembled once", () => {
   assertEquals(databaseName("p1", "(default)"), "projects/p1/databases/(default)");
   assertEquals(
     documentsRoot("p1", "(default)"),
@@ -29,7 +30,7 @@ Deno.test("client: a database name and the documents root are assembled once", (
   );
 });
 
-Deno.test("client: a document path has an even segment count, and is joined verbatim", () => {
+test("client: a document path has an even segment count, and is joined verbatim", () => {
   assertEquals(
     documentName("p1", "(default)", "users/alice"),
     "projects/p1/databases/(default)/documents/users/alice",
@@ -48,12 +49,12 @@ Deno.test("client: a document path has an even segment count, and is joined verb
   assertThrows(() => documentName("p1", "(default)", ""), Error, "`path` is required");
 });
 
-Deno.test("client: a full resource name is passed through, not re-prefixed", () => {
+test("client: a full resource name is passed through, not re-prefixed", () => {
   const name = "projects/other/databases/named/documents/users/alice";
   assertEquals(documentName("p1", "(default)", name), name);
 });
 
-Deno.test("client: collectionParent splits the id off the end of a collection path", () => {
+test("client: collectionParent splits the id off the end of a collection path", () => {
   const root = documentsRoot("p1", "(default)");
   assertEquals(collectionParent("p1", "(default)", "users"), {
     parent: root,
@@ -68,19 +69,19 @@ Deno.test("client: collectionParent splits the id off the end of a collection pa
   assertThrows(() => collectionParent("p1", "(default)", ""), Error);
 });
 
-Deno.test("client: pathSegments drops empties and trims", () => {
+test("client: pathSegments drops empties and trims", () => {
   assertEquals(pathSegments(" users / alice / / o1 "), ["users", "alice", "o1"]);
   assertEquals(pathSegments(""), []);
 });
 
-Deno.test("client: documentIdOf is the last segment", () => {
+test("client: documentIdOf is the last segment", () => {
   assertEquals(documentIdOf("projects/p/databases/d/documents/users/alice"), "alice");
   assertEquals(documentIdOf(undefined), undefined);
 });
 
 // ---------------------------------------------------------------- toValue --
 
-Deno.test("toValue: the obvious JS mapping, with int64 string-encoded", () => {
+test("toValue: the obvious JS mapping, with int64 string-encoded", () => {
   assertEquals(toValue("ada"), { stringValue: "ada" });
   assertEquals(toValue(true), { booleanValue: true });
   assertEquals(toValue(false), { booleanValue: false });
@@ -92,7 +93,7 @@ Deno.test("toValue: the obvious JS mapping, with int64 string-encoded", () => {
   assertEquals(toValue(undefined), { nullValue: null });
 });
 
-Deno.test("toValue: arrays become arrayValue, objects become mapValue", () => {
+test("toValue: arrays become arrayValue, objects become mapValue", () => {
   assertEquals(toValue([1, "two"]), {
     arrayValue: { values: [{ integerValue: "1" }, { stringValue: "two" }] },
   });
@@ -103,7 +104,7 @@ Deno.test("toValue: arrays become arrayValue, objects become mapValue", () => {
   assertEquals(toValue([]), { arrayValue: { values: [] } });
 });
 
-Deno.test("toValue: a single-key typed object is passed through already-typed", () => {
+test("toValue: a single-key typed object is passed through already-typed", () => {
   assertEquals(toValue({ timestampValue: "2026-09-22T10:00:00Z" }), {
     timestampValue: "2026-09-22T10:00:00Z",
   });
@@ -125,7 +126,7 @@ Deno.test("toValue: a single-key typed object is passed through already-typed", 
   });
 });
 
-Deno.test("toValue: a two-key object is a map even if one key looks like a type", () => {
+test("toValue: a two-key object is a map even if one key looks like a type", () => {
   // The single-key rule is what disambiguates; two keys cannot be a leaf.
   assertEquals(toValue({ stringValue: "x", other: 1 }), {
     mapValue: {
@@ -134,7 +135,7 @@ Deno.test("toValue: a two-key object is a map even if one key looks like a type"
   });
 });
 
-Deno.test("toValue: rejects what Firestore cannot store", () => {
+test("toValue: rejects what Firestore cannot store", () => {
   assertThrows(() => toValue(NaN), Error, "NaN");
   assertThrows(() => toValue(Infinity), Error, "NaN");
   assertThrows(() => toValue({ integerValue: "1.5" }), Error, "whole number");
@@ -143,7 +144,7 @@ Deno.test("toValue: rejects what Firestore cannot store", () => {
 
 // -------------------------------------------------------------- fromValue --
 
-Deno.test("fromValue: the obvious JS mapping", () => {
+test("fromValue: the obvious JS mapping", () => {
   assertEquals(fromValue({ stringValue: "ada" }), "ada");
   assertEquals(fromValue({ booleanValue: false }), false);
   assertEquals(fromValue({ doubleValue: 1.5 }), 1.5);
@@ -152,13 +153,13 @@ Deno.test("fromValue: the obvious JS mapping", () => {
 });
 
 /** An int64 becomes a number only when that is lossless. */
-Deno.test("fromValue: int64 is a number while safe, the string beyond it", () => {
+test("fromValue: int64 is a number while safe, the string beyond it", () => {
   assertEquals(fromValue({ integerValue: "36" }), 36);
   assertEquals(fromValue({ integerValue: "-7" }), -7);
   assertEquals(fromValue({ integerValue: "9007199254740993" }), "9007199254740993");
 });
 
-Deno.test("fromValue: timestamps, bytes and references stay the wire strings", () => {
+test("fromValue: timestamps, bytes and references stay the wire strings", () => {
   assertEquals(fromValue({ timestampValue: "2026-09-22T10:00:00Z" }), "2026-09-22T10:00:00Z");
   assertEquals(fromValue({ bytesValue: "aGk=" }), "aGk=");
   assertEquals(
@@ -171,7 +172,7 @@ Deno.test("fromValue: timestamps, bytes and references stay the wire strings", (
   });
 });
 
-Deno.test("fromValue: arrays and maps recurse", () => {
+test("fromValue: arrays and maps recurse", () => {
   assertEquals(
     fromValue({ arrayValue: { values: [{ integerValue: "1" }, { stringValue: "x" }] } }),
     [
@@ -186,14 +187,14 @@ Deno.test("fromValue: arrays and maps recurse", () => {
   assertEquals(fromValue({ arrayValue: {} }), []);
 });
 
-Deno.test("fromValue: a leaf this app does not know is returned, not dropped", () => {
+test("fromValue: a leaf this app does not know is returned, not dropped", () => {
   // A pipeline-only arm is still visible rather than silently null.
   assertEquals(fromValue({ pipelineValue: { stages: [] } } as never), {
     pipelineValue: { stages: [] },
   });
 });
 
-Deno.test("encodeFields / decodeFields: a document's fields round-trip", () => {
+test("encodeFields / decodeFields: a document's fields round-trip", () => {
   const plain = {
     name: "Ada",
     age: 36,
@@ -213,7 +214,7 @@ Deno.test("encodeFields / decodeFields: a document's fields round-trip", () => {
   assertEquals(decodeFields(undefined), {});
 });
 
-Deno.test("decodeDocument: keeps the raw fields and adds decoded `data`", () => {
+test("decodeDocument: keeps the raw fields and adds decoded `data`", () => {
   const doc = {
     name: "projects/p/databases/d/documents/users/alice",
     fields: { age: { integerValue: "36" } },
@@ -227,7 +228,7 @@ Deno.test("decodeDocument: keeps the raw fields and adds decoded `data`", () => 
   assertEquals(decodeDocument(undefined), {});
 });
 
-Deno.test("parseJson: a live object passes through, a bad string throws", () => {
+test("parseJson: a live object passes through, a bad string throws", () => {
   assertEquals(parseJson('{"a":1}', "data"), { a: 1 });
   assertEquals(parseJson({ a: 1 }, "data"), { a: 1 });
   assertEquals(parseJson("", "data"), undefined);
@@ -236,7 +237,7 @@ Deno.test("parseJson: a live object passes through, a bad string throws", () => 
 
 // ----------------------------------------------------------------- errors --
 
-Deno.test("parseGoogleError / describeGoogleError: the body decides, not the status", () => {
+test("parseGoogleError / describeGoogleError: the body decides, not the status", () => {
   const body = JSON.stringify({
     error: {
       code: 403,
@@ -255,7 +256,7 @@ Deno.test("parseGoogleError / describeGoogleError: the body decides, not the sta
 
 // ----------------------------------------------------------------- client --
 
-Deno.test("client: repeated query params are appended, and errors carry the envelope", async () => {
+test("client: repeated query params are appended, and errors carry the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { documents: [] } },
     {
@@ -288,7 +289,7 @@ Deno.test("client: repeated query params are appended, and errors carry the enve
   );
 });
 
-Deno.test("client: requestStream reads the streamed RPCs' JSON array, and tolerates one object", async () => {
+test("client: requestStream reads the streamed RPCs' JSON array, and tolerates one object", async () => {
   const { ctx } = mockCtx([
     { status: 200, body: [{ document: { name: "x" } }, { readTime: "t" }] },
     { status: 200, body: { found: { name: "x" } } },
@@ -298,7 +299,7 @@ Deno.test("client: requestStream reads the streamed RPCs' JSON array, and tolera
   assertEquals((await client.requestStream("/y:batchGet", { method: "POST", body: {} })).length, 1);
 });
 
-Deno.test("client: an empty successful body is not a parse error", async () => {
+test("client: an empty successful body is not a parse error", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(await new FirestoreClient(ctx).request("/x"), undefined);
 });

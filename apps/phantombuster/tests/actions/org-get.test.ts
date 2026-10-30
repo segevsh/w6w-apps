@@ -1,4 +1,5 @@
-import { assertEquals, assertFalse } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertFalse } from "../_assert.ts";
 import orgGet from "../../actions/org-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -12,7 +13,7 @@ const ORG = {
   },
 };
 
-Deno.test("org-get: calls GET /orgs/fetch with no with* query flags", async () => {
+test("org-get: calls GET /orgs/fetch with no with* query flags", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: ORG }]);
 
   await orgGet.execute({}, ctx);
@@ -21,13 +22,13 @@ Deno.test("org-get: calls GET /orgs/fetch with no with* query flags", async () =
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("org-get: strips identityTokens entirely", async () => {
+test("org-get: strips identityTokens entirely", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ORG }]);
   const out = await orgGet.execute({}, ctx) as Record<string, unknown>;
   assertFalse("identityTokens" in (out.org as Record<string, unknown>));
 });
 
-Deno.test("org-get: strips qualificationFlow.sessionCookie but keeps its other fields", async () => {
+test("org-get: strips qualificationFlow.sessionCookie but keeps its other fields", async () => {
   const { ctx } = mockCtx([{ status: 200, body: ORG }]);
   const out = await orgGet.execute({}, ctx) as Record<string, unknown>;
   const qf = (out.org as Record<string, unknown>).qualificationFlow as Record<string, unknown>;
@@ -35,12 +36,12 @@ Deno.test("org-get: strips qualificationFlow.sessionCookie but keeps its other f
   assertEquals(qf.email, "a@b.com");
 });
 
-Deno.test("org-get: never sets withProxies or withCrmIntegrations", () => {
+test("org-get: never sets withProxies or withCrmIntegrations", () => {
   const keys = orgGet.params?.map((p) => p.key) ?? [];
   assertEquals(keys, []);
 });
 
-Deno.test("org-get: a response with no qualificationFlow is returned unchanged", async () => {
+test("org-get: a response with no qualificationFlow is returned unchanged", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "org1", name: "acme" } }]);
   const out = await orgGet.execute({}, ctx) as Record<string, unknown>;
   assertEquals(out.org, { id: "org1", name: "acme" });

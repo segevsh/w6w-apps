@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declares an absence rather than a probe", () => {
+test("quota: declares an absence rather than a probe", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined, "declares both a probe and an absence");
@@ -13,12 +14,12 @@ Deno.test("quota: declares an absence rather than a probe", () => {
  * outranks `ok` in the roll-up. At any other severity this declared absence
  * would pin the app at `unknown` forever.
  */
-Deno.test("quota: is informational, so it cannot pin the app at unknown", () => {
+test("quota: is informational, so it cannot pin the app at unknown", () => {
   assertEquals(quota.severity, "informational");
 });
 
 /** An absence has nothing to reach, so it must not widen egress. */
-Deno.test("quota: widens no egress", () => {
+test("quota: widens no egress", () => {
   assertEquals(quota.network, undefined);
 });
 
@@ -28,7 +29,7 @@ Deno.test("quota: widens no egress", () => {
  * it is careful not to over-claim: Kajabi sits behind Cloudflare, so edge
  * limits very likely exist — what is missing is a *readable remainder*.
  */
-Deno.test("quota: the reason states the evidence and does not over-claim", () => {
+test("quota: the reason states the evidence and does not over-claim", () => {
   const reason = quota.unavailable!.reason;
   assert(reason.includes("OpenAPI"), "does not cite the spec");
   assert(reason.includes("429"), "does not mention the absent 429 declaration");

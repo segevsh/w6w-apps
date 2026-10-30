@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT,
   componentState,
@@ -25,7 +26,7 @@ function summary(overrides: Record<string, string> = {}, indicator = "none") {
   };
 }
 
-Deno.test("service: probes the verified summary endpoint on the vendor's own host", async () => {
+test("service: probes the verified summary endpoint on the vendor's own host", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -34,7 +35,7 @@ Deno.test("service: probes the verified summary endpoint on the vendor's own hos
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("service: all operational -> ok, with every component reported", async () => {
+test("service: all operational -> ok, with every component reported", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "ok");
@@ -47,7 +48,7 @@ Deno.test("service: all operational -> ok, with every component reported", async
   ]);
 });
 
-Deno.test("service: the verdict follows API Access, not the page indicator", async () => {
+test("service: the verdict follows API Access, not the page indicator", async () => {
   const down = mockCtx([{ body: summary({ "API Access": "major_outage" }, "major") }]);
   assertEquals((await service.check!({}, down.ctx)).state, "down");
   const partial = mockCtx([{ body: summary({ "API Access": "partial_outage" }) }]);
@@ -56,7 +57,7 @@ Deno.test("service: the verdict follows API Access, not the page indicator", asy
   assertEquals((await service.check!({}, full.ctx)).state, "down");
 });
 
-Deno.test("service: an iOS outage alone leaves the API verdict ok but is still reported", async () => {
+test("service: an iOS outage alone leaves the API verdict ok but is still reported", async () => {
   const { ctx } = mockCtx([{ body: summary({ iOS: "major_outage" }, "major") }]);
   const r = await service.check!({}, ctx);
   assertEquals(r.state, "ok");
@@ -64,7 +65,7 @@ Deno.test("service: an iOS outage alone leaves the API verdict ok but is still r
   assert(r.message!.includes("affected: ios"));
 });
 
-Deno.test("service: a missing API Access component falls back to the indicator, loudly", async () => {
+test("service: a missing API Access component falls back to the indicator, loudly", async () => {
   const body = summary({}, "minor");
   body.components = body.components.filter((c) => c.name !== "API Access");
   const { ctx } = mockCtx([{ body }]);
@@ -73,7 +74,7 @@ Deno.test("service: a missing API Access component falls back to the indicator, 
   assert(r.message!.includes("no `API Access` component"));
 });
 
-Deno.test("service: a page that is not Mighty Networks is unknown, never ok", async () => {
+test("service: a page that is not Mighty Networks is unknown, never ok", async () => {
   const body = summary();
   body.page.name = "Somebody Else";
   const { ctx } = mockCtx([{ body }]);
@@ -82,7 +83,7 @@ Deno.test("service: a page that is not Mighty Networks is unknown, never ok", as
   assert(r.message!.includes("Somebody Else"));
 });
 
-Deno.test("service: a failing or unreadable status page is unknown, not down", async () => {
+test("service: a failing or unreadable status page is unknown, not down", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ status: 503, body: "x" }]).ctx)).state,
     "unknown",
@@ -93,14 +94,14 @@ Deno.test("service: a failing or unreadable status page is unknown, not down", a
   assertEquals((await service.check!({}, mockCtx([{ body: empty }]).ctx)).state, "unknown");
 });
 
-Deno.test("service: maintenance windows and incidents are mentioned", async () => {
+test("service: maintenance windows and incidents are mentioned", async () => {
   const body = { ...summary(), incidents: [{}], scheduled_maintenances: [{}, {}] };
   const r = await service.check!({}, mockCtx([{ body }]).ctx);
   assert(r.message!.includes("1 open incident"));
   assert(r.message!.includes("2 scheduled maintenance"));
 });
 
-Deno.test("service: vocab helpers map unknown words to unknown", () => {
+test("service: vocab helpers map unknown words to unknown", () => {
   assertEquals(componentState("weird"), "unknown");
   assertEquals(componentState(undefined), "unknown");
   assertEquals(indicatorState("critical"), "down");

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/collection-list-ids.ts";
 
-Deno.test("collection-list-ids: POSTs to the documents root for top-level collections", async () => {
+test("collection-list-ids: POSTs to the documents root for top-level collections", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { collectionIds: ["users", "cities"], nextPageToken: "tok-2" },
@@ -24,7 +25,7 @@ Deno.test("collection-list-ids: POSTs to the documents root for top-level collec
   assertEquals(result.nextPageToken, "tok-2");
 });
 
-Deno.test("collection-list-ids: a parentPath lists that document's subcollections", async () => {
+test("collection-list-ids: a parentPath lists that document's subcollections", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { collectionIds: ["orders"] } }], {
     display: DISPLAY,
   });
@@ -38,7 +39,7 @@ Deno.test("collection-list-ids: a parentPath lists that document's subcollection
   assertEquals(result.collectionIds, ["orders"]);
 });
 
-Deno.test("collection-list-ids: paging params go in the body, not the query string", async () => {
+test("collection-list-ids: paging params go in the body, not the query string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: DISPLAY });
   await action.execute({ pageSize: 10, pageToken: "tok-2" }, ctx);
   assertEquals(new URL(calls[0].url).search, "");

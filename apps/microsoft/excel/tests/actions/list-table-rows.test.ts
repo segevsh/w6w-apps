@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-table-rows.ts";
 
-Deno.test("list-table-rows: GETs the table's rows collection", async () => {
+test("list-table-rows: GETs the table's rows collection", async () => {
   const { ctx, calls } = mockCtx([{
     body: { value: [{ index: 0, values: [[42019, 53, 34]] }] },
   }]);
@@ -17,7 +18,7 @@ Deno.test("list-table-rows: GETs the table's rows collection", async () => {
   assertEquals(out.value[0].values, [[42019, 53, 34]]);
 });
 
-Deno.test("list-table-rows: accepts a numeric table id in the same position", async () => {
+test("list-table-rows: accepts a numeric table id in the same position", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1", table: "4" }, ctx);
   assertEquals(
@@ -26,7 +27,7 @@ Deno.test("list-table-rows: accepts a numeric table id in the same position", as
   );
 });
 
-Deno.test("list-table-rows: resolves within a worksheet when one is given", async () => {
+test("list-table-rows: resolves within a worksheet when one is given", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1", worksheet: "Sheet15799", table: "table2" }, ctx);
   assertEquals(
@@ -35,7 +36,7 @@ Deno.test("list-table-rows: resolves within a worksheet when one is given", asyn
   );
 });
 
-Deno.test("list-table-rows: pages with $top and $skip, per Microsoft's guidance", async () => {
+test("list-table-rows: pages with $top and $skip, per Microsoft's guidance", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1", table: "Table1", top: 5, skip: 5 }, ctx);
   const url = new URL(calls[0].url);
@@ -43,13 +44,13 @@ Deno.test("list-table-rows: pages with $top and $skip, per Microsoft's guidance"
   assertEquals(url.searchParams.get("$skip"), "5");
 });
 
-Deno.test("list-table-rows: forwards the session header", async () => {
+test("list-table-rows: forwards the session header", async () => {
   const { ctx, calls } = mockCtx([{ body: { value: [] } }]);
   await action.execute({ itemId: "ITEM1", table: "Table1", sessionId: "s1" }, ctx);
   assertEquals(calls[0].headers["workbook-session-id"], "s1");
 });
 
-Deno.test("list-table-rows: refuses an empty table identifier", async () => {
+test("list-table-rows: refuses an empty table identifier", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ itemId: "ITEM1", table: "  " }, ctx),

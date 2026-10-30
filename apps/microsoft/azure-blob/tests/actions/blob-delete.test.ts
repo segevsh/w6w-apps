@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/blob-delete.ts";
 
@@ -11,7 +12,7 @@ const policy = (days: number | null) => ({
   }</DeleteRetentionPolicy></StorageServiceProperties>`,
 });
 
-Deno.test("blob-delete: reads the retention policy, then deletes", async () => {
+test("blob-delete: reads the retention policy, then deletes", async () => {
   const { ctx, calls } = mockCtx([policy(7), { status: 202, body: "" }], D);
   const result = await action.execute(
     { container: "uploads", blob: "logs/a.log" },
@@ -27,7 +28,7 @@ Deno.test("blob-delete: reads the retention policy, then deletes", async () => {
 });
 
 /** The response is identical either way, so the policy is what decides. */
-Deno.test("blob-delete: reports whether soft delete can bring it back", async () => {
+test("blob-delete: reports whether soft delete can bring it back", async () => {
   const recoverable = mockCtx([policy(7), { status: 202, body: "" }], D);
   const kept = await action.execute(
     { container: "uploads", blob: "a.log" },
@@ -49,7 +50,7 @@ Deno.test("blob-delete: reports whether soft delete can bring it back", async ()
 });
 
 /** Reading service properties needs an account-level permission. */
-Deno.test("blob-delete: not being able to read the policy is reported, not guessed", async () => {
+test("blob-delete: not being able to read the policy is reported, not guessed", async () => {
   const { ctx, logs } = mockCtx([{ status: 403, body: "" }, { status: 202, body: "" }], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log" },
@@ -61,7 +62,7 @@ Deno.test("blob-delete: not being able to read the policy is reported, not guess
 });
 
 /** A blob with snapshots is a 409 without an instruction. */
-Deno.test("blob-delete: the snapshot instruction is passed through when given", async () => {
+test("blob-delete: the snapshot instruction is passed through when given", async () => {
   const { ctx, calls } = mockCtx([policy(7), { status: 202, body: "" }], D);
   const result = await action.execute(
     { container: "uploads", blob: "a.log", snapshots: "include" },
@@ -75,13 +76,13 @@ Deno.test("blob-delete: the snapshot instruction is passed through when given", 
   assertEquals(plain.calls[1].headers["x-ms-delete-snapshots"], undefined);
 });
 
-Deno.test("blob-delete: an ETag becomes the If-Match precondition", async () => {
+test("blob-delete: an ETag becomes the If-Match precondition", async () => {
   const { ctx, calls } = mockCtx([policy(7), { status: 202, body: "" }], D);
   await action.execute({ container: "uploads", blob: "a.log", ifMatch: '"0x8D"' }, ctx);
   assertEquals(calls[1].headers["if-match"], '"0x8D"');
 });
 
-Deno.test("blob-delete: says Azure has no default for snapshots", () => {
+test("blob-delete: says Azure has no default for snapshots", () => {
   assert(
     /refuses to be deleted until you say what happens to them/.test(action.description!),
     action.description,

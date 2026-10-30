@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-screen-notes.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("list-screen-notes: GETs /projects/5db81e73e1e36ee19f138c1a/screens/s1/notes and wraps the array with its paging position", async () => {
+test("list-screen-notes: GETs /projects/5db81e73e1e36ee19f138c1a/screens/s1/notes and wraps the array with its paging position", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({ projectId: "5db81e73e1e36ee19f138c1a", screenId: "s1" }, ctx);
   const u = new URL(calls[0].url);
@@ -23,7 +24,7 @@ Deno.test("list-screen-notes: GETs /projects/5db81e73e1e36ee19f138c1a/screens/s1
   });
 });
 
-Deno.test("list-screen-notes: a full page yields next_offset; limit and offset are validated", async () => {
+test("list-screen-notes: a full page yields next_offset; limit and offset are validated", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "a" }, { id: "b" }] }]);
   const out = await action.execute({
     ...{ projectId: "5db81e73e1e36ee19f138c1a", screenId: "s1" },
@@ -44,7 +45,7 @@ Deno.test("list-screen-notes: a full page yields next_offset; limit and offset a
   );
 });
 
-Deno.test("list-screen-notes: a vendor error is thrown with its message; a non-array body is an error", async () => {
+test("list-screen-notes: a vendor error is thrown with its message; a non-array body is an error", async () => {
   const bad = mockCtx([{ status: 401, body: { message: "invalid_token" } }]);
   await assertRejects(
     async () =>

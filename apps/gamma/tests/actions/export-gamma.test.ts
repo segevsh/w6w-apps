@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import exportGamma from "../../actions/export-gamma.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("export-gamma: POSTs /gammas/{id}/export with exportAs", async () => {
+test("export-gamma: POSTs /gammas/{id}/export with exportAs", async () => {
   const { ctx, calls } = mockCtx([{ body: { exportId: "exp1" } }]);
   const out = await exportGamma.execute({ gammaId: "g_1", exportAs: "pdf" }, ctx) as {
     exportId: string;
@@ -14,6 +15,6 @@ Deno.test("export-gamma: POSTs /gammas/{id}/export with exportAs", async () => {
   assertEquals(out.exportId, "exp1");
 });
 
-Deno.test("export-gamma: is not idempotent — every call starts a new export job", () => {
+test("export-gamma: is not idempotent — every call starts a new export job", () => {
   assertEquals(exportGamma.idempotent, false);
 });

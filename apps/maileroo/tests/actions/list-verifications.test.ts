@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-verifications.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("list-verifications: filters become query params; cursor drives hasMore", async () => {
+test("list-verifications: filters become query params; cursor drives hasMore", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { items: [{ id: "vrf_1" }], next_cursor: "cur2", total: 80 } },
   }]);
@@ -19,7 +20,7 @@ Deno.test("list-verifications: filters become query params; cursor drives hasMor
   assertEquals(out, { items: [{ id: "vrf_1" }], nextCursor: "cur2", hasMore: true, total: 80 });
 });
 
-Deno.test("list-verifications: a null cursor ends paging; a bad filter is the vendor's 400", async () => {
+test("list-verifications: a null cursor ends paging; a bad filter is the vendor's 400", async () => {
   const end = await run(
     action,
     { cursor: "cur2" },

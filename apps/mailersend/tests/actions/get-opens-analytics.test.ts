@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-opens-analytics.ts";
 import { exec, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-opens-analytics: routes each breakdown to its endpoint", async () => {
+test("get-opens-analytics: routes each breakdown to its endpoint", async () => {
   for (const b of ["country", "ua-name", "ua-type"]) {
     const resp = { data: { stats: [{ name: "US", count: 4 }] } };
     const { ctx, calls } = mockCtx([{ body: resp }]);
@@ -17,7 +18,7 @@ Deno.test("get-opens-analytics: routes each breakdown to its endpoint", async ()
   }
 });
 
-Deno.test("get-opens-analytics: an unknown breakdown is refused", async () => {
+test("get-opens-analytics: an unknown breakdown is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/write-key.ts";
 
-Deno.test("write-key: type is basic, fields are writeKey (secret, required)", () => {
+test("write-key: type is basic, fields are writeKey (secret, required)", () => {
   assertEquals(auth.key, "write-key");
   assertEquals(auth.type, "basic");
   const keys = auth.fields?.map((f) => f.key);
@@ -12,7 +13,7 @@ Deno.test("write-key: type is basic, fields are writeKey (secret, required)", ()
   assertEquals(field?.required, true);
 });
 
-Deno.test("write-key: sign encodes the write key as Basic username with an empty password", async () => {
+test("write-key: sign encodes the write key as Basic username with an empty password", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.segment.io/v1/identify",
@@ -23,7 +24,7 @@ Deno.test("write-key: sign encodes the write key as Basic username with an empty
   assertEquals(out.headers["authorization"], `Basic ${btoa("wk_123:")}`);
 });
 
-Deno.test("write-key: test rejects a credential with no writeKey, without a request", async () => {
+test("write-key: test rejects a credential with no writeKey, without a request", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(await auth.test({ credential: {} }, ctx), {
     ok: false,
@@ -32,7 +33,7 @@ Deno.test("write-key: test rejects a credential with no writeKey, without a requ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("write-key: test posts a minimal identify call, signed with the write key", async () => {
+test("write-key: test posts a minimal identify call, signed with the write key", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true } }]);
   assertEquals(await auth.test({ credential: { writeKey: "wk_123" } }, ctx), { ok: true });
   assertEquals(calls.length, 1);
@@ -42,7 +43,7 @@ Deno.test("write-key: test posts a minimal identify call, signed with the write 
   assertEquals(JSON.parse(calls[0].body!), { anonymousId: "w6w-connection-test", traits: {} });
 });
 
-Deno.test("write-key: test surfaces a non-2xx as a failed check", async () => {
+test("write-key: test surfaces a non-2xx as a failed check", async () => {
   const { ctx } = mockCtx([{ status: 401, body: {} }]);
   assertEquals(await auth.test({ credential: { writeKey: "bad" } }, ctx), {
     ok: false,

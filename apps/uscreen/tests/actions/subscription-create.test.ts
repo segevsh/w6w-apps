@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionCreate from "../../actions/subscription-create.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscription-create: sends POST /customers/${seg(input.customerId)}/subscription", async () => {
+test("subscription-create: sends POST /customers/${seg(input.customerId)}/subscription", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 4 } }]);
   const out = await subscriptionCreate.execute(
     { "customerId": "5", "productId": 8, "currency": "USD" } as never,
@@ -15,7 +16,7 @@ Deno.test("subscription-create: sends POST /customers/${seg(input.customerId)}/s
   assertEquals(out, { "id": 4 });
 });
 
-Deno.test("subscription-create: a 422 surfaces the vendor's message", async () => {
+test("subscription-create: a 422 surfaces the vendor's message", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "bad input" } }]);
   await assertRejects(
     () =>

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import toolCreateVideoSlideshow from "../../actions/tool-create-video-slideshow.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tool-create-video-slideshow: POST /tools/create_video_slideshow", async () => {
+test("tool-create-video-slideshow: POST /tools/create_video_slideshow", async () => {
   const { ctx, calls } = mockCtx([
     { status: 202, body: { uid: "j1", tool: "create_video_slideshow" } },
   ]);
@@ -17,7 +18,7 @@ Deno.test("tool-create-video-slideshow: POST /tools/create_video_slideshow", asy
   assertEquals(body.slide_duration, 4);
 });
 
-Deno.test("tool-create-video-slideshow: requires at least 2 image URLs", async () => {
+test("tool-create-video-slideshow: requires at least 2 image URLs", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() =>
     toolCreateVideoSlideshow.execute({ imageUrls: "https://x/1.jpg" }, ctx)

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-current-member-profile.ts";
 
-Deno.test("get-current-member-profile: GETs /v2/userinfo and returns the parsed profile", async () => {
+test("get-current-member-profile: GETs /v2/userinfo and returns the parsed profile", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { sub: "abc123", name: "Ada Lovelace", email: "ada@example.com" } },
   ]);
@@ -14,7 +15,7 @@ Deno.test("get-current-member-profile: GETs /v2/userinfo and returns the parsed 
   assertEquals((out as { email: string }).email, "ada@example.com");
 });
 
-Deno.test("get-current-member-profile: throws a descriptive error on a non-ok response", async () => {
+test("get-current-member-profile: throws a descriptive error on a non-ok response", async () => {
   const { ctx } = mockCtx([{ status: 401 }]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "401");
 });

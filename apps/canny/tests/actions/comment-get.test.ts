@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentGet from "../../actions/comment-get.ts";
 import { bodyOf, mockCtx } from "../_helpers.ts";
 
-Deno.test("comment-get: retrieves by id", async () => {
+test("comment-get: retrieves by id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "cm1" } }]);
   await commentGet.execute({ id: "cm1" }, ctx);
 

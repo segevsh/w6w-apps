@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-listings.ts";
 
-Deno.test("list-listings: GETs /v1/listings with only the supplied filters", async () => {
+test("list-listings: GETs /v1/listings with only the supplied filters", async () => {
   const { ctx, calls } = mockCtx([envelope([{ id: 40160 }], { count: 1, page: 1, totalPages: 1 })]);
   const page = await action.execute(
     { limit: 10, offset: 0, city: "Bremerhaven", sortOrder: "name" },
@@ -20,7 +21,7 @@ Deno.test("list-listings: GETs /v1/listings with only the supplied filters", asy
   assertEquals(page.count, 1);
 });
 
-Deno.test("list-listings: surfaces Hostaway's own failure envelope", async () => {
+test("list-listings: surfaces Hostaway's own failure envelope", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: "fail", message: "denied" } }]);
   await assertRejects(() => Promise.resolve(action.execute({}, ctx)), Error, "denied");
 });

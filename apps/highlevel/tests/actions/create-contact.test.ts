@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/create-contact.ts";
 
-Deno.test("create-contact: POSTs /contacts/ with locationId and the given fields", async () => {
+test("create-contact: POSTs /contacts/ with locationId and the given fields", async () => {
   const { ctx, calls } = mockHighLevelCtx([
     { status: 201, body: { contact: { id: "c1" } } },
   ], "loc-1");
@@ -21,7 +22,7 @@ Deno.test("create-contact: POSTs /contacts/ with locationId and the given fields
   assertEquals(body.tags, ["vip", "newsletter"]);
 });
 
-Deno.test("create-contact: merges additionalFields into the payload", async () => {
+test("create-contact: merges additionalFields into the payload", async () => {
   const { ctx, calls } = mockHighLevelCtx([{ status: 201, body: { contact: {} } }]);
   await action.execute!({
     email: "a@b.com",

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/identify.ts";
 
-Deno.test("identify: POSTs id/email/data to /users/track", async () => {
+test("identify: POSTs id/email/data to /users/track", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   const result = await action.execute!(
     { id: "u1", email: "a@b.com", data: { plan: "pro" } },
@@ -15,7 +16,7 @@ Deno.test("identify: POSTs id/email/data to /users/track", async () => {
   assertEquals(result, { success: true, message: "Success." });
 });
 
-Deno.test("identify: rejects a blank id", async () => {
+test("identify: rejects a blank id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "  ", email: "a@b.com" }, ctx),
@@ -25,7 +26,7 @@ Deno.test("identify: rejects a blank id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("identify: rejects a blank email", async () => {
+test("identify: rejects a blank email", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "u1", email: "" }, ctx),
@@ -35,7 +36,7 @@ Deno.test("identify: rejects a blank email", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("identify: channels passes through as-is", async () => {
+test("identify: channels passes through as-is", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!(
     {
@@ -50,7 +51,7 @@ Deno.test("identify: channels passes through as-is", async () => {
   ]);
 });
 
-Deno.test("identify: createdAt and updateOnly map to extras", async () => {
+test("identify: createdAt and updateOnly map to extras", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!(
     { id: "u1", email: "a@b.com", createdAt: "2026-01-01T00:00:00Z", updateOnly: true },
@@ -62,13 +63,13 @@ Deno.test("identify: createdAt and updateOnly map to extras", async () => {
   });
 });
 
-Deno.test("identify: extras is omitted entirely when neither field is set", async () => {
+test("identify: extras is omitted entirely when neither field is set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   await action.execute!({ id: "u1", email: "a@b.com" }, ctx);
   assertEquals("extras" in JSON.parse(calls[0].body!), false);
 });
 
-Deno.test("identify: a non-2xx response propagates as an Error", async () => {
+test("identify: a non-2xx response propagates as an Error", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { status: 401, message: "invalid credentials" } },
   ]);

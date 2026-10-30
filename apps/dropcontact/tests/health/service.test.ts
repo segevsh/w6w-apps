@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const page = (apiStatus: string, appStatus = "operational", id = "x803htx24trw")
   ],
 });
 
-Deno.test("service: unsigned, scoped to status.dropcontact.com, API component decides", async () => {
+test("service: unsigned, scoped to status.dropcontact.com, API component decides", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational") }]);
   assertEquals(service.credential, "none");
   assertEquals(service.network?.allow, ["status.dropcontact.com"]);
@@ -20,7 +21,7 @@ Deno.test("service: unsigned, scoped to status.dropcontact.com, API component de
   assertEquals(Object.keys(report.components ?? {}).length, 2);
 });
 
-Deno.test("service: API outage is down; a web-app outage is capped at degraded detail", async () => {
+test("service: API outage is down; a web-app outage is capped at degraded detail", async () => {
   const down = await service.check!({}, mockCtx([{ body: page("major_outage") }]).ctx);
   assertEquals(down.state, "down");
   const app = await service.check!(
@@ -31,7 +32,7 @@ Deno.test("service: API outage is down; a web-app outage is capped at degraded d
   assertEquals(app.components?.["gp1g28gtn3f4"].state, "degraded");
 });
 
-Deno.test("service: foreign page, missing component, HTTP error and bad body are unknown", async () => {
+test("service: foreign page, missing component, HTTP error and bad body are unknown", async () => {
   assertEquals(
     (await service.check!({}, mockCtx([{ body: page("operational", "operational", "zzz") }]).ctx))
       .state,
@@ -49,7 +50,7 @@ Deno.test("service: foreign page, missing component, HTTP error and bad body are
   assertEquals((await service.check!({}, mockCtx([{ body: "not json" }]).ctx)).state, "unknown");
 });
 
-Deno.test("service: component status vocabulary maps as documented", () => {
+test("service: component status vocabulary maps as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

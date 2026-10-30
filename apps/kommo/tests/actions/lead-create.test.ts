@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/lead-create.ts";
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("lead-create: POSTs an array body to /leads", async () => {
+test("lead-create: POSTs an array body to /leads", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 152462, request_id: "0" }] } } }],
     conn,
@@ -16,7 +17,7 @@ Deno.test("lead-create: POSTs an array body to /leads", async () => {
   assertEquals(out, { id: 152462, requestId: "0" });
 });
 
-Deno.test("lead-create: tagsToAdd becomes Kommo's [{name}] shape", async () => {
+test("lead-create: tagsToAdd becomes Kommo's [{name}] shape", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 1, request_id: "0" }] } } }],
     conn,
@@ -26,7 +27,7 @@ Deno.test("lead-create: tagsToAdd becomes Kommo's [{name}] shape", async () => {
   assertEquals(body.tags_to_add, [{ name: "vip" }, { name: "hot" }]);
 });
 
-Deno.test("lead-create: customFieldsValues parses a JSON-string array", async () => {
+test("lead-create: customFieldsValues parses a JSON-string array", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _embedded: { leads: [{ id: 1, request_id: "0" }] } } }],
     conn,
@@ -39,6 +40,6 @@ Deno.test("lead-create: customFieldsValues parses a JSON-string array", async ()
   assertEquals(body.custom_fields_values, [{ field_id: 184994, values: [{ value: true }] }]);
 });
 
-Deno.test("lead-create: idempotent is false — Kommo mints a new lead ID per call", () => {
+test("lead-create: idempotent is false — Kommo mints a new lead ID per call", () => {
   assertEquals(action.idempotent, false);
 });

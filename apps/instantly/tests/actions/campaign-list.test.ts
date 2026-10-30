@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignList from "../../actions/campaign-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("campaign-list: GETs with the search/status/pagination query", async () => {
+test("campaign-list: GETs with the search/status/pagination query", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [{ id: "c1" }] } }]);
   const out = await campaignList.execute(
     { search: "Summer", status: 1, limit: 5 },
@@ -15,11 +16,11 @@ Deno.test("campaign-list: GETs with the search/status/pagination query", async (
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("campaign-list: default limit is prefilled at 20", () => {
+test("campaign-list: default limit is prefilled at 20", () => {
   const p = campaignList.params?.find((p) => p.key === "limit");
   assertEquals(p?.default, 20);
 });
 
-Deno.test("campaign-list: is a search action with no side effects declared", () => {
+test("campaign-list: is a search action with no side effects declared", () => {
   assertEquals(campaignList.type, "search");
 });

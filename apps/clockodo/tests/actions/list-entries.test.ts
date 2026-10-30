@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-entries.ts";
 import { API_ROOT, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("list-entries: GETs /v2/entries with deepObject filters and paging", async () => {
+test("list-entries: GETs /v2/entries with deepObject filters and paging", async () => {
   const resp = { paging: { current_page: 2, count_items: 5 }, entries: [{ id: 1 }] };
   const { ctx, calls } = mockCtx([{ body: resp }]);
   const out = await exec(action, {
@@ -26,7 +27,7 @@ Deno.test("list-entries: GETs /v2/entries with deepObject filters and paging", a
   assertEquals(out, resp);
 });
 
-Deno.test("list-entries: the window is required and never reaches the API without it", async () => {
+test("list-entries: the window is required and never reaches the API without it", async () => {
   const none = mockCtx();
   await assertRejects(
     () => exec(action, { timeSince: "2026-10-01T00:00:00Z" }, none.ctx),
@@ -36,7 +37,7 @@ Deno.test("list-entries: the window is required and never reaches the API withou
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("list-entries: a non-array entries member becomes an empty list; errors surface", async () => {
+test("list-entries: a non-array entries member becomes an empty list; errors surface", async () => {
   const a = mockCtx([{ body: {} }]);
   assertEquals((await exec(action, { timeSince: "a", timeUntil: "b" }, a.ctx)).entries, []);
   const b = mockCtx([{

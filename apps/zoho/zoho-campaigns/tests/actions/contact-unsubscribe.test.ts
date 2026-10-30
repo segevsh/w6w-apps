@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/contact-unsubscribe.ts";
 
-Deno.test("contact-unsubscribe: POSTs json/listunsubscribe with contactinfo JSON-encoded", async () => {
+test("contact-unsubscribe: POSTs json/listunsubscribe with contactinfo JSON-encoded", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { status: "success", code: "0", message: "User successfully unsubscribed." } },
   ]);

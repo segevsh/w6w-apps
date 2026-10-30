@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
-Deno.test("project-create: POSTs to /v11/projects with the git repository", async () => {
+test("project-create: POSTs to /v11/projects with the git repository", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "prj_1" } }], { display: {} });
   await action.execute!({
     name: "my-app",
@@ -18,7 +19,7 @@ Deno.test("project-create: POSTs to /v11/projects with the git repository", asyn
   });
 });
 
-Deno.test("project-create: a name is required and bad JSON is named", async () => {
+test("project-create: a name is required and bad JSON is named", async () => {
   const noName = mockCtx([], { display: {} });
   await assertRejects(async () => await action.execute!({}, noName.ctx), Error, "`name`");
   const badJson = mockCtx([], { display: {} });

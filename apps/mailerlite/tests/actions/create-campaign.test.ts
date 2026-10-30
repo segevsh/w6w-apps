@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-campaign.ts";
 
-Deno.test("create-campaign: assembles the flat params into MailerLite's `emails` array", async () => {
+test("create-campaign: assembles the flat params into MailerLite's `emails` array", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "1", status: "draft" } } }]);
   await action.execute!({
     name: "Dummy campaign",
@@ -27,13 +28,13 @@ Deno.test("create-campaign: assembles the flat params into MailerLite's `emails`
   });
 });
 
-Deno.test("create-campaign: defaults type to regular", async () => {
+test("create-campaign: defaults type to regular", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ name: "x", subject: "s" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).type, "regular");
 });
 
-Deno.test("create-campaign: forwards groups, segments and language_id", async () => {
+test("create-campaign: forwards groups, segments and language_id", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({
     name: "x",
@@ -48,13 +49,13 @@ Deno.test("create-campaign: forwards groups, segments and language_id", async ()
   assertEquals(body.language_id, 4);
 });
 
-Deno.test("create-campaign: omits groups/segments/language_id when unset", async () => {
+test("create-campaign: omits groups/segments/language_id when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({ name: "x", subject: "s" }, ctx);
   assertEquals(Object.keys(JSON.parse(calls[0].body!)).sort(), ["emails", "name", "type"]);
 });
 
-Deno.test("create-campaign: a raw `emails` array overrides the flat params", async () => {
+test("create-campaign: a raw `emails` array overrides the flat params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute!({
     name: "x",
@@ -67,6 +68,6 @@ Deno.test("create-campaign: a raw `emails` array overrides the flat params", asy
   assertEquals(body.emails, [{ subject: "A" }, { subject: "B" }]);
 });
 
-Deno.test("create-campaign: is NOT idempotent — each call drafts a new campaign", () => {
+test("create-campaign: is NOT idempotent — each call drafts a new campaign", () => {
   assertEquals(action.idempotent, false);
 });

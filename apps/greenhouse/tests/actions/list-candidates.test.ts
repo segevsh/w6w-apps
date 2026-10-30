@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import listCandidates from "../../actions/list-candidates.ts";
 import { listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-candidates: calls GET /v3/candidates and returns the bare array", async () => {
+test("list-candidates: calls GET /v3/candidates and returns the bare array", async () => {
   const { ctx, calls } = mockCtx([listPage([{ id: 2 }, { id: 1 }])]);
   const page = await listCandidates.execute({}, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("list-candidates: calls GET /v3/candidates and returns the bare array"
   assertEquals(page.hasMore, false);
 });
 
-Deno.test("list-candidates: maps its filters onto the vendor's snake_case names", async () => {
+test("list-candidates: maps its filters onto the vendor's snake_case names", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listCandidates.execute({
     email: "a@b.com",
@@ -36,7 +37,7 @@ Deno.test("list-candidates: maps its filters onto the vendor's snake_case names"
 });
 
 /** `created_at=gte|<iso>`, not a bracketed sub-key and not a bare timestamp. */
-Deno.test("list-candidates: date filters use the pipe-delimited operator form", async () => {
+test("list-candidates: date filters use the pipe-delimited operator form", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listCandidates.execute({
     createdAtOperator: "gte",
@@ -51,7 +52,7 @@ Deno.test("list-candidates: date filters use the pipe-delimited operator form", 
   });
 });
 
-Deno.test("list-candidates: the header-borne cursor is returned for the next step", async () => {
+test("list-candidates: the header-borne cursor is returned for the next step", async () => {
   const { ctx } = mockCtx([listPage([{ id: 1 }], "NEXT")]);
   const page = await listCandidates.execute({}, ctx);
   assertEquals(page.nextCursor, "NEXT");
@@ -60,7 +61,7 @@ Deno.test("list-candidates: the header-borne cursor is returned for the next ste
 });
 
 /** Greenhouse answers 422 for a cursor sent with anything else. */
-Deno.test("list-candidates: a cursor combined with a filter fails locally", () => {
+test("list-candidates: a cursor combined with a filter fails locally", () => {
   const { ctx } = mockCtx([]);
   const err = assertThrows(
     () => listCandidates.execute({ cursor: "NEXT", email: "a@b.com" }, ctx),
@@ -69,7 +70,7 @@ Deno.test("list-candidates: a cursor combined with a filter fails locally", () =
   assert(err.message.includes("email"), err.message);
 });
 
-Deno.test("list-candidates: a lone cursor is sent as the only parameter", async () => {
+test("list-candidates: a lone cursor is sent as the only parameter", async () => {
   const { ctx, calls } = mockCtx([listPage([])]);
   await listCandidates.execute({ cursor: "NEXT" }, ctx);
   assertEquals(queryOf(calls[0].url), { cursor: "NEXT" });

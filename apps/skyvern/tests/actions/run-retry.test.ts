@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import runRetry from "../../actions/run-retry.ts";
 
 const HOST = "https://api.skyvern.com";
 
-Deno.test("run-retry: POSTs /v1/agents/runs/{id}/retry", async () => {
+test("run-retry: POSTs /v1/agents/runs/{id}/retry", async () => {
   const { ctx, calls } = mockCtx([{ body: { run_id: "wr_2", attempt: 2 } }]);
   const out = await runRetry.execute({ runId: "wr_1" }, ctx);
   assertEquals((out as { attempt: number }).attempt, 2);

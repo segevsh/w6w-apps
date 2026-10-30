@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import getRecord from "../../actions/get-record.ts";
 
 const env = { active_from: "2023-04-03T15:21:06.447000000Z", active_until: null };
 
-Deno.test("get-record: GETs the record and attaches values_flat", async () => {
+test("get-record: GETs the record and attaches values_flat", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -24,7 +25,7 @@ Deno.test("get-record: GETs the record and attaches values_flat", async () => {
   assertEquals(out.values_flat, { stage: "Lead" });
 });
 
-Deno.test("get-record: a record with no values yields an empty flat map, not a crash", async () => {
+test("get-record: a record with no values yields an empty flat map, not a crash", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { data: { id: { record_id: "r1" } } } }]);
   const out = await run<{ values_flat: Record<string, unknown> }>(
     getRecord,

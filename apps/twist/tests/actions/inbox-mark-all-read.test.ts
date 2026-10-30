@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import inboxMarkAllRead from "../../actions/inbox-mark-all-read.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("inbox-mark-all-read: POST /api/v3/inbox/mark_all_read with every documented parameter", async () => {
+test("inbox-mark-all-read: POST /api/v3/inbox/mark_all_read with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await inboxMarkAllRead.execute({ "workspaceId": 100 }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("inbox-mark-all-read: POST /api/v3/inbox/mark_all_read with every docu
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("inbox-mark-all-read: sends a form body, never a query string", async () => {
+test("inbox-mark-all-read: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxMarkAllRead.execute({ "workspaceId": 100 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("inbox-mark-all-read: sends a form body, never a query string", async 
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("inbox-mark-all-read: is declared idempotent", () => {
+test("inbox-mark-all-read: is declared idempotent", () => {
   assertEquals(inboxMarkAllRead.idempotent, true);
 });
 
-Deno.test("inbox-mark-all-read: sends no credential of its own", async () => {
+test("inbox-mark-all-read: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await inboxMarkAllRead.execute({ "workspaceId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("inbox-mark-all-read: surfaces Twist's error body", async () => {
+test("inbox-mark-all-read: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

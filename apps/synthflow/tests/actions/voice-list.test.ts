@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import voiceList from "../../actions/voice-list.ts";
 import { mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
 const PAGE = { total_records: 1, limit: 20, offset: 0 };
 
-Deno.test("voice-list: GET /voices with workspace, search and provider", async () => {
+test("voice-list: GET /voices with workspace, search and provider", async () => {
   const { ctx, calls } = mockCtx([{ body: ok({ pagination: PAGE, voices: [{ id: "v1" }] }) }]);
   const out = await voiceList.execute(
     { workspace: "w1", search: "ana", provider: "elevenlabs" },

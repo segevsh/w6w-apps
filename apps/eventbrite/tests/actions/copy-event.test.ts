@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/copy-event.ts";
 
-Deno.test("copy-event: POSTs unwrapped overrides", async () => {
+test("copy-event: POSTs unwrapped overrides", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "2" } }]);
   await action.execute!(
     { eventId: "1", name: "Copy", startDate: "2026-12-01T18:00:00Z", timezone: "UTC" },
@@ -17,7 +18,7 @@ Deno.test("copy-event: POSTs unwrapped overrides", async () => {
   });
 });
 
-Deno.test("copy-event: no overrides sends empty object", async () => {
+test("copy-event: no overrides sends empty object", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ eventId: "1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), {});

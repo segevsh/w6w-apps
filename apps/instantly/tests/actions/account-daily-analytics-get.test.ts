@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountDailyAnalyticsGet from "../../actions/account-daily-analytics-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("account-daily-analytics-get: GETs /accounts/analytics/daily", async () => {
+test("account-daily-analytics-get: GETs /accounts/analytics/daily", async () => {
   const { ctx, calls } = mockCtx([
     { body: [{ date: "2026-01-01", email_account: "a@b.com", sent: 5 }] },
   ]);

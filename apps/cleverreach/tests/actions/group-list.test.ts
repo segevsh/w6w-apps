@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/group-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("group-list: calls GET /v3/groups with the order", async () => {
+test("group-list: calls GET /v3/groups with the order", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "News" }, { id: 2, name: "VIP" }] }]);
   const out = await action.execute({ order: "created DESC" }, ctx) as {
     items: unknown[];
@@ -14,7 +15,7 @@ Deno.test("group-list: calls GET /v3/groups with the order", async () => {
   assertEquals(out.count, 2);
 });
 
-Deno.test("group-list: rejects an order outside the documented set before any request", async () => {
+test("group-list: rejects an order outside the documented set before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ order: "name ASC" }, ctx),
@@ -24,7 +25,7 @@ Deno.test("group-list: rejects an order outside the documented set before any re
   assertEquals(calls.length, 0);
 });
 
-Deno.test("group-list: keeps a non-array body as raw", async () => {
+test("group-list: keeps a non-array body as raw", async () => {
   const { ctx } = mockCtx([{ body: { odd: true } }]);
   const out = await action.execute({}, ctx) as { items: unknown[]; raw: unknown };
   assertEquals(out.items, []);

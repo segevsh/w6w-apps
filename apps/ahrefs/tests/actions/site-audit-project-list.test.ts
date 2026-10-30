@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/site-audit-project-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const input = {};
 
-Deno.test("site-audit-project-list: GETs /site-audit/projects and returns the healthscores with cost headers", async () => {
+test("site-audit-project-list: GETs /site-audit/projects and returns the healthscores with cost headers", async () => {
   const { ctx, calls } = mockCtx([{
     body: { healthscores: [{ a: 1 }] },
     headers: {
@@ -22,14 +23,14 @@ Deno.test("site-audit-project-list: GETs /site-audit/projects and returns the he
   assertEquals(u.origin + u.pathname, "https://api.ahrefs.com/v3/site-audit/projects");
 });
 
-Deno.test("site-audit-project-list: omits cost fields when headers are absent and passes optional params", async () => {
+test("site-audit-project-list: omits cost fields when headers are absent and passes optional params", async () => {
   const { ctx, calls } = mockCtx([{ body: { healthscores: [{ a: 1 }] } }]);
   const out = await action.execute!({ ...input }, ctx) as Record<string, unknown>;
   assertEquals("unitsCost" in out, false);
   assertEquals(calls.length, 1);
 });
 
-Deno.test("site-audit-project-list: a 403 array error body is surfaced", async () => {
+test("site-audit-project-list: a 403 array error body is surfaced", async () => {
   const { ctx } = mockCtx([{ status: 403, body: ["Error", "Forbidden"] }]);
   await assertRejects(
     async () => await action.execute!(input, ctx),

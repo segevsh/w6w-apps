@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pushDeleteAll from "../../actions/push-delete-all.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("push-delete-all: DELETEs /v2/pushes with no path parameter", async () => {
+test("push-delete-all: DELETEs /v2/pushes with no path parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await pushDeleteAll.execute({}, ctx) as { requested: boolean };
 
@@ -11,10 +12,10 @@ Deno.test("push-delete-all: DELETEs /v2/pushes with no path parameter", async ()
   assertEquals(out.requested, true);
 });
 
-Deno.test("push-delete-all: is declared idempotent — a repeat call deletes nothing further", () => {
+test("push-delete-all: is declared idempotent — a repeat call deletes nothing further", () => {
   assertEquals(pushDeleteAll.idempotent, true);
 });
 
-Deno.test("push-delete-all: takes no params", () => {
+test("push-delete-all: takes no params", () => {
   assertEquals(pushDeleteAll.params, []);
 });

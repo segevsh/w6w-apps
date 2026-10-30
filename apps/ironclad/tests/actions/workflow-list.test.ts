@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import workflowList from "../../actions/workflow-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("workflow-list: GET /workflows with pagination and filters", async () => {
+test("workflow-list: GET /workflows with pagination and filters", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "w1" }]) }]);
   const out = await workflowList.execute(
     {
@@ -28,13 +29,13 @@ Deno.test("workflow-list: GET /workflows with pagination and filters", async () 
   assertEquals(out.count, 1);
 });
 
-Deno.test("workflow-list: sends nothing the caller left unset", async () => {
+test("workflow-list: sends nothing the caller left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await workflowList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});
 });
 
-Deno.test("workflow-list: accepts a comma-separated status string", async () => {
+test("workflow-list: accepts a comma-separated status string", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await workflowList.execute({ status: "completed, cancelled" }, ctx);
   assertEquals(queryOf(calls[0].url).status, "completed,cancelled");

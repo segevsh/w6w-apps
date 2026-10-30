@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { DEFAULT_DISPLAY, mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
-Deno.test("project-list: unwraps a single project (not an array)", async () => {
+test("project-list: unwraps a single project (not an array)", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -18,7 +19,7 @@ Deno.test("project-list: unwraps a single project (not an array)", async () => {
   assertEquals(new URL(calls[0].url).pathname, "/api/3.21/sites/site-1/projects");
 });
 
-Deno.test("project-list: returnAll walks pages until a short one", async () => {
+test("project-list: returnAll walks pages until a short one", async () => {
   const full = Array.from({ length: 100 }, (_, i) => ({ id: `p${i}` }));
   const { ctx, calls } = mockCtx(
     [
@@ -44,7 +45,7 @@ Deno.test("project-list: returnAll walks pages until a short one", async () => {
   assertEquals(new URL(calls[1].url).searchParams.get("pageNumber"), "2");
 });
 
-Deno.test("project-list: filter and sort reach the wire", async () => {
+test("project-list: filter and sort reach the wire", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { projects: {} } }],
     { display: DEFAULT_DISPLAY },

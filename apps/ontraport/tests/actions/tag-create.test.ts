@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagCreate from "../../actions/tag-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("tag-create: calls POST /1/Tags, form-urlencoded", async () => {
+test("tag-create: calls POST /1/Tags, form-urlencoded", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ tag_id: "1", tag_name: "api_tag" }) }]);
   await tagCreate.execute({ tagName: "api_tag" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("tag-create: calls POST /1/Tags, form-urlencoded", async () => {
   assertEquals(form.get("tag_name"), "api_tag");
 });
 
-Deno.test("tag-create: defaults object_type_id to 0 (Contact) when omitted from the wire, per the vendor default", async () => {
+test("tag-create: defaults object_type_id to 0 (Contact) when omitted from the wire, per the vendor default", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({}) }]);
   await tagCreate.execute({ tagName: "api_tag", objectTypeId: 0 }, ctx);
   const form = new URLSearchParams(calls[0].body!);

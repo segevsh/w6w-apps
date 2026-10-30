@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productGet from "../../actions/product-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("product-get: fetches by id and unwraps the product", async () => {
+test("product-get: fetches by id and unwraps the product", async () => {
   const product = { id: "OKMHM2X2OHYV", name: "Amazon.com" };
   const { ctx, calls } = mockCtx([{ status: 200, body: { product } }]);
   const result = await productGet.execute({ id: "OKMHM2X2OHYV" }, ctx);

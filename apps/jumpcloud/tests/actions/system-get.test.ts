@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/system-get.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("system-get: reads one device by id", async () => {
+test("system-get: reads one device by id", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { _id: "s1", hostname: "ada-mbp" } }],
     display,
@@ -15,12 +16,12 @@ Deno.test("system-get: reads one device by id", async () => {
 });
 
 /** `active` is about agent check-in, not whether the machine is powered on. */
-Deno.test("system-get: the output says what `active` actually means", () => {
+test("system-get: the output says what `active` actually means", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "active")!.label.includes("not 'powered on now'"));
 });
 
-Deno.test("system-get: a blank id fails before any request", async () => {
+test("system-get: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`systemId`");
   assertEquals(calls.length, 0);

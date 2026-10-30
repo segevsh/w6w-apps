@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-update.ts";
 
-Deno.test("contacts-update: POSTs contacts.update with id and returns {id} on 204", async () => {
+test("contacts-update: POSTs contacts.update with id and returns {id} on 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute({ id: "1", firstName: "New Name" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/contacts.update");
@@ -12,7 +13,7 @@ Deno.test("contacts-update: POSTs contacts.update with id and returns {id} on 20
   assertEquals(out, { id: "1" });
 });
 
-Deno.test("contacts-update: passes custom_fields_update_strategy through verbatim", async () => {
+test("contacts-update: passes custom_fields_update_strategy through verbatim", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute({
     id: "1",

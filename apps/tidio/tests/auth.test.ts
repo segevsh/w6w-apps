@@ -1,11 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import auth from "../auth/client-credentials.ts";
 import { mockCtx } from "./_helpers.ts";
 
 const cred = { clientId: "ci_abc", clientSecret: "cs_def" };
 
-Deno.test("auth.sign: stamps both headers", async () => {
+test("auth.sign: stamps both headers", async () => {
   const req = {
     url: "https://api.tidio.com/project",
     method: "GET",
@@ -16,7 +17,7 @@ Deno.test("auth.sign: stamps both headers", async () => {
   assertEquals(out.headers["x-tidio-openapi-client-secret"], "cs_def");
 });
 
-Deno.test("auth.test: 200 with project_id is ok, and sends the version header", async () => {
+test("auth.test: 200 with project_id is ok, and sends the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { project_id: 7, status: "online" } }]);
   const r = await (auth.test as any)({ credential: cred }, ctx);
   assertEquals(r.ok, true);
@@ -24,7 +25,7 @@ Deno.test("auth.test: 200 with project_id is ok, and sends the version header", 
   assertEquals(calls[0].headers.accept, "application/json; version=1");
 });
 
-Deno.test("auth.test: classifies by vendor error code, not status", async () => {
+test("auth.test: classifies by vendor error code, not status", async () => {
   const t = auth.test as any;
   const bad = mockCtx([{
     status: 401,
@@ -43,7 +44,7 @@ Deno.test("auth.test: classifies by vendor error code, not status", async () => 
   assertEquals((await t({ credential: cred }, odd.ctx)).ok, false);
 });
 
-Deno.test("auth.test: a missing half of the pair fails without a request", async () => {
+test("auth.test: a missing half of the pair fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const r = await (auth.test as any)({ credential: { clientId: "ci_x" } }, ctx);
   assertEquals(r.ok, false);

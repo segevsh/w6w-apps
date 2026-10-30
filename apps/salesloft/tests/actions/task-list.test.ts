@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/task-list.ts";
 
-Deno.test("task-list: GETs /tasks with query filters", async () => {
+test("task-list: GETs /tasks with query filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ currentState: "scheduled", timeIntervalFilter: "overdue" }, ctx);
   const url = new URL(calls[0].url);

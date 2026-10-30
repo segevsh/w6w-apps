@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/text-replace-all.ts";
 
-Deno.test("text-replace-all: builds replaceAllText with the match criteria", async () => {
+test("text-replace-all: builds replaceAllText with the match criteria", async () => {
   const { ctx, calls } = mockCtx([
     { body: { presentationId: "p1", replies: [{ replaceAllText: { occurrencesChanged: 4 } }] } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("text-replace-all: builds replaceAllText with the match criteria", asy
   assertEquals(out.occurrencesChanged, 4);
 });
 
-Deno.test("text-replace-all: matchCase and searchByRegex reach containsText", async () => {
+test("text-replace-all: matchCase and searchByRegex reach containsText", async () => {
   const { ctx, calls } = mockCtx([{ body: { replies: [{ replaceAllText: {} }] } }]);
   await action.execute({
     presentationId: "p1",
@@ -39,7 +40,7 @@ Deno.test("text-replace-all: matchCase and searchByRegex reach containsText", as
   });
 });
 
-Deno.test("text-replace-all: pageObjectIds narrows the sweep, and an empty list is omitted", async () => {
+test("text-replace-all: pageObjectIds narrows the sweep, and an empty list is omitted", async () => {
   const { ctx, calls } = mockCtx([
     { body: { replies: [{ replaceAllText: {} }] } },
     { body: { replies: [{ replaceAllText: {} }] } },
@@ -63,7 +64,7 @@ Deno.test("text-replace-all: pageObjectIds narrows the sweep, and an empty list 
   );
 });
 
-Deno.test("text-replace-all: an unmatched run is a 200 with an EMPTY reply, normalised to 0", async () => {
+test("text-replace-all: an unmatched run is a 200 with an EMPTY reply, normalised to 0", async () => {
   // Protobuf JSON omits int32 fields at their default, so "changed nothing"
   // arrives as `{}` rather than `{ occurrencesChanged: 0 }`.
   const { ctx } = mockCtx([{ body: { presentationId: "p1", replies: [{ replaceAllText: {} }] } }]);
@@ -74,7 +75,7 @@ Deno.test("text-replace-all: an unmatched run is a 200 with an EMPTY reply, norm
   assertEquals(out.occurrencesChanged, 0);
 });
 
-Deno.test("text-replace-all: a wholly empty replies array still normalises to 0", async () => {
+test("text-replace-all: a wholly empty replies array still normalises to 0", async () => {
   const { ctx } = mockCtx([{ body: { presentationId: "p1", replies: [] } }]);
   const out = await action.execute(
     { presentationId: "p1", text: "nope", replaceText: "x" },
@@ -83,7 +84,7 @@ Deno.test("text-replace-all: a wholly empty replies array still normalises to 0"
   assertEquals(out.occurrencesChanged, 0);
 });
 
-Deno.test("text-replace-all: failIfNoMatch turns the silent 200 into an error", async () => {
+test("text-replace-all: failIfNoMatch turns the silent 200 into an error", async () => {
   const { ctx } = mockCtx([{ body: { replies: [{ replaceAllText: {} }] } }]);
   await assertRejects(
     async () => {
@@ -97,7 +98,7 @@ Deno.test("text-replace-all: failIfNoMatch turns the silent 200 into an error", 
   );
 });
 
-Deno.test("text-replace-all: failIfNoMatch stays quiet when something matched", async () => {
+test("text-replace-all: failIfNoMatch stays quiet when something matched", async () => {
   const { ctx } = mockCtx([{ body: { replies: [{ replaceAllText: { occurrencesChanged: 1 } }] } }]);
   const out = await action.execute(
     { presentationId: "p1", text: "a", replaceText: "b", failIfNoMatch: true },
@@ -106,7 +107,7 @@ Deno.test("text-replace-all: failIfNoMatch stays quiet when something matched", 
   assertEquals(out.occurrencesChanged, 1);
 });
 
-Deno.test("text-replace-all: failIfNoMatch defaults off", () => {
+test("text-replace-all: failIfNoMatch defaults off", () => {
   const param = (action.params ?? []).find((p) => p.key === "failIfNoMatch");
   assertEquals(param?.default, false);
 });

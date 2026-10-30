@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import locationCreate from "../../actions/location-create.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
 const LOCATION = { id: "lc_1", name: "HQ", description: "1 Market St" };
 
-Deno.test("location-create: POSTs name and description", async () => {
+test("location-create: POSTs name and description", async () => {
   const { ctx, calls } = mockCtx([{ body: LOCATION }]);
   const result = await locationCreate.execute(
     { name: "HQ", description: "1 Market St" },
@@ -17,14 +18,14 @@ Deno.test("location-create: POSTs name and description", async () => {
   assertEquals(result.id, "lc_1");
 });
 
-Deno.test("location-create: description is optional and left off the wire when empty", async () => {
+test("location-create: description is optional and left off the wire when empty", async () => {
   const { ctx, calls } = mockCtx([{ body: LOCATION }]);
   await locationCreate.execute({ name: "HQ" }, ctx);
 
   assertEquals(bodyOf(calls[0]), { name: "HQ" });
 });
 
-Deno.test("location-create: an idempotency key is forwarded, never invented", async () => {
+test("location-create: an idempotency key is forwarded, never invented", async () => {
   const withKey = mockCtx([{ body: LOCATION }]);
   await locationCreate.execute({ name: "HQ", idempotencyKey: "k1" }, withKey.ctx);
   assertEquals(withKey.calls[0].headers["idempotency-key"], "k1");
@@ -34,7 +35,7 @@ Deno.test("location-create: an idempotency key is forwarded, never invented", as
   assertEquals(withoutKey.calls[0].headers["idempotency-key"], undefined);
 });
 
-Deno.test("location-create: a create is not declared idempotent", () => {
+test("location-create: a create is not declared idempotent", () => {
   assertEquals(locationCreate.type, "perform");
   assertEquals(locationCreate.idempotent, false);
   assertEquals(locationCreate.params?.find((p) => p.key === "name")?.required, true);

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-domain-add.ts";
 
-Deno.test("project-domain-add: POSTs the domain to the project", async () => {
+test("project-domain-add: POSTs the domain to the project", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "a.com", verified: false } }], {
     display: {},
   });
@@ -14,7 +15,7 @@ Deno.test("project-domain-add: POSTs the domain to the project", async () => {
   assertEquals((result as Record<string, unknown>).verified, false);
 });
 
-Deno.test("project-domain-add: redirect and branch options are sent when given", async () => {
+test("project-domain-add: redirect and branch options are sent when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display: {} });
   await action.execute!({
     projectId: "my-app",
@@ -31,7 +32,7 @@ Deno.test("project-domain-add: redirect and branch options are sent when given",
   });
 });
 
-Deno.test("project-domain-add: project and domain are both required", async () => {
+test("project-domain-add: project and domain are both required", async () => {
   const a = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ name: "a.com" }, a.ctx),

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockInventoryCtx } from "../_helpers.ts";
 import action from "../../actions/location-list.ts";
 
@@ -7,7 +8,7 @@ import action from "../../actions/location-list.ts";
  * of. Stock is tracked per location, so this is where a "how many are there"
  * question gets its second half.
  */
-Deno.test("location-list: GETs /locations with organization_id and unwraps `locations`", async () => {
+test("location-list: GETs /locations with organization_id and unwraps `locations`", async () => {
   const { ctx, calls } = mockInventoryCtx([
     {
       body: {
@@ -28,7 +29,7 @@ Deno.test("location-list: GETs /locations with organization_id and unwraps `loca
   assertEquals(out.pageContext, { page: 1, per_page: 200, has_more_page: false });
 });
 
-Deno.test("location-list: read-only — no create, update or delete param surface", () => {
+test("location-list: read-only — no create, update or delete param surface", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params?.every((p) => !p.required), true);
 });

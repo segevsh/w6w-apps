@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx, page } from "../_helpers.ts";
 import action from "../../actions/user-get-many.ts";
 
-Deno.test("user-get-many: GETs /users mapping settingsAccess to settings_access", async () => {
+test("user-get-many: GETs /users mapping settingsAccess to settings_access", async () => {
   const { ctx, calls } = mockCtx([
     { body: page([{ name: "Bob Lee", status: "active" }], null, 10) },
   ]);
@@ -22,14 +23,14 @@ Deno.test("user-get-many: GETs /users mapping settingsAccess to settings_access"
   assertEquals(result.items, [{ name: "Bob Lee", status: "active" }]);
 });
 
-Deno.test("user-get-many: a non-admin key's 403 surfaces as an error", async () => {
+test("user-get-many: a non-admin key's 403 surfaces as an error", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "Forbidden" }]);
   const err = await assertRejects(async () => await action.execute({}, ctx));
   assert(err instanceof Error);
   assert(err.message.includes("403"));
 });
 
-Deno.test("user-get-many: offers only the documented status and access values", () => {
+test("user-get-many: offers only the documented status and access values", () => {
   const values = (key: string) =>
     (action.params?.find((p) => p.key === key)?.options as Array<{ value: string }>).map((o) =>
       o.value

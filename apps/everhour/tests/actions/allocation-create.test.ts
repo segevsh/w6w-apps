@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import allocationCreate from "../../actions/allocation-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("allocation-create: POST /allocations with the documented query and body", async () => {
+test("allocation-create: POST /allocations with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await allocationCreate.execute({
     "startDate": "2019-01-01",
@@ -34,7 +35,7 @@ Deno.test("allocation-create: POST /allocations with the documented query and bo
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("allocation-create: an Everhour error surfaces its message and status", async () => {
+test("allocation-create: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -54,7 +55,7 @@ Deno.test("allocation-create: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("allocation-create: declares perform and idempotent=false", () => {
+test("allocation-create: declares perform and idempotent=false", () => {
   assertEquals(allocationCreate.type, "perform");
   assertEquals(allocationCreate.idempotent, false);
 });

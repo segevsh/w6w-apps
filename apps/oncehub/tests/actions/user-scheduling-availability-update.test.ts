@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-scheduling-availability-update.ts";
 
-Deno.test("user-scheduling-availability-update: PATCHes /users/{id}/scheduling-availability with raw JSON", async () => {
+test("user-scheduling-availability-update: PATCHes /users/{id}/scheduling-availability with raw JSON", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "schedule" } }]);
   const weekly = [{
     day: "Monday",

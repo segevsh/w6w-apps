@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDripCtx } from "../_helpers.ts";
 import action from "../../actions/get-subscriber.ts";
 
-Deno.test("get-subscriber: GETs /subscribers/:idOrEmail, url-encoded", async () => {
+test("get-subscriber: GETs /subscribers/:idOrEmail, url-encoded", async () => {
   const { ctx, calls } = mockDripCtx([{
     body: { subscribers: [{ id: "abc", email: "john+test@acme.com" }] },
   }]);
@@ -14,7 +15,7 @@ Deno.test("get-subscriber: GETs /subscribers/:idOrEmail, url-encoded", async () 
   assertEquals(out, { id: "abc", email: "john+test@acme.com" });
 });
 
-Deno.test("get-subscriber: defaults to an empty object when Drip returns none", async () => {
+test("get-subscriber: defaults to an empty object when Drip returns none", async () => {
   const { ctx } = mockDripCtx([{ body: {} }]);
   assertEquals(await action.execute({ idOrEmail: "abc" }, ctx), {});
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockQuickBooksCtx } from "../_helpers.ts";
 import action from "../../actions/estimate-create.ts";
 
@@ -9,7 +10,7 @@ const LINES = [{
   SalesItemLineDetail: { ItemRef: { value: "1" } },
 }];
 
-Deno.test("estimate-create: POSTs /estimate with CustomerRef and Line", async () => {
+test("estimate-create: POSTs /estimate with CustomerRef and Line", async () => {
   const { ctx, calls } = mockQuickBooksCtx([{ body: { Estimate: { Id: "1" } } }]);
   await action.execute({ customerId: "42", lines: LINES }, ctx);
   assertEquals(

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/store-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("store-list: GET /stores and unwraps the envelope", async () => {
+test("store-list: GET /stores and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "code": 200, "result": [{ "id": 1, "name": "S", "type": "native" }] },
   }]);
@@ -13,7 +14,7 @@ Deno.test("store-list: GET /stores and unwraps the envelope", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("store-list: a Printful error is surfaced with its reason and message", async () => {
+test("store-list: a Printful error is surfaced with its reason and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     headers: { "content-type": "application/json", "x-ratelimit-reset": "30" },

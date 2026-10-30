@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contacts-list.ts";
 
 const RESPONSE = { "data": [{ "contactId": "1" }] };
 
-Deno.test("contacts-list: calls GET /api/client/v2/contacts and returns the vendor body", async () => {
+test("contacts-list: calls GET /api/client/v2/contacts and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "startDate": "2026-09-01T00:00:00Z",
@@ -28,7 +29,7 @@ Deno.test("contacts-list: calls GET /api/client/v2/contacts and returns the vend
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("contacts-list: sends nothing for fields left unset", async () => {
+test("contacts-list: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!(
     { "startDate": "2026-09-01T00:00:00Z", "endDate": "2026-10-01T00:00:00Z" },
@@ -42,7 +43,7 @@ Deno.test("contacts-list: sends nothing for fields left unset", async () => {
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("contacts-list: refuses a missing startDate before any request", async () => {
+test("contacts-list: refuses a missing startDate before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await action.execute!({ "endDate": "2026-10-01T00:00:00Z" } as never, ctx)
@@ -50,7 +51,7 @@ Deno.test("contacts-list: refuses a missing startDate before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contacts-list: surfaces the vendor's error body", async () => {
+test("contacts-list: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

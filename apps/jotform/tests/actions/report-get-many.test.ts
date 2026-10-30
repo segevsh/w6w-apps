@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/report-get-many.ts";
 
-Deno.test("report-get-many: GETs /form/{formID}/reports", async () => {
+test("report-get-many: GETs /form/{formID}/reports", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope([{ id: "r1", list_type: "table", title: "Table Report" }]) },
   ]);
@@ -12,7 +13,7 @@ Deno.test("report-get-many: GETs /form/{formID}/reports", async () => {
   assertEquals(result, { reports: [{ id: "r1", list_type: "table", title: "Table Report" }] });
 });
 
-Deno.test("report-get-many: an empty content falls back to an empty list", async () => {
+test("report-get-many: an empty content falls back to an empty list", async () => {
   const { ctx } = mockCtx([{ body: envelope(undefined) }]);
   assertEquals(await action.execute({ formId: "1" }, ctx), { reports: [] });
 });

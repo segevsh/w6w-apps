@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import updateEntry from "../../actions/update-entry.ts";
 
-Deno.test("update-entry: append is PATCH, overwrite is PUT, on the entry url", async () => {
+test("update-entry: append is PATCH, overwrite is PUT, on the entry url", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { data: {} } },
     { status: 200, body: { data: {} } },
@@ -17,6 +18,6 @@ Deno.test("update-entry: append is PATCH, overwrite is PUT, on the entry url", a
   assertEquals(JSON.parse(calls[0].body!), { data: { entry_values: { stage: "Won" } } });
 });
 
-Deno.test("update-entry: says the parent record cannot be changed here", () => {
+test("update-entry: says the parent record cannot be changed here", () => {
   assert(/parent record cannot be changed/i.test(updateEntry.description!));
 });

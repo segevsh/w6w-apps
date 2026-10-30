@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-get.ts";
 
 const conn = { display: { baseUrl: "https://mautic.example.com" } };
 
-Deno.test("contact-get: GETs /contacts/{id} and unwraps the `contact` envelope", async () => {
+test("contact-get: GETs /contacts/{id} and unwraps the `contact` envelope", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: { contact: { id: 47, points: 10 } } }],
     conn,
@@ -15,7 +16,7 @@ Deno.test("contact-get: GETs /contacts/{id} and unwraps the `contact` envelope",
   assertEquals(out, { id: 47, points: 10 });
 });
 
-Deno.test("contact-get: rejects a non-numeric contactId before any request", async () => {
+test("contact-get: rejects a non-numeric contactId before any request", async () => {
   const { ctx, calls } = mockCtx([], conn);
   const err = await assertRejects(
     async () => await action.execute!({ contactId: "abc" }, ctx),

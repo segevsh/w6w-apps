@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import directoryContactList from "../../actions/directory-contact-list.ts";
 import { API_ROOT, listEnvelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("directory-contact-list: contacts are directory-scoped, never top-level", async () => {
+test("directory-contact-list: contacts are directory-scoped, never top-level", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ contactId: "CID_1" }]) }]);
   const out = await directoryContactList.execute({ directoryId: "POOL_1" }, ctx) as {
     elements: unknown[];
@@ -12,7 +13,7 @@ Deno.test("directory-contact-list: contacts are directory-scoped, never top-leve
   assertEquals(out.elements, [{ contactId: "CID_1" }]);
 });
 
-Deno.test("directory-contact-list: path-escapes the directory id", async () => {
+test("directory-contact-list: path-escapes the directory id", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await directoryContactList.execute({ directoryId: "POOL/1" }, ctx);
 

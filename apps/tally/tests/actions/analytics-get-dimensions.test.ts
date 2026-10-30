@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/analytics-get-dimensions.ts";
 
-Deno.test("analytics-get-dimensions: GETs the audience breakdowns", async () => {
+test("analytics-get-dimensions: GETs the audience breakdowns", async () => {
   const dimensions = {
     source: { google: 10 },
     browser: { Chrome: 8 },

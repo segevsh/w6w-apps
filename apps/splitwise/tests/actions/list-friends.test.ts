@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listFriends from "../../actions/list-friends.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("list-friends: reads the friends envelope", async () => {
+test("list-friends: reads the friends envelope", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       friends: [{
@@ -19,11 +20,11 @@ Deno.test("list-friends: reads the friends envelope", async () => {
   assertEquals(out.friends[0].id, 15);
 });
 
-Deno.test("list-friends: takes no params — the endpoint has no pagination", () => {
+test("list-friends: takes no params — the endpoint has no pagination", () => {
   assertEquals(listFriends.params?.length, 0);
 });
 
-Deno.test("list-friends: a missing key yields an empty list", async () => {
+test("list-friends: a missing key yields an empty list", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals(await listFriends.execute({}, ctx), { friends: [] });
 });

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, csv, FrontClient, json, tokenFromNext, unixSeconds } from "../../lib/client.ts";
 
-Deno.test("client: the `q` filter is bracket notation, one repeated key per array item", () => {
+test("client: the `q` filter is bracket notation, one repeated key per array item", () => {
   const { ctx } = mockCtx();
   const url = new FrontClient(ctx).url("/conversations", {
     q: { statuses: ["assigned", "unassigned"], updated_after: 1700000000 },
@@ -13,13 +14,13 @@ Deno.test("client: the `q` filter is bracket notation, one repeated key per arra
   assert(!url.search.includes("%7B"), `no JSON object should be encoded: ${url.search}`);
 });
 
-Deno.test("client: empty `q` entries are dropped rather than sent blank", () => {
+test("client: empty `q` entries are dropped rather than sent blank", () => {
   const { ctx } = mockCtx();
   const url = new FrontClient(ctx).url("/conversations", { q: { statuses: [], q2: "" } });
   assertEquals(url.search, "");
 });
 
-Deno.test("client: paging carries only the page_token, not Front's own hostname", async () => {
+test("client: paging carries only the page_token, not Front's own hostname", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -39,7 +40,7 @@ Deno.test("client: paging carries only the page_token, not Front's own hostname"
   assertEquals(new URL(calls[1].url).searchParams.get("page_token"), "tok2");
 });
 
-Deno.test("client: a next link without a page_token stops paging instead of looping", async () => {
+test("client: a next link without a page_token stops paging instead of looping", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { _results: [{ id: "a" }], _pagination: { next: "not a url" } } },
   ]);
@@ -47,7 +48,7 @@ Deno.test("client: a next link without a page_token stops paging instead of loop
   assertEquals(calls.length, 1);
 });
 
-Deno.test("client: a collection with no _pagination is fetched once and sliced", async () => {
+test("client: a collection with no _pagination is fetched once and sliced", async () => {
   // tags, statuses, inboxes, channels, teammates and comments have no cursor.
   const { ctx, calls } = mockCtx([
     { status: 200, body: { _results: [{ id: "t1" }, { id: "t2" }, { id: "t3" }] } },
@@ -59,13 +60,13 @@ Deno.test("client: a collection with no _pagination is fetched once and sliced",
   assertEquals(calls.length, 1);
 });
 
-Deno.test("client: page size is capped at Front's maximum of 100", async () => {
+test("client: page size is capped at Front's maximum of 100", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { _results: [] } }]);
   await new FrontClient(ctx).requestAll("/conversations", {}, 5000);
   assertEquals(new URL(calls[0].url).searchParams.get("limit"), "100");
 });
 
-Deno.test("client: an error surfaces Front's _error title, message and details", async () => {
+test("client: an error surfaces Front's _error title, message and details", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {
@@ -84,7 +85,7 @@ Deno.test("client: an error surfaces Front's _error title, message and details",
   assert(text.includes("body is required"), text);
 });
 
-Deno.test("client: 204 answers with no body do not blow up JSON parsing", async () => {
+test("client: 204 answers with no body do not blow up JSON parsing", async () => {
   const { ctx } = mockCtx([{ status: 204 }]);
   assertEquals(
     await new FrontClient(ctx).request("/conversations/cnv_1", { method: "PATCH" }),
@@ -92,7 +93,7 @@ Deno.test("client: 204 answers with no body do not blow up JSON parsing", async 
   );
 });
 
-Deno.test("unixSeconds: ISO in, SECONDS out — not milliseconds", () => {
+test("unixSeconds: ISO in, SECONDS out — not milliseconds", () => {
   assertEquals(unixSeconds("2026-01-01T00:00:00Z", "x"), 1767225600);
   assertEquals(unixSeconds(1767225600, "x"), 1767225600);
   assertEquals(unixSeconds("1767225600", "x"), 1767225600);
@@ -100,7 +101,7 @@ Deno.test("unixSeconds: ISO in, SECONDS out — not milliseconds", () => {
   assertThrows(() => unixSeconds("not a date", "dueAt"), Error, "dueAt");
 });
 
-Deno.test("csv / compact / json behave as the actions assume", () => {
+test("csv / compact / json behave as the actions assume", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(csv(""), undefined);
   assertEquals(compact({ a: 1, b: "", c: null, d: [], e: "x" }), { a: 1, e: "x" });
@@ -108,7 +109,7 @@ Deno.test("csv / compact / json behave as the actions assume", () => {
   assertThrows(() => json("{oops", "customFields"), Error, "customFields");
 });
 
-Deno.test("tokenFromNext: reads the cursor, tolerates rubbish", () => {
+test("tokenFromNext: reads the cursor, tolerates rubbish", () => {
   assertEquals(tokenFromNext("https://x.api.frontapp.com/c?page_token=abc"), "abc");
   assertEquals(tokenFromNext("https://x.api.frontapp.com/c"), undefined);
   assertEquals(tokenFromNext(""), undefined);

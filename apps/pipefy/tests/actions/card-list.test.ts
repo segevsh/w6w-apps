@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, normalizeGql } from "../_helpers.ts";
 import cardList from "../../actions/card-list.ts";
 
-Deno.test("card-list: lists cards in a pipe with default pagination", async () => {
+test("card-list: lists cards in a pipe with default pagination", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -28,7 +29,7 @@ Deno.test("card-list: lists cards in a pipe with default pagination", async () =
   assert(q.includes("pageInfo { endCursor } totalCount"));
 });
 
-Deno.test("card-list: filters by title and supports a cursor", async () => {
+test("card-list: filters by title and supports a cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { cards: { edges: [], pageInfo: { endCursor: null }, totalCount: 0 } } },
   }]);
@@ -39,7 +40,7 @@ Deno.test("card-list: filters by title and supports a cursor", async () => {
   assert(q.includes('after: "cursor1"'));
 });
 
-Deno.test("card-list: type/resource metadata", () => {
+test("card-list: type/resource metadata", () => {
   assertEquals(cardList.type, "search");
   assertEquals(cardList.resource, "card");
 });

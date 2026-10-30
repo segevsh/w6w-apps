@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey, { authHeaders, isPublishable, modeOf, probeFor } from "../../auth/api-key.ts";
 import { bodyOf, errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 // Deliberately NOT key-shaped: a hex-tailed `test_…` fixture trips GitHub push protection.
 const SECRET = "test_FAKE-fixture-not-a-real-lob-key";
 
-Deno.test("sign: stamps Basic auth with the key as username and an EMPTY password", async () => {
+test("sign: stamps Basic auth with the key as username and an EMPTY password", async () => {
   const request = {
     url: "https://api.lob.com/v1/addresses",
     method: "GET",
@@ -20,14 +21,14 @@ Deno.test("sign: stamps Basic auth with the key as username and an EMPTY passwor
   assert(!signed.url.includes(SECRET), "the key must never be put in the URL");
 });
 
-Deno.test("authHeaders: trims whitespace pasted around the key", () => {
+test("authHeaders: trims whitespace pasted around the key", () => {
   assertEquals(
     authHeaders({ apiKey: `  ${SECRET}\n` }).authorization,
     `Basic ${btoa(`${SECRET}:`)}`,
   );
 });
 
-Deno.test("modeOf / isPublishable: read the environment from the prefix", () => {
+test("modeOf / isPublishable: read the environment from the prefix", () => {
   assertEquals(modeOf("test_abc"), "test");
   assertEquals(modeOf("live_abc"), "live");
   assertEquals(modeOf("sk_abc"), undefined);
@@ -35,14 +36,14 @@ Deno.test("modeOf / isPublishable: read the environment from the prefix", () => 
   assertEquals(isPublishable("live_abc"), false);
 });
 
-Deno.test("probeFor: a secret key reads the address book, a publishable key autocompletes", () => {
+test("probeFor: a secret key reads the address book, a publishable key autocompletes", () => {
   assertEquals(probeFor(SECRET).path, "/addresses?limit=1");
   assertEquals(probeFor(SECRET).method, "GET");
   assertEquals(probeFor("test_pub_abc").path, "/us_autocompletions");
   assertEquals(probeFor("test_pub_abc").method, "POST");
 });
 
-Deno.test("test: a 200 from the address-book probe is ok, and the probe is signed", async () => {
+test("test: a 200 from the address-book probe is ok, and the probe is signed", async () => {
   const { ctx, calls } = mockCtx([{ body: { object: "list", data: [], count: 0 } }]);
   const result = await apiKey.test!({ credential: { apiKey: SECRET } } as never, ctx);
   assertEquals(result, { ok: true });
@@ -52,7 +53,7 @@ Deno.test("test: a 200 from the address-book probe is ok, and the probe is signe
   assertEquals(calls[0].headers.authorization, `Basic ${btoa(`${SECRET}:`)}`);
 });
 
-Deno.test("test: a publishable key is probed through autocomplete and passes", async () => {
+test("test: a publishable key is probed through autocomplete and passes", async () => {
   const { ctx, calls } = mockCtx([{ body: { suggestions: [] } }]);
   const result = await apiKey.test!(
     { credential: { apiKey: "live_pub_0123456789abcdef" } } as never,
@@ -64,7 +65,7 @@ Deno.test("test: a publishable key is probed through autocomplete and passes", a
   assertEquals(bodyOf(calls[0]), { address_prefix: "1" });
 });
 
-Deno.test("test: invalid_api_key and unauthorized are both 401 but get different advice", async () => {
+test("test: invalid_api_key and unauthorized are both 401 but get different advice", async () => {
   const bad = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_key", "Your API key is not valid.", 401),
@@ -85,7 +86,7 @@ Deno.test("test: invalid_api_key and unauthorized are both 401 but get different
   assert(missingResult.message?.includes("reconnect"));
 });
 
-Deno.test("test: validity comes from the body code, not the status", async () => {
+test("test: validity comes from the body code, not the status", async () => {
   // A rejected key that arrives under a non-401 status is still a rejection...
   const odd = mockCtx([{ status: 400, body: errorBody("invalid_api_key", "bad", 400) }]);
   assertEquals(
@@ -100,7 +101,7 @@ Deno.test("test: validity comes from the body code, not the status", async () =>
   );
 });
 
-Deno.test("test: a 5xx, a 429 or an unreadable 401 is inconclusive, never a pass", async () => {
+test("test: a 5xx, a 429 or an unreadable 401 is inconclusive, never a pass", async () => {
   for (
     const r of [
       { status: 503, body: "<html>bad gateway</html>" },
@@ -113,7 +114,7 @@ Deno.test("test: a 5xx, a 429 or an unreadable 401 is inconclusive, never a pass
   }
 });
 
-Deno.test("test: a missing or malformed key fails without a request", async () => {
+test("test: a missing or malformed key fails without a request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await apiKey.test!({ credential: {} } as never, ctx)).ok, false);
   const malformed = await apiKey.test!({ credential: { apiKey: "sk_live_x" } } as never, ctx);
@@ -122,7 +123,7 @@ Deno.test("test: a missing or malformed key fails without a request", async () =
   assertEquals(calls.length, 0);
 });
 
-Deno.test("afterConnect: labels the Connection test or live from the key, with no request", async () => {
+test("afterConnect: labels the Connection test or live from the key, with no request", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals(await apiKey.afterConnect!({ credential: { apiKey: SECRET } } as never, ctx), {
     mode: "test",
@@ -133,7 +134,7 @@ Deno.test("afterConnect: labels the Connection test or live from the key, with n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("the probe response is never the credential: it is not a whoami", () => {
+test("the probe response is never the credential: it is not a whoami", () => {
   for (const key of [SECRET, "test_pub_x"]) {
     assert(!/me|apikey/i.test(probeFor(key).path));
   }

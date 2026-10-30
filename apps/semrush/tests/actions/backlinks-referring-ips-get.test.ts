@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import backlinksReferringIpsGet from "../../actions/backlinks-referring-ips-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("backlinks-referring-ips-get: GETs ref-ips and unwraps data", async () => {
+test("backlinks-referring-ips-get: GETs ref-ips and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope([
@@ -21,14 +22,14 @@ Deno.test("backlinks-referring-ips-get: GETs ref-ips and unwraps data", async ()
   assertEquals(out.data[0].ip_address, "203.0.113.10");
 });
 
-Deno.test("backlinks-referring-ips-get: sorts by domains_count DESC by default", () => {
+test("backlinks-referring-ips-get: sorts by domains_count DESC by default", () => {
   const orderBy = backlinksReferringIpsGet.params?.find((p) => p.key === "order_by");
   const direction = backlinksReferringIpsGet.params?.find((p) => p.key === "direction");
   assertEquals(orderBy?.default, "domains_count");
   assertEquals(direction?.default, "DESC");
 });
 
-Deno.test("backlinks-referring-ips-get: forwards the four-target scope and paging", async () => {
+test("backlinks-referring-ips-get: forwards the four-target scope and paging", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
 
   await backlinksReferringIpsGet.execute(

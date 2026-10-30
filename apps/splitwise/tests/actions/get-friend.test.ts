@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getFriend from "../../actions/get-friend.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-friend: takes the friend's USER id, not a friendship id", async () => {
+test("get-friend: takes the friend's USER id, not a friendship id", async () => {
   const { ctx, calls } = mockCtx([{ body: { friend: { id: 15, first_name: "Ada" } } }]);
   const out = await getFriend.execute({ userId: 15 }, ctx) as { id: number };
 
@@ -10,7 +11,7 @@ Deno.test("get-friend: takes the friend's USER id, not a friendship id", async (
   assertEquals(out.id, 15);
 });
 
-Deno.test("get-friend: a bad id fails before the request", async () => {
+test("get-friend: a bad id fails before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await getFriend.execute({ userId: -1 as unknown as number }, ctx),

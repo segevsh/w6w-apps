@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { USER_URL } from "../../health/quota.ts";
 import requestRate from "../../health/request-rate.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("quota: reads the whoami endpoint, signed, on the app's own host", () => {
+test("quota: reads the whoami endpoint, signed, on the app's own host", () => {
   assertEquals(USER_URL, "https://api.heygen.com/v3/users/me");
   assertEquals(quota.credential, "signed");
   assertEquals(quota.network, undefined);
 });
 
-Deno.test("quota: a wallet account with a positive balance reports ok", async () => {
+test("quota: a wallet account with a positive balance reports ok", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -25,7 +26,7 @@ Deno.test("quota: a wallet account with a positive balance reports ok", async ()
   assertEquals(report.quota, [{ id: "wallet-balance", remaining: 42.5, unit: "usd" }]);
 });
 
-Deno.test("quota: an exhausted wallet reports down", async () => {
+test("quota: an exhausted wallet reports down", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({ billing_type: "wallet", wallet: { currency: "usd", remaining_balance: 0 } }),
@@ -37,7 +38,7 @@ Deno.test("quota: an exhausted wallet reports down", async () => {
   assert(/exhausted/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: subscription credit pools report the worse of two pools", async () => {
+test("quota: subscription credit pools report the worse of two pools", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({
@@ -66,7 +67,7 @@ Deno.test("quota: subscription credit pools report the worse of two pools", asyn
   assert(/add-on credits exhausted/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: usage-based with a configured spending cap reports a fraction against it", async () => {
+test("quota: usage-based with a configured spending cap reports a fraction against it", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({
@@ -81,7 +82,7 @@ Deno.test("quota: usage-based with a configured spending cap reports a fraction 
   assertEquals(report.quota, [{ id: "usage-spend", limit: 100, remaining: 10, unit: "USD" }]);
 });
 
-Deno.test("quota: usage-based hitting its spending cap reports down", async () => {
+test("quota: usage-based hitting its spending cap reports down", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({
@@ -93,7 +94,7 @@ Deno.test("quota: usage-based hitting its spending cap reports down", async () =
   assertEquals((await quota.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: usage-based with no configured cap falls back to remaining_credits", async () => {
+test("quota: usage-based with no configured cap falls back to remaining_credits", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({
@@ -110,17 +111,17 @@ Deno.test("quota: usage-based with no configured cap falls back to remaining_cre
   ]);
 });
 
-Deno.test("quota: a refused read reports unknown, not degraded", async () => {
+test("quota: a refused read reports unknown, not degraded", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: a response with no data reports unknown", async () => {
+test("quota: a response with no data reports unknown", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: a billing block with no readable figures reports unknown", async () => {
+test("quota: a billing block with no readable figures reports unknown", async () => {
   const { ctx } = mockCtx([{ body: envelope({ billing_type: "wallet", wallet: {} }) }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
@@ -131,7 +132,7 @@ Deno.test("quota: a billing block with no readable figures reports unknown", asy
  * An `unavailable` entry always reports `unknown`, and `unknown` outranks `ok` in the roll-up, so
  * any severity but `informational` would pin the app at `unknown` forever.
  */
-Deno.test("request-rate: is a declared absence at informational severity", () => {
+test("request-rate: is a declared absence at informational severity", () => {
   assertEquals(requestRate.severity, "informational");
   assertEquals(typeof requestRate.check, "undefined");
   assert((requestRate.unavailable?.reason ?? "").length > 0);

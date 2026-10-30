@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-identify.ts";
 
 const display = { display: { instance: "iad-01" } };
 
-Deno.test("user-identify: posts identify arrays and merge_behavior", async () => {
+test("user-identify: posts identify arrays and merge_behavior", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], display);
   await action.execute!({
     emailsToIdentify: [{ external_id: "e1", email: "a@b.com" }],

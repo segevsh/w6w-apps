@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import site from "../../health/site.ts";
 
 const conn = { display: { baseUrl: "https://example.com/sendy" } };
 
-Deno.test("site: ok on the documented keyless rejection", async () => {
+test("site: ok on the documented keyless rejection", async () => {
   const { ctx, calls } = mockCtx([{ body: "API key not passed" }], conn);
   const result = await site.check!({}, ctx);
   assertEquals(result.state, "ok");
@@ -13,19 +14,19 @@ Deno.test("site: ok on the documented keyless rejection", async () => {
   assertEquals(body.get("api_key"), null, "the site check must not sign the request");
 });
 
-Deno.test("site: down on an unrecognised body", async () => {
+test("site: down on an unrecognised body", async () => {
   const { ctx } = mockCtx([{ body: "<!doctype html>" }], conn);
   const result = await site.check!({}, ctx);
   assertEquals(result.state, "down");
 });
 
-Deno.test("site: down on a non-2xx status", async () => {
+test("site: down on a non-2xx status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }], conn);
   const result = await site.check!({}, ctx);
   assertEquals(result.state, "down");
 });
 
-Deno.test("site: unknown when the connection records no installation URL", async () => {
+test("site: unknown when the connection records no installation URL", async () => {
   const { ctx } = mockCtx([]);
   const result = await site.check!({}, ctx);
   assertEquals(result.state, "unknown");

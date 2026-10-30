@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import incidentAcknowledge from "../../actions/incident-acknowledge.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("incident-acknowledge: POST /api/v3/incidents/{incident_id}/acknowledge", async () => {
+test("incident-acknowledge: POST /api/v3/incidents/{incident_id}/acknowledge", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -23,7 +24,7 @@ Deno.test("incident-acknowledge: POST /api/v3/incidents/{incident_id}/acknowledg
   assertEquals(out.status, "Acknowledged");
 });
 
-Deno.test("incident-acknowledge: puts no credential on the request (sign owns that)", async () => {
+test("incident-acknowledge: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -37,7 +38,7 @@ Deno.test("incident-acknowledge: puts no credential on the request (sign owns th
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("incident-acknowledge: a vendor error surfaces its own message", async () => {
+test("incident-acknowledge: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await incidentAcknowledge.execute(

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import sequenceList from "../../actions/sequence-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("sequence-list: GETs /v3/sequences with the given filters as query params", async () => {
+test("sequence-list: GETs /v3/sequences with the given filters as query params", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: 1, name: "Cold outreach" }]) }]);
   const out = await sequenceList.execute({ status: "active", isArchived: false }, ctx);
 

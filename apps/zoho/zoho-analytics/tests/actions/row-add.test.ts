@@ -1,12 +1,13 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockAnalyticsCtx } from "../_helpers.ts";
 import action from "../../actions/row-add.ts";
 
-Deno.test("row-add: POSTs with CONFIG.columns and the org header, not idempotent", () => {
+test("row-add: POSTs with CONFIG.columns and the org header, not idempotent", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("row-add: builds CONFIG from columns and optional date-format fields", async () => {
+test("row-add: builds CONFIG from columns and optional date-format fields", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {
@@ -37,7 +38,7 @@ Deno.test("row-add: builds CONFIG from columns and optional date-format fields",
   assertEquals(out, { addedColumns: { Region: "East" }, invalidColumns: {} });
 });
 
-Deno.test("row-add: accepts columns as a JSON string param", async () => {
+test("row-add: accepts columns as a JSON string param", async () => {
   const { ctx, calls } = mockAnalyticsCtx([
     {
       body: {

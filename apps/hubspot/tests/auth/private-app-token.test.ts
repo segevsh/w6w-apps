@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/private-app-token.ts";
 
-Deno.test("private-app-token: is a bearer method exposing an `apiKey` secret field", () => {
+test("private-app-token: is a bearer method exposing an `apiKey` secret field", () => {
   assertEquals(auth.key, "private-app-token");
   assertEquals(auth.type, "bearer");
   const field = auth.fields?.find((f) => f.key === "apiKey");
@@ -11,7 +12,7 @@ Deno.test("private-app-token: is a bearer method exposing an `apiKey` secret fie
   assertEquals(field.required, true);
 });
 
-Deno.test("private-app-token: sign appends Bearer using credential.apiKey", async () => {
+test("private-app-token: sign appends Bearer using credential.apiKey", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -22,7 +23,7 @@ Deno.test("private-app-token: sign appends Bearer using credential.apiKey", asyn
   assertEquals(out.headers["authorization"], "Bearer pat-xyz");
 });
 
-Deno.test("private-app-token: test hits /account-info/v3/details and reports ok", async () => {
+test("private-app-token: test hits /account-info/v3/details and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { results: [] } }]);
   const result = await auth.test({ credential: { apiKey: "pat-xyz" } }, ctx);
   assertEquals(result.ok, true);
@@ -33,7 +34,7 @@ Deno.test("private-app-token: test hits /account-info/v3/details and reports ok"
   assertEquals(calls[0].headers["authorization"], "Bearer pat-xyz");
 });
 
-Deno.test("private-app-token: test reports the upstream status on failure", async () => {
+test("private-app-token: test reports the upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, statusText: "Unauthorized" }]);
   const result = await auth.test({ credential: { apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);

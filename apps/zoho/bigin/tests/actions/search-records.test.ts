@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockBiginCtx } from "../_helpers.ts";
 import action from "../../actions/search-records.ts";
 
-Deno.test("search-records: GETs /{module}/search with the documented criteria grammar", async () => {
+test("search-records: GETs /{module}/search with the documented criteria grammar", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [{ id: "1" }], info: { count: 1 } } }]);
   await action.execute(
     { module: "Pipelines", criteria: "((Deal_Name:starts_with:W)and(Amount:greater_than:5000))" },
@@ -17,7 +18,7 @@ Deno.test("search-records: GETs /{module}/search with the documented criteria gr
   );
 });
 
-Deno.test("search-records: accepts the account module's real API name", async () => {
+test("search-records: accepts the account module's real API name", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [] } }]);
   await action.execute({ module: "Accounts", email: "a@acme.com" }, ctx);
   const url = new URL(calls[0].url);
@@ -25,7 +26,7 @@ Deno.test("search-records: accepts the account module's real API name", async ()
   assertEquals(url.searchParams.get("email"), "a@acme.com");
 });
 
-Deno.test("search-records: sends exactly one selector, never two at once", async () => {
+test("search-records: sends exactly one selector, never two at once", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: { data: [] } }]);
   await action.execute({ module: "Contacts", word: "abc" }, ctx);
   const url = new URL(calls[0].url);
@@ -33,7 +34,7 @@ Deno.test("search-records: sends exactly one selector, never two at once", async
   assertEquals(url.searchParams.get("word"), "abc");
 });
 
-Deno.test("search-records: rejects a call with no selector or with several", async () => {
+test("search-records: rejects a call with no selector or with several", async () => {
   const { ctx } = mockBiginCtx([{ body: { data: [] } }]);
   await assertRejects(
     // `moduleName`/selector validation throws SYNCHRONOUSLY, before any promise
@@ -55,7 +56,7 @@ Deno.test("search-records: rejects a call with no selector or with several", asy
   );
 });
 
-Deno.test("search-records: rejects a module name that is not an API identifier", async () => {
+test("search-records: rejects a module name that is not an API identifier", async () => {
   const { ctx } = mockBiginCtx([{ body: { data: [] } }]);
   await assertRejects(
     async () => {

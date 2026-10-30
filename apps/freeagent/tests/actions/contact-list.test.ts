@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreeAgentCtx } from "../_helpers.ts";
 import action from "../../actions/contact-list.ts";
 
-Deno.test("contact-list: GETs /contacts with no query params by default", async () => {
+test("contact-list: GETs /contacts with no query params by default", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ body: { contacts: [] } }]);
   await action.execute({}, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("contact-list: GETs /contacts with no query params by default", async 
   assertEquals(url.search, "");
 });
 
-Deno.test("contact-list: forwards view/sort/updated_since/page/per_page", async () => {
+test("contact-list: forwards view/sort/updated_since/page/per_page", async () => {
   const { ctx, calls } = mockFreeAgentCtx([{ body: { contacts: [] } }]);
   await action.execute({
     view: "clients",

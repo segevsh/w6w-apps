@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, envelope, pathOf, queryOf, WS } from "../_helpers.ts";
 import action from "../../actions/record-get.ts";
 
-Deno.test("record-get: uses the singular `record` path", async () => {
+test("record-get: uses the singular `record` path", async () => {
   const { ctx, calls } = connCtx([{ body: envelope({ id: "7", values: { name: "Ada" } }) }]);
   const out = await action.execute(
     { moduleName: "crm", tableName: "contacts", recordId: 7, fields: "name" },
@@ -16,7 +17,7 @@ Deno.test("record-get: uses the singular `record` path", async () => {
   assertEquals(queryOf(calls[0].url), { fields: "name" });
 });
 
-Deno.test("record-get: rejects a non-integer id before any request", async () => {
+test("record-get: rejects a non-integer id before any request", async () => {
   const { ctx, calls } = connCtx();
   await assertRejects(
     async () =>

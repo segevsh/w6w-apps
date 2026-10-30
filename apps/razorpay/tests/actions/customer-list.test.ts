@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customerList from "../../actions/customer-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("customer-list: lists /customers with only count/skip — no date-range filter exists", async () => {
+test("customer-list: lists /customers with only count/skip — no date-range filter exists", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([{ id: "cust_1" }]) }]);
   await customerList.execute({ count: 25, skip: 5 }, ctx);
 

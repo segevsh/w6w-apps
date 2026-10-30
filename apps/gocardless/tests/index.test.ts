@@ -1,4 +1,6 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 16;
@@ -17,7 +19,7 @@ const CREATE_ACTIONS = [
   "create-refund",
 ];
 
-Deno.test("index: exports 16 actions, one auth method and two health checks", () => {
+test("index: exports 16 actions, one auth method and two health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth?.length, 1);
@@ -42,7 +44,7 @@ Deno.test("index: exports 16 actions, one auth method and two health checks", ()
   ]);
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -50,7 +52,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description, output and execute", () => {
+test("index: every action declares a valid type, a description, output and execute", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -63,7 +65,7 @@ Deno.test("index: every action declares a valid type, a description, output and 
   }
 });
 
-Deno.test("index: the read/search/perform split matches what each action does", () => {
+test("index: the read/search/perform split matches what each action does", () => {
   const expected: Record<string, string> = {
     "list-customers": "search",
     "get-customer": "read",
@@ -87,7 +89,7 @@ Deno.test("index: the read/search/perform split matches what each action does", 
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -102,7 +104,7 @@ Deno.test("index: every param has a key and a label", () => {
  * `invalid_state` error. `true` anywhere here would make the runtime's own
  * retry a double charge.
  */
-Deno.test("index: every perform action is explicitly not idempotent", () => {
+test("index: every perform action is explicitly not idempotent", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   assertEquals(performs.length, 7);
   for (const a of performs) {
@@ -110,7 +112,7 @@ Deno.test("index: every perform action is explicitly not idempotent", () => {
   }
 });
 
-Deno.test("index: every list action takes the shared cursor params and reports the cursors", () => {
+test("index: every list action takes the shared cursor params and reports the cursors", () => {
   for (const key of LIST_ACTIONS) {
     const action = app.actions.find((a) => a.key === key)!;
     const paramKeys = (action.params ?? []).map((p) => p.key);
@@ -129,14 +131,14 @@ Deno.test("index: every list action takes the shared cursor params and reports t
  * on a read) would imply GoCardless treats a repeat as a no-op, which it does
  * not — it answers `invalid_state`.
  */
-Deno.test("index: exactly the four creating actions accept an idempotency key", () => {
+test("index: exactly the four creating actions accept an idempotency key", () => {
   for (const a of app.actions) {
     const hasKey = (a.params ?? []).some((p) => p.key === "idempotencyKey");
     assertEquals(hasKey, CREATE_ACTIONS.includes(a.key), `${a.key}: idempotencyKey exposure`);
   }
 });
 
-Deno.test("index: the create actions require the fields GoCardless requires", () => {
+test("index: the create actions require the fields GoCardless requires", () => {
   const requiredOf = (key: string) =>
     (app.actions.find((a) => a.key === key)!.params ?? [])
       .filter((p) => p.required === true)
@@ -160,9 +162,9 @@ Deno.test("index: the create actions require the fields GoCardless requires", ()
  * status host belongs to the `service` check's declared feed (allowlisted
  * implicitly), never to the app's own list.
  */
-Deno.test("index: the manifest declares both hosts and nothing else", async () => {
+test("index: the manifest declares both hosts and nothing else", async () => {
   const manifest = JSON.parse(
-    await Deno.readTextFile(new URL("../package.json", import.meta.url)),
+    await denoReadTextFile(new URL("../package.json", import.meta.url)),
   ) as {
     name: string;
     w6w: {
@@ -190,8 +192,8 @@ Deno.test("index: the manifest declares both hosts and nothing else", async () =
  * byte-for-byte — so the check is that the vendor's artwork is still intact, not
  * that the file matches some house style.
  */
-Deno.test("index: the icon is the vendor's own two-colour mark, unredrawn", async () => {
-  const svg = await Deno.readTextFile(new URL("../assets/icon.svg", import.meta.url));
+test("index: the icon is the vendor's own two-colour mark, unredrawn", async () => {
+  const svg = await denoReadTextFile(new URL("../assets/icon.svg", import.meta.url));
   assert(
     svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none">'),
     "icon.svg is not the vendor's 64x64 export",
@@ -222,9 +224,9 @@ function code(src: string): string {
 }
 
 const actionSource = async (key: string) =>
-  code(await Deno.readTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
+  code(await denoReadTextFile(new URL(`../actions/${key}.ts`, import.meta.url)));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -234,7 +236,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -247,7 +249,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * hard-coded a host — or accepted one as a param — could be pointed somewhere
  * the manifest never allowlisted.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/gocardless\.com/.test(src), `${a.key}: contains a GoCardless host literal`);
@@ -255,7 +257,7 @@ Deno.test("index: no action hard-codes a host", async () => {
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|base_?url|environment|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -266,7 +268,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
 
 // --- health checks -----------------------------------------------------------
 
-Deno.test("index: the health surface is a real feed and a real quota read", () => {
+test("index: the health surface is a real feed and a real quota read", () => {
   const keys = (app.healthChecks ?? []).map((h) => h.key);
   assertEquals(keys, ["service", "quota"]);
 
@@ -293,13 +295,13 @@ Deno.test("index: the health surface is a real feed and a real quota read", () =
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the token. */
-Deno.test("index: no health check widens egress", () => {
+test("index: no health check widens egress", () => {
   for (const h of app.healthChecks ?? []) {
     assertEquals(h.network, undefined, `${h.key}: widens egress`);
   }
 });
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.

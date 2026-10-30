@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/job-update-address.ts";
 import { mockCtx, pathOf, problemBody, queryOf } from "../_helpers.ts";
 
-Deno.test("job-update-address: sends PUT /jobs/j1/address and returns the vendor body", async () => {
+test("job-update-address: sends PUT /jobs/j1/address and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await action.execute(
     { jobId: "j1", city: "Detroit", zipCode: "48201" } as never,
@@ -17,7 +18,7 @@ Deno.test("job-update-address: sends PUT /jobs/j1/address and returns the vendor
   assertEquals(out, { success: true });
 });
 
-Deno.test("job-update-address: a vendor error surfaces its title and status", async () => {
+test("job-update-address: a vendor error surfaces its title and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: problemBody(404, "Resource not found.") }]);
   await assertRejects(
     async () =>
@@ -27,7 +28,7 @@ Deno.test("job-update-address: a vendor error surfaces its title and status", as
   );
 });
 
-Deno.test("job-update-address: refuses an update that changes nothing", async () => {
+test("job-update-address: refuses an update that changes nothing", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ jobId: "j1" } as never, ctx),

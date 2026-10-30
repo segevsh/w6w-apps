@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/user-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("user-create: full input maps to POST /users", async () => {
+test("user-create: full input maps to POST /users", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -31,7 +32,7 @@ Deno.test("user-create: full input maps to POST /users", async () => {
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("user-create: required input only maps to POST /users", async () => {
+test("user-create: required input only maps to POST /users", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "success": true, "data": { "uuid": "x1" }, "message": "ok" },
   }]);
@@ -52,7 +53,7 @@ Deno.test("user-create: required input only maps to POST /users", async () => {
   assertEquals(out, { "data": { "uuid": "x1" }, "message": "ok" });
 });
 
-Deno.test("user-create: sends no authorization header of its own", async () => {
+test("user-create: sends no authorization header of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, data: {}, message: "ok" } }]);
   await action.execute!({
     "name": "sample-name",
@@ -66,7 +67,7 @@ Deno.test("user-create: sends no authorization header of its own", async () => {
   assert(!("authorization" in calls[0].headers), "the sign hook injects credentials, not actions");
 });
 
-Deno.test("user-create: surfaces a JSON error body as a thrown error", async () => {
+test("user-create: surfaces a JSON error body as a thrown error", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { message: "Name already taken" } }]);
   await assertRejects(
     async () =>
@@ -84,7 +85,7 @@ Deno.test("user-create: surfaces a JSON error body as a thrown error", async () 
   );
 });
 
-Deno.test("user-create: an empty 401 body still reads as an auth failure", async () => {
+test("user-create: an empty 401 body still reads as an auth failure", async () => {
   const { ctx } = mockCtx([{ status: 401, headers: { "content-type": "text/html" } }]);
   await assertRejects(
     async () =>
@@ -102,7 +103,7 @@ Deno.test("user-create: an empty 401 body still reads as an auth failure", async
   );
 });
 
-Deno.test("user-create: declares type, params and output", () => {
+test("user-create: declares type, params and output", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.key, "user-create");
   assert(Array.isArray(action.output) && action.output.length > 0);

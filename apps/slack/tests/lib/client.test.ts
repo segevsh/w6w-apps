@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { encodeForm, SlackClient } from "../../lib/client.ts";
 
-Deno.test("client: JSON body sets application/json content-type", async () => {
+test("client: JSON body sets application/json content-type", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new SlackClient(ctx);
   await client.request("/chat.postMessage", {
@@ -14,7 +15,7 @@ Deno.test("client: JSON body sets application/json content-type", async () => {
   assertEquals(JSON.parse(calls[0].body!), { channel: "C1", text: "hi" });
 });
 
-Deno.test("client: form content-type triggers URLSearchParams body", async () => {
+test("client: form content-type triggers URLSearchParams body", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new SlackClient(ctx);
   await client.request("/files.upload", {
@@ -28,7 +29,7 @@ Deno.test("client: form content-type triggers URLSearchParams body", async () =>
   assertEquals(params.get("content"), "hello");
 });
 
-Deno.test("client: throws when Slack returns { ok: false, error }", async () => {
+test("client: throws when Slack returns { ok: false, error }", async () => {
   const { ctx } = mockCtx([{ body: { ok: false, error: "channel_not_found" } }]);
   const client = new SlackClient(ctx);
   await assertRejects(
@@ -38,7 +39,7 @@ Deno.test("client: throws when Slack returns { ok: false, error }", async () => 
   );
 });
 
-Deno.test("client: surfaces `needed` scopes in the error message", async () => {
+test("client: surfaces `needed` scopes in the error message", async () => {
   const { ctx } = mockCtx([{ body: { ok: false, error: "missing_scope", needed: "chat:write" } }]);
   const client = new SlackClient(ctx);
   await assertRejects(
@@ -48,7 +49,7 @@ Deno.test("client: surfaces `needed` scopes in the error message", async () => {
   );
 });
 
-Deno.test("client: throws on HTTP non-2xx", async () => {
+test("client: throws on HTTP non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 500, statusText: "Server Error", body: "boom" }]);
   const client = new SlackClient(ctx);
   await assertRejects(
@@ -58,7 +59,7 @@ Deno.test("client: throws on HTTP non-2xx", async () => {
   );
 });
 
-Deno.test("client: skips null/undefined/empty query params", async () => {
+test("client: skips null/undefined/empty query params", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new SlackClient(ctx);
   await client.request("/x", {
@@ -71,7 +72,7 @@ Deno.test("client: skips null/undefined/empty query params", async () => {
   assertEquals(url.searchParams.has("d"), false);
 });
 
-Deno.test("client: absolute URLs pass through unchanged (upload_url case)", async () => {
+test("client: absolute URLs pass through unchanged (upload_url case)", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const client = new SlackClient(ctx);
   await client.request("https://files.slack.example/upload?x=1");
@@ -80,7 +81,7 @@ Deno.test("client: absolute URLs pass through unchanged (upload_url case)", asyn
   assertEquals(url.pathname, "/upload");
 });
 
-Deno.test("encodeForm: JSON-stringifies nested arrays/objects (Slack quirk)", () => {
+test("encodeForm: JSON-stringifies nested arrays/objects (Slack quirk)", () => {
   const out = encodeForm({
     channel: "C1",
     blocks: [{ type: "section", text: { type: "mrkdwn", text: "hi" } }],

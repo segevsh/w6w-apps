@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import locationList from "../../actions/location-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("location-list: GETs /api/location with from_number", async () => {
+test("location-list: GETs /api/location with from_number", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "OK", locations: [] } }]);
   await locationList.execute({ fromNumber: "+1" }, ctx);
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action, { parseEmailList } from "../../actions/send-email.ts";
 
-Deno.test("parseEmailList: accepts plain, comma-separated, and Name-<addr> forms", () => {
+test("parseEmailList: accepts plain, comma-separated, and Name-<addr> forms", () => {
   assertEquals(parseEmailList("a@x.com"), [{ email: "a@x.com" }]);
   assertEquals(parseEmailList("a@x.com, b@x.com"), [{ email: "a@x.com" }, { email: "b@x.com" }]);
   assertEquals(parseEmailList("Ada <a@x.com>"), [{ email: "a@x.com", name: "Ada" }]);
@@ -12,20 +13,20 @@ Deno.test("parseEmailList: accepts plain, comma-separated, and Name-<addr> forms
   );
 });
 
-Deno.test("parseEmailList: strips wrapping quotes from names", () => {
+test("parseEmailList: strips wrapping quotes from names", () => {
   assertEquals(parseEmailList('"Ada Lovelace" <a@x.com>'), [
     { email: "a@x.com", name: "Ada Lovelace" },
   ]);
 });
 
-Deno.test("parseEmailList: passes structured input through unchanged", () => {
+test("parseEmailList: passes structured input through unchanged", () => {
   assertEquals(
     parseEmailList([{ email: "a@x.com", name: "Ada" }, { email: "b@x.com" }]),
     [{ email: "a@x.com", name: "Ada" }, { email: "b@x.com" }],
   );
 });
 
-Deno.test("send-email: POSTs /v3/smtp/email with parsed sender/to and subject", async () => {
+test("send-email: POSTs /v3/smtp/email with parsed sender/to and subject", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { messageId: "abc" } }]);
   await action.execute!(
     {
@@ -46,7 +47,7 @@ Deno.test("send-email: POSTs /v3/smtp/email with parsed sender/to and subject", 
   assertEquals(body.textContent, "Hello");
 });
 
-Deno.test("send-email: forwards htmlContent, cc, bcc, replyTo when provided", async () => {
+test("send-email: forwards htmlContent, cc, bcc, replyTo when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!(
     {
@@ -67,7 +68,7 @@ Deno.test("send-email: forwards htmlContent, cc, bcc, replyTo when provided", as
   assertEquals(body.replyTo, { email: "reply@x.com" });
 });
 
-Deno.test("send-email: normalizes tags string to an array; forwards array as-is", async () => {
+test("send-email: normalizes tags string to an array; forwards array as-is", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }, { status: 201, body: {} }]);
   await action.execute!(
     { sender: "ada@x.com", to: "bob@x.com", subject: "Hi", tags: "vip, promo" },
@@ -81,7 +82,7 @@ Deno.test("send-email: normalizes tags string to an array; forwards array as-is"
   assertEquals(JSON.parse(calls[1].body!).tags, ["a", "b"]);
 });
 
-Deno.test("send-email: forwards attachment and template params when provided", async () => {
+test("send-email: forwards attachment and template params when provided", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute!(
     {

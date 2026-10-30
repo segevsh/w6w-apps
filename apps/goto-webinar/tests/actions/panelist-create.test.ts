@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import panelistCreate from "../../actions/panelist-create.ts";
 import { mockCtxWithOrganizer, pathOf } from "../_helpers.ts";
 
-Deno.test("panelist-create: wraps the single panelist in the top-level array GoTo requires", async () => {
+test("panelist-create: wraps the single panelist in the top-level array GoTo requires", async () => {
   const { ctx, calls } = mockCtxWithOrganizer(
     [{
       status: 201,

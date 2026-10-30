@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-get-usage.ts";
 
-Deno.test("user-get-usage: GETs /user/usage and folds limit-left into the result", async () => {
+test("user-get-usage: GETs /user/usage and folds limit-left into the result", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope(
@@ -22,7 +23,7 @@ Deno.test("user-get-usage: GETs /user/usage and folds limit-left into the result
   });
 });
 
-Deno.test("user-get-usage: an absent limit-left leaves the field undefined", async () => {
+test("user-get-usage: an absent limit-left leaves the field undefined", async () => {
   const { ctx } = mockCtx([{ body: envelope({ api: "3" }) }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.limitLeft, undefined);

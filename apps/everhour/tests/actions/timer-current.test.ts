@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timerCurrent from "../../actions/timer-current.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("timer-current: GET /timers/current with the documented query and body", async () => {
+test("timer-current: GET /timers/current with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await timerCurrent.execute({}, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("timer-current: GET /timers/current with the documented query and body
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("timer-current: an Everhour error surfaces its message and status", async () => {
+test("timer-current: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(timerCurrent.execute({}, ctx)),
@@ -30,6 +31,6 @@ Deno.test("timer-current: an Everhour error surfaces its message and status", as
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("timer-current: declares read", () => {
+test("timer-current: declares read", () => {
   assertEquals(timerCurrent.type, "read");
 });

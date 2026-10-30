@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import balanceGet from "../../actions/balance-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const INPUT = {} as Parameters<typeof balanceGet.execute>[0];
 
-Deno.test("balance-get: GET /api/balance with the documented fields", async () => {
+test("balance-get: GET /api/balance with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { "amount": 12.35, "currency": "EUR" } }]);
   const out = await balanceGet.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -18,14 +19,14 @@ Deno.test("balance-get: GET /api/balance with the documented fields", async () =
   assertEquals(out.amount, 12.35);
 });
 
-Deno.test("balance-get: declares type read-or-search and every required param", () => {
+test("balance-get: declares type read-or-search and every required param", () => {
   const required = (balanceGet.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, []);
   assert(["read", "search", "perform"].includes(balanceGet.type));
   assertEquals(balanceGet.type === "perform", false);
 });
 
-Deno.test("balance-get: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("balance-get: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

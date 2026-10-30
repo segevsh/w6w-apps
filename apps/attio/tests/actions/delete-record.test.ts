@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, run } from "../_helpers.ts";
 import deleteRecord from "../../actions/delete-record.ts";
 
-Deno.test("delete-record: DELETEs and summarises the empty 200", async () => {
+test("delete-record: DELETEs and summarises the empty 200", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   const out = await run<{ deleted: boolean; record_id: string }>(
     deleteRecord,
@@ -14,7 +15,7 @@ Deno.test("delete-record: DELETEs and summarises the empty 200", async () => {
   assertEquals(out, { deleted: true, record_id: "r1" });
 });
 
-Deno.test("delete-record: warns that this is not archiving", () => {
+test("delete-record: warns that this is not archiving", () => {
   const d = deleteRecord.description!;
   assert(/[Nn]ot reversible/.test(d), d);
   assert(/archiv/i.test(d), d);

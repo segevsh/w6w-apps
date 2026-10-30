@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookSubscribe from "../../actions/webhook-subscribe.ts";
 import { API_ROOT, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-subscribe: sends POST /webhooks/subscriptions", async () => {
+test("webhook-subscribe: sends POST /webhooks/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": "w1", "encryptionKey": "k" } }]);
   const out = await webhookSubscribe.execute(
     { "url": "https://example.com/hook", "events": ["invoice.paid", "proposal.*"] } as never,
@@ -25,7 +26,7 @@ Deno.test("webhook-subscribe: sends POST /webhooks/subscriptions", async () => {
   assertEquals(out.id, "w1");
 });
 
-Deno.test("webhook-subscribe: a non-2xx answer throws with the vendor's error code", async () => {
+test("webhook-subscribe: a non-2xx answer throws with the vendor's error code", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { status: 403, error: "FORBIDDEN_USER" } }]);
   let message = "";
   try {

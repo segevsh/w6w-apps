@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageTemplateGet from "../../actions/image-template-get.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-template-get: GET /image_templates/{uid}", async () => {
+test("image-template-get: GET /image_templates/{uid}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { uid: "t1", name: "Card", config: { objects: [{ name: "title" }] } } },
   ]);
@@ -15,7 +16,7 @@ Deno.test("image-template-get: GET /image_templates/{uid}", async () => {
   assertEquals(out.name, "Card");
 });
 
-Deno.test("image-template-get: requires uid", async () => {
+test("image-template-get: requires uid", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => imageTemplateGet.execute({ uid: "" }, ctx));
 });

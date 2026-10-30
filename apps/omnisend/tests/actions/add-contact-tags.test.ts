@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import addContactTags from "../../actions/add-contact-tags.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("add-contact-tags: POSTs to /contacts/tags and returns undefined for the 202", async () => {
+test("add-contact-tags: POSTs to /contacts/tags and returns undefined for the 202", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   const out = await addContactTags.execute({ tags: ["vip"], contactIDs: ["c1"] }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("add-contact-tags: POSTs to /contacts/tags and returns undefined for t
   assertEquals(body, { tags: ["vip"], contactIDs: ["c1"] });
 });
 
-Deno.test("add-contact-tags: selectors combine additively — all four may be sent together", async () => {
+test("add-contact-tags: selectors combine additively — all four may be sent together", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await addContactTags.execute({
     tags: ["vip"],
@@ -30,12 +31,12 @@ Deno.test("add-contact-tags: selectors combine additively — all four may be se
   assertEquals(body.segmentID, "seg1");
 });
 
-Deno.test("add-contact-tags: tags is required", () => {
+test("add-contact-tags: tags is required", () => {
   const tags = addContactTags.params?.find((p) => p.key === "tags");
   assertEquals(tags?.required, true);
 });
 
-Deno.test("add-contact-tags: is marked idempotent — adding the same tag twice is a no-op on the vendor side", () => {
+test("add-contact-tags: is marked idempotent — adding the same tag twice is a no-op on the vendor side", () => {
   assertEquals(addContactTags.idempotent, true);
   assertEquals(addContactTags.type, "perform");
 });

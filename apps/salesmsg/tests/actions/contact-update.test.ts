@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { API_ROOT, bodyOf, mockCtx, unauthorized } from "../_helpers.ts";
 
-Deno.test("contact-update: sends the documented request and returns the answer", async () => {
+test("contact-update: sends the documented request and returns the answer", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1, ok: true } }]);
   const result = await contactUpdate.execute({
     "contact": 42,
@@ -17,18 +18,18 @@ Deno.test("contact-update: sends the documented request and returns the answer",
   assertEquals(result.id, 1);
 });
 
-Deno.test("contact-update: declares idempotent = true", () => {
+test("contact-update: declares idempotent = true", () => {
   assertEquals(contactUpdate.idempotent, true);
   assertEquals(contactUpdate.type, "perform");
 });
 
-Deno.test("contact-update: sends only the fields supplied", async () => {
+test("contact-update: sends only the fields supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }]);
   await contactUpdate.execute({ contact: 42, last_name: "Lee" }, ctx);
   assertEquals(bodyOf(calls[0]), { last_name: "Lee" });
 });
 
-Deno.test("contact-update: a refused token surfaces the vendor message", async () => {
+test("contact-update: a refused token surfaces the vendor message", async () => {
   const { ctx } = mockCtx([unauthorized()]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import eventSeriesDelete from "../../actions/event-series-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-series-delete: DELETEs and returns the 200 body (never expects 204)", async () => {
+test("event-series-delete: DELETEs and returns the 200 body (never expects 204)", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { id: "es_1", object: "event_series", deleted: "true" } },
   ]);

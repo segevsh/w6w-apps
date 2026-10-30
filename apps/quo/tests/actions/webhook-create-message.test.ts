@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookCreateMessage from "../../actions/webhook-create-message.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create-message: POSTs /v1/webhooks/messages with the given events/url/resourceIds", async () => {
+test("webhook-create-message: POSTs /v1/webhooks/messages with the given events/url/resourceIds", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { data: { id: "WH1" } } }]);
   await webhookCreateMessage.execute(
     {
@@ -20,7 +21,7 @@ Deno.test("webhook-create-message: POSTs /v1/webhooks/messages with the given ev
   assertEquals(body.resourceIds, ["*"]);
 });
 
-Deno.test("webhook-create-message: events param only offers the two message event types", () => {
+test("webhook-create-message: events param only offers the two message event types", () => {
   const events = webhookCreateMessage.params?.find((p) => p.key === "events");
   assertEquals(events?.options, [
     { value: "message.received", label: "Message received" },
@@ -28,7 +29,7 @@ Deno.test("webhook-create-message: events param only offers the two message even
   ]);
 });
 
-Deno.test("webhook-create-message: is a non-idempotent perform action", () => {
+test("webhook-create-message: is a non-idempotent perform action", () => {
   assertEquals(webhookCreateMessage.type, "perform");
   assertEquals(webhookCreateMessage.idempotent, false);
 });

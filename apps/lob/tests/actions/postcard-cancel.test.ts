@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postcardCancel from "../../actions/postcard-cancel.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("postcard-cancel: sends DELETE to the resource and returns Lob's confirmation", async () => {
+test("postcard-cancel: sends DELETE to the resource and returns Lob's confirmation", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "psc_abc", deleted: true } }]);
   const out = await postcardCancel.execute({ postcardId: "psc_abc" }, ctx) as {
     id: string;
@@ -14,11 +15,11 @@ Deno.test("postcard-cancel: sends DELETE to the resource and returns Lob's confi
   assertEquals(out, { id: "psc_abc", deleted: true });
 });
 
-Deno.test("postcard-cancel: is declared idempotent", () => {
+test("postcard-cancel: is declared idempotent", () => {
   assertEquals(postcardCancel.idempotent, true);
 });
 
-Deno.test("postcard-cancel: a refused delete surfaces Lob's code", async () => {
+test("postcard-cancel: a refused delete surfaces Lob's code", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: errorBody("not_deletable", "cannot be deleted", 422),

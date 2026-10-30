@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/oauth2.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("oauth2: declares the vendor's own authorize/token/revoke URLs", () => {
+test("oauth2: declares the vendor's own authorize/token/revoke URLs", () => {
   assertEquals(auth.oauth2?.authorizationUrl, "https://moneybird.com/oauth/authorize");
   assertEquals(auth.oauth2?.tokenUrl, "https://moneybird.com/oauth/token");
   assertEquals(auth.oauth2?.revokeUrl, "https://moneybird.com/oauth/revoke");
   assert(auth.oauth2?.scopes?.includes("sales_invoices"));
 });
 
-Deno.test("oauth2: sign stamps Authorization: Bearer", async () => {
+test("oauth2: sign stamps Authorization: Bearer", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://moneybird.com/api/v2/123/contacts.json",
@@ -20,21 +21,21 @@ Deno.test("oauth2: sign stamps Authorization: Bearer", async () => {
   assertEquals(signed.headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test accepts a token that reaches at least one administration", async () => {
+test("oauth2: test accepts a token that reaches at least one administration", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "123", name: "Acme" }] }]);
   assertEquals(await auth.test({ credential: { accessToken: "tok" } }, ctx), { ok: true });
   assertEquals(calls[0].url, "https://moneybird.com/api/v2/administrations.json");
   assertEquals(calls[0].headers["authorization"], "Bearer tok");
 });
 
-Deno.test("oauth2: test rejects a token that reaches no administration", async () => {
+test("oauth2: test rejects a token that reaches no administration", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   const out = await auth.test({ credential: { accessToken: "tok" } }, ctx);
   assertEquals(out.ok, false);
   assertEquals(out.message?.includes("reaches no administration"), true);
 });
 
-Deno.test("oauth2: afterConnect resolves the FIRST administration", async () => {
+test("oauth2: afterConnect resolves the FIRST administration", async () => {
   const { ctx } = mockCtx([{
     body: [{ id: "123", name: "Acme B.V." }, { id: "456", name: "Other" }],
   }]);
@@ -43,7 +44,7 @@ Deno.test("oauth2: afterConnect resolves the FIRST administration", async () => 
   assertEquals(out.administrationName, "Acme B.V.");
 });
 
-Deno.test("oauth2: afterConnect degrades to {} when no administration is accessible", async () => {
+test("oauth2: afterConnect degrades to {} when no administration is accessible", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   assertEquals(await auth.afterConnect!({ credential: { accessToken: "tok" } }, ctx), {});
 });

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import quotationCreate from "../../actions/quotation-create.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -20,7 +21,7 @@ const INPUT = {
   "products": '[{"name": "Consulting", "price": 100, "tax_rate": 20, "quantity": 2}]',
 };
 
-Deno.test("quotation-create: POST /api/v2/quotations with the documented query, header and body", async () => {
+test("quotation-create: POST /api/v2/quotations with the documented query, header and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1 } }]);
   const out = await quotationCreate.execute(INPUT as never, ctx);
 
@@ -61,13 +62,13 @@ Deno.test("quotation-create: POST /api/v2/quotations with the documented query, 
   assertEquals(out, { id: 1 });
 });
 
-Deno.test("quotation-create: an Axonaut error surfaces its message and status", async () => {
+test("quotation-create: an Axonaut error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody(403, "Forbidden access") }]);
   const err = await assertRejects(async () => await quotationCreate.execute(INPUT as never, ctx));
   assertStringIncludes((err as Error).message, "Axonaut 403: Forbidden access");
 });
 
-Deno.test("quotation-create: invalid JSON in products is rejected before any request", async () => {
+test("quotation-create: invalid JSON in products is rejected before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () =>
     await (quotationCreate.execute({

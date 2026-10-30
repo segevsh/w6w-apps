@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { BASE, display, ok } from "./_shared.ts";
 import action from "../../actions/generate.ts";
@@ -14,7 +15,7 @@ const answer = ok({
   load_duration: 1_000_000_000,
 });
 
-Deno.test("generate: posts to /api/generate with stream false and reads the usage", async () => {
+test("generate: posts to /api/generate with stream false and reads the usage", async () => {
   const { ctx, calls } = mockCtx([answer], { display });
   const result = await action.execute!(
     { model: "llama3.2:3b", prompt: "Why is the sky blue?" },
@@ -35,13 +36,13 @@ Deno.test("generate: posts to /api/generate with stream false and reads the usag
   assertEquals(result.doneReason, "stop");
 });
 
-Deno.test("generate: never sets an authorization header itself", async () => {
+test("generate: never sets an authorization header itself", async () => {
   const { ctx, calls } = mockCtx([answer], { display });
   await action.execute!({ model: "m", prompt: "p" }, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("generate: options, keep_alive, think and images are shaped for Ollama", async () => {
+test("generate: options, keep_alive, think and images are shaped for Ollama", async () => {
   const { ctx, calls } = mockCtx([answer], { display });
   await action.execute!({
     model: "llava",
@@ -63,7 +64,7 @@ Deno.test("generate: options, keep_alive, think and images are shaped for Ollama
   assertEquals(body.options, { top_k: 20, temperature: 0.2, num_ctx: 8192 });
 });
 
-Deno.test("generate: a JSON schema format is sent as an object and the reply is parsed", async () => {
+test("generate: a JSON schema format is sent as an object and the reply is parsed", async () => {
   const { ctx, calls } = mockCtx([ok({ response: '{"age": 30}', done: true })], { display });
   const schema = { type: "object", properties: { age: { type: "integer" } } };
   const result = await action.execute!({
@@ -75,7 +76,7 @@ Deno.test("generate: a JSON schema format is sent as an object and the reply is 
   assertEquals(result.parsed, { age: 30 });
 });
 
-Deno.test("generate: format json is passed through as the string json", async () => {
+test("generate: format json is passed through as the string json", async () => {
   const { ctx, calls } = mockCtx([ok({ response: "not json", done: true })], { display });
   const result = await action.execute!({ model: "m", prompt: "p", format: "json" }, ctx) as {
     parsed: unknown;
@@ -86,7 +87,7 @@ Deno.test("generate: format json is passed through as the string json", async ()
   assertEquals(result.response, "not json");
 });
 
-Deno.test("generate: validates before any request", async () => {
+test("generate: validates before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ prompt: "p" }, ctx),
@@ -111,7 +112,7 @@ Deno.test("generate: validates before any request", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("generate: an unknown model is a 404 that points at model-pull", async () => {
+test("generate: an unknown model is a 404 that points at model-pull", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: "model 'nope' not found" } }], {
     display,
   });
@@ -122,7 +123,7 @@ Deno.test("generate: an unknown model is a 404 that points at model-pull", async
   assert(/model-pull/.test((err as Error).message));
 });
 
-Deno.test("generate: a connection with no host fails with a reconnect message", async () => {
+test("generate: a connection with no host fails with a reconnect message", async () => {
   const { ctx } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ model: "m", prompt: "p" }, ctx),

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSplunkCtx } from "../_helpers.ts";
 import action from "../../actions/index-get-many.ts";
 
-Deno.test("index-get-many: GETs /services/data/indexes with datatype", async () => {
+test("index-get-many: GETs /services/data/indexes with datatype", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { entry: [] } }]);
   await action.execute({ count: 30, offset: 0, datatype: "all" }, ctx);
   const url = new URL(calls[0].url);
@@ -10,7 +11,7 @@ Deno.test("index-get-many: GETs /services/data/indexes with datatype", async () 
   assertEquals(url.searchParams.get("datatype"), "all");
 });
 
-Deno.test("index-get-many: defaults to event indexes when datatype is unset", async () => {
+test("index-get-many: defaults to event indexes when datatype is unset", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { entry: [] } }]);
   await action.execute({}, ctx);
   assertEquals(new URL(calls[0].url).searchParams.has("datatype"), false);

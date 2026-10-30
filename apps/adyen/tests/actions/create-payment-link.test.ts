@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import createPaymentLink from "../../actions/create-payment-link.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const INPUT = {
   "requiredShopperFields": '["shopperEmail"]',
 } as Parameters<typeof createPaymentLink.execute>[0];
 
-Deno.test("create-payment-link: sends POST to the documented path and returns the response", async () => {
+test("create-payment-link: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "id": "PL1", "url": "https://pay.example/PL1", "status": "active" },
@@ -31,7 +32,7 @@ Deno.test("create-payment-link: sends POST to the documented path and returns th
   assertEquals(out, { "id": "PL1", "url": "https://pay.example/PL1", "status": "active" });
 });
 
-Deno.test("create-payment-link: targets the connection's base URL and carries no credential", async () => {
+test("create-payment-link: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "id": "PL1", "url": "https://pay.example/PL1", "status": "active" },
@@ -46,7 +47,7 @@ Deno.test("create-payment-link: targets the connection's base URL and carries no
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("create-payment-link: surfaces Adyen's error code, type and message", async () => {
+test("create-payment-link: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -64,7 +65,7 @@ Deno.test("create-payment-link: surfaces Adyen's error code, type and message", 
   );
 });
 
-Deno.test("create-payment-link: sends the invocation id as Idempotency-Key", async () => {
+test("create-payment-link: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "id": "PL1", "url": "https://pay.example/PL1", "status": "active" },
@@ -74,11 +75,11 @@ Deno.test("create-payment-link: sends the invocation id as Idempotency-Key", asy
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("create-payment-link: declares idempotency as false", () => {
+test("create-payment-link: declares idempotency as false", () => {
   assertEquals(createPaymentLink.idempotent, false);
 });
 
-Deno.test("create-payment-link: an explicit merchantAccount beats the connection's", async () => {
+test("create-payment-link: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 201,
     body: { "id": "PL1", "url": "https://pay.example/PL1", "status": "active" },

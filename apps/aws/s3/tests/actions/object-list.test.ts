@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-list.ts";
 
@@ -26,7 +27,7 @@ const SAMPLE_XML = `<?xml version="1.0" encoding="UTF-8"?>
   </Contents>
 </ListBucketResult>`;
 
-Deno.test("object-list: builds list-type=2 query and parses Contents", async () => {
+test("object-list: builds list-type=2 query and parses Contents", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: SAMPLE_XML }]);
   const result = await action.execute!({ bucket: "my-bucket", prefix: "docs/" }, ctx);
 
@@ -47,7 +48,7 @@ Deno.test("object-list: builds list-type=2 query and parses Contents", async () 
   assertEquals(result.keyCount, 2);
 });
 
-Deno.test("object-list: forwards continuationToken and delimiter", async () => {
+test("object-list: forwards continuationToken and delimiter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "<ListBucketResult></ListBucketResult>" }]);
   await action.execute!(
     { bucket: "my-bucket", continuationToken: "tok", delimiter: "/", maxKeys: 5 },
@@ -59,7 +60,7 @@ Deno.test("object-list: forwards continuationToken and delimiter", async () => {
   assertEquals(url.searchParams.get("max-keys"), "5");
 });
 
-Deno.test("object-list: parses CommonPrefixes when a delimiter groups keys", async () => {
+test("object-list: parses CommonPrefixes when a delimiter groups keys", async () => {
   const xml =
     `<ListBucketResult><CommonPrefixes><Prefix>docs/</Prefix></CommonPrefixes><CommonPrefixes><Prefix>img/</Prefix></CommonPrefixes></ListBucketResult>`;
   const { ctx } = mockCtx([{ status: 200, body: xml }]);
@@ -67,7 +68,7 @@ Deno.test("object-list: parses CommonPrefixes when a delimiter groups keys", asy
   assertEquals(result.commonPrefixes, ["docs/", "img/"]);
 });
 
-Deno.test("object-list: missing bucket rejects", async () => {
+test("object-list: missing bucket rejects", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(() => Promise.resolve(action.execute!({ bucket: "" }, ctx)), Error, "bucket");
 });

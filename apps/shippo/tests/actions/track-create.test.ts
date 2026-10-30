@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/track-create.ts";
 
-Deno.test("track-create: posts carrier and tracking number to /tracks", async () => {
+test("track-create: posts carrier and tracking number to /tracks", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -24,7 +25,7 @@ Deno.test("track-create: posts carrier and tracking number to /tracks", async ()
   assertEquals(result.tracking_status?.status, "TRANSIT");
 });
 
-Deno.test("track-create: `carrier` and `trackingNumber` are both required", async () => {
+test("track-create: `carrier` and `trackingNumber` are both required", async () => {
   for (const missing of ["carrier", "trackingNumber"]) {
     const input: Record<string, unknown> = { carrier: "usps", trackingNumber: "123" };
     input[missing] = "";
@@ -34,6 +35,6 @@ Deno.test("track-create: `carrier` and `trackingNumber` are both required", asyn
   }
 });
 
-Deno.test("track-create: is not idempotent", () => {
+test("track-create: is not idempotent", () => {
   assertEquals(action.idempotent, false);
 });

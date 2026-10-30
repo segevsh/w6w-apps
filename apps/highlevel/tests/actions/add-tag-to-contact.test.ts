@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/add-tag-to-contact.ts";
 
-Deno.test("add-tag-to-contact: POSTs /contacts/:contactId/tags with the parsed tag list", async () => {
+test("add-tag-to-contact: POSTs /contacts/:contactId/tags with the parsed tag list", async () => {
   const { ctx, calls } = mockHighLevelCtx([{ body: { tags: ["vip", "lead"] } }]);
   const out = await action.execute!({ contactId: "c1", tags: "vip, lead" }, ctx);
   assertEquals(calls[0].method, "POST");

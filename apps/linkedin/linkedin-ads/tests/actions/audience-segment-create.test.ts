@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import audienceSegmentCreate from "../../actions/audience-segment-create.ts";
 import { createdResponse, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("audience-segment-create: POSTs with destinations pinned to LINKEDIN and the account URN", async () => {
+test("audience-segment-create: POSTs with destinations pinned to LINKEDIN and the account URN", async () => {
   const { ctx, calls } = mockCtx([createdResponse("11204")]);
   const result = await audienceSegmentCreate.execute(
     { accountId: "516848833", name: "DMP Segment 1", type: "USER", sourcePlatform: "PARTNER_API" },
@@ -20,7 +21,7 @@ Deno.test("audience-segment-create: POSTs with destinations pinned to LINKEDIN a
   assertEquals(result, { id: "11204" });
 });
 
-Deno.test("audience-segment-create: description and sourceSegmentId are included only when set", async () => {
+test("audience-segment-create: description and sourceSegmentId are included only when set", async () => {
   const { ctx, calls } = mockCtx([createdResponse("1")]);
   await audienceSegmentCreate.execute(
     {
@@ -37,6 +38,6 @@ Deno.test("audience-segment-create: description and sourceSegmentId are included
   assertEquals("description" in body, false);
 });
 
-Deno.test("audience-segment-create: is not idempotent", () => {
+test("audience-segment-create: is not idempotent", () => {
   assertEquals(audienceSegmentCreate.idempotent, false);
 });

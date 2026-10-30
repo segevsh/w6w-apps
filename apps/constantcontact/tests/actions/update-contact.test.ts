@@ -1,15 +1,16 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-contact.ts";
 
-Deno.test("update-contact: PUTs /v3/contacts/{id}", async () => {
+test("update-contact: PUTs /v3/contacts/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact_id: "c1" } }]);
   await action.execute!({ contactId: "c1", emailAddress: "a@b.test" }, ctx);
   assertEquals(calls[0].method, "PUT");
   assertEquals(new URL(calls[0].url).pathname, "/v3/contacts/c1");
 });
 
-Deno.test("update-contact: always sends email_address and update_source", async () => {
+test("update-contact: always sends email_address and update_source", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ contactId: "c1", emailAddress: "a@b.test" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -17,7 +18,7 @@ Deno.test("update-contact: always sends email_address and update_source", async 
   assertEquals(body.update_source, "Account");
 });
 
-Deno.test("update-contact: honours an explicit update_source", async () => {
+test("update-contact: honours an explicit update_source", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     contactId: "c1",
@@ -27,7 +28,7 @@ Deno.test("update-contact: honours an explicit update_source", async () => {
   assertEquals(JSON.parse(calls[0].body!).update_source, "Contact");
 });
 
-Deno.test("update-contact: maps every optional field to its snake_case name", async () => {
+test("update-contact: maps every optional field to its snake_case name", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({
     contactId: "c1",
@@ -62,7 +63,7 @@ Deno.test("update-contact: maps every optional field to its snake_case name", as
   assertEquals(body.street_addresses, [{ kind: "work" }]);
 });
 
-Deno.test("update-contact: omits sub-resources entirely when not supplied, so they survive", async () => {
+test("update-contact: omits sub-resources entirely when not supplied, so they survive", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ contactId: "c1", emailAddress: "a@b.test" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -71,6 +72,6 @@ Deno.test("update-contact: omits sub-resources entirely when not supplied, so th
   assertEquals("custom_fields" in body, false);
 });
 
-Deno.test("update-contact: is idempotent — the same full representation replays cleanly", () => {
+test("update-contact: is idempotent — the same full representation replays cleanly", () => {
   assertEquals(action.idempotent, true);
 });

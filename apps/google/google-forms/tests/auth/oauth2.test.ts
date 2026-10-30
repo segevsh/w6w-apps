@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares Google's authorize/token endpoints", () => {
+test("oauth2: declares Google's authorize/token endpoints", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
@@ -10,7 +11,7 @@ Deno.test("oauth2: declares Google's authorize/token endpoints", () => {
   assertEquals(auth.oauth2?.pkce, false);
 });
 
-Deno.test("oauth2: requests the forms + drive scopes the API actually accepts", () => {
+test("oauth2: requests the forms + drive scopes the API actually accepts", () => {
   assertEquals(auth.oauth2?.scopes, [
     "https://www.googleapis.com/auth/forms.body",
     "https://www.googleapis.com/auth/forms.responses.readonly",
@@ -19,12 +20,12 @@ Deno.test("oauth2: requests the forms + drive scopes the API actually accepts", 
   ]);
 });
 
-Deno.test("oauth2: forces offline + consent to obtain a refresh token", () => {
+test("oauth2: forces offline + consent to obtain a refresh token", () => {
   assertEquals(auth.oauth2?.extraAuthParams?.access_type, "offline");
   assertEquals(auth.oauth2?.extraAuthParams?.prompt, "consent");
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -35,7 +36,7 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure", async () => {
+test("oauth2: test with missing accessToken reports the failure", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -43,7 +44,7 @@ Deno.test("oauth2: test with missing accessToken reports the failure", async () 
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test hits Google's tokeninfo endpoint", async () => {
+test("oauth2: test hits Google's tokeninfo endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { scope: "…" } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -53,14 +54,14 @@ Deno.test("oauth2: test hits Google's tokeninfo endpoint", async () => {
   assertEquals(url.searchParams.get("access_token"), "acc-abc");
 });
 
-Deno.test("oauth2: test returns upstream status on non-2xx", async () => {
+test("oauth2: test returns upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("oauth2: afterConnect maps userinfo onto connection label data", async () => {
+test("oauth2: afterConnect maps userinfo onto connection label data", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { sub: "u1", name: "Ada", email: "ada@example.com" } },
   ]);
@@ -69,7 +70,7 @@ Deno.test("oauth2: afterConnect maps userinfo onto connection label data", async
   assertEquals(out, { user: { id: "u1", name: "Ada", email: "ada@example.com" } });
 });
 
-Deno.test("oauth2: afterConnect degrades to no label data when userinfo is denied", async () => {
+test("oauth2: afterConnect degrades to no label data when userinfo is denied", async () => {
   const { ctx } = mockCtx([{ status: 403, body: "" }]);
   assertEquals(await auth.afterConnect!({ credential: {} }, ctx), {});
 });

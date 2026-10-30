@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunityStageList from "../../actions/opportunity-stage-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("opportunity-stage-list: fetches GET /lists/opportunity_stages", async () => {
+test("opportunity-stage-list: fetches GET /lists/opportunity_stages", async () => {
   const { ctx, calls } = mockCtx([{
     body: { opportunity_stages: [{ id: 10, code: "Closed Lost", is_default: true }] },
   }]);

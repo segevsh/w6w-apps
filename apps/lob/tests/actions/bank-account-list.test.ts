@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import bankAccountList from "../../actions/bank-account-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("bank-account-list: GETs /bank_accounts and flattens the page", async () => {
+test("bank-account-list: GETs /bank_accounts and flattens the page", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       object: "list",
@@ -23,7 +24,7 @@ Deno.test("bank-account-list: GETs /bank_accounts and flattens the page", async 
   assertEquals("totalCount" in out, false);
 });
 
-Deno.test("bank-account-list: cursor, total count and filters are serialized in Lob's bracket form", async () => {
+test("bank-account-list: cursor, total count and filters are serialized in Lob's bracket form", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], count: 0, total_count: 7 } }]);
   const out = await bankAccountList.execute({
     after: "ABC",
@@ -39,7 +40,7 @@ Deno.test("bank-account-list: cursor, total count and filters are serialized in 
   assertEquals(out.totalCount, 7);
 });
 
-Deno.test("bank-account-list: refuses both cursors at once", async () => {
+test("bank-account-list: refuses both cursors at once", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await bankAccountList.execute({ after: "a", before: "b" }, ctx),
@@ -49,7 +50,7 @@ Deno.test("bank-account-list: refuses both cursors at once", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("bank-account-list: surfaces Lob's error code", async () => {
+test("bank-account-list: surfaces Lob's error code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: errorBody("invalid_api_key", "Your API key is not valid.", 401),
@@ -57,7 +58,7 @@ Deno.test("bank-account-list: surfaces Lob's error code", async () => {
   await assertRejects(async () => await bankAccountList.execute({}, ctx), Error, "invalid_api_key");
 });
 
-Deno.test("bank-account-list: the full account number is stripped from every listed account", async () => {
+test("bank-account-list: the full account number is stripped from every listed account", async () => {
   const { ctx } = mockCtx([{
     body: {
       data: [{ id: "bank_1", account_number: "123456789", routing_number: "322271627" }],

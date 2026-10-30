@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alias.ts";
 
-Deno.test("alias: PUTs id/new_id to /users/reidentify", async () => {
+test("alias: PUTs id/new_id to /users/reidentify", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { status: 200, message: "Success." } }]);
   const result = await action.execute!({ id: "old-id", newId: "new-id" }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("alias: PUTs id/new_id to /users/reidentify", async () => {
   assertEquals(result, { success: true, message: "Success." });
 });
 
-Deno.test("alias: rejects a blank id", async () => {
+test("alias: rejects a blank id", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "  ", newId: "new-id" }, ctx),
@@ -22,7 +23,7 @@ Deno.test("alias: rejects a blank id", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("alias: rejects a blank newId", async () => {
+test("alias: rejects a blank newId", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ id: "old-id", newId: "" }, ctx),
@@ -32,7 +33,7 @@ Deno.test("alias: rejects a blank newId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("alias: a non-2xx response propagates as an Error", async () => {
+test("alias: a non-2xx response propagates as an Error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { status: 404, message: "not found" } }]);
   const err = await assertRejects(
     async () => await action.execute!({ id: "old-id", newId: "new-id" }, ctx),

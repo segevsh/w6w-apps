@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import formGet from "../../actions/form-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("form-get: GET /forms/{id}", async () => {
+test("form-get: GET /forms/{id}", async () => {
   const form = { id: "f1", name: "Contact", spamProtection: null };
   const { ctx, calls } = mockCtx([{ body: form }]);
   const out = await formGet.execute({ formId: "f1" }, ctx);
@@ -11,7 +12,7 @@ Deno.test("form-get: GET /forms/{id}", async () => {
   assertEquals(out, form);
 });
 
-Deno.test("form-get: a path-breaking id is encoded", async () => {
+test("form-get: a path-breaking id is encoded", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await formGet.execute({ formId: "a/b?c" }, ctx);
   assertEquals(calls[0].url, "https://api.formspark.io/public/v1/forms/a%2Fb%3Fc");

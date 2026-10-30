@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: declared as unavailable rather than omitted", () => {
+test("quota: declared as unavailable rather than omitted", () => {
   assertEquals(quota.kind, "quota");
   assert(quota.unavailable?.reason);
   // No hook: there is nothing to probe, and inventing one would be worse than
@@ -9,11 +10,11 @@ Deno.test("quota: declared as unavailable rather than omitted", () => {
   assertEquals(quota.check, undefined);
 });
 
-Deno.test("quota: informational, so a permanent `unknown` never pins the verdict", () => {
+test("quota: informational, so a permanent `unknown` never pins the verdict", () => {
   assertEquals(quota.severity, "informational");
 });
 
-Deno.test("quota: the reason names the access tiers and the error that surfaces", () => {
+test("quota: the reason names the access tiers and the error that surfaces", () => {
   const reason = quota.unavailable!.reason;
   assert(reason.includes("RESOURCE_EXHAUSTED"));
   assert(reason.includes("15,000"));

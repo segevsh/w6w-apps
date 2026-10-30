@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import assistantGet from "../../actions/assistant-get.ts";
 import { mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
 const PAGE = { total_records: 1, limit: 20, offset: 0 };
 
-Deno.test("assistant-get: GET /assistants/{id} and unwraps the one-element array", async () => {
+test("assistant-get: GET /assistants/{id} and unwraps the one-element array", async () => {
   const { ctx, calls } = mockCtx([{
     body: ok({ pagination: PAGE, assistants: [{ model_id: "a/1" }] }),
   }]);
@@ -14,7 +15,7 @@ Deno.test("assistant-get: GET /assistants/{id} and unwraps the one-element array
   assertEquals(out, { assistant: { model_id: "a/1" } });
 });
 
-Deno.test("assistant-get: an empty array is null, not an exception", async () => {
+test("assistant-get: an empty array is null, not an exception", async () => {
   const { ctx } = mockCtx([{ body: ok({ assistants: [] }) }]);
   assertEquals(await assistantGet.execute({ model_id: "x" }, ctx), { assistant: null });
 });

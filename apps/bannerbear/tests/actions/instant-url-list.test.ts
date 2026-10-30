@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import instantUrlList from "../../actions/instant-url-list.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("instant-url-list: GET /instant_urls", async () => {
+test("instant-url-list: GET /instant_urls", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "iu1", base_url: "https://cdn/x" }] }]);
   const out = await instantUrlList.execute({}, ctx) as unknown[];
 

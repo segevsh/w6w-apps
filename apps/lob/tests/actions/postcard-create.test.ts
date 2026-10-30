@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import postcardCreate from "../../actions/postcard-create.ts";
 import { bodyOf, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const addr = {
   address_zip: "94107",
 };
 
-Deno.test("postcard-create: POSTs the documented body to /postcards", async () => {
+test("postcard-create: POSTs the documented body to /postcards", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_1", url: "https://lob-assets.com/x.pdf" } }]);
   const out = await postcardCreate.execute({
     to: "adr_1",
@@ -32,7 +33,7 @@ Deno.test("postcard-create: POSTs the documented body to /postcards", async () =
   assertEquals(out.id, "x_1");
 });
 
-Deno.test("postcard-create: a saved address id passes through as a string, an inline address as an object", async () => {
+test("postcard-create: a saved address id passes through as a string, an inline address as an object", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "x_2" } }]);
   await postcardCreate.execute({
     ...{
@@ -59,7 +60,7 @@ Deno.test("postcard-create: a saved address id passes through as a string, an in
   assertEquals(bodyOf(second.calls[0]).to, addr);
 });
 
-Deno.test("postcard-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
+test("postcard-create: Idempotency-Key is the caller's own, else the invocation id, else absent", async () => {
   const own = mockCtx([{ body: { id: "a" } }]);
   await postcardCreate.execute({
     ...{
@@ -95,11 +96,11 @@ Deno.test("postcard-create: Idempotency-Key is the caller's own, else the invoca
   assertEquals("idempotency-key" in none.calls[0].headers, false);
 });
 
-Deno.test("postcard-create: is declared non-idempotent (it mails a physical piece)", () => {
+test("postcard-create: is declared non-idempotent (it mails a physical piece)", () => {
   assertEquals(postcardCreate.idempotent, false);
 });
 
-Deno.test("postcard-create: a missing use type is refused before any request", async () => {
+test("postcard-create: a missing use type is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -119,7 +120,7 @@ Deno.test("postcard-create: a missing use type is refused before any request", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("postcard-create: Lob's validation error is surfaced with its code", async () => {
+test("postcard-create: Lob's validation error is surfaced with its code", async () => {
   const { ctx } = mockCtx([{ status: 422, body: errorBody("invalid", "to is invalid", 422) }]);
   await assertRejects(
     async () =>
@@ -135,7 +136,7 @@ Deno.test("postcard-create: Lob's validation error is surfaced with its code", a
   );
 });
 
-Deno.test("postcard-create: a QR code object is forwarded as qr_code", async () => {
+test("postcard-create: a QR code object is forwarded as qr_code", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "psc_1" } }]);
   await postcardCreate.execute({
     to: "adr_1",

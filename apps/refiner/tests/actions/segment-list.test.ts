@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import segmentList from "../../actions/segment-list.ts";
 import { errorBody, listPage, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("segment-list: GETs /v1/segments with paging", async () => {
+test("segment-list: GETs /v1/segments with paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: listPage([{ uuid: "s1", name: "Power", is_manual: true }]),
   }]);
@@ -12,7 +13,7 @@ Deno.test("segment-list: GETs /v1/segments with paging", async () => {
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("segment-list: a vendor error surfaces its own message", async () => {
+test("segment-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("API key does not look valid") }]);
   const err = await assertRejects(
     () => Promise.resolve(segmentList.execute({}, ctx)),

@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import orderUpdateCustomField from "../../actions/order-update-custom-field.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -9,7 +10,7 @@ const INPUT = {
 };
 const RESPONSE = { "success": "true", "data": "ok" };
 
-Deno.test("order-update-custom-field: sends PUT /v1/orders/1337 with the mapped parameters", async () => {
+test("order-update-custom-field: sends PUT /v1/orders/1337 with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await orderUpdateCustomField.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -24,14 +25,14 @@ Deno.test("order-update-custom-field: sends PUT /v1/orders/1337 with the mapped 
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("order-update-custom-field: returns the documented result shape", async () => {
+test("order-update-custom-field: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await orderUpdateCustomField.execute(INPUT, ctx), {
     "response": { "success": "true", "data": "ok" },
   });
 });
 
-Deno.test("order-update-custom-field: an error surfaces SamCart's own message", async () => {
+test("order-update-custom-field: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(orderUpdateCustomField.execute(INPUT, ctx)),
@@ -40,7 +41,7 @@ Deno.test("order-update-custom-field: an error surfaces SamCart's own message", 
   assertEquals(err.message.includes("Object could not be found"), true, err.message);
 });
 
-Deno.test("order-update-custom-field: a non-integer orderId is refused before any request", async () => {
+test("order-update-custom-field: a non-integer orderId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

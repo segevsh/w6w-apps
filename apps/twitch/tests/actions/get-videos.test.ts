@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import getVideos from "../../actions/get-videos.ts";
 import { mockCtx, page, pathOf, queryAll, queryOf } from "../_helpers.ts";
 
-Deno.test("get-videos: calls GET /helix/videos", async () => {
+test("get-videos: calls GET /helix/videos", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "335921245" }]) }]);
   await getVideos.execute({ id: "335921245" }, ctx);
 
@@ -10,7 +11,7 @@ Deno.test("get-videos: calls GET /helix/videos", async () => {
   assertEquals(queryAll(calls[0].url, "id"), ["335921245"]);
 });
 
-Deno.test("get-videos: the three selectors are mutually exclusive and spend no request", async () => {
+test("get-videos: the three selectors are mutually exclusive and spend no request", async () => {
   const both = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(getVideos.execute({ id: "1", userId: "2" }, both.ctx)),
@@ -32,7 +33,7 @@ Deno.test("get-videos: the three selectors are mutually exclusive and spend no r
  * Twitch documents the filters as valid "only if you specify the game_id or
  * user_id query parameter", so sending them alongside `id` would be guessing.
  */
-Deno.test("get-videos: filters are dropped for an ID lookup and kept for a broadcaster lookup", async () => {
+test("get-videos: filters are dropped for an ID lookup and kept for a broadcaster lookup", async () => {
   const byId = mockCtx([{ body: page([]) }]);
   await getVideos.execute({ id: "1", period: "week", sort: "views", first: 5 }, byId.ctx);
   assertEquals(queryOf(byId.calls[0].url), { id: "1" });
@@ -48,7 +49,7 @@ Deno.test("get-videos: filters are dropped for an ID lookup and kept for a broad
 });
 
 /** `after`/`before` are documented for the user_id form only. */
-Deno.test("get-videos: cursors are sent only for a broadcaster lookup", async () => {
+test("get-videos: cursors are sent only for a broadcaster lookup", async () => {
   const byGame = mockCtx([{ body: page([]) }]);
   await getVideos.execute({ gameId: "33214", after: "cur" }, byGame.ctx);
   assertEquals(queryOf(byGame.calls[0].url), { game_id: "33214" });

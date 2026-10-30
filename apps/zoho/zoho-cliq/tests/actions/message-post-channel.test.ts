@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/message-post-channel.ts";
 
-Deno.test("message-post-channel: posts by unique name as a bot (204)", async () => {
+test("message-post-channel: posts by unique name as a bot (204)", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 204 }]);
   const out = await action.execute(
     {
@@ -27,7 +28,7 @@ Deno.test("message-post-channel: posts by unique name as a bot (204)", async () 
   assertEquals(JSON.parse(JSON.stringify(out ?? null)), { "success": true, "response": null });
 });
 
-Deno.test("message-post-channel: posts by channel id as a reply with sync", async () => {
+test("message-post-channel: posts by channel id as a reply with sync", async () => {
   const { ctx, calls } = mockCliqCtx([{ "status": 200, "body": { "message_id": "m10" } }]);
   const out = await action.execute(
     { "channelId": "O1", "text": "Hello!", "replyTo": "m9", "syncMessage": true } as never,
@@ -52,7 +53,7 @@ Deno.test("message-post-channel: posts by channel id as a reply with sync", asyn
   });
 });
 
-Deno.test("message-post-channel: needs a channel id or unique name", async () => {
+test("message-post-channel: needs a channel id or unique name", async () => {
   const { ctx, calls } = mockCliqCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute({ "text": "x" } as never, ctx)),
@@ -62,7 +63,7 @@ Deno.test("message-post-channel: needs a channel id or unique name", async () =>
   assertEquals(calls.length, 0);
 });
 
-Deno.test("message-post-channel: idempotent is declared as false", () => {
+test("message-post-channel: idempotent is declared as false", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
 });

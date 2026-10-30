@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-download-get.ts";
 
-Deno.test("recording-download-get: GETs the nested download path", async () => {
+test("recording-download-get: GETs the nested download path", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -31,7 +32,7 @@ Deno.test("recording-download-get: GETs the nested download path", async () => {
   assertEquals(result.status, "completed");
 });
 
-Deno.test("recording-download-get: url-encodes the download id", async () => {
+test("recording-download-get: url-encodes the download id", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "processing" } }]);
   await action.execute({ recordingId: 1, downloadId: "dl/with space" }, ctx);
   assertEquals(
@@ -40,7 +41,7 @@ Deno.test("recording-download-get: url-encodes the download id", async () => {
   );
 });
 
-Deno.test("recording-download-get: both ids are required", () => {
+test("recording-download-get: both ids are required", () => {
   assertEquals(action.type, "read");
   assertEquals(action.params?.find((p) => p.key === "recordingId")?.required, true);
   assertEquals(action.params?.find((p) => p.key === "downloadId")?.required, true);

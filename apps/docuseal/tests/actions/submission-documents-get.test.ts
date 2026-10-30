@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-documents-get.ts";
 
-Deno.test("submission-documents-get: reads a submission's documents", async () => {
+test("submission-documents-get: reads a submission's documents", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 1, documents: [{ name: "example", url: "https://docuseal.com/file/x.pdf" }] },

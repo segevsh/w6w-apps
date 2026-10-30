@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rerank from "../../actions/rerank.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rerank: posts to /v1/rerank with the required fields only", async () => {
+test("rerank: posts to /v1/rerank with the required fields only", async () => {
   const { ctx, calls } = mockCtx([
     { body: { model: "jina-reranker-v2-base-multilingual", usage: {}, results: [] } },
   ]);
@@ -23,7 +24,7 @@ Deno.test("rerank: posts to /v1/rerank with the required fields only", async () 
   });
 });
 
-Deno.test("rerank: forwards top_n/return_documents/max_doc_length/return_embeddings when set", async () => {
+test("rerank: forwards top_n/return_documents/max_doc_length/return_embeddings when set", async () => {
   const { ctx, calls } = mockCtx([{ body: { model: "jina-reranker-v3", usage: {}, results: [] } }]);
   await rerank.execute(
     {
@@ -49,7 +50,7 @@ Deno.test("rerank: forwards top_n/return_documents/max_doc_length/return_embeddi
   });
 });
 
-Deno.test("rerank: accepts an ImageDoc query for jina-reranker-m0", async () => {
+test("rerank: accepts an ImageDoc query for jina-reranker-m0", async () => {
   const { ctx, calls } = mockCtx([{ body: { model: "jina-reranker-m0", usage: {}, results: [] } }]);
   await rerank.execute(
     { model: "jina-reranker-m0", query: { image: "https://example.com/x.png" }, documents: ["a"] },

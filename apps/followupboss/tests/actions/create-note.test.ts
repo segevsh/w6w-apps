@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import createNote from "../../actions/create-note.ts";
 
-Deno.test("create-note: POSTs /notes with the documented body", async () => {
+test("create-note: POSTs /notes with the documented body", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 32 } }]);
   await createNote.execute({
     personId: 12235,
@@ -20,7 +21,7 @@ Deno.test("create-note: POSTs /notes with the documented body", async () => {
   });
 });
 
-Deno.test("create-note: requires only personId and warns about the tight rate limit", () => {
+test("create-note: requires only personId and warns about the tight rate limit", () => {
   assertEquals(createNote.idempotent, false);
   assertEquals((createNote.params ?? []).filter((p) => p.required).map((p) => p.key), ["personId"]);
   assert(/10 requests/.test(createNote.description!), createNote.description);

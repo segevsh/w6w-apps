@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/email-send.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("email-send: POST /emails/transactional builds Recipients, Content and Options", async () => {
+test("email-send: POST /emails/transactional builds Recipients, Content and Options", async () => {
   const { ctx, calls } = mockCtx([{ body: { TransactionID: "t1", MessageID: "m1" } }]);
   const out = await action.execute({
     to: "a@x.com, b@x.com",
@@ -36,7 +37,7 @@ Deno.test("email-send: POST /emails/transactional builds Recipients, Content and
   });
 });
 
-Deno.test("email-send: a template alone is enough; no body and no template is refused", async () => {
+test("email-send: a template alone is enough; no body and no template is refused", async () => {
   const { ctx, calls } = mockCtx([{ body: { TransactionID: "t" } }]);
   await action.execute({ to: "a@x.com", templateName: "welcome" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).Content, { TemplateName: "welcome" });
@@ -48,7 +49,7 @@ Deno.test("email-send: a template alone is enough; no body and no template is re
   );
 });
 
-Deno.test("email-send: requires a recipient and an object for merge fields", async () => {
+test("email-send: requires a recipient and an object for merge fields", async () => {
   await assertRejects(
     async () => await action.execute({ templateName: "t" }, mockCtx().ctx),
     Error,

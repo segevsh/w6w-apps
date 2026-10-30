@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactCreate from "../../actions/contact-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-create: POSTs to /contacts with plain string-array emails/phones/tags", async () => {
+test("contact-create: POSTs to /contacts with plain string-array emails/phones/tags", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1" }) }]);
   await contactCreate.execute(
     { first_name: "Ada", last_name: "Lovelace", emails: "a@x.com, b@x.com", tags: "vip" },
@@ -17,7 +18,7 @@ Deno.test("contact-create: POSTs to /contacts with plain string-array emails/pho
   assertEquals(body.tags, ["vip"]);
 });
 
-Deno.test("contact-create: addresses JSON is parsed into an object array", async () => {
+test("contact-create: addresses JSON is parsed into an object array", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ id: "1" }) }]);
   await contactCreate.execute(
     { company_name: "Acme", addresses: '[{"city":"NYC"}]' },

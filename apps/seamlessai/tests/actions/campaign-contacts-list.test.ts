@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-contacts-list.ts";
 
 const RESPONSE = { "success": true, "data": [{ "contactId": 1 }] };
 
-Deno.test("campaign-contacts-list: calls GET /api/client/v2/campaigns/{id}/contacts and returns the vendor body", async () => {
+test("campaign-contacts-list: calls GET /api/client/v2/campaigns/{id}/contacts and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "id": "5",
@@ -27,7 +28,7 @@ Deno.test("campaign-contacts-list: calls GET /api/client/v2/campaigns/{id}/conta
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("campaign-contacts-list: sends nothing for fields left unset", async () => {
+test("campaign-contacts-list: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({ "id": "5" }, ctx);
   const url = new URL(calls[0].url);
@@ -35,13 +36,13 @@ Deno.test("campaign-contacts-list: sends nothing for fields left unset", async (
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("campaign-contacts-list: refuses a missing id before any request", async () => {
+test("campaign-contacts-list: refuses a missing id before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({} as never, ctx));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("campaign-contacts-list: surfaces the vendor's error body", async () => {
+test("campaign-contacts-list: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

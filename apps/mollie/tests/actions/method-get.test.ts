@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import methodGet from "../../actions/method-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("method-get: fetches /methods/{id}", async () => {
+test("method-get: fetches /methods/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "ideal", description: "iDEAL" } }]);
   const out = await methodGet.execute({ methodId: "ideal" }, ctx);
 

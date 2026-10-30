@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-subscription.ts";
 
-Deno.test("create-subscription: is a non-idempotent perform action", () => {
+test("create-subscription: is a non-idempotent perform action", () => {
   assertEquals(action.key, "create-subscription");
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
@@ -12,7 +13,7 @@ Deno.test("create-subscription: is a non-idempotent perform action", () => {
   }
 });
 
-Deno.test("create-subscription: POSTs /subscriptions with account wrapped as { code }", async () => {
+test("create-subscription: POSTs /subscriptions with account wrapped as { code }", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "s1", uuid: "u1", state: "active" },
@@ -30,7 +31,7 @@ Deno.test("create-subscription: POSTs /subscriptions with account wrapped as { c
   assertEquals(body.account, { code: "bob" });
 });
 
-Deno.test("create-subscription: splits comma-separated coupon codes into an array", async () => {
+test("create-subscription: splits comma-separated coupon codes into an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     planCode: "gold",
@@ -41,7 +42,7 @@ Deno.test("create-subscription: splits comma-separated coupon codes into an arra
   assertEquals(JSON.parse(calls[0].body ?? "{}").coupon_codes, ["EARLYBIRD", "SUMMER25"]);
 });
 
-Deno.test("create-subscription: unitAmount is passed through unchanged — major units, not cents", async () => {
+test("create-subscription: unitAmount is passed through unchanged — major units, not cents", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await action.execute({
     planCode: "gold",

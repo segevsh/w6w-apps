@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   accountFromConnection,
@@ -16,21 +17,21 @@ import {
 
 const display = { region: "US", accountId: 12345 };
 
-Deno.test("endpointFor: US and EU are separate endpoints", () => {
+test("endpointFor: US and EU are separate endpoints", () => {
   assertEquals(endpointFor("US"), REGIONS.US);
   assertEquals(endpointFor("eu"), REGIONS.EU);
   assertEquals(endpointFor(undefined), REGIONS.US);
   assertThrows(() => endpointFor("APAC"), Error, "US and EU");
 });
 
-Deno.test("regionFromConnection reads the connection, defaulting to US", () => {
+test("regionFromConnection reads the connection, defaulting to US", () => {
   assertEquals(regionFromConnection({ display } as never), "US");
   assertEquals(regionFromConnection({ display: { region: "EU" } } as never), "EU");
   assertEquals(regionFromConnection(undefined), "US");
 });
 
 /** A user key sees several accounts, so the id is not implied by the credential. */
-Deno.test("accountId: the param wins, then the connection, then an explanatory error", () => {
+test("accountId: the param wins, then the connection, then an explanatory error", () => {
   assertEquals(accountId(999, { display } as never), 999);
   assertEquals(accountId("", { display } as never), 12345);
   assertEquals(accountFromConnection({ display } as never), 12345);
@@ -39,7 +40,7 @@ Deno.test("accountId: the param wins, then the connection, then an explanatory e
   assert(/account-list/.test(error.message), error.message);
 });
 
-Deno.test("compact, csv and json behave as the actions assume", () => {
+test("compact, csv and json behave as the actions assume", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined, d: [], e: false }), { a: 1, e: false });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv(""), undefined);
@@ -47,7 +48,7 @@ Deno.test("compact, csv and json behave as the actions assume", () => {
   assertThrows(() => json("{oops", "x"), Error, "`x` is not valid JSON");
 });
 
-Deno.test("gql: posts the query and variables to the connection's region", async () => {
+test("gql: posts the query and variables to the connection's region", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { ok: true } } }], { display });
   await new NewRelicClient(ctx).gql("{ actor { user { name } } }", { a: 1 });
   assertEquals(calls[0].url, REGIONS.US);
@@ -58,7 +59,7 @@ Deno.test("gql: posts the query and variables to the connection's region", async
   });
 });
 
-Deno.test("gql: an EU connection goes to the EU endpoint", async () => {
+test("gql: an EU connection goes to the EU endpoint", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], {
     display: { region: "EU" },
   });
@@ -67,14 +68,14 @@ Deno.test("gql: an EU connection goes to the EU endpoint", async () => {
 });
 
 /** The auth hook signs; the client must never carry a key itself. */
-Deno.test("gql: never sets an api-key header", async () => {
+test("gql: never sets an api-key header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: {} } }], { display });
   await new NewRelicClient(ctx).gql("{ actor { user { name } } }");
   assertEquals(calls[0].headers["api-key"], undefined);
 });
 
 /** Level 1: HTTP, which only auth failures actually use. */
-Deno.test("gql: a 401 throws with the explanation of all three causes", async () => {
+test("gql: a 401 throws with the explanation of all three causes", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { errors: [{ message: "authentication required" }] },
@@ -94,7 +95,7 @@ Deno.test("gql: a 401 throws with the explanation of all three causes", async ()
  * Level 2: the GraphQL errors array, which arrives inside a 200 — the trap
  * GraphQL makes structural.
  */
-Deno.test("gql: errors inside a 200 throw rather than reading as success", async () => {
+test("gql: errors inside a 200 throw rather than reading as success", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { errors: [{ message: "NRQL Syntax Error", path: ["actor", "account", "nrql"] }] },
@@ -110,7 +111,7 @@ Deno.test("gql: errors inside a 200 throw rather than reading as success", async
 });
 
 /** GraphQL permits data AND errors together, which reads as a clean result. */
-Deno.test("gql: a partial success is named as one, not silently returned", async () => {
+test("gql: a partial success is named as one, not silently returned", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: {
@@ -128,7 +129,7 @@ Deno.test("gql: a partial success is named as one, not silently returned", async
   assert(/incomplete rather than wrong/.test(message), message);
 });
 
-Deno.test("gql: a body with neither data nor errors is an error", async () => {
+test("gql: a body with neither data nor errors is an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: {} }], { display });
   let message = "";
   try {
@@ -139,7 +140,7 @@ Deno.test("gql: a body with neither data nor errors is an error", async () => {
   assert(/neither data nor errors/.test(message), message);
 });
 
-Deno.test("gql: a non-JSON body fails loudly", async () => {
+test("gql: a non-JSON body fails loudly", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "<html>bad gateway</html>" }], { display });
   let message = "";
   try {
@@ -150,7 +151,7 @@ Deno.test("gql: a non-JSON body fails loudly", async () => {
   assert(/did not return JSON/.test(message), message);
 });
 
-Deno.test("describeErrors: an error class is included when there is one", () => {
+test("describeErrors: an error class is included when there is one", () => {
   const message = describeErrors(
     [{ message: "boom", extensions: { errorClass: "VALIDATION_ERROR" } }],
     false,
@@ -162,7 +163,7 @@ Deno.test("describeErrors: an error class is included when there is one", () => 
  * Level 3: a mutation's own errors, inside `data`, with no GraphQL error and
  * no HTTP status to notice.
  */
-Deno.test("mutationErrors: a mutation payload's errors throw, and say where they came from", () => {
+test("mutationErrors: a mutation payload's errors throw, and say where they came from", () => {
   mutationErrors({ errors: [] }, "op");
   mutationErrors(undefined, "op");
   const error = assertThrows(

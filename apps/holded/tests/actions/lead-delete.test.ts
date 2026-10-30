@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import leadDelete from "../../actions/lead-delete.ts";
 import { asMutation, mockCtx, pathOf, writeResult } from "../_helpers.ts";
 
-Deno.test("lead-delete: metadata — idempotent", () => {
+test("lead-delete: metadata — idempotent", () => {
   assertEquals(leadDelete.type, "perform");
   assertEquals(leadDelete.idempotent, true);
 });
 
-Deno.test("lead-delete: DELETE /leads/{leadId}", async () => {
+test("lead-delete: DELETE /leads/{leadId}", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: writeResult("Successfully deleted", "l1"),

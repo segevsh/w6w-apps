@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import bookmarksDelete from "../../actions/bookmarks-delete.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("bookmarks-delete: posts bookmark_id and returns it on the documented empty-array success", async () => {
+test("bookmarks-delete: posts bookmark_id and returns it on the documented empty-array success", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope([]) }]);
   const result = await bookmarksDelete.execute({ bookmarkId: 7 }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("bookmarks-delete: posts bookmark_id and returns it on the documented 
   assertEquals(result, { bookmark_id: 7 });
 });
 
-Deno.test("bookmarks-delete: is marked idempotent", () => {
+test("bookmarks-delete: is marked idempotent", () => {
   assertEquals(bookmarksDelete.idempotent, true);
 });

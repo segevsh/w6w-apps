@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createNote from "../../actions/create-note.ts";
 import { bodyOf, envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-note: POST /notes with contact, text, linked deal and notify list", async () => {
+test("create-note: POST /notes with contact, text, linked deal and notify list", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope({ note: { id: "n1" } }) }]);
   const out = await createNote.execute({
     contactId: "c1",

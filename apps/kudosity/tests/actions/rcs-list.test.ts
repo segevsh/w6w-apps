@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rcsList from "../../actions/rcs-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("rcs-list: cursor paging params and no campaign filter", async () => {
+test("rcs-list: cursor paging params and no campaign filter", async () => {
   const { ctx, calls } = mockCtx([{
     body: envelope({ messages: [{ id: "1" }, { id: "2" }] }, { pagination: { has_next: false } }),
   }]);

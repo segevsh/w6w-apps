@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-reassign.ts";
 
-Deno.test("incident-reassign: builds an assignments array from comma-separated user IDs", async () => {
+test("incident-reassign: builds an assignments array from comma-separated user IDs", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { incident: { id: "P1" } } }]);
   const result = await action.execute!(
     { incidentId: "P1", from: "user@example.com", userIds: "U1, U2" },
@@ -20,7 +21,7 @@ Deno.test("incident-reassign: builds an assignments array from comma-separated u
   assertEquals(result, { id: "P1" });
 });
 
-Deno.test("incident-reassign: missing incidentId, from, or userIds rejects", async () => {
+test("incident-reassign: missing incidentId, from, or userIds rejects", async () => {
   const base = { incidentId: "P1", from: "user@example.com", userIds: "U1" };
   for (const patch of [{ incidentId: "" }, { from: "" }, { userIds: "" }]) {
     const { ctx } = mockCtx();

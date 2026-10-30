@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectCreate from "../../actions/project-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-create - POSTs /projects, joining tags and inverting billable", async () => {
+test("project-create - POSTs /projects, joining tags and inverting billable", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { project_id: 10, name: "Website Redesign" },
@@ -19,7 +20,7 @@ Deno.test("project-create - POSTs /projects, joining tags and inverting billable
   assertEquals(out, { project_id: 10, name: "Website Redesign" });
 });
 
-Deno.test("project-create - extraFields can set project_team without a typed param for it", async () => {
+test("project-create - extraFields can set project_team without a typed param for it", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }]);
   await projectCreate.execute(
     { name: "X", extraFields: { project_team: { add: [{ people_id: 1, role_id: 2 }] } } },

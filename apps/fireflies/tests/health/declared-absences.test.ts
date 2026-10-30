@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service from "../../health/service.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("health/service: a declared absence, informational, with no hook", () => {
+test("health/service: a declared absence, informational, with no hook", () => {
   assertEquals(service.key, "service");
   assertEquals(service.kind, "service");
   assertEquals(service.check, undefined);
@@ -16,7 +17,7 @@ Deno.test("health/service: a declared absence, informational, with no hook", () 
   assertEquals(service.feed, undefined);
 });
 
-Deno.test("health/quota: a declared absence, informational, with no hook", () => {
+test("health/quota: a declared absence, informational, with no hook", () => {
   assertEquals(quota.key, "quota");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);

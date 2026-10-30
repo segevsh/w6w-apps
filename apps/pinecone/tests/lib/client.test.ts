@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_VERSION,
@@ -14,21 +15,21 @@ import {
  * The header is not optional: measured 2026-08-18, omitting it makes Pinecone
  * serve 2024-04 — the OLDEST version — rather than the latest.
  */
-Deno.test("client: pins the API version header on every request", async () => {
+test("client: pins the API version header on every request", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { indexes: [] } }]);
   await new PineconeClient(ctx).request("/indexes");
   assertEquals(calls[0].headers["x-pinecone-api-version"], API_VERSION);
   assertEquals(API_VERSION, "2026-04");
 });
 
-Deno.test("client: control-plane calls go to api.pinecone.io", async () => {
+test("client: control-plane calls go to api.pinecone.io", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new PineconeClient(ctx).request("/indexes");
   assertEquals(new URL(calls[0].url).host, "api.pinecone.io");
 });
 
 /** The data plane lives on a host only the control plane knows. */
-Deno.test("client: a data call describes the index once, then reuses the host", async () => {
+test("client: a data call describes the index once, then reuses the host", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: { name: "idx", host: "idx-abc.svc.aped-1.pinecone.io" } },
     { status: 200, body: { upsertedCount: 1 } },
@@ -44,7 +45,7 @@ Deno.test("client: a data call describes the index once, then reuses the host", 
   assertEquals(new URL(calls[2].url).host, "idx-abc.svc.aped-1.pinecone.io");
 });
 
-Deno.test("client: an explicit host skips the describe call entirely", async () => {
+test("client: an explicit host skips the describe call entirely", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new PineconeClient(ctx).data(
     "idx",
@@ -56,7 +57,7 @@ Deno.test("client: an explicit host skips the describe call entirely", async () 
   assertEquals(new URL(calls[0].url).host, "idx-abc.svc.aped-1.pinecone.io");
 });
 
-Deno.test("client: an index with no host yet says so, rather than building a bad URL", async () => {
+test("client: an index with no host yet says so, rather than building a bad URL", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { name: "idx", status: { state: "Initializing" } },
@@ -72,7 +73,7 @@ Deno.test("client: an index with no host yet says so, rather than building a bad
  * Auth failures are PLAIN TEXT with content-type text/html; everything else is
  * a JSON envelope. A client that assumes JSON reports a parse error.
  */
-Deno.test("client: a plain-text auth failure surfaces its text, not a parse error", async () => {
+test("client: a plain-text auth failure surfaces its text, not a parse error", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: "Invalid API key",
@@ -82,7 +83,7 @@ Deno.test("client: a plain-text auth failure surfaces its text, not a parse erro
   assert(String(err).includes("Invalid API key"), String(err));
 });
 
-Deno.test("client: a JSON error surfaces the code and message", async () => {
+test("client: a JSON error surfaces the code and message", async () => {
   const { ctx } = mockCtx([{
     status: 403,
     body: {
@@ -96,7 +97,7 @@ Deno.test("client: a JSON error surfaces the code and message", async () => {
 });
 
 /** The upsert-text route declares application/x-ndjson and nothing else. */
-Deno.test("client: NDJSON bodies are one JSON object per line, not an array", async () => {
+test("client: NDJSON bodies are one JSON object per line, not an array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new PineconeClient(ctx).request("/records/namespaces/ns/upsert", {
     method: "POST",
@@ -107,19 +108,19 @@ Deno.test("client: NDJSON bodies are one JSON object per line, not an array", as
   assertEquals(calls[0].body, '{"_id":"a"}\n{"_id":"b"}');
 });
 
-Deno.test("client: repeated query params (ids) are appended, not overwritten", async () => {
+test("client: repeated query params (ids) are appended, not overwritten", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new PineconeClient(ctx).request("/vectors/fetch", { query: { ids: ["a", "b"] } });
   assertEquals(new URL(calls[0].url).searchParams.getAll("ids"), ["a", "b"]);
 });
 
-Deno.test("withScheme: adds https once and only once", () => {
+test("withScheme: adds https once and only once", () => {
   assertEquals(withScheme("x.pinecone.io"), "https://x.pinecone.io");
   assertEquals(withScheme("https://x.pinecone.io"), "https://x.pinecone.io");
   assertEquals(withScheme("https://x.pinecone.io/"), "https://x.pinecone.io");
 });
 
-Deno.test("vector: accepts JSON, live arrays and comma-separated numbers", () => {
+test("vector: accepts JSON, live arrays and comma-separated numbers", () => {
   assertEquals(vector("[0.1, 0.2]", "v"), [0.1, 0.2]);
   assertEquals(vector([0.1, 0.2], "v"), [0.1, 0.2]);
   assertEquals(vector("0.1, 0.2", "v"), [0.1, 0.2]);
@@ -127,7 +128,7 @@ Deno.test("vector: accepts JSON, live arrays and comma-separated numbers", () =>
   assertThrows(() => vector('[1, "cat"]', "values"), Error, "values");
 });
 
-Deno.test("csv / compact / json behave as the actions assume", () => {
+test("csv / compact / json behave as the actions assume", () => {
   assertEquals(csv("a, b ,,c"), ["a", "b", "c"]);
   assertEquals(compact({ a: 1, b: "", c: null, d: [], e: "x" }), { a: 1, e: "x" });
   assertThrows(() => json("{oops", "filter"), Error, "filter");

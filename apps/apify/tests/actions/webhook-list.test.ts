@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookList from "../../actions/webhook-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("webhook-list: calls GET /v2/webhooks and unwraps the page", async () => {
+test("webhook-list: calls GET /v2/webhooks and unwraps the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "w1" }]) }]);
   const out = await webhookList.execute({ limit: 100, desc: true }, ctx) as { items: unknown[] };
 
@@ -18,6 +19,6 @@ Deno.test("webhook-list: calls GET /v2/webhooks and unwraps the page", async () 
  * a known path, and removing it would break read-modify-write of a webhook. The
  * risk is stated in the action's description instead.
  */
-Deno.test("webhook-list: warns in its description that results can carry secrets", () => {
+test("webhook-list: warns in its description that results can carry secrets", () => {
   assert(/secret/i.test(webhookList.description ?? ""), webhookList.description);
 });

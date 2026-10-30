@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import crawlStart from "../../actions/crawl-start.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("crawl-start: builds the nested body and returns the crawl id", async () => {
+test("crawl-start: builds the nested body and returns the crawl id", async () => {
   const reply = { success: true, id: "crawl_1", url: "https://x/crawl/crawl_1" };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await crawlStart.execute(
@@ -35,7 +36,7 @@ Deno.test("crawl-start: builds the nested body and returns the crawl id", async 
   });
 });
 
-Deno.test("crawl-start: minimal body, and refusals", async () => {
+test("crawl-start: minimal body, and refusals", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true, id: "c" } }]);
   await crawlStart.execute({ url: "https://a.com" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { url: "https://a.com" });

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-ad-accounts.ts";
 
-Deno.test("list-ad-accounts: GET /me/adaccounts with fields, limit and cursor", async () => {
+test("list-ad-accounts: GET /me/adaccounts with fields, limit and cursor", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [{ id: "act_1" }], paging: {} } }]);
   const out = await action.execute({ limit: 10, cursor: "abc" }, ctx);
   const url = new URL(calls[0].url);

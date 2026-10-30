@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createUser from "../../actions/create-user.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-user: PUT /users with required fields, optional fields omitted when unset", async () => {
+test("create-user: PUT /users with required fields, optional fields omitted when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await createUser.execute({ email: "a@b.com", name: "Dwight", roleID: "r1" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,7 +12,7 @@ Deno.test("create-user: PUT /users with required fields, optional fields omitted
   assertEquals(body, { email: "a@b.com", name: "Dwight", roleID: "r1" });
 });
 
-Deno.test("create-user: comma-separated groupIDs are split into an array", async () => {
+test("create-user: comma-separated groupIDs are split into an array", async () => {
   const { ctx, calls } = mockCtx([{ body: undefined }]);
   await createUser.execute(
     { email: "a@b.com", name: "Dwight", roleID: "r1", groupIDs: "g1, g2" },
@@ -21,6 +22,6 @@ Deno.test("create-user: comma-separated groupIDs are split into an array", async
   assertEquals(body.groupIDs, ["g1", "g2"]);
 });
 
-Deno.test("create-user: is not idempotent — a retry would create a duplicate member", () => {
+test("create-user: is not idempotent — a retry would create a duplicate member", () => {
   assertEquals(createUser.idempotent, false);
 });

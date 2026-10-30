@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactDelete from "../../actions/contact-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-delete: DELETEs /contacts/{id} and returns the message", async () => {
+test("contact-delete: DELETEs /contacts/{id} and returns the message", async () => {
   const { ctx, calls } = mockCtx([{ body: { message: "Contact deleted" } }]);
   const out = await contactDelete.execute({ id: 11 }, ctx) as { message: string };
 
@@ -12,6 +13,6 @@ Deno.test("contact-delete: DELETEs /contacts/{id} and returns the message", asyn
   assertEquals(out.message, "Contact deleted");
 });
 
-Deno.test("contact-delete: is safe to retry", () => {
+test("contact-delete: is safe to retry", () => {
   assertEquals(contactDelete.idempotent, true);
 });

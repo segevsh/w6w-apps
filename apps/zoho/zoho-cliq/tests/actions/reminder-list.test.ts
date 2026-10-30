@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCliqCtx } from "../_helpers.ts";
 import action from "../../actions/reminder-list.ts";
 
-Deno.test("reminder-list: lists a category, maps next_set_token", async () => {
+test("reminder-list: lists a category, maps next_set_token", async () => {
   const { ctx, calls } = mockCliqCtx([{
     "status": 200,
     "body": { "category": "others", "list": [{ "id": "r1" }], "next_set_token": "10" },
@@ -30,6 +31,6 @@ Deno.test("reminder-list: lists a category, maps next_set_token", async () => {
   });
 });
 
-Deno.test("reminder-list: is a read action", () => {
+test("reminder-list: is a read action", () => {
   assertEquals(action.type, "read");
 });

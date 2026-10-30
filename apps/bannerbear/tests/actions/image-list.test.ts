@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageList from "../../actions/image-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("image-list: GET /images with the page query param", async () => {
+test("image-list: GET /images with the page query param", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ uid: "i1" }] }]);
   const out = await imageList.execute({ page: 3 }, ctx) as unknown[];
 

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/job-list.ts";
 
@@ -30,7 +31,7 @@ const jobs = {
 };
 
 /** The status a workflow branching on `failed` treats as a success. */
-Deno.test("job-list: counts incomplete apart from succeeded and failed", async () => {
+test("job-list: counts incomplete apart from succeeded and failed", async () => {
   const { ctx, logs } = mockCtx([jobs], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.succeeded, 1);
@@ -43,7 +44,7 @@ Deno.test("job-list: counts incomplete apart from succeeded and failed", async (
 });
 
 /** When the data last fully arrived — the number people mean by "healthy". */
-Deno.test("job-list: reports the last full success, not the last job", async () => {
+test("job-list: reports the last full success, not the last job", async () => {
   const { ctx } = mockCtx([jobs], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals((result.latest as { jobId: number }).jobId, 3);
@@ -51,7 +52,7 @@ Deno.test("job-list: reports the last full success, not the last job", async () 
 });
 
 /** Airbyte reports timestamps, not durations. */
-Deno.test("job-list: computes each duration and averages the finished ones", async () => {
+test("job-list: computes each duration and averages the finished ones", async () => {
   const { ctx } = mockCtx([jobs], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   const list = result.jobs as Array<{ durationSeconds?: number }>;
@@ -62,7 +63,7 @@ Deno.test("job-list: computes each duration and averages the finished ones", asy
 });
 
 /** Airbyte would keep the connection id and drop the workspaces silently. */
-Deno.test("job-list: refuses both filters rather than letting one be ignored", async () => {
+test("job-list: refuses both filters rather than letting one be ignored", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ connectionId: UUID, workspaceIds: "w1" }, ctx),
@@ -72,7 +73,7 @@ Deno.test("job-list: refuses both filters rather than letting one be ignored", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("job-list: the filters that are allowed reach the query", async () => {
+test("job-list: the filters that are allowed reach the query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }], D);
   await action.execute({ connectionId: UUID, jobType: "sync", status: "failed", limit: 5 }, ctx);
   const q = new URL(calls[0].url).searchParams;
@@ -82,7 +83,7 @@ Deno.test("job-list: the filters that are allowed reach the query", async () => 
   assertEquals(q.get("limit"), "5");
 });
 
-Deno.test("job-list: totals the rows moved", async () => {
+test("job-list: totals the rows moved", async () => {
   const { ctx } = mockCtx([jobs], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.totalRowsSynced, 1012);

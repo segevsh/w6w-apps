@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import cardUpdateContent from "../../actions/card-update-content.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("card-update-content: PUTs content AND title to the /content endpoint", async () => {
+test("card-update-content: PUTs content AND title to the /content endpoint", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", content: "new body" } }]);
   const result = await cardUpdateContent.execute(
     { cardId: "c1", title: "Unchanged Title", content: "new body" },

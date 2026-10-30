@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -9,7 +10,7 @@ function feedEntry(title: string) {
   return { title, summary: "", summaryHtml: "", publishedAt: new Date().toISOString() };
 }
 
-Deno.test("parseComponentTitle: splits '{component} - {status}'", () => {
+test("parseComponentTitle: splits '{component} - {status}'", () => {
   assertEquals(parseComponentTitle("Tumblr API - Operational"), {
     name: "Tumblr API",
     status: "Operational",
@@ -20,7 +21,7 @@ Deno.test("parseComponentTitle: splits '{component} - {status}'", () => {
   });
 });
 
-Deno.test("mapComponentStatus: covers the vendor's own incident_status_id_list vocabulary", () => {
+test("mapComponentStatus: covers the vendor's own incident_status_id_list vocabulary", () => {
   assertEquals(mapComponentStatus("Operational"), "ok");
   assertEquals(mapComponentStatus("Informational"), "ok");
   assertEquals(mapComponentStatus("Degraded Performance"), "degraded");
@@ -30,12 +31,12 @@ Deno.test("mapComponentStatus: covers the vendor's own incident_status_id_list v
   assertEquals(mapComponentStatus("Something New"), "unknown");
 });
 
-Deno.test("componentKey: slugifies the vendor's component name", () => {
+test("componentKey: slugifies the vendor's component name", () => {
   assertEquals(componentKey("Tumblr API"), "tumblr-api");
   assertEquals(componentKey("Tumblr Dashboard"), "tumblr-dashboard");
 });
 
-Deno.test("service.check: ok when all three Tumblr components are operational", () => {
+test("service.check: ok when all three Tumblr components are operational", () => {
   const feed = {
     entries: [],
     latest: [
@@ -53,7 +54,7 @@ Deno.test("service.check: ok when all three Tumblr components are operational", 
   assertEquals("wordpress-com" in (report.components ?? {}), false);
 });
 
-Deno.test("service.check: degraded when one Tumblr component degrades", () => {
+test("service.check: degraded when one Tumblr component degrades", () => {
   const feed = {
     entries: [],
     latest: [
@@ -69,7 +70,7 @@ Deno.test("service.check: degraded when one Tumblr component degrades", () => {
   assertEquals(report.message?.includes("Tumblr API"), true, report.message);
 });
 
-Deno.test("service.check: unknown when the feed failed to load", () => {
+test("service.check: unknown when the feed failed to load", () => {
   const out = service.check!(
     { feed: { entries: [], latest: [], fetchedAt: new Date().toISOString(), error: "timeout" } },
     { fetch: () => Promise.reject(), log: () => {} } as never,
@@ -77,7 +78,7 @@ Deno.test("service.check: unknown when the feed failed to load", () => {
   assertEquals((out as { state: string }).state, "unknown");
 });
 
-Deno.test("service.check: unknown, never ok, when no entry names a Tumblr component", () => {
+test("service.check: unknown, never ok, when no entry names a Tumblr component", () => {
   const feed = {
     entries: [],
     latest: [feedEntry("WordPress.com - Operational"), feedEntry("Gravatar - Operational")],

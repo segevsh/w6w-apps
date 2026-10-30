@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import timeActivityList from "../../actions/time-activity-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-activity-list: GETs time-activities with the required date range", async () => {
+test("time-activity-list: GETs time-activities with the required date range", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ timeActivitiesByUsers: [] }) }]);
   await timeActivityList.execute(
     { timeClockId: 5, startDate: "2026-01-01", endDate: "2026-01-31" },
@@ -15,7 +16,7 @@ Deno.test("time-activity-list: GETs time-activities with the required date range
   );
 });
 
-Deno.test("time-activity-list: activityTypes is a repeated-key array filter", async () => {
+test("time-activity-list: activityTypes is a repeated-key array filter", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ timeActivitiesByUsers: [] }) }]);
   await timeActivityList.execute(
     {

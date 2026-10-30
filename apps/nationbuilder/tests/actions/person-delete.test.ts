@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/person-delete.ts";
 
-Deno.test("person-delete: refuses without an explicit confirm", async () => {
+test("person-delete: refuses without an explicit confirm", async () => {
   const { ctx } = mockNationBuilderCtx([]);
   await assertRejects(
     async () => {
@@ -13,7 +14,7 @@ Deno.test("person-delete: refuses without an explicit confirm", async () => {
   );
 });
 
-Deno.test("person-delete: DELETEs /signups/{id} once confirmed", async () => {
+test("person-delete: DELETEs /signups/{id} once confirmed", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{ status: 204 }]);
   const out = await action.execute({ personId: "42", confirm: true }, ctx);
   assertEquals(calls[0].url, "https://acme.nationbuilder.com/api/v2/signups/42");

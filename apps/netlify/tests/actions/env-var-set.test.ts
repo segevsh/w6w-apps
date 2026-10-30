@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/env-var-set.ts";
 
-Deno.test("env-var-set: POSTs /accounts/{id}/env with a one-entry values array", async () => {
+test("env-var-set: POSTs /accounts/{id}/env with a one-entry values array", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ key: "API_URL" }] }]);
   await action.execute!(
     { accountId: "acct1", key: "API_URL", value: "https://example.com", context: "production" },
@@ -18,7 +19,7 @@ Deno.test("env-var-set: POSTs /accounts/{id}/env with a one-entry values array",
   }]);
 });
 
-Deno.test("env-var-set: defaults context to 'all' and respects isSecret + siteId", async () => {
+test("env-var-set: defaults context to 'all' and respects isSecret + siteId", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await action.execute!(
     { accountId: "acct1", siteId: "site1", key: "SECRET_KEY", value: "s3cr3t", isSecret: true },
@@ -33,7 +34,7 @@ Deno.test("env-var-set: defaults context to 'all' and respects isSecret + siteId
   }]);
 });
 
-Deno.test("env-var-set: requires accountId and key", async () => {
+test("env-var-set: requires accountId and key", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ key: "X", value: "y" }, ctx)),
@@ -47,6 +48,6 @@ Deno.test("env-var-set: requires accountId and key", async () => {
   );
 });
 
-Deno.test("env-var-set: is declared idempotent", () => {
+test("env-var-set: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

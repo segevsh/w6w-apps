@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import webhookDelete from "../../actions/webhook-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-delete: DELETE /api/v1/webhook/w1 on the workspace host", async () => {
+test("webhook-delete: DELETE /api/v1/webhook/w1 on the workspace host", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { webhook_id: "w1", deleted: true } }]);
   const out = await webhookDelete.execute({ webhookId: "w1" }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("webhook-delete: DELETE /api/v1/webhook/w1 on the workspace host", asy
   assertEquals((out as { deleted: boolean }).deleted, true);
 });
 
-Deno.test("webhook-delete: a Fellow error surfaces its detail and status", async () => {
+test("webhook-delete: a Fellow error surfaces its detail and status", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { detail: "Forbidden for this key" } }]);
   const err = await assertRejects(
     () => Promise.resolve(webhookDelete.execute({ webhookId: "w1" }, ctx)),

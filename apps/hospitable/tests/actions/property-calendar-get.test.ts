@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import propertyCalendarGet from "../../actions/property-calendar-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("property-calendar-get: GET .../calendar with a date window", async () => {
+test("property-calendar-get: GET .../calendar with a date window", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { days: [] } } }]);
   await propertyCalendarGet.execute({
     uuid: "p1",

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-get-cards.ts";
 
-Deno.test("list-get-cards: GETs /lists/{id}/cards", async () => {
+test("list-get-cards: GETs /lists/{id}/cards", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "c1" }] }]);
   assertEquals(await action.execute({ id: "l1", limit: 10 }, ctx), [{ id: "c1" }]);
   assertEquals(new URL(calls[0].url).pathname, "/1/lists/l1/cards");

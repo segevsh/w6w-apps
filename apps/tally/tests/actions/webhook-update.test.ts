@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { jsonBody, mockCtx } from "../_helpers.ts";
 import action from "../../actions/webhook-update.ts";
 
-Deno.test("webhook-update: PATCHes the full documented body and handles the 204", async () => {
+test("webhook-update: PATCHes the full documented body and handles the 204", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const result = await action.execute({
     webhookId: "wh1",
@@ -23,7 +24,7 @@ Deno.test("webhook-update: PATCHes the full documented body and handles the 204"
   assertEquals(result, { webhookId: "wh1", updated: true });
 });
 
-Deno.test("webhook-update: marks the API's four required fields required", () => {
+test("webhook-update: marks the API's four required fields required", () => {
   const required = action.params?.filter((p) => p.required).map((p) => p.key);
   assertEquals(required, ["webhookId", "formId", "url", "isEnabled"]);
 });

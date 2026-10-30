@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailboxDelete from "../../actions/mailbox-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("mailbox-delete: DELETEs /parser/{id} and returns the async acknowledgement", async () => {
+test("mailbox-delete: DELETEs /parser/{id} and returns the async acknowledgement", async () => {
   const { ctx, calls } = mockCtx([
     { body: { notification_set: { info: ["Mailbox is being deleted. This can take a while."] } } },
   ]);
@@ -17,6 +18,6 @@ Deno.test("mailbox-delete: DELETEs /parser/{id} and returns the async acknowledg
   assertEquals(out.notification_set.info, ["Mailbox is being deleted. This can take a while."]);
 });
 
-Deno.test("mailbox-delete: is idempotent", () => {
+test("mailbox-delete: is idempotent", () => {
   assertEquals(mailboxDelete.idempotent, true);
 });

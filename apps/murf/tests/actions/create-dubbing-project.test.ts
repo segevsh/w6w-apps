@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/create-dubbing-project.ts";
 import { bodyOf, exec, failure, mockCtx } from "../_helpers.ts";
 
-Deno.test("create-dubbing-project: POSTs a JSON body with snake_case keys and a locale array", async () => {
+test("create-dubbing-project: POSTs a JSON body with snake_case keys and a locale array", async () => {
   const reply = { project_id: "p1", dubbing_type: "QA", target_locales: ["fr_FR", "de_DE"] };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const out = await exec(action, {
@@ -23,7 +24,7 @@ Deno.test("create-dubbing-project: POSTs a JSON body with snake_case keys and a 
   assertEquals(out, reply);
 });
 
-Deno.test("create-dubbing-project: validates input before calling", async () => {
+test("create-dubbing-project: validates input before calling", async () => {
   const { ctx, calls } = mockCtx();
   assertEquals(
     (await failure(action, { name: "", dubbingType: "QA", targetLocales: "a" }, ctx)).includes(

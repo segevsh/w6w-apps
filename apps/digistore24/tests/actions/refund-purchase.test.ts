@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import refundPurchase from "../../actions/refund-purchase.ts";
 import { envelope, errorEnvelope, fieldsOf, fnOf, mockCtx } from "../_helpers.ts";
 
 const FN = "refundPurchase";
 const DATA = { "ok": "Y" };
 
-Deno.test("refund-purchase: calls refundPurchase with POST and returns the data payload", async () => {
+test("refund-purchase: calls refundPurchase with POST and returns the data payload", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   const out = await refundPurchase.execute({ "purchase_id": "X26QE8GN" }, ctx);
   assertEquals(fnOf(calls[0].url), FN);
@@ -14,7 +15,7 @@ Deno.test("refund-purchase: calls refundPurchase with POST and returns the data 
   assertEquals(out, DATA);
 });
 
-Deno.test("refund-purchase: sends every optional field under the vendor's wire name", async () => {
+test("refund-purchase: sends every optional field under the vendor's wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await refundPurchase.execute({
     "purchase_id": "X26QE8GN",
@@ -28,7 +29,7 @@ Deno.test("refund-purchase: sends every optional field under the vendor's wire n
   });
 });
 
-Deno.test("refund-purchase: form-encodes the body and never puts arguments in the URL", async () => {
+test("refund-purchase: form-encodes the body and never puts arguments in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await refundPurchase.execute({
     "purchase_id": "X26QE8GN",
@@ -40,7 +41,7 @@ Deno.test("refund-purchase: form-encodes the body and never puts arguments in th
   assert(!("x-ds-api-key" in calls[0].headers), "credential must come from sign, not the action");
 });
 
-Deno.test("refund-purchase: surfaces the vendor error envelope even on HTTP 200", async () => {
+test("refund-purchase: surfaces the vendor error envelope even on HTTP 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorEnvelope("The API key is invalid.", 2) }]);
   await assertRejects(
     async () => await refundPurchase.execute({ "purchase_id": "X26QE8GN" }, ctx),
@@ -49,6 +50,6 @@ Deno.test("refund-purchase: surfaces the vendor error envelope even on HTTP 200"
   );
 });
 
-Deno.test("refund-purchase: declares idempotency as false", () => {
+test("refund-purchase: declares idempotency as false", () => {
   assertEquals(refundPurchase.idempotent, false);
 });

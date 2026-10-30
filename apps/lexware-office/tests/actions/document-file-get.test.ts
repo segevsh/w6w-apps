@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/document-file-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const pdf = new TextEncoder().encode("%PDF-1.7 fake");
 
-Deno.test("document-file-get: GETs /v1/<type>/{id}/file with the chosen Accept and returns base64", async () => {
+test("document-file-get: GETs /v1/<type>/{id}/file with the chosen Accept and returns base64", async () => {
   const { ctx, calls } = mockCtx([{
     bytes: pdf,
     headers: {
@@ -26,7 +27,7 @@ Deno.test("document-file-get: GETs /v1/<type>/{id}/file with the chosen Accept a
   assertEquals(atob(out.base64), "%PDF-1.7 fake");
 });
 
-Deno.test("document-file-get: default Accept is */* and a missing disposition gives a null name", async () => {
+test("document-file-get: default Accept is */* and a missing disposition gives a null name", async () => {
   const { ctx, calls } = mockCtx([{ bytes: pdf, headers: { "content-type": "application/xml" } }]);
   const out = await action.execute({ documentType: "credit-notes", id: "c1" }, ctx) as {
     fileName: string | null;
@@ -36,7 +37,7 @@ Deno.test("document-file-get: default Accept is */* and a missing disposition gi
   assertEquals(out.fileName, null);
 });
 
-Deno.test("document-file-get: a draft (409) surfaces the vendor error; bad input never hits the network", async () => {
+test("document-file-get: a draft (409) surfaces the vendor error; bad input never hits the network", async () => {
   const { ctx } = mockCtx([{ status: 409, body: { status: 409, message: "Draft has no file" } }]);
   await assertRejects(
     async () => await action.execute({ documentType: "invoices", id: "d1" }, ctx),

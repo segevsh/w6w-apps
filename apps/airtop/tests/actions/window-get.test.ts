@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowGet from "../../actions/window-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("window-get: reads window info with the live-view query options", async () => {
+test("window-get: reads window info with the live-view query options", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: envelope({ windowId: "w1", targetId: "t1", liveViewUrl: "https://live.airtop.ai/w1" }),

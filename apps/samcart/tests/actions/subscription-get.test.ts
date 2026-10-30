@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import subscriptionGet from "../../actions/subscription-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -16,7 +17,7 @@ const INPUT = {
 };
 const RESPONSE = { "id": 1, "marker": true };
 
-Deno.test("subscription-get: sends GET /v1/subscriptions/1337 with the mapped parameters", async () => {
+test("subscription-get: sends GET /v1/subscriptions/1337 with the mapped parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await subscriptionGet.execute(INPUT, ctx);
   assertEquals(calls.length, 1);
@@ -37,12 +38,12 @@ Deno.test("subscription-get: sends GET /v1/subscriptions/1337 with the mapped pa
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("subscription-get: returns the documented result shape", async () => {
+test("subscription-get: returns the documented result shape", async () => {
   const { ctx } = mockCtx([{ body: RESPONSE }]);
   assertEquals(await subscriptionGet.execute(INPUT, ctx), { "id": 1, "marker": true });
 });
 
-Deno.test("subscription-get: an error surfaces SamCart's own message", async () => {
+test("subscription-get: an error surfaces SamCart's own message", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { message: "Object could not be found" } }]);
   const err = await assertRejects(
     () => Promise.resolve(subscriptionGet.execute(INPUT, ctx)),
@@ -51,7 +52,7 @@ Deno.test("subscription-get: an error surfaces SamCart's own message", async () 
   assertEquals(err.message.includes("Object could not be found"), true, err.message);
 });
 
-Deno.test("subscription-get: a non-integer subscriptionId is refused before any request", async () => {
+test("subscription-get: a non-integer subscriptionId is refused before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>

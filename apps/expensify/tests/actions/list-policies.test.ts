@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/list-policies.ts";
 import { mockCtx } from "../_helpers.ts";
 import { assertWire, sent } from "../_job.ts";
@@ -22,7 +23,7 @@ const POLICIES = [
   },
 ];
 
-Deno.test("list-policies: posts get/policyList and returns the list with a count", async () => {
+test("list-policies: posts get/policyList and returns the list with a count", async () => {
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200, policyList: POLICIES } }]);
   const out = await action.execute!({ adminOnly: true, userEmail: "e@d.com" }, ctx);
   assertWire(calls[0]);
@@ -33,14 +34,14 @@ Deno.test("list-policies: posts get/policyList and returns the list with a count
   assertEquals(out, { policyList: POLICIES, count: 2 });
 });
 
-Deno.test("list-policies: a bare call sends only the type, and no policies is an empty list", async () => {
+test("list-policies: a bare call sends only the type, and no policies is an empty list", async () => {
   const { ctx, calls } = mockCtx([{ body: { responseCode: 200 } }]);
   const out = await action.execute!({}, ctx);
   assertEquals(sent(calls[0]).job.inputSettings, { type: "policyList" });
   assertEquals(out, { policyList: [], count: 0 });
 });
 
-Deno.test("list-policies: an authentication error is thrown even at HTTP 200", async () => {
+test("list-policies: an authentication error is thrown even at HTTP 200", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { responseMessage: "Authentication error", responseCode: 404 },
@@ -48,7 +49,7 @@ Deno.test("list-policies: an authentication error is thrown even at HTTP 200", a
   await assertRejects(async () => await action.execute!({}, ctx), Error, "Authentication error");
 });
 
-Deno.test("list-policies: declares a read with output", () => {
+test("list-policies: declares a read with output", () => {
   assertEquals(action.type, "read");
   assert(Array.isArray(action.output));
 });

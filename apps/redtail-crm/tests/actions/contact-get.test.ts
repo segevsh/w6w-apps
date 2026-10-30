@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactGet from "../../actions/contact-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("contact-get: fetches GET /contacts/:id with an optional include header", async () => {
+test("contact-get: fetches GET /contacts/:id with an optional include header", async () => {
   const { ctx, calls } = mockCtx([{ body: { contact: { id: 5, full_name: "Margaret Smith" } } }]);
   const out = await contactGet.execute({ contactId: 5, include: "addresses,phones" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("contact-get: fetches GET /contacts/:id with an optional include heade
   assertEquals(out.contact.full_name, "Margaret Smith");
 });
 
-Deno.test("contact-get: is a read action", () => {
+test("contact-get: is a read action", () => {
   assertEquals(contactGet.type, "read");
 });

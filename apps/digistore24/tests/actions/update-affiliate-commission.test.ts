@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import updateAffiliateCommission from "../../actions/update-affiliate-commission.ts";
 import { envelope, errorEnvelope, fieldsOf, fnOf, mockCtx } from "../_helpers.ts";
 
 const FN = "updateAffiliateCommission";
 const DATA = { "ok": "Y" };
 
-Deno.test("update-affiliate-commission: calls updateAffiliateCommission with POST and returns the data payload", async () => {
+test("update-affiliate-commission: calls updateAffiliateCommission with POST and returns the data payload", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   const out = await updateAffiliateCommission.execute({
     "affiliate_id": "aff1",
@@ -17,7 +18,7 @@ Deno.test("update-affiliate-commission: calls updateAffiliateCommission with POS
   assertEquals(out, DATA);
 });
 
-Deno.test("update-affiliate-commission: sends every optional field under the vendor's wire name", async () => {
+test("update-affiliate-commission: sends every optional field under the vendor's wire name", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await updateAffiliateCommission.execute({
     "affiliate_id": "aff1",
@@ -41,7 +42,7 @@ Deno.test("update-affiliate-commission: sends every optional field under the ven
   });
 });
 
-Deno.test("update-affiliate-commission: form-encodes the body and never puts arguments in the URL", async () => {
+test("update-affiliate-commission: form-encodes the body and never puts arguments in the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(DATA) }]);
   await updateAffiliateCommission.execute({
     "affiliate_id": "aff1",
@@ -58,7 +59,7 @@ Deno.test("update-affiliate-commission: form-encodes the body and never puts arg
   assert(!("x-ds-api-key" in calls[0].headers), "credential must come from sign, not the action");
 });
 
-Deno.test("update-affiliate-commission: surfaces the vendor error envelope even on HTTP 200", async () => {
+test("update-affiliate-commission: surfaces the vendor error envelope even on HTTP 200", async () => {
   const { ctx } = mockCtx([{ status: 200, body: errorEnvelope("The API key is invalid.", 2) }]);
   await assertRejects(
     async () =>
@@ -71,6 +72,6 @@ Deno.test("update-affiliate-commission: surfaces the vendor error envelope even 
   );
 });
 
-Deno.test("update-affiliate-commission: declares idempotency as true", () => {
+test("update-affiliate-commission: declares idempotency as true", () => {
   assertEquals(updateAffiliateCommission.idempotent, true);
 });

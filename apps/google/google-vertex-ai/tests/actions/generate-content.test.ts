@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import generate from "../../actions/generate-content.ts";
 
 const display = { projectId: "p1", location: "europe-west4" };
 const BASE = "https://europe-west4-aiplatform.googleapis.com/v1/projects/p1/locations/europe-west4";
 
-Deno.test("generate-content: POSTs to the regional publisher model with generationConfig", async () => {
+test("generate-content: POSTs to the regional publisher model with generationConfig", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       candidates: [{
@@ -35,7 +36,7 @@ Deno.test("generate-content: POSTs to the regional publisher model with generati
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("generate-content: location override picks the host; JSON strings parse", async () => {
+test("generate-content: location override picks the host; JSON strings parse", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }], { display });
   await generate.execute!({
     model: "gemini-2.5-flash",
@@ -54,7 +55,7 @@ Deno.test("generate-content: location override picks the host; JSON strings pars
   });
 });
 
-Deno.test("generate-content: guards — schema without JSON mime, missing contents, bad location", async () => {
+test("generate-content: guards — schema without JSON mime, missing contents, bad location", async () => {
   const { ctx } = mockCtx([], { display });
   await assertRejects(
     () => Promise.resolve(generate.execute!({ model: "m", contents: [], responseSchema: {} }, ctx)),

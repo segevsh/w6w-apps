@@ -1,13 +1,14 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { compact, FreeAgentClient, jsonArray, jsonObject, ref } from "../../lib/client.ts";
 
-Deno.test("ref: builds the full resource URL FreeAgent expects for a reference field", () => {
+test("ref: builds the full resource URL FreeAgent expects for a reference field", () => {
   assertEquals(ref("contacts", 2), "https://api.freeagent.com/v2/contacts/2");
   assertEquals(ref("tasks", "10"), "https://api.freeagent.com/v2/tasks/10");
 });
 
-Deno.test("compact: drops undefined/null/empty-string values, keeps falsy-but-real ones", () => {
+test("compact: drops undefined/null/empty-string values, keeps falsy-but-real ones", () => {
   assertEquals(compact({ a: undefined, b: null, c: "", d: 0, e: false, f: "x" }), {
     d: 0,
     e: false,
@@ -15,7 +16,7 @@ Deno.test("compact: drops undefined/null/empty-string values, keeps falsy-but-re
   });
 });
 
-Deno.test("jsonObject: accepts a plain object and a JSON string, rejects an array", () => {
+test("jsonObject: accepts a plain object and a JSON string, rejects an array", () => {
   assertEquals(jsonObject({ a: 1 }, "fields"), { a: 1 });
   assertEquals(jsonObject('{"a":1}', "fields"), { a: 1 });
   assertEquals(jsonObject(undefined, "fields"), {});
@@ -29,7 +30,7 @@ Deno.test("jsonObject: accepts a plain object and a JSON string, rejects an arra
   assertEquals(threw, true);
 });
 
-Deno.test("jsonArray: accepts an array, rejects a non-array", () => {
+test("jsonArray: accepts an array, rejects a non-array", () => {
   assertEquals(jsonArray([1, 2], "invoiceItems"), [1, 2]);
   let threw = false;
   try {
@@ -41,7 +42,7 @@ Deno.test("jsonArray: accepts an array, rejects a non-array", () => {
   assertEquals(threw, true);
 });
 
-Deno.test("FreeAgentClient: GET drops undefined/null/empty query values", async () => {
+test("FreeAgentClient: GET drops undefined/null/empty query values", async () => {
   const { ctx, calls } = mockCtx([{ body: { contacts: [] } }]);
   await new FreeAgentClient(ctx).request("/contacts", {
     query: { view: "active", sort: undefined, page: undefined },
@@ -52,7 +53,7 @@ Deno.test("FreeAgentClient: GET drops undefined/null/empty query values", async 
   assertEquals(url.searchParams.has("page"), false);
 });
 
-Deno.test("FreeAgentClient: throws a message built from FreeAgent's own error shape", async () => {
+test("FreeAgentClient: throws a message built from FreeAgent's own error shape", async () => {
   const { ctx } = mockCtx([{ status: 422, body: { errors: { message: "Name can't be blank" } } }]);
   await assertRejects(
     () => new FreeAgentClient(ctx).request("/contacts", { method: "POST", body: {} }),
@@ -61,7 +62,7 @@ Deno.test("FreeAgentClient: throws a message built from FreeAgent's own error sh
   );
 });
 
-Deno.test("FreeAgentClient: returns undefined for an empty 200 body (e.g. a DELETE)", async () => {
+test("FreeAgentClient: returns undefined for an empty 200 body (e.g. a DELETE)", async () => {
   const { ctx } = mockCtx([{ status: 200 }]);
   const out = await new FreeAgentClient(ctx).request("/contacts/1", { method: "DELETE" });
   assertEquals(out, undefined);

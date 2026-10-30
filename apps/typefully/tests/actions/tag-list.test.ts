@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tagList from "../../actions/tag-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tag-list: fetches a social set's tags", async () => {
+test("tag-list: fetches a social set's tags", async () => {
   const { ctx, calls } = mockCtx([{
     body: listEnvelope([{ slug: "marketing", name: "Marketing" }]),
   }]);

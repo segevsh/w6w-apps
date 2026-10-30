@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sheet-read.ts";
 
-Deno.test("sheet-read: GET values with defaults", async () => {
+test("sheet-read: GET values with defaults", async () => {
   const { ctx, calls } = mockCtx([{ body: { values: [["a", "b"]] } }]);
   const result = await action.execute(
     { spreadsheetId: "ss-1", range: "Sheet1!A1:B2" },
@@ -15,7 +16,7 @@ Deno.test("sheet-read: GET values with defaults", async () => {
   assertEquals(result, { values: [["a", "b"]] });
 });
 
-Deno.test("sheet-read: forwards optional render options when provided", async () => {
+test("sheet-read: forwards optional render options when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     spreadsheetId: "ss-1",

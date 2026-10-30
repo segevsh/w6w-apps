@@ -1,21 +1,22 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-notebook.ts";
 
-Deno.test("get-notebook: addresses /me/onenote/notebooks/{id} by default", async () => {
+test("get-notebook: addresses /me/onenote/notebooks/{id} by default", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "n1" } }]);
   await action.execute({ notebookId: "n1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/onenote/notebooks/n1");
   assertEquals(calls[0].method, "GET");
 });
 
-Deno.test("get-notebook: a site location addresses /sites/{id}/onenote", async () => {
+test("get-notebook: a site location addresses /sites/{id}/onenote", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ location: "site", locationId: "s1", notebookId: "n1" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/sites/s1/onenote/notebooks/n1");
 });
 
-Deno.test("get-notebook: a non-me location with no Location ID throws before any request", async () => {
+test("get-notebook: a non-me location with no Location ID throws before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   try {
     await action.execute({ location: "user", notebookId: "n1" }, ctx);
@@ -26,7 +27,7 @@ Deno.test("get-notebook: a non-me location with no Location ID throws before any
   assertEquals(calls.length, 0);
 });
 
-Deno.test("get-notebook: $select and $expand ride as query parameters", async () => {
+test("get-notebook: $select and $expand ride as query parameters", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ notebookId: "n1", select: ["displayName"], expand: ["sections"] }, ctx);
   const url = new URL(calls[0].url);

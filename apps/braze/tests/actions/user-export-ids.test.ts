@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-export-ids.ts";
 
-Deno.test("user-export-ids: posts identifiers and fields_to_export", async () => {
+test("user-export-ids: posts identifiers and fields_to_export", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { users: [{ external_id: "e1" }] } }], {
     display: { instance: "iad-01" },
   });

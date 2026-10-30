@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import candidateUpdate from "../../actions/candidate-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("candidate-update: PATCHes the id, sends `parse` as a query flag", async () => {
+test("candidate-update: PATCHes the id, sends `parse` as a query flag", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { candidate: { id: 7 }, references: [] } }]);
   await candidateUpdate.execute(
     { candidateId: 7, name: "Jane Doe", reveal: true, parse: true },
@@ -17,7 +18,7 @@ Deno.test("candidate-update: PATCHes the id, sends `parse` as a query flag", asy
   assertEquals(body.reveal, true);
 });
 
-Deno.test("candidate-update: omitted fields are dropped, not sent as null", async () => {
+test("candidate-update: omitted fields are dropped, not sent as null", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { candidate: {} } }]);
   await candidateUpdate.execute({ candidateId: 7, name: "Jane Doe" }, ctx);
   const body = JSON.parse(calls[0].body!);

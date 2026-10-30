@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/search-company.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
 const filters = { company_industry: { include: ["Software Development"] } };
 
-Deno.test("search-company: posts filters and page to /search-company", async () => {
+test("search-company: posts filters and page to /search-company", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       error: false,
@@ -21,7 +22,7 @@ Deno.test("search-company: posts filters and page to /search-company", async () 
   assertEquals(out.free, false);
 });
 
-Deno.test("search-company: defaults page to 1, accepts a JSON string, NO_RESULTS is empty", async () => {
+test("search-company: defaults page to 1, accepts a JSON string, NO_RESULTS is empty", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { error: true, error_code: "NO_RESULTS" },
@@ -31,7 +32,7 @@ Deno.test("search-company: defaults page to 1, accepts a JSON string, NO_RESULTS
   assertEquals(out.results, []);
 });
 
-Deno.test("search-company: INVALID_FILTERS surfaces filter_error; non-object filters never call", async () => {
+test("search-company: INVALID_FILTERS surfaces filter_error; non-object filters never call", async () => {
   const { ctx, calls } = mockCtx([{
     status: 400,
     body: { error: true, error_code: "INVALID_FILTERS", filter_error: "Invalid industry" },

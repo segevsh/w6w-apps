@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { GROUP_ID, mapComponentStatus, PAGE_ID } from "../../health/service.ts";
 import api from "../../health/api.ts";
 import quota from "../../health/quota.ts";
@@ -14,38 +15,38 @@ const child = (id: string, status = "operational") => ({
 const feed = (components: unknown[], id = PAGE_ID) => ({ page: { id }, components });
 const runService = (body: unknown) => service.check!({} as never, mockCtx([{ body }]).ctx);
 
-Deno.test("service: allowlists only the status host, unsigned", () => {
+test("service: allowlists only the status host, unsigned", () => {
   assertEquals(service.network, { allow: ["status.kaseya.com"] });
   assertEquals(service.credential, "none");
 });
 
-Deno.test("mapComponentStatus: the documented Statuspage vocabulary", () => {
+test("mapComponentStatus: the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("weird"), "unknown");
 });
 
-Deno.test("service: all regions operational is ok and reports every child", async () => {
+test("service: all regions operational is ok and reports every child", async () => {
   const r = await runService(feed([child("a"), child("b")]));
   assertEquals(r.state, "ok");
   assertEquals(Object.keys(r.components!).length, 2);
 });
 
-Deno.test("service: one affected region is degraded, not down — the feed cannot say whose it is", async () => {
+test("service: one affected region is degraded, not down — the feed cannot say whose it is", async () => {
   const r = await runService(feed([child("a", "major_outage"), child("b")]));
   assertEquals(r.state, "degraded");
   assert(r.message!.includes("Region a"));
 });
 
-Deno.test("service: every region in a major outage is down", async () => {
+test("service: every region in a major outage is down", async () => {
   assertEquals(
     (await runService(feed([child("a", "major_outage"), child("b", "major_outage")]))).state,
     "down",
   );
 });
 
-Deno.test("service: other Kaseya products and group rows never move the verdict", async () => {
+test("service: other Kaseya products and group rows never move the verdict", async () => {
   const r = await runService(feed([
     child("a"),
     { id: "x", name: "SaaS Alerts API", status: "major_outage", group_id: "other" },
@@ -54,20 +55,20 @@ Deno.test("service: other Kaseya products and group rows never move the verdict"
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: a different page id, an empty group and a broken feed are unknown", async () => {
+test("service: a different page id, an empty group and a broken feed are unknown", async () => {
   assertEquals((await runService(feed([child("a")], "someone-else"))).state, "unknown");
   assertEquals((await runService(feed([]))).state, "unknown");
   const broken = await service.check!({} as never, mockCtx([{ status: 503, body: "x" }]).ctx);
   assertEquals(broken.state, "unknown");
 });
 
-Deno.test("api: declares an unsigned app-level dependency probe on the discovery host", () => {
+test("api: declares an unsigned app-level dependency probe on the discovery host", () => {
   assertEquals(api.kind, "dependency");
   assertEquals(api.credential, "none");
   assertEquals(api.network, { allow: ["webservices.autotask.net"] });
 });
 
-Deno.test("api: the vendor's own 500 errors envelope is a PASS; an HTML 500 and a bare 502 are down", async () => {
+test("api: the vendor's own 500 errors envelope is a PASS; an HTML 500 and a bare 502 are down", async () => {
   const run = (r: Parameters<typeof mockCtx>[0]) => api.check!({} as never, mockCtx(r).ctx);
   assertEquals(
     (await run([{ status: 500, body: { errors: ["Zone information could not be determined"] } }]))
@@ -83,7 +84,7 @@ Deno.test("api: the vendor's own 500 errors envelope is a PASS; an HTML 500 and 
   assertEquals((await run([{ body: { hello: 1 } }])).state, "unknown");
 });
 
-Deno.test("quota: signed, connection-scoped, reads the zone's ThresholdInformation", async () => {
+test("quota: signed, connection-scoped, reads the zone's ThresholdInformation", async () => {
   assertEquals(quota.credential, "signed");
   const { ctx, calls } = mockCtx([{
     body: {
@@ -101,7 +102,7 @@ Deno.test("quota: signed, connection-scoped, reads the zone's ThresholdInformati
   assertEquals(r.quota, [{ id: "requests", limit: 10000, remaining: 9000, unit: "requests" }]);
 });
 
-Deno.test("quota: 80% is degraded, the ceiling is degraded, a refusal or no zone is unknown", async () => {
+test("quota: 80% is degraded, the ceiling is degraded, a refusal or no zone is unknown", async () => {
   const at = (used: number) =>
     mockCtx([{ body: { externalRequestThreshold: 100, currentTimeframeRequestCount: used } }], {
       display: { zone: "2" },

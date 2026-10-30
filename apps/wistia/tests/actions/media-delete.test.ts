@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaDelete from "../../actions/media-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("media-delete: calls DELETE /modern/medias/abc with the version header", async () => {
+test("media-delete: calls DELETE /modern/medias/abc with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await mediaDelete.execute({ "mediaId": "abc" } as never, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("media-delete: calls DELETE /modern/medias/abc with the version header
   assert(out.ok === true);
 });
 
-Deno.test("media-delete: surfaces a Wistia error with its code", async () => {
+test("media-delete: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -35,7 +36,7 @@ Deno.test("media-delete: surfaces a Wistia error with its code", async () => {
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("media-delete: encodes the id so it cannot escape the path", async () => {
+test("media-delete: encodes the id so it cannot escape the path", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await mediaDelete.execute({ mediaId: "../folders/f1" } as never, ctx);
   assertEquals(pathOf(calls[0].url), "/modern/medias/..%2Ffolders%2Ff1");

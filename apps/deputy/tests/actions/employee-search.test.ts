@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/employee-search.ts";
 import { BASE_URL, mockCtx } from "../_helpers.ts";
 
-Deno.test("employee-search: POSTs the QUERY body with search/sort/join/start/max", async () => {
+test("employee-search: POSTs the QUERY body with search/sort/join/start/max", async () => {
   const { ctx, calls } = mockCtx(
     [{ status: 200, body: [{ Id: 1 }] }],
     { display: { baseUrl: BASE_URL } },
@@ -29,7 +30,7 @@ Deno.test("employee-search: POSTs the QUERY body with search/sort/join/start/max
   assertEquals(out.start, 100);
 });
 
-Deno.test("employee-search: offers nextCursor only when the page came back full", async () => {
+test("employee-search: offers nextCursor only when the page came back full", async () => {
   const full = Array.from({ length: 5 }, (_, i) => ({ Id: i }));
   const { ctx } = mockCtx([{ status: 200, body: full }], { display: { baseUrl: BASE_URL } });
   const out = await action.execute({ max: 5 }, ctx) as { nextCursor?: number };

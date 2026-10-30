@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 /** The 31 operations chosen for this build, pinned by key so a dropped action fails loudly. */
@@ -36,17 +37,17 @@ const EXPECTED_KEYS = [
   "webhook-list",
 ];
 
-Deno.test("index: exposes exactly the pinned actions", () => {
+test("index: exposes exactly the pinned actions", () => {
   assertEquals([...app.actions.map((a) => a.key)].sort(), [...EXPECTED_KEYS].sort());
 });
 
-Deno.test("index: action keys are unique kebab-case", () => {
+test("index: action keys are unique kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length);
   for (const key of keys) assert(/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(key), key);
 });
 
-Deno.test("index: every perform action states its idempotency", () => {
+test("index: every perform action states its idempotency", () => {
   for (const action of app.actions) {
     if (action.type === "perform") {
       assertEquals(typeof action.idempotent, "boolean", action.key);
@@ -54,13 +55,13 @@ Deno.test("index: every perform action states its idempotency", () => {
   }
 });
 
-Deno.test("index: sends and creates are non-idempotent; the API has no idempotency key", () => {
+test("index: sends and creates are non-idempotent; the API has no idempotency key", () => {
   const nonIdempotent = app.actions.filter((a) => a.type === "perform" && !a.idempotent)
     .map((a) => a.key).sort();
   assertEquals(nonIdempotent, ["group-create", "media-create", "message-send", "webhook-create"]);
 });
 
-Deno.test("index: one basic-auth method and two health checks", () => {
+test("index: one basic-auth method and two health checks", () => {
   assertEquals(app.auth?.map((a) => a.key), ["basic"]);
   assertEquals(app.healthChecks?.map((h) => h.key), ["service", "quota"]);
 });

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import monitorGroupList from "../../actions/monitor-group-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("monitor-group-list: GET /api/v2/monitor-groups", async () => {
+test("monitor-group-list: GET /api/v2/monitor-groups", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -37,7 +38,7 @@ Deno.test("monitor-group-list: GET /api/v2/monitor-groups", async () => {
   assertEquals((out.items as Array<Record<string, unknown>>)[0].name, "Backend services");
 });
 
-Deno.test("monitor-group-list: puts no credential on the request (sign owns that)", async () => {
+test("monitor-group-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -58,7 +59,7 @@ Deno.test("monitor-group-list: puts no credential on the request (sign owns that
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("monitor-group-list: a vendor error surfaces its own message", async () => {
+test("monitor-group-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () =>
     await monitorGroupList.execute({ "team_name": "Prod" }, ctx)

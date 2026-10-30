@@ -1,14 +1,15 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rateLimit, { PROBE_PATH } from "../../health/rate-limit.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rate-limit: probes GET /v2/users/me — the same call the auth test uses", () => {
+test("rate-limit: probes GET /v2/users/me — the same call the auth test uses", () => {
   assertEquals(PROBE_PATH, "/users/me");
   assertEquals(rateLimit.credential, "signed");
   assertEquals(rateLimit.scope, "connection");
 });
 
-Deno.test("rate-limit: healthy headroom reports ok with a HealthQuota entry", async () => {
+test("rate-limit: healthy headroom reports ok with a HealthQuota entry", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {},
@@ -29,7 +30,7 @@ Deno.test("rate-limit: healthy headroom reports ok with a HealthQuota entry", as
   assertEquals(report.quota?.[0].resetAt, new Date(1432447070 * 1000).toISOString());
 });
 
-Deno.test("rate-limit: near-exhausted headroom reports degraded, never down", async () => {
+test("rate-limit: near-exhausted headroom reports degraded, never down", async () => {
   const { ctx } = mockCtx([
     {
       body: {},
@@ -45,7 +46,7 @@ Deno.test("rate-limit: near-exhausted headroom reports degraded, never down", as
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("rate-limit: exhausted headroom (0 remaining) reports degraded, not down — it recovers", async () => {
+test("rate-limit: exhausted headroom (0 remaining) reports degraded, not down — it recovers", async () => {
   const { ctx } = mockCtx([
     {
       body: {},
@@ -61,13 +62,13 @@ Deno.test("rate-limit: exhausted headroom (0 remaining) reports degraded, not do
   assertEquals(report.state, "degraded");
 });
 
-Deno.test("rate-limit: a response with no X-Ratelimit-* headers reports unknown", async () => {
+test("rate-limit: a response with no X-Ratelimit-* headers reports unknown", async () => {
   const { ctx } = mockCtx([{ body: {}, headers: { "content-type": "application/json" } }]);
   const report = await rateLimit.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("rate-limit: a non-ok response reports unknown, not down", async () => {
+test("rate-limit: a non-ok response reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await rateLimit.check!({}, ctx);
   assertEquals(report.state, "unknown");

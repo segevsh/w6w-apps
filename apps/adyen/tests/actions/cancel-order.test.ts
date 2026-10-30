@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import cancelOrder from "../../actions/cancel-order.ts";
 import { connectionCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "orderData": "od", "orderPspReference": "1" } as Parameters<
   typeof cancelOrder.execute
 >[0];
 
-Deno.test("cancel-order: sends POST to the documented path and returns the response", async () => {
+test("cancel-order: sends POST to the documented path and returns the response", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "pspReference": "2", "resultCode": "Received" },
@@ -22,7 +23,7 @@ Deno.test("cancel-order: sends POST to the documented path and returns the respo
   assertEquals(out, { "pspReference": "2", "resultCode": "Received" });
 });
 
-Deno.test("cancel-order: targets the connection's base URL and carries no credential", async () => {
+test("cancel-order: targets the connection's base URL and carries no credential", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "pspReference": "2", "resultCode": "Received" },
@@ -37,7 +38,7 @@ Deno.test("cancel-order: targets the connection's base URL and carries no creden
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("cancel-order: surfaces Adyen's error code, type and message", async () => {
+test("cancel-order: surfaces Adyen's error code, type and message", async () => {
   const { ctx } = connectionCtx([{
     status: 422,
     body: {
@@ -55,7 +56,7 @@ Deno.test("cancel-order: surfaces Adyen's error code, type and message", async (
   );
 });
 
-Deno.test("cancel-order: sends the invocation id as Idempotency-Key", async () => {
+test("cancel-order: sends the invocation id as Idempotency-Key", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "pspReference": "2", "resultCode": "Received" },
@@ -65,11 +66,11 @@ Deno.test("cancel-order: sends the invocation id as Idempotency-Key", async () =
   assertEquals(calls[0].headers["idempotency-key"], "inv-123");
 });
 
-Deno.test("cancel-order: declares idempotency as false", () => {
+test("cancel-order: declares idempotency as false", () => {
   assertEquals(cancelOrder.idempotent, false);
 });
 
-Deno.test("cancel-order: an explicit merchantAccount beats the connection's", async () => {
+test("cancel-order: an explicit merchantAccount beats the connection's", async () => {
   const { ctx, calls } = connectionCtx([{
     status: 200,
     body: { "pspReference": "2", "resultCode": "Received" },

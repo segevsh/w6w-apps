@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import transactionList from "../../actions/transaction-list.ts";
 import { collection, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("transaction-list: GETs the collection with every documented filter mapped", async () => {
+test("transaction-list: GETs the collection with every documented filter mapped", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "transactions") }]);
   await transactionList.execute({
     siteId: "111",
@@ -21,7 +22,7 @@ Deno.test("transaction-list: GETs the collection with every documented filter ma
   assertEquals(q["filter[end_date]"], "2026-01-31");
 });
 
-Deno.test("transaction-list: sends no query at all when nothing is filled in", async () => {
+test("transaction-list: sends no query at all when nothing is filled in", async () => {
   const { ctx, calls } = mockCtx([{ body: collection(["1"], "transactions") }]);
   await transactionList.execute({}, ctx);
   assertEquals(queryOf(calls[0]), {});

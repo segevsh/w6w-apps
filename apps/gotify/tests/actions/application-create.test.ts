@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/application-create.ts";
 
 const conn = { display: { baseUrl: "https://gotify.example.com" } };
 
-Deno.test("application-create: POSTs name/description/defaultPriority", async () => {
+test("application-create: POSTs name/description/defaultPriority", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { id: 1, name: "Backup", token: "gtfy.abc" },
@@ -19,7 +20,7 @@ Deno.test("application-create: POSTs name/description/defaultPriority", async ()
   assertEquals((result as { token: string }).token, "gtfy.abc");
 });
 
-Deno.test("application-create: requires a non-empty name before any fetch", async () => {
+test("application-create: requires a non-empty name before any fetch", async () => {
   const { ctx, calls } = mockCtx([], conn);
   let threw = false;
   try {

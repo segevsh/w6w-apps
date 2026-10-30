@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import recurringTaskDelete from "../../actions/recurring-task-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("recurring-task-delete: DELETEs /v1/recurring-tasks/{id}", async () => {
+test("recurring-task-delete: DELETEs /v1/recurring-tasks/{id}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await recurringTaskDelete.execute({ id: "r1" }, ctx);
 
@@ -13,7 +14,7 @@ Deno.test("recurring-task-delete: DELETEs /v1/recurring-tasks/{id}", async () =>
 });
 
 /** As with tasks, the reference types this as `integer`; real ids are strings. */
-Deno.test("recurring-task-delete: the id is treated as an opaque string", () => {
+test("recurring-task-delete: the id is treated as an opaque string", () => {
   assertEquals(recurringTaskDelete.params?.[0].type, "string");
   assertEquals(recurringTaskDelete.idempotent, true);
 });

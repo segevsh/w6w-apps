@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { API_ROOT, errorBody, listBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import employmentTypeList from "../../actions/employment-type-list.ts";
 
 const NEXT = `${API_ROOT}/employment-types/?cursor=abc%3D&limit=2`;
 
-Deno.test("employment-type-list: GETs /employment-types/ with every query parameter and shapes the page", async () => {
+test("employment-type-list: GETs /employment-types/ with every query parameter and shapes the page", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -38,7 +39,7 @@ Deno.test("employment-type-list: GETs /employment-types/ with every query parame
   }]);
 });
 
-Deno.test("employment-type-list: last page has a null cursor and sends no stray parameters", async () => {
+test("employment-type-list: last page has a null cursor and sends no stray parameters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   const out = await employmentTypeList.execute({}, ctx) as Record<string, unknown>;
 
@@ -48,7 +49,7 @@ Deno.test("employment-type-list: last page has a null cursor and sends no stray 
   assertEquals(out.redactedFields, []);
 });
 
-Deno.test("employment-type-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
+test("employment-type-list: a pasted next_link URL is reduced to its cursor, never fetched", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await employmentTypeList.execute({ cursor: NEXT }, ctx);
 
@@ -57,7 +58,7 @@ Deno.test("employment-type-list: a pasted next_link URL is reduced to its cursor
   assertEquals(queryOf(calls[0].url), { cursor: "abc=" });
 });
 
-Deno.test("employment-type-list: sends no credential (sign owns it) and declares its scope", async () => {
+test("employment-type-list: sends no credential (sign owns it) and declares its scope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: listBody([]) }]);
   await employmentTypeList.execute({}, ctx);
   assertEquals(calls[0].headers["authorization"], undefined);
@@ -67,7 +68,7 @@ Deno.test("employment-type-list: sends no credential (sign owns it) and declares
   assert(employmentTypeList.params!.some((p) => p.key === "limit" && p.validation?.max === 100));
 });
 
-Deno.test("employment-type-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
+test("employment-type-list: a 403 surfaces Rippling's message, the status and the scope hint", async () => {
   const { ctx } = mockCtx([
     {
       status: 403,

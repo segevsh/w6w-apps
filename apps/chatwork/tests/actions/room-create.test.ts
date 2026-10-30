@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import roomCreate from "../../actions/room-create.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("room-create: posts form-encoded fields to POST /rooms", async () => {
+test("room-create: posts form-encoded fields to POST /rooms", async () => {
   const { ctx, calls } = mockCtx([{ body: { room_id: 5 } }]);
   const out = await roomCreate.execute({
     name: "Website renewal",
@@ -27,6 +28,6 @@ Deno.test("room-create: posts form-encoded fields to POST /rooms", async () => {
   assertEquals(out, { room_id: 5 });
 });
 
-Deno.test("room-create: is not idempotent — retrying creates a second room", () => {
+test("room-create: is not idempotent — retrying creates a second room", () => {
   assertEquals(roomCreate.idempotent, false);
 });

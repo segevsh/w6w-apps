@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/flag-create.ts";
 
 const conn = { display: { projectKey: "default" } };
 
-Deno.test("flag-create: POSTs to the project's flags", async () => {
+test("flag-create: POSTs to the project's flags", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { key: "f" } }], conn);
   await action.execute!({ key: "new-checkout", name: "New checkout" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -15,14 +16,14 @@ Deno.test("flag-create: POSTs to the project's flags", async () => {
   assertEquals(body.temporary, true);
 });
 
-Deno.test("flag-create: temporary can be turned off explicitly", async () => {
+test("flag-create: temporary can be turned off explicitly", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!({ key: "k", name: "n", temporary: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).temporary, false);
 });
 
 /** A multivariate flag with no variations is a 400 waiting to happen. */
-Deno.test("flag-create: a multivariate flag needs at least two variations", async () => {
+test("flag-create: a multivariate flag needs at least two variations", async () => {
   const { ctx, calls } = mockCtx([], conn);
   await assertRejects(
     async () => await action.execute!({ key: "k", name: "n", kind: "multivariate" }, ctx),
@@ -32,13 +33,13 @@ Deno.test("flag-create: a multivariate flag needs at least two variations", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("flag-create: a boolean flag needs none", async () => {
+test("flag-create: a boolean flag needs none", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], conn);
   await action.execute!({ key: "k", name: "n", kind: "boolean" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).variations, undefined);
 });
 
-Deno.test("flag-create: key and name are both required, before any request", async () => {
+test("flag-create: key and name are both required, before any request", async () => {
   const noKey = mockCtx([], conn);
   await assertRejects(async () => await action.execute!({ name: "n" }, noKey.ctx), Error, "`key`");
   const noName = mockCtx([], conn);

@@ -1,13 +1,14 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import quota from "../../health/quota.ts";
 
-Deno.test("quota: is informational and never worsens a roll-up", () => {
+test("quota: is informational and never worsens a roll-up", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
 });
 
-Deno.test("quota: reads X-RateLimit-* headers off /auth/test", async () => {
+test("quota: reads X-RateLimit-* headers off /auth/test", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { message: "ok" },
@@ -19,7 +20,7 @@ Deno.test("quota: reads X-RateLimit-* headers off /auth/test", async () => {
   assertEquals(result.quota, [{ limit: 20, remaining: 18, unit: "requests" }]);
 });
 
-Deno.test("quota: near-zero remaining is degraded, zero is down", async () => {
+test("quota: near-zero remaining is degraded, zero is down", async () => {
   const low = mockCtx([{
     status: 200,
     headers: { "x-ratelimit-limit": "20", "x-ratelimit-remaining": "1" },
@@ -33,19 +34,19 @@ Deno.test("quota: near-zero remaining is degraded, zero is down", async () => {
   assertEquals((await quota.check!({}, empty.ctx)).state, "down");
 });
 
-Deno.test("quota: no rate-limit headers at all is unknown, not assumed healthy", async () => {
+test("quota: no rate-limit headers at all is unknown, not assumed healthy", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: { "content-type": "application/json" } }]);
   const result = await quota.check!({}, ctx);
   assertEquals(result.state, "unknown");
   assert(/did not return/.test(result.message!), result.message);
 });
 
-Deno.test("quota: a failed probe is unknown, never down", async () => {
+test("quota: a failed probe is unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 503 }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: a network failure is reported, not thrown", async () => {
+test("quota: a network failure is reported, not thrown", async () => {
   const ctx = {
     fetch: () => Promise.reject(new Error("network down")),
     log: () => {},

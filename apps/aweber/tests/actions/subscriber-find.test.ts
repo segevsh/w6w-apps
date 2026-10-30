@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberFind from "../../actions/subscriber-find.ts";
 import { entries, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("subscriber-find: searches with ws.op=find and JSON-encodes tag filters", async () => {
+test("subscriber-find: searches with ws.op=find and JSON-encodes tag filters", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([{ id: 1 }]) }]);
   await subscriberFind.execute(
     { accountId: "1", listId: "2", tags: ["vip", "trial"], tagsNotIn: ["unsubscribed"] },
@@ -16,7 +17,7 @@ Deno.test("subscriber-find: searches with ws.op=find and JSON-encodes tag filter
   assertEquals(q.tags_not_in, JSON.stringify(["unsubscribed"]));
 });
 
-Deno.test("subscriber-find: extraFilters merges vendor query names verbatim", async () => {
+test("subscriber-find: extraFilters merges vendor query names verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([]) }]);
   await subscriberFind.execute(
     { accountId: "1", listId: "2", extraFilters: { area_code: 215, postal_code: "19001" } },
@@ -28,7 +29,7 @@ Deno.test("subscriber-find: extraFilters merges vendor query names verbatim", as
   assertEquals(q.postal_code, "19001");
 });
 
-Deno.test("subscriber-find: extraFilters also accepts a JSON string, like other json params", async () => {
+test("subscriber-find: extraFilters also accepts a JSON string, like other json params", async () => {
   const { ctx, calls } = mockCtx([{ body: entries([]) }]);
   await subscriberFind.execute(
     { accountId: "1", listId: "2", extraFilters: '{"region": "PA"}' },

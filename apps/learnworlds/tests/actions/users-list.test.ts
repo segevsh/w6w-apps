@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/users-list.ts";
 
 const conn = { display: { schoolDomain: "https://yourschool.learnworlds.com" } };
 
-Deno.test("users-list: GETs /v2/users and forwards filters with LearnWorlds' own param names", async () => {
+test("users-list: GETs /v2/users and forwards filters with LearnWorlds' own param names", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: {} } }], conn);
   await action.execute!(
     {
@@ -26,7 +27,7 @@ Deno.test("users-list: GETs /v2/users and forwards filters with LearnWorlds' own
   assertEquals(url.searchParams.get("items_per_page"), "50");
 });
 
-Deno.test("users-list: omits include_suspended when false", async () => {
+test("users-list: omits include_suspended when false", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [], meta: {} } }], conn);
   await action.execute!({ includeSuspended: false }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("include_suspended"), null);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import spaceUserList from "../../actions/space-user-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("space-user-list: GETs /space/user with pagination query", async () => {
+test("space-user-list: GETs /space/user with pagination query", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: 1, firstName: "Ada" }]) }]);
   const out = await spaceUserList.execute({ limit: 50 }, ctx) as { items: unknown[] };
 
@@ -11,7 +12,7 @@ Deno.test("space-user-list: GETs /space/user with pagination query", async () =>
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("space-user-list: is safe to invoke with {} — it doubles as the health probe shape", async () => {
+test("space-user-list: is safe to invoke with {} — it doubles as the health probe shape", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await spaceUserList.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

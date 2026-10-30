@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import videoList from "../../actions/video-list.ts";
 import { collection, mockCtx, q, url, video } from "../_helpers.ts";
 
-Deno.test("video-list: hits the /me alias so the numeric user id is never needed", async () => {
+test("video-list: hits the /me alias so the numeric user id is never needed", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([video(1)]) }]);
   const out = await videoList.execute({}, ctx);
   assertEquals(url(calls[0]).pathname, "/me/videos");
@@ -10,7 +11,7 @@ Deno.test("video-list: hits the /me alias so the numeric user id is never needed
   assertEquals(out.total, 1);
 });
 
-Deno.test("video-list: forwards every documented filter and pagination parameter", async () => {
+test("video-list: forwards every documented filter and pagination parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await videoList.execute({
     query: "stop motion",
@@ -40,7 +41,7 @@ Deno.test("video-list: forwards every documented filter and pagination parameter
  * Vimeo needs `filter=embeddable` AND `filter_embeddable=<bool>` together;
  * either alone is a 400.
  */
-Deno.test("video-list: the embeddable filter is sent as the documented pair", async () => {
+test("video-list: the embeddable filter is sent as the documented pair", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }, { body: collection([]) }]);
   await videoList.execute({ filterEmbeddable: true }, ctx);
   assertEquals(q(calls[0], "filter"), "embeddable");
@@ -52,7 +53,7 @@ Deno.test("video-list: the embeddable filter is sent as the documented pair", as
   assertEquals(q(calls[1], "filter_embeddable"), "false");
 });
 
-Deno.test("video-list: neither half of the pair is sent when the boolean is unset", async () => {
+test("video-list: neither half of the pair is sent when the boolean is unset", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }]);
   await videoList.execute({ sort: "date" }, ctx);
   assertEquals(q(calls[0], "filter"), null);
@@ -60,7 +61,7 @@ Deno.test("video-list: neither half of the pair is sent when the boolean is unse
 });
 
 /** Vimeo documents containing_uri as unavailable when paired with a query. */
-Deno.test("video-list: containing_uri is dropped when a search query is also set", async () => {
+test("video-list: containing_uri is dropped when a search query is also set", async () => {
   const { ctx, calls } = mockCtx([{ body: collection([]) }, { body: collection([]) }]);
   await videoList.execute({ containingUri: "/videos/1", query: "x" }, ctx);
   assertEquals(q(calls[0], "containing_uri"), null);
@@ -70,7 +71,7 @@ Deno.test("video-list: containing_uri is dropped when a search query is also set
   assertEquals(q(calls[1], "containing_uri"), "/videos/1");
 });
 
-Deno.test("video-list: is a search action that returns the whole collection envelope", () => {
+test("video-list: is a search action that returns the whole collection envelope", () => {
   assertEquals(videoList.type, "search");
   const keys = (videoList.output as Array<{ key: string }>).map((o) => o.key);
   assert(keys.includes("data") && keys.includes("total") && keys.includes("paging"));

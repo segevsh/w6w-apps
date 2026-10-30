@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import quota, { readRateLimitHeaders } from "../../health/quota.ts";
 import { PROBE_PATH } from "../../auth/bearer-token.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quota: reads the three documented headers, case-insensitively", () => {
+test("quota: reads the three documented headers, case-insensitively", () => {
   const headers = new Headers({
     "X-RateLimit-Limit": "100000",
     "X-Ratelimit-Count": "57",
@@ -12,7 +13,7 @@ Deno.test("quota: reads the three documented headers, case-insensitively", () =>
   assertEquals(readRateLimitHeaders(headers), { limit: 100000, count: 57, resetSeconds: 23841 });
 });
 
-Deno.test("quota: missing headers read as undefined, not zero", () => {
+test("quota: missing headers read as undefined, not zero", () => {
   assertEquals(readRateLimitHeaders(new Headers()), {
     limit: undefined,
     count: undefined,
@@ -20,7 +21,7 @@ Deno.test("quota: missing headers read as undefined, not zero", () => {
   });
 });
 
-Deno.test("quota: is signed, connection-scoped, and probes /v3/profile", async () => {
+test("quota: is signed, connection-scoped, and probes /v3/profile", async () => {
   assertEquals(quota.credential, "signed");
   assertEquals(quota.scope, "connection");
   const { ctx, calls } = mockCtx([
@@ -30,7 +31,7 @@ Deno.test("quota: is signed, connection-scoped, and probes /v3/profile", async (
   assertEquals(pathOf(calls[0].url), PROBE_PATH);
 });
 
-Deno.test("quota: low usage reports ok with the correct remaining count", async () => {
+test("quota: low usage reports ok with the correct remaining count", async () => {
   const { ctx } = mockCtx([
     { headers: { "x-ratelimit-count": "100", "x-ratelimit-limit": "100000" } },
   ]);
@@ -44,7 +45,7 @@ Deno.test("quota: low usage reports ok with the correct remaining count", async 
   });
 });
 
-Deno.test("quota: at or above 90% usage reports degraded", async () => {
+test("quota: at or above 90% usage reports degraded", async () => {
   const { ctx } = mockCtx([
     { headers: { "x-ratelimit-count": "90000", "x-ratelimit-limit": "100000" } },
   ]);
@@ -53,7 +54,7 @@ Deno.test("quota: at or above 90% usage reports degraded", async () => {
   assert(/90000\/100000/.test(report.message ?? ""), report.message);
 });
 
-Deno.test("quota: at 100% usage reports down", async () => {
+test("quota: at 100% usage reports down", async () => {
   const { ctx } = mockCtx([
     { headers: { "x-ratelimit-count": "100000", "x-ratelimit-limit": "100000" } },
   ]);
@@ -62,23 +63,23 @@ Deno.test("quota: at 100% usage reports down", async () => {
   assertEquals(report.quota?.[0].remaining, 0);
 });
 
-Deno.test("quota: falls back to the documented 100,000 cap when X-RateLimit-Limit is absent", async () => {
+test("quota: falls back to the documented 100,000 cap when X-RateLimit-Limit is absent", async () => {
   const { ctx } = mockCtx([{ headers: { "x-ratelimit-count": "5" } }]);
   const report = await quota.check!({}, ctx);
   assertEquals(report.quota?.[0].limit, 100_000);
 });
 
-Deno.test("quota: a missing X-RateLimit-Count reports unknown", async () => {
+test("quota: a missing X-RateLimit-Count reports unknown", async () => {
   const { ctx } = mockCtx([{ headers: {} }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: a non-ok response reports unknown, not down", async () => {
+test("quota: a non-ok response reports unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   assertEquals((await quota.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("quota: converts resetSeconds to an ISO resetAt", async () => {
+test("quota: converts resetSeconds to an ISO resetAt", async () => {
   const { ctx } = mockCtx([
     {
       headers: {

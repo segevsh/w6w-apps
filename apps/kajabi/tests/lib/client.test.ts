@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import {
   API_HOST,
   API_URL,
@@ -15,12 +16,12 @@ import {
 } from "../../lib/client.ts";
 import { bodyOf, doc, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client: the base URL is the one fixed host, with the /v1 prefix", () => {
+test("client: the base URL is the one fixed host, with the /v1 prefix", () => {
   assertEquals(API_HOST, "api.kajabi.com");
   assertEquals(API_URL, "https://api.kajabi.com/v1");
 });
 
-Deno.test("client: GET sends the JSON:API accept header and no body", async () => {
+test("client: GET sends the JSON:API accept header and no body", async () => {
   const { ctx, calls } = mockCtx([{ body: doc() }]);
   await new KajabiClient(ctx).request("/contacts/1");
   assertEquals(calls[0].method, "GET");
@@ -33,7 +34,7 @@ Deno.test("client: GET sends the JSON:API accept header and no body", async () =
  * JSON:API requires the vendor media type on writes. Plain `application/json`
  * risks a 415 from a strict server, so this is pinned rather than assumed.
  */
-Deno.test("client: writes send content-type: application/vnd.api+json", async () => {
+test("client: writes send content-type: application/vnd.api+json", async () => {
   const { ctx, calls } = mockCtx([{ body: doc() }]);
   await new KajabiClient(ctx).request("/contacts", {
     method: "POST",
@@ -48,7 +49,7 @@ Deno.test("client: writes send content-type: application/vnd.api+json", async ()
  * JSON:API relationship removal puts the ids in the request body of a DELETE.
  * The client must therefore allow a body on any method, not just POST/PATCH.
  */
-Deno.test("client: DELETE can carry a body — JSON:API relationship removal needs it", async () => {
+test("client: DELETE can carry a body — JSON:API relationship removal needs it", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await new KajabiClient(ctx).request("/contacts/1/relationships/tags", {
     method: "DELETE",
@@ -58,7 +59,7 @@ Deno.test("client: DELETE can carry a body — JSON:API relationship removal nee
   assertEquals(bodyOf(calls[0]), { data: [{ id: "5", type: "contact_tags" }] });
 });
 
-Deno.test("client: bracketed JSON:API query keys survive into the URL", async () => {
+test("client: bracketed JSON:API query keys survive into the URL", async () => {
   const { ctx, calls } = mockCtx([{ body: doc() }]);
   await new KajabiClient(ctx).request("/contacts", {
     query: { "filter[site_id]": "111", "page[number]": 2, "page[size]": 50 },
@@ -69,7 +70,7 @@ Deno.test("client: bracketed JSON:API query keys survive into the URL", async ()
   assertEquals(q["page[size]"], "50");
 });
 
-Deno.test("client: unset query values are dropped, but false and 0 survive", async () => {
+test("client: unset query values are dropped, but false and 0 survive", async () => {
   const { ctx, calls } = mockCtx([{ body: doc() }]);
   await new KajabiClient(ctx).request("/purchases", {
     query: {
@@ -88,7 +89,7 @@ Deno.test("client: unset query values are dropped, but false and 0 survive", asy
   assertEquals(q["filter[n]"], "0");
 });
 
-Deno.test("client: a 204 and an empty body both resolve to undefined", async () => {
+test("client: a 204 and an empty body both resolve to undefined", async () => {
   const { ctx } = mockCtx([{ status: 204 }, { status: 200, body: "" }]);
   const client = new KajabiClient(ctx);
   assertEquals(await client.request("/contacts/1"), undefined);
@@ -100,7 +101,7 @@ Deno.test("client: a 204 and an empty body both resolve to undefined", async () 
  * `GET /v1/me` with no Authorization header). The title and detail must both
  * reach the operator — the detail is the part that says what to do.
  */
-Deno.test("client: a JSON:API error surfaces title and detail", async () => {
+test("client: a JSON:API error surfaces title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     statusText: "Unauthorized",
@@ -129,7 +130,7 @@ Deno.test("client: a JSON:API error surfaces title and detail", async () => {
  * verified on the wire. `errorMessage` must not lose the status by throwing on
  * a failed parse.
  */
-Deno.test("client: an HTML error body degrades gracefully", async () => {
+test("client: an HTML error body degrades gracefully", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     statusText: "Not Found",
@@ -141,7 +142,7 @@ Deno.test("client: an HTML error body degrades gracefully", async () => {
   assert(err.message.includes("doesn't exist"));
 });
 
-Deno.test("errorMessage: reads the flat OAuth envelope too", () => {
+test("errorMessage: reads the flat OAuth envelope too", () => {
   assertEquals(
     errorMessage(JSON.stringify({ error: "Invalid client credentials" })),
     "Invalid client credentials",
@@ -152,14 +153,14 @@ Deno.test("errorMessage: reads the flat OAuth envelope too", () => {
   );
 });
 
-Deno.test("errorMessage: caps a long body so an HTML page cannot flood an error", () => {
+test("errorMessage: caps a long body so an HTML page cannot flood an error", () => {
   assertEquals(errorMessage("x".repeat(5000)).length, 400);
   assertEquals(errorMessage(""), "");
 });
 
 // ------------------------------------------------------------- primitives --
 
-Deno.test("unset: an empty string means absent", () => {
+test("unset: an empty string means absent", () => {
   assertEquals(unset(""), undefined);
   assertEquals(unset("a"), "a");
   assertEquals(unset(undefined), undefined);
@@ -170,19 +171,19 @@ Deno.test("unset: an empty string means absent", () => {
  * `["string","null"]`, where null means "clear this field". Collapsing it into
  * "absent" would make blanking a phone number impossible.
  */
-Deno.test("compact: drops undefined and empty string, keeps null, false and 0", () => {
+test("compact: drops undefined and empty string, keeps null, false and 0", () => {
   assertEquals(
     compact({ a: undefined, b: "", c: null, d: false, e: 0, f: "x" }),
     { c: null, d: false, e: 0, f: "x" },
   );
 });
 
-Deno.test("resourceIdentifier: stringifies the id, as JSON:API requires", () => {
+test("resourceIdentifier: stringifies the id, as JSON:API requires", () => {
   assertEquals(resourceIdentifier(7, "offers"), { id: "7", type: "offers" });
   assertEquals(resourceIdentifier("7", "offers"), { id: "7", type: "offers" });
 });
 
-Deno.test("identifierList: builds the array form and trims", () => {
+test("identifierList: builds the array form and trims", () => {
   assertEquals(identifierList("1, 2 ,3", "contact_tags"), [
     { id: "1", type: "contact_tags" },
     { id: "2", type: "contact_tags" },
@@ -195,14 +196,14 @@ Deno.test("identifierList: builds the array form and trims", () => {
  * "replace" routes an empty array would clear the whole relationship, and a
  * user who typed whitespace did not ask for that.
  */
-Deno.test("identifierList: whitespace yields undefined, never an empty array", () => {
+test("identifierList: whitespace yields undefined, never an empty array", () => {
   assertEquals(identifierList("   ", "contact_tags"), undefined);
   assertEquals(identifierList(",,", "contact_tags"), undefined);
   assertEquals(identifierList("", "contact_tags"), undefined);
   assertEquals(identifierList(undefined, "contact_tags"), undefined);
 });
 
-Deno.test("jsonObject: accepts an object or a JSON string, rejects the rest", () => {
+test("jsonObject: accepts an object or a JSON string, rejects the rest", () => {
   assertEquals(jsonObject({ a: 1 }, "F"), { a: 1 });
   assertEquals(jsonObject('{"a":1}', "F"), { a: 1 });
   assertEquals(jsonObject("", "F"), undefined);
@@ -211,7 +212,7 @@ Deno.test("jsonObject: accepts an object or a JSON string, rejects the rest", ()
   assertThrows(() => jsonObject("[1,2]", "F"), Error, "must be a JSON object");
 });
 
-Deno.test("extraFilters: wraps each key in filter[...]", () => {
+test("extraFilters: wraps each key in filter[...]", () => {
   assertEquals(
     extraFilters({ created_in_last: 30, subscribed: true }),
     { "filter[created_in_last]": 30, "filter[subscribed]": true },
@@ -219,7 +220,7 @@ Deno.test("extraFilters: wraps each key in filter[...]", () => {
   assertEquals(extraFilters(undefined), {});
 });
 
-Deno.test("extraFilters: drops blanks", () => {
+test("extraFilters: drops blanks", () => {
   assertEquals(extraFilters({ a: "", b: null, c: undefined, d: "x" }), { "filter[d]": "x" });
 });
 
@@ -228,7 +229,7 @@ Deno.test("extraFilters: drops blanks", () => {
  * `]` or `&` could close the bracket and reach a different parameter entirely.
  * Rejecting loudly beats silently encoding something the author did not mean.
  */
-Deno.test("extraFilters: rejects a key that could inject a second query parameter", () => {
+test("extraFilters: rejects a key that could inject a second query parameter", () => {
   assertThrows(
     () => extraFilters({ "site_id]&fields[contacts": "x" }),
     Error,
@@ -238,11 +239,11 @@ Deno.test("extraFilters: rejects a key that could inject a second query paramete
   assertThrows(() => extraFilters({ "a.b": "x" }), Error, "not a valid Kajabi filter name");
 });
 
-Deno.test("extraFilters: a nested value is JSON-encoded rather than dropped", () => {
+test("extraFilters: a nested value is JSON-encoded rather than dropped", () => {
   assertEquals(extraFilters({ a: { b: 1 } }), { "filter[a]": '{"b":1}' });
 });
 
-Deno.test("definedQuery: drops unset entries, keeps false and 0", () => {
+test("definedQuery: drops unset entries, keeps false and 0", () => {
   assertEquals(
     definedQuery({ a: undefined, b: null, c: "", d: false, e: 0, f: "x" }),
     { d: false, e: 0, f: "x" },
@@ -255,7 +256,7 @@ Deno.test("definedQuery: drops unset entries, keeps false and 0", () => {
  * filter supplied through the escape hatch — and shadow it silently, since the
  * client then drops the key and the workflow gets an unfiltered result set.
  */
-Deno.test("definedQuery: an unset key cannot shadow an earlier spread", () => {
+test("definedQuery: an unset key cannot shadow an earlier spread", () => {
   const merged = { ...extraFilters({ x: "42" }), ...definedQuery({ "filter[x]": undefined }) };
   assertEquals(merged["filter[x]"], "42");
 
@@ -265,7 +266,7 @@ Deno.test("definedQuery: an unset key cannot shadow an earlier spread", () => {
 });
 
 /** Without the helper, the shadowing really does happen — the bug is real. */
-Deno.test("definedQuery: a raw spread would have lost the value", () => {
+test("definedQuery: a raw spread would have lost the value", () => {
   const naive = { ...extraFilters({ x: "42" }), "filter[x]": undefined };
   assertEquals(naive["filter[x]"], undefined);
   assertEquals("filter[x]" in naive, true, "key present but undefined — the silent failure");

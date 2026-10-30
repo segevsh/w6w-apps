@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/key-event-list.ts";
 
 /** keyEvents, not the deprecated conversionEvents name for the same list. */
-Deno.test("key-event-list: reads the current keyEvents resource", async () => {
+test("key-event-list: reads the current keyEvents resource", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { keyEvents: [{ eventName: "purchase" }] },

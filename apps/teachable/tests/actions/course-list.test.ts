@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import courseList from "../../actions/course-list.ts";
 import { envelope, mockCtx, paginationMeta, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("course-list: builds the query from filters and defaults per to 20", async () => {
+test("course-list: builds the query from filters and defaults per to 20", async () => {
   const { ctx, calls } = mockCtx([
     { body: { courses: [{ id: 1, name: "A" }], meta: paginationMeta() } },
   ]);
@@ -13,7 +14,7 @@ Deno.test("course-list: builds the query from filters and defaults per to 20", a
   assertEquals((out as { courses: unknown[] }).courses.length, 1);
 });
 
-Deno.test("course-list: an explicit per overrides the default", async () => {
+test("course-list: an explicit per overrides the default", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope("courses", []) }]);
   await courseList.execute({ per: 5, page: 2 }, ctx);
 

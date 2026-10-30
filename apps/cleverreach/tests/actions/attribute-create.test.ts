@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/attribute-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("attribute-create: POSTs the attribute", async () => {
+test("attribute-create: POSTs the attribute", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 3, name: "secret_id" } }]);
   await action.execute({
     name: "secret_id",
@@ -24,7 +25,7 @@ Deno.test("attribute-create: POSTs the attribute", async () => {
   });
 });
 
-Deno.test("attribute-create: requires a name and a documented type", async () => {
+test("attribute-create: requires a name and a documented type", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ type: "text" }, ctx),

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-list.ts";
 
 const D = { display: { region: "us" } };
 
-Deno.test("event-list: sends filters as query params", async () => {
+test("event-list: sends filters as query params", async () => {
   const { ctx, calls } = mockCtx([{
     body: { object: "list", data: [{ object: "event", type: 1000 }] },
   }], D);
@@ -21,7 +22,7 @@ Deno.test("event-list: sends filters as query params", async () => {
   assertEquals(result.hasMore, false);
 });
 
-Deno.test("event-list: follows the continuation token up to maxPages", async () => {
+test("event-list: follows the continuation token up to maxPages", async () => {
   const { ctx, calls } = mockCtx([{
     body: { object: "list", data: [{ type: 1 }], continuationToken: "tok1" },
   }, { body: { object: "list", data: [{ type: 2 }] } }], D);
@@ -32,7 +33,7 @@ Deno.test("event-list: follows the continuation token up to maxPages", async () 
   assertEquals(result.hasMore, false);
 });
 
-Deno.test("event-list: stops at maxPages and hands back the token", async () => {
+test("event-list: stops at maxPages and hands back the token", async () => {
   const { ctx, calls } = mockCtx([{
     body: { object: "list", data: [{ type: 1 }], continuationToken: "tok1" },
   }], D);

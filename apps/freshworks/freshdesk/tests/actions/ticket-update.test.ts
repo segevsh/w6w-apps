@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshdeskCtx } from "../_helpers.ts";
 import action from "../../actions/ticket-update.ts";
 
-Deno.test("ticket-update: PUTs /tickets/:id with only the set fields", async () => {
+test("ticket-update: PUTs /tickets/:id with only the set fields", async () => {
   const { ctx, calls } = mockFreshdeskCtx([{ body: { id: 1, status: 4 } }]);
   await action.execute({ ticketId: 1, status: 4 }, ctx);
   assertEquals(calls[0].url, "https://acme.freshdesk.com/api/v2/tickets/1");
@@ -10,6 +11,6 @@ Deno.test("ticket-update: PUTs /tickets/:id with only the set fields", async () 
   assertEquals(JSON.parse(calls[0].body!), { status: 4 });
 });
 
-Deno.test("ticket-update: is declared idempotent", () => {
+test("ticket-update: is declared idempotent", () => {
   assertEquals(action.idempotent, true);
 });

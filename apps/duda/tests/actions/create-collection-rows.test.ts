@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { EU, mockConnectedCtx } from "../_helpers.ts";
 import action from "../../actions/create-collection-rows.ts";
 
-Deno.test("create-collection-rows: POSTs the raw array as the body, unwrapped", async () => {
+test("create-collection-rows: POSTs the raw array as the body, unwrapped", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: [{ id: "row-1" }, { id: "row-2" }] }], "EU");
   const rows = [
     { data: { Name: "Ada", Email: "ada@acme.com" } },
@@ -21,7 +22,7 @@ Deno.test("create-collection-rows: POSTs the raw array as the body, unwrapped", 
   assertEquals(result.map((r) => r.id), ["row-1", "row-2"]);
 });
 
-Deno.test("create-collection-rows: accepts the rows as JSON text too", async () => {
+test("create-collection-rows: accepts the rows as JSON text too", async () => {
   const { ctx, calls } = mockConnectedCtx([{ body: [{ id: "row-1" }] }]);
   await action.execute!(
     { siteName: "abc", collectionName: "Team", rows: '[{"data":{"Name":"Ada"}}]' },
@@ -30,7 +31,7 @@ Deno.test("create-collection-rows: accepts the rows as JSON text too", async () 
   assertEquals(JSON.parse(calls[0].body!), [{ data: { Name: "Ada" } }]);
 });
 
-Deno.test("create-collection-rows: refuses a non-array before spending a request", async () => {
+test("create-collection-rows: refuses a non-array before spending a request", async () => {
   const { ctx, calls } = mockConnectedCtx([]);
   const err = await Promise.resolve(action.execute!(
     { siteName: "abc", collectionName: "Team", rows: { data: { Name: "Ada" } } },
@@ -42,12 +43,12 @@ Deno.test("create-collection-rows: refuses a non-array before spending a request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("create-collection-rows: is not idempotent — a retry creates the rows twice", () => {
+test("create-collection-rows: is not idempotent — a retry creates the rows twice", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.type, "perform");
 });
 
-Deno.test("create-collection-rows: the hint ties `data` keys to the collection's fields", () => {
+test("create-collection-rows: the hint ties `data` keys to the collection's fields", () => {
   const rows = action.params!.find((p) => p.key === "rows");
   assertEquals(rows?.type, "json");
   assertEquals(rows?.required, true);

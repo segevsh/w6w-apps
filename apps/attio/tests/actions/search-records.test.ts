@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, param } from "../_helpers.ts";
 import searchRecords from "../../actions/search-records.ts";
 
-Deno.test("search-records: POSTs query, objects and a workspace-wide request_as", async () => {
+test("search-records: POSTs query, objects and a workspace-wide request_as", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await searchRecords.execute({ query: "alan mathis", objects: ["people", "deals"] }, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("search-records: POSTs query, objects and a workspace-wide request_as"
   });
 });
 
-Deno.test("search-records: narrows request_as by member id when given", async () => {
+test("search-records: narrows request_as by member id when given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await searchRecords.execute({
     query: "x",
@@ -28,7 +29,7 @@ Deno.test("search-records: narrows request_as by member id when given", async ()
   });
 });
 
-Deno.test("search-records: narrows request_as by member email when only that is given", async () => {
+test("search-records: narrows request_as by member email when only that is given", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await searchRecords.execute({
     query: "x",
@@ -41,7 +42,7 @@ Deno.test("search-records: narrows request_as by member email when only that is 
   });
 });
 
-Deno.test("search-records: id wins over email when both are supplied", async () => {
+test("search-records: id wins over email when both are supplied", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [] } }]);
   await searchRecords.execute({
     query: "x",
@@ -55,12 +56,12 @@ Deno.test("search-records: id wins over email when both are supplied", async () 
   });
 });
 
-Deno.test("search-records: caps limit at the documented 25", () => {
+test("search-records: caps limit at the documented 25", () => {
   assertEquals(param(searchRecords, "limit").validation?.max, 25);
 });
 
 /** Two vendor warnings that decide whether this is the right action at all. */
-Deno.test("search-records: warns it is beta and eventually consistent", () => {
+test("search-records: warns it is beta and eventually consistent", () => {
   const d = searchRecords.description!;
   assert(/beta/i.test(d), d);
   assert(/eventually consistent/i.test(d), d);

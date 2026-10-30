@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { BASE_PATH, DISPLAY, mockCtx, paramsOf } from "../_helpers.ts";
 import action from "../../actions/style-get-many.ts";
 
-Deno.test("style-get-many: GETs /styles with the documented query names", async () => {
+test("style-get-many: GETs /styles with the documented query names", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }], { display: DISPLAY });
   await action.execute({ page: 1, pageSize: 20, order: "ASC", orderBy: "name", search: "x" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, `${BASE_PATH}/styles`);

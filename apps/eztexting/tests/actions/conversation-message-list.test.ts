@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationMessageList from "../../actions/conversation-message-list.ts";
 import { API_ROOT, mockCtx, page, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-message-list: calls GET /conversations/conversation/8005550100/2125551234 and returns the documented shape", async () => {
+test("conversation-message-list: calls GET /conversations/conversation/8005550100/2125551234 and returns the documented shape", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "1", inbound: true, message: "yes" }]) }]);
   const result = await conversationMessageList.execute(
     {
@@ -29,7 +30,7 @@ Deno.test("conversation-message-list: calls GET /conversations/conversation/8005
   });
 });
 
-Deno.test("conversation-message-list: carries no credential — auth is the sign hook's job", async () => {
+test("conversation-message-list: carries no credential — auth is the sign hook's job", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "1", inbound: true, message: "yes" }]) }]);
   await conversationMessageList.execute(
     {
@@ -43,7 +44,7 @@ Deno.test("conversation-message-list: carries no credential — auth is the sign
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("conversation-message-list: does not mark messages read unless asked", async () => {
+test("conversation-message-list: does not mark messages read unless asked", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await conversationMessageList.execute(
     { userNumber: "8005550100", contactNumber: "2125551234" },

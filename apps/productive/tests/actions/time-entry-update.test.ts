@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeEntryUpdate from "../../actions/time-entry-update.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("time-entry-update: PATCH /time_entries/{id} sends a JSON:API document of attributes", async () => {
+test("time-entry-update: PATCH /time_entries/{id} sends a JSON:API document of attributes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "time_entries", "attributes": { "name": "x" } } },
@@ -41,7 +42,7 @@ Deno.test("time-entry-update: PATCH /time_entries/{id} sends a JSON:API document
   assertEquals((out as Record<string, unknown>).id, "42");
 });
 
-Deno.test("time-entry-update: only the fields set are sent", async () => {
+test("time-entry-update: only the fields set are sent", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": "42", "type": "time_entries", "attributes": { "name": "x" } } },
@@ -52,7 +53,7 @@ Deno.test("time-entry-update: only the fields set are sent", async () => {
   });
 });
 
-Deno.test("time-entry-update: naming no field to change fails before any request", async () => {
+test("time-entry-update: naming no field to change fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () => Promise.resolve(timeEntryUpdate.execute({ id: "42" }, ctx)),
@@ -62,7 +63,7 @@ Deno.test("time-entry-update: naming no field to change fails before any request
   assertEquals(calls.length, 0);
 });
 
-Deno.test("time-entry-update: a vendor error surfaces its status, title and detail", async () => {
+test("time-entry-update: a vendor error surfaces its status, title and detail", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody("404", "not_found", "Not Found", "Resource not found"),
@@ -75,7 +76,7 @@ Deno.test("time-entry-update: a vendor error surfaces its status, title and deta
   assertEquals(err.message.includes("Resource not found"), true, err.message);
 });
 
-Deno.test("time-entry-update: declares perform and idempotent=true", () => {
+test("time-entry-update: declares perform and idempotent=true", () => {
   assertEquals(timeEntryUpdate.type, "perform");
   assertEquals(timeEntryUpdate.idempotent, true);
   assertEquals(timeEntryUpdate.key, "time-entry-update");

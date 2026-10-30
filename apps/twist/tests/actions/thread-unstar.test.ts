@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import threadUnstar from "../../actions/thread-unstar.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("thread-unstar: POST /api/v3/threads/unstar with every documented parameter", async () => {
+test("thread-unstar: POST /api/v3/threads/unstar with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await threadUnstar.execute({ "threadId": 100 }, ctx) as Record<string, unknown>;
 
@@ -14,7 +15,7 @@ Deno.test("thread-unstar: POST /api/v3/threads/unstar with every documented para
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("thread-unstar: sends a form body, never a query string", async () => {
+test("thread-unstar: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadUnstar.execute({ "threadId": 100 }, ctx);
 
@@ -22,18 +23,18 @@ Deno.test("thread-unstar: sends a form body, never a query string", async () => 
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("thread-unstar: is declared idempotent", () => {
+test("thread-unstar: is declared idempotent", () => {
   assertEquals(threadUnstar.idempotent, true);
 });
 
-Deno.test("thread-unstar: sends no credential of its own", async () => {
+test("thread-unstar: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await threadUnstar.execute({ "threadId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("thread-unstar: surfaces Twist's error body", async () => {
+test("thread-unstar: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

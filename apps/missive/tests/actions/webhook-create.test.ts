@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/webhook-create.ts";
 import { assertActionRejects, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-create: posts type/url and returns the id", async () => {
+test("webhook-create: posts type/url and returns the id", async () => {
   const { ctx, calls } = mockCtx([{ body: { hooks: { id: "h1" } } }]);
   const out = await action.execute(
     { type: "new_comment", url: "https://hooks.example.com/cb", isTask: true },
@@ -16,7 +17,7 @@ Deno.test("webhook-create: posts type/url and returns the id", async () => {
   assertEquals(out, { id: "h1" });
 });
 
-Deno.test("webhook-create: exclusive-to-type fields are dropped for other types", async () => {
+test("webhook-create: exclusive-to-type fields are dropped for other types", async () => {
   const { ctx, calls } = mockCtx([{ body: { hooks: { id: "h2" } } }]);
   await action.execute(
     { type: "incoming_email", url: "https://x", isTask: true, fromEq: "a@b.com" },
@@ -27,7 +28,7 @@ Deno.test("webhook-create: exclusive-to-type fields are dropped for other types"
   assertEquals(body.hooks.from_eq, "a@b.com");
 });
 
-Deno.test("webhook-create: requires type and url", async () => {
+test("webhook-create: requires type and url", async () => {
   const { ctx } = mockCtx([]);
   await assertActionRejects(() => action.execute({ type: "" as never, url: "https://x" }, ctx));
   await assertActionRejects(() => action.execute({ type: "new_comment", url: "" }, ctx));

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBooqableCtx } from "../_helpers.ts";
 import action from "../../actions/product-group-update.ts";
 
-Deno.test("product-group-update: PUTs a JSON:API document with id to /product_groups/{id}", async () => {
+test("product-group-update: PUTs a JSON:API document with id to /product_groups/{id}", async () => {
   const { ctx, calls } = mockBooqableCtx([{ body: { data: { id: "pg1" } } }]);
   await action.execute({ productGroupId: "pg1", name: "iPad mini 2" }, ctx);
   assertEquals(calls[0].method, "PUT");

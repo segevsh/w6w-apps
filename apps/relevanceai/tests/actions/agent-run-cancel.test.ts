@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import agentRunCancel from "../../actions/agent-run-cancel.ts";
 import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("agent-run-cancel: POSTs an empty body to /agents/{id}/cancel", async () => {
+test("agent-run-cancel: POSTs an empty body to /agents/{id}/cancel", async () => {
   // A successful cancel answers 200 with no body at all.
   const { ctx, calls } = mockRelevanceCtx([{ status: 200 }]);
   const out = await agentRunCancel.execute({ agentId: "a1" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("agent-run-cancel: POSTs an empty body to /agents/{id}/cancel", async 
   assertEquals(out, { cancelled: true });
 });
 
-Deno.test("agent-run-cancel: is idempotent, and the endpoint takes no key", () => {
+test("agent-run-cancel: is idempotent, and the endpoint takes no key", () => {
   assertEquals(agentRunCancel.type, "perform");
   assertEquals(agentRunCancel.idempotent, true);
   assertEquals(agentRunCancel.params?.map((p) => p.key), ["agentId"]);

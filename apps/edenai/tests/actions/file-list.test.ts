@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import fileList from "../../actions/file-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("file-list: lists files with purpose filter and bounded paging", async () => {
+test("file-list: lists files with purpose filter and bounded paging", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       items: [{ file_id: "f1", file_name: "a.pdf" }],

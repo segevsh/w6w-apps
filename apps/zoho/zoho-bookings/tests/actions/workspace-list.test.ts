@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBookingsCtx } from "../_helpers.ts";
 import action from "../../actions/workspace-list.ts";
 
-Deno.test("workspace-list: GETs /workspaces with no workspace_id when omitted", async () => {
+test("workspace-list: GETs /workspaces with no workspace_id when omitted", async () => {
   const { ctx, calls } = mockBookingsCtx([
     {
       body: {
@@ -20,7 +21,7 @@ Deno.test("workspace-list: GETs /workspaces with no workspace_id when omitted", 
   assertEquals(out, { data: [{ id: "1", name: "Chennai" }] });
 });
 
-Deno.test("workspace-list: passes workspaceId through as workspace_id", async () => {
+test("workspace-list: passes workspaceId through as workspace_id", async () => {
   const { ctx, calls } = mockBookingsCtx([
     { body: { response: { status: "success", returnvalue: { data: [] } } } },
   ]);

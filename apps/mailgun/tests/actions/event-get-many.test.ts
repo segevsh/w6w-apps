@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/event-get-many.ts";
 
-Deno.test("event-get-many: GETs /v3/{domain}/events with filters", async () => {
+test("event-get-many: GETs /v3/{domain}/events with filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { items: [] } }]);
   await action.execute!(
     {
@@ -24,7 +25,7 @@ Deno.test("event-get-many: GETs /v3/{domain}/events with filters", async () => {
   assertEquals(url.searchParams.get("limit"), "50");
 });
 
-Deno.test("event-get-many: missing domain rejects", async () => {
+test("event-get-many: missing domain rejects", async () => {
   const { ctx } = mockCtx();
   await assertRejects(async () => await action.execute!({ domain: "" }, ctx), Error, "`domain`");
 });

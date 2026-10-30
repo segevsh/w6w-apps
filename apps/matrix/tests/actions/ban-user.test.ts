@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import banUser from "../../actions/ban-user.ts";
 import { HOMESERVER, mockMatrixCtx } from "../_helpers.ts";
 
-Deno.test("ban-user: POSTs /rooms/{roomId}/ban with user_id", async () => {
+test("ban-user: POSTs /rooms/{roomId}/ban with user_id", async () => {
   const { ctx, calls } = mockMatrixCtx([{ body: {} }]);
   const result = await banUser.execute(
     { roomId: "!x:example.org", userId: "@bob:example.org", reason: "abuse" },

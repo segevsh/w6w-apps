@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/sms-invalid-phone-number-list.ts";
 
-Deno.test("sms-invalid-phone-number-list: sends the date range, limit and offset", async () => {
+test("sms-invalid-phone-number-list: sends the date range, limit and offset", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { invalid_phone_numbers: [] } }], {
     display: { instance: "iad-01" },
   });
@@ -15,7 +16,7 @@ Deno.test("sms-invalid-phone-number-list: sends the date range, limit and offset
 });
 
 /** Braze's own spec mistypes this as an integer; the prose and example are unambiguous. */
-Deno.test("sms-invalid-phone-number-list: phone_numbers is sent as repeated array-form keys", async () => {
+test("sms-invalid-phone-number-list: phone_numbers is sent as repeated array-form keys", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { invalid_phone_numbers: [] } }], {
     display: { instance: "iad-01" },
   });

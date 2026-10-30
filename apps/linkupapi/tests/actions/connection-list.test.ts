@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import connectionList from "../../actions/connection-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("connection-list: sends every input, unwraps data and credits", async () => {
+test("connection-list: sends every input, unwraps data and credits", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -20,7 +21,7 @@ Deno.test("connection-list: sends every input, unwraps data and credits", async 
   });
 });
 
-Deno.test("connection-list: omits optional inputs that were not given", async () => {
+test("connection-list: omits optional inputs that were not given", async () => {
   const { ctx, calls } = mockCtx([{
     body: { success: true, data: { ok: true }, metadata: { credits_consumed: 2 } },
   }]);
@@ -34,7 +35,7 @@ Deno.test("connection-list: omits optional inputs that were not given", async ()
   });
 });
 
-Deno.test("connection-list: an error envelope is thrown with the vendor code", async () => {
+test("connection-list: an error envelope is thrown with the vendor code", async () => {
   const { ctx } = mockCtx([{
     status: 402,
     body: { success: false, error: { code: "INSUFFICIENT_CREDITS", message: "no credits" } },

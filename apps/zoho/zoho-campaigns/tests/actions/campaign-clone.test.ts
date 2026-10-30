@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/campaign-clone.ts";
 
-Deno.test("campaign-clone: POSTs json/clonecampaign with campaigninfo JSON-encoded", async () => {
+test("campaign-clone: POSTs json/clonecampaign with campaigninfo JSON-encoded", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { status: "success", code: "0", "campaign-details": [{ campaign_name: "Sample1" }] } },
   ]);

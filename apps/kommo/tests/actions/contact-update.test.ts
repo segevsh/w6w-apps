@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-update.ts";
 
 const conn = { display: { accountDomain: "acme.kommo.com" } };
 
-Deno.test("contact-update: PATCHes a plain object body to /contacts/{id}", async () => {
+test("contact-update: PATCHes a plain object body to /contacts/{id}", async () => {
   const { ctx, calls } = mockCtx(
     [{
       status: 200,
@@ -19,6 +20,6 @@ Deno.test("contact-update: PATCHes a plain object body to /contacts/{id}", async
   assertEquals(out, { id: 963410, updatedAt: 1687192924 });
 });
 
-Deno.test("contact-update: idempotent is true", () => {
+test("contact-update: idempotent is true", () => {
   assertEquals(action.idempotent, true);
 });

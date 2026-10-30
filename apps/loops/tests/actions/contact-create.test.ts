@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/contact-create.ts";
 
-Deno.test("contact-create: POSTs the contact fields", async () => {
+test("contact-create: POSTs the contact fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { success: true, id: "c1" } }]);
   await action.execute!({ email: "ada@example.com", firstName: "Ada" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,7 +17,7 @@ Deno.test("contact-create: POSTs the contact fields", async () => {
 });
 
 /** Custom properties sit beside firstName, not under a nested key. */
-Deno.test("contact-create: custom properties merge into the top level", async () => {
+test("contact-create: custom properties merge into the top level", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({
     email: "a@x.com",
@@ -28,13 +29,13 @@ Deno.test("contact-create: custom properties merge into the top level", async ()
   assertEquals(body.customProperties, undefined);
 });
 
-Deno.test("contact-create: subscribed false survives, rather than being dropped", async () => {
+test("contact-create: subscribed false survives, rather than being dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute!({ email: "a@x.com", subscribed: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!).subscribed, false);
 });
 
-Deno.test("contact-create: a custom property may not shadow a built-in field", async () => {
+test("contact-create: a custom property may not shadow a built-in field", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -45,7 +46,7 @@ Deno.test("contact-create: a custom property may not shadow a built-in field", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("contact-create: an email is required, and duplicates are refused by Loops", async () => {
+test("contact-create: an email is required, and duplicates are refused by Loops", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`email` is required");
   assertEquals(calls.length, 0);

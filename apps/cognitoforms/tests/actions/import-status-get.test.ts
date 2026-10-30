@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/import-status-get.ts";
 
-Deno.test("import-status-get: GETs /forms/{formId}/import-status/{importId}", async () => {
+test("import-status-get: GETs /forms/{formId}/import-status/{importId}", async () => {
   const { ctx, calls } = mockCtx([
     { body: { Id: "imp1", Status: "Completed", SuccessfulEntries: 10, TotalEntries: 10 } },
   ]);

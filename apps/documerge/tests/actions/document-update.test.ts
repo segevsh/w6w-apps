@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentUpdate from "../../actions/document-update.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-update: PUT /api/documents/{documentId}", async () => {
+test("document-update: PUT /api/documents/{documentId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 1 } } }]);
   const out = await documentUpdate.execute(
     {
@@ -36,7 +37,7 @@ Deno.test("document-update: PUT /api/documents/{documentId}", async () => {
   assertEquals(calls[0].headers["content-type"], "application/json");
 });
 
-Deno.test("document-update: a vendor error surfaces its own message", async () => {
+test("document-update: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -63,5 +64,5 @@ Deno.test("document-update: a vendor error surfaces its own message", async () =
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-update: idempotency is declared as true", () =>
+test("document-update: idempotency is declared as true", () =>
   assertEquals(documentUpdate.idempotent, true));

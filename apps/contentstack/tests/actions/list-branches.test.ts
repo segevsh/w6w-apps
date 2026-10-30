@@ -1,14 +1,15 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-branches.ts";
 
-Deno.test("list-branches: metadata", () => {
+test("list-branches: metadata", () => {
   assertEquals(action.key, "list-branches");
   assertEquals(action.type, "read");
   assertEquals(action.params?.map((p) => p.key), ["includeCount", "limit", "skip"]);
 });
 
-Deno.test("list-branches: calls GET /stacks/branches on the NA host", async () => {
+test("list-branches: calls GET /stacks/branches on the NA host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "branches": [{ "uid": "main" }] } }]);
   const out = await action.execute({ "includeCount": true }, ctx);
   assertEquals(calls.length, 1);
@@ -20,7 +21,7 @@ Deno.test("list-branches: calls GET /stacks/branches on the NA host", async () =
   assertEquals(out, { "branches": [{ "uid": "main" }] });
 });
 
-Deno.test("list-branches: uses the connection's regional host", async () => {
+test("list-branches: uses the connection's regional host", async () => {
   const { ctx, calls } = mockCtx([{ body: { "branches": [{ "uid": "main" }] } }], {
     connection: { display: { region: "azure-eu" } },
   });
@@ -31,7 +32,7 @@ Deno.test("list-branches: uses the connection's regional host", async () => {
   );
 });
 
-Deno.test("list-branches: surfaces Contentstack's own error body", async () => {
+test("list-branches: surfaces Contentstack's own error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

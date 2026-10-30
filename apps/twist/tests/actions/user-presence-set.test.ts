@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import userPresenceSet from "../../actions/user-presence-set.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("user-presence-set: POST /api/v3/users/heartbeat with every documented parameter", async () => {
+test("user-presence-set: POST /api/v3/users/heartbeat with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await userPresenceSet.execute(
     { "workspaceId": 100, "platform": "api" },
@@ -17,7 +18,7 @@ Deno.test("user-presence-set: POST /api/v3/users/heartbeat with every documented
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("user-presence-set: sends a form body, never a query string", async () => {
+test("user-presence-set: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await userPresenceSet.execute({ "workspaceId": 100, "platform": "api" }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("user-presence-set: sends a form body, never a query string", async ()
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("user-presence-set: is declared idempotent", () => {
+test("user-presence-set: is declared idempotent", () => {
   assertEquals(userPresenceSet.idempotent, true);
 });
 
-Deno.test("user-presence-set: sends no credential of its own", async () => {
+test("user-presence-set: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await userPresenceSet.execute({ "workspaceId": 100, "platform": "api" }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("user-presence-set: surfaces Twist's error body", async () => {
+test("user-presence-set: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

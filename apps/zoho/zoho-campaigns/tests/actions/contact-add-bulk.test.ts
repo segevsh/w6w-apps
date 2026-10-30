@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCampaignsCtx } from "../_helpers.ts";
 import action from "../../actions/contact-add-bulk.ts";
 
-Deno.test("contact-add-bulk: POSTs addlistsubscribersinbulk with the list key and email ids", async () => {
+test("contact-add-bulk: POSTs addlistsubscribersinbulk with the list key and email ids", async () => {
   const { ctx, calls } = mockCampaignsCtx([
     { body: { status: "success", code: "0", listkey: "abc", listname: "My List" } },
   ]);

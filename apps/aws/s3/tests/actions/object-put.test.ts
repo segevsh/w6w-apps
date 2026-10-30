@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-put.ts";
 
-Deno.test("object-put: PUTs text content with the given content-type", async () => {
+test("object-put: PUTs text content with the given content-type", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, headers: { etag: '"e1"' } }]);
   const result = await action.execute!(
     { bucket: "my-bucket", key: "a.txt", content: "hello", contentType: "text/plain" },
@@ -16,7 +17,7 @@ Deno.test("object-put: PUTs text content with the given content-type", async () 
   assertEquals(result.etag, '"e1"');
 });
 
-Deno.test("object-put: base64 content is decoded to a binary string body", async () => {
+test("object-put: base64 content is decoded to a binary string body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, headers: {} }]);
   const b64 = btoa("hi"); // "aGk="
   await action.execute!(
@@ -26,7 +27,7 @@ Deno.test("object-put: base64 content is decoded to a binary string body", async
   assertEquals(calls[0].body, "hi");
 });
 
-Deno.test("object-put: sets x-amz-acl and x-amz-meta-* headers", async () => {
+test("object-put: sets x-amz-acl and x-amz-meta-* headers", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, headers: {} }]);
   await action.execute!(
     {
@@ -43,13 +44,13 @@ Deno.test("object-put: sets x-amz-acl and x-amz-meta-* headers", async () => {
   assertEquals(calls[0].headers["x-amz-meta-team-id"], "42");
 });
 
-Deno.test("object-put: reports the version id when versioning is enabled", async () => {
+test("object-put: reports the version id when versioning is enabled", async () => {
   const { ctx } = mockCtx([{ status: 200, headers: { "x-amz-version-id": "v123" } }]);
   const result = await action.execute!({ bucket: "b", key: "a.txt", content: "x" }, ctx);
   assertEquals(result.versionId, "v123");
 });
 
-Deno.test("object-put: propagates S3 errors", async () => {
+test("object-put: propagates S3 errors", async () => {
   const { ctx } = mockCtx([
     { status: 403, body: "<Error><Code>AccessDenied</Code><Message>denied</Message></Error>" },
   ]);
@@ -60,7 +61,7 @@ Deno.test("object-put: propagates S3 errors", async () => {
   );
 });
 
-Deno.test("object-put: missing params reject", async () => {
+test("object-put: missing params reject", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     () => Promise.resolve(action.execute!({ bucket: "", key: "a", content: "x" }, ctx)),

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
-Deno.test("api-key: is a custom method with accountId + apiKey fields", () => {
+test("api-key: is a custom method with accountId + apiKey fields", () => {
   assertEquals(auth.key, "api-key");
   assertEquals(auth.type, "custom");
   const account = auth.fields?.find((f) => f.key === "accountId");
@@ -15,7 +16,7 @@ Deno.test("api-key: is a custom method with accountId + apiKey fields", () => {
   assertEquals(key.required, true);
 });
 
-Deno.test("api-key: sign stamps BOTH headers, without mutating the credential", async () => {
+test("api-key: sign stamps BOTH headers, without mutating the credential", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://app.smartsuite.com/api/v1/solutions/",
@@ -30,7 +31,7 @@ Deno.test("api-key: sign stamps BOTH headers, without mutating the credential", 
   assertEquals(out.headers["account-id"], "acme");
 });
 
-Deno.test("api-key: test probes GET /solutions/ with both headers and reads ok on 2xx", async () => {
+test("api-key: test probes GET /solutions/ with both headers and reads ok on 2xx", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "sol1" }] }]);
   const result = await auth.test({ credential: { accountId: "acme", apiKey: "tok-123" } }, ctx);
   assertEquals(result.ok, true);
@@ -39,7 +40,7 @@ Deno.test("api-key: test probes GET /solutions/ with both headers and reads ok o
   assertEquals(calls[0].headers["account-id"], "acme");
 });
 
-Deno.test("api-key: test with missing accountId fails without a network call", async () => {
+test("api-key: test with missing accountId fails without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: { apiKey: "tok-123" } }, ctx);
   assertEquals(result.ok, false);
@@ -47,14 +48,14 @@ Deno.test("api-key: test with missing accountId fails without a network call", a
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: a 400 naming the account id is classified as accountId, not apiKey", async () => {
+test("api-key: a 400 naming the account id is classified as accountId, not apiKey", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Account ID acme is not valid" }]);
   const result = await auth.test({ credential: { accountId: "acme", apiKey: "tok-123" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("Account ID"));
 });
 
-Deno.test("api-key: the missing-ACCOUNT-ID 400 is classified as accountId", async () => {
+test("api-key: the missing-ACCOUNT-ID 400 is classified as accountId", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Account ID is not specified" }]);
   const result = await auth.test({ credential: { accountId: "acme", apiKey: "tok-123" } }, ctx);
   assertEquals(result.ok, false);
@@ -62,7 +63,7 @@ Deno.test("api-key: the missing-ACCOUNT-ID 400 is classified as accountId", asyn
   assert(!(result.message ?? "").includes("API key"));
 });
 
-Deno.test("api-key: a 401 is classified as a rejected API key", async () => {
+test("api-key: a 401 is classified as a rejected API key", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }]);
   const result = await auth.test({ credential: { accountId: "acme", apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);
@@ -70,14 +71,14 @@ Deno.test("api-key: a 401 is classified as a rejected API key", async () => {
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("api-key: a plain-text 400 that does not mention the account id is an API-key error", async () => {
+test("api-key: a plain-text 400 that does not mention the account id is an API-key error", async () => {
   const { ctx } = mockCtx([{ status: 400, body: "Bad request" }]);
   const result = await auth.test({ credential: { accountId: "acme", apiKey: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("API key"));
 });
 
-Deno.test("api-key: test never echoes the credential back in its message", async () => {
+test("api-key: test never echoes the credential back in its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "Unauthorized" }]);
   const result = await auth.test({
     credential: { accountId: "acme", apiKey: "super-secret-token" },

@@ -1,9 +1,10 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/item-list-in-frame.ts";
 
 /** The spec's {board_id_PlatformContainers} is the same items URL. */
-Deno.test("item-list-in-frame: same path, scoped by parent_item_id", async () => {
+test("item-list-in-frame: same path, scoped by parent_item_id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: [{ id: "i1" }] } }], {
     display: {},
   });
@@ -13,7 +14,7 @@ Deno.test("item-list-in-frame: same path, scoped by parent_item_id", async () =>
   assertEquals(url.searchParams.get("parent_item_id"), "f1");
 });
 
-Deno.test("item-list-in-frame: both ids are required", async () => {
+test("item-list-in-frame: both ids are required", async () => {
   const { ctx, calls } = mockCtx([], { display: {} });
   await assertRejects(
     async () => await action.execute!({ boardId: "b1" }, ctx),

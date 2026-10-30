@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/submission-create-from-pdf.ts";
 
-Deno.test("submission-create-from-pdf: sends the parsed documents and submitters", async () => {
+test("submission-create-from-pdf: sends the parsed documents and submitters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute!({
     documents: '[{"name":"A","file":"base64=="}]',
@@ -15,7 +16,7 @@ Deno.test("submission-create-from-pdf: sends the parsed documents and submitters
   );
 });
 
-Deno.test("submission-create-from-pdf: at least one submitter is required", async () => {
+test("submission-create-from-pdf: at least one submitter is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {

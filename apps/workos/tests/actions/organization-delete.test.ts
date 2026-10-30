@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/organization-delete.ts";
 
@@ -6,7 +7,7 @@ import action from "../../actions/organization-delete.ts";
  * Deleting takes the SSO connection, the directory and every membership with
  * it — in practice locking a customer's whole staff out, with no undo.
  */
-Deno.test("organization-delete: refuses without the confirmation, and says why", async () => {
+test("organization-delete: refuses without the confirmation, and says why", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ organizationId: "org_1" }, ctx),
@@ -16,7 +17,7 @@ Deno.test("organization-delete: refuses without the confirmation, and says why",
   assertEquals(calls.length, 0);
 });
 
-Deno.test("organization-delete: confirmed, it deletes and warns", async () => {
+test("organization-delete: confirmed, it deletes and warns", async () => {
   const { ctx, calls, logs } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({ organizationId: "org_1", confirm: true }, ctx), {
     ok: true,
@@ -26,7 +27,7 @@ Deno.test("organization-delete: confirmed, it deletes and warns", async () => {
   assert(logs.some((l) => l.level === "warn"), JSON.stringify(logs));
 });
 
-Deno.test("organization-delete: needs an id even with the confirmation set", async () => {
+test("organization-delete: needs an id even with the confirmation set", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await action.execute!({ confirm: true }, ctx),

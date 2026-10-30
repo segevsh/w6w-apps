@@ -1,10 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import apiKey from "../../auth/api-key.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const cred = { apiKey: "SECRET-TOKEN" };
 
-Deno.test("api-key: sign sets X-Access-Token and nothing else", async () => {
+test("api-key: sign sets X-Access-Token and nothing else", async () => {
   const { ctx } = mockCtx();
   const out = await apiKey.sign!({
     request: { url: "https://api.dropcontact.com/v1/enrich/all", method: "POST", headers: {} },
@@ -14,7 +15,7 @@ Deno.test("api-key: sign sets X-Access-Token and nothing else", async () => {
   assertEquals(out.headers.authorization, undefined);
 });
 
-Deno.test("api-key: test posts one empty contact and passes on credits_left", async () => {
+test("api-key: test posts one empty contact and passes on credits_left", async () => {
   const { ctx, calls } = mockCtx([{
     body: { error: false, success: true, request_id: "r1", credits_left: 42 },
   }]);
@@ -25,12 +26,12 @@ Deno.test("api-key: test posts one empty contact and passes on credits_left", as
   assertEquals(calls[0].headers["x-access-token"], "SECRET-TOKEN");
 });
 
-Deno.test("api-key: a 200 without credits_left is not a pass", async () => {
+test("api-key: a 200 without credits_left is not a pass", async () => {
   const { ctx } = mockCtx([{ body: { error: false, success: true } }]);
   assertEquals((await apiKey.test!({ credential: cred }, ctx)).ok, false);
 });
 
-Deno.test("api-key: 401 and 403 are rejections that never echo the token", async () => {
+test("api-key: 401 and 403 are rejections that never echo the token", async () => {
   for (
     const [status, reason, needle] of [
       [401, "Unknown account", "rejected"],
@@ -46,7 +47,7 @@ Deno.test("api-key: 401 and 403 are rejections that never echo the token", async
   }
 });
 
-Deno.test("api-key: 429, 5xx and a missing token get distinct messages", async () => {
+test("api-key: 429, 5xx and a missing token get distinct messages", async () => {
   const busy = mockCtx([{ status: 429, body: { error: true, reason: "slow down" } }]);
   assert((await apiKey.test!({ credential: cred }, busy.ctx)).message?.includes("rate-limited"));
   const down = mockCtx([{ status: 503, body: "oops" }]);

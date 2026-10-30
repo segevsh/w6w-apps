@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockSplunkCtx } from "../_helpers.ts";
 import action from "../../actions/search-create.ts";
 
-Deno.test("search-create: POSTs a form-encoded body to /services/search/jobs", async () => {
+test("search-create: POSTs a form-encoded body to /services/search/jobs", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { sid: "123.45" } }]);
   const out = await action.execute(
     { search: "search index=_internal | head 10", earliestTime: "-1h", latestTime: "now" },
@@ -23,7 +24,7 @@ Deno.test("search-create: POSTs a form-encoded body to /services/search/jobs", a
   assertEquals(out, { sid: "123.45" });
 });
 
-Deno.test("search-create: never sets an Authorization header — sign injects it", async () => {
+test("search-create: never sets an Authorization header — sign injects it", async () => {
   const { ctx, calls } = mockSplunkCtx([{ body: { sid: "1" } }]);
   await action.execute({ search: "search index=_internal" }, ctx);
   assertEquals("authorization" in calls[0].headers, false);

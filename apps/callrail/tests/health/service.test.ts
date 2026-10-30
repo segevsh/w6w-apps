@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, { componentKey, mapComponentStatus, mapIndicator } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -17,7 +18,7 @@ function summary(overrides: Record<string, unknown> = {}) {
   };
 }
 
-Deno.test("mapComponentStatus / mapIndicator: cover the documented Statuspage vocabulary", () => {
+test("mapComponentStatus / mapIndicator: cover the documented Statuspage vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -33,13 +34,13 @@ Deno.test("mapComponentStatus / mapIndicator: cover the documented Statuspage vo
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("componentKey: prefers the vendor id, falls back to a slug of the name", () => {
+test("componentKey: prefers the vendor id, falls back to a slug of the name", () => {
   assertEquals(componentKey({ id: "abc123", name: "API" }, 0), "abc123");
   assertEquals(componentKey({ name: "Call Tracking" }, 3), "call-tracking-3");
   assertEquals(componentKey({}, 5), "component-5");
 });
 
-Deno.test("service.check: all-operational summary reports ok, and group rows are excluded", async () => {
+test("service.check: all-operational summary reports ok, and group rows are excluded", async () => {
   const { ctx } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "ok");
@@ -49,7 +50,7 @@ Deno.test("service.check: all-operational summary reports ok, and group rows are
   assertEquals(report.components!["cfmjwz3wnf7x"].state, "ok");
 });
 
-Deno.test("service.check: a major outage on one component still reports the page's own verdict", async () => {
+test("service.check: a major outage on one component still reports the page's own verdict", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { indicator: "major", description: "Partial API outage" },
@@ -66,13 +67,13 @@ Deno.test("service.check: a major outage on one component still reports the page
   assert(report.message?.includes("API"));
 });
 
-Deno.test("service.check: an unreachable status page reports unknown, never down", async () => {
+test("service.check: an unreachable status page reports unknown, never down", async () => {
   const { ctx } = mockCtx([{ status: 500 }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service.check: a page that no longer self-identifies as CallRail's is unknown", async () => {
+test("service.check: a page that no longer self-identifies as CallRail's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "Someone Else", url: "https://status.example.com" } }),
   }]);
@@ -80,7 +81,7 @@ Deno.test("service.check: a page that no longer self-identifies as CallRail's is
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: unsigned, app-scoped, and widens egress only to the status host", () => {
+test("service: unsigned, app-scoped, and widens egress only to the status host", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

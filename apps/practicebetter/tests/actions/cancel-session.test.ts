@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/cancel-session.ts";
 import { API_ROOT, bodyOf, mockCtx, urlOf } from "../_helpers.ts";
 
-Deno.test("cancel-session: POSTs to /consultant/sessions/{sessionId}/cancel", async () => {
+test("cancel-session: POSTs to /consultant/sessions/{sessionId}/cancel", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: undefined }]);
   const result = await action.execute({
     sessionId: "sess-1",
@@ -22,14 +23,14 @@ Deno.test("cancel-session: POSTs to /consultant/sessions/{sessionId}/cancel", as
   assertEquals(result, { status: 200 });
 });
 
-Deno.test("cancel-session: an empty body is valid — every field is optional", async () => {
+test("cancel-session: an empty body is valid — every field is optional", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: undefined }]);
   await action.execute({ sessionId: "sess-1" }, ctx);
   assertEquals(calls[0].body, "{}");
   assertEquals(action.params!.every((p) => p.key === "sessionId" || p.required !== true), true);
 });
 
-Deno.test("cancel-session: reports the status and is retry-safe in end state", () => {
+test("cancel-session: reports the status and is retry-safe in end state", () => {
   assertEquals(action.idempotent, true);
   assertEquals((action.output as Array<{ key: string }>).map((o) => o.key), ["status"]);
   assertEquals(action.type, "perform");

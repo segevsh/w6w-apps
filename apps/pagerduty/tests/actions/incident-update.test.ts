@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/incident-update.ts";
 
-Deno.test("incident-update: sends only the fields provided, with the From header", async () => {
+test("incident-update: sends only the fields provided, with the From header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { incident: { id: "P1" } } }]);
   const result = await action.execute!({
     incidentId: "P1",
@@ -18,7 +19,7 @@ Deno.test("incident-update: sends only the fields provided, with the From header
   assertEquals(result, { id: "P1" });
 });
 
-Deno.test("incident-update: priority/escalationPolicy/escalationLevel map to references", async () => {
+test("incident-update: priority/escalationPolicy/escalationLevel map to references", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { incident: {} } }]);
   await action.execute!({
     incidentId: "P1",
@@ -31,7 +32,7 @@ Deno.test("incident-update: priority/escalationPolicy/escalationLevel map to ref
   assertEquals(body.incident.escalation_level, 2);
 });
 
-Deno.test("incident-update: missing incidentId or from rejects", async () => {
+test("incident-update: missing incidentId or from rejects", async () => {
   for (const patch of [{ incidentId: "" }, { from: "" }]) {
     const { ctx } = mockCtx();
     await assertRejects(

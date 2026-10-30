@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import api from "../../health/api.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ const SEND = {
   body: { success: false, message: "You have used an invalid API key." },
 };
 
-Deno.test("api: both hosts' schema-correct auth errors are a pass, unsigned", async () => {
+test("api: both hosts' schema-correct auth errors are a pass, unsigned", async () => {
   const { ctx, calls } = mockCtx([ACCT, SEND]);
   assertEquals(api.credential, "none");
   assertEquals((await api.check!({}, ctx)).state, "ok");
@@ -18,7 +19,7 @@ Deno.test("api: both hosts' schema-correct auth errors are a pass, unsigned", as
   assertEquals(calls[1].headers["x-api-key"], undefined);
 });
 
-Deno.test("api: a 5xx on either host is down; a non-Maileroo 401 is unknown", async () => {
+test("api: a 5xx on either host is down; a non-Maileroo 401 is unknown", async () => {
   const down = mockCtx([ACCT, { status: 502, body: "bad gateway" }]);
   assertEquals((await api.check!({}, down.ctx)).state, "down");
   const odd = mockCtx([
@@ -28,7 +29,7 @@ Deno.test("api: a 5xx on either host is down; a non-Maileroo 401 is unknown", as
   assertEquals((await api.check!({}, odd.ctx)).state, "unknown");
 });
 
-Deno.test("api: a network failure is down", async () => {
+test("api: a network failure is down", async () => {
   const { ctx } = mockCtx();
   ctx.fetch = () => Promise.reject(new Error("dns"));
   const res = await api.check!({}, ctx);

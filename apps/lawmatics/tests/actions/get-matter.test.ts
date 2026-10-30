@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getMatter from "../../actions/get-matter.ts";
 import { item, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-matter: hits GET /v1/prospects/:id", async () => {
+test("get-matter: hits GET /v1/prospects/:id", async () => {
   const { ctx, calls } = mockCtx([{ body: item("25", "prospect", { first_name: "Tyrion" }) }]);
   const out = await getMatter.execute({ matterId: "25" }, ctx) as { id: string; type: string };
 
@@ -11,7 +12,7 @@ Deno.test("get-matter: hits GET /v1/prospects/:id", async () => {
   assertEquals(out.type, "prospect");
 });
 
-Deno.test("get-matter: forwards fields=all", async () => {
+test("get-matter: forwards fields=all", async () => {
   const { ctx, calls } = mockCtx([{ body: item("25", "prospect", {}) }]);
   await getMatter.execute({ matterId: "25", fields: "all" }, ctx);
   assertEquals(queryOf(calls[0].url), { fields: "all" });

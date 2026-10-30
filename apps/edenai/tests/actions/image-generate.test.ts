@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import imageGenerate from "../../actions/image-generate.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("image-generate: sends the prompt and returns images and their URLs", async () => {
+test("image-generate: sends the prompt and returns images and their URLs", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: [{ url: "https://img/1.png" }, { b64_json: "AAAA" }],
@@ -29,7 +30,7 @@ Deno.test("image-generate: sends the prompt and returns images and their URLs", 
   assertEquals(out.cost, 0.04);
 });
 
-Deno.test("image-generate: an empty data list yields no images", async () => {
+test("image-generate: an empty data list yields no images", async () => {
   const { ctx } = mockCtx([{ body: {} }]);
   const out = await imageGenerate.execute({ model: "m", prompt: "p" }, ctx) as Record<
     string,

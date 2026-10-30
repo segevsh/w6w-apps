@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/tag-create.ts";
 
-Deno.test("tag-create: POSTs name and text, returns the new id", async () => {
+test("tag-create: POSTs name and text, returns the new id", async () => {
   const { ctx, calls } = mockCtx([{ body: [49] }]);
   const out = await action.execute({ name: "mynewtag", text: "hello" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,13 +12,13 @@ Deno.test("tag-create: POSTs name and text, returns the new id", async () => {
   assertEquals(out, { tagId: 49 });
 });
 
-Deno.test("tag-create: omits an empty description", async () => {
+test("tag-create: omits an empty description", async () => {
   const { ctx, calls } = mockCtx([{ body: [50] }]);
   await action.execute({ name: "t", text: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "t" });
 });
 
-Deno.test("tag-create: a body without an id is a failure", async () => {
+test("tag-create: a body without an id is a failure", async () => {
   const { ctx } = mockCtx([{ body: [] }]);
   await assertRejects(
     async () => await action.execute({ name: "t" }, ctx),

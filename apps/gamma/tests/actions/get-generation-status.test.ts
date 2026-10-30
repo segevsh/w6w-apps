@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getGenerationStatus from "../../actions/get-generation-status.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("get-generation-status: calls GET /generations/{id}", async () => {
+test("get-generation-status: calls GET /generations/{id}", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -22,7 +23,7 @@ Deno.test("get-generation-status: calls GET /generations/{id}", async () => {
   assertEquals(out.status, "completed");
 });
 
-Deno.test("get-generation-status: a failed generation's error object passes through", async () => {
+test("get-generation-status: a failed generation's error object passes through", async () => {
   const { ctx } = mockCtx([
     {
       body: {

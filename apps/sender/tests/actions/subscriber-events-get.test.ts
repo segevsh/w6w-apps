@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import subscriberEventsGet from "../../actions/subscriber-events-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("subscriber-events-get: sends actions as a JSON-array-literal query value", async () => {
+test("subscriber-events-get: sends actions as a JSON-array-literal query value", async () => {
   const { ctx, calls } = mockCtx([{ body: { email: { got: [] }, sms: [] } }]);
   const out = await subscriberEventsGet.execute(
     { identifier: "a@b.com", actions: ["got"] },

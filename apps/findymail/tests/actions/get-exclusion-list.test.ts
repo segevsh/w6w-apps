@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-exclusion-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("get-exclusion-list: GETs the list by id", async () => {
+test("get-exclusion-list: GETs the list by id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 3, "name": "Competitors" } }]);
   const out = await action.execute!({ "id": 3 } as never, ctx);
   const url = new URL(calls[0].url);
@@ -16,7 +17,7 @@ Deno.test("get-exclusion-list: GETs the list by id", async () => {
   assertEquals(out, { "id": 3, "name": "Competitors" });
 });
 
-Deno.test("get-exclusion-list: surfaces a 404", async () => {
+test("get-exclusion-list: surfaces a 404", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { "message": "No query results for model [ExcludedDomainList]." },

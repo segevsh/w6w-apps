@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-exchanges.ts";
 
-Deno.test("list-exchanges: calls the documented path with the mapped query", async () => {
+test("list-exchanges: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "binance" }] }]);
   const out = await action.execute!({ perPage: 10, page: 2 }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("list-exchanges: calls the documented path with the mapped query", asy
   assert(out !== undefined);
 });
 
-Deno.test("list-exchanges: a vendor error body becomes a readable error", async () => {
+test("list-exchanges: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },

@@ -1,11 +1,12 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import basic, { authHeader, PROBE_PATH } from "../../auth/basic.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
 const KEY_ID = "rzp_test_unitTestFixtureKeyId0";
 const KEY_SECRET = "unitTestFixtureSecretNotReal00";
 
-Deno.test("basic: sign stamps the Basic header and nothing else", () => {
+test("basic: sign stamps the Basic header and nothing else", () => {
   const request = {
     method: "GET",
     url: "https://api.razorpay.com/v1/payments",
@@ -21,18 +22,18 @@ Deno.test("basic: sign stamps the Basic header and nothing else", () => {
   assert(!signed.url.includes(KEY_SECRET));
 });
 
-Deno.test("basic: authHeader is the single source of the wire format", () => {
+test("basic: authHeader is the single source of the wire format", () => {
   assertEquals(
     authHeader({ keyId: KEY_ID, keySecret: KEY_SECRET }),
     `Basic ${btoa(`${KEY_ID}:${KEY_SECRET}`)}`,
   );
 });
 
-Deno.test("basic: the probe is /payments — there is no dedicated ping/whoami", () => {
+test("basic: the probe is /payments — there is no dedicated ping/whoami", () => {
   assertEquals(PROBE_PATH, "/payments");
 });
 
-Deno.test("basic: test passes when the probe answers 200", async () => {
+test("basic: test passes when the probe answers 200", async () => {
   const { ctx, calls } = mockCtx([{ body: { entity: "collection", count: 0, items: [] } }]);
   const result = await basic.test({ credential: { keyId: KEY_ID, keySecret: KEY_SECRET } }, ctx);
 
@@ -42,7 +43,7 @@ Deno.test("basic: test passes when the probe answers 200", async () => {
   assertEquals(calls[0].headers.authorization, `Basic ${btoa(`${KEY_ID}:${KEY_SECRET}`)}`);
 });
 
-Deno.test("basic: test fails with no credential, without making a request", async () => {
+test("basic: test fails with no credential, without making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await basic.test({ credential: {} }, ctx);
 
@@ -55,7 +56,7 @@ Deno.test("basic: test fails with no credential, without making a request", asyn
  * `BAD_REQUEST_ERROR` for both failures below, so only the message text
  * distinguishes "never reached the request" from "wrong credential".
  */
-Deno.test("basic: a missing-credential response is reported as never having arrived", async () => {
+test("basic: a missing-credential response is reported as never having arrived", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,
@@ -71,7 +72,7 @@ Deno.test("basic: a missing-credential response is reported as never having arri
   assert(/received no credential/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("basic: a wrong-credential response is reported as rejected, same code as above", async () => {
+test("basic: a wrong-credential response is reported as rejected, same code as above", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: errorBody("BAD_REQUEST_ERROR", "Authentication failed") },
   ]);
@@ -81,7 +82,7 @@ Deno.test("basic: a wrong-credential response is reported as rejected, same code
   assert(/rejected the key id and secret/i.test(result.message ?? ""), result.message);
 });
 
-Deno.test("basic: a 500 is reported as an HTTP failure, not a credential problem", async () => {
+test("basic: a 500 is reported as an HTTP failure, not a credential problem", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "upstream exploded" }]);
   const result = await basic.test({ credential: { keyId: KEY_ID, keySecret: KEY_SECRET } }, ctx);
 
@@ -89,7 +90,7 @@ Deno.test("basic: a 500 is reported as an HTTP failure, not a credential problem
   assert(/HTTP 500/.test(result.message ?? ""), result.message);
 });
 
-Deno.test("basic: afterConnect labels the connection from the key id prefix, no network call", () => {
+test("basic: afterConnect labels the connection from the key id prefix, no network call", () => {
   assertEquals(basic.afterConnect!({ credential: { keyId: "rzp_test_abc" } }, {} as never), {
     mode: "Test",
   });
@@ -101,7 +102,7 @@ Deno.test("basic: afterConnect labels the connection from the key id prefix, no 
   });
 });
 
-Deno.test("basic: the credential fields are declared secret/string, not silently plain", () => {
+test("basic: the credential fields are declared secret/string, not silently plain", () => {
   const secretField = basic.fields?.find((f) => f.key === "keySecret");
   assertEquals(secretField?.type, "secret");
 });

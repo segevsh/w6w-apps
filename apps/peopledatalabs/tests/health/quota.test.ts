@@ -1,17 +1,18 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quota from "../../health/quota.ts";
 import { mockCtx } from "../_helpers.ts";
 
 const bad = { status: 400, error: { type: ["invalid_request_error"], message: "missing params" } };
 const hdr = (v: string) => ({ "content-type": "application/json", "x-totallimit-remaining": v });
 
-Deno.test("quota: declares an informational, signed quota check", () => {
+test("quota: declares an informational, signed quota check", () => {
   assertEquals(quota.kind, "quota");
   assertEquals(quota.severity, "informational");
   assertEquals(quota.credential, "signed");
 });
 
-Deno.test("quota: reads credits from the header of a parameterless GET /v5/person/enrich", async () => {
+test("quota: reads credits from the header of a parameterless GET /v5/person/enrich", async () => {
   const { ctx, calls } = mockCtx([{ status: 400, body: bad, headers: hdr("1342") }]);
   const r = await quota.check!({} as never, ctx);
   assertEquals(r.state, "ok");
@@ -20,7 +21,7 @@ Deno.test("quota: reads credits from the header of a parameterless GET /v5/perso
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("quota: zero credits is degraded; a missing header or a 401 is unknown", async () => {
+test("quota: zero credits is degraded; a missing header or a 401 is unknown", async () => {
   const zero = await quota.check!(
     {} as never,
     mockCtx([{ status: 400, body: bad, headers: hdr("0") }]).ctx,

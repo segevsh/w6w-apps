@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/connection-list.ts";
 
@@ -11,7 +12,7 @@ const page = (data: unknown[], after: string | null = null) => ({
  * A `draft` connection is a setup somebody started in the Admin Portal and
  * never finished — invisible until one of their staff cannot log in.
  */
-Deno.test("connection-list: can be narrowed to the setups nobody finished", async () => {
+test("connection-list: can be narrowed to the setups nobody finished", async () => {
   const { ctx } = mockCtx([
     page([{ id: "conn_1", state: "active" }, { id: "conn_2", state: "draft" }]),
   ]);
@@ -23,7 +24,7 @@ Deno.test("connection-list: can be narrowed to the setups nobody finished", asyn
   assertEquals(result.connections[0].id, "conn_2");
 });
 
-Deno.test("connection-list: unfiltered, it returns everything", async () => {
+test("connection-list: unfiltered, it returns everything", async () => {
   const { ctx, calls } = mockCtx([
     page([{ id: "conn_1", state: "active" }, { id: "conn_2", state: "draft" }]),
   ]);
@@ -32,7 +33,7 @@ Deno.test("connection-list: unfiltered, it returns everything", async () => {
   assertEquals(new URL(calls[0].url).searchParams.get("organization_id"), "org_1");
 });
 
-Deno.test("connection-list: the provider type reaches the wire", async () => {
+test("connection-list: the provider type reaches the wire", async () => {
   const { ctx, calls } = mockCtx([page([])]);
   await action.execute!({ connectionType: "OktaSAML" }, ctx);
   assertEquals(new URL(calls[0].url).searchParams.get("connection_type"), "OktaSAML");

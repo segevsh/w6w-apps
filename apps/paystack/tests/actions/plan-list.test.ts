@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import action from "../../actions/plan-list.ts";
 import { LIST_META, mockCtx, ok, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("plan-list: filters by interval and amount", async () => {
+test("plan-list: filters by interval and amount", async () => {
   const { ctx, calls } = mockCtx([{ body: ok([], LIST_META) }]);
   assertEquals(await action.execute({ interval: "weekly", amount: 100 }, ctx), {
     items: [],

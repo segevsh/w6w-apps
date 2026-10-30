@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/alias-list.ts";
 
@@ -7,7 +8,7 @@ const page = (items: unknown[], next: number | null) => ({
   pagination: { count: items.length, next, prev: null },
 });
 
-Deno.test("alias-list: lists aliases with project and domain filters", async () => {
+test("alias-list: lists aliases with project and domain filters", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ alias: "a.com" }], null) }], {
     display: {},
   });
@@ -19,7 +20,7 @@ Deno.test("alias-list: lists aliases with project and domain filters", async () 
   assertEquals(result, [{ alias: "a.com" }]);
 });
 
-Deno.test("alias-list: a small limit truncates without a second request", async () => {
+test("alias-list: a small limit truncates without a second request", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page([{ alias: "a" }, { alias: "b" }], 1700000000000) },
   ], { display: {} });

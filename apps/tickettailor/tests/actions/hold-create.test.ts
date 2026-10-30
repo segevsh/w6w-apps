@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import holdCreate from "../../actions/hold-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("hold-create: sends the ticket_type_id association map bracket-keyed", async () => {
+test("hold-create: sends the ticket_type_id association map bracket-keyed", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "ho_1" } }]);
   await holdCreate.execute(
     { eventId: "ev_1", note: "Press hold", ticketTypeId: "tt_1", quantity: 5 },

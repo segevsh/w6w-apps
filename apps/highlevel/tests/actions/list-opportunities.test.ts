@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockHighLevelCtx } from "../_helpers.ts";
 import action from "../../actions/list-opportunities.ts";
 
-Deno.test("list-opportunities: GETs /opportunities/search with location_id (snake_case)", async () => {
+test("list-opportunities: GETs /opportunities/search with location_id (snake_case)", async () => {
   const { ctx, calls } = mockHighLevelCtx([
     { body: { opportunities: [{ id: "o1" }], meta: {} } },
   ], "loc-1");

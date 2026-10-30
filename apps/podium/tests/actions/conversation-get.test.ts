@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { API, mockCtx } from "../_helpers.ts";
 import conversationGet from "../../actions/conversation-get.ts";
 
-Deno.test("conversation-get: sends every documented field in its documented place", async () => {
+test("conversation-get: sends every documented field in its documented place", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: { uid: "r1" }, metadata: { nextCursor: "c2" } },
   }]);
@@ -16,7 +17,7 @@ Deno.test("conversation-get: sends every documented field in its documented plac
   assertEquals(result, { uid: "r1" });
 });
 
-Deno.test("conversation-get: declares its params and kind", () => {
+test("conversation-get: declares its params and kind", () => {
   assertEquals((conversationGet.params ?? []).map((p) => p.key), ["uid"]);
   assertEquals((conversationGet.params ?? []).filter((p) => p.required).map((p) => p.key), ["uid"]);
   assertEquals(conversationGet.type, "read");

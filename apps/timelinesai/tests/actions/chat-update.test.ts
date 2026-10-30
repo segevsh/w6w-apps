@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import chatUpdate from "../../actions/chat-update.ts";
 
-Deno.test("chat-update: patches only the supplied fields, keeping false", async () => {
+test("chat-update: patches only the supplied fields, keeping false", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "id": 7 } } }]);
   const out = await chatUpdate.execute!(
     { "chatId": 7, "closed": false, "name": "Acme" } as never,
@@ -20,7 +21,7 @@ Deno.test("chat-update: patches only the supplied fields, keeping false", async 
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("chat-update: surfaces a vendor error envelope", async () => {
+test("chat-update: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },
@@ -31,7 +32,7 @@ Deno.test("chat-update: surfaces a vendor error envelope", async () => {
   assert(err.message.includes("not_found"), err.message);
 });
 
-Deno.test("chat-update: refuses an update that changes nothing, before the network", async () => {
+test("chat-update: refuses an update that changes nothing, before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await chatUpdate.execute!({ chatId: 7 } as never, ctx);

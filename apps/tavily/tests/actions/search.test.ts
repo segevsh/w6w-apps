@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import search from "../../actions/search.ts";
 import { errorBody, mockCtx, pathOf, rejection } from "../_helpers.ts";
 
-Deno.test("search: posts compacted snake_case body to /search", async () => {
+test("search: posts compacted snake_case body to /search", async () => {
   const { ctx, calls } = mockCtx([{ body: { query: "q", results: [], images: [] } }]);
   const out = await search.execute({
     query: "q",
@@ -27,7 +28,7 @@ Deno.test("search: posts compacted snake_case body to /search", async () => {
   assert(!("authorization" in calls[0].headers), "credentials belong to sign");
 });
 
-Deno.test("search: 432 surfaces the plan-limit message", async () => {
+test("search: 432 surfaces the plan-limit message", async () => {
   const { ctx } = mockCtx([{
     status: 432,
     body: errorBody("This request exceeds your plan's limit"),
@@ -37,7 +38,7 @@ Deno.test("search: 432 surfaces the plan-limit message", async () => {
   assert(err.message.includes("exceeds your plan"));
 });
 
-Deno.test("search: 422 array detail is rendered as loc and msg", async () => {
+test("search: 422 array detail is rendered as loc and msg", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { detail: [{ loc: ["body", "query"], msg: "Input should be a valid string" }] },

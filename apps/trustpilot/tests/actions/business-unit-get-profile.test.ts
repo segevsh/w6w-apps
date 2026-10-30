@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/business-unit-get-profile.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("business-unit-get-profile: builds the profileinfo URL and returns the body", async () => {
+test("business-unit-get-profile: builds the profileinfo URL and returns the body", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -24,7 +25,7 @@ Deno.test("business-unit-get-profile: builds the profileinfo URL and returns the
   assertEquals(out.isClaimed, true);
 });
 
-Deno.test("business-unit-get-profile: URL-encodes the business unit id", async () => {
+test("business-unit-get-profile: URL-encodes the business unit id", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ businessUnitId: "weird id/with slash" }, ctx);
   assertEquals(
@@ -33,7 +34,7 @@ Deno.test("business-unit-get-profile: URL-encodes the business unit id", async (
   );
 });
 
-Deno.test("business-unit-get-profile: surfaces a 404 with Trustpilot's documented hint", async () => {
+test("business-unit-get-profile: surfaces a 404 with Trustpilot's documented hint", async () => {
   const { ctx } = mockCtx([{ status: 404, body: "" }]);
   await assertRejects(
     async () => await action.execute({ businessUnitId: "does-not-exist" }, ctx),

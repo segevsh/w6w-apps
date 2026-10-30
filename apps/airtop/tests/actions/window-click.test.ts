@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowClick from "../../actions/window-click.ts";
 import { aiEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-click: posts elementDescription and reads back status/credits", async () => {
+test("window-click: posts elementDescription and reads back status/credits", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: aiEnvelope("Clicked the login button.", {
@@ -32,6 +33,6 @@ Deno.test("window-click: posts elementDescription and reads back status/credits"
   });
 });
 
-Deno.test("window-click: is declared non-idempotent", () => {
+test("window-click: is declared non-idempotent", () => {
   assertEquals(windowClick.idempotent, false);
 });

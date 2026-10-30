@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/task-date-delete.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("task-date-delete: calls DELETE /projects/{projectId}/tasks/{taskId}/date", async () => {
+test("task-date-delete: calls DELETE /projects/{projectId}/tasks/{taskId}/date", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true } }]);
   const out = await action.execute!(
     { "projectId": "projectId-1", "taskId": "taskId-1" },
@@ -16,7 +17,7 @@ Deno.test("task-date-delete: calls DELETE /projects/{projectId}/tasks/{taskId}/d
   assertEquals(out.ok, true);
 });
 
-Deno.test("task-date-delete: a failure envelope is an error", async () => {
+test("task-date-delete: a failure envelope is an error", async () => {
   const { ctx } = mockCtx([
     {
       status: 401,

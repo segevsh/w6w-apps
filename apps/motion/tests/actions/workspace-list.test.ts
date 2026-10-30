@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import workspaceList from "../../actions/workspace-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("workspace-list: calls GET /v1/workspaces and unwraps the `workspaces` key", async () => {
+test("workspace-list: calls GET /v1/workspaces and unwraps the `workspaces` key", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: page("workspaces", [{ id: "ws1", name: "Acme", teamId: "tm1", type: "team" }], {
@@ -26,7 +27,7 @@ Deno.test("workspace-list: calls GET /v1/workspaces and unwraps the `workspaces`
  * request, so its encoding is unspecified — a wrong guess silently returns the
  * wrong workspaces. Cursor is the only parameter offered.
  */
-Deno.test("workspace-list: the undocumented-encoding ids array is not exposed", () => {
+test("workspace-list: the undocumented-encoding ids array is not exposed", () => {
   const keys = (workspaceList.params ?? []).map((p) => p.key);
   assertEquals(keys, ["cursor"]);
   assert(!keys.includes("ids"));

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import jobAddPayment from "../../actions/job-add-payment.ts";
 import { bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ import { bodyOf, mockCtx, pathOf, queryOf } from "../_helpers.ts";
  * The one call where a value is required twice: `type` goes out as a required
  * query parameter AND as a required body field, from the same input.
  */
-Deno.test("job-add-payment: sends type in both the query and the body", async () => {
+test("job-add-payment: sends type in both the query and the body", async () => {
   const { ctx, calls } = mockCtx([{ body: { flag: true, msg: "ok", data: { paymentId: 7 } } }]);
   const out = await jobAddPayment.execute(
     {
@@ -31,7 +32,7 @@ Deno.test("job-add-payment: sends type in both the query and the body", async ()
   assertEquals(out, { flag: true, msg: "ok", data: { paymentId: 7 } });
 });
 
-Deno.test("job-add-payment: an optional reference rides along when given", async () => {
+test("job-add-payment: an optional reference rides along when given", async () => {
   const { ctx, calls } = mockCtx([{ body: { flag: true } }]);
   await jobAddPayment.execute(
     {
@@ -47,7 +48,7 @@ Deno.test("job-add-payment: an optional reference rides along when given", async
   assertEquals(bodyOf(calls[0]).reference, "cheque-1042");
 });
 
-Deno.test("job-add-payment: the required set matches Workiz's addPaymentBody", () => {
+test("job-add-payment: the required set matches Workiz's addPaymentBody", () => {
   for (const key of ["uuid", "type", "amount", "date", "authSecret"]) {
     assertEquals(jobAddPayment.params?.find((p) => p.key === key)?.required, true, key);
   }
@@ -61,6 +62,6 @@ Deno.test("job-add-payment: the required set matches Workiz's addPaymentBody", (
 });
 
 /** Each call records a new payment, so a retry books the money twice. */
-Deno.test("job-add-payment: recording a payment is not idempotent", () => {
+test("job-add-payment: recording a payment is not idempotent", () => {
   assertEquals(jobAddPayment.idempotent, false);
 });

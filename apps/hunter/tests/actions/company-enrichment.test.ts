@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 import action from "../../actions/company-enrichment.ts";
 
-Deno.test("company-enrichment: GETs /companies/find (not /company-enrichment)", async () => {
+test("company-enrichment: GETs /companies/find (not /company-enrichment)", async () => {
   const body = envelope({ name: "Hunter", domain: "hunter.io" });
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ domain: "hunter.io" }, ctx);

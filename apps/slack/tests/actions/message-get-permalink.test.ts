@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/message-get-permalink.ts";
 
-Deno.test("message-get-permalink: GETs /chat.getPermalink with channel + message_ts", async () => {
+test("message-get-permalink: GETs /chat.getPermalink with channel + message_ts", async () => {
   const { ctx, calls } = mockCtx([{ body: { ok: true, permalink: "https://slack.example/…" } }]);
   await action.execute!({ channel: "C1", ts: "1.1" }, ctx);
   const url = new URL(calls[0].url);

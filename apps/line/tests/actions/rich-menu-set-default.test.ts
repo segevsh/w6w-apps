@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import richMenuSetDefault from "../../actions/rich-menu-set-default.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("rich-menu-set-default: POSTs to /v2/bot/user/all/richmenu/{richMenuId}", async () => {
+test("rich-menu-set-default: POSTs to /v2/bot/user/all/richmenu/{richMenuId}", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await richMenuSetDefault.execute({ richMenuId: "r1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("rich-menu-set-default: POSTs to /v2/bot/user/all/richmenu/{richMenuId
   assertEquals(calls[0].body, null);
 });
 
-Deno.test("rich-menu-set-default: requires richMenuId", async () => {
+test("rich-menu-set-default: requires richMenuId", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await richMenuSetDefault.execute({ richMenuId: "" }, ctx),
@@ -21,6 +22,6 @@ Deno.test("rich-menu-set-default: requires richMenuId", async () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("rich-menu-set-default: is declared idempotent", () => {
+test("rich-menu-set-default: is declared idempotent", () => {
   assertEquals(richMenuSetDefault.idempotent, true);
 });

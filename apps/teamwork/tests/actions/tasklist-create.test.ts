@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTeamworkCtx } from "../_helpers.ts";
 import action from "../../actions/tasklist-create.ts";
 
-Deno.test("tasklist-create: POSTs the V1 /projects/{id}/tasklists.json endpoint", async () => {
+test("tasklist-create: POSTs the V1 /projects/{id}/tasklists.json endpoint", async () => {
   const { ctx, calls } = mockTeamworkCtx([{
     status: 201,
     body: { TASKLISTID: "1", STATUS: "OK" },

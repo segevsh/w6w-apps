@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import bookingGet from "../../actions/booking-get.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
  * `data` would return `undefined` here, which is the whole reason this app
  * unwraps nothing.
  */
-Deno.test("booking-get: calls GET /api/bookings/{id} and returns the bare entity", async () => {
+test("booking-get: calls GET /api/bookings/{id} and returns the bare entity", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 7, starts_at: "2026-03-20T10:00:00Z" } }]);
   const out = await bookingGet.execute({ booking: 7 }, ctx) as { id: number };
 
@@ -16,13 +17,13 @@ Deno.test("booking-get: calls GET /api/bookings/{id} and returns the bare entity
   assertEquals(out.id, 7);
 });
 
-Deno.test("booking-get: a slash pasted into the id cannot escape the path segment", async () => {
+test("booking-get: a slash pasted into the id cannot escape the path segment", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await bookingGet.execute({ booking: "7/../../me" as unknown as number }, ctx);
   assertEquals(pathOf(calls[0].url), "/api/bookings/7%2F..%2F..%2Fme");
 });
 
-Deno.test("booking-get: a 403 is reported distinctly from a 404", async () => {
+test("booking-get: a 403 is reported distinctly from a 404", async () => {
   const { ctx } = mockCtx([{ status: 403, body: errorBody("This action is unauthorized.") }]);
   const err = await assertRejects(
     () => Promise.resolve(bookingGet.execute({ booking: 7 }, ctx)),

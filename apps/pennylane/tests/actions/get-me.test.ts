@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-me.ts";
 
@@ -14,7 +15,7 @@ const ME = {
   scopes: ["customers:all", "suppliers:all"],
 };
 
-Deno.test("get-me: GETs /me with no query and no body", async () => {
+test("get-me: GETs /me with no query and no body", async () => {
   const { ctx, calls } = mockCtx([{ body: ME }]);
   const res = await action.execute({}, ctx);
 
@@ -26,6 +27,6 @@ Deno.test("get-me: GETs /me with no query and no body", async () => {
   assertEquals(res, ME);
 });
 
-Deno.test("get-me: declares no params at all — it needs no scope and takes no input", () => {
+test("get-me: declares no params at all — it needs no scope and takes no input", () => {
   assertEquals(action.params, []);
 });

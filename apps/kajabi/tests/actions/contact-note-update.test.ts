@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactNoteUpdate from "../../actions/contact-note-update.ts";
 import { bodyOf, doc, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-note-update: PATCHes the note body", async () => {
+test("contact-note-update: PATCHes the note body", async () => {
   const { ctx, calls } = mockCtx([{ body: doc("3", "contact_notes") }]);
   await contactNoteUpdate.execute({ id: "3", body: "Corrected" }, ctx);
   assertEquals(calls[0].method, "PATCH");
@@ -17,7 +18,7 @@ Deno.test("contact-note-update: PATCHes the note body", async () => {
 });
 
 /** The update schema declares no `relationships` — a note cannot be re-homed. */
-Deno.test("contact-note-update: cannot move a note to another contact", () => {
+test("contact-note-update: cannot move a note to another contact", () => {
   const keys = contactNoteUpdate.params!.map((p) => p.key);
   assertEquals(keys.includes("contactId"), false);
 });

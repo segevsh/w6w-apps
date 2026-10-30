@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/update-customer.ts";
 import { API_ROOT, bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("update-customer: PUTs only the given fields", async () => {
+test("update-customer: PUTs only the given fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: 3, active: false } } }]);
   const out = await exec(action, { id: 3, active: false, name: "New" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -11,7 +12,7 @@ Deno.test("update-customer: PUTs only the given fields", async () => {
   assertEquals(out.data.id, 3);
 });
 
-Deno.test("update-customer: no fields is refused locally", async () => {
+test("update-customer: no fields is refused locally", async () => {
   const none = mockCtx();
   await assertRejects(() => exec(action, { id: 3 }, none.ctx), Error, "at least one");
   assertEquals(none.calls.length, 0);

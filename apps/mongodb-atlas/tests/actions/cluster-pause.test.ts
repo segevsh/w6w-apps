@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/cluster-pause.ts";
 
@@ -7,7 +8,7 @@ const state = (paused: boolean, stateName = "IDLE") => ({
   body: { name: "prod", paused, stateName },
 });
 
-Deno.test("cluster-pause: reads the state, then PATCHes only `paused`", async () => {
+test("cluster-pause: reads the state, then PATCHes only `paused`", async () => {
   const { ctx, calls } = mockCtx([state(false), state(true, "UPDATING")]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod" },
@@ -20,7 +21,7 @@ Deno.test("cluster-pause: reads the state, then PATCHes only `paused`", async ()
   assertEquals(result.stateName, "UPDATING");
 });
 
-Deno.test("cluster-pause: resuming sends paused false", async () => {
+test("cluster-pause: resuming sends paused false", async () => {
   const { ctx, calls } = mockCtx([state(true), state(false, "UPDATING")]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod", paused: false },
@@ -31,7 +32,7 @@ Deno.test("cluster-pause: resuming sends paused false", async () => {
 });
 
 /** A scheduled pause hitting an already-paused cluster is not a failure. */
-Deno.test("cluster-pause: an already-paused cluster is a no-op, not a 409", async () => {
+test("cluster-pause: an already-paused cluster is a no-op, not a 409", async () => {
   const { ctx, calls, logs } = mockCtx([state(true)]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod" },
@@ -43,7 +44,7 @@ Deno.test("cluster-pause: an already-paused cluster is a no-op, not a 409", asyn
   assert(/already paused/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("cluster-pause: an already-running cluster is a no-op for a resume", async () => {
+test("cluster-pause: an already-running cluster is a no-op for a resume", async () => {
   const { ctx, calls } = mockCtx([state(false)]);
   const result = await action.execute(
     { projectId: "5f8d0d55b54eff0f2b2c3d4e", cluster: "prod", paused: false },
@@ -54,13 +55,13 @@ Deno.test("cluster-pause: an already-running cluster is a no-op for a resume", a
 });
 
 /** The 60-minute re-pause window and the 30-day auto-resume. */
-Deno.test("cluster-pause: the description names both scheduling traps", () => {
+test("cluster-pause: the description names both scheduling traps", () => {
   assert(/RESUMES a paused cluster after 30 days/.test(action.description!), action.description);
   assert(/60 minutes after it\s+resumes/.test(action.description!), action.description);
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("cluster-pause: a 409 from Atlas surfaces with its explanation", async () => {
+test("cluster-pause: a 409 from Atlas surfaces with its explanation", async () => {
   const { ctx } = mockCtx([state(false), {
     status: 409,
     body: { detail: "Cannot pause cluster within 60 minutes of resuming" },
@@ -74,7 +75,7 @@ Deno.test("cluster-pause: a 409 from Atlas surfaces with its explanation", async
   assert(/within 60 minutes/.test(message), message);
 });
 
-Deno.test("cluster-pause: a cluster name is required", async () => {
+test("cluster-pause: a cluster name is required", async () => {
   const { ctx, calls } = mockCtx([]);
   let threw = false;
   try {

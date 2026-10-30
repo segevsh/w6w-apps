@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-profiles.ts";
 
-Deno.test("get-profiles: GETs /profiles/ and forwards filter, sort, page[cursor], page[size]", async () => {
+test("get-profiles: GETs /profiles/ and forwards filter, sort, page[cursor], page[size]", async () => {
   const body = { data: [], links: {} };
   const { ctx, calls } = mockCtx([{ body }]);
   await action.execute!(

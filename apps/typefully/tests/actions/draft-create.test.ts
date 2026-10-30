@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import draftCreate from "../../actions/draft-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("draft-create: posts the platforms object and optional fields", async () => {
+test("draft-create: posts the platforms object and optional fields", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: 99, status: "draft", platforms: {} },
@@ -26,7 +27,7 @@ Deno.test("draft-create: posts the platforms object and optional fields", async 
   assertEquals(out.id, 99);
 });
 
-Deno.test("draft-create: accepts platforms as a JSON string, same as a parsed object", async () => {
+test("draft-create: accepts platforms as a JSON string, same as a parsed object", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await draftCreate.execute({
     socialSetId: 1,
@@ -36,7 +37,7 @@ Deno.test("draft-create: accepts platforms as a JSON string, same as a parsed ob
   assertEquals(body.platforms.x.enabled, true);
 });
 
-Deno.test("draft-create: rejects invalid JSON in platforms before making a request", async () => {
+test("draft-create: rejects invalid JSON in platforms before making a request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await draftCreate.execute({ socialSetId: 1, platforms: "{not json" }, ctx),
@@ -44,11 +45,11 @@ Deno.test("draft-create: rejects invalid JSON in platforms before making a reque
   assertEquals(calls.length, 0);
 });
 
-Deno.test("draft-create: is not idempotent — Typefully documents no dedupe key", () => {
+test("draft-create: is not idempotent — Typefully documents no dedupe key", () => {
   assertEquals(draftCreate.idempotent, false);
 });
 
-Deno.test("draft-create: publishAt and planAt are omitted, not sent as empty strings, by default", async () => {
+test("draft-create: publishAt and planAt are omitted, not sent as empty strings, by default", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: 1 } }]);
   await draftCreate.execute({
     socialSetId: 1,

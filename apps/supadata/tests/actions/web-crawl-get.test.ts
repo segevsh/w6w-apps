@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import crawl from "../../actions/web-crawl-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("web-crawl-get: GETs /web/crawl/{id}; skip 0 is still sent", async () => {
+test("web-crawl-get: GETs /web/crawl/{id}; skip 0 is still sent", async () => {
   const body = {
     status: "scraping",
     pages: [],
@@ -15,7 +16,7 @@ Deno.test("web-crawl-get: GETs /web/crawl/{id}; skip 0 is still sent", async () 
   assertEquals(calls[1].url, "https://api.supadata.ai/v1/web/crawl/c1?skip=0");
 });
 
-Deno.test("web-crawl-get: a 404 is thrown; a blank id makes no call", async () => {
+test("web-crawl-get: a 404 is thrown; a blank id makes no call", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error: "not-found", message: "m", details: "No crawl" },

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import {
   asJson,
   asOptionalJson,
@@ -17,13 +18,13 @@ import { BASE, mockFormstackCtx } from "../_helpers.ts";
  * non-interchangeable credentials. Pinning both here is what lets the auth
  * method name the wrong one in its error message.
  */
-Deno.test("client: pins the V2025 base and keeps the legacy one for messaging only", () => {
+test("client: pins the V2025 base and keeps the legacy one for messaging only", () => {
   assertEquals(BASE_URL, BASE);
   assertEquals(BASE_URL, "https://www.formstack.com/api/v2025");
   assertEquals(LEGACY_BASE_URL, "https://www.formstack.com/api/v2");
 });
 
-Deno.test("compact: drops unset keys but keeps `false` and `0`", () => {
+test("compact: drops unset keys but keeps `false` and `0`", () => {
   assertEquals(
     compact({ a: 1, b: undefined, c: null, d: "", e: false, f: 0 }),
     { a: 1, e: false, f: 0 },
@@ -34,19 +35,19 @@ Deno.test("compact: drops unset keys but keeps `false` and `0`", () => {
  * A `json` param arrives as a string when a human typed it into the studio and
  * as a value when an upstream step produced it. Both have to work.
  */
-Deno.test("asJson: accepts a parsed value or the string a user typed", () => {
+test("asJson: accepts a parsed value or the string a user typed", () => {
   assertEquals(asJson<{ a: number }>('{"a":1}', "field"), { a: 1 });
   assertEquals(asJson<{ a: number }>({ a: 1 }, "field"), { a: 1 });
   assertEquals(asJson<number[]>("[1,2]", "field"), [1, 2]);
 });
 
-Deno.test("asJson: names the field when it is missing or malformed", () => {
+test("asJson: names the field when it is missing or malformed", () => {
   assertThrows(() => asJson(undefined, "fields"), Error, "fields is required");
   assertThrows(() => asJson("", "fields"), Error, "fields is required");
   assertThrows(() => asJson("{nope", "fields"), Error, "fields is not valid JSON");
 });
 
-Deno.test("asOptionalJson: an absent value is absent, not an error", () => {
+test("asOptionalJson: an absent value is absent, not an error", () => {
   assertEquals(asOptionalJson(undefined, "fields"), undefined);
   assertEquals(asOptionalJson(null, "fields"), undefined);
   assertEquals(asOptionalJson("", "fields"), undefined);
@@ -55,13 +56,13 @@ Deno.test("asOptionalJson: an absent value is absent, not an error", () => {
 });
 
 /** Formstack types its query flags as `"true"`/`"false"` strings, not JSON booleans. */
-Deno.test("flag: renders booleans as the strings the API expects", () => {
+test("flag: renders booleans as the strings the API expects", () => {
   assertEquals(flag(true), "true");
   assertEquals(flag(false), "false");
   assertEquals(flag(undefined), undefined);
 });
 
-Deno.test("truncate: leaves short text alone and marks what it cut", () => {
+test("truncate: leaves short text alone and marks what it cut", () => {
   assertEquals(truncate("short"), "short");
   const cut = truncate("y".repeat(650));
   assert(cut.includes("650 bytes truncated"), cut);
@@ -71,7 +72,7 @@ Deno.test("truncate: leaves short text alone and marks what it cut", () => {
  * The 429 sentence is the load-bearing one: Formstack's limit is a DAILY quota
  * per token, so "retry shortly" — the reflex for a 429 — is wrong advice here.
  */
-Deno.test("formatFormstackError: a 429 says the window is a day", () => {
+test("formatFormstackError: a 429 says the window is a day", () => {
   const msg = formatFormstackError(429, "GET", "/forms", '{"status":"error","error":"Rate limit"}');
   assert(msg.includes("daily API quota"), msg);
   assert(msg.includes("retrying"), msg);
@@ -79,7 +80,7 @@ Deno.test("formatFormstackError: a 429 says the window is a day", () => {
   assert(msg.includes("Rate limit"), msg);
 });
 
-Deno.test("formatFormstackError: prefers the vendor's own error text", () => {
+test("formatFormstackError: prefers the vendor's own error text", () => {
   assertEquals(
     formatFormstackError(401, "GET", "/forms", '{"status":"error","error":"Unauthorized"}'),
     "Formstack 401 for GET /forms: Unauthorized",
@@ -91,7 +92,7 @@ Deno.test("formatFormstackError: prefers the vendor's own error text", () => {
 });
 
 /** Validation failures carry `errors`; losing them would hide which field is wrong. */
-Deno.test("formatFormstackError: serialises a validation `errors` payload", () => {
+test("formatFormstackError: serialises a validation `errors` payload", () => {
   const msg = formatFormstackError(
     422,
     "POST",
@@ -102,12 +103,12 @@ Deno.test("formatFormstackError: serialises a validation `errors` payload", () =
   assert(msg.includes("required"), msg);
 });
 
-Deno.test("formatFormstackError: falls back to the raw body when it is not JSON", () => {
+test("formatFormstackError: falls back to the raw body when it is not JSON", () => {
   const msg = formatFormstackError(502, "GET", "/forms", "<html>Bad Gateway</html>");
   assert(msg.includes("Bad Gateway"), msg);
 });
 
-Deno.test("client: GETs the V2025 base with a JSON accept header", async () => {
+test("client: GETs the V2025 base with a JSON accept header", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: { data: [] } }]);
   await new FormstackClient(ctx).request("/forms");
   assertEquals(calls[0].url, `${BASE}/forms`);
@@ -115,7 +116,7 @@ Deno.test("client: GETs the V2025 base with a JSON accept header", async () => {
   assertEquals(calls[0].headers["accept"], "application/json");
 });
 
-Deno.test("client: drops unset query params and sends no body on a GET", async () => {
+test("client: drops unset query params and sends no body on a GET", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: {} }]);
   await new FormstackClient(ctx).request("/forms", {
     query: { pageSize: 25, page: undefined, search: "", deleted: "false" },
@@ -132,7 +133,7 @@ Deno.test("client: drops unset query params and sends no body on a GET", async (
  * Formstack defaults to url-encoded input, so JSON has to be asked for by name —
  * and submission field values are structured, so this app always asks.
  */
-Deno.test("client: a body is sent as JSON with the matching content-type", async () => {
+test("client: a body is sent as JSON with the matching content-type", async () => {
   const { ctx, calls } = mockFormstackCtx([{ status: 201, body: { id: "7" } }]);
   const result = await new FormstackClient(ctx).request<{ id: string }>("/forms/1/submissions", {
     method: "POST",
@@ -145,14 +146,14 @@ Deno.test("client: a body is sent as JSON with the matching content-type", async
 });
 
 /** A delete answers 204 with nothing to parse — a success, not a parse error. */
-Deno.test("client: 204 and an empty body both resolve to undefined", async () => {
+test("client: 204 and an empty body both resolve to undefined", async () => {
   const { ctx } = mockFormstackCtx([{ status: 204 }, { body: "" }]);
   const client = new FormstackClient(ctx);
   assertEquals(await client.request("/forms/1", { method: "DELETE" }), undefined);
   assertEquals(await client.request("/forms"), undefined);
 });
 
-Deno.test("client: a failure throws the formatted vendor error", async () => {
+test("client: a failure throws the formatted vendor error", async () => {
   const { ctx } = mockFormstackCtx([
     { status: 429, body: '{"status":"error","error":"Rate limit exceeded"}' },
   ]);
@@ -163,7 +164,7 @@ Deno.test("client: a failure throws the formatted vendor error", async () => {
 });
 
 /** Credentials belong to `sign`; the client must not add an Authorization header. */
-Deno.test("client: sends no Authorization header of its own", async () => {
+test("client: sends no Authorization header of its own", async () => {
   const { ctx, calls } = mockFormstackCtx([{ body: {} }]);
   await new FormstackClient(ctx).request("/forms");
   assertEquals(calls[0].headers["authorization"], undefined);

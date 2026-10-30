@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-whitelist.ts";
 
-Deno.test("delete-whitelist: POSTs /whitelists/delete.json with the email", async () => {
+test("delete-whitelist: POSTs /whitelists/delete.json with the email", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { email: "a@x.com", deleted: true } }]);
   await action.execute!({ email: "a@x.com" }, ctx);
   const url = new URL(calls[0].url);

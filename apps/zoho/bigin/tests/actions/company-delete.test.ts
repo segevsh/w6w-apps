@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockBiginCtx, recordResult } from "../_helpers.ts";
 import action from "../../actions/company-delete.ts";
 
-Deno.test("company-delete: DELETEs the record path and unwraps the result entry", async () => {
+test("company-delete: DELETEs the record path and unwraps the result entry", async () => {
   const { ctx, calls } = mockBiginCtx([{ body: recordResult("42") }]);
   const result = await action.execute({ recordId: "42" }, ctx);
   assertEquals(calls[0].method, "DELETE");

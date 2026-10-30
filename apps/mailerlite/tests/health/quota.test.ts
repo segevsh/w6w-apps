@@ -1,15 +1,16 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import check from "../../health/quota.ts";
 
-Deno.test("quota: is a signed, informational quota check with no extra egress", () => {
+test("quota: is a signed, informational quota check with no extra egress", () => {
   assertEquals(check.key, "quota");
   assertEquals(check.kind, "quota");
   assertEquals(check.severity, "informational");
   assertEquals(check.network, undefined, "a signed check may not widen egress");
 });
 
-Deno.test("quota: probes the cheap subscriber-count endpoint", async () => {
+test("quota: probes the cheap subscriber-count endpoint", async () => {
   const { ctx, calls } = mockCtx([{
     body: { total: 10 },
     headers: { "x-ratelimit-limit": "120", "x-ratelimit-remaining": "119" },
@@ -21,7 +22,7 @@ Deno.test("quota: probes the cheap subscriber-count endpoint", async () => {
   assertEquals(url.searchParams.get("limit"), "0");
 });
 
-Deno.test("quota: healthy headroom reports ok with the limit and remaining", async () => {
+test("quota: healthy headroom reports ok with the limit and remaining", async () => {
   const { ctx } = mockCtx([{
     body: { total: 10 },
     headers: { "x-ratelimit-limit": "120", "x-ratelimit-remaining": "119" },
@@ -33,7 +34,7 @@ Deno.test("quota: healthy headroom reports ok with the limit and remaining", asy
   assertEquals(report.quota?.[0].unit, "requests");
 });
 
-Deno.test("quota: under 10% headroom reports degraded", async () => {
+test("quota: under 10% headroom reports degraded", async () => {
   const { ctx } = mockCtx([{
     body: { total: 10 },
     headers: { "x-ratelimit-limit": "120", "x-ratelimit-remaining": "5" },
@@ -41,7 +42,7 @@ Deno.test("quota: under 10% headroom reports degraded", async () => {
   assertEquals((await check.check!({}, ctx)).state, "degraded");
 });
 
-Deno.test("quota: zero remaining on a 2xx reports down", async () => {
+test("quota: zero remaining on a 2xx reports down", async () => {
   const { ctx } = mockCtx([{
     body: { total: 10 },
     headers: { "x-ratelimit-limit": "120", "x-ratelimit-remaining": "0" },
@@ -49,7 +50,7 @@ Deno.test("quota: zero remaining on a 2xx reports down", async () => {
   assertEquals((await check.check!({}, ctx)).state, "down");
 });
 
-Deno.test("quota: a 429 reports down and turns Retry-After into an absolute resetAt", async () => {
+test("quota: a 429 reports down and turns Retry-After into an absolute resetAt", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: '{"message":"Too Many Attempts."}',
@@ -68,7 +69,7 @@ Deno.test("quota: a 429 reports down and turns Retry-After into an absolute rese
   assert(resetAt <= Date.now() + 119_000 + 2_000);
 });
 
-Deno.test("quota: a response with no rate-limit headers reports unknown, not ok", async () => {
+test("quota: a response with no rate-limit headers reports unknown, not ok", async () => {
   const { ctx } = mockCtx([{ body: { total: 10 }, headers: {} }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -76,7 +77,7 @@ Deno.test("quota: a response with no rate-limit headers reports unknown, not ok"
   assertEquals(report.quota, undefined, "must not invent a reading");
 });
 
-Deno.test("quota: a non-429 error reports unknown with the status", async () => {
+test("quota: a non-429 error reports unknown with the status", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await check.check!({}, ctx);
   assertEquals(report.state, "unknown");

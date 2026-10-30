@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/company-lookup.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("company-lookup: posts the identifiers and returns the first match", async () => {
+test("company-lookup: posts the identifiers and returns the first match", async () => {
   const { ctx, calls } = mockCtx([{
     body: { companies: [{ id: "c1" }], metadata: { credits: 0.25 } },
   }]);
@@ -18,12 +19,12 @@ Deno.test("company-lookup: posts the identifiers and returns the first match", a
   assertEquals(out, { company: { id: "c1" }, credits: 0.25 });
 });
 
-Deno.test("company-lookup: no match returns null", async () => {
+test("company-lookup: no match returns null", async () => {
   const { ctx } = mockCtx([{ body: { companies: [] } }]);
   assertEquals(await action.execute!({ domain: "x.io" }, ctx), { company: null, credits: null });
 });
 
-Deno.test("company-lookup: a 429 is thrown", async () => {
+test("company-lookup: a 429 is thrown", async () => {
   const { ctx } = mockCtx([{ status: 429, body: { code: "error.rate.limit", message: "slow" } }]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "slow");
 });

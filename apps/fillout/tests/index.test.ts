@@ -1,9 +1,11 @@
-import { assert, assertEquals } from "@std/assert";
+import { denoReadDir, denoReadTextFile } from "./_deno.ts";
+import { test } from "node:test";
+import { assert, assertEquals } from "./_assert.ts";
 import app from "../index.ts";
 
 const ACTION_COUNT = 8;
 
-Deno.test("index: exports actions, auth and health checks", () => {
+test("index: exports actions, auth and health checks", () => {
   assert(Array.isArray(app.actions));
   assertEquals(app.actions.length, ACTION_COUNT);
   assertEquals(app.auth.length, 1);
@@ -15,16 +17,16 @@ Deno.test("index: exports actions, auth and health checks", () => {
  * file that was written but never wired into `index.ts` fails here instead of
  * shipping invisible.
  */
-Deno.test("index: every file in actions/ is wired into the entry module, and vice versa", async () => {
+test("index: every file in actions/ is wired into the entry module, and vice versa", async () => {
   const files: string[] = [];
-  for await (const entry of Deno.readDir(new URL("../actions", import.meta.url))) {
+  for await (const entry of denoReadDir(new URL("../actions", import.meta.url))) {
     if (entry.isFile && entry.name.endsWith(".ts")) files.push(entry.name.replace(/\.ts$/, ""));
   }
   assertEquals(files.length, ACTION_COUNT, `actions/ holds ${files.length} files`);
   assertEquals(files.slice().sort(), app.actions.map((a) => a.key).slice().sort());
 });
 
-Deno.test("index: every action key is unique and kebab-case", () => {
+test("index: every action key is unique and kebab-case", () => {
   const keys = app.actions.map((a) => a.key);
   assertEquals(new Set(keys).size, keys.length, "duplicate action key");
   for (const key of keys) {
@@ -32,7 +34,7 @@ Deno.test("index: every action key is unique and kebab-case", () => {
   }
 });
 
-Deno.test("index: every action declares a valid type, a description and an execute hook", () => {
+test("index: every action declares a valid type, a description and an execute hook", () => {
   for (const a of app.actions) {
     assert(["read", "search", "perform"].includes(a.type), `${a.key}: bad type ${a.type}`);
     assert(
@@ -44,7 +46,7 @@ Deno.test("index: every action declares a valid type, a description and an execu
   }
 });
 
-Deno.test("index: every perform action states idempotency explicitly", () => {
+test("index: every perform action states idempotency explicitly", () => {
   const performs = app.actions.filter((a) => a.type === "perform");
   assertEquals(performs.length, 4, "expected 4 perform actions");
   for (const a of performs) {
@@ -58,7 +60,7 @@ Deno.test("index: every perform action states idempotency explicitly", () => {
  * A retry of either of these creates a second thing — a duplicated import, or a
  * second subscription delivering every submission twice.
  */
-Deno.test("index: the two creating actions are NOT marked idempotent", () => {
+test("index: the two creating actions are NOT marked idempotent", () => {
   for (const key of ["submission-create", "webhook-create"]) {
     assertEquals(app.actions.find((a) => a.key === key)?.idempotent, false, key);
   }
@@ -70,13 +72,13 @@ Deno.test("index: the two creating actions are NOT marked idempotent", () => {
  * one, so saying so is what lets the runtime recover from a dropped connection
  * instead of failing the run.
  */
-Deno.test("index: the two by-id deletions are marked idempotent", () => {
+test("index: the two by-id deletions are marked idempotent", () => {
   for (const key of ["submission-delete", "webhook-delete"]) {
     assertEquals(app.actions.find((a) => a.key === key)?.idempotent, true, key);
   }
 });
 
-Deno.test("index: every param has a key and a label", () => {
+test("index: every param has a key and a label", () => {
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
       assert(typeof p.key === "string" && p.key.length > 0, `${a.key}: param without a key`);
@@ -111,10 +113,10 @@ function codeOnly(src: string): string {
   );
 }
 
-const readSource = (rel: string) => Deno.readTextFile(new URL(`../${rel}`, import.meta.url));
+const readSource = (rel: string) => denoReadTextFile(new URL(`../${rel}`, import.meta.url));
 const actionSource = async (key: string) => code(await readSource(`actions/${key}.ts`));
 
-Deno.test("index: no action reads a credential — signing is the auth hook's job", async () => {
+test("index: no action reads a credential — signing is the auth hook's job", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/credential/i.test(src), `${a.key}: references a credential`);
@@ -124,7 +126,7 @@ Deno.test("index: no action reads a credential — signing is the auth hook's jo
   }
 });
 
-Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
+test("index: no action calls global fetch or touches Deno.*", async () => {
   for (const a of app.actions) {
     const src = await actionSource(a.key);
     assert(!/(^|[^.\w])fetch\s*\(/.test(src), `${a.key}: calls a bare fetch`);
@@ -138,7 +140,7 @@ Deno.test("index: no action calls global fetch or touches Deno.*", async () => {
  * the manifest never allowlisted, and would also ignore the Connection's
  * region.
  */
-Deno.test("index: no action hard-codes a host", async () => {
+test("index: no action hard-codes a host", async () => {
   for (const a of app.actions) {
     const src = codeOnly(await readSource(`actions/${a.key}.ts`));
     assert(!/fillout\.com/.test(src), `${a.key}: contains a Fillout host literal`);
@@ -155,7 +157,7 @@ Deno.test("index: no action hard-codes a host", async () => {
  */
 async function hostLiterals(dir: string): Promise<Set<string>> {
   const found = new Set<string>();
-  for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+  for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
     if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
     const src = codeOnly(await readSource(`${dir}/${entry.name}`));
     for (const m of src.matchAll(/["'`]([a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})["'`]/gi)) {
@@ -175,7 +177,7 @@ async function hostLiterals(dir: string): Promise<Set<string>> {
  * host that is called but undeclared and a host that is declared but never
  * called are each a failure.
  */
-Deno.test("index: the manifest allowlist is exactly the host set the sandboxed code names", async () => {
+test("index: the manifest allowlist is exactly the host set the sandboxed code names", async () => {
   const manifest = JSON.parse(await readSource("package.json")) as {
     w6w: { network: { allow: string[] } };
   };
@@ -198,7 +200,7 @@ Deno.test("index: the manifest allowlist is exactly the host set the sandboxed c
  * the day someone moves a status fetch into `lib/` the test above fails instead
  * of this one passing quietly.
  */
-Deno.test("index: the status host lives in the check's allowlist, never the app's", async () => {
+test("index: the status host lives in the check's allowlist, never the app's", async () => {
   const manifest = JSON.parse(await readSource("package.json")) as {
     w6w: { network: { allow: string[] } };
   };
@@ -215,7 +217,7 @@ Deno.test("index: the status host lives in the check's allowlist, never the app'
   }
 });
 
-Deno.test("index: connection identity is never reachable as an action param", () => {
+test("index: connection identity is never reachable as an action param", () => {
   const banned = /^(host|origin|domain|region|base_?url|api_?key|api_?token|token|account)$/i;
   for (const a of app.actions) {
     for (const p of a.params ?? []) {
@@ -226,7 +228,7 @@ Deno.test("index: connection identity is never reachable as an action param", ()
 
 // --- auth ------------------------------------------------------------------
 
-Deno.test("index: the credential field is declared secret and the region field is not", () => {
+test("index: the credential field is declared secret and the region field is not", () => {
   const [method] = app.auth;
   assertEquals(method.key, "api-key");
   assertEquals(method.type, "bearer");
@@ -250,7 +252,7 @@ Deno.test("index: the credential field is declared secret and the region field i
  * nothing secret — the schema is `{name, formId}` and `formId` is the public id
  * already in every share link.
  */
-Deno.test("index: the auth probe is /forms", async () => {
+test("index: the auth probe is /forms", async () => {
   const src = code(await readSource("auth/api-key.ts"));
   assert(
     /PROBE_PATH\s*=\s*["'`]\/forms["'`]/.test(src),
@@ -265,9 +267,9 @@ Deno.test("index: the auth probe is /forms", async () => {
  * list with no auth involved. So no verdict here may be derived from the status
  * code.
  */
-Deno.test("index: no auth or health code decides a credential verdict from a status code", async () => {
+test("index: no auth or health code decides a credential verdict from a status code", async () => {
   for (const dir of ["auth", "health"]) {
-    for await (const entry of Deno.readDir(new URL(`../${dir}`, import.meta.url))) {
+    for await (const entry of denoReadDir(new URL(`../${dir}`, import.meta.url))) {
       if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
       const src = code(await readSource(`${dir}/${entry.name}`));
       assert(
@@ -280,7 +282,7 @@ Deno.test("index: no auth or health code decides a credential verdict from a sta
 
 // --- health ----------------------------------------------------------------
 
-Deno.test("index: every health check is either probing or declared unavailable", () => {
+test("index: every health check is either probing or declared unavailable", () => {
   for (const h of app.healthChecks) {
     const hasCheck = typeof h.check === "function";
     const hasUnavailable = typeof h.unavailable?.reason === "string";
@@ -294,7 +296,7 @@ Deno.test("index: every health check is either probing or declared unavailable",
  * in the roll-up, so at any severity but `informational` a declared absence
  * pins the App at `unknown` forever.
  */
-Deno.test("index: every unavailable health check is informational", () => {
+test("index: every unavailable health check is informational", () => {
   const unavailable = app.healthChecks.filter((h) => h.unavailable);
   assertEquals(unavailable.length, 1, "expected exactly one declared absence");
   for (const h of unavailable) {
@@ -303,7 +305,7 @@ Deno.test("index: every unavailable health check is informational", () => {
 });
 
 /** A check that widens egress must be unsigned — a status host never sees the key. */
-Deno.test("index: any health check declaring extra egress is unsigned", () => {
+test("index: any health check declaring extra egress is unsigned", () => {
   const widening = app.healthChecks.filter((h) => h.network?.allow?.length);
   assertEquals(widening.length, 1, "expected exactly one check to widen egress");
   for (const h of widening) {
@@ -316,7 +318,7 @@ Deno.test("index: any health check declaring extra egress is unsigned", () => {
 
 // --- manifest --------------------------------------------------------------
 
-Deno.test("index: the manifest allows both API hosts and not the status host", async () => {
+test("index: the manifest allows both API hosts and not the status host", async () => {
   const manifest = JSON.parse(await readSource("package.json")) as {
     w6w: {
       id: string;
@@ -335,7 +337,7 @@ Deno.test("index: the manifest allows both API hosts and not the status host", a
   assertEquals(manifest.w6w.appearance.icon.alt, "Fillout");
 });
 
-Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
+test("index: the icon is the vendor's mark, byte-for-byte", async () => {
   const svg = await readSource("assets/icon.svg");
   // The square icon from Fillout's own brand page
   // (https://www.fillout.com/brand → /fillout-icon.svg), taken on 2026-08-15 and
@@ -355,14 +357,14 @@ Deno.test("index: the icon is the vendor's mark, byte-for-byte", async () => {
 
 // --- the guards' own guards -------------------------------------------------
 
-Deno.test("index: the comment stripper actually strips, so the guards above mean something", () => {
+test("index: the comment stripper actually strips, so the guards above mean something", () => {
   assertEquals(code("/* credential */ const a = 1;").trim(), "const a = 1;");
   assertEquals(code("// api-key\nconst a = 1;").trim(), "const a = 1;");
   // A URL's `//` must survive — stripping it would corrupt the scanned text.
   assert(code('const u = "https://x/y";').includes("https://x/y"));
 });
 
-Deno.test("index: the prose stripper removes form copy but not request code", () => {
+test("index: the prose stripper removes form copy but not request code", () => {
   // The exact placeholder `actions/webhook-create.ts` ships.
   assertEquals(
     codeOnly('placeholder: "https://example.com/hooks/fillout",').trim(),

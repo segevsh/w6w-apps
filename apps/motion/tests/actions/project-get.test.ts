@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectGet from "../../actions/project-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("project-get: calls GET /v1/projects/{id}", async () => {
+test("project-get: calls GET /v1/projects/{id}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1", name: "Launch" } }]);
   const out = await projectGet.execute({ id: "p1" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("project-get: calls GET /v1/projects/{id}", async () => {
   assertEquals(out, { id: "p1", name: "Launch" });
 });
 
-Deno.test("project-get: the id is path-escaped", async () => {
+test("project-get: the id is path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await projectGet.execute({ id: "a/b" }, ctx);
   assertEquals(pathOf(calls[0].url), "/v1/projects/a%2Fb");

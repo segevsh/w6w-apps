@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-locations.ts";
 
-Deno.test("list-locations: GETs /v1/accounts/{id}/locations with the default readMask", async () => {
+test("list-locations: GETs /v1/accounts/{id}/locations with the default readMask", async () => {
   const body = { locations: [{ name: "locations/1" }], totalSize: 1 };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ accountId: "9" }, ctx);
@@ -17,7 +18,7 @@ Deno.test("list-locations: GETs /v1/accounts/{id}/locations with the default rea
   assertEquals(result, body);
 });
 
-Deno.test("list-locations: accepts the accounts/- wildcard and a custom readMask", async () => {
+test("list-locations: accepts the accounts/- wildcard and a custom readMask", async () => {
   const { ctx, calls } = mockCtx([{ body: { locations: [] } }]);
   await action.execute!({ accountId: "accounts/-", readMask: "name,title" }, ctx);
   const url = new URL(calls[0].url);
@@ -25,7 +26,7 @@ Deno.test("list-locations: accepts the accounts/- wildcard and a custom readMask
   assertEquals(url.searchParams.get("readMask"), "name,title");
 });
 
-Deno.test("list-locations: forwards filter, orderBy, pageToken", async () => {
+test("list-locations: forwards filter, orderBy, pageToken", async () => {
   const { ctx, calls } = mockCtx([{ body: { locations: [] } }]);
   await action.execute!({
     accountId: "9",

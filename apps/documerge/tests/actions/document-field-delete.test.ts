@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import documentFieldDelete from "../../actions/document-field-delete.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("document-field-delete: DELETE /api/documents/fields/{documentId}/{fieldId}", async () => {
+test("document-field-delete: DELETE /api/documents/fields/{documentId}/{fieldId}", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   const out = await documentFieldDelete.execute({ "documentId": 7, "fieldId": 21 } as never, ctx);
   assertEquals(calls[0].method, "DELETE");
@@ -12,7 +13,7 @@ Deno.test("document-field-delete: DELETE /api/documents/fields/{documentId}/{fie
   assertEquals(calls[0].headers["content-type"], undefined);
 });
 
-Deno.test("document-field-delete: a vendor error surfaces its own message", async () => {
+test("document-field-delete: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errorBody("Unauthenticated.") }]);
   const err = await assertRejects(
     () =>
@@ -25,5 +26,5 @@ Deno.test("document-field-delete: a vendor error surfaces its own message", asyn
   assert(err.message.includes("401"), err.message);
 });
 
-Deno.test("document-field-delete: idempotency is declared as true", () =>
+test("document-field-delete: idempotency is declared as true", () =>
   assertEquals(documentFieldDelete.idempotent, true));

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationGet from "../../actions/conversation-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-get: calls GET /v1/conversations/4711", async () => {
+test("conversation-get: calls GET /v1/conversations/4711", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "data": { "id": 4711, "state": "Open" } },
@@ -20,7 +21,7 @@ Deno.test("conversation-get: calls GET /v1/conversations/4711", async () => {
   assertEquals(out, { "data": { "id": 4711, "state": "Open" } });
 });
 
-Deno.test("conversation-get: surfaces a Dixa error message with the status", async () => {
+test("conversation-get: surfaces a Dixa error message with the status", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { message: "Invalid value for: body" } }]);
   let message = "";
   try {
@@ -32,7 +33,7 @@ Deno.test("conversation-get: surfaces a Dixa error message with the status", asy
   assert(message.includes("Invalid value for: body"), message);
 });
 
-Deno.test("conversation-get: rejects bad input before any request", async () => {
+test("conversation-get: rejects bad input before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyUpdate from "../../actions/company-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("company-update: PUT /v1/companies/{companyId}/", async () => {
+test("company-update: PUT /v1/companies/{companyId}/", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 3, name: "Acme 2" } }]);
   const result = await companyUpdate.execute({ companyId: "3", name: "Acme 2" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -14,12 +15,12 @@ Deno.test("company-update: PUT /v1/companies/{companyId}/", async () => {
   assertEquals(result, { id: 3, name: "Acme 2" });
 });
 
-Deno.test("company-update: declares type perform", () => {
+test("company-update: declares type perform", () => {
   assertEquals(companyUpdate.type, "perform");
   assertEquals(companyUpdate.idempotent, true);
 });
 
-Deno.test("company-update: surfaces the vendor error body", async () => {
+test("company-update: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

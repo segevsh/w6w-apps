@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/report-run-pivot.ts";
 
 const display = { propertyId: "123" };
 
-Deno.test("report-run-pivot: sends the pivot array alongside dimensions and metrics", async () => {
+test("report-run-pivot: sends the pivot array alongside dimensions and metrics", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { rows: [] } }], { display });
   await action.execute!({
     dimensions: "country,browser",
@@ -17,7 +18,7 @@ Deno.test("report-run-pivot: sends the pivot array alongside dimensions and metr
   assertEquals(body.dimensions, [{ name: "country" }, { name: "browser" }]);
 });
 
-Deno.test("report-run-pivot: dimensions, metrics and a non-empty pivot are all required", async () => {
+test("report-run-pivot: dimensions, metrics and a non-empty pivot are all required", async () => {
   for (
     const [patch, needle] of [
       [{ metrics: "sessions", pivots: "[{}]" }, "dimensions"],

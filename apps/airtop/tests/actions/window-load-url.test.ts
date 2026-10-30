@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowLoadUrl from "../../actions/window-load-url.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-load-url: POSTs the url and wait options to the window path", async () => {
+test("window-load-url: POSTs the url and wait options to the window path", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ success: true }) }]);
   const out = await windowLoadUrl.execute(
     { sessionId: "s1", windowId: "w1", url: "https://example.com", waitUntil: "complete" },

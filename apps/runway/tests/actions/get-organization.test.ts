@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-organization.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-organization: sends the documented request and maps the answer", async () => {
+test("get-organization: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       "tier": { "maxMonthlyCreditSpend": 1000, "models": {} },
@@ -24,7 +25,7 @@ Deno.test("get-organization: sends the documented request and maps the answer", 
   });
 });
 
-Deno.test("get-organization: a 401 surfaces Runway's error text", async () => {
+test("get-organization: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactNoteCreate from "../../actions/contact-note-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
 const REPLY = { data: { ok: true }, message: "done" };
 
-Deno.test("contact-note-create: sends every input as body", async () => {
+test("contact-note-create: sends every input as body", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   const out = await contactNoteCreate.execute({ "contactId": 7, "note": "x-note" } as never, ctx);
 
@@ -14,7 +15,7 @@ Deno.test("contact-note-create: sends every input as body", async () => {
   assertEquals(out, REPLY);
 });
 
-Deno.test("contact-note-create: omits every unset optional", async () => {
+test("contact-note-create: omits every unset optional", async () => {
   const { ctx, calls } = mockCtx([{ body: REPLY }]);
   await contactNoteCreate.execute({ "contactId": 7, "note": "x-note" } as never, ctx);
 
@@ -23,7 +24,7 @@ Deno.test("contact-note-create: omits every unset optional", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("contact-note-create: declares a perform action's idempotency", () => {
+test("contact-note-create: declares a perform action's idempotency", () => {
   assertEquals(contactNoteCreate.type, "perform");
   assertEquals(contactNoteCreate.idempotent, false);
   assertEquals(contactNoteCreate.params!.filter((p) => p.required).map((p) => p.key), [

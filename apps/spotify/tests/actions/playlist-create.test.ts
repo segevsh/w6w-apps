@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/playlist-create.ts";
 
-Deno.test("playlist-create: POSTs /me/playlists with defaults applied", async () => {
+test("playlist-create: POSTs /me/playlists with defaults applied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "p1" } }]);
   await action.execute({ name: "Favorites" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -11,7 +12,7 @@ Deno.test("playlist-create: POSTs /me/playlists with defaults applied", async ()
   assertEquals(body, { name: "Favorites", public: true, collaborative: false });
 });
 
-Deno.test("playlist-create: sends description and visibility flags when set", async () => {
+test("playlist-create: sends description and visibility flags when set", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute(
     { name: "Secret Mix", description: "just for me", public: false, collaborative: true },
@@ -26,6 +27,6 @@ Deno.test("playlist-create: sends description and visibility flags when set", as
   });
 });
 
-Deno.test("playlist-create: is not idempotent — a retry creates a second playlist", () => {
+test("playlist-create: is not idempotent — a retry creates a second playlist", () => {
   assertEquals(action.idempotent, false);
 });

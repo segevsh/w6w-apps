@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertThrows } from "../_assert.ts";
 import updateProduct from "../../actions/update-product.ts";
 import { API_ROOT, bodyOf, errorBody, mockCtx } from "../_helpers.ts";
 
-Deno.test("update-product: POST /v2/commerce/products/{productId} — a POST, not a PATCH", async () => {
+test("update-product: POST /v2/commerce/products/{productId} — a POST, not a PATCH", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "P1", name: "New name" } }]);
   const out = await updateProduct.execute!({ productId: "P1", name: "New name" }, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("update-product: POST /v2/commerce/products/{productId} — a POST, no
   assertEquals(out.name, "New name");
 });
 
-Deno.test("update-product: every supplied field is wrapped in {present, value}", async () => {
+test("update-product: every supplied field is wrapped in {present, value}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "P1" } }]);
   await updateProduct.execute!({
     productId: "P1",
@@ -42,7 +43,7 @@ Deno.test("update-product: every supplied field is wrapped in {present, value}",
   });
 });
 
-Deno.test("update-product: an untouched field is absent, never wrapped as null", async () => {
+test("update-product: an untouched field is absent, never wrapped as null", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "P1" } }]);
   await updateProduct.execute!({ productId: "P1", name: "Only the name" }, ctx);
 
@@ -52,7 +53,7 @@ Deno.test("update-product: an untouched field is absent, never wrapped as null",
   assertEquals("pricing" in body, false);
 });
 
-Deno.test("update-product: an empty body is rejected rather than sent as a no-op", () => {
+test("update-product: an empty body is rejected rather than sent as a no-op", () => {
   const { ctx } = mockCtx([]);
   assertThrows(
     () => updateProduct.execute!({ productId: "P1" }, ctx),
@@ -61,14 +62,14 @@ Deno.test("update-product: an empty body is rejected rather than sent as a no-op
   );
 });
 
-Deno.test("update-product: an empty string is a value, and is sent as one", async () => {
+test("update-product: an empty string is a value, and is sent as one", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "P1" } }]);
   await updateProduct.execute!({ productId: "P1", description: "" }, ctx);
 
   assertEquals(bodyOf(calls[0]), { description: { present: true, value: "" } });
 });
 
-Deno.test("update-product: a 409 PRODUCT_UPDATE_CONFLICT body is surfaced", async () => {
+test("update-product: a 409 PRODUCT_UPDATE_CONFLICT body is surfaced", async () => {
   const { ctx } = mockCtx([{
     status: 409,
     body: errorBody("CONFLICT", {

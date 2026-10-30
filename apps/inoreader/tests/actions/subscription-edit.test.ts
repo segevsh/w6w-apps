@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import edit from "../../actions/subscription-edit.ts";
 import { mockCtx, pathOf, queryOf, text } from "../_helpers.ts";
 
-Deno.test("subscription-edit: POSTs ac/s/t/a/r and returns ok", async () => {
+test("subscription-edit: POSTs ac/s/t/a/r and returns ok", async () => {
   const { ctx, calls } = mockCtx([text("OK")]);
   const out = await edit.execute({
     action: "edit",
@@ -23,13 +24,13 @@ Deno.test("subscription-edit: POSTs ac/s/t/a/r and returns ok", async () => {
   assertEquals(out, { ok: true });
 });
 
-Deno.test("subscription-edit: omits unset title/folders (title omitted keeps the title)", async () => {
+test("subscription-edit: omits unset title/folders (title omitted keeps the title)", async () => {
   const { ctx, calls } = mockCtx([text("OK")]);
   await edit.execute({ action: "unsubscribe", streamId: "feed/x" }, ctx);
   assertEquals(queryOf(calls[0].url), { ac: "unsubscribe", s: "feed/x" });
 });
 
-Deno.test("subscription-edit: validates action and streamId; a non-OK body fails", async () => {
+test("subscription-edit: validates action and streamId; a non-OK body fails", async () => {
   const { ctx } = mockCtx([text("Error=Unknown feed", 200)]);
   await assertRejects(
     async () => await edit.execute({ action: "bogus" as "edit", streamId: "x" }, ctx),

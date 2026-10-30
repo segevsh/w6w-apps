@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import quoteGet from "../../actions/quote-get.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("quote-get: GETs /profiles/{profileId}/quotes/{quoteId}", async () => {
+test("quote-get: GETs /profiles/{profileId}/quotes/{quoteId}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "q-1", rate: 1.3 } }]);
   const out = await quoteGet.execute({ profileId: 1, quoteId: "q-1" }, ctx) as { id: string };
 

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import templateSet from "../../actions/template-set.ts";
 import { mockCtx, pathOf, problem } from "../_helpers.ts";
 
-Deno.test("template-set: PUT with {code} only", async () => {
+test("template-set: PUT with {code} only", async () => {
   const { ctx, calls } = mockCtx([{ body: { kind: "notification", mode: "code", paused: true } }]);
   const out = await templateSet.execute(
     { formId: "f1", kind: "notification", code: "<b>{{data.email}}</b>" },
@@ -14,7 +15,7 @@ Deno.test("template-set: PUT with {code} only", async () => {
   assertEquals((out as { paused: boolean }).paused, true);
 });
 
-Deno.test("template-set: template_invalid errors[] reach the message", async () => {
+test("template-set: template_invalid errors[] reach the message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: problem(400, "template_invalid", "The template could not be compiled.", {

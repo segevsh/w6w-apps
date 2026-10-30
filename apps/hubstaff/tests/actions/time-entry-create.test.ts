@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/time-entry-create.ts";
 
-Deno.test("time-entry-create: POSTs the required trio to /v2/users/{user_id}/time_entries", async () => {
+test("time-entry-create: POSTs the required trio to /v2/users/{user_id}/time_entries", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { success: true } }]);
   const result = await action.execute!({
     user_id: 651956,
@@ -21,7 +22,7 @@ Deno.test("time-entry-create: POSTs the required trio to /v2/users/{user_id}/tim
   assertEquals(result.success, true);
 });
 
-Deno.test("time-entry-create: billable=false is sent rather than dropped", async () => {
+test("time-entry-create: billable=false is sent rather than dropped", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { success: true } }]);
   await action.execute!({
     user_id: 1,
@@ -42,7 +43,7 @@ Deno.test("time-entry-create: billable=false is sent rather than dropped", async
   });
 });
 
-Deno.test("time-entry-create: documents that v2 has no read for time entries", () => {
+test("time-entry-create: documents that v2 has no read for time entries", () => {
   assertEquals(action.idempotent, false);
   assertEquals(action.resource, "time-entry");
   for (const key of ["user_id", "project_id", "start_time", "tracked"]) {

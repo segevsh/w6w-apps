@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-list.ts";
 
@@ -7,7 +8,7 @@ const page = (items: unknown[], next: number | null) => ({
   pagination: { count: items.length, next, prev: null },
 });
 
-Deno.test("project-list: lists /v10/projects with a search filter", async () => {
+test("project-list: lists /v10/projects with a search filter", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: page([{ id: "prj_1" }], null) }], {
     display: { teamId: "team_abc" },
   });
@@ -19,7 +20,7 @@ Deno.test("project-list: lists /v10/projects with a search filter", async () => 
   assertEquals(result, [{ id: "prj_1" }]);
 });
 
-Deno.test("project-list: returnAll collects every page", async () => {
+test("project-list: returnAll collects every page", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: page([{ id: "1" }], 1700000000000) },
     { status: 200, body: page([{ id: "2" }], null) },

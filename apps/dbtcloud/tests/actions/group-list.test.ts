@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/group-list.ts";
 
@@ -13,7 +14,7 @@ const page = (data: unknown[]) => ({
  * membership in dbt Cloud reverts. Telling the two apart is the difference
  * between an access change that sticks and one that quietly does not.
  */
-Deno.test("group-list: separates the groups the identity provider fills", async () => {
+test("group-list: separates the groups the identity provider fills", async () => {
   const { ctx, calls } = mockCtx([page([
     { id: 1, name: "Analytics", sso_mapping_groups: ["okta-analytics"] },
     { id: 2, name: "Contractors", sso_mapping_groups: [] },
@@ -25,6 +26,6 @@ Deno.test("group-list: separates the groups the identity provider fills", async 
   assertEquals(result.count, 3);
 });
 
-Deno.test("group-list: says permissions hang off groups rather than users", () => {
+test("group-list: says permissions hang off groups rather than users", () => {
   assert(/permissions actually hang off/.test(action.description!), action.description);
 });

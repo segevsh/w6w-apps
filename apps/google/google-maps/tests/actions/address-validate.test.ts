@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { rpc } from "./_shared.ts";
 import action, { describeConcerns } from "../../actions/address-validate.ts";
@@ -15,7 +16,7 @@ const clean = rpc({
   },
 });
 
-Deno.test("address-validate: a clean address is deliverable with no concerns", async () => {
+test("address-validate: a clean address is deliverable with no concerns", async () => {
   const { ctx, calls } = mockCtx([clean]);
   const result = await action.execute!({
     addressLines: "1600 Amphitheatre Pkwy\nMountain View, CA",
@@ -32,7 +33,7 @@ Deno.test("address-validate: a clean address is deliverable with no concerns", a
  * The distinction from `geocode`: this says what Google had to change, and a
  * replaced component is a different address from the one that was submitted.
  */
-Deno.test("address-validate: a replaced component makes it undeliverable, and says so", async () => {
+test("address-validate: a replaced component makes it undeliverable, and says so", async () => {
   const { ctx } = mockCtx([
     rpc({
       result: {
@@ -53,7 +54,7 @@ Deno.test("address-validate: a replaced component makes it undeliverable, and sa
 });
 
 /** A street confirmed but not the building is not a deliverable address. */
-Deno.test("address-validate: ROUTE granularity is a concern", () => {
+test("address-validate: ROUTE granularity is a concern", () => {
   const concerns = describeConcerns({
     addressComplete: true,
     validationGranularity: "ROUTE",
@@ -62,7 +63,7 @@ Deno.test("address-validate: ROUTE granularity is a concern", () => {
 });
 
 /** "Near the building, but not it" is deliberately treated as not good enough. */
-Deno.test("address-validate: PREMISE_PROXIMITY is deliberately not good enough", () => {
+test("address-validate: PREMISE_PROXIMITY is deliberately not good enough", () => {
   assertEquals(
     describeConcerns({
       addressComplete: true,
@@ -79,7 +80,7 @@ Deno.test("address-validate: PREMISE_PROXIMITY is deliberately not good enough",
   );
 });
 
-Deno.test("address-validate: every verdict flag becomes its own concern", () => {
+test("address-validate: every verdict flag becomes its own concern", () => {
   const concerns = describeConcerns({
     addressComplete: false,
     validationGranularity: "OTHER",
@@ -91,7 +92,7 @@ Deno.test("address-validate: every verdict flag becomes its own concern", () => 
   assertEquals(concerns.length, 6);
 });
 
-Deno.test("address-validate: CASS mode is opt-in and returns its own block", async () => {
+test("address-validate: CASS mode is opt-in and returns its own block", async () => {
   const { ctx, calls } = mockCtx([
     rpc({
       result: {
@@ -109,13 +110,13 @@ Deno.test("address-validate: CASS mode is opt-in and returns its own block", asy
   assertEquals(result.uspsData.dpvConfirmation, "Y");
 });
 
-Deno.test("address-validate: re-validation links to the previous response", async () => {
+test("address-validate: re-validation links to the previous response", async () => {
   const { ctx, calls } = mockCtx([clean]);
   await action.execute!({ addressLines: "x", previousResponseId: "r-1" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).previousResponseId, "r-1");
 });
 
-Deno.test("address-validate: structured components are sent when given", async () => {
+test("address-validate: structured components are sent when given", async () => {
   const { ctx, calls } = mockCtx([clean]);
   await action.execute!({
     addressLines: "1 High St",
@@ -131,7 +132,7 @@ Deno.test("address-validate: structured components are sent when given", async (
 });
 
 /** An address is somebody's home. */
-Deno.test("address-validate: logs the verdict, never the address", async () => {
+test("address-validate: logs the verdict, never the address", async () => {
   const { ctx, logs } = mockCtx([clean]);
   await action.execute!({ addressLines: "1600 Amphitheatre Pkwy" }, ctx);
   assert(!JSON.stringify(logs).includes("Amphitheatre"), JSON.stringify(logs));
@@ -142,7 +143,7 @@ Deno.test("address-validate: logs the verdict, never the address", async () => {
   });
 });
 
-Deno.test("address-validate: needs an address", async () => {
+test("address-validate: needs an address", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => await action.execute!({ addressLines: "  " }, ctx),

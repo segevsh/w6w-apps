@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import paymentCreate from "../../actions/payment-create.ts";
 import { alegraError, assertRejects, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("payment-create: POST /payments with bank account/client refs and the invoice allocations", async () => {
+test("payment-create: POST /payments with bank account/client refs and the invoice allocations", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { id: "31", status: "open" } }]);
   const out = await paymentCreate.execute({
     date: "2026-10-02",
@@ -27,7 +28,7 @@ Deno.test("payment-create: POST /payments with bank account/client refs and the 
   assertEquals(out, { id: "31", status: "open" });
 });
 
-Deno.test("payment-create: bills given as JSON text are parsed; unset arrays are not sent", async () => {
+test("payment-create: bills given as JSON text are parsed; unset arrays are not sent", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await paymentCreate.execute({
     date: "2026-10-02",
@@ -41,7 +42,7 @@ Deno.test("payment-create: bills given as JSON text are parsed; unset arrays are
   assertEquals("invoices" in body, false);
 });
 
-Deno.test("payment-create: bad JSON in invoices fails before any request", async () => {
+test("payment-create: bad JSON in invoices fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     () =>
@@ -57,7 +58,7 @@ Deno.test("payment-create: bad JSON in invoices fails before any request", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("payment-create: a 400 surfaces the vendor message", async () => {
+test("payment-create: a 400 surfaces the vendor message", async () => {
   const { ctx } = mockCtx([{ status: 400, body: alegraError(400, "saldo insuficiente") }]);
   await assertRejects(
     () => paymentCreate.execute({ date: "d", bankAccountId: "1", paymentMethod: "cash" }, ctx),

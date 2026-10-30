@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import credentialCreate from "../../actions/credential-create.ts";
 import { CREDENTIAL, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("credential-create: POSTs groupId, nested recipient, dates and custom attributes", async () => {
+test("credential-create: POSTs groupId, nested recipient, dates and custom attributes", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREDENTIAL }]);
   const out = await credentialCreate.execute({
     groupId: "g1",
@@ -25,13 +26,13 @@ Deno.test("credential-create: POSTs groupId, nested recipient, dates and custom 
   assertEquals(out.id, "c1");
 });
 
-Deno.test("credential-create: optional fields are omitted, not sent empty", async () => {
+test("credential-create: optional fields are omitted, not sent empty", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: CREDENTIAL }]);
   await credentialCreate.execute({ groupId: "g1", recipientName: "A", recipientEmail: "" }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { groupId: "g1", recipient: { name: "A" } });
 });
 
-Deno.test("credential-create: a bad date fails before any request; it is not idempotent", async () => {
+test("credential-create: a bad date fails before any request; it is not idempotent", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

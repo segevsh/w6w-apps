@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import tasksPerson from "../../actions/tasks-person-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("tasks-person-list: task_status is sent only when chosen", async () => {
+test("tasks-person-list: task_status is sent only when chosen", async () => {
   const { ctx, calls } = mockCtx([{ body: { tasks: [] } }, { body: { tasks: [] } }, {
     body: { tasks: [] },
   }]);

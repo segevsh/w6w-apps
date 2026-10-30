@@ -1,7 +1,7 @@
 {
   "name": "@w6w-apps/google-maps",
   "version": "0.1.0",
-  "description": "Google Maps Platform \u2014 geocode addresses, validate them, search places, compute routes and matrices, snap GPS traces to roads, and read time zones and elevation.",
+  "description": "Google Maps Platform — geocode addresses, validate them, search places, compute routes and matrices, snap GPS traces to roads, and read time zones and elevation.",
   "license": "MIT",
   "author": {
     "name": "w6w"
@@ -39,5 +39,11 @@
       ]
     },
     "entry": "./index.ts"
+  },
+  "type": "module",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "node --test --experimental-transform-types --no-warnings \"tests/**/*.test.ts\"",
+    "build": "esbuild index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --outfile=dist/app.js"
   }
 }

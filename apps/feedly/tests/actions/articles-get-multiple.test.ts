@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articlesGetMultiple from "../../actions/articles-get-multiple.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("articles-get-multiple: posts a bare array body, per the vendor's .mget shape", async () => {
+test("articles-get-multiple: posts a bare array body, per the vendor's .mget shape", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: "e1" }, { id: "e2" }] }]);
   const out = await articlesGetMultiple.execute({ entryIds: ["e1", "e2"] }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("articles-get-multiple: posts a bare array body, per the vendor's .mge
   assertEquals(out, [{ id: "e1" }, { id: "e2" }]);
 });
 
-Deno.test("articles-get-multiple: caps the request at the documented 1,000-entry limit", async () => {
+test("articles-get-multiple: caps the request at the documented 1,000-entry limit", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   const ids = Array.from({ length: 1500 }, (_, i) => `e${i}`);
   await articlesGetMultiple.execute({ entryIds: ids }, ctx);

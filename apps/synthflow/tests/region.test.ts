@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import type { HookContext } from "@w6w/types";
 import assistantList from "../actions/assistant-list.ts";
 import { mockCtx, ok } from "./_helpers.ts";
@@ -18,7 +19,7 @@ for (
     ["mars", "api.synthflow.ai"],
   ] as const
 ) {
-  Deno.test(`client: connection region ${region} -> ${host}`, async () => {
+  test(`client: connection region ${region} -> ${host}`, async () => {
     const { ctx, calls } = withRegion(region);
     await assistantList.execute({}, ctx);
     assertEquals(new URL(calls[0].url).host, host);

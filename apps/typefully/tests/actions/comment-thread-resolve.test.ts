@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentThreadResolve from "../../actions/comment-thread-resolve.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-thread-resolve: POSTs to the resolve sub-path", async () => {
+test("comment-thread-resolve: POSTs to the resolve sub-path", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "t1", status: "resolved", comments: [] } }]);
   const out = await commentThreadResolve.execute(
     { socialSetId: 4, draftId: 12, commentThreadId: "t1" },
@@ -16,6 +17,6 @@ Deno.test("comment-thread-resolve: POSTs to the resolve sub-path", async () => {
   assertEquals(out.status, "resolved");
 });
 
-Deno.test("comment-thread-resolve: idempotent — resolving twice is a no-op", () => {
+test("comment-thread-resolve: idempotent — resolving twice is a no-op", () => {
   assertEquals(commentThreadResolve.idempotent, true);
 });

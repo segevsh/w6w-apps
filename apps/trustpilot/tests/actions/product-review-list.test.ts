@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/product-review-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("product-review-list: sends sku and filters, returns items", async () => {
+test("product-review-list: sends sku and filters, returns items", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 200,
@@ -23,7 +24,7 @@ Deno.test("product-review-list: sends sku and filters, returns items", async () 
   assertEquals(out.items[0].id, "pr1");
 });
 
-Deno.test("product-review-list: rejects when neither sku nor productUrl is given", async () => {
+test("product-review-list: rejects when neither sku nor productUrl is given", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(
     async () => await action.execute({ businessUnitId: "bu1" }, ctx),
@@ -32,7 +33,7 @@ Deno.test("product-review-list: rejects when neither sku nor productUrl is given
   );
 });
 
-Deno.test("product-review-list: productUrl alone is sufficient", async () => {
+test("product-review-list: productUrl alone is sufficient", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { productReviews: [] } }]);
   await action.execute(
     { businessUnitId: "bu1", productUrl: "http://example.com/p/1" },

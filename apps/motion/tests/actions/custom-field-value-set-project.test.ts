@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import customFieldValueSetProject from "../../actions/custom-field-value-set-project.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("custom-field-value-set-project: POSTs the tagged value pair to /beta", async () => {
+test("custom-field-value-set-project: POSTs the tagged value pair to /beta", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "select", value: "Q3" } }]);
   await customFieldValueSetProject.execute({
     projectId: "p1",
@@ -20,7 +21,7 @@ Deno.test("custom-field-value-set-project: POSTs the tagged value pair to /beta"
   });
 });
 
-Deno.test("custom-field-value-set-project: the project id is path-escaped", async () => {
+test("custom-field-value-set-project: the project id is path-escaped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await customFieldValueSetProject.execute(
     { projectId: "a/b", customFieldInstanceId: "cf1", type: "text", value: '"x"' },

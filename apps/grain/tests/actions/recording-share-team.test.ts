@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/recording-share-team.ts";
 
-Deno.test("recording-share-team: PUTs team_id in the body against /teams (follows the doc's example, not its Endpoint line)", async () => {
+test("recording-share-team: PUTs team_id in the body against /teams (follows the doc's example, not its Endpoint line)", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   const result = await action.execute({ recordingId: "r1", teamId: "t1" }, ctx);
 
@@ -12,7 +13,7 @@ Deno.test("recording-share-team: PUTs team_id in the body against /teams (follow
   assertEquals(result, { success: true });
 });
 
-Deno.test("recording-share-team: is an idempotent perform action", () => {
+test("recording-share-team: is an idempotent perform action", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, true);
 });

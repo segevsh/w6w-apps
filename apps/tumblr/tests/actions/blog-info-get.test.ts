@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import blogInfoGet from "../../actions/blog-info-get.ts";
 import { envelope, errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("blog-info-get: calls GET /v2/blog/{id}/info and returns the blog", async () => {
+test("blog-info-get: calls GET /v2/blog/{id}/info and returns the blog", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ blog: { name: "staff", title: "Staff", posts: 3456 } }) },
   ]);
@@ -15,7 +16,7 @@ Deno.test("blog-info-get: calls GET /v2/blog/{id}/info and returns the blog", as
   assertEquals(out.blog.name, "staff");
 });
 
-Deno.test("blog-info-get: a Tumblr error surfaces its machine-readable code", async () => {
+test("blog-info-get: a Tumblr error surfaces its machine-readable code", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody(0, "Blog was not found.", 404, "Not Found"),

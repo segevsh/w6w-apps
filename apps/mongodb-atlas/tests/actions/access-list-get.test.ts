@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/access-list-get.ts";
 
@@ -13,7 +14,7 @@ const page = {
   },
 };
 
-Deno.test("access-list-get: reads the project's access list", async () => {
+test("access-list-get: reads the project's access list", async () => {
   const { ctx, calls } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -28,7 +29,7 @@ Deno.test("access-list-get: reads the project's access list", async () => {
 });
 
 /** An entry that removes the perimeter does not stand out in a list. */
-Deno.test("access-list-get: flags 0.0.0.0/0 explicitly and warns", async () => {
+test("access-list-get: flags 0.0.0.0/0 explicitly and warns", async () => {
   const { ctx, logs } = mockCtx([{
     status: 200,
     body: {
@@ -47,7 +48,7 @@ Deno.test("access-list-get: flags 0.0.0.0/0 explicitly and warns", async () => {
   assert(/reachable from anywhere/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("access-list-get: a list without it does not warn", async () => {
+test("access-list-get: a list without it does not warn", async () => {
   const { ctx, logs } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -58,7 +59,7 @@ Deno.test("access-list-get: a list without it does not warn", async () => {
 });
 
 /** Expiry is how temporary access is granted, and how it is lost. */
-Deno.test("access-list-get: counts the entries that will disappear on their own", async () => {
+test("access-list-get: counts the entries that will disappear on their own", async () => {
   const { ctx } = mockCtx([page]);
   const result = await action.execute({ projectId: "5f8d0d55b54eff0f2b2c3d4e" }, ctx) as Record<
     string,
@@ -67,7 +68,7 @@ Deno.test("access-list-get: counts the entries that will disappear on their own"
   assertEquals(result.expiringCount, 1);
 });
 
-Deno.test("access-list-get: an AWS security group entry is carried through", async () => {
+test("access-list-get: an AWS security group entry is carried through", async () => {
   const { ctx } = mockCtx([{
     status: 200,
     body: { results: [{ awsSecurityGroup: "sg-0123456789abcdef0" }] },
@@ -80,6 +81,6 @@ Deno.test("access-list-get: an AWS security group entry is carried through", asy
 });
 
 /** A correct password from an unlisted address gets a timeout, not a refusal. */
-Deno.test("access-list-get: says this is the perimeter for every cluster", () => {
+test("access-list-get: says this is the perimeter for every cluster", () => {
   assert(/perimeter for every cluster/.test(action.description!), action.description);
 });

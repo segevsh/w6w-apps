@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import onetimeCreate from "../../actions/onetime-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("onetime-create: POSTs to /onetimes with a nested external_variant_id", async () => {
+test("onetime-create: POSTs to /onetimes with a nested external_variant_id", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: envelope("onetime", { id: 1 }) }]);
   await onetimeCreate.execute(
     {

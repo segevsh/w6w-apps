@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/enrich-company.ts";
 import { bodyOf, exec, mockCtx } from "../_helpers.ts";
 
-Deno.test("enrich-company: posts data to /enrich-company and returns the company", async () => {
+test("enrich-company: posts data to /enrich-company and returns the company", async () => {
   const { ctx, calls } = mockCtx([{
     body: { error: false, free_enrichment: true, company: { company_id: "c1" } },
   }]);
@@ -12,7 +13,7 @@ Deno.test("enrich-company: posts data to /enrich-company and returns the company
   assertEquals(out, { matched: true, free_enrichment: true, company: { company_id: "c1" } });
 });
 
-Deno.test("enrich-company: NO_MATCH is unmatched; empty input throws before any call", async () => {
+test("enrich-company: NO_MATCH is unmatched; empty input throws before any call", async () => {
   const { ctx, calls } = mockCtx([{ status: 400, body: { error: true, error_code: "NO_MATCH" } }]);
   assertEquals((await exec(action, { companyName: "Zzz" }, ctx)).matched, false);
   await assertRejects(() => exec(action, {}, ctx), Error, "at least one");

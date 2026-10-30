@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import api from "../../health/api.ts";
 import quota from "../../health/quota.ts";
@@ -11,7 +12,7 @@ import service, {
 const runApi = (ctx: ReturnType<typeof mockCtx>["ctx"]) => api.check!({} as never, ctx);
 const runService = (ctx: ReturnType<typeof mockCtx>["ctx"]) => service.check!({} as never, ctx);
 
-Deno.test("api: unsigned app-level probe; the empty 401 is a pass", async () => {
+test("api: unsigned app-level probe; the empty 401 is a pass", async () => {
   assertEquals([api.kind, api.credential, api.scope], ["dependency", "none", "app"]);
   const { ctx, calls } = mockCtx([{ status: 401, headers: {} }]);
   assertEquals((await runApi(ctx)).state, "ok");
@@ -19,13 +20,13 @@ Deno.test("api: unsigned app-level probe; the empty 401 is a pass", async () => 
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("api: 5xx is down, anything else is unknown", async () => {
+test("api: 5xx is down, anything else is unknown", async () => {
   assertEquals((await runApi(mockCtx([{ status: 503, headers: {} }]).ctx)).state, "down");
   assertEquals((await runApi(mockCtx([{ status: 200, body: { user: {} } }]).ctx)).state, "unknown");
   assertEquals((await runApi(mockCtx([{ status: 404, headers: {} }]).ctx)).state, "unknown");
 });
 
-Deno.test("quota: declared absent at informational severity", () => {
+test("quota: declared absent at informational severity", () => {
   assertEquals(quota.severity, "informational");
   assertEquals(quota.kind, "quota");
   assertEquals(quota.check, undefined);
@@ -53,12 +54,12 @@ const page = (aggregate: string, status = "operational", name = "SuperX GmbH") =
   ],
 });
 
-Deno.test("service: declares a Better Stack probe of status.superchat.de, unsigned", () => {
+test("service: declares a Better Stack probe of status.superchat.de, unsigned", () => {
   assertEquals([service.kind, service.credential, service.scope], ["service", "none", "app"]);
   assertEquals(service.network?.allow, ["status.superchat.de"]);
 });
 
-Deno.test("service: operational page is ok with one component per resource (sections skipped)", async () => {
+test("service: operational page is ok with one component per resource (sections skipped)", async () => {
   const { ctx, calls } = mockCtx([{ body: page("operational") }]);
   const r = await runService(ctx);
   assertEquals(r.state, "ok");
@@ -66,14 +67,14 @@ Deno.test("service: operational page is ok with one component per resource (sect
   assertEquals(calls[0].url, "https://status.superchat.de/index.json");
 });
 
-Deno.test("service: a down resource and the aggregate drive the verdict and the message", async () => {
+test("service: a down resource and the aggregate drive the verdict and the message", async () => {
   const r = await runService(mockCtx([{ body: page("downtime", "downtime") }]).ctx);
   assertEquals(r.state, "down");
   assertEquals(r.components?.api.state, "down");
   assertEquals(r.message?.includes("API (downtime)"), true);
 });
 
-Deno.test("service: a page that is not Superchat's, a missing JSON, or a bad status is unknown, never down", async () => {
+test("service: a page that is not Superchat's, a missing JSON, or a bad status is unknown, never down", async () => {
   const other = {
     ...page("operational"),
     data: {
@@ -86,7 +87,7 @@ Deno.test("service: a page that is not Superchat's, a missing JSON, or a bad sta
   assertEquals((await runService(mockCtx([{ status: 500, headers: {} }]).ctx)).state, "unknown");
 });
 
-Deno.test("service: Better Stack vocabulary maps onto health states", () => {
+test("service: Better Stack vocabulary maps onto health states", () => {
   assertEquals(mapResourceStatus("operational"), "ok");
   assertEquals(mapResourceStatus("maintenance"), "degraded");
   assertEquals(mapResourceStatus("downtime"), "down");

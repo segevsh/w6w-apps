@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import companyUpdate from "../../actions/company-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("company-update: PUTs the settings that were provided", async () => {
+test("company-update: PUTs the settings that were provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "COM1", name: "Widget Shop" } }]);
   await companyUpdate.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("company-update: PUTs the settings that were provided", async () => {
   });
 });
 
-Deno.test("company-update: never exposes the documented no-op deprecated fields as params", () => {
+test("company-update: never exposes the documented no-op deprecated fields as params", () => {
   const keys = companyUpdate.params?.map((p) => p.key) ?? [];
   assertEquals(keys.includes("swapExcludeJquery"), false);
   assertEquals(keys.includes("keywordSpottingEnabled"), false);

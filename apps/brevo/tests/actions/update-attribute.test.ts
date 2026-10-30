@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-attribute.ts";
 
-Deno.test("update-attribute: calculated — PUTs /contacts/attributes/calculated/{name} with value", async () => {
+test("update-attribute: calculated — PUTs /contacts/attributes/calculated/{name} with value", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!({ category: "calculated", name: "AGE", value: "SUB(NOW(), DOB)" }, ctx);
   const url = new URL(calls[0].url);
@@ -12,7 +13,7 @@ Deno.test("update-attribute: calculated — PUTs /contacts/attributes/calculated
   assertEquals(body.value, "SUB(NOW(), DOB)");
 });
 
-Deno.test("update-attribute: category — PUTs with enumeration and NOT value", async () => {
+test("update-attribute: category — PUTs with enumeration and NOT value", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   await action.execute!(
     {

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, outputKeys } from "../_helpers.ts";
 import action from "../../actions/list-activity-types.ts";
 
-Deno.test("list-activity-types: GETs /activity_types and keeps Copper's category keying", async () => {
+test("list-activity-types: GETs /activity_types and keeps Copper's category keying", async () => {
   // The response is `{user: [...], system: [...]}`, not a flat array — and that
   // is the point, since an id is only meaningful paired with its category.
   const body = {
@@ -16,6 +17,6 @@ Deno.test("list-activity-types: GETs /activity_types and keeps Copper's category
   assertEquals(out, body);
 });
 
-Deno.test("list-activity-types: declares both category buckets as output", () => {
+test("list-activity-types: declares both category buckets as output", () => {
   assertEquals(outputKeys(action), ["user", "system"]);
 });

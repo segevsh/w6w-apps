@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/check-status-get.ts";
 
-Deno.test("check-status-get: reads one check's current state", async () => {
+test("check-status-get: reads one check's current state", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { checkId: "c1", hasFailures: true, hasErrors: false },
@@ -13,13 +14,13 @@ Deno.test("check-status-get: reads one check's current state", async () => {
 });
 
 /** A failure and an error are different events with different causes. */
-Deno.test("check-status-get: the outputs distinguish failures from errors", () => {
+test("check-status-get: the outputs distinguish failures from errors", () => {
   const outputs = action.output as Array<{ key: string; label: string }>;
   assert(outputs.find((o) => o.key === "hasFailures")!.label.includes("monitored thing"));
   assert(outputs.find((o) => o.key === "hasErrors")!.label.includes("did not complete"));
 });
 
-Deno.test("check-status-get: a blank id fails before any request", async () => {
+test("check-status-get: a blank id fails before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`checkId`");
   assertEquals(calls.length, 0);

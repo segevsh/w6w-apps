@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/comment-get-many.ts";
 
-Deno.test("comment-get-many: GETs /{resource}/{id}/comment with paging", async () => {
+test("comment-get-many: GETs /{resource}/{id}/comment with paging", async () => {
   const { ctx, calls } = mockCtx([{ body: { comments: [] } }]);
   await action.execute!({ commentsOn: "task", id: "t1", start: 1700000000000, startId: "c9" }, ctx);
   const url = new URL(calls[0].url);

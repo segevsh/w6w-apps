@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockNationBuilderCtx } from "../_helpers.ts";
 import action from "../../actions/donation-create.ts";
 
-Deno.test("donation-create: POSTs /donations against an existing person", async () => {
+test("donation-create: POSTs /donations against an existing person", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{
     body: { data: { id: "1", type: "donations", attributes: { amount_in_cents: 5000 } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("donation-create: POSTs /donations against an existing person", async 
   assertEquals(out, { id: "1", type: "donations", amount_in_cents: 5000 });
 });
 
-Deno.test("donation-create: can identify the donor by email/name instead of an ID", async () => {
+test("donation-create: can identify the donor by email/name instead of an ID", async () => {
   const { ctx, calls } = mockNationBuilderCtx([{ body: { data: {} } }]);
   await action.execute({
     amountInCents: 2500,

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import {
   API_HOST,
@@ -17,7 +18,7 @@ import {
 
 const ID = "0123456789abcdef01234567";
 
-Deno.test("the API host and the documented limits", () => {
+test("the API host and the documented limits", () => {
   assertEquals(API_HOST, "https://api.particle.io");
   assertEquals(MAX_FUNCTION_ARG_BYTES, 1024);
   assertEquals(MAX_EVENT_NAME_BYTES, 64);
@@ -25,7 +26,7 @@ Deno.test("the API host and the documented limits", () => {
 });
 
 /** A name works on some paths and not others; where it does not, it 404s. */
-Deno.test("deviceId: requires 24 hex characters and says why", () => {
+test("deviceId: requires 24 hex characters and says why", () => {
   assertEquals(deviceId(ID), ID);
   assertEquals(deviceId(ID.toUpperCase()), ID);
   const err = assertThrows(() => deviceId("my-sensor"), Error);
@@ -35,14 +36,14 @@ Deno.test("deviceId: requires 24 hex characters and says why", () => {
 });
 
 /** Every Particle limit is in bytes of UTF-8, not characters. */
-Deno.test("byteLength: counts bytes, not characters", () => {
+test("byteLength: counts bytes, not characters", () => {
   assertEquals(byteLength("abcd"), 4);
   assertEquals(byteLength("aaé"), 4, "three characters, four bytes");
   assertEquals(byteLength("🙂"), 4, "one character, four bytes");
 });
 
 /** Most of this API predates JSON bodies. */
-Deno.test("request: sends form encoding when given a form", async () => {
+test("request: sends form encoding when given a form", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { ok: true } }]);
   await new ParticleClient(ctx).request("/v1/devices/x/fn", {
     method: "POST",
@@ -52,7 +53,7 @@ Deno.test("request: sends form encoding when given a form", async () => {
   assertEquals(calls[0].body, "arg=on&ttl=60");
 });
 
-Deno.test("request: an undefined form value is omitted rather than sent as the string", async () => {
+test("request: an undefined form value is omitted rather than sent as the string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await new ParticleClient(ctx).request("/v1/devices/x", {
     method: "PUT",
@@ -62,14 +63,14 @@ Deno.test("request: an undefined form value is omitted rather than sent as the s
 });
 
 /** The auth hook signs; the client must never carry a token. */
-Deno.test("request: never sets an authorization header", async () => {
+test("request: never sets an authorization header", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   await new ParticleClient(ctx).request("/v1/devices");
   assertEquals(calls[0].headers["authorization"], undefined);
   assertEquals(calls[0].url, "https://api.particle.io/v1/devices");
 });
 
-Deno.test("compact, csv, json and query behave as the actions assume", () => {
+test("compact, csv, json and query behave as the actions assume", () => {
   assertEquals(compact({ a: 1, b: "", c: undefined }), { a: 1 });
   assertEquals(csv("a, b"), ["a", "b"]);
   assertEquals(csv(""), undefined);
@@ -82,7 +83,7 @@ Deno.test("compact, csv, json and query behave as the actions assume", () => {
  * Measured: no token at all is a 400 about the request, and a bad token is a
  * 401 — the opposite of where anyone would look.
  */
-Deno.test("describeError: a 400 invalid_request is explained as a MISSING credential", () => {
+test("describeError: a 400 invalid_request is explained as a MISSING credential", () => {
   const message = describeError(
     400,
     JSON.stringify({
@@ -95,19 +96,19 @@ Deno.test("describeError: a 400 invalid_request is explained as a MISSING creden
 });
 
 /** A token created without a lifetime lasts 90 days. */
-Deno.test("describeError: a 401 names token expiry", () => {
+test("describeError: a 401 names token expiry", () => {
   const message = describeError(401, JSON.stringify({ error: "invalid_token" }));
   assert(/lasts 90 days/.test(message), message);
   assert(/worked for months can stop for this reason alone/.test(message), message);
 });
 
-Deno.test("describeError: a 403 is about ownership, not the token being wrong", () => {
+test("describeError: a 403 is about ownership, not the token being wrong", () => {
   const message = describeError(403, "{}");
   assert(/does not own this device/.test(message), message);
 });
 
 /** A device timing out is the hardware, not the API. */
-Deno.test("describeError: a timeout is attributed to the device", () => {
+test("describeError: a timeout is attributed to the device", () => {
   const message = describeError(408, JSON.stringify({ error: "Timed out." }));
   assert(/the DEVICE did not answer in time/.test(message), message);
   assert(/working exactly as designed/.test(message), message);
@@ -117,13 +118,13 @@ Deno.test("describeError: a timeout is attributed to the device", () => {
   assert(/did not answer in time/.test(byBody), byBody);
 });
 
-Deno.test("describeError: 404, 429 and 5xx each explain themselves", () => {
+test("describeError: 404, 429 and 5xx each explain themselves", () => {
   assert(/24 hex characters/.test(describeError(404, "{}")));
   assert(/publishes no headers/.test(describeError(429, "{}")));
   assert(/the cloud rather than the hardware/.test(describeError(500, "{}")));
 });
 
-Deno.test("request: an error names the method, the path and the explanation", async () => {
+test("request: an error names the method, the path and the explanation", async () => {
   const { ctx } = mockCtx([{ status: 403, body: { error: "forbidden" } }]);
   let message = "";
   try {

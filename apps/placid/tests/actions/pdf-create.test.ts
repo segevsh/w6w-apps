@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import pdfCreate from "../../actions/pdf-create.ts";
 import { assertRejects, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ const queued = (url: string) => ({
   body: { id: 7, status: "queued", [url]: null, polling_url: "https://api.placid.app/x" },
 });
 
-Deno.test("pdf-create: pages array required; modifications built from options", async () => {
+test("pdf-create: pages array required; modifications built from options", async () => {
   const pages = [{ template_uuid: "a", layers: { t: { text: "x" } } }];
   const { ctx, calls } = mockCtx([queued("pdf_url")]);
   await pdfCreate.execute({

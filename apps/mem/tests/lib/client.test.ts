@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildUrl,
   call,
@@ -12,7 +13,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("client: errorInfo reads the platform, quota and plain envelopes", () => {
+test("client: errorInfo reads the platform, quota and plain envelopes", () => {
   assertEquals(errorInfo({ error_metadata: { error_kind: "NOT_AUTHORIZED", message: "m" } }), {
     kind: "NOT_AUTHORIZED",
     message: "m",
@@ -26,7 +27,7 @@ Deno.test("client: errorInfo reads the platform, quota and plain envelopes", () 
   assertEquals(errorInfo(null), {});
 });
 
-Deno.test("client: a 429 quota error carries its type and message", async () => {
+test("client: a 429 quota error carries its type and message", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { error: { type: "quota_exceeded", message: "free tier limit" } },
@@ -40,7 +41,7 @@ Deno.test("client: a 429 quota error carries its type and message", async () => 
   assertEquals(err.message.includes("free tier limit"), true);
 });
 
-Deno.test("client: encodeId trims, encodes and refuses empty", () => {
+test("client: encodeId trims, encodes and refuses empty", () => {
   assertEquals(encodeId(" a/b "), "a%2Fb");
   try {
     encodeId("  ");
@@ -50,7 +51,7 @@ Deno.test("client: encodeId trims, encodes and refuses empty", () => {
   }
 });
 
-Deno.test("client: buildUrl and pick drop unset values", () => {
+test("client: buildUrl and pick drop unset values", () => {
   assertEquals(
     buildUrl("/v2/x", { a: 1, b: undefined, c: "", d: false }),
     "https://api.mem.ai/v2/x?a=1&d=false",
@@ -58,14 +59,14 @@ Deno.test("client: buildUrl and pick drop unset values", () => {
   assertEquals(pick({ a: 1, b: null, c: "", d: 0 }, ["a", "b", "c", "d"]), { a: 1, d: 0 });
 });
 
-Deno.test("client: list splits comma and newline text and passes arrays", () => {
+test("client: list splits comma and newline text and passes arrays", () => {
   assertEquals(list("a, b\nc,,"), ["a", "b", "c"]);
   assertEquals(list([" x ", "y"]), ["x", "y"]);
   assertEquals(list(""), undefined);
   assertEquals(list(" , "), undefined);
 });
 
-Deno.test("client: pagination shapes", () => {
+test("client: pagination shapes", () => {
   assertEquals(pageList({ results: [1], total: 5, next_page: "c" }), {
     items: [1],
     total: 5,
@@ -79,7 +80,7 @@ Deno.test("client: pagination shapes", () => {
   );
 });
 
-Deno.test("client: a non-JSON error body is still reported", async () => {
+test("client: a non-JSON error body is still reported", async () => {
   const { ctx } = mockCtx([{ status: 502, body: "bad gateway" }]);
   const err = await assertRejects(() => call(ctx, "GET", "/v2/notes"), MemError);
   assertEquals(err.message.includes("bad gateway"), true);

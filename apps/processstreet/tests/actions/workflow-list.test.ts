@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/workflow-list.ts";
 
-Deno.test("workflow-list: GETs /workflows with name and cursor", async () => {
+test("workflow-list: GETs /workflows with name and cursor", async () => {
   const { ctx, calls } = mockCtx([{
     body: { workflows: [{ id: "w1", name: "Onboarding" }] },
     headers: {
@@ -17,7 +18,7 @@ Deno.test("workflow-list: GETs /workflows with name and cursor", async () => {
   assertEquals(out.workflows, [{ id: "w1", name: "Onboarding" }]);
 });
 
-Deno.test("workflow-list: extracts nextCursor from the 'next' link", async () => {
+test("workflow-list: extracts nextCursor from the 'next' link", async () => {
   const { ctx } = mockCtx([{
     body: {
       workflows: [],
@@ -32,7 +33,7 @@ Deno.test("workflow-list: extracts nextCursor from the 'next' link", async () =>
   assertEquals(out.nextCursor, "next-token");
 });
 
-Deno.test("workflow-list: no next link means no next cursor", async () => {
+test("workflow-list: no next link means no next cursor", async () => {
   const { ctx } = mockCtx([{ body: { workflows: [] } }]);
   const out = await action.execute({}, ctx);
   assertEquals(out.nextCursor, undefined);

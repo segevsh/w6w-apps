@@ -1,11 +1,12 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/link-list.ts";
 
 const D = { display: { host: "https://nocodb.internal" } };
 
 /** Linked records do not come back with the parent record. */
-Deno.test("link-list: reads the link endpoint, keyed by the field id", async () => {
+test("link-list: reads the link endpoint, keyed by the field id", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { list: [{ Id: 5 }, { Id: 6 }], pageInfo: { totalRows: 2 } },
@@ -22,7 +23,7 @@ Deno.test("link-list: reads the link endpoint, keyed by the field id", async () 
   assertEquals(result.requestsRemaining, 40);
 });
 
-Deno.test("link-list: an empty link is reported as empty rather than missing", async () => {
+test("link-list: an empty link is reported as empty rather than missing", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { list: [] } }], D);
   const result = await action.execute(
     { tableId: "mtbl1", linkFieldId: "cl1", recordId: "3" },
@@ -33,7 +34,7 @@ Deno.test("link-list: an empty link is reported as empty rather than missing", a
 });
 
 /** Everybody has the field's name; the endpoint wants its id. */
-Deno.test("link-list: the missing-field error names where the id comes from", async () => {
+test("link-list: the missing-field error names where the id comes from", async () => {
   const { ctx, calls } = mockCtx([], D);
   const err = await assertRejects(
     async () => await action.execute({ tableId: "mtbl1", recordId: "3" }, ctx),
@@ -45,7 +46,7 @@ Deno.test("link-list: the missing-field error names where the id comes from", as
 });
 
 /** One request per record per field, against sixty a minute. */
-Deno.test("link-list: says filtering the child table is often cheaper", () => {
+test("link-list: says filtering the child table is often cheaper", () => {
   assert(
     /filtering the child table is often cheaper/.test(action.description!),
     action.description,

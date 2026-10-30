@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: is a non-idempotent perform requiring name and dueDate", () => {
+test("create-task: is a non-idempotent perform requiring name and dueDate", () => {
   assertEquals(action.type, "perform");
   assertEquals(action.idempotent, false);
   const required = (action.params ?? []).filter((p) => p.required).map((p) => p.key);
@@ -10,7 +11,7 @@ Deno.test("create-task: is a non-idempotent perform requiring name and dueDate",
   assert(required.includes("dueDate"));
 });
 
-Deno.test("create-task: POSTs /tasks with the mapped snake_case body, assigned to a user", async () => {
+test("create-task: POSTs /tasks with the mapped snake_case body, assigned to a user", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: 1 } }]);
   await action.execute({
     name: "Return Bill's call",
@@ -28,7 +29,7 @@ Deno.test("create-task: POSTs /tasks with the mapped snake_case body, assigned t
   });
 });
 
-Deno.test("create-task: supports assigning to a team instead of a user", async () => {
+test("create-task: supports assigning to a team instead of a user", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({ name: "Team task", dueDate: "2025-01-01", assignedToTeam: 10 }, ctx);
   const sent = JSON.parse(calls[0].body!);
@@ -36,7 +37,7 @@ Deno.test("create-task: supports assigning to a team instead of a user", async (
   assertEquals(sent.assigned_to, undefined);
 });
 
-Deno.test("create-task: merges additionalProperties", async () => {
+test("create-task: merges additionalProperties", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }]);
   await action.execute({
     name: "x",

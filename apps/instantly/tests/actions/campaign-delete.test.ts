@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import campaignDelete from "../../actions/campaign-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("campaign-delete: DELETEs /campaigns/{id} and returns the deleted entity", async () => {
+test("campaign-delete: DELETEs /campaigns/{id} and returns the deleted entity", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "c1", name: "Gone" } }]);
   const out = await campaignDelete.execute({ id: "c1" }, ctx) as { id: string };
 

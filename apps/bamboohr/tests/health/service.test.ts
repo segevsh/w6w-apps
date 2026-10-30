@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HealthFeedEntry, HealthFeedInput } from "@w6w/types";
 import service from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -25,7 +26,7 @@ const run = (feed: HealthFeedInput | undefined) => {
   return service.check!({ feed }, ctx);
 };
 
-Deno.test("service: is a feed-backed, unsigned, app-scoped check", () => {
+test("service: is a feed-backed, unsigned, app-scoped check", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.covers, ["*"]);
   assertEquals(
@@ -46,11 +47,11 @@ Deno.test("service: is a feed-backed, unsigned, app-scoped check", () => {
   assertEquals(service.unavailable, undefined);
 });
 
-Deno.test("service: no open incidents is ok", async () => {
+test("service: no open incidents is ok", async () => {
   assertEquals((await run(feedInput({}))).state, "ok");
 });
 
-Deno.test("service: an open incident is degraded and names itself", async () => {
+test("service: an open incident is degraded and names itself", async () => {
   const r = await run(
     feedInput({ latest: [entry("Background Processing is Delayed", "Investigating")] }),
   );
@@ -58,7 +59,7 @@ Deno.test("service: an open incident is degraded and names itself", async () => 
   assert(r.message?.includes("Background Processing is Delayed"));
 });
 
-Deno.test("service: a resolved incident does not report an outage that ended", async () => {
+test("service: a resolved incident does not report an outage that ended", async () => {
   // The whole reason the RFC provides `latest`: status.io emits one item per
   // UPDATE, so the newest item of a resolved incident still carries the
   // incident's original title. Judging by the title alone would report an
@@ -73,14 +74,14 @@ Deno.test("service: a resolved incident does not report an outage that ended", a
   }
 });
 
-Deno.test("service: the resolved marker is matched in the title too", async () => {
+test("service: the resolved marker is matched in the title too", async () => {
   // status.io is not consistent about which field carries it, and a missed
   // "resolved" reads as a live outage — the expensive direction to be wrong in.
   const r = await run(feedInput({ latest: [entry("Resolved: API latency", "")] }));
   assertEquals(r.state, "ok");
 });
 
-Deno.test("service: a mixed feed reports only what is still open", async () => {
+test("service: a mixed feed reports only what is still open", async () => {
   const r = await run(feedInput({
     latest: [
       entry("Old outage", "Status: Resolved"),
@@ -91,13 +92,13 @@ Deno.test("service: a mixed feed reports only what is still open", async () => {
   assertEquals(r.message, "Live outage");
 });
 
-Deno.test("service: an unreadable feed is unknown, never down", async () => {
+test("service: an unreadable feed is unknown, never down", async () => {
   // A status feed that itself fails tells us nothing about the vendor.
   assertEquals((await run(feedInput({ error: "502" }))).state, "unknown");
   assertEquals((await run(undefined)).state, "unknown");
 });
 
-Deno.test("service: the check makes no network call of its own", async () => {
+test("service: the check makes no network call of its own", async () => {
   // The host fetches and parses the feed; this app never reimplements a reader.
   const { ctx, calls } = mockCtx();
   await service.check!({ feed: feedInput({}) }, ctx);

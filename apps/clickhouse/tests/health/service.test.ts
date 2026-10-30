@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import service, { mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 
@@ -11,7 +12,7 @@ const page = (components: Array<[string, string]>, description = "All Systems Op
   },
 });
 
-Deno.test("service: reads the summary route", async () => {
+test("service: reads the summary route", async () => {
   const { ctx, calls } = mockCtx([page([["ClickHouse Cloud Services", "operational"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -19,7 +20,7 @@ Deno.test("service: reads the summary route", async () => {
 });
 
 /** An API outage stops provisioning and not queries. */
-Deno.test("service: names the control plane when only it is affected", async () => {
+test("service: names the control plane when only it is affected", async () => {
   const { ctx } = mockCtx([page([
     ["ClickHouse Cloud API", "major_outage"],
     ["ClickHouse Cloud Services", "operational"],
@@ -33,7 +34,7 @@ Deno.test("service: names the control plane when only it is affected", async () 
 });
 
 /** And a service outage is the other way round. */
-Deno.test("service: names the services when they are affected", async () => {
+test("service: names the services when they are affected", async () => {
   const { ctx } = mockCtx([page([["ClickHouse Cloud Services", "partial_outage"]])]);
   const result = await service.check!({}, ctx);
   assert(/queries may fail/.test(result.message!), result.message);
@@ -41,7 +42,7 @@ Deno.test("service: names the services when they are affected", async () => {
 });
 
 /** Incidents are regional and this check is app-scoped. */
-Deno.test("service: never claims a full outage", async () => {
+test("service: never claims a full outage", async () => {
   const { ctx } = mockCtx([page([
     ["ClickHouse Cloud API", "major_outage"],
     ["ClickHouse Cloud Services", "major_outage"],
@@ -51,14 +52,14 @@ Deno.test("service: never claims a full outage", async () => {
   assert(/regional/.test(service.description!), service.description);
 });
 
-Deno.test("service: an unrecognised affected component is still reported by name", async () => {
+test("service: an unrecognised affected component is still reported by name", async () => {
   const { ctx } = mockCtx([page([["Something Else", "partial_outage"]])]);
   const result = await service.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assert(/Something Else/.test(result.message!), result.message);
 });
 
-Deno.test("service: an empty, broken or unreachable page is unknown", async () => {
+test("service: an empty, broken or unreachable page is unknown", async () => {
   const empty = mockCtx([page([])]);
   assertEquals((await service.check!({}, empty.ctx)).state, "unknown");
 
@@ -75,14 +76,14 @@ Deno.test("service: an empty, broken or unreachable page is unknown", async () =
   assertEquals((await service.check!({}, offline)).state, "unknown");
 });
 
-Deno.test("service: maps Statuspage's vocabulary", () => {
+test("service: maps Statuspage's vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("major_outage"), "down");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus(undefined), "degraded");
 });
 
-Deno.test("service: is informational and app-scoped", () => {
+test("service: is informational and app-scoped", () => {
   assertEquals(service.severity, "informational");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");

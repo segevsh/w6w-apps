@@ -1,11 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { escapeLittleText } from "../../lib/little-text.ts";
 
-Deno.test("escapeLittleText: leaves plain text unchanged", () => {
+test("escapeLittleText: leaves plain text unchanged", () => {
   assertEquals(escapeLittleText("Hello World"), "Hello World");
 });
 
-Deno.test("escapeLittleText: escapes every reserved character with a backslash", () => {
+test("escapeLittleText: escapes every reserved character with a backslash", () => {
   assertEquals(escapeLittleText("#tag"), "\\#tag");
   assertEquals(escapeLittleText("@mention"), "\\@mention");
   assertEquals(escapeLittleText("(parens)"), "\\(parens\\)");
@@ -17,7 +18,7 @@ Deno.test("escapeLittleText: escapes every reserved character with a backslash",
   assertEquals(escapeLittleText("back\\slash"), "back\\\\slash");
 });
 
-Deno.test("escapeLittleText: mixed text keeps non-reserved characters as-is", () => {
+test("escapeLittleText: mixed text keeps non-reserved characters as-is", () => {
   assertEquals(
     escapeLittleText("Excited to share #news about @[our] launch!"),
     "Excited to share \\#news about \\@\\[our\\] launch!",

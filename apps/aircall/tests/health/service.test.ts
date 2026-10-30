@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import service, {
   API_COMPONENT_ID,
   componentKey,
@@ -33,7 +34,7 @@ function summary(over: Record<string, unknown> = {}) {
  * allowlist, so declaring the `.io` name yields a check that fails on the
  * redirect. Pinned in three places at once so they cannot drift.
  */
-Deno.test("service: declares, and calls, the host that answers without a redirect", () => {
+test("service: declares, and calls, the host that answers without a redirect", () => {
   assertEquals(STATUS_HOST, "status.aircall.com");
   assertEquals(service.network?.allow, ["status.aircall.com"]);
   assert(STATUS_URL.startsWith("https://status.aircall.com/"), STATUS_URL);
@@ -43,7 +44,7 @@ Deno.test("service: declares, and calls, the host that answers without a redirec
   );
 });
 
-Deno.test("service: reports ok and one component per non-group row", async () => {
+test("service: reports ok and one component per non-group row", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -59,7 +60,7 @@ Deno.test("service: reports ok and one component per non-group row", async () =>
  * app. `API & Webhooks` is the component that is, and an incident on it is
  * called out by name rather than left in a list of fifty.
  */
-Deno.test("service: an incident on the API component is named explicitly", async () => {
+test("service: an incident on the API component is named explicitly", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -78,7 +79,7 @@ Deno.test("service: an incident on the API component is named explicitly", async
   assertEquals(report.components![API_COMPONENT_ID].state, "down");
 });
 
-Deno.test("service: an unrelated component does not name the API", async () => {
+test("service: an unrelated component does not name the API", async () => {
   const { ctx } = mockCtx([
     {
       body: summary({
@@ -96,13 +97,13 @@ Deno.test("service: an unrelated component does not name the API", async () => {
 });
 
 /** A broken status API says nothing about Aircall — never `down`. */
-Deno.test("service: a 500 from the status page is unknown, not down", async () => {
+test("service: a 500 from the status page is unknown, not down", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: an unreadable body is unknown", async () => {
+test("service: an unreadable body is unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
@@ -113,7 +114,7 @@ Deno.test("service: an unreadable body is unknown", async () => {
  * different product — which is exactly what a future redirect or rebrand would
  * produce here, given the `.io` / `.com` split.
  */
-Deno.test("service: a page identifying as someone else is unknown", async () => {
+test("service: a page identifying as someone else is unknown", async () => {
   const { ctx } = mockCtx([
     { body: summary({ page: { id: "x", name: "Nope", url: "https://status.example.com" } }) },
   ]);
@@ -122,13 +123,13 @@ Deno.test("service: a page identifying as someone else is unknown", async () => 
   assert(report.message!.includes("no longer self-identifies"), report.message);
 });
 
-Deno.test("service: an empty component list is unknown", async () => {
+test("service: an empty component list is unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
 });
 
-Deno.test("service: the Statuspage vocabularies map as documented", () => {
+test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -144,14 +145,14 @@ Deno.test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id and falls back to a slug", () => {
+test("service: componentKey prefers the vendor id and falls back to a slug", () => {
   assertEquals(componentKey({ id: "abc", name: "API & Webhooks" }, 0), "abc");
   assertEquals(componentKey({ name: "API & Webhooks" }, 4), "api-webhooks-4");
   assertEquals(componentKey({}, 7), "component-7");
 });
 
 /** A check that widens egress must never be signed — a status host sees no token. */
-Deno.test("service: widens egress only under an unsigned posture", () => {
+test("service: widens egress only under an unsigned posture", () => {
   assertEquals(service.credential, "none");
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");

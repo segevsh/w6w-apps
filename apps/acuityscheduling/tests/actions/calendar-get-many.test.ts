@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/calendar-get-many.ts";
 
-Deno.test("calendar-get-many: GETs /calendars with no query params", async () => {
+test("calendar-get-many: GETs /calendars with no query params", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Main" }] }]);
   const result = await action.execute({}, ctx);
   const url = new URL(calls[0].url);

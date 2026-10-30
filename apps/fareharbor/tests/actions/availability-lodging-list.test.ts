@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import availabilityLodgingList from "../../actions/availability-lodging-list.ts";
 import { errorBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("availability-lodging-list: GET /api/external/v1/companies/bodyglove/availabilities/99/lodgings/", async () => {
+test("availability-lodging-list: GET /api/external/v1/companies/bodyglove/availabilities/99/lodgings/", async () => {
   const body = { lodgings: [{ pk: 3 }] };
   const { ctx, calls } = mockCtx([{ body }]);
   assertEquals(
@@ -18,7 +19,7 @@ Deno.test("availability-lodging-list: GET /api/external/v1/companies/bodyglove/a
   assertEquals(calls[0].headers["x-fareharbor-api-app"], undefined);
 });
 
-Deno.test("availability-lodging-list: a vendor error surfaces its code and sentence", async () => {
+test("availability-lodging-list: a vendor error surfaces its code and sentence", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: errorBody(404, "company-shortname-invalid", "nope is not a valid company shortname"),
@@ -31,7 +32,7 @@ Deno.test("availability-lodging-list: a vendor error surfaces its code and sente
   );
 });
 
-Deno.test("availability-lodging-list: refuses an empty shortname before any request", async () => {
+test("availability-lodging-list: refuses an empty shortname before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>

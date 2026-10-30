@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import auth from "../../auth/personal-access-token.ts";
 import { mockCtx, pathOf, unauthorized } from "../_helpers.ts";
 import type { HookContext } from "@w6w/types";
@@ -11,7 +12,7 @@ const testHook = auth.test as any;
 // deno-lint-ignore no-explicit-any
 const signHook = auth.sign as any;
 
-Deno.test("auth: sign stamps Basic base64(accountId:token)", () => {
+test("auth: sign stamps Basic base64(accountId:token)", () => {
   const out = signHook({
     request: { url: "https://api.livechatinc.com/v3.6/agent/action/list_chats", headers: {} },
     credential,
@@ -19,14 +20,14 @@ Deno.test("auth: sign stamps Basic base64(accountId:token)", () => {
   assertEquals(out.headers["authorization"], expected);
 });
 
-Deno.test("auth: declares a secret token field and a plain account id", () => {
+test("auth: declares a secret token field and a plain account id", () => {
   assertEquals(auth.type, "basic");
   const byKey = Object.fromEntries((auth.fields ?? []).map((f) => [f.key, f]));
   assertEquals(byKey.token.type, "secret");
   assertEquals(byKey.accountId.type, "string");
 });
 
-Deno.test("auth.test: an array from list_channels passes, and the probe is signed by hand", async () => {
+test("auth.test: an array from list_channels passes, and the probe is signed by hand", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ channel_type: "code" }] }]);
   const out = await testHook({ credential }, ctx);
   assertEquals(out, { ok: true });
@@ -35,7 +36,7 @@ Deno.test("auth.test: an array from list_channels passes, and the probe is signe
   assertEquals(calls[0].headers["authorization"], expected);
 });
 
-Deno.test("auth.test: the authentication error type is a rejected credential", async () => {
+test("auth.test: the authentication error type is a rejected credential", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { error: { type: "authentication", message: "Invalid access token" } },
@@ -46,7 +47,7 @@ Deno.test("auth.test: the authentication error type is a rejected credential", a
   assert(out.message.includes("Invalid access token"));
 });
 
-Deno.test("auth.test: the verdict comes from the body, not the status", async () => {
+test("auth.test: the verdict comes from the body, not the status", async () => {
   // A 200 carrying an error envelope is a failure...
   const a = mockCtx([{ status: 200, body: unauthorized }]);
   assertEquals((await testHook({ credential }, a.ctx)).ok, false);
@@ -57,7 +58,7 @@ Deno.test("auth.test: the verdict comes from the body, not the status", async ()
   assert(out.message.includes("unexpected response"));
 });
 
-Deno.test("auth.test: other vendor errors and non-JSON bodies are reported", async () => {
+test("auth.test: other vendor errors and non-JSON bodies are reported", async () => {
   const wrongRegion = mockCtx([{
     status: 400,
     body: {
@@ -72,7 +73,7 @@ Deno.test("auth.test: other vendor errors and non-JSON bodies are reported", asy
   assert((await testHook({ credential }, html.ctx)).message.includes("non-JSON"));
 });
 
-Deno.test("auth.test: a credential missing a part never reaches the network", async () => {
+test("auth.test: a credential missing a part never reaches the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const out = await testHook({ credential: { accountId: "a" } }, ctx as HookContext);
   assertEquals(out.ok, false);

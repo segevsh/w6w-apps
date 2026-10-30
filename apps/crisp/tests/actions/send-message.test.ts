@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import sendMessage from "../../actions/send-message.ts";
 
-Deno.test("send-message: POSTs the text/from/origin/content body and returns the fingerprint", async () => {
+test("send-message: POSTs the text/from/origin/content body and returns the fingerprint", async () => {
   const { ctx, calls } = mockCtx([
     {
       status: 202,
@@ -28,7 +29,7 @@ Deno.test("send-message: POSTs the text/from/origin/content body and returns the
   assertEquals(url.pathname, "/v1/website/site_1/conversation/session_x/message");
 });
 
-Deno.test("send-message: supports the note type unchanged", async () => {
+test("send-message: supports the note type unchanged", async () => {
   const { ctx, calls } = mockCtx([
     { status: 202, body: { error: false, data: { fingerprint: 2 } } },
   ], "site_1");
@@ -42,7 +43,7 @@ Deno.test("send-message: supports the note type unchanged", async () => {
   assertEquals(JSON.parse(calls[0].body!).type, "note");
 });
 
-Deno.test("send-message: perform, not idempotent — retrying would send it twice", () => {
+test("send-message: perform, not idempotent — retrying would send it twice", () => {
   assertEquals(sendMessage.type, "perform");
   assertEquals(sendMessage.idempotent, false);
 });

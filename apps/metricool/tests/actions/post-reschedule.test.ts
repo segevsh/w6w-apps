@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import postReschedule from "../../actions/post-reschedule.ts";
 import { envelope, jsonBody, mockCtx, queryOf } from "../_helpers.ts";
 
-Deno.test("post-reschedule: PATCH with fields=publicationDate and only the date", async () => {
+test("post-reschedule: PATCH with fields=publicationDate and only the date", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(true) }]);
   const out = await postReschedule.execute({
     blogId: "9",

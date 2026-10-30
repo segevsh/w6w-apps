@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import clientGet from "../../actions/client-get.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("client-get: GET /clients/{clientId} with the documented query and body", async () => {
+test("client-get: GET /clients/{clientId} with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { "id": 1, "name": "x" } }]);
   const out = await clientGet.execute({ "clientId": 107 }, ctx);
 
@@ -20,7 +21,7 @@ Deno.test("client-get: GET /clients/{clientId} with the documented query and bod
   assertEquals(out, { "id": 1, "name": "x" });
 });
 
-Deno.test("client-get: an Everhour error surfaces its message and status", async () => {
+test("client-get: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () => Promise.resolve(clientGet.execute({ "clientId": 107 }, ctx)),
@@ -30,6 +31,6 @@ Deno.test("client-get: an Everhour error surfaces its message and status", async
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("client-get: declares read", () => {
+test("client-get: declares read", () => {
   assertEquals(clientGet.type, "read");
 });

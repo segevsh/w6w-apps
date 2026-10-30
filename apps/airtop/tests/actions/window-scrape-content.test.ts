@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import windowScrapeContent from "../../actions/window-scrape-content.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("window-scrape-content: reads the structured object shape, not a plain string", async () => {
+test("window-scrape-content: reads the structured object shape, not a plain string", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {

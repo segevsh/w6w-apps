@@ -1,14 +1,15 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-email-subscribers.ts";
 
-Deno.test("list-email-subscribers: identity", () => {
+test("list-email-subscribers: identity", () => {
   assertEquals(action.key, "list-email-subscribers");
   assertEquals(action.type, "search");
   assertEquals(action.resource, "email-list");
 });
 
-Deno.test("list-email-subscribers: sends GET /api/v1/email/lists/l1/subscriptions", async () => {
+test("list-email-subscribers: sends GET /api/v1/email/lists/l1/subscriptions", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { metadata: { limit: 25, offset: 0, total: 1 }, items: [{ Uid: "x1" }] },
@@ -29,7 +30,7 @@ Deno.test("list-email-subscribers: sends GET /api/v1/email/lists/l1/subscription
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("list-email-subscribers: a failure names the status and the request", async () => {
+test("list-email-subscribers: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

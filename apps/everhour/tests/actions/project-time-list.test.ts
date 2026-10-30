@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import projectTimeList from "../../actions/project-time-list.ts";
 import { errorBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-time-list: GET /projects/{projectId}/time with the documented query and body", async () => {
+test("project-time-list: GET /projects/{projectId}/time with the documented query and body", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ "id": 1 }, { "id": 2 }] }]);
   const out = await projectTimeList.execute({
     "projectId": "as:13456788",
@@ -25,7 +26,7 @@ Deno.test("project-time-list: GET /projects/{projectId}/time with the documented
   assertEquals(out, { "items": [{ "id": 1 }, { "id": 2 }], "count": 2, "nextPage": 3 });
 });
 
-Deno.test("project-time-list: an Everhour error surfaces its message and status", async () => {
+test("project-time-list: an Everhour error surfaces its message and status", async () => {
   const { ctx } = mockCtx([{ status: 404, body: errorBody(404, "Not found") }]);
   const err = await assertRejects(
     () =>
@@ -43,6 +44,6 @@ Deno.test("project-time-list: an Everhour error surfaces its message and status"
   assertEquals(err.message.includes("Not found"), true, err.message);
 });
 
-Deno.test("project-time-list: declares search", () => {
+test("project-time-list: declares search", () => {
   assertEquals(projectTimeList.type, "search");
 });

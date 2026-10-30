@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/invoice-send.ts";
 
-Deno.test("invoice-send: posts to /send with subject and note, defaulting send_to_recipient true", async () => {
+test("invoice-send: posts to /send with subject and note, defaulting send_to_recipient true", async () => {
   const { ctx, calls } = mockCtx([{ body: { result: {} } }]);
   await action.execute!({ invoiceId: "INV-1", subject: "Invoice due", note: "Please pay" }, ctx);
   assertEquals(calls[0].url, "https://api-m.paypal.com/v2/invoicing/invoices/INV-1/send");
@@ -14,7 +15,7 @@ Deno.test("invoice-send: posts to /send with subject and note, defaulting send_t
   assertEquals(body.send_to_invoicer, false);
 });
 
-Deno.test("invoice-send: additionalFields override the send flags", async () => {
+test("invoice-send: additionalFields override the send flags", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -28,7 +29,7 @@ Deno.test("invoice-send: additionalFields override the send flags", async () => 
   assertEquals(body.send_to_invoicer, true);
 });
 
-Deno.test("invoice-send: invoiceId is required", async () => {
+test("invoice-send: invoiceId is required", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     () => Promise.resolve(action.execute!({ invoiceId: "" }, ctx)),

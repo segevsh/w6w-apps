@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/collection-list.ts";
 
@@ -14,7 +15,7 @@ const collections = [
   { name: "products_v2", num_documents: 0, fields: [] },
 ];
 
-Deno.test("collection-list: returns names, counts and the largest collection", async () => {
+test("collection-list: returns names, counts and the largest collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: collections }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/collections");
@@ -24,20 +25,20 @@ Deno.test("collection-list: returns names, counts and the largest collection", a
 });
 
 /** Empty and missing look the same to a workflow reading only the count. */
-Deno.test("collection-list: names the empty collections", async () => {
+test("collection-list: names the empty collections", async () => {
   const { ctx } = mockCtx([{ status: 200, body: collections }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.empty, ["products_v2"]);
 });
 
-Deno.test("collection-list: reports the facet fields of each collection", async () => {
+test("collection-list: reports the facet fields of each collection", async () => {
   const { ctx } = mockCtx([{ status: 200, body: collections }], D);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   const first = (result.collections as Array<{ facetFields: string[] }>)[0];
   assertEquals(first.facetFields, ["brand"]);
 });
 
-Deno.test("collection-list: filters on the name here, case-insensitively", async () => {
+test("collection-list: filters on the name here, case-insensitively", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: collections }], D);
   const result = await action.execute({ nameContains: "PRODUCTS" }, ctx) as Record<string, unknown>;
   assertEquals(result.count, 2);
@@ -45,6 +46,6 @@ Deno.test("collection-list: filters on the name here, case-insensitively", async
 });
 
 /** Typesense serves from RAM. */
-Deno.test("collection-list: says a document count is roughly the RAM bill", () => {
+test("collection-list: says a document count is roughly the RAM bill", () => {
   assert(/IN MEMORY/.test(action.description!), action.description);
 });

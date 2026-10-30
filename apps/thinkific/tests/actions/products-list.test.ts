@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import productsList from "../../actions/products-list.ts";
 import { listEnvelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("products-list: fetches GET /products", async () => {
+test("products-list: fetches GET /products", async () => {
   const { ctx, calls } = mockCtx([
     { status: 200, body: listEnvelope([{ id: 1, productable_type: "Bundle" }]) },
   ]);

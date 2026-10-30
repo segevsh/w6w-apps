@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-remove-leads.ts";
 
 const conn = { display: { restBaseUrl: "https://123-abc-456.mktorest.com" } };
 
-Deno.test("list-remove-leads: DELETEs with repeated id query params", async () => {
+test("list-remove-leads: DELETEs with repeated id query params", async () => {
   const { ctx, calls } = mockCtx([
     { body: { success: true, result: [{ id: 1, status: "removed" }] } },
   ], conn);
@@ -16,6 +17,6 @@ Deno.test("list-remove-leads: DELETEs with repeated id query params", async () =
   assertEquals(out, [{ id: 1, status: "removed" }]);
 });
 
-Deno.test("list-remove-leads: idempotent is true — removing a non-member is a no-op skip, not an error", () => {
+test("list-remove-leads: idempotent is true — removing a non-member is a no-op skip, not an error", () => {
   assertEquals(action.idempotent, true);
 });

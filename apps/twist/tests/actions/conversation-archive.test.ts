@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import conversationArchive from "../../actions/conversation-archive.ts";
 import { formOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("conversation-archive: POST /api/v3/conversations/archive with every documented parameter", async () => {
+test("conversation-archive: POST /api/v3/conversations/archive with every documented parameter", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   const out = await conversationArchive.execute({ "conversationId": 100 }, ctx) as Record<
     string,
@@ -17,7 +18,7 @@ Deno.test("conversation-archive: POST /api/v3/conversations/archive with every d
   assertEquals(out, { "id": 7, "name": "Sample" });
 });
 
-Deno.test("conversation-archive: sends a form body, never a query string", async () => {
+test("conversation-archive: sends a form body, never a query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await conversationArchive.execute({ "conversationId": 100 }, ctx);
 
@@ -25,18 +26,18 @@ Deno.test("conversation-archive: sends a form body, never a query string", async
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("conversation-archive: is declared idempotent", () => {
+test("conversation-archive: is declared idempotent", () => {
   assertEquals(conversationArchive.idempotent, true);
 });
 
-Deno.test("conversation-archive: sends no credential of its own", async () => {
+test("conversation-archive: sends no credential of its own", async () => {
   const { ctx, calls } = mockCtx([{ body: { "id": 7, "name": "Sample" } }]);
   await conversationArchive.execute({ "conversationId": 100 }, ctx);
 
   assert(!("authorization" in calls[0].headers));
 });
 
-Deno.test("conversation-archive: surfaces Twist's error body", async () => {
+test("conversation-archive: surfaces Twist's error body", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { error_code: 110, error_string: "Resource not found", error_extra: {}, error_uuid: "u" },

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/account-lookup.ts";
@@ -13,7 +14,7 @@ const remote = ok({
   statuses_count: 30,
 });
 
-Deno.test("account-lookup: resolves a handle and strips the bio's HTML", async () => {
+test("account-lookup: resolves a handle and strips the bio's HTML", async () => {
   const { ctx, calls } = mockCtx([remote], { display });
   const result = await action.execute!({ acct: "@bob@other.social" }, ctx) as {
     acct: string;
@@ -32,7 +33,7 @@ Deno.test("account-lookup: resolves a handle and strips the bio's HTML", async (
  * Mastodon returns a bare `acct` for a local account and `user@domain` for a
  * remote one — the only signal of which it is.
  */
-Deno.test("account-lookup: local and remote are distinguished by the acct's shape", async () => {
+test("account-lookup: local and remote are distinguished by the acct's shape", async () => {
   const localCtx = mockCtx([ok({ id: "a2", acct: "alice" })], { display });
   const local = await action.execute!({ acct: "alice" }, localCtx.ctx) as { local: boolean };
   assertEquals(local.local, true);
@@ -44,7 +45,7 @@ Deno.test("account-lookup: local and remote are distinguished by the acct's shap
   assertEquals(away.local, false);
 });
 
-Deno.test("account-lookup: missing counts read as zero", async () => {
+test("account-lookup: missing counts read as zero", async () => {
   const { ctx } = mockCtx([ok({ id: "a1", acct: "alice" })], { display });
   const result = await action.execute!({ acct: "alice" }, ctx) as {
     counts: { followers: number; statuses: number };
@@ -52,13 +53,13 @@ Deno.test("account-lookup: missing counts read as zero", async () => {
   assertEquals(result.counts, { followers: 0, following: 0, statuses: 0 } as unknown);
 });
 
-Deno.test("account-lookup: needs a handle", async () => {
+test("account-lookup: needs a handle", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({}, ctx), Error, "`acct` is required");
   assertEquals(calls.length, 0);
 });
 
 /** Across the fediverse the same name usually exists on several servers. */
-Deno.test("account-lookup: warns that a bare name means a local account", () => {
+test("account-lookup: warns that a bare name means a local account", () => {
   assert(/means a LOCAL account/.test(action.description!), action.description);
 });

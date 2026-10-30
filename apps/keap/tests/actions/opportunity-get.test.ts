@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import opportunityGet from "../../actions/opportunity-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -13,7 +14,7 @@ const OPPORTUNITY = {
  * The request is flat (`contact_id`, `stage_id`) and the response is nested
  * (`contact`, `stage` objects) — there is no `contact_id` on the way back.
  */
-Deno.test("opportunity-get: the response nests the contact and stage", async () => {
+test("opportunity-get: the response nests the contact and stage", async () => {
   const { ctx, calls } = mockCtx([{ body: OPPORTUNITY }]);
   const out = await opportunityGet.execute({ opportunityId: "1" }, ctx) as {
     contact: { id: string };
@@ -24,13 +25,13 @@ Deno.test("opportunity-get: the response nests the contact and stage", async () 
   assertEquals(out.contact_id, undefined);
 });
 
-Deno.test("opportunity-get: the optional-fields allowlist is comma-joined", async () => {
+test("opportunity-get: the optional-fields allowlist is comma-joined", async () => {
   const { ctx, calls } = mockCtx([{ body: OPPORTUNITY }]);
   await opportunityGet.execute({ opportunityId: "1", fields: ["custom_fields"] }, ctx);
   assertEquals(queryOf(calls[0].url).fields, "custom_fields");
 });
 
-Deno.test("opportunity-get: no fields parameter when none were asked for", async () => {
+test("opportunity-get: no fields parameter when none were asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: OPPORTUNITY }]);
   await opportunityGet.execute({ opportunityId: "1" }, ctx);
   assertEquals(queryOf(calls[0].url).fields, undefined);

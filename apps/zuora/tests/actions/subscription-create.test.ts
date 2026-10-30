@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, one } from "./_shared.ts";
 import action from "../../actions/subscription-create.ts";
 
-Deno.test("subscription-create: builds subscribeToRatePlans from a single rate plan id", async () => {
+test("subscription-create: builds subscribeToRatePlans from a single rate plan id", async () => {
   const { ctx, calls } = mockCtx([one({ id: "sub1" })], { display });
   await action.execute!(
     {
@@ -23,7 +24,7 @@ Deno.test("subscription-create: builds subscribeToRatePlans from a single rate p
   assertEquals(body.termType, "TERMED");
 });
 
-Deno.test("subscription-create: passes chargeOverrides through when provided", async () => {
+test("subscription-create: passes chargeOverrides through when provided", async () => {
   const { ctx, calls } = mockCtx([one({ id: "sub1" })], { display });
   await action.execute!(
     {
@@ -41,7 +42,7 @@ Deno.test("subscription-create: passes chargeOverrides through when provided", a
   ]);
 });
 
-Deno.test("subscription-create: sets Idempotency-Key from the invocation id", async () => {
+test("subscription-create: sets Idempotency-Key from the invocation id", async () => {
   const { ctx, calls } = mockCtx([one({ id: "sub1" })], { display, invocationId: "inv-9" });
   await action.execute!(
     {
@@ -55,7 +56,7 @@ Deno.test("subscription-create: sets Idempotency-Key from the invocation id", as
   assertEquals(calls[0].headers["idempotency-key"], "inv-9");
 });
 
-Deno.test("subscription-create: never sets an authorization header — sign's job, not this action's", async () => {
+test("subscription-create: never sets an authorization header — sign's job, not this action's", async () => {
   const { ctx, calls } = mockCtx([one({ id: "sub1" })], { display });
   await action.execute!(
     {

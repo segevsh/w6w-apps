@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import type { HookContext } from "@w6w/types";
 import service, {
   API_COMPONENT,
@@ -59,7 +60,7 @@ function summary(apiStatus = "operational", overrides: Record<string, unknown> =
 
 // --- pure helpers -----------------------------------------------------------
 
-Deno.test("service: the Statuspage vocabulary maps to health states", () => {
+test("service: the Statuspage vocabulary maps to health states", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -75,7 +76,7 @@ Deno.test("service: the Statuspage vocabulary maps to health states", () => {
  * groups, with different ids and the same name. A name-only key would collapse
  * them and silently drop two rows.
  */
-Deno.test("service: component keys are group-qualified so the duplicates survive", () => {
+test("service: component keys are group-qualified so the duplicates survive", () => {
   const groups = new Map([["g-sms", "SMS"], ["g-mms", "MMS"]]);
   const incoming = { id: "a", name: "Incoming", group_id: "g-sms" };
   const otherIncoming = { id: "b", name: "Incoming", group_id: "g-mms" };
@@ -89,7 +90,7 @@ Deno.test("service: component keys are group-qualified so the duplicates survive
 
 // --- the probe --------------------------------------------------------------
 
-Deno.test("service: probes the status host, with no credential and no API host in its allowlist", () => {
+test("service: probes the status host, with no credential and no API host in its allowlist", () => {
   assertEquals(STATUS_URL, "https://status.simpletexting.com/api/v2/summary.json");
   assertEquals(service.network?.allow, ["status.simpletexting.com"]);
   assertEquals(service.credential, "none");
@@ -97,7 +98,7 @@ Deno.test("service: probes the status host, with no credential and no API host i
   assertEquals(service.scope, "app");
 });
 
-Deno.test("service: an all-operational page reports ok, with every component", async () => {
+test("service: an all-operational page reports ok, with every component", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
 
@@ -115,14 +116,14 @@ Deno.test("service: an all-operational page reports ok, with every component", a
   ]);
 });
 
-Deno.test("service: a major API outage is down", async () => {
+test("service: a major API outage is down", async () => {
   const { ctx } = mockCtx([{ body: summary("major_outage") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "down");
   assert(report.message!.includes("API (major_outage)"), report.message);
 });
 
-Deno.test("service: a degraded API is degraded", async () => {
+test("service: a degraded API is degraded", async () => {
   const { ctx } = mockCtx([{ body: summary("partial_outage") }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "degraded");
@@ -134,7 +135,7 @@ Deno.test("service: a degraded API is degraded", async () => {
  * The dashboard and the delivery pipelines are reported, and named, but they do
  * not make a workflow that only manages contacts look broken.
  */
-Deno.test("service: another component's outage does not move the verdict, but is named", async () => {
+test("service: another component's outage does not move the verdict, but is named", async () => {
   const body = summary();
   // "SMS" and "MMS" are `group: true` containers — mirrors only, filtered out
   // of the check's own `nodes` — so the mutation has to land on a real,
@@ -154,7 +155,7 @@ Deno.test("service: another component's outage does not move the verdict, but is
 
 // --- guards -----------------------------------------------------------------
 
-Deno.test("service: a page with no API component is unknown, never down", async () => {
+test("service: a page with no API component is unknown, never down", async () => {
   const body = summary();
   body.components = body.components.filter((c) => c.name !== "API") as typeof body.components;
 
@@ -164,7 +165,7 @@ Deno.test("service: a page with no API component is unknown, never down", async 
   assert(report.message!.includes(API_COMPONENT), report.message);
 });
 
-Deno.test("service: a page that is not SimpleTexting's is unknown", async () => {
+test("service: a page that is not SimpleTexting's is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary("operational", {
       page: { name: "Someone Else", url: "https://status.elsewhere.com" },
@@ -175,7 +176,7 @@ Deno.test("service: a page that is not SimpleTexting's is unknown", async () => 
   assert(report.message!.includes("Someone Else"), report.message);
 });
 
-Deno.test("service: a page that moved away from status.simpletexting.com is unknown", async () => {
+test("service: a page that moved away from status.simpletexting.com is unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary("operational", {
       page: { name: "SimpleTexting", url: "https://status.definitely-not-theirs.example.com" },
@@ -186,7 +187,7 @@ Deno.test("service: a page that moved away from status.simpletexting.com is unkn
   assert(report.message!.includes("status.simpletexting.com"), report.message);
 });
 
-Deno.test("service: an unreachable or failing status page is unknown, never down", async () => {
+test("service: an unreachable or failing status page is unknown, never down", async () => {
   const failing = mockCtx([{ status: 503, body: "<html>maintenance</html>" }]);
   const failed = await service.check!({}, failing.ctx);
   assertEquals(failed.state, "unknown");
@@ -201,7 +202,7 @@ Deno.test("service: an unreachable or failing status page is unknown, never down
   assert(offline.message!.includes("could not reach"), offline.message);
 });
 
-Deno.test("service: a non-JSON body is unknown rather than an outage", async () => {
+test("service: a non-JSON body is unknown rather than an outage", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>ok</html>" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/saved-search-create.ts";
 
 const RESPONSE = { "success": true, "data": { "savedSearchId": "8" } };
 
-Deno.test("saved-search-create: calls POST /api/client/v2/saved-searches and returns the vendor body", async () => {
+test("saved-search-create: calls POST /api/client/v2/saved-searches and returns the vendor body", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   const result = await action.execute!({
     "name": "US VPs of Sales",
@@ -30,7 +31,7 @@ Deno.test("saved-search-create: calls POST /api/client/v2/saved-searches and ret
   assertEquals(result, RESPONSE);
 });
 
-Deno.test("saved-search-create: sends nothing for fields left unset", async () => {
+test("saved-search-create: sends nothing for fields left unset", async () => {
   const { ctx, calls } = mockCtx([{ body: RESPONSE }]);
   await action.execute!({
     "name": "US VPs of Sales",
@@ -46,7 +47,7 @@ Deno.test("saved-search-create: sends nothing for fields left unset", async () =
   });
 });
 
-Deno.test("saved-search-create: refuses a missing name before any request", async () => {
+test("saved-search-create: refuses a missing name before any request", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () =>
     await action.execute!(
@@ -57,7 +58,7 @@ Deno.test("saved-search-create: refuses a missing name before any request", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("saved-search-create: surfaces the vendor's error body", async () => {
+test("saved-search-create: surfaces the vendor's error body", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: { msg: "Insufficient credit amount.", code: "insufficientCredits" },

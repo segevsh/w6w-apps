@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { listRequest } from "../../lib/params.ts";
 
-Deno.test("listRequest: plain listing when no filter field is set", () => {
+test("listRequest: plain listing when no filter field is set", () => {
   const { path, query } = listRequest("Contacts", { top: 10, skip: 5, brief: true });
   assertEquals(path, "/Contacts");
   assertEquals(query, { top: 10, skip: 5, brief: true });
 });
 
-Deno.test("listRequest: switches to /Search once a filter field is set", () => {
+test("listRequest: switches to /Search once a filter field is set", () => {
   const { path, query } = listRequest("Leads", {
     fieldName: "LEAD_RATING",
     fieldValue: "5",

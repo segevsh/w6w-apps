@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import mediaUploadCreate from "../../actions/media-upload-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("media-upload-create: posts the file name and returns media_id + upload_url", async () => {
+test("media-upload-create: posts the file name and returns media_id + upload_url", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {
@@ -21,7 +22,7 @@ Deno.test("media-upload-create: posts the file name and returns media_id + uploa
   assertEquals(out.upload_url, "https://s3.amazonaws.com/bucket/x");
 });
 
-Deno.test("media-upload-create: does not itself attempt any second request to upload_url", async () => {
+test("media-upload-create: does not itself attempt any second request to upload_url", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { media_id: "id", upload_url: "https://s3.amazonaws.com/bucket/x" },
@@ -30,7 +31,7 @@ Deno.test("media-upload-create: does not itself attempt any second request to up
   assertEquals(calls.length, 1, "the action must make exactly one request, not a PUT as well");
 });
 
-Deno.test("media-upload-create: the file name pattern rejects a disallowed extension", () => {
+test("media-upload-create: the file name pattern rejects a disallowed extension", () => {
   const fileNameParam = mediaUploadCreate.params?.find((p) => p.key === "fileName");
   const re = new RegExp(fileNameParam!.validation!.pattern!);
   assert(re.test("photo.jpg"));

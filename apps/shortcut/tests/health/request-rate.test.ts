@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import requestRate from "../../health/request-rate.ts";
 
-Deno.test("request-rate: is a declared absence, not a live probe", () => {
+test("request-rate: is a declared absence, not a live probe", () => {
   assertEquals(typeof requestRate.check, "undefined");
   assertEquals(typeof requestRate.unavailable?.reason, "string");
   assert((requestRate.unavailable?.reason.length ?? 0) > 0);
@@ -12,6 +13,6 @@ Deno.test("request-rate: is a declared absence, not a live probe", () => {
  * at any severity but `informational` this would pin the app's health verdict
  * at `unknown` forever.
  */
-Deno.test("request-rate: severity is informational", () => {
+test("request-rate: severity is informational", () => {
   assertEquals(requestRate.severity, "informational");
 });

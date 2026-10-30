@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import timeActivityCreate from "../../actions/time-activity-create.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
 const oneActivity = [{ userId: 1, shifts: [{ start: { timestamp: 1700000000 } }] }];
 
-Deno.test("time-activity-create: POSTs the array body, defaulting isSplitShiftOnManualBreak to false", async () => {
+test("time-activity-create: POSTs the array body, defaulting isSplitShiftOnManualBreak to false", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ timeActivitiesByUsers: [] }) }]);
   await timeActivityCreate.execute({ timeClockId: 5, timeActivities: oneActivity }, ctx);
   assertEquals(pathOf(calls[0].url), "/time-clock/v1/time-clocks/5/time-activities");
@@ -14,7 +15,7 @@ Deno.test("time-activity-create: POSTs the array body, defaulting isSplitShiftOn
   });
 });
 
-Deno.test("time-activity-create: accepts the JSON param as a string too", async () => {
+test("time-activity-create: accepts the JSON param as a string too", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ timeActivitiesByUsers: [] }) }]);
   await timeActivityCreate.execute(
     { timeClockId: 5, timeActivities: JSON.stringify(oneActivity) },
@@ -23,7 +24,7 @@ Deno.test("time-activity-create: accepts the JSON param as a string too", async 
   assertEquals(JSON.parse(calls[0].body!).timeActivities, oneActivity);
 });
 
-Deno.test("time-activity-create: rejects an empty or non-array payload before calling the API", async () => {
+test("time-activity-create: rejects an empty or non-array payload before calling the API", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(async () => {
     await timeActivityCreate.execute({ timeClockId: 5, timeActivities: [] }, ctx);
@@ -37,6 +38,6 @@ Deno.test("time-activity-create: rejects an empty or non-array payload before ca
   assertEquals(calls.length, 0);
 });
 
-Deno.test("time-activity-create: not idempotent", () => {
+test("time-activity-create: not idempotent", () => {
   assertEquals(timeActivityCreate.idempotent, false);
 });

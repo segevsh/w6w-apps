@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-campaign.ts";
 
-Deno.test("get-campaign: GETs /campaigns/{id}", async () => {
+test("get-campaign: GETs /campaigns/{id}", async () => {
   const body = { data: { id: "12345", type: "campaign" } };
   const { ctx, calls } = mockCtx([{ body }]);
   const out = await action.execute({ campaignId: "12345", include: "tiers" }, ctx);
@@ -12,7 +13,7 @@ Deno.test("get-campaign: GETs /campaigns/{id}", async () => {
   assertEquals(out, body);
 });
 
-Deno.test("get-campaign: URL-encodes the campaign id", async () => {
+test("get-campaign: URL-encodes the campaign id", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ campaignId: "abc/def" }, ctx);
   const url = new URL(calls[0].url);

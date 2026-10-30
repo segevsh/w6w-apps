@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/whatsapp-balance-get.ts";
 import { jsonBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-balance-get: POST fetchPrepaidBalance and maps the fields", async () => {
+test("whatsapp-balance-get: POST fetchPrepaidBalance and maps the fields", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       number: "+9199999999",
@@ -18,7 +19,7 @@ Deno.test("whatsapp-balance-get: POST fetchPrepaidBalance and maps the fields", 
   assertEquals(out, { prepaidBalance: 250.75, planStatus: "active", number: "+9199999999" });
 });
 
-Deno.test("whatsapp-balance-get: puts no credential on the request (sign owns that)", async () => {
+test("whatsapp-balance-get: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success", prepaid_balance: 1 } }]);
   await action.execute({ integratedNumber: "9199" }, ctx);
   assertEquals(calls[0].headers.authkey, undefined);
@@ -26,7 +27,7 @@ Deno.test("whatsapp-balance-get: puts no credential on the request (sign owns th
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("whatsapp-balance-get: a vendor error surfaces its own message", async () => {
+test("whatsapp-balance-get: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({ integratedNumber: "9199" }, ctx)

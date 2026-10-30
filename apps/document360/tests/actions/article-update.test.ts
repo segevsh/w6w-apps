@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import articleUpdate from "../../actions/article-update.ts";
 import { envelope, mockCtx, pathOf, PID, problem, PROBLEM_HEADERS, queryOf } from "../_helpers.ts";
 
-Deno.test("article-update: PATCHes only the fields that were set", async () => {
+test("article-update: PATCHes only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: envelope({ id: "a1", title: "New" }) }]);
   const out = await articleUpdate.execute({
     articleId: "a1",
@@ -20,7 +21,7 @@ Deno.test("article-update: PATCHes only the fields that were set", async () => {
   assertEquals(out.title, "New");
 });
 
-Deno.test("article-update: a vendor error surfaces its code and message", async () => {
+test("article-update: a vendor error surfaces its code and message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     headers: PROBLEM_HEADERS,

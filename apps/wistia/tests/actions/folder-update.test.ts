@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import folderUpdate from "../../actions/folder-update.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("folder-update: calls PUT /modern/folders/f1 with the version header", async () => {
+test("folder-update: calls PUT /modern/folders/f1 with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await folderUpdate.execute(
     { "folderId": "f1", "name": "Renamed", "anonymousCanDownload": true } as never,
@@ -21,7 +22,7 @@ Deno.test("folder-update: calls PUT /modern/folders/f1 with the version header",
   assert(out.ok === true);
 });
 
-Deno.test("folder-update: surfaces a Wistia error with its code", async () => {
+test("folder-update: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },
@@ -39,7 +40,7 @@ Deno.test("folder-update: surfaces a Wistia error with its code", async () => {
   assert(message.includes("Token lacks scope."), message);
 });
 
-Deno.test("folder-update: refuses an empty update without calling Wistia", async () => {
+test("folder-update: refuses an empty update without calling Wistia", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -51,7 +52,7 @@ Deno.test("folder-update: refuses an empty update without calling Wistia", async
   assertEquals(calls.length, 0);
 });
 
-Deno.test("folder-update: false flags are sent, not dropped", async () => {
+test("folder-update: false flags are sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await folderUpdate.execute({ folderId: "f1", public: false } as never, ctx);
   assertEquals(JSON.parse(calls[0].body!), { public: false });

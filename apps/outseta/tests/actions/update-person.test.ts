@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { connected, mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-person.ts";
 
-Deno.test("update-person: identity", () => {
+test("update-person: identity", () => {
   assertEquals(action.key, "update-person");
   assertEquals(action.type, "perform");
   assertEquals(action.resource, "person");
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("update-person: sends PUT /api/v1/crm/people/abc123", async () => {
+test("update-person: sends PUT /api/v1/crm/people/abc123", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { Uid: "x1" } }]);
   const result = await action.execute({
     personUid: "abc123",
@@ -29,7 +30,7 @@ Deno.test("update-person: sends PUT /api/v1/crm/people/abc123", async () => {
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("update-person: a failure names the status and the request", async () => {
+test("update-person: a failure names the status and the request", async () => {
   const { ctx } = mockCtx([{ status: 404 }]);
   const err = await assertRejects(async () => {
     await action.execute({

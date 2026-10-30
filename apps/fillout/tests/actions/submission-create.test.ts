@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import submissionCreate from "../../actions/submission-create.ts";
 import { mockCtx, pathOf, zodErrorBody } from "../_helpers.ts";
 
 const one = { questions: [{ id: "q1", value: "a@b.com" }] };
 
-Deno.test("submission-create: posts {submissions: [...]} and reports what came back", async () => {
+test("submission-create: posts {submissions: [...]} and reports what came back", async () => {
   const { ctx, calls } = mockCtx([{
     body: { submissions: [{ submissionId: "s1", submissionTime: "2026-08-01T10:00:00.000Z" }] },
   }]);
@@ -18,7 +19,7 @@ Deno.test("submission-create: posts {submissions: [...]} and reports what came b
 });
 
 /** The host may hand a `json` param through as the string the user typed. */
-Deno.test("submission-create: a JSON string param is parsed before sending", async () => {
+test("submission-create: a JSON string param is parsed before sending", async () => {
   const { ctx, calls } = mockCtx([{ body: { submissions: [] } }]);
   await submissionCreate.execute({ formId: "aB1", submissions: JSON.stringify([one]) }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { submissions: [one] });
@@ -28,7 +29,7 @@ Deno.test("submission-create: a JSON string param is parsed before sending", asy
  * A single object is the shape people reach for first, and the API accepts only
  * an array — so wrapping it turns a guaranteed 400 into a working call.
  */
-Deno.test("submission-create: a lone submission object is wrapped in an array", async () => {
+test("submission-create: a lone submission object is wrapped in an array", async () => {
   const { ctx, calls } = mockCtx([{ body: { submissions: [] } }]);
   await submissionCreate.execute({ formId: "aB1", submissions: one }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { submissions: [one] });
@@ -39,7 +40,7 @@ Deno.test("submission-create: a lone submission object is wrapped in an array", 
  * round trip less than letting Fillout refuse — and at 5 requests/second, round
  * trips are the scarce resource.
  */
-Deno.test("submission-create: more than ten submissions is refused before the request", async () => {
+test("submission-create: more than ten submissions is refused before the request", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -52,7 +53,7 @@ Deno.test("submission-create: more than ten submissions is refused before the re
   assertEquals(calls.length, 0, "it must not have made the request");
 });
 
-Deno.test("submission-create: malformed JSON is reported as such, not sent", async () => {
+test("submission-create: malformed JSON is reported as such, not sent", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(
     () =>
@@ -70,7 +71,7 @@ Deno.test("submission-create: malformed JSON is reported as such, not sent", asy
  * credential failure on this API is *also* a `400`. Reading the status alone
  * would report "bad API key" for a typo in a question id.
  */
-Deno.test("submission-create: a body-validation 400 is reported as a body problem, not an auth one", async () => {
+test("submission-create: a body-validation 400 is reported as a body problem, not an auth one", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: zodErrorBody([
@@ -96,6 +97,6 @@ Deno.test("submission-create: a body-validation 400 is reported as a body proble
   assertEquals(/api key|reconnect|revoked/i.test(err.message), false, err.message);
 });
 
-Deno.test("submission-create: is not idempotent, because Fillout offers no key to make it so", () => {
+test("submission-create: is not idempotent, because Fillout offers no key to make it so", () => {
   assertEquals(submissionCreate.idempotent, false);
 });

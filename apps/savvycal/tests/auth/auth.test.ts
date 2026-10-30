@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import pat from "../../auth/personal-access-token.ts";
 import oauth2 from "../../auth/oauth2.ts";
 import { mockCtx } from "../_helpers.ts";
@@ -16,17 +17,17 @@ function signed(auth: typeof pat, credential: unknown) {
   return (auth.sign as any)({ request, credential }).headers;
 }
 
-Deno.test("pat: sign stamps the bearer header", () => {
+test("pat: sign stamps the bearer header", () => {
   assertEquals(signed(pat, { token: "pt_secret_x" }), { authorization: "Bearer pt_secret_x" });
 });
 
-Deno.test("oauth2: sign stamps the access token and declares the documented endpoints", () => {
+test("oauth2: sign stamps the access token and declares the documented endpoints", () => {
   assertEquals(signed(oauth2, { accessToken: "at" }), { authorization: "Bearer at" });
   assertEquals(oauth2.oauth2?.authorizationUrl, "https://savvycal.com/oauth/authorize");
   assertEquals(oauth2.oauth2?.tokenUrl, "https://savvycal.com/oauth/token");
 });
 
-Deno.test("pat: test passes on a JSON profile and probes /v1/me with the token", async () => {
+test("pat: test passes on a JSON profile and probes /v1/me with the token", async () => {
   const { ctx, calls } = mockCtx([{ body: ME }]);
   // deno-lint-ignore no-explicit-any
   const r = await (pat.test as any)({ credential: { token: " pt_secret_x " } }, ctx);
@@ -35,7 +36,7 @@ Deno.test("pat: test passes on a JSON profile and probes /v1/me with the token",
   assertEquals(calls[0].headers["authorization"], "Bearer pt_secret_x");
 });
 
-Deno.test("pat: test fails on the plain-text Unauthenticated body", async () => {
+test("pat: test fails on the plain-text Unauthenticated body", async () => {
   const { ctx } = mockCtx([UNAUTH]);
   // deno-lint-ignore no-explicit-any
   const r = await (pat.test as any)({ credential: { token: "bad" } }, ctx);
@@ -44,7 +45,7 @@ Deno.test("pat: test fails on the plain-text Unauthenticated body", async () => 
   assert(!r.message.includes("bad"));
 });
 
-Deno.test("pat: a 200 that is not the profile shape is not a pass", async () => {
+test("pat: a 200 that is not the profile shape is not a pass", async () => {
   const { ctx } = mockCtx([{
     body: "<html>shell</html>",
     headers: { "content-type": "text/html" },
@@ -54,7 +55,7 @@ Deno.test("pat: a 200 that is not the profile shape is not a pass", async () => 
   assertEquals(r.ok, false);
 });
 
-Deno.test("pat: a 500 is reported by status, not as a rejected credential", async () => {
+test("pat: a 500 is reported by status, not as a rejected credential", async () => {
   const { ctx } = mockCtx([{
     status: 500,
     body: "boom",
@@ -66,7 +67,7 @@ Deno.test("pat: a 500 is reported by status, not as a rejected credential", asyn
   assert(r.message.includes("500"));
 });
 
-Deno.test("pat/oauth2: test refuses a credential with no token without calling out", async () => {
+test("pat/oauth2: test refuses a credential with no token without calling out", async () => {
   const { ctx, calls } = mockCtx([]);
   // deno-lint-ignore no-explicit-any
   assertEquals((await (pat.test as any)({ credential: {} }, ctx)).ok, false);
@@ -75,7 +76,7 @@ Deno.test("pat/oauth2: test refuses a credential with no token without calling o
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test probes /v1/me with the access token", async () => {
+test("oauth2: test probes /v1/me with the access token", async () => {
   const { ctx, calls } = mockCtx([{ body: ME }]);
   // deno-lint-ignore no-explicit-any
   const r = await (oauth2.test as any)({ credential: { accessToken: "at" } }, ctx);
@@ -83,7 +84,7 @@ Deno.test("oauth2: test probes /v1/me with the access token", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer at");
 });
 
-Deno.test("afterConnect publishes email and id only", async () => {
+test("afterConnect publishes email and id only", async () => {
   const { ctx } = mockCtx([{ body: ME }, { body: ME }]);
   // deno-lint-ignore no-explicit-any
   const a = await (pat.afterConnect as any)({ credential: { token: "t" } }, ctx);
@@ -93,7 +94,7 @@ Deno.test("afterConnect publishes email and id only", async () => {
   assertEquals(b, a);
 });
 
-Deno.test("afterConnect swallows a failed profile read", async () => {
+test("afterConnect swallows a failed profile read", async () => {
   const { ctx } = mockCtx([UNAUTH]);
   // deno-lint-ignore no-explicit-any
   assertEquals(await (pat.afterConnect as any)({ credential: { token: "t" } }, ctx), {});

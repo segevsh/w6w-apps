@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import projectRunsList from "../../actions/project-runs-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("project-runs-list: GET runs with limit/offset and filters", async () => {
+test("project-runs-list: GET runs with limit/offset and filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: { runs: [{ runId: "r1" }], nextPage: null, previousPage: null },
   }]);
@@ -23,7 +24,7 @@ Deno.test("project-runs-list: GET runs with limit/offset and filters", async () 
   assertEquals(out.runs.length, 1);
 });
 
-Deno.test("project-runs-list: offset 0 is sent, not dropped", async () => {
+test("project-runs-list: offset 0 is sent, not dropped", async () => {
   const { ctx, calls } = mockCtx([{ body: { runs: [] } }]);
   await projectRunsList.execute({ projectId: "p1", offset: 0 }, ctx);
   assertEquals(queryOf(calls[0].url), { offset: "0" });

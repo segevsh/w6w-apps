@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth, { base64Encode } from "../../auth/basic.ts";
 
-Deno.test("basic: declares username + password (secret) fields", () => {
+test("basic: declares username + password (secret) fields", () => {
   assertEquals(auth.key, "basic");
   assertEquals(auth.type, "basic");
   const username = auth.fields?.find((f) => f.key === "username");
@@ -15,7 +16,7 @@ Deno.test("basic: declares username + password (secret) fields", () => {
   assertEquals(password.required, true);
 });
 
-Deno.test("basic: sign appends Basic <base64(user:pw)>", async () => {
+test("basic: sign appends Basic <base64(user:pw)>", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -30,7 +31,7 @@ Deno.test("basic: sign appends Basic <base64(user:pw)>", async () => {
   assertEquals(out.headers["authorization"], "Basic YWxpY2U6aHVudGVyMg==");
 });
 
-Deno.test("basic: test with missing username or password reports the failure and makes no call", async () => {
+test("basic: test with missing username or password reports the failure and makes no call", async () => {
   const { ctx, calls } = mockCtx();
   const r1 = await auth.test({ credential: { username: "alice" } }, ctx);
   assertEquals(r1.ok, false);
@@ -40,7 +41,7 @@ Deno.test("basic: test with missing username or password reports the failure and
   assertEquals(calls.length, 0, "must not make a network call when credential is malformed");
 });
 
-Deno.test("basic: test hits /user with Basic auth and reports ok", async () => {
+test("basic: test hits /user with Basic auth and reports ok", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { account_id: "acc-1" } }]);
   const result = await auth.test(
     { credential: { username: "alice", password: "hunter2" } },
@@ -52,7 +53,7 @@ Deno.test("basic: test hits /user with Basic auth and reports ok", async () => {
   assertEquals(calls[0].headers["authorization"], "Basic YWxpY2U6aHVudGVyMg==");
 });
 
-Deno.test("basic: test returns the upstream status on non-2xx", async () => {
+test("basic: test returns the upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test(
     { credential: { username: "alice", password: "wrong" } },
@@ -64,7 +65,7 @@ Deno.test("basic: test returns the upstream status on non-2xx", async () => {
 
 // The inlined encoder is load-bearing (worker sandbox = no imports). Pin its
 // behavior against RFC 4648 test vectors so a regression is obvious.
-Deno.test("basic: base64Encode matches RFC-4648 vectors", () => {
+test("basic: base64Encode matches RFC-4648 vectors", () => {
   assertEquals(base64Encode(""), "");
   assertEquals(base64Encode("f"), "Zg==");
   assertEquals(base64Encode("fo"), "Zm8=");
@@ -74,7 +75,7 @@ Deno.test("basic: base64Encode matches RFC-4648 vectors", () => {
   assertEquals(base64Encode("foobar"), "Zm9vYmFy");
 });
 
-Deno.test("basic: base64Encode handles non-ASCII (UTF-8, not Latin-1)", () => {
+test("basic: base64Encode handles non-ASCII (UTF-8, not Latin-1)", () => {
   // "☃" (U+2603) → bytes E2 98 83 → 4pi D
   assertEquals(base64Encode("☃"), "4piD");
 });

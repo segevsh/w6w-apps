@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import instance from "../../health/instance.ts";
 
@@ -8,7 +9,7 @@ const running = {
   body: { state: "RUNNING", version: "2026.8.1", location_name: "Home" },
 };
 
-Deno.test("instance: reads the connection's own host", async () => {
+test("instance: reads the connection's own host", async () => {
   const { ctx, calls } = mockCtx([running], { display });
   const result = await instance.check!({}, ctx);
   assertEquals(calls[0].url, "https://abc.ui.nabu.casa/api/config");
@@ -20,7 +21,7 @@ Deno.test("instance: reads the connection's own host", async () => {
  * After a restart the API answers for minutes while integrations load, during
  * which everything reads unavailable. That is waiting, not an outage.
  */
-Deno.test("instance: STARTING is degraded, and says what it means", async () => {
+test("instance: STARTING is degraded, and says what it means", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { state: "STARTING" } }], { display });
   const result = await instance.check!({}, ctx);
   assertEquals(result.state, "degraded");
@@ -28,13 +29,13 @@ Deno.test("instance: STARTING is degraded, and says what it means", async () => 
   assert(/unavailable/.test(result.message!), result.message);
 });
 
-Deno.test("instance: any other reported state is degraded too", async () => {
+test("instance: any other reported state is degraded too", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { state: "STOPPING" } }], { display });
   assertEquals((await instance.check!({}, ctx)).state, "degraded");
 });
 
 /** A revoked token is not an outage — the derived auth check owns it. */
-Deno.test("instance: a rejected token is unknown, not down", async () => {
+test("instance: a rejected token is unknown, not down", async () => {
   for (const status of [401, 403]) {
     const { ctx } = mockCtx([{ status, body: { message: "Unauthorized" } }], { display });
     const result = await instance.check!({}, ctx);
@@ -43,7 +44,7 @@ Deno.test("instance: a rejected token is unknown, not down", async () => {
   }
 });
 
-Deno.test("instance: an unreachable or erroring host is down", async () => {
+test("instance: an unreachable or erroring host is down", async () => {
   const erroring = mockCtx([{ status: 502, body: "bad gateway" }], { display });
   assertEquals((await instance.check!({}, erroring.ctx)).state, "down");
 
@@ -56,21 +57,21 @@ Deno.test("instance: an unreachable or erroring host is down", async () => {
 });
 
 /** The web UI answers 200 with HTML while the API is entirely dead. */
-Deno.test("instance: an HTML body is degraded and named as a proxy", async () => {
+test("instance: an HTML body is degraded and named as a proxy", async () => {
   const { ctx } = mockCtx([{ status: 200, body: "<html>Home Assistant</html>" }], { display });
   const result = await instance.check!({}, ctx);
   assertEquals(result.state, "degraded");
   assert(/reverse proxy or a login page/.test(result.message!), result.message);
 });
 
-Deno.test("instance: a connection with no URL is unknown", async () => {
+test("instance: a connection with no URL is unknown", async () => {
   const { ctx, calls } = mockCtx([]);
   assertEquals((await instance.check!({}, ctx)).state, "unknown");
   assertEquals(calls.length, 0);
 });
 
 /** There is no unauthenticated endpoint worth probing on this API. */
-Deno.test("instance: is signed, unlike most dependency checks here", () => {
+test("instance: is signed, unlike most dependency checks here", () => {
   assertEquals(instance.credential, "signed");
   assertEquals(instance.kind, "dependency");
   assertEquals(instance.scope, "connection");

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { display, ok } from "./_shared.ts";
 import action from "../../actions/dashboard-list.ts";
@@ -16,7 +17,7 @@ const dashboards = ok({
 });
 
 /** There is no dashboards endpoint — a dashboard is an entity. */
-Deno.test("dashboard-list: searches entities scoped to the dashboard type", async () => {
+test("dashboard-list: searches entities scoped to the dashboard type", async () => {
   const { ctx, calls } = mockCtx([dashboards], { display });
   const result = await action.execute!({}, ctx) as { count: number; total: number };
   const query = JSON.parse(calls[0].body!).variables.query;
@@ -27,19 +28,19 @@ Deno.test("dashboard-list: searches entities scoped to the dashboard type", asyn
   assertEquals(result.total, 5);
 });
 
-Deno.test("dashboard-list: a name filter is added to the clause", async () => {
+test("dashboard-list: a name filter is added to the clause", async () => {
   const { ctx, calls } = mockCtx([dashboards], { display });
   await action.execute!({ name: "Checkout" }, ctx);
   assert(JSON.parse(calls[0].body!).variables.query.includes("name LIKE 'Checkout'"));
 });
 
-Deno.test("dashboard-list: the cursor comes back for paging", async () => {
+test("dashboard-list: the cursor comes back for paging", async () => {
   const { ctx } = mockCtx([dashboards], { display });
   const result = await action.execute!({}, ctx) as { cursor: string };
   assertEquals(result.cursor, "c1");
 });
 
-Deno.test("dashboard-list: an account with no dashboards is a count of zero", async () => {
+test("dashboard-list: an account with no dashboards is a count of zero", async () => {
   const { ctx } = mockCtx([
     ok({ actor: { entitySearch: { count: 0, results: { entities: [] } } } }),
   ], { display });
@@ -47,6 +48,6 @@ Deno.test("dashboard-list: an account with no dashboards is a count of zero", as
   assertEquals(result.count, 0);
 });
 
-Deno.test("dashboard-list: says there is no dashboards endpoint", () => {
+test("dashboard-list: says there is no dashboards endpoint", () => {
   assert(/no dashboards endpoint/.test(action.description!), action.description);
 });

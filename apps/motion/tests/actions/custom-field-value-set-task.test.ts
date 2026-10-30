@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import customFieldValueSetTask from "../../actions/custom-field-value-set-task.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
  * not a bare scalar. The inner `type` is the documented discriminator, and it is
  * assembled here so it cannot be mistyped.
  */
-Deno.test("custom-field-value-set-task: POSTs the tagged value pair to /beta", async () => {
+test("custom-field-value-set-task: POSTs the tagged value pair to /beta", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "text", value: "in progress" } }]);
   await customFieldValueSetTask.execute({
     taskId: "t1",
@@ -25,7 +26,7 @@ Deno.test("custom-field-value-set-task: POSTs the tagged value pair to /beta", a
   });
 });
 
-Deno.test("custom-field-value-set-task: non-string values survive their JSON type", async () => {
+test("custom-field-value-set-task: non-string values survive their JSON type", async () => {
   const number = mockCtx([{ body: {} }]);
   await customFieldValueSetTask.execute(
     { taskId: "t1", customFieldInstanceId: "cf1", type: "number", value: "42" },
@@ -57,7 +58,7 @@ Deno.test("custom-field-value-set-task: non-string values survive their JSON typ
   );
 });
 
-Deno.test("custom-field-value-set-task: a missing value fails before a request is made", async () => {
+test("custom-field-value-set-task: a missing value fails before a request is made", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () => {
@@ -72,6 +73,6 @@ Deno.test("custom-field-value-set-task: a missing value fails before a request i
   assertEquals(calls.length, 0);
 });
 
-Deno.test("custom-field-value-set-task: setting a value twice is safe", () => {
+test("custom-field-value-set-task: setting a value twice is safe", () => {
   assertEquals(customFieldValueSetTask.idempotent, true);
 });

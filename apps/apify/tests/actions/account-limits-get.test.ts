@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import accountLimitsGet from "../../actions/account-limits-get.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("account-limits-get: calls GET /v2/users/me/limits and unwraps data", async () => {
+test("account-limits-get: calls GET /v2/users/me/limits and unwraps data", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: envelope({
@@ -23,6 +24,6 @@ Deno.test("account-limits-get: calls GET /v2/users/me/limits and unwraps data", 
   assertEquals(out.current.monthlyUsageUsd, 43);
 });
 
-Deno.test("account-limits-get: takes no parameters", () => {
+test("account-limits-get: takes no parameters", () => {
   assertEquals(accountLimitsGet.params?.length, 0);
 });

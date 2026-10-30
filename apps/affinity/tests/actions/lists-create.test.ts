@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listsCreate from "../../actions/lists-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("lists-create: POSTs the name/type/is_public payload", async () => {
+test("lists-create: POSTs the name/type/is_public payload", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 383, name: "My List of Organizations" } }]);
   await listsCreate.execute(
     { name: "My List of Organizations", type: 1, isPublic: true, ownerId: 38706 },

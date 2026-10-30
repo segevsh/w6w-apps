@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import prospectList from "../../actions/prospect-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("prospect-list: lists with filters and reads X-Total-Count", async () => {
+test("prospect-list: lists with filters and reads X-Total-Count", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{ "id": 1, "email": "erlich@bachmanity.com", "status": "ACTIVE" }],
@@ -24,7 +25,7 @@ Deno.test("prospect-list: lists with filters and reads X-Total-Count", async () 
   assertEquals(out.count, 1);
 });
 
-Deno.test("prospect-list: campaign filter and an empty match", async () => {
+test("prospect-list: campaign filter and an empty match", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "message": "There are no prospects matching the given criteria." },

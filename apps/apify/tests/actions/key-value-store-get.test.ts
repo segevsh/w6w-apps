@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import keyValueStoreGet from "../../actions/key-value-store-get.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("key-value-store-get: calls GET /v2/key-value-stores/{id}", async () => {
+test("key-value-store-get: calls GET /v2/key-value-stores/{id}", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ id: "s1", name: "config", generalAccess: "RESTRICTED" }) },
   ]);
@@ -16,7 +17,7 @@ Deno.test("key-value-store-get: calls GET /v2/key-value-stores/{id}", async () =
  * `KeyValueStore.urlSigningSecretKey` mints signed public URLs for this store's
  * records — a live credential in an ordinary metadata read.
  */
-Deno.test("key-value-store-get: the URL-signing secret never reaches the caller", async () => {
+test("key-value-store-get: the URL-signing secret never reaches the caller", async () => {
   const { ctx } = mockCtx([
     {
       body: envelope({

@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/droplet-list.ts";
 
@@ -16,7 +17,7 @@ const page = (droplets: Array<[string, string, string?]>, total = droplets.lengt
   },
 });
 
-Deno.test("droplet-list: lists droplets and separates the page from the total", async () => {
+test("droplet-list: lists droplets and separates the page from the total", async () => {
   const { ctx, calls } = mockCtx([page([["web", "active"], ["db", "active"]], 57)]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/v2/droplets");
@@ -26,7 +27,7 @@ Deno.test("droplet-list: lists droplets and separates the page from the total", 
 });
 
 /** Only `archive` stops the charge; `off` does not. */
-Deno.test("droplet-list: counts the powered-off droplets and warns they still bill", async () => {
+test("droplet-list: counts the powered-off droplets and warns they still bill", async () => {
   const { ctx, logs } = mockCtx([page([["web", "active"], ["staging", "off"], ["old", "off"]])]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.activeCount, 1);
@@ -35,7 +36,7 @@ Deno.test("droplet-list: counts the powered-off droplets and warns they still bi
   assert(/only destroying a droplet stops the charge/.test(logs[0].message), logs[0].message);
 });
 
-Deno.test("droplet-list: an all-running account does not warn", async () => {
+test("droplet-list: an all-running account does not warn", async () => {
   const { ctx, logs } = mockCtx([page([["web", "active"]])]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.offCount, 0);
@@ -43,7 +44,7 @@ Deno.test("droplet-list: an all-running account does not warn", async () => {
 });
 
 /** A tag is the only server-side filter and the only grouping. */
-Deno.test("droplet-list: the tag is sent and the name is filtered here", async () => {
+test("droplet-list: the tag is sent and the name is filtered here", async () => {
   const { ctx, calls } = mockCtx([page([["web-1", "active"], ["db-1", "active"]])]);
   const result = await action.execute({ tag: "staging", name: "WEB" }, ctx) as Record<
     string,
@@ -54,13 +55,13 @@ Deno.test("droplet-list: the tag is sent and the name is filtered here", async (
   assertEquals(result.count, 1);
 });
 
-Deno.test("droplet-list: reports the distinct regions", async () => {
+test("droplet-list: reports the distinct regions", async () => {
   const { ctx } = mockCtx([page([["a", "active", "fra1"], ["b", "active", "nyc3"]])]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.regions, ["fra1", "nyc3"]);
 });
 
-Deno.test("droplet-list: an empty account is not an error", async () => {
+test("droplet-list: an empty account is not an error", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { droplets: [], meta: { total: 0 } } }]);
   const result = await action.execute({}, ctx) as Record<string, unknown>;
   assertEquals(result.count, 0);

@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-file.ts";
 
-Deno.test("get-file: calls GET /v1/files/file_1 on api.x.ai and returns the body", async () => {
+test("get-file: calls GET /v1/files/file_1 on api.x.ai and returns the body", async () => {
   const reply = { ok: true };
   const { ctx, calls } = mockCtx([{ body: reply }]);
   const result = await action.execute!({ fileId: "file_1" }, ctx);
@@ -15,7 +16,7 @@ Deno.test("get-file: calls GET /v1/files/file_1 on api.x.ai and returns the body
   assertEquals(result, reply);
 });
 
-Deno.test("get-file: surfaces the vendor error code on failure", async () => {
+test("get-file: surfaces the vendor error code on failure", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { code: "invalid-argument", error: "bad" } }]);
   let message = "";
   try {

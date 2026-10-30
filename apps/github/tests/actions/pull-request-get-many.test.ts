@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/pull-request-get-many.ts";
 
-Deno.test("pull-request-get-many: GETs /pulls with the filters", async () => {
+test("pull-request-get-many: GETs /pulls with the filters", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await action.execute({ owner: "acme", repository: "api", state: "closed", base: "main" }, ctx);
   const q = new URL(calls[0].url).searchParams;

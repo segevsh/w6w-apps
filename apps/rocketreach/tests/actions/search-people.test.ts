@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/search-people.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("search-people: POSTs the query as arrays to /person/search and maps the page", async () => {
+test("search-people: POSTs the query as arrays to /person/search and maps the page", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: {
@@ -27,13 +28,13 @@ Deno.test("search-people: POSTs the query as arrays to /person/search and maps t
   assertEquals(out.profiles[1].name, "B");
 });
 
-Deno.test("search-people: accepts the documented bare-array response and pages on a full page", async () => {
+test("search-people: accepts the documented bare-array response and pages on a full page", async () => {
   const { ctx } = mockCtx([{ status: 201, body: [{ id: 1 }, { id: 2 }] }]);
   const out = await run(action, { keyword: "data", page_size: 2, start: 5 }, ctx);
   assertEquals([out.count, out.start, out.nextStart], [2, 5, 7]);
 });
 
-Deno.test("search-people: refuses an empty search and surfaces a vendor 403", async () => {
+test("search-people: refuses an empty search and surfaces a vendor 403", async () => {
   const none = mockCtx();
   await assertRejects(() => run(action, {}, none.ctx), Error, "at least one search filter");
   assertEquals(none.calls.length, 0);
@@ -41,7 +42,7 @@ Deno.test("search-people: refuses an empty search and surfaces a vendor 403", as
   await assertRejects(() => run(action, { keyword: "x" }, bad.ctx), Error, "out of credits");
 });
 
-Deno.test("search-people: declares a default page size of 10", () => {
+test("search-people: declares a default page size of 10", () => {
   const p = action.params!.find((x) => x.key === "page_size");
   assertEquals(p?.default, 10);
 });

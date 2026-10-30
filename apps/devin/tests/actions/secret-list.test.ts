@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import secretList from "../../actions/secret-list.ts";
 import { API_ROOT, mockCtx } from "../_helpers.ts";
 
-Deno.test("secret-list: lists org secrets, mapped to { items, nextCursor }", async () => {
+test("secret-list: lists org secrets, mapped to { items, nextCursor }", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       items: [{
@@ -25,7 +26,7 @@ Deno.test("secret-list: lists org secrets, mapped to { items, nextCursor }", asy
   assertEquals(out.items[0].key, "GH_TOKEN");
 });
 
-Deno.test("secret-list: no secret value ever appears anywhere in the result", async () => {
+test("secret-list: no secret value ever appears anywhere in the result", async () => {
   const { ctx } = mockCtx([{
     body: {
       items: [{ secret_id: "secret-1", key: "GH_TOKEN", is_sensitive: true, access_type: "org" }],

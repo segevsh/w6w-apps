@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import guestAdd from "../../actions/guest-add.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("guest-add: posts the guest list and an optional single ticket type", async () => {
+test("guest-add: posts the guest list and an optional single ticket type", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await guestAdd.execute(
     {
@@ -23,7 +24,7 @@ Deno.test("guest-add: posts the guest list and an optional single ticket type", 
   });
 });
 
-Deno.test("guest-add: no ticket type set means no `ticket` key is sent", async () => {
+test("guest-add: no ticket type set means no `ticket` key is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await guestAdd.execute({ eventId: "evt-1", guests: [{ email: "a@b.com" }] }, ctx);
   assertEquals("ticket" in JSON.parse(calls[0].body!), false);

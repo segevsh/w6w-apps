@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-conversation.ts";
 
-Deno.test("create-conversation: POSTs /conversations with a customer thread, and reads the id off Resource-ID", async () => {
+test("create-conversation: POSTs /conversations with a customer thread, and reads the id off Resource-ID", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: { "resource-id": "123" } }]);
   const out = await action.execute({
     mailboxId: 85,
@@ -27,7 +28,7 @@ Deno.test("create-conversation: POSTs /conversations with a customer thread, and
   assertEquals(out, { id: 123 });
 });
 
-Deno.test("create-conversation: splits tags on commas", async () => {
+test("create-conversation: splits tags on commas", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, headers: {} }]);
   await action.execute({
     mailboxId: 1,

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/sms-send.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const INPUT = {
   realTimeResponse: true,
 };
 
-Deno.test("sms-send: POST /flow with one recipient per number carrying the variables", async () => {
+test("sms-send: POST /flow with one recipient per number carrying the variables", async () => {
   const { ctx, calls } = mockCtx([{
     body: { type: "success", message: "5e1e93cad6fc054d8e759a5b" },
   }]);
@@ -33,7 +34,7 @@ Deno.test("sms-send: POST /flow with one recipient per number carrying the varia
   assertEquals(out, { requestId: "5e1e93cad6fc054d8e759a5b", recipientCount: 2 });
 });
 
-Deno.test("sms-send: explicit recipients override mobiles and are normalised", async () => {
+test("sms-send: explicit recipients override mobiles and are normalised", async () => {
   const { ctx, calls } = mockCtx([{ body: { type: "success", message: "r1" } }]);
   await action.execute({
     templateId: "t",
@@ -48,13 +49,13 @@ Deno.test("sms-send: explicit recipients override mobiles and are normalised", a
   assertEquals("short_url" in body, false);
 });
 
-Deno.test("sms-send: requires a template and at least one number", async () => {
+test("sms-send: requires a template and at least one number", async () => {
   const { ctx } = mockCtx([]);
   await assertRejects(async () => await action.execute({ mobiles: "919876543210" }, ctx));
   await assertRejects(async () => await action.execute({ templateId: "t" }, ctx));
 });
 
-Deno.test("sms-send: puts no credential on the request (sign owns that)", async () => {
+test("sms-send: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     body: { type: "success", message: "5e1e93cad6fc054d8e759a5b" },
   }]);
@@ -68,7 +69,7 @@ Deno.test("sms-send: puts no credential on the request (sign owns that)", async 
   assert(calls[0].url.startsWith("https://control.msg91.com/api/v5/"));
 });
 
-Deno.test("sms-send: a vendor error surfaces its own message", async () => {
+test("sms-send: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ body: { type: "error", message: "Auth Key missing" } }]);
   const err = await assertRejects(async () =>
     await action.execute({

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-pdf.ts";
 
-Deno.test("create-pdf: POSTs /v2/create-pdf with template_id in the query and data in the body", async () => {
+test("create-pdf: POSTs /v2/create-pdf with template_id in the query and data in the body", async () => {
   const body = { status: "success", download_url: "https://x/y.pdf", total_pages: 3 };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!(
@@ -18,7 +19,7 @@ Deno.test("create-pdf: POSTs /v2/create-pdf with template_id in the query and da
   assertEquals(result, body);
 });
 
-Deno.test("create-pdf: forwards filename, expiration, cmyk flag, and pdf standard", async () => {
+test("create-pdf: forwards filename, expiration, cmyk flag, and pdf standard", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await action.execute!(
     {
@@ -38,7 +39,7 @@ Deno.test("create-pdf: forwards filename, expiration, cmyk flag, and pdf standar
   assertEquals(url.searchParams.get("pdf_standard"), "PDFA1B");
 });
 
-Deno.test("create-pdf: omits is_cmyk and pdf_standard when unset", async () => {
+test("create-pdf: omits is_cmyk and pdf_standard when unset", async () => {
   const { ctx, calls } = mockCtx([{ body: { status: "success" } }]);
   await action.execute!({ templateId: "tpl-2", data: {} }, ctx);
   const url = new URL(calls[0].url);

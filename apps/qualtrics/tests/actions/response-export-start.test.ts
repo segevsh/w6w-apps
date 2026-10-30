@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import responseExportStart from "../../actions/response-export-start.ts";
 import { API_ROOT, envelope, mockCtx } from "../_helpers.ts";
 
-Deno.test("response-export-start: POSTs the required format body to export-responses", async () => {
+test("response-export-start: POSTs the required format body to export-responses", async () => {
   const { ctx, calls } = mockCtx([
     { body: envelope({ progressId: "ES_1", percentComplete: 0, status: "inProgress" }) },
   ]);
@@ -17,7 +18,7 @@ Deno.test("response-export-start: POSTs the required format body to export-respo
   assertEquals(out.progressId, "ES_1");
 });
 
-Deno.test("response-export-start: format defaults to json", async () => {
+test("response-export-start: format defaults to json", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ progressId: "ES_1" }) }]);
   await responseExportStart.execute({ surveyId: "SV_1" }, ctx);
 
@@ -28,12 +29,12 @@ Deno.test("response-export-start: format defaults to json", async () => {
  * Each call starts a fresh job and returns a new progressId. Marking it
  * retryable would turn one dropped connection into two exports.
  */
-Deno.test("response-export-start: is a perform that is not idempotent", () => {
+test("response-export-start: is a perform that is not idempotent", () => {
   assertEquals(responseExportStart.type, "perform");
   assertEquals(responseExportStart.idempotent, false);
 });
 
-Deno.test("response-export-start: only the verified format field is sent", async () => {
+test("response-export-start: only the verified format field is sent", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope({ progressId: "ES_1" }) }]);
   await responseExportStart.execute({ surveyId: "SV_1", format: "json" }, ctx);
 

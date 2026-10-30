@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import add from "../../actions/competitor-add.ts";
 import { envelope, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("competitor-add: POST with the account in id", async () => {
+test("competitor-add: POST with the account in id", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(true) }]);
   assertEquals(await add.execute({ blogId: "9", network: "twitter", id: "rival" }, ctx), {
     success: true,

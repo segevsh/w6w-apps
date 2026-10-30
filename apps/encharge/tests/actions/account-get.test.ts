@@ -1,18 +1,19 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import accountGet from "../../actions/account-get.ts";
 import { errBody, mockCtx } from "../_helpers.ts";
 
 const run = (ctx: Parameters<typeof accountGet.execute>[1]) =>
   accountGet.execute({} as never, ctx) as Promise<unknown>;
 
-Deno.test("account-get: declares a read action", () => {
+test("account-get: declares a read action", () => {
   assertEquals(accountGet.key, "account-get");
   assertEquals(accountGet.type, "read");
   assert((accountGet.description ?? "").length > 0);
   assert(Array.isArray(accountGet.output) && accountGet.output.length > 0);
 });
 
-Deno.test("account-get: GETs /accounts/info and returns the documented members", async () => {
+test("account-get: GETs /accounts/info and returns the documented members", async () => {
   const body = {
     accountId: "a1",
     name: "Acme",
@@ -28,7 +29,7 @@ Deno.test("account-get: GETs /accounts/info and returns the documented members",
   assertEquals(calls[0].url, "https://api.encharge.io/v1/accounts/info");
 });
 
-Deno.test("account-get: an Encharge failure is thrown with its message", async () => {
+test("account-get: an Encharge failure is thrown with its message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: errBody("User not logged in") }]);
   await assertRejects(() => run(ctx), Error, "User not logged in");
 });

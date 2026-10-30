@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import listFolders from "../../actions/list-folders.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("list-folders: calls GET /folders with compacted query params", async () => {
+test("list-folders: calls GET /folders with compacted query params", async () => {
   const { ctx, calls } = mockCtx([{
     body: { data: [{ id: "f1", name: "Marketing" }], hasMore: false, nextCursor: null },
   }]);

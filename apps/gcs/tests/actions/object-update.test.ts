@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/object-update.ts";
 
@@ -7,7 +8,7 @@ const patched = {
   body: { name: "a.txt", generation: "1700000000000001", metageneration: "3" },
 };
 
-Deno.test("object-update: PATCHes the object's metadata", async () => {
+test("object-update: PATCHes the object's metadata", async () => {
   const { ctx, calls } = mockCtx([patched]);
   const result = await action.execute(
     { bucket: "uploads", object: "a.txt", contentType: "text/csv" },
@@ -19,7 +20,7 @@ Deno.test("object-update: PATCHes the object's metadata", async () => {
 });
 
 /** Metadata edits bump the metageneration; the bytes did not move. */
-Deno.test("object-update: the generation is unchanged and the metageneration is not", async () => {
+test("object-update: the generation is unchanged and the metageneration is not", async () => {
   const { ctx } = mockCtx([patched]);
   const result = await action.execute(
     { bucket: "uploads", object: "a.txt", cacheControl: "no-store" },
@@ -30,7 +31,7 @@ Deno.test("object-update: the generation is unchanged and the metageneration is 
 });
 
 /** Sending one key leaves the object with only that key. */
-Deno.test("object-update: custom metadata replaces the whole map, and says so", async () => {
+test("object-update: custom metadata replaces the whole map, and says so", async () => {
   const { ctx, logs } = mockCtx([patched]);
   await action.execute(
     { bucket: "uploads", object: "a.txt", metadata: '{"owner":"jane"}' },
@@ -42,7 +43,7 @@ Deno.test("object-update: custom metadata replaces the whole map, and says so", 
 });
 
 /** An empty object is how the map is cleared, and must survive compaction. */
-Deno.test("object-update: an empty metadata object clears it rather than being dropped", async () => {
+test("object-update: an empty metadata object clears it rather than being dropped", async () => {
   const { ctx, calls } = mockCtx([patched]);
   await action.execute({ bucket: "uploads", object: "a.txt", metadata: "{}" }, ctx);
   const body = JSON.parse(calls[0].body!);
@@ -50,7 +51,7 @@ Deno.test("object-update: an empty metadata object clears it rather than being d
   assertEquals(body.metadata, {});
 });
 
-Deno.test("object-update: metadata must be an object, not a list", async () => {
+test("object-update: metadata must be an object, not a list", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {
@@ -63,7 +64,7 @@ Deno.test("object-update: metadata must be an object, not a list", async () => {
 });
 
 /** Metadata edits bump the metageneration, not the generation. */
-Deno.test("object-update: the precondition is on the metageneration, and says so", async () => {
+test("object-update: the precondition is on the metageneration, and says so", async () => {
   const { ctx, calls } = mockCtx([patched]);
   await action.execute({
     bucket: "uploads",
@@ -77,7 +78,7 @@ Deno.test("object-update: the precondition is on the metageneration, and says so
 });
 
 /** A colder class starts its minimum billed duration afresh. */
-Deno.test("object-update: the storage class options name their minimums", () => {
+test("object-update: the storage class options name their minimums", () => {
   const options = action.params!.find((p) => p.key === "storageClass")!.options as Array<
     { value: string; label: string }
   >;
@@ -85,7 +86,7 @@ Deno.test("object-update: the storage class options name their minimums", () => 
   assert(/restarts its minimum billed duration/.test(action.description!), action.description);
 });
 
-Deno.test("object-update: a PATCH with nothing in it is refused", async () => {
+test("object-update: a PATCH with nothing in it is refused", async () => {
   const { ctx, calls } = mockCtx([]);
   let message = "";
   try {

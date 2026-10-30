@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import mailboxList from "../../actions/mailbox-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("mailbox-list: lists mailboxes", async () => {
+test("mailbox-list: lists mailboxes", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: [{
@@ -24,7 +25,7 @@ Deno.test("mailbox-list: lists mailboxes", async () => {
   assertEquals((out.mailboxes as Array<{ id: number }>)[0].id, 123456);
 });
 
-Deno.test("mailbox-list: no mailboxes is an empty list", async () => {
+test("mailbox-list: no mailboxes is an empty list", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [] }]);
   const out = await mailboxList.execute({} as never, ctx) as Record<string, unknown>;
   assertEquals(calls.length, 1);

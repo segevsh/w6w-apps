@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-email-log.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-email-log: encodes the message id and maps the raw message", async () => {
+test("get-email-log: encodes the message id and maps the raw message", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       data: {
@@ -26,7 +27,7 @@ Deno.test("get-email-log: encodes the message id and maps the raw message", asyn
   });
 });
 
-Deno.test("get-email-log: a 404 throws", async () => {
+test("get-email-log: a 404 throws", async () => {
   const { ctx } = mockCtx([{ status: 404, body: { error: { message: "Email not found" } } }]);
   await assertRejects(() => run(action, { messageId: "x" }, ctx), Error, "Email not found");
 });

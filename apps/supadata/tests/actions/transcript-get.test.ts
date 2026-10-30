@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import transcriptGet from "../../actions/transcript-get.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("transcript-get: GETs /transcript with only the set params and flags a finished transcript", async () => {
+test("transcript-get: GETs /transcript with only the set params and flags a finished transcript", async () => {
   const body = {
     content: [{ text: "hi", offset: 0, duration: 900 }],
     lang: "en",
@@ -26,14 +27,14 @@ Deno.test("transcript-get: GETs /transcript with only the set params and flags a
   assertEquals(calls[0].headers["x-api-key"], undefined);
 });
 
-Deno.test("transcript-get: text=true is sent and a job id answer is pending", async () => {
+test("transcript-get: text=true is sent and a job id answer is pending", async () => {
   const { ctx, calls } = mockCtx([{ status: 202, body: { jobId: "job-1" } }]);
   const out = await transcriptGet.execute({ url: "https://x.test/v.mp4", text: true }, ctx);
   assertEquals(out, { pending: true, jobId: "job-1" });
   assertEquals(new URL(calls[0].url).searchParams.get("text"), "true");
 });
 
-Deno.test("transcript-get: a 206 transcript-unavailable envelope is thrown, not returned", async () => {
+test("transcript-get: a 206 transcript-unavailable envelope is thrown, not returned", async () => {
   const { ctx } = mockCtx([{
     status: 206,
     body: {
@@ -49,7 +50,7 @@ Deno.test("transcript-get: a 206 transcript-unavailable envelope is thrown, not 
   );
 });
 
-Deno.test("transcript-get: url is required and no request is made without it", async () => {
+test("transcript-get: url is required and no request is made without it", async () => {
   const { ctx, calls } = mockCtx();
   await assertRejects(
     async () => await transcriptGet.execute({ url: " " }, ctx),

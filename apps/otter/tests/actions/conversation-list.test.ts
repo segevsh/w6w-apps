@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationList from "../../actions/conversation-list.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("conversation-list: fetches GET /conversations with the given filters", async () => {
+test("conversation-list: fetches GET /conversations with the given filters", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       meta: { retrieved_at: "2026-09-29T00:00:00Z", has_more: true, next_cursor: "abc" },
@@ -25,7 +26,7 @@ Deno.test("conversation-list: fetches GET /conversations with the given filters"
   assertEquals(out.data[0].id, "conv1");
 });
 
-Deno.test("conversation-list: omits unset filters entirely", async () => {
+test("conversation-list: omits unset filters entirely", async () => {
   const { ctx, calls } = mockCtx([{ body: { meta: {}, data: [] } }]);
   await conversationList.execute({}, ctx);
 
@@ -33,6 +34,6 @@ Deno.test("conversation-list: omits unset filters entirely", async () => {
   assertEquals(url.search, "");
 });
 
-Deno.test("conversation-list: is a search action, not read", () => {
+test("conversation-list: is a search action, not read", () => {
   assertEquals(conversationList.type, "search");
 });

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import service, { mapComponentStatus, STATUS_URL } from "../../health/service.ts";
 import { mockCtx } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const page = { id: "m8f43n57h83g", name: "WorkFlowy", url: "https://status.workf
 const comp = (id: string, name: string, status: string) => ({ id, name, status, group: false });
 const run = (ctx: never) => service.check!({} as never, ctx);
 
-Deno.test("service: all operational is ok, keyed by component id", async () => {
+test("service: all operational is ok, keyed by component id", async () => {
   const { ctx, calls } = mockCtx([{
     body: {
       page,
@@ -19,7 +20,7 @@ Deno.test("service: all operational is ok, keyed by component id", async () => {
   assertEquals(calls[0].url, STATUS_URL);
 });
 
-Deno.test("service: the API component decides; another component's outage does not", async () => {
+test("service: the API component decides; another component's outage does not", async () => {
   const web = mockCtx([{
     body: {
       page,
@@ -35,7 +36,7 @@ Deno.test("service: the API component decides; another component's outage does n
   assertEquals((await run(part.ctx as never)).state, "degraded");
 });
 
-Deno.test("service: a foreign page, missing API component or bad HTTP is unknown, never down", async () => {
+test("service: a foreign page, missing API component or bad HTTP is unknown, never down", async () => {
   const foreign = mockCtx([{
     body: {
       page: { url: "https://status.other.com" },
@@ -51,7 +52,7 @@ Deno.test("service: a foreign page, missing API component or bad HTTP is unknown
   assertEquals((await run(empty.ctx as never)).state, "unknown");
 });
 
-Deno.test("service: mapComponentStatus vocabulary", () => {
+test("service: mapComponentStatus vocabulary", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("under_maintenance"), "degraded");
   assertEquals(mapComponentStatus("major_outage"), "down");

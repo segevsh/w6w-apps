@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/get-usage.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
-Deno.test("get-usage: sends the documented request and maps the answer", async () => {
+test("get-usage: sends the documented request and maps the answer", async () => {
   const { ctx, calls } = mockCtx([{
     body: { "results": [{ "date": "2026-09-01", "usedCredits": [] }], "models": ["gen4.5"] },
   }]);
@@ -21,7 +22,7 @@ Deno.test("get-usage: sends the documented request and maps the answer", async (
   });
 });
 
-Deno.test("get-usage: a 401 surfaces Runway's error text", async () => {
+test("get-usage: a 401 surfaces Runway's error text", async () => {
   const bad = mockCtx([{
     status: 401,
     body: { error: "No API key was provided." },

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/delete-bin.ts";
 
-Deno.test("delete-bin: DELETEs /api/bin/:binId", async () => {
+test("delete-bin: DELETEs /api/bin/:binId", async () => {
   const { ctx, calls } = mockCtx([{ body: { msg: "Bin Deleted" } }]);
   const out = await action.execute({ binId: "YS4il4gS" }, ctx);
 
@@ -11,6 +12,6 @@ Deno.test("delete-bin: DELETEs /api/bin/:binId", async () => {
   assertEquals(out.msg, "Bin Deleted");
 });
 
-Deno.test("delete-bin: declares idempotent (PostBin returns 200 even for an already-gone bin)", () => {
+test("delete-bin: declares idempotent (PostBin returns 200 even for an already-gone bin)", () => {
   assertEquals(action.idempotent, true);
 });

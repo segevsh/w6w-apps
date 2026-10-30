@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import raindropGet from "../../actions/raindrop-get.ts";
 import { item, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -7,7 +8,7 @@ import { item, mockCtx, pathOf } from "../_helpers.ts";
  * raindrop id as a *collection* id — returning an empty list rather than an
  * error, which is the worst possible failure mode.
  */
-Deno.test("raindrop-get: reads the SINGULAR raindrop path", async () => {
+test("raindrop-get: reads the SINGULAR raindrop path", async () => {
   const { ctx, calls } = mockCtx([{ body: item({ _id: 373777232, link: "https://x" }) }]);
   const out = await raindropGet.execute({ raindropId: 373777232 }, ctx) as { item: unknown };
 
@@ -20,7 +21,7 @@ Deno.test("raindrop-get: reads the SINGULAR raindrop path", async () => {
  * Highlights are a field of the raindrop, not a resource with its own read path
  * — this call is what the reference means by "Get highlights of raindrop".
  */
-Deno.test("raindrop-get: returns the highlights carried on the bookmark", async () => {
+test("raindrop-get: returns the highlights carried on the bookmark", async () => {
   const { ctx } = mockCtx([
     { body: item({ _id: 1, highlights: [{ _id: "62388e9e48b63606f41e44a6", text: "quote" }] }) },
   ]);

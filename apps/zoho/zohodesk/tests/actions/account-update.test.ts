@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockDeskCtx } from "../_helpers.ts";
 import action from "../../actions/account-update.ts";
 
-Deno.test("account-update: PATCHes /accounts/{id}", async () => {
+test("account-update: PATCHes /accounts/{id}", async () => {
   const { ctx, calls } = mockDeskCtx([{ body: { id: "3", website: "https://acme.com" } }]);
   const out = await action.execute(
     { recordId: "3", fields: { website: "https://acme.com" } },
@@ -13,6 +14,6 @@ Deno.test("account-update: PATCHes /accounts/{id}", async () => {
   assertEquals(out, { id: "3", website: "https://acme.com" });
 });
 
-Deno.test("account-update: is idempotent", () => {
+test("account-update: is idempotent", () => {
   assertEquals(action.idempotent, true);
 });

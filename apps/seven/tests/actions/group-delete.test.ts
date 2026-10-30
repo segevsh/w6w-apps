@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import groupDelete from "../../actions/group-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
@@ -6,7 +7,7 @@ const INPUT = { "id": 17923, "delete_contacts": false } as Parameters<
   typeof groupDelete.execute
 >[0];
 
-Deno.test("group-delete: DELETE /api/groups/17923 with the documented fields", async () => {
+test("group-delete: DELETE /api/groups/17923 with the documented fields", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, headers: {}, body: "" }]);
   const out = await groupDelete.execute(INPUT, ctx) as Record<string, unknown>;
 
@@ -22,14 +23,14 @@ Deno.test("group-delete: DELETE /api/groups/17923 with the documented fields", a
   assertEquals(out.deleted, true);
 });
 
-Deno.test("group-delete: declares type perform and every required param", () => {
+test("group-delete: declares type perform and every required param", () => {
   const required = (groupDelete.params ?? []).filter((p) => p.required).map((p) => p.key).sort();
   assertEquals(required, ["id"]);
   assert(["read", "search", "perform"].includes(groupDelete.type));
   assertEquals(groupDelete.type, "perform");
 });
 
-Deno.test("group-delete: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
+test("group-delete: a refused key (bare code 900 in an HTTP 200) is thrown, not returned", async () => {
   const { ctx } = mockCtx([{ body: '"900"' }]);
   let message = "";
   try {

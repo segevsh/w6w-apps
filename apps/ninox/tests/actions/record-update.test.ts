@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { connCtx, envelope, errorBody, pathOf, WS } from "../_helpers.ts";
 import action from "../../actions/record-update.ts";
 
-Deno.test("record-update: PATCHes {records} with ids", async () => {
+test("record-update: PATCHes {records} with ids", async () => {
   const { ctx, calls } = connCtx([{ body: envelope({ updatedIds: ["1"] }) }]);
   const out = await action.execute(
     { moduleName: "crm", tableName: "contacts", records: [{ id: 1, name: "Z" }] },
@@ -15,7 +16,7 @@ Deno.test("record-update: PATCHes {records} with ids", async () => {
   assertEquals(action.idempotent, true);
 });
 
-Deno.test("record-update: an entry without a positive integer id is rejected locally", async () => {
+test("record-update: an entry without a positive integer id is rejected locally", async () => {
   const { ctx, calls } = connCtx();
   for (const bad of [{ name: "x" }, { id: 0 }, { id: "abc" }, { id: 1.5 }]) {
     await assertRejects(
@@ -27,7 +28,7 @@ Deno.test("record-update: an entry without a positive integer id is rejected loc
   assertEquals(calls.length, 0);
 });
 
-Deno.test("record-update: a 413 is an error", async () => {
+test("record-update: a 413 is an error", async () => {
   const { ctx } = connCtx([{ status: 413, body: errorBody("Payload too large") }]);
   await assertRejects(
     async () =>

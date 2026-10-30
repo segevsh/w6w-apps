@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockFreshserviceCtx } from "../_helpers.ts";
 import action from "../../actions/asset-create.ts";
 
-Deno.test("asset-create: POSTs /assets and unwraps `asset`", async () => {
+test("asset-create: POSTs /assets and unwraps `asset`", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { asset: { id: 1, display_id: 5 } } }]);
   const out = await action.execute({ name: "Macbook Pro", assetTypeId: 25 }, ctx);
   assertEquals(calls[0].url, "https://acme.freshservice.com/api/v2/assets");
@@ -11,7 +12,7 @@ Deno.test("asset-create: POSTs /assets and unwraps `asset`", async () => {
   assertEquals(out, { id: 1, display_id: 5 });
 });
 
-Deno.test("asset-create: passes type_fields through as the flat suffixed map", async () => {
+test("asset-create: passes type_fields through as the flat suffixed map", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: {} }]);
   await action.execute({
     name: "n",
@@ -24,7 +25,7 @@ Deno.test("asset-create: passes type_fields through as the flat suffixed map", a
   });
 });
 
-Deno.test("asset-create: rejects a non-object type_fields instead of sending nonsense", () => {
+test("asset-create: rejects a non-object type_fields instead of sending nonsense", () => {
   const { ctx } = mockFreshserviceCtx();
   assertThrows(
     () => action.execute({ name: "n", assetTypeId: 25, typeFields: "[1,2]" }, ctx),
@@ -33,7 +34,7 @@ Deno.test("asset-create: rejects a non-object type_fields instead of sending non
   );
 });
 
-Deno.test("asset-create: impact and usage type are strings here, not the ticket integers", () => {
+test("asset-create: impact and usage type are strings here, not the ticket integers", () => {
   const impact = action.params?.find((p) => p.key === "impact");
   assertEquals(impact?.default, "low");
   assertEquals((impact?.options as { value: string }[])[0].value, "low");

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/shipment-create.ts";
 
@@ -6,7 +7,7 @@ const rated = (rates: unknown[]) => ({ status: 200, body: { id: "shp_1", rates }
 const addr = '{"street1":"179 N Harbor Dr","city":"Redondo Beach","state":"CA","zip":"90277"}';
 const parcel = '{"length":10,"width":8,"height":4,"weight":16}';
 
-Deno.test("shipment-create: wraps the body and sends both addresses and the parcel", async () => {
+test("shipment-create: wraps the body and sends both addresses and the parcel", async () => {
   const { ctx, calls } = mockCtx([rated([])]);
   await action.execute!({ toAddress: addr, fromAddress: "adr_home", parcel }, ctx);
   assertEquals(calls[0].url, "https://api.easypost.com/v2/shipments");
@@ -22,7 +23,7 @@ Deno.test("shipment-create: wraps the body and sends both addresses and the parc
  * `rate` is a string, so comparing lexically puts "9.99" above "10.05" — which
  * buys the wrong label and is never noticed.
  */
-Deno.test("shipment-create: sorts rates numerically and surfaces the cheapest", async () => {
+test("shipment-create: sorts rates numerically and surfaces the cheapest", async () => {
   const { ctx } = mockCtx([rated([
     { id: "r1", rate: "10.05", carrier: "UPS" },
     { id: "r2", rate: "9.99", carrier: "USPS" },
@@ -39,7 +40,7 @@ Deno.test("shipment-create: sorts rates numerically and surfaces the cheapest", 
 });
 
 /** No rates is a real outcome — no carrier account can serve the route. */
-Deno.test("shipment-create: an empty rate list is warned about", async () => {
+test("shipment-create: an empty rate list is warned about", async () => {
   const { ctx, logs } = mockCtx([rated([])]);
   await action.execute!({ toAddress: addr, fromAddress: addr, parcel }, ctx);
   assert(logs.some((l) => l.level === "warn" && /no rates/.test(l.message)), JSON.stringify(logs));
@@ -49,13 +50,13 @@ Deno.test("shipment-create: an empty rate list is warned about", async () => {
  * EasyPost's one-call buy purchases immediately when `service` is included in
  * creation. A step named "create shipment" must not spend money.
  */
-Deno.test("shipment-create: offers no service parameter, so it cannot buy by accident", () => {
+test("shipment-create: offers no service parameter, so it cannot buy by accident", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assert(!keys.includes("service"), keys.join(","));
   assert(/BUYS NOTHING/.test(action.description!), action.description);
 });
 
-Deno.test("shipment-create: carrier accounts become id references", async () => {
+test("shipment-create: carrier accounts become id references", async () => {
   const { ctx, calls } = mockCtx([rated([])]);
   await action.execute!({
     toAddress: addr,
@@ -69,7 +70,7 @@ Deno.test("shipment-create: carrier accounts become id references", async () => 
   ]);
 });
 
-Deno.test("shipment-create: all three of address, address and parcel are required", async () => {
+test("shipment-create: all three of address, address and parcel are required", async () => {
   for (const missing of ["toAddress", "fromAddress", "parcel"]) {
     const input: Record<string, unknown> = { toAddress: addr, fromAddress: addr, parcel };
     input[missing] = "";
@@ -79,7 +80,7 @@ Deno.test("shipment-create: all three of address, address and parcel are require
   }
 });
 
-Deno.test("shipment-create: logs the shipment and rate count, not the addresses", async () => {
+test("shipment-create: logs the shipment and rate count, not the addresses", async () => {
   const { ctx, logs } = mockCtx([rated([{ id: "r1", rate: "9.99" }])]);
   await action.execute!({ toAddress: addr, fromAddress: addr, parcel }, ctx);
   assert(!JSON.stringify(logs).includes("Redondo"), JSON.stringify(logs));

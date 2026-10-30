@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares the Facebook authorize/token endpoints and required scopes", () => {
+test("oauth2: declares the Facebook authorize/token endpoints and required scopes", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://www.facebook.com/v23.0/dialog/oauth");
@@ -18,7 +19,7 @@ Deno.test("oauth2: declares the Facebook authorize/token endpoints and required 
   ]);
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -29,7 +30,7 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
+test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -37,7 +38,7 @@ Deno.test("oauth2: test with missing accessToken reports the failure without a n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test issues GET /me with Bearer token", async () => {
+test("oauth2: test issues GET /me with Bearer token", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "u1", name: "Test" } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -46,14 +47,14 @@ Deno.test("oauth2: test issues GET /me with Bearer token", async () => {
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test returns the upstream status on non-2xx", async () => {
+test("oauth2: test returns the upstream status on non-2xx", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("oauth2: afterConnect labels the connection with the user's id/name", async () => {
+test("oauth2: afterConnect labels the connection with the user's id/name", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { id: "u1", name: "Ada" } }]);
   const result = await auth.afterConnect!({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result, { user: { id: "u1", name: "Ada" } });

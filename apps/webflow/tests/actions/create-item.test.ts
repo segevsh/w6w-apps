@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-item.ts";
 
-Deno.test("create-item: POSTs fieldData to /v2/collections/{id}/items (staged)", async () => {
+test("create-item: POSTs fieldData to /v2/collections/{id}/items (staged)", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i1" } }]);
   await action.execute!(
     { collectionId: "c1", fieldData: { name: "Hi", slug: "hi" }, isDraft: true },
@@ -16,7 +17,7 @@ Deno.test("create-item: POSTs fieldData to /v2/collections/{id}/items (staged)",
   });
 });
 
-Deno.test("create-item: uses the /live variant when live is set", async () => {
+test("create-item: uses the /live variant when live is set", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "i1" } }]);
   await action.execute!({ collectionId: "c1", fieldData: { name: "Hi" }, live: true }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v2/collections/c1/items/live");

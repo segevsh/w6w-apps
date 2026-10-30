@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import getRandomGif from "../../actions/get-random-gif.ts";
 import { envelope, gif, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("get-random-gif: calls GET /v1/gifs/random and returns a SINGLE object", async () => {
+test("get-random-gif: calls GET /v1/gifs/random and returns a SINGLE object", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   const out = await getRandomGif.execute({ tag: "celebrate", rating: "g" }, ctx) as {
     data: { id: string; images: { original: { width: string } } };
@@ -17,7 +18,7 @@ Deno.test("get-random-gif: calls GET /v1/gifs/random and returns a SINGLE object
   assertEquals(out.data.images.original.width, "480");
 });
 
-Deno.test("get-random-gif: a bare call sends no query at all", async () => {
+test("get-random-gif: a bare call sends no query at all", async () => {
   const { ctx, calls } = mockCtx([{ body: envelope(gif()) }]);
   await getRandomGif.execute({}, ctx);
   assertEquals(queryOf(calls[0].url), {});

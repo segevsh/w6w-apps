@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import contactUpdate from "../../actions/contact-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("contact-update: PATCHes only the fields provided", async () => {
+test("contact-update: PATCHes only the fields provided", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42, firstName: "Ada" } }]);
   await contactUpdate.execute({ id: 42, firstName: "Ada" }, ctx);
 
@@ -17,7 +18,7 @@ Deno.test("contact-update: PATCHes only the fields provided", async () => {
  * the one behaviour worth pinning — using the wrong shape silently fails to
  * match an existing field.
  */
-Deno.test("contact-update: customFields uses {id|name, value}, not {key, value}", async () => {
+test("contact-update: customFields uses {id|name, value}, not {key, value}", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }]);
   await contactUpdate.execute(
     { id: 42, customFields: '[{"name":"leadSource","value":"Conference"}]' },
@@ -28,7 +29,7 @@ Deno.test("contact-update: customFields uses {id|name, value}, not {key, value}"
   assertEquals(body.customFields, [{ name: "leadSource", value: "Conference" }]);
 });
 
-Deno.test('contact-update: callStatus/meetingStatus accept the literal "none" to clear', async () => {
+test('contact-update: callStatus/meetingStatus accept the literal "none" to clear', async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 42 } }]);
   await contactUpdate.execute({ id: 42, callStatus: "none", meetingStatus: "none" }, ctx);
 
@@ -37,6 +38,6 @@ Deno.test('contact-update: callStatus/meetingStatus accept the literal "none" to
   assertEquals(body.meetingStatus, "none");
 });
 
-Deno.test("contact-update: is idempotent — re-applying the same patch is a no-op", () => {
+test("contact-update: is idempotent — re-applying the same patch is a no-op", () => {
   assertEquals(contactUpdate.idempotent, true);
 });

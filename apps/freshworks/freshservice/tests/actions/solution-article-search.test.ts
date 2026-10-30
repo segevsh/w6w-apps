@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshserviceCtx } from "../_helpers.ts";
 import action from "../../actions/solution-article-search.ts";
 
-Deno.test("solution-article-search: GETs the search path and unwraps `articles`", async () => {
+test("solution-article-search: GETs the search path and unwraps `articles`", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { articles: [{ id: 2886 }] } }]);
   const out = await action.execute({ searchTerm: "printer" }, ctx);
   assertEquals(
@@ -12,7 +13,7 @@ Deno.test("solution-article-search: GETs the search path and unwraps `articles`"
   assertEquals(out, { articles: [{ id: 2886 }] });
 });
 
-Deno.test("solution-article-search: passes user_email for an impersonated search", async () => {
+test("solution-article-search: passes user_email for an impersonated search", async () => {
   const { ctx, calls } = mockFreshserviceCtx([{ body: { articles: [] } }]);
   await action.execute(
     { searchTerm: "vpn issue", userEmail: "andrea@acme.test", perPage: 10 },

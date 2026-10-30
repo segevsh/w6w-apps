@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import messagesList from "../../actions/messages-list.ts";
 
-Deno.test("messages-list: lists with no filters", async () => {
+test("messages-list: lists with no filters", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": { "messages": [] } } }]);
   const out = await messagesList.execute!({ "chatId": 5 } as never, ctx);
   assertEquals(calls.length, 1);
@@ -17,7 +18,7 @@ Deno.test("messages-list: lists with no filters", async () => {
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("messages-list: maps the filters, keeping from_me=false", async () => {
+test("messages-list: maps the filters, keeping from_me=false", async () => {
   const { ctx, calls } = mockCtx([{ body: { "status": "ok", "data": {} } }]);
   const out = await messagesList.execute!(
     { "chatId": 5, "fromMe": false, "afterMessage": "u1", "sortingOrder": "asc" } as never,
@@ -38,7 +39,7 @@ Deno.test("messages-list: maps the filters, keeping from_me=false", async () => 
   assertEquals((out as { status: string }).status, "ok");
 });
 
-Deno.test("messages-list: refuses an empty path id before the network", async () => {
+test("messages-list: refuses an empty path id before the network", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => {
     await messagesList.execute!({ "chatId": "" } as never, ctx);
@@ -47,7 +48,7 @@ Deno.test("messages-list: refuses an empty path id before the network", async ()
   assertEquals(calls.length, 0, "must not reach the network");
 });
 
-Deno.test("messages-list: surfaces a vendor error envelope", async () => {
+test("messages-list: surfaces a vendor error envelope", async () => {
   const { ctx } = mockCtx([{
     status: 404,
     body: { status: "error", message: "not found", error_code: "not_found" },

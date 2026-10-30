@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import webhookGet from "../../actions/webhook-get.ts";
 import { entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-get: strips the token from the single-entity read too", async () => {
+test("webhook-get: strips the token from the single-entity read too", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: entityBody("webhook", {

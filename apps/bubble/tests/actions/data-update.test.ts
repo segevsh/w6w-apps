@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/data-update.ts";
 
 const display = { baseUrl: "https://myapp.bubbleapps.io" };
 
-Deno.test("data-update: PATCHes only the given fields and treats 204 as success", async () => {
+test("data-update: PATCHes only the given fields and treats 204 as success", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }], { display });
 
   const out = await action.execute({
@@ -19,6 +20,6 @@ Deno.test("data-update: PATCHes only the given fields and treats 204 as success"
   assertEquals(out, { ok: true });
 });
 
-Deno.test("data-update: is declared idempotent — the same fields land in the same state", () => {
+test("data-update: is declared idempotent — the same fields land in the same state", () => {
   assertEquals(action.idempotent, true);
 });

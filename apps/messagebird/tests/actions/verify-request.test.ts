@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 import action from "../../actions/verify-request.ts";
 
-Deno.test("verify-request: POSTs a JSON body to /verify with a stripped msisdn", async () => {
+test("verify-request: POSTs a JSON body to /verify with a stripped msisdn", async () => {
   const body = {
     id: "4e213b01155d1e35a9d9571v00162985",
     recipient: 31612345678,
@@ -21,7 +22,7 @@ Deno.test("verify-request: POSTs a JSON body to /verify with a stripped msisdn",
 });
 
 /** Email is the one delivery channel where the recipient is NOT a phone number. */
-Deno.test("verify-request: an email recipient is sent verbatim, not msisdn-stripped", async () => {
+test("verify-request: an email recipient is sent verbatim, not msisdn-stripped", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     { recipient: "client-email@example.com", type: "email", originator: "verify@company.com" },
@@ -32,7 +33,7 @@ Deno.test("verify-request: an email recipient is sent verbatim, not msisdn-strip
   assertEquals(sent.type, "email");
 });
 
-Deno.test("verify-request: passes template, timeout, tokenLength, maxAttempts, voice, language", async () => {
+test("verify-request: passes template, timeout, tokenLength, maxAttempts, voice, language", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!(
     {
@@ -56,11 +57,11 @@ Deno.test("verify-request: passes template, timeout, tokenLength, maxAttempts, v
   assertEquals(sent.language, "en-us");
 });
 
-Deno.test("verify-request: idempotent is explicitly false — a retry must not re-send a code", () => {
+test("verify-request: idempotent is explicitly false — a retry must not re-send a code", () => {
   assertEquals(action.idempotent, false);
 });
 
-Deno.test("verify-request: unset optional fields are omitted from the payload", async () => {
+test("verify-request: unset optional fields are omitted from the payload", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ recipient: "+1" }, ctx);
   const sent = JSON.parse(calls[0].body ?? "{}");

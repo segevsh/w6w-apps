@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/create-task.ts";
 
-Deno.test("create-task: POSTs /tasks with { data: {...} } including workspace, name, and extras", async () => {
+test("create-task: POSTs /tasks with { data: {...} } including workspace, name, and extras", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { gid: "t-1" } } }]);
   await action.execute({
     workspace: "ws-1",
@@ -19,21 +20,21 @@ Deno.test("create-task: POSTs /tasks with { data: {...} } including workspace, n
   });
 });
 
-Deno.test("create-task: drops empty projects array and undefined fields", async () => {
+test("create-task: drops empty projects array and undefined fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({ workspace: "ws-1", name: "hello", projects: [] }, ctx);
   const sent = JSON.parse(calls[0].body!);
   assert(!("projects" in sent.data));
 });
 
-Deno.test("create-task: new params are keyed exactly as Asana spells the field (the wholesale forward relies on it)", () => {
+test("create-task: new params are keyed exactly as Asana spells the field (the wholesale forward relies on it)", () => {
   const declared = new Set(action.params?.map((p) => p.key));
   for (const k of ["custom_fields", "followers", "html_notes", "start_on", "due_at"]) {
     assert(declared.has(k), `expected a param declared with key "${k}"`);
   }
 });
 
-Deno.test("create-task: forwards custom_fields/followers/html_notes/start_on/due_at verbatim", async () => {
+test("create-task: forwards custom_fields/followers/html_notes/start_on/due_at verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: {} } }]);
   await action.execute({
     workspace: "ws-1",

@@ -1,8 +1,9 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-categories.ts";
 
-Deno.test("list-categories: calls the documented path with the mapped query", async () => {
+test("list-categories: calls the documented path with the mapped query", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: [{ id: "layer-1" }] }]);
   const out = await action.execute!({ order: "name_asc" }, ctx);
   assertEquals(calls.length, 1);
@@ -12,7 +13,7 @@ Deno.test("list-categories: calls the documented path with the mapped query", as
   assert(out !== undefined);
 });
 
-Deno.test("list-categories: a vendor error body becomes a readable error", async () => {
+test("list-categories: a vendor error body becomes a readable error", async () => {
   const { ctx } = mockCtx([{
     status: 429,
     body: { status: { error_code: 429, error_message: "Rate limit" } },

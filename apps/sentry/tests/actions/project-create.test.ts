@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/project-create.ts";
 
 const display = { organizationSlug: "acme" };
 
-Deno.test("project-create: POSTs to the org's project collection", async () => {
+test("project-create: POSTs to the org's project collection", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: { slug: "new-svc" } }], { display });
   const result = await action.execute!({ name: "New Svc", platform: "node" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -13,13 +14,13 @@ Deno.test("project-create: POSTs to the org's project collection", async () => {
   assertEquals(result, { slug: "new-svc" });
 });
 
-Deno.test("project-create: defaultRules maps to Sentry's snake_case field", async () => {
+test("project-create: defaultRules maps to Sentry's snake_case field", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: {} }], { display });
   await action.execute!({ name: "Svc", defaultRules: false }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Svc", default_rules: false });
 });
 
-Deno.test("project-create: is honestly non-idempotent and needs a name", async () => {
+test("project-create: is honestly non-idempotent and needs a name", async () => {
   assertEquals(action.idempotent, false);
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(

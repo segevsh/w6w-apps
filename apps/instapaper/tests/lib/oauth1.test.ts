@@ -1,13 +1,14 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { buildOAuth1Header, parseFormBody, percentEncode } from "../../lib/oauth1.ts";
 
-Deno.test("oauth1: percentEncode escapes the RFC 3986 reserved set encodeURIComponent misses", () => {
+test("oauth1: percentEncode escapes the RFC 3986 reserved set encodeURIComponent misses", () => {
   assertEquals(percentEncode("a b"), "a%20b");
   assertEquals(percentEncode("a!b*c'd(e)f"), "a%21b%2Ac%27d%28e%29f");
   assertEquals(percentEncode("abc-._~"), "abc-._~");
 });
 
-Deno.test("parseFormBody: reads an application/x-www-form-urlencoded body into an object", () => {
+test("parseFormBody: reads an application/x-www-form-urlencoded body into an object", () => {
   assertEquals(parseFormBody("a=1&b=hello%20world"), { a: "1", b: "hello world" });
   assertEquals(parseFormBody(null), {});
   assertEquals(parseFormBody(undefined), {});
@@ -22,7 +23,7 @@ Deno.test("parseFormBody: reads an application/x-www-form-urlencoded body into a
  * here would still produce SOME signature — this is the only check that
  * catches producing the WRONG one.
  */
-Deno.test("oauth1: buildOAuth1Header matches an independently computed HMAC-SHA1 signature", async () => {
+test("oauth1: buildOAuth1Header matches an independently computed HMAC-SHA1 signature", async () => {
   const header = await buildOAuth1Header(
     "POST",
     "https://api.twitter.com/1/statuses/update.json",
@@ -48,7 +49,7 @@ Deno.test("oauth1: buildOAuth1Header matches an independently computed HMAC-SHA1
   );
 });
 
-Deno.test("oauth1: two-legged (no token) omits oauth_token entirely", async () => {
+test("oauth1: two-legged (no token) omits oauth_token entirely", async () => {
   const header = await buildOAuth1Header(
     "POST",
     "https://www.instapaper.com/api/1/oauth/access_token",
@@ -64,7 +65,7 @@ Deno.test("oauth1: two-legged (no token) omits oauth_token entirely", async () =
   assertEquals(header.includes('oauth_consumer_key="ck"'), true);
 });
 
-Deno.test("oauth1: query string on the URL is excluded from the base string, per Instapaper's own POST-body-only rule", async () => {
+test("oauth1: query string on the URL is excluded from the base string, per Instapaper's own POST-body-only rule", async () => {
   const withQuery = await buildOAuth1Header(
     "POST",
     "https://www.instapaper.com/api/1/folders/list?ignored=1",
@@ -82,7 +83,7 @@ Deno.test("oauth1: query string on the URL is excluded from the base string, per
   assertEquals(withQuery, withoutQuery);
 });
 
-Deno.test("oauth1: a different body produces a different signature", async () => {
+test("oauth1: a different body produces a different signature", async () => {
   const creds = { consumerKey: "ck", consumerSecret: "cs", token: "tk", tokenSecret: "ts" };
   const a = await buildOAuth1Header(
     "POST",

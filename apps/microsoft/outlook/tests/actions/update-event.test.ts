@@ -1,8 +1,9 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertThrows } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/update-event.ts";
 
-Deno.test("update-event: PATCHes only what changed", async () => {
+test("update-event: PATCHes only what changed", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "e1", subject: "Renamed" } }]);
   const out = await action.execute({ eventId: "e1", subject: "Renamed" }, ctx);
 
@@ -12,13 +13,13 @@ Deno.test("update-event: PATCHes only what changed", async () => {
   assertEquals((out as { subject: string }).subject, "Renamed");
 });
 
-Deno.test("update-event: targets the per-calendar path when a calendar is named", async () => {
+test("update-event: targets the per-calendar path when a calendar is named", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ eventId: "e1", calendarId: "cal-1", subject: "x" }, ctx);
   assertEquals(new URL(calls[0].url).pathname, "/v1.0/me/calendars/cal-1/events/e1");
 });
 
-Deno.test("update-event: reschedules when start and end move together", async () => {
+test("update-event: reschedules when start and end move together", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({
     eventId: "e1",
@@ -33,7 +34,7 @@ Deno.test("update-event: reschedules when start and end move together", async ()
   });
 });
 
-Deno.test("update-event: refuses to move only one end of the range", () => {
+test("update-event: refuses to move only one end of the range", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => action.execute({ eventId: "e1", start: "2026-08-15T14:00:00" }, ctx),
@@ -43,7 +44,7 @@ Deno.test("update-event: refuses to move only one end of the range", () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-event: refuses a no-op PATCH", () => {
+test("update-event: refuses a no-op PATCH", () => {
   const { ctx, calls } = mockCtx();
   assertThrows(
     () => action.execute({ eventId: "e1" }, ctx),
@@ -53,11 +54,11 @@ Deno.test("update-event: refuses a no-op PATCH", () => {
   assertEquals(calls.length, 0);
 });
 
-Deno.test("update-event: does not expose transactionId, which Graph makes write-once", () => {
+test("update-event: does not expose transactionId, which Graph makes write-once", () => {
   assertEquals(action.params?.some((p) => p.key === "transactionId"), false);
 });
 
-Deno.test("update-event: leaving attendees empty does not clear them", async () => {
+test("update-event: leaving attendees empty does not clear them", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute({ eventId: "e1", subject: "x" }, ctx);
   assertEquals(JSON.parse(calls[0].body!).attendees, undefined);

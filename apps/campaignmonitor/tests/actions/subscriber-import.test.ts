@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import subscriberImport, { MAX_SUBSCRIBERS_PER_IMPORT } from "../../actions/subscriber-import.ts";
 import { API_PATH, bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
@@ -10,7 +11,7 @@ const OK_BODY = {
   DuplicateEmailsInSubmission: [],
 };
 
-Deno.test("subscriber-import: POSTs to /subscribers/{listid}/import.json", async () => {
+test("subscriber-import: POSTs to /subscribers/{listid}/import.json", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: OK_BODY }]);
   const out = await subscriberImport.execute({
     listId: "lid",
@@ -23,7 +24,7 @@ Deno.test("subscriber-import: POSTs to /subscribers/{listid}/import.json", async
 });
 
 /** The batch-level consent is applied per subscriber, and a per-subscriber value wins. */
-Deno.test("subscriber-import: batch consent fills in, per-subscriber consent overrides", async () => {
+test("subscriber-import: batch consent fills in, per-subscriber consent overrides", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: OK_BODY }]);
   await subscriberImport.execute({
     listId: "lid",
@@ -38,7 +39,7 @@ Deno.test("subscriber-import: batch consent fills in, per-subscriber consent ove
   assertEquals(subs[1].ConsentToTrack, "No");
 });
 
-Deno.test("subscriber-import: the three autoresponder/resubscribe flags default off", async () => {
+test("subscriber-import: the three autoresponder/resubscribe flags default off", async () => {
   const { ctx, calls } = mockCtx([{ status: 201, body: OK_BODY }]);
   await subscriberImport.execute({
     listId: "lid",
@@ -52,7 +53,7 @@ Deno.test("subscriber-import: the three autoresponder/resubscribe flags default 
 });
 
 /** The 1000 ceiling is checked before the upload, so the error names the cause. */
-Deno.test("subscriber-import: refuses an oversized batch without spending a request", async () => {
+test("subscriber-import: refuses an oversized batch without spending a request", async () => {
   const { ctx, calls } = mockCtx([]);
   const tooMany = Array.from(
     { length: MAX_SUBSCRIBERS_PER_IMPORT + 1 },
@@ -70,7 +71,7 @@ Deno.test("subscriber-import: refuses an oversized batch without spending a requ
   assertEquals(calls.length, 0);
 });
 
-Deno.test("subscriber-import: refuses an empty batch", async () => {
+test("subscriber-import: refuses an empty batch", async () => {
   const { ctx, calls } = mockCtx([]);
   await assertRejects(
     async () =>
@@ -89,7 +90,7 @@ Deno.test("subscriber-import: refuses an empty batch", async () => {
  * names each failed address. Discarding it would throw away the only record of
  * which addresses landed.
  */
-Deno.test("subscriber-import: a partial-failure 400 keeps ResultData in the message", async () => {
+test("subscriber-import: a partial-failure 400 keeps ResultData in the message", async () => {
   const { ctx } = mockCtx([{
     status: 400,
     body: {

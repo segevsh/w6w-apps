@@ -1,9 +1,10 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import { base64ToBytes } from "../../lib/client.ts";
 import action from "../../actions/files-download.ts";
 
-Deno.test("files-download: GETs /openai/v1/files/{id}/content and base64-encodes the body", async () => {
+test("files-download: GETs /openai/v1/files/{id}/content and base64-encodes the body", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: '{"custom_id":"1"}',

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertStringIncludes } from "../_assert.ts";
 import service, {
   componentKey,
   mapComponentStatus,
@@ -31,7 +32,7 @@ function summary(over: Record<string, unknown> = {}): Record<string, unknown> {
   };
 }
 
-Deno.test("service: an all-operational page reports ok with every component named", async () => {
+test("service: an all-operational page reports ok with every component named", async () => {
   const { ctx, calls } = mockCtx([{ body: summary() }]);
   const report = await service.check!({}, ctx);
   assertEquals(calls[0].url, STATUS_URL);
@@ -46,7 +47,7 @@ Deno.test("service: an all-operational page reports ok with every component name
  * Deriving one from the component list would report a platform outage for a
  * single degraded peripheral.
  */
-Deno.test("service: the verdict follows the page indicator, not the worst component", async () => {
+test("service: the verdict follows the page indicator, not the worst component", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: { description: "Partially Degraded Service", indicator: "minor" },
@@ -63,7 +64,7 @@ Deno.test("service: the verdict follows the page indicator, not the worst compon
   assertStringIncludes(report.message!, "Telephony (major_outage)");
 });
 
-Deno.test("service: with no indicator at all the worst component decides", async () => {
+test("service: with no indicator at all the worst component decides", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       status: undefined,
@@ -76,7 +77,7 @@ Deno.test("service: with no indicator at all the worst component decides", async
   assertEquals((await service.check!({}, ctx)).state, "down");
 });
 
-Deno.test("service: open incidents and maintenance windows are counted in the message", async () => {
+test("service: open incidents and maintenance windows are counted in the message", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       incidents: [{ name: "Elevated latency", status: "investigating" }],
@@ -89,19 +90,19 @@ Deno.test("service: open incidents and maintenance windows are counted in the me
 });
 
 /** A broken status page says nothing about the vendor — never `down`. */
-Deno.test("service: a 500 from the status page reports unknown", async () => {
+test("service: a 500 from the status page reports unknown", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "boom" }]);
   const report = await service.check!({}, ctx);
   assertEquals(report.state, "unknown");
   assertStringIncludes(report.message!, "500");
 });
 
-Deno.test("service: an unreadable body reports unknown", async () => {
+test("service: an unreadable body reports unknown", async () => {
   const { ctx } = mockCtx([{ body: "<html>not json</html>" }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
 
-Deno.test("service: a page that no longer self-identifies as ElevenLabs' reports unknown", async () => {
+test("service: a page that no longer self-identifies as ElevenLabs' reports unknown", async () => {
   const { ctx } = mockCtx([{
     body: summary({ page: { name: "SomeoneElse", url: "https://status.example.com/" } }),
   }]);
@@ -110,7 +111,7 @@ Deno.test("service: a page that no longer self-identifies as ElevenLabs' reports
   assertStringIncludes(report.message!, "no longer self-identifies");
 });
 
-Deno.test("service: a page with no components reports unknown", async () => {
+test("service: a page with no components reports unknown", async () => {
   const { ctx } = mockCtx([{ body: summary({ components: [] }) }]);
   assertEquals((await service.check!({}, ctx)).state, "unknown");
 });
@@ -119,7 +120,7 @@ Deno.test("service: a page with no components reports unknown", async () => {
  * ElevenLabs publishes no group rows today. The filter is kept so a future
  * grouping does not double-count its children, and this pins that behaviour.
  */
-Deno.test("service: a container row would be filtered out rather than double-counted", async () => {
+test("service: a container row would be filtered out rather than double-counted", async () => {
   const { ctx } = mockCtx([{
     body: summary({
       components: [
@@ -132,7 +133,7 @@ Deno.test("service: a container row would be filtered out rather than double-cou
   assertEquals(Object.keys(report.components!), ["a"]);
 });
 
-Deno.test("service: the Statuspage vocabularies map as documented", () => {
+test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapComponentStatus("operational"), "ok");
   assertEquals(mapComponentStatus("degraded_performance"), "degraded");
   assertEquals(mapComponentStatus("partial_outage"), "degraded");
@@ -148,13 +149,13 @@ Deno.test("service: the Statuspage vocabularies map as documented", () => {
   assertEquals(mapIndicator(undefined), "unknown");
 });
 
-Deno.test("service: componentKey prefers the vendor id and slugs a name otherwise", () => {
+test("service: componentKey prefers the vendor id and slugs a name otherwise", () => {
   assertEquals(componentKey({ id: "abc", name: "Text to Speech" }, 0), "abc");
   assertEquals(componentKey({ name: "Text to Speech" }, 2), "text-to-speech-2");
   assertEquals(componentKey({}, 4), "component-4");
 });
 
-Deno.test("service: the status host is the check's own egress, and it is unsigned", () => {
+test("service: the status host is the check's own egress, and it is unsigned", () => {
   assertEquals(service.kind, "service");
   assertEquals(service.scope, "app");
   assertEquals(service.credential, "none");
@@ -163,7 +164,7 @@ Deno.test("service: the status host is the check's own egress, and it is unsigne
 
 // --- the declared absence ---------------------------------------------------
 
-Deno.test("request-rate: the absence is declared, informational, and names what was checked", () => {
+test("request-rate: the absence is declared, informational, and names what was checked", () => {
   assertEquals(requestRate.check, undefined, "an unavailable check must not also probe");
   assertEquals(requestRate.severity, "informational");
   const reason = requestRate.unavailable!.reason;

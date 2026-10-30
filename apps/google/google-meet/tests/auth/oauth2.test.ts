@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/oauth2.ts";
 
-Deno.test("oauth2: declares the Google authorize/token endpoints and Meet scopes", () => {
+test("oauth2: declares the Google authorize/token endpoints and Meet scopes", () => {
   assertEquals(auth.key, "oauth2");
   assertEquals(auth.type, "oauth2");
   assertEquals(auth.oauth2?.authorizationUrl, "https://accounts.google.com/o/oauth2/v2/auth");
@@ -21,7 +22,7 @@ Deno.test("oauth2: declares the Google authorize/token endpoints and Meet scopes
   assertEquals(auth.oauth2?.pkce, true);
 });
 
-Deno.test("oauth2: sign appends Bearer access token", async () => {
+test("oauth2: sign appends Bearer access token", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://x",
@@ -32,7 +33,7 @@ Deno.test("oauth2: sign appends Bearer access token", async () => {
   assertEquals(out.headers["authorization"], "Bearer acc-123");
 });
 
-Deno.test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
+test("oauth2: test with missing accessToken reports the failure without a network call", async () => {
   const { ctx, calls } = mockCtx();
   const result = await auth.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
@@ -40,7 +41,7 @@ Deno.test("oauth2: test with missing accessToken reports the failure without a n
   assertEquals(calls.length, 0);
 });
 
-Deno.test("oauth2: test hits /v2/conferenceRecords to prove a Meet scope", async () => {
+test("oauth2: test hits /v2/conferenceRecords to prove a Meet scope", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { conferenceRecords: [] } }]);
   const result = await auth.test({ credential: { accessToken: "acc-abc" } }, ctx);
   assertEquals(result.ok, true);
@@ -52,13 +53,13 @@ Deno.test("oauth2: test hits /v2/conferenceRecords to prove a Meet scope", async
   assertEquals(calls[0].headers["authorization"], "Bearer acc-abc");
 });
 
-Deno.test("oauth2: test surfaces upstream status on failure", async () => {
+test("oauth2: test surfaces upstream status on failure", async () => {
   const { ctx } = mockCtx([{ status: 401, body: "" }]);
   const result = await auth.test({ credential: { accessToken: "bad" } }, ctx);
   assertEquals(result.ok, false);
   assert((result.message ?? "").includes("401"));
 });
 
-Deno.test("oauth2: declares no afterConnect — Meet has no whoami endpoint", () => {
+test("oauth2: declares no afterConnect — Meet has no whoami endpoint", () => {
   assertEquals(auth.afterConnect, undefined);
 });

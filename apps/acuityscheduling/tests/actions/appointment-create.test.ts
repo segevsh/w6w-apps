@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/appointment-create.ts";
 
-Deno.test("appointment-create: POSTs /appointments with the required fields", async () => {
+test("appointment-create: POSTs /appointments with the required fields", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute(
     {
@@ -25,7 +26,7 @@ Deno.test("appointment-create: POSTs /appointments with the required fields", as
   assertEquals(body.email, "jane@example.com");
 });
 
-Deno.test("appointment-create: includes optional fields when supplied", async () => {
+test("appointment-create: includes optional fields when supplied", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: 1 } }]);
   await action.execute(
     {

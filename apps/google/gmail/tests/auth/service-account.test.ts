@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects, assertStringIncludes } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/service-account.ts";
 import * as mod from "../../auth/service-account.ts";
@@ -7,7 +8,7 @@ import app from "../../index.ts";
 const PROBE_URL = "https://gmail.googleapis.com/gmail/v1/users/me/profile";
 const SENTINEL = "SENTINEL-BODY-TEXT-do-not-leak";
 
-Deno.test("service-account: declares the serviceAccount shape", () => {
+test("service-account: declares the serviceAccount shape", () => {
   assertEquals(auth.key, "service-account");
   assertEquals(auth.type, "serviceAccount");
   const { bindingFields, ...rest } = auth.serviceAccount!;
@@ -30,13 +31,13 @@ Deno.test("service-account: declares the serviceAccount shape", () => {
   assertEquals(app.auth.map((x) => x.key), ["oauth2", "service-account"]);
 });
 
-Deno.test("service-account: mint code is gone; only default is exported", () => {
+test("service-account: mint code is gone; only default is exported", () => {
   assertEquals(Object.keys(mod), ["default"]);
   assertEquals((auth as unknown as Record<string, unknown>).exchange, undefined);
   assertEquals((auth as unknown as Record<string, unknown>).refresh, undefined);
 });
 
-Deno.test("service-account: sign attaches Bearer without any network call", async () => {
+test("service-account: sign attaches Bearer without any network call", async () => {
   const { ctx, calls } = mockCtx();
   const request = {
     url: "https://x.example/y",
@@ -51,7 +52,7 @@ Deno.test("service-account: sign attaches Bearer without any network call", asyn
   assertEquals(calls.length, 0);
 });
 
-Deno.test("service-account: sign throws on a missing token ({} and null)", async () => {
+test("service-account: sign throws on a missing token ({} and null)", async () => {
   for (const credential of [{}, null]) {
     const { ctx } = mockCtx();
     const request = {
@@ -63,7 +64,7 @@ Deno.test("service-account: sign throws on a missing token ({} and null)", async
   }
 });
 
-Deno.test("service-account: test makes one unsigned probe call and succeeds on 2xx", async () => {
+test("service-account: test makes one unsigned probe call and succeeds on 2xx", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { ok: true } }]);
   const out = await auth.test({ credential: null }, ctx);
   assertEquals(out.ok, true);
@@ -72,7 +73,7 @@ Deno.test("service-account: test makes one unsigned probe call and succeeds on 2
   assertEquals(calls[0].headers["authorization"], undefined);
 });
 
-Deno.test("service-account: test failure carries the status, never the body", async () => {
+test("service-account: test failure carries the status, never the body", async () => {
   const { ctx } = mockCtx([{ status: 403, body: SENTINEL }]);
   const out = await auth.test({ credential: null }, ctx);
   assertEquals(out.ok, false);
@@ -80,7 +81,7 @@ Deno.test("service-account: test failure carries the status, never the body", as
   assertEquals((out.message ?? "").includes(SENTINEL), false);
 });
 
-Deno.test("service-account: afterConnect returns the mailbox email, {} when not ok", async () => {
+test("service-account: afterConnect returns the mailbox email, {} when not ok", async () => {
   const ok = mockCtx([{ status: 200, body: { emailAddress: "me@example.com" } }]);
   assertEquals(await auth.afterConnect!({ credential: null }, ok.ctx), {
     user: { email: "me@example.com" },

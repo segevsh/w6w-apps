@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import rolesList from "../../actions/roles-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("roles-list: reads GET /v2/roles", async () => {
+test("roles-list: reads GET /v2/roles", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ id: 1, name: "Designer", active: true }] }]);
   const result = await rolesList.execute({}, ctx);
 
@@ -15,7 +16,7 @@ Deno.test("roles-list: reads GET /v2/roles", async () => {
  * nothing about how it parses a false value — so the flag is expressed as
  * absence unless the caller asks for archived roles.
  */
-Deno.test("roles-list: archived roles are only requested when asked for", async () => {
+test("roles-list: archived roles are only requested when asked for", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }, { body: [] }]);
   await rolesList.execute({}, ctx);
   assert(!("include_archived" in queryOf(calls[0].url)));

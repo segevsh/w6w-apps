@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import enrich from "../../actions/enrich-contact.ts";
 import { mockCtx, run } from "../_helpers.ts";
 
 const submitted = { body: { error: false, success: true, request_id: "r1", credits_left: 10 } };
 
-Deno.test("enrich-contact: default submits one contact and returns the request id", async () => {
+test("enrich-contact: default submits one contact and returns the request id", async () => {
   const { ctx, calls } = mockCtx([submitted]);
   const out = await run(enrich, { firstName: "John", lastName: "Smith", website: "corp.com" }, ctx);
   assertEquals(calls.length, 1);
@@ -15,7 +16,7 @@ Deno.test("enrich-contact: default submits one contact and returns the request i
   assertEquals(out.ready, false);
 });
 
-Deno.test("enrich-contact: waitSeconds polls past 'not ready' and shapes the contact", async () => {
+test("enrich-contact: waitSeconds polls past 'not ready' and shapes the contact", async () => {
   const { ctx, calls } = mockCtx([
     submitted,
     { body: { error: false, success: false, reason: "Request not ready yet" } },
@@ -48,7 +49,7 @@ Deno.test("enrich-contact: waitSeconds polls past 'not ready' and shapes the con
   assertEquals(out.creditsLeft, 9);
 });
 
-Deno.test("enrich-contact: gives up at the deadline with ready false", async () => {
+test("enrich-contact: gives up at the deadline with ready false", async () => {
   const pending = { body: { error: false, success: false, reason: "not ready" } };
   const { ctx } = mockCtx(
     Array.from({ length: 400 }, () => pending).map((p, i) => i === 0 ? submitted : p),
@@ -62,7 +63,7 @@ Deno.test("enrich-contact: gives up at the deadline with ready false", async () 
   assertEquals(out.requestId, "r1");
 });
 
-Deno.test("enrich-contact: no fields throws before any request; a 401 throws", async () => {
+test("enrich-contact: no fields throws before any request; a 401 throws", async () => {
   const none = mockCtx();
   await assertRejects(() => run(enrich, { firstName: " " }, none.ctx), Error, "at least one");
   assertEquals(none.calls.length, 0);

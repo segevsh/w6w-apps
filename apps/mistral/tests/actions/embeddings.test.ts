@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/embeddings.ts";
 
-Deno.test("embeddings: POSTs /v1/embeddings with default model", async () => {
+test("embeddings: POSTs /v1/embeddings with default model", async () => {
   const body = { data: [{ embedding: [0.1, 0.2] }] };
   const { ctx, calls } = mockCtx([{ body }]);
   const result = await action.execute!({ input: "hello" }, ctx);
@@ -17,21 +18,21 @@ Deno.test("embeddings: POSTs /v1/embeddings with default model", async () => {
   assertEquals(result, body);
 });
 
-Deno.test("embeddings: forwards array input verbatim", async () => {
+test("embeddings: forwards array input verbatim", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ input: ["a", "b", "c"] }, ctx);
   const sent = JSON.parse(calls[0].body!);
   assertEquals(sent.input, ["a", "b", "c"]);
 });
 
-Deno.test("embeddings: forwards encodingFormat as snake_case when provided", async () => {
+test("embeddings: forwards encodingFormat as snake_case when provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ input: "x", encodingFormat: "base64", model: "mistral-embed" }, ctx);
   const sent = JSON.parse(calls[0].body!);
   assertEquals(sent.encoding_format, "base64");
 });
 
-Deno.test("embeddings: omits encoding_format when not provided", async () => {
+test("embeddings: omits encoding_format when not provided", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   await action.execute!({ input: "x" }, ctx);
   const sent = JSON.parse(calls[0].body!);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import commentCreate from "../../actions/comment-create.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("comment-create: appends a comment to a thread and returns the full thread", async () => {
+test("comment-create: appends a comment to a thread and returns the full thread", async () => {
   const { ctx, calls } = mockCtx([{
     status: 201,
     body: { id: "t1", status: "unresolved", comments: [{ id: "c1", text: "Can we soften this?" }] },

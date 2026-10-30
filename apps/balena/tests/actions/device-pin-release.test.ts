@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/device-pin-release.ts";
 
@@ -29,7 +30,7 @@ const release = (extra: Record<string, unknown> = {}) => ({
 const ok = { status: 200, body: {} };
 
 /** The canary pattern. */
-Deno.test("device-pin-release: pins by commit and reports what changed", async () => {
+test("device-pin-release: pins by commit and reports what changed", async () => {
   const { ctx, calls } = mockCtx([device(), release(), ok]);
   const result = await action.execute({ uuid: UUID, release: "abc123" }, ctx) as Record<
     string,
@@ -42,7 +43,7 @@ Deno.test("device-pin-release: pins by commit and reports what changed", async (
 });
 
 /** Unpinning means "follow the fleet", not "go back". */
-Deno.test("device-pin-release: an empty release unpins and says what that means", async () => {
+test("device-pin-release: an empty release unpins and says what that means", async () => {
   const { ctx, calls, logs } = mockCtx([device(900), ok]);
   const result = await action.execute({ uuid: UUID }, ctx) as Record<string, unknown>;
   assertEquals(JSON.parse(calls[1].body!), { is_pinned_on__release: null });
@@ -56,7 +57,7 @@ Deno.test("device-pin-release: an empty release unpins and says what that means"
 });
 
 /** balena's own refusal names the release rather than the mismatch. */
-Deno.test("device-pin-release: refuses a release from another fleet", async () => {
+test("device-pin-release: refuses a release from another fleet", async () => {
   const { ctx, calls } = mockCtx([
     device(),
     release({ belongs_to__application: { __id: 2 } }),
@@ -70,7 +71,7 @@ Deno.test("device-pin-release: refuses a release from another fleet", async () =
 });
 
 /** Pinning to a failed build leaves the device with nothing to download. */
-Deno.test("device-pin-release: refuses a release that did not build", async () => {
+test("device-pin-release: refuses a release that did not build", async () => {
   const { ctx } = mockCtx([device(), release({ status: "failed" })]);
   const err = await assertRejects(
     async () => await action.execute({ uuid: UUID, release: "abc123" }, ctx),
@@ -80,7 +81,7 @@ Deno.test("device-pin-release: refuses a release that did not build", async () =
 });
 
 /** balena allows it; the app says so. */
-Deno.test("device-pin-release: warns when pinning to an invalidated release", async () => {
+test("device-pin-release: warns when pinning to an invalidated release", async () => {
   const { ctx, logs } = mockCtx([device(), release({ is_invalidated: true }), ok]);
   const result = await action.execute({ uuid: UUID, release: "abc123" }, ctx) as Record<
     string,
@@ -93,7 +94,7 @@ Deno.test("device-pin-release: warns when pinning to an invalidated release", as
   );
 });
 
-Deno.test("device-pin-release: an unknown release names all three ways to refer to one", async () => {
+test("device-pin-release: an unknown release names all three ways to refer to one", async () => {
   const { ctx } = mockCtx([device(), { status: 200, body: { d: [] } }]);
   const err = await assertRejects(
     async () => await action.execute({ uuid: UUID, release: "nope" }, ctx),
@@ -102,7 +103,7 @@ Deno.test("device-pin-release: an unknown release names all three ways to refer 
   assert(/full commit hash, a version/.test(err.message), err.message);
 });
 
-Deno.test("device-pin-release: a numeric reference filters on the release id", async () => {
+test("device-pin-release: a numeric reference filters on the release id", async () => {
   const { ctx, calls } = mockCtx([device(), release(), ok]);
   await action.execute({ uuid: UUID, release: "900" }, ctx);
   assertEquals(new URL(calls[1].url).searchParams.get("$filter"), "id eq 900");

@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/clean-company.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("clean-company: GETs /v5/company/clean", async () => {
+test("clean-company: GETs /v5/company/clean", async () => {
   const { ctx, calls } = mockCtx([{
     body: { status: 200, id: "c1", name: "people data labs", score: 4 },
   }]);
@@ -17,7 +18,7 @@ Deno.test("clean-company: GETs /v5/company/clean", async () => {
   assertEquals(out.id, "c1");
 });
 
-Deno.test("clean-company: needs an input; 404 is found: false", async () => {
+test("clean-company: needs an input; 404 is found: false", async () => {
   await assertRejects(
     async () => await action.execute!({} as never, mockCtx([]).ctx),
     Error,

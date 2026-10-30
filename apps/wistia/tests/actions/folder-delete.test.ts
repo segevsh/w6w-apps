@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import folderDelete from "../../actions/folder-delete.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("folder-delete: calls DELETE /modern/folders/f1 with the version header", async () => {
+test("folder-delete: calls DELETE /modern/folders/f1 with the version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { "ok": true, "hashed_id": "h1" } }]);
   const out = await folderDelete.execute({ "folderId": "f1" } as never, ctx) as Record<
     string,
@@ -20,7 +21,7 @@ Deno.test("folder-delete: calls DELETE /modern/folders/f1 with the version heade
   assert(out.ok === true);
 });
 
-Deno.test("folder-delete: surfaces a Wistia error with its code", async () => {
+test("folder-delete: surfaces a Wistia error with its code", async () => {
   const { ctx } = mockCtx([{
     status: 401,
     body: { code: "unauthorized_scope", error: "Token lacks scope." },

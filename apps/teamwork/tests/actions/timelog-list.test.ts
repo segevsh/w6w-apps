@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockTeamworkCtx } from "../_helpers.ts";
 import action from "../../actions/timelog-list.ts";
 
-Deno.test("timelog-list: GETs /projects/api/v3/time.json using the non-deprecated array filters", async () => {
+test("timelog-list: GETs /projects/api/v3/time.json using the non-deprecated array filters", async () => {
   const { ctx, calls } = mockTeamworkCtx([{ body: { timelogs: [] } }]);
   await action.execute({ projectId: 42, taskId: 9 }, ctx);
   const url = new URL(calls[0].url);

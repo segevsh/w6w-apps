@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import rateGet from "../../actions/rate-get.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("rate-get: GETs /rates as a bare array, wrapped as items", async () => {
+test("rate-get: GETs /rates as a bare array, wrapped as items", async () => {
   const { ctx, calls } = mockCtx([{ body: [{ rate: 1.3, source: "GBP", target: "USD" }] }]);
   const out = await rateGet.execute({ source: "GBP", target: "USD" }, ctx) as { items: unknown[] };
 
@@ -12,7 +13,7 @@ Deno.test("rate-get: GETs /rates as a bare array, wrapped as items", async () =>
   assertEquals(out.items.length, 1);
 });
 
-Deno.test("rate-get: history params (from/to/group) pass through", async () => {
+test("rate-get: history params (from/to/group) pass through", async () => {
   const { ctx, calls } = mockCtx([{ body: [] }]);
   await rateGet.execute({
     source: "GBP",

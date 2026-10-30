@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import {
   buildQuery,
   compact,
@@ -11,7 +12,7 @@ import {
 } from "../../lib/client.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("buildQuery: arrays use Rails-style repeated key[] parameters", () => {
+test("buildQuery: arrays use Rails-style repeated key[] parameters", () => {
   assertEquals(
     decodeURIComponent(buildQuery({ source_id: ["a", "b"], page: 2 })),
     "?source_id[]=a&source_id[]=b&page=2",
@@ -20,7 +21,7 @@ Deno.test("buildQuery: arrays use Rails-style repeated key[] parameters", () => 
   assertEquals(buildQuery({ flag: false }), "?flag=false");
 });
 
-Deno.test("seg / strList / jsonValue / compact / nested helpers", () => {
+test("seg / strList / jsonValue / compact / nested helpers", () => {
   assertEquals(seg("a/b"), "a%2Fb");
   assertEquals(strList("a, b,,c"), ["a", "b", "c"]);
   assertEquals(strList([]), undefined);
@@ -33,7 +34,7 @@ Deno.test("seg / strList / jsonValue / compact / nested helpers", () => {
   assertEquals(nested({ a: 1, b: undefined }), { a: 1 });
 });
 
-Deno.test("errorText: reads message/error, ignores HTML shells", () => {
+test("errorText: reads message/error, ignores HTML shells", () => {
   assertEquals(errorText({ message: "bad" }, ""), "bad");
   assertEquals(errorText({ error: "nope" }, ""), "nope");
   assertEquals(errorText({ errors: { name: ["taken"] } }, ""), '{"name":["taken"]}');
@@ -41,7 +42,7 @@ Deno.test("errorText: reads message/error, ignores HTML shells", () => {
   assertEquals(errorText(undefined, "plain failure"), "plain failure");
 });
 
-Deno.test("request: JSON body gets a content-type, a non-JSON success body becomes {}", async () => {
+test("request: JSON body gets a content-type, a non-JSON success body becomes {}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: "ok-not-json" }]);
   const out = await new LeexiClient(ctx).request("POST", "/teams", { body: { name: "x" } });
   assertEquals(out, {});
@@ -49,7 +50,7 @@ Deno.test("request: JSON body gets a content-type, a non-JSON success body becom
   assertEquals(calls[0].headers.accept, "application/json");
 });
 
-Deno.test("request: documented statuses carry their meaning", async () => {
+test("request: documented statuses carry their meaning", async () => {
   for (
     const [status, text] of [[402, "subscription"], [403, "permission scope"], [
       429,

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createDirectChat from "../../actions/create-direct-chat.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-direct-chat: PUT /directChats returns {chatID, url}", async () => {
+test("create-direct-chat: PUT /directChats returns {chatID, url}", async () => {
   const { ctx, calls } = mockCtx([{
     body: { chatID: "dc1", url: "https://app.heartbeat.chat/x/c/dc1" },
   }]);
@@ -15,6 +16,6 @@ Deno.test("create-direct-chat: PUT /directChats returns {chatID, url}", async ()
   assertEquals(out.chatID, "dc1");
 });
 
-Deno.test("create-direct-chat: is idempotent — Heartbeat documents get-or-create", () => {
+test("create-direct-chat: is idempotent — Heartbeat documents get-or-create", () => {
   assertEquals(createDirectChat.idempotent, true);
 });

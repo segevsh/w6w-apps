@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import conversationList from "../../actions/conversation-list.ts";
 import { mockCtx, page, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("conversation-list: GET /agents/{id}/conversations", async () => {
+test("conversation-list: GET /agents/{id}/conversations", async () => {
   const { ctx, calls } = mockCtx([{ body: page([{ id: "c1" }]) }]);
   const out = await conversationList.execute({ agentId: "a1" }, ctx) as { data: unknown[] };
 
@@ -10,7 +11,7 @@ Deno.test("conversation-list: GET /agents/{id}/conversations", async () => {
   assertEquals(out.data.length, 1);
 });
 
-Deno.test("conversation-list: forwards cursor/limit", async () => {
+test("conversation-list: forwards cursor/limit", async () => {
   const { ctx, calls } = mockCtx([{ body: page([]) }]);
   await conversationList.execute({ agentId: "a1", cursor: "cur1", limit: 10 }, ctx);
   assertEquals(queryOf(calls[0].url), { cursor: "cur1", limit: "10" });

@@ -1,10 +1,11 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx, pageEnvelope } from "../_helpers.ts";
 import action from "../../actions/course-sessions-list.ts";
 
 const sample = pageEnvelope([{ id: 6, object: "course_session" }], 1);
 
-Deno.test("course-sessions-list: reads /course_sessions and passes its filters through", async () => {
+test("course-sessions-list: reads /course_sessions and passes its filters through", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   const result = await action.execute!({
     course: 5,
@@ -34,7 +35,7 @@ Deno.test("course-sessions-list: reads /course_sessions and passes its filters t
   assertEquals(result.results.length, 1);
 });
 
-Deno.test("course-sessions-list: unset filters are not sent", async () => {
+test("course-sessions-list: unset filters are not sent", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: sample }]);
   await action.execute!({}, ctx);
   assertEquals(new URL(calls[0].url).search, "");

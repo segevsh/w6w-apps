@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import action from "../../actions/heartbeat-create.ts";
 import { mockCtx } from "../_helpers.ts";
 
-Deno.test("heartbeat-create: POSTs the documented path", async () => {
+test("heartbeat-create: POSTs the documented path", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: { id: "h1" } } }]);
   const out = await action.execute!({
     entity: "/src/a.ts",
@@ -19,7 +20,7 @@ Deno.test("heartbeat-create: POSTs the documented path", async () => {
   assertEquals(out, { data: { id: "h1" } });
 });
 
-Deno.test("heartbeat-create: a vendor error reports status and message", async () => {
+test("heartbeat-create: a vendor error reports status and message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: ["Unauthorized."] } }]);
   await assertRejects(
     async () =>

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockFreshBooksCtx } from "../_helpers.ts";
 import action from "../../actions/client-create.ts";
 
-Deno.test("client-create: POSTs /users/clients with the client envelope", async () => {
+test("client-create: POSTs /users/clients with the client envelope", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{
     body: { response: { result: { client: { id: 1 } } } },
   }]);
@@ -14,7 +15,7 @@ Deno.test("client-create: POSTs /users/clients with the client envelope", async 
   });
 });
 
-Deno.test("client-create: drops blank fields and merges additionalFields", async () => {
+test("client-create: drops blank fields and merges additionalFields", async () => {
   const { ctx, calls } = mockFreshBooksCtx([{ body: {} }]);
   await action.execute({
     fname: "Ada",

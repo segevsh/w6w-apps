@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import severityList from "../../actions/severity-list.ts";
 import { jsonBody, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("severity-list: GET /api/v2/urgencies", async () => {
+test("severity-list: GET /api/v2/urgencies", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -34,7 +35,7 @@ Deno.test("severity-list: GET /api/v2/urgencies", async () => {
   assertEquals((out.items as Array<Record<string, unknown>>)[0].name, "High Severity");
 });
 
-Deno.test("severity-list: puts no credential on the request (sign owns that)", async () => {
+test("severity-list: puts no credential on the request (sign owns that)", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: {
@@ -55,7 +56,7 @@ Deno.test("severity-list: puts no credential on the request (sign owns that)", a
   assertEquals(calls[0].headers.authorization, undefined);
 });
 
-Deno.test("severity-list: a vendor error surfaces its own message", async () => {
+test("severity-list: a vendor error surfaces its own message", async () => {
   const { ctx } = mockCtx([{ status: 401, body: { errors: "Invalid Team API token." } }]);
   const err = await assertRejects(async () => await severityList.execute({}, ctx)) as Error;
   assertEquals(err.message.includes("(401)"), true);

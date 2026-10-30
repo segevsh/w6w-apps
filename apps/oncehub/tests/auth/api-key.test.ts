@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import apiKey from "../../auth/api-key.ts";
 
-Deno.test("api-key: sign stamps the raw key onto the API-Key header, no prefix", async () => {
+test("api-key: sign stamps the raw key onto the API-Key header, no prefix", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.oncehub.com/v2/bookings",
@@ -14,7 +15,7 @@ Deno.test("api-key: sign stamps the raw key onto the API-Key header, no prefix",
   assertEquals(out.headers["authorization"], undefined);
 });
 
-Deno.test("api-key: test() calls GET /v2/test with the key and reports ok on 200", async () => {
+test("api-key: test() calls GET /v2/test with the key and reports ok on 200", async () => {
   const { ctx, calls } = mockCtx([
     { body: { message: "The API key is valid for account: admin@example.com" } },
   ]);
@@ -25,7 +26,7 @@ Deno.test("api-key: test() calls GET /v2/test with the key and reports ok on 200
   assertEquals(result.message, "The API key is valid for account: admin@example.com");
 });
 
-Deno.test("api-key: test() classifies failure from the body's authentication_error, not just the status", async () => {
+test("api-key: test() classifies failure from the body's authentication_error, not just the status", async () => {
   const { ctx } = mockCtx([
     { status: 401, body: { type: "authentication_error", message: "Invalid API key." } },
   ]);
@@ -34,14 +35,14 @@ Deno.test("api-key: test() classifies failure from the body's authentication_err
   assertEquals(result.message, "Invalid API key.");
 });
 
-Deno.test("api-key: test() fails locally without hitting the network when the credential is missing", async () => {
+test("api-key: test() fails locally without hitting the network when the credential is missing", async () => {
   const { ctx, calls } = mockCtx([]);
   const result = await apiKey.test({ credential: {} }, ctx);
   assertEquals(result.ok, false);
   assertEquals(calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect extracts the account email from the test message", async () => {
+test("api-key: afterConnect extracts the account email from the test message", async () => {
   const { ctx } = mockCtx([
     { body: { message: "The API key is valid for account: someone@example.com" } },
   ]);

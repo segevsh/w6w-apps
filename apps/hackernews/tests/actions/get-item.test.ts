@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/get-item.ts";
 
-Deno.test("get-item: GETs /v0/item/:id.json and returns the item", async () => {
+test("get-item: GETs /v0/item/:id.json and returns the item", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -27,7 +28,7 @@ Deno.test("get-item: GETs /v0/item/:id.json and returns the item", async () => {
   assertEquals(out?.title, "My YC app: Dropbox - Throw away your USB drive");
 });
 
-Deno.test("get-item: a missing id answers 200 null, passed through unchanged", async () => {
+test("get-item: a missing id answers 200 null, passed through unchanged", async () => {
   const { ctx } = mockCtx([{ body: "null" }]);
   const out = await action.execute({ id: 999999999999 }, ctx);
   assertEquals(out, null);

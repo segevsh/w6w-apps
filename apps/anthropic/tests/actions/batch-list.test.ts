@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/batch-list.ts";
 
-Deno.test("batch-list: GETs /v1/messages/batches with version header", async () => {
+test("batch-list: GETs /v1/messages/batches with version header", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [], has_more: false } }]);
   await action.execute!({}, ctx);
 
@@ -11,7 +12,7 @@ Deno.test("batch-list: GETs /v1/messages/batches with version header", async () 
   assertEquals(calls[0].headers["anthropic-version"], "2023-06-01");
 });
 
-Deno.test("batch-list: forwards pagination params", async () => {
+test("batch-list: forwards pagination params", async () => {
   const { ctx, calls } = mockCtx([{ body: { data: [] } }]);
   await action.execute!({ limit: 10, after_id: "b_a", before_id: "b_b" }, ctx);
   const params = new URL(calls[0].url).searchParams;

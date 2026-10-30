@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import discountUpdate from "../../actions/discount-update.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("discount-update: POSTs to the resource's own URL", async () => {
+test("discount-update: POSTs to the resource's own URL", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "di_1" } }]);
   await discountUpdate.execute({ discountId: "di_1", name: "New Name" }, ctx);
   assertEquals(calls[0].method, "POST");

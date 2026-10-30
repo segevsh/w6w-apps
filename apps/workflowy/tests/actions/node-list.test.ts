@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import nodeList from "../../actions/node-list.ts";
 import { mockCtx, queryOf } from "../_helpers.ts";
 
@@ -11,7 +12,7 @@ const node = (id: string, priority: number) => ({
   completed: false,
 });
 
-Deno.test("node-list: sorts unordered children by priority and sends parent_id", async () => {
+test("node-list: sorts unordered children by priority and sends parent_id", async () => {
   const { ctx, calls } = mockCtx([{
     body: { nodes: [node("b", 300), node("a", 100), node("c", 200)] },
   }]);
@@ -24,7 +25,7 @@ Deno.test("node-list: sorts unordered children by priority and sends parent_id",
   assertEquals(queryOf(calls[0].url), { parent_id: "inbox" });
 });
 
-Deno.test("node-list: no nodes gives an empty list", async () => {
+test("node-list: no nodes gives an empty list", async () => {
   const { ctx, calls } = mockCtx([{ body: {} }]);
   const out = await nodeList.execute({}, ctx) as { count: number };
   assertEquals(out.count, 0);

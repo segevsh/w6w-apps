@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/upsert-contact.ts";
 
-Deno.test("upsert-contact: PUTs /crm/v3/objects/contacts/{email}?idProperty=email", async () => {
+test("upsert-contact: PUTs /crm/v3/objects/contacts/{email}?idProperty=email", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "1" } }]);
   await action.execute!({ email: "a@x", firstname: "Ada" }, ctx);
   const url = new URL(calls[0].url);

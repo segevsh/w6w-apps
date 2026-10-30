@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import runList from "../../actions/run-list.ts";
 import { listEnvelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("run-list: calls GET /v2/actor-runs and unwraps the page", async () => {
+test("run-list: calls GET /v2/actor-runs and unwraps the page", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([{ id: "r1" }]) }]);
   const out = await runList.execute({ limit: 100 }, ctx) as { items: unknown[] };
 
@@ -16,19 +17,19 @@ Deno.test("run-list: calls GET /v2/actor-runs and unwraps the page", async () =>
  * untouched, because the underscored form filters to nothing rather than
  * erroring.
  */
-Deno.test("run-list: statuses are comma-joined with their hyphens intact", async () => {
+test("run-list: statuses are comma-joined with their hyphens intact", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await runList.execute({ status: ["FAILED", "TIMED-OUT"] }, ctx);
   assertEquals(queryOf(calls[0].url).status, "FAILED,TIMED-OUT");
 });
 
-Deno.test("run-list: a single status arriving as a bare string still works", async () => {
+test("run-list: a single status arriving as a bare string still works", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await runList.execute({ status: "RUNNING" }, ctx);
   assertEquals(queryOf(calls[0].url).status, "RUNNING");
 });
 
-Deno.test("run-list: date filters are passed through as given", async () => {
+test("run-list: date filters are passed through as given", async () => {
   const { ctx, calls } = mockCtx([{ body: listEnvelope([]) }]);
   await runList.execute(
     { startedAfter: "2026-08-01T00:00:00.000Z", startedBefore: "2026-08-11T00:00:00.000Z" },

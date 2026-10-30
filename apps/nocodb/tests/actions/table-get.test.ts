@@ -1,4 +1,5 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/table-get.ts";
 
@@ -25,7 +26,7 @@ const table = {
 };
 
 /** A formula is rejected in terms of the column rather than the rule. */
-Deno.test("table-get: separates writable columns from computed ones", async () => {
+test("table-get: separates writable columns from computed ones", async () => {
   const { ctx, calls } = mockCtx([table], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(new URL(calls[0].url).pathname, "/api/v2/meta/tables/mtbl1");
@@ -34,20 +35,20 @@ Deno.test("table-get: separates writable columns from computed ones", async () =
 });
 
 /** The link actions take the field's id, and everybody has the title. */
-Deno.test("table-get: reports the link field ids", async () => {
+test("table-get: reports the link field ids", async () => {
   const { ctx } = mockCtx([table], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.linkFields, [{ id: "c5", title: "Items" }]);
 });
 
-Deno.test("table-get: reports the values a select column will accept", async () => {
+test("table-get: reports the values a select column will accept", async () => {
   const { ctx } = mockCtx([table], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.selectOptions, { Status: ["New", "Done"] });
 });
 
 /** A base built on an existing database may key on something else. */
-Deno.test("table-get: reports the primary key column, defaulting to Id", async () => {
+test("table-get: reports the primary key column, defaulting to Id", async () => {
   const { ctx } = mockCtx([table], D);
   const result = await action.execute({ tableId: "mtbl1" }, ctx) as Record<string, unknown>;
   assertEquals(result.primaryKey, "Id");
@@ -60,7 +61,7 @@ Deno.test("table-get: reports the primary key column, defaulting to Id", async (
   assertEquals(other.primaryKey, "sku");
 });
 
-Deno.test("table-get: requires a table id", async () => {
+test("table-get: requires a table id", async () => {
   const { ctx } = mockCtx([], D);
   await assertRejects(async () => await action.execute({}, ctx), Error, "`tableId` is required");
 });

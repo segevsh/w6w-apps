@@ -1,9 +1,10 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import auth from "../../auth/api-key.ts";
 
 /** Checkly's own scheme description spells out both halves. */
-Deno.test("api-key: signs with the bearer token AND the account header", async () => {
+test("api-key: signs with the bearer token AND the account header", async () => {
   const { ctx } = mockCtx();
   const request = {
     url: "https://api.checklyhq.com/v1/checks",
@@ -16,7 +17,7 @@ Deno.test("api-key: signs with the bearer token AND the account header", async (
 });
 
 /** The header is declared on 188/194 operations — the gaps are a spec bug. */
-Deno.test("api-key: both fields are required", () => {
+test("api-key: both fields are required", () => {
   const required = auth.fields!.filter((f) => f.required).map((f) => f.key).sort();
   assertEquals(required, ["accountId", "apiKey"]);
   assertEquals(auth.fields!.filter((f) => f.type === "secret").map((f) => f.key), ["apiKey"]);
@@ -26,7 +27,7 @@ Deno.test("api-key: both fields are required", () => {
  * /v1/accounts/me proves both halves; /v1/checks would pass for a key pointed
  * at the wrong account.
  */
-Deno.test("api-key: test probes the account, not just the key", async () => {
+test("api-key: test probes the account, not just the key", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { name: "Acme" } }]);
   assertEquals(
     await auth.test!({ credential: { apiKey: "k1", accountId: "a1" } } as never, ctx),
@@ -36,7 +37,7 @@ Deno.test("api-key: test probes the account, not just the key", async () => {
   assertEquals(calls[0].headers["x-checkly-account"], "a1");
 });
 
-Deno.test("api-key: a bad key and a wrong account get different messages", async () => {
+test("api-key: a bad key and a wrong account get different messages", async () => {
   const badKey = mockCtx([{ status: 401, body: {} }]);
   const a = await auth.test!(
     { credential: { apiKey: "k", accountId: "a1" } } as never,
@@ -56,7 +57,7 @@ Deno.test("api-key: a bad key and a wrong account get different messages", async
   }
 });
 
-Deno.test("api-key: a missing field fails before any network call", async () => {
+test("api-key: a missing field fails before any network call", async () => {
   const noKey = mockCtx([]);
   assertEquals(await auth.test!({ credential: { accountId: "a1" } } as never, noKey.ctx), {
     ok: false,
@@ -70,7 +71,7 @@ Deno.test("api-key: a missing field fails before any network call", async () => 
   assertEquals(noKey.calls.length + noAccount.calls.length, 0);
 });
 
-Deno.test("api-key: afterConnect publishes the account and runtime, never the key", async () => {
+test("api-key: afterConnect publishes the account and runtime, never the key", async () => {
   const { ctx } = mockCtx([{ status: 200, body: { name: "Acme", runtimeId: "2025.04" } }]);
   const display = await auth.afterConnect!(
     { credential: { apiKey: "supersecret", accountId: "a1" } } as never,
@@ -80,7 +81,7 @@ Deno.test("api-key: afterConnect publishes the account and runtime, never the ke
   assert(!JSON.stringify(display).includes("supersecret"), "the credential leaked into display");
 });
 
-Deno.test("api-key: a failed lookup still connects, with the account id recorded", async () => {
+test("api-key: a failed lookup still connects, with the account id recorded", async () => {
   const { ctx } = mockCtx([{ status: 500, body: "" }]);
   assertEquals(
     await auth.afterConnect!({ credential: { apiKey: "k", accountId: "a1" } } as never, ctx),

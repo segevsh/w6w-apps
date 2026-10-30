@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/list-channels.ts";
 
-Deno.test("list-channels: GETs /guilds/{id}/channels and wraps the result", async () => {
+test("list-channels: GETs /guilds/{id}/channels and wraps the result", async () => {
   const body = [
     { id: "c1", type: 0, name: "general" },
     { id: "c2", type: 2, name: "voice" },
@@ -13,7 +14,7 @@ Deno.test("list-channels: GETs /guilds/{id}/channels and wraps the result", asyn
   assertEquals(result, { channels: body });
 });
 
-Deno.test("list-channels: filterTypes narrows the returned list to those types", async () => {
+test("list-channels: filterTypes narrows the returned list to those types", async () => {
   const body = [
     { id: "c1", type: 0, name: "general" },
     { id: "c2", type: 2, name: "voice" },
@@ -27,7 +28,7 @@ Deno.test("list-channels: filterTypes narrows the returned list to those types",
   assertEquals(result.channels[0].id, "c1");
 });
 
-Deno.test("list-channels: limit slices from the top", async () => {
+test("list-channels: limit slices from the top", async () => {
   const body = [{ id: "c1", type: 0 }, { id: "c2", type: 0 }, { id: "c3", type: 0 }];
   const { ctx } = mockCtx([{ body }]);
   const result = await action.execute!({ guildId: "g1", limit: 2 }, ctx) as {

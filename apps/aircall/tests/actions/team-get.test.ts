@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import teamGet from "../../actions/team-get.ts";
 import { entityBody, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("team-get: reads GET /v1/teams/{id} and unwraps the envelope", async () => {
+test("team-get: reads GET /v1/teams/{id} and unwraps the envelope", async () => {
   const { ctx, calls } = mockCtx([
     { body: entityBody("team", { id: 678, name: "Global Sales", users: [] }) },
   ]);

@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/space-create.ts";
 
 const display = { site: "acme" };
 
-Deno.test("space-create: sends the description as a flat {value, representation}", async () => {
+test("space-create: sends the description as a flat {value, representation}", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "101" } }], { display });
   await action.execute!({ name: "Engineering", key: "ENG", description: "Team space" }, ctx);
   assertEquals(calls[0].method, "POST");
@@ -16,13 +17,13 @@ Deno.test("space-create: sends the description as a flat {value, representation}
   });
 });
 
-Deno.test("space-create: private is only sent when set", async () => {
+test("space-create: private is only sent when set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({ name: "Secret", createPrivateSpace: true }, ctx);
   assertEquals(JSON.parse(calls[0].body!), { name: "Secret", createPrivateSpace: true });
 });
 
-Deno.test("space-create: a name is required before any request", async () => {
+test("space-create: a name is required before any request", async () => {
   const { ctx, calls } = mockCtx([], { display });
   await assertRejects(async () => await action.execute!({ name: " " }, ctx), Error, "`name`");
   assertEquals(calls.length, 0);

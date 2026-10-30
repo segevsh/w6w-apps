@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import userList from "../../actions/user-list.ts";
 import { mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("user-list: GET /v1/users/", async () => {
+test("user-list: GET /v1/users/", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { count: 1, next: null, previous: null, results: [{ username: "a@b.test" }] },
@@ -21,11 +22,11 @@ Deno.test("user-list: GET /v1/users/", async () => {
   });
 });
 
-Deno.test("user-list: declares type read", () => {
+test("user-list: declares type read", () => {
   assertEquals(userList.type, "read");
 });
 
-Deno.test("user-list: surfaces the vendor error body", async () => {
+test("user-list: surfaces the vendor error body", async () => {
   const { ctx } = mockCtx([{ status: 400, body: { detail: "Not found." } }]);
   let message = "";
   try {

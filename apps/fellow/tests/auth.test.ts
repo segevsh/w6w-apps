@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "./_assert.ts";
 import apiKey, { authHeaders } from "../auth/api-key.ts";
 import { mockCtx } from "./_helpers.ts";
 
@@ -7,7 +8,7 @@ const ME = {
   workspace: { id: "w", name: "Acme", subdomain: "acme" },
 };
 
-Deno.test("auth: sign stamps X-API-KEY and nothing else", () => {
+test("auth: sign stamps X-API-KEY and nothing else", () => {
   const req = {
     url: "https://acme.fellow.app/api/v1/me",
     method: "GET",
@@ -23,7 +24,7 @@ Deno.test("auth: sign stamps X-API-KEY and nothing else", () => {
   assertEquals(authHeaders({}), { "x-api-key": "" });
 });
 
-Deno.test("auth.test: a /me body with user.id passes, sent to the workspace host with the key", async () => {
+test("auth.test: a /me body with user.id passes, sent to the workspace host with the key", async () => {
   const { ctx, calls } = mockCtx([{ body: ME }]);
   const r = await apiKey.test!({ credential: { subdomain: "acme", apiKey: "k" } } as never, ctx);
   assertEquals(r, { ok: true });
@@ -31,7 +32,7 @@ Deno.test("auth.test: a /me body with user.id passes, sent to the workspace host
   assertEquals(calls[0].headers["x-api-key"], "k");
 });
 
-Deno.test("auth.test: judged on the body, not the status", async () => {
+test("auth.test: judged on the body, not the status", async () => {
   // 200 but not the /me shape (e.g. an SPA shell) must not pass.
   const html = mockCtx([{ body: "<html></html>", headers: { "content-type": "text/html" } }]);
   assertEquals(
@@ -45,7 +46,7 @@ Deno.test("auth.test: judged on the body, not the status", async () => {
   );
 });
 
-Deno.test("auth.test: 401 detail, unknown workspace and missing fields are distinct messages", async () => {
+test("auth.test: 401 detail, unknown workspace and missing fields are distinct messages", async () => {
   const bad = mockCtx([{ status: 401, body: { detail: "Unauthorized" } }]);
   const r1 = await apiKey.test!(
     { credential: { subdomain: "acme", apiKey: "bad" } } as never,
@@ -73,7 +74,7 @@ Deno.test("auth.test: 401 detail, unknown workspace and missing fields are disti
   assertEquals(none.calls.length, 0);
 });
 
-Deno.test("auth.test: a subdomain that could redirect elsewhere is refused before any request", async () => {
+test("auth.test: a subdomain that could redirect elsewhere is refused before any request", async () => {
   for (const evil of ["evil.com/x", "a.b", "acme.fellow.app.evil.com", "-x", "a b"]) {
     const { ctx, calls } = mockCtx([]);
     const r = await apiKey.test!({ credential: { subdomain: evil, apiKey: "k" } } as never, ctx);
@@ -82,7 +83,7 @@ Deno.test("auth.test: a subdomain that could redirect elsewhere is refused befor
   }
 });
 
-Deno.test("auth.test: pasting the full URL or host still resolves to the label", async () => {
+test("auth.test: pasting the full URL or host still resolves to the label", async () => {
   const { ctx, calls } = mockCtx([{ body: ME }]);
   await apiKey.test!(
     { credential: { subdomain: "https://Acme.fellow.app/home", apiKey: "k" } } as never,
@@ -91,7 +92,7 @@ Deno.test("auth.test: pasting the full URL or host still resolves to the label",
   assertEquals(calls[0].url, "https://acme.fellow.app/api/v1/me");
 });
 
-Deno.test("auth.afterConnect: publishes workspace label data, falls back to the subdomain", async () => {
+test("auth.afterConnect: publishes workspace label data, falls back to the subdomain", async () => {
   const ok = mockCtx([{ body: ME }]);
   assertEquals(
     await apiKey.afterConnect!({ credential: { subdomain: "acme", apiKey: "k" } } as never, ok.ctx),

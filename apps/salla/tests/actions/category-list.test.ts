@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/category-list.ts";
 
@@ -10,7 +11,7 @@ const input = {
   "per_page": 30,
 } as never;
 
-Deno.test("category-list: GET /categories", async () => {
+test("category-list: GET /categories", async () => {
   const { ctx, calls } = mockCtx([{
     status: 200,
     body: { "status": 200, "success": true, "data": { "id": 1 } },
@@ -31,13 +32,13 @@ Deno.test("category-list: GET /categories", async () => {
   assertEquals(result, { "status": 200, "success": true, "data": { "id": 1 } });
 });
 
-Deno.test("category-list: unset filters add no query string", async () => {
+test("category-list: unset filters add no query string", async () => {
   const { ctx, calls } = mockCtx([{ body: { success: true } }]);
   await action.execute!({} as never, ctx);
   assertEquals(new URL(calls[0].url).search, "");
 });
 
-Deno.test("category-list: a Salla error envelope throws with its message", async () => {
+test("category-list: a Salla error envelope throws with its message", async () => {
   const { ctx } = mockCtx([{
     status: 422,
     body: {

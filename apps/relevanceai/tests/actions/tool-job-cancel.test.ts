@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import toolJobCancel from "../../actions/tool-job-cancel.ts";
 import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
 
@@ -8,7 +9,7 @@ import { bodyOf, mockRelevanceCtx, pathOf } from "../_helpers.ts";
  * `^[a-zd._-]+$` pattern, so a tool id sent here would look valid and cancel
  * nothing.
  */
-Deno.test("tool-job-cancel: POSTs the JOB id to /studios/{job_id}/cancel", async () => {
+test("tool-job-cancel: POSTs the JOB id to /studios/{job_id}/cancel", async () => {
   const { ctx, calls } = mockRelevanceCtx([{ status: 200 }]);
   const out = await toolJobCancel.execute({ jobId: "j1" }, ctx);
 
@@ -18,7 +19,7 @@ Deno.test("tool-job-cancel: POSTs the JOB id to /studios/{job_id}/cancel", async
   assertEquals(out, { cancelled: true });
 });
 
-Deno.test("tool-job-cancel: is idempotent and takes only the job id", () => {
+test("tool-job-cancel: is idempotent and takes only the job id", () => {
   assertEquals(toolJobCancel.type, "perform");
   assertEquals(toolJobCancel.idempotent, true);
   assertEquals(toolJobCancel.params?.map((p) => p.key), ["jobId"]);

@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import whatsappList from "../../actions/whatsapp-list.ts";
 import { envelope, mockCtx, pathOf, queryOf } from "../_helpers.ts";
 
-Deno.test("whatsapp-list: query names, campaign filter, messages and pagination", async () => {
+test("whatsapp-list: query names, campaign filter, messages and pagination", async () => {
   const pagination = { type: "cursor", next_cursor: "abc", has_next: true, has_prev: false };
   const { ctx, calls } = mockCtx([{ body: envelope({ messages: [{ id: "1" }] }, { pagination }) }]);
   const out = await whatsappList.execute({
@@ -26,7 +27,7 @@ Deno.test("whatsapp-list: query names, campaign filter, messages and pagination"
   assertEquals(out.pagination, pagination);
 });
 
-Deno.test("whatsapp-list: empty result still returns arrays", async () => {
+test("whatsapp-list: empty result still returns arrays", async () => {
   const { ctx } = mockCtx([{ body: envelope({}) }]);
   assertEquals(await whatsappList.execute({}, ctx), { messages: [], pagination: null });
 });

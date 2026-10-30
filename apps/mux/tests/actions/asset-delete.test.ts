@@ -1,15 +1,16 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/asset-delete.ts";
 
-Deno.test("asset-delete: refuses without confirmation", async () => {
+test("asset-delete: refuses without confirmation", async () => {
   const { ctx, calls } = mockCtx([]);
   const err = await assertRejects(async () => await action.execute!({ assetId: "a1" }, ctx), Error);
   assert(/stored master/.test(String(err)), String(err));
   assertEquals(calls.length, 0);
 });
 
-Deno.test("asset-delete: confirmed, it deletes", async () => {
+test("asset-delete: confirmed, it deletes", async () => {
   const { ctx, calls } = mockCtx([{ status: 204 }]);
   assertEquals(await action.execute!({ assetId: "a1", confirm: true }, ctx), {
     ok: true,
@@ -19,6 +20,6 @@ Deno.test("asset-delete: confirmed, it deletes", async () => {
 });
 
 /** A retention job is exactly the thing that deletes the wrong list. */
-Deno.test("asset-delete: frames itself as a cost-control operation", () => {
+test("asset-delete: frames itself as a cost-control operation", () => {
   assert(/storage cost/i.test(action.description!), action.description);
 });

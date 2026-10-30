@@ -1,8 +1,9 @@
-import { assert, assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import upsertRecord from "../../actions/upsert-record.ts";
 
-Deno.test("upsert-record: PUTs with matching_attribute on the QUERY string", async () => {
+test("upsert-record: PUTs with matching_attribute on the QUERY string", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { data: { id: { record_id: "r1" } } } }]);
   await upsertRecord.execute({
     object: "companies",
@@ -19,7 +20,7 @@ Deno.test("upsert-record: PUTs with matching_attribute on the QUERY string", asy
   });
 });
 
-Deno.test("upsert-record: is idempotent and says why it is the integration default", () => {
+test("upsert-record: is idempotent and says why it is the integration default", () => {
   assertEquals(upsertRecord.idempotent, true);
   const d = upsertRecord.description!;
   assert(/lead intake|sync/i.test(d), d);

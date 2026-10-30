@@ -1,10 +1,11 @@
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assert, assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/user-update.ts";
 
 const display = { display: { region: "us" } };
 
-Deno.test("user-update: PUTs only the fields that were set", async () => {
+test("user-update: PUTs only the fields that were set", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { _id: "u1" } }], display);
   await action.execute!({ userId: "u1", department: "Engineering", company: "" }, ctx);
   assertEquals(calls[0].method, "PUT");
@@ -13,12 +14,12 @@ Deno.test("user-update: PUTs only the fields that were set", async () => {
 });
 
 /** State is an access decision and belongs to its own action. */
-Deno.test("user-update: does not offer a state field", () => {
+test("user-update: does not offer a state field", () => {
   const keys = (action.params as Array<{ key: string }>).map((p) => p.key);
   assert(!keys.includes("state"), "state must not be settable here");
 });
 
-Deno.test("user-update: an update with nothing set is refused, not sent", async () => {
+test("user-update: an update with nothing set is refused, not sent", async () => {
   const { ctx, calls } = mockCtx([], display);
   await assertRejects(
     async () => await action.execute!({ userId: "u1" }, ctx),

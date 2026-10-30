@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import ping from "../../actions/ping.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("ping: hits GET /ping and returns the version string", async () => {
+test("ping: hits GET /ping and returns the version string", async () => {
   // Live behaviour, verified 2026-09-05: the body is {"version":"1.0"}, not
   // the {"version":"pong"} the OpenAPI document's own example shows.
   const { ctx, calls } = mockCtx([{ status: 200, body: { version: "1.0" } }]);
@@ -11,6 +12,6 @@ Deno.test("ping: hits GET /ping and returns the version string", async () => {
   assertEquals(result, { version: "1.0" });
 });
 
-Deno.test("ping: declares requiresAuth false — it needs no credential", () => {
+test("ping: declares requiresAuth false — it needs no credential", () => {
   assertEquals(ping.requiresAuth, false);
 });

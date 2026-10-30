@@ -1,10 +1,11 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import { mockCtx } from "../_helpers.ts";
 import action from "../../actions/deployment-create.ts";
 
 const display = { teamId: "team_abc" };
 
-Deno.test("deployment-create: POSTs the git source Vercel's schema expects", async () => {
+test("deployment-create: POSTs the git source Vercel's schema expects", async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: { id: "dpl_1" } }], { display });
   const result = await action.execute!({
     name: "my-app",
@@ -21,7 +22,7 @@ Deno.test("deployment-create: POSTs the git source Vercel's schema expects", asy
   assertEquals(result, { id: "dpl_1" });
 });
 
-Deno.test('deployment-create: the two flag query params go as Vercel\'s literal "1"', async () => {
+test('deployment-create: the two flag query params go as Vercel\'s literal "1"', async () => {
   const { ctx, calls } = mockCtx([{ status: 200, body: {} }], { display });
   await action.execute!({
     name: "my-app",
@@ -33,7 +34,7 @@ Deno.test('deployment-create: the two flag query params go as Vercel\'s literal 
   assertEquals(q.get("skipAutoDetectionConfirmation"), "1");
 });
 
-Deno.test("deployment-create: a name is required and bad JSON is named", async () => {
+test("deployment-create: a name is required and bad JSON is named", async () => {
   const noName = mockCtx([], { display });
   await assertRejects(
     async () => await action.execute!({ name: " " }, noName.ctx),
@@ -49,6 +50,6 @@ Deno.test("deployment-create: a name is required and bad JSON is named", async (
   assertEquals(noName.calls.length + badJson.calls.length, 0);
 });
 
-Deno.test("deployment-create: is honestly non-idempotent", () => {
+test("deployment-create: is honestly non-idempotent", () => {
   assertEquals(action.idempotent, false);
 });

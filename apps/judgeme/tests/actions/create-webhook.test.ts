@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import createWebhook from "../../actions/create-webhook.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("create-webhook: posts a nested webhook.key/webhook.url", async () => {
+test("create-webhook: posts a nested webhook.key/webhook.url", async () => {
   const { ctx, calls } = mockCtx([
     {
       body: {
@@ -25,7 +26,7 @@ Deno.test("create-webhook: posts a nested webhook.key/webhook.url", async () => 
   assertEquals(out.webhook, { id: 5, key: "review/created", url: "https://example.com/hook" });
 });
 
-Deno.test("create-webhook: every option is one of the document's enumerated webhook_key values", () => {
+test("create-webhook: every option is one of the document's enumerated webhook_key values", () => {
   const keyParam = createWebhook.params?.find((p) => p.key === "key");
   const options = keyParam?.options as Array<{ value: string }>;
   const documented = new Set([

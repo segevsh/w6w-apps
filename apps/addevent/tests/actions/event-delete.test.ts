@@ -1,8 +1,9 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals, assertRejects } from "../_assert.ts";
 import eventDelete from "../../actions/event-delete.ts";
 import { mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("event-delete: DELETEs and reports the 204 with no body to parse", async () => {
+test("event-delete: DELETEs and reports the 204 with no body to parse", async () => {
   const { ctx, calls } = mockCtx([{ status: 204, body: undefined }]);
   const out = await eventDelete.execute({ eventId: "evt-1" }, ctx) as {
     eventId: string;
@@ -13,7 +14,7 @@ Deno.test("event-delete: DELETEs and reports the 204 with no body to parse", asy
   assertEquals(out, { eventId: "evt-1", status: 204 });
 });
 
-Deno.test("event-delete: a repeat delete on an unknown id surfaces as an error", async () => {
+test("event-delete: a repeat delete on an unknown id surfaces as an error", async () => {
   const { ctx } = mockCtx([{ status: 404, body: undefined }]);
   await assertRejects(
     () => Promise.resolve(eventDelete.execute({ eventId: "evt-1" }, ctx)),
@@ -21,6 +22,6 @@ Deno.test("event-delete: a repeat delete on an unknown id surfaces as an error",
   );
 });
 
-Deno.test("event-delete: is declared idempotent", () => {
+test("event-delete: is declared idempotent", () => {
   assertEquals(eventDelete.idempotent, true);
 });

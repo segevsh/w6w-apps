@@ -1,8 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { test } from "node:test";
+import { assertEquals } from "../_assert.ts";
 import webhookUpdate from "../../actions/webhook-update.ts";
 import { bodyOf, mockCtx, pathOf } from "../_helpers.ts";
 
-Deno.test("webhook-update: PUTs the full body to the id", async () => {
+test("webhook-update: PUTs the full body to the id", async () => {
   const { ctx, calls } = mockCtx([{ body: { id: "w1" } }]);
   await webhookUpdate.execute({
     id: "w1",
@@ -20,7 +21,7 @@ Deno.test("webhook-update: PUTs the full body to the id", async () => {
   });
 });
 
-Deno.test("webhook-update: is idempotent and takes the id first", () => {
+test("webhook-update: is idempotent and takes the id first", () => {
   assertEquals(webhookUpdate.idempotent, true);
   assertEquals(webhookUpdate.params![0].key, "id");
 });
