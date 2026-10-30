@@ -41,7 +41,14 @@ const subscriptionList: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "stats", label: "Stats" },
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "referrals", label: "Referrals" },
+        { value: "newsletter_lists", label: "Newsletter lists" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: `stats`, `custom_fields`, `referrals`, `newsletter_lists`.",
     },
     {

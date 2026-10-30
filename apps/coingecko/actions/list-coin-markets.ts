@@ -56,7 +56,17 @@ const action: ActionDefinition = {
     {
       key: "priceChangePercentage",
       label: "Price-change windows",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "1h", label: "1h" },
+        { value: "24h", label: "24h" },
+        { value: "7d", label: "7d" },
+        { value: "14d", label: "14d" },
+        { value: "30d", label: "30d" },
+        { value: "200d", label: "200d" },
+        { value: "1y", label: "1y" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: 1h, 24h, 7d, 14d, 30d, 200d, 1y.",
     },
     { key: "locale", label: "Language", type: "string", hint: "e.g. en, de, ja, zh-tw." },

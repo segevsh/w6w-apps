@@ -1,6 +1,7 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient, type EventbriteListResponse } from "../lib/client.ts";
 import { resolveEventbriteFields } from "../lib/fields.ts";
+import { ORDER_EXPANSIONS } from "../lib/expansions.ts";
 
 interface Input {
   scope: "event" | "organization" | "user";
@@ -11,6 +12,7 @@ interface Input {
   onlyEmails?: string;
   excludeEmails?: string;
   expand?: string;
+  /** Legacy saved input; Eventbrite does not accept page_size on order endpoints. */
   pageSize?: number;
   continuation?: string;
 }
@@ -55,8 +57,17 @@ const listOrders: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
-      hint: "e.g. `placed`, `refunded`, `transferred`.",
+      type: "select",
+      placeholder: "Select…",
+      showIf: { field: "scope", notIn: ["user"] },
+      options: [
+        { value: "active", label: "Active" },
+        { value: "inactive", label: "Inactive" },
+        { value: "both", label: "All orders" },
+        { value: "all_not_deleted", label: "All non-deleted orders" },
+      ],
+      hint:
+        "Filter by attending orders, non-attending orders, all orders, or all non-deleted orders.",
     },
     { key: "changedSince", label: "Changed since (ISO datetime)", type: "string" },
     {
@@ -64,16 +75,33 @@ const listOrders: ActionDefinition<Input> = {
       label: "Time filter",
       type: "select",
       hint: "Only used when scope is `user`.",
+      showIf: { field: "scope", equals: "user" },
       options: [
         { value: "all", label: "All" },
         { value: "past", label: "Past" },
         { value: "current_future", label: "Current and future" },
       ],
     },
-    { key: "onlyEmails", label: "Only emails (comma-separated)", type: "string" },
-    { key: "excludeEmails", label: "Exclude emails (comma-separated)", type: "string" },
-    { key: "expand", label: "Expand", type: "string", default: DEFAULT_EXPAND },
-    { key: "pageSize", label: "Page size", type: "number", default: 50 },
+    {
+      key: "onlyEmails",
+      label: "Only emails (comma-separated)",
+      type: "string",
+      showIf: { field: "scope", notIn: ["user"] },
+    },
+    {
+      key: "excludeEmails",
+      label: "Exclude emails (comma-separated)",
+      type: "string",
+      showIf: { field: "scope", notIn: ["user"] },
+    },
+    {
+      key: "expand",
+      label: "Expand",
+      type: "multiselect",
+      options: ORDER_EXPANSIONS,
+      config: { valueFormat: "csv" },
+      default: DEFAULT_EXPAND,
+    },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
@@ -92,13 +120,12 @@ const listOrders: ActionDefinition<Input> = {
       : `/events/${id}/orders/`;
     return client.request<EventbriteListResponse<"orders">>(path, {
       query: {
-        status: input.status,
+        status: input.scope === "user" ? undefined : input.status,
         changed_since: input.changedSince,
         time_filter: input.scope === "user" ? input.timeFilter : undefined,
-        only_emails: input.onlyEmails,
-        exclude_emails: input.excludeEmails,
+        only_emails: input.scope === "user" ? undefined : input.onlyEmails,
+        exclude_emails: input.scope === "user" ? undefined : input.excludeEmails,
         expand: input.expand ?? DEFAULT_EXPAND,
-        page_size: input.pageSize ?? 50,
         continuation: input.continuation,
       },
     });

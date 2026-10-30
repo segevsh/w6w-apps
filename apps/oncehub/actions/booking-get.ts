@@ -29,7 +29,12 @@ const bookingGet: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "owner", label: "Owner" }, { value: "contact", label: "Contact" }, {
+        value: "conversation",
+        label: "Conversation",
+      }],
+      config: { valueFormat: "csv" },
       advanced: true,
       hint: "Comma-separated: owner, contact, conversation.",
     },

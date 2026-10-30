@@ -26,7 +26,15 @@ const action: ActionDefinition<Input> = {
     {
       key: "eventType",
       label: "Event type",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "All", label: "All" },
+        { value: "Personal", label: "Personal" },
+        { value: "InitialAppointment", label: "InitialAppointment" },
+        { value: "MaterialDelivery", label: "MaterialDelivery" },
+        { value: "CrewLabor", label: "CrewLabor" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated: All, Personal, InitialAppointment, MaterialDelivery, CrewLabor. Defaults to All.",
     },

@@ -95,7 +95,16 @@ const action: ActionDefinition = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "contact", label: "Contact" },
+        { value: "applications", label: "Applications" },
+        { value: "stage", label: "Stage" },
+        { value: "owner", label: "Owner" },
+        { value: "followers", label: "Followers" },
+        { value: "sourcedBy", label: "Sourced By" },
+      ],
+      config: { valueFormat: "csv" },
       default: "contact",
       hint: "Comma-separated: contact, applications, stage, owner, followers, sourcedBy. " +
         "Without expanding, these come back as ids.",

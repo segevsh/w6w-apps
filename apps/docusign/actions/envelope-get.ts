@@ -30,7 +30,19 @@ const envelopeGet: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "documents", label: "Documents" },
+        { value: "attachments", label: "Attachments" },
+        { value: "extensions", label: "Extensions" },
+        { value: "folders", label: "Folders" },
+        { value: "recipients", label: "Recipients" },
+        { value: "powerform", label: "Powerform" },
+        { value: "tabs", label: "Tabs" },
+        { value: "payment_tabs", label: "Payment tabs" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated extras: custom_fields, documents, attachments, extensions, folders, recipients, powerform, tabs, payment_tabs.",
     },

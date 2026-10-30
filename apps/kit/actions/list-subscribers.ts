@@ -75,7 +75,12 @@ const listSubscribers: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "attribution", label: "Attribution" }, { value: "tags", label: "Tags" }, {
+        value: "location",
+        label: "Location",
+      }, { value: "canceled_at", label: "Canceled at" }],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated extra fields: `attribution`, `tags`, `location`, `canceled_at`.",
     },
     {

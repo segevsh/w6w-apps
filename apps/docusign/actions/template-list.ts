@@ -47,7 +47,16 @@ const templateList: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "recipients", label: "Recipients" },
+        { value: "documents", label: "Documents" },
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "notification", label: "Notification" },
+        { value: "powerforms", label: "Powerforms" },
+        { value: "folders", label: "Folders" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated extras: recipients, documents, custom_fields, notification, powerforms, folders.",
     },
@@ -69,7 +78,12 @@ const templateList: ActionDefinition<Input> = {
     {
       key: "userFilter",
       label: "User filter",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [{ value: "owned_by_me", label: "owned_by_me" }, {
+        value: "shared_with_me",
+        label: "shared_with_me",
+      }, { value: "all", label: "all" }],
       hint: "Sharing scope: `owned_by_me`, `shared_with_me` or `all`.",
     },
     {

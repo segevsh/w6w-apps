@@ -50,7 +50,17 @@ const listContacts: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "all", label: "all" },
+        { value: "active", label: "active" },
+        { value: "deleted", label: "deleted" },
+        { value: "not_set", label: "not_set" },
+        { value: "pending_confirmation", label: "pending_confirmation" },
+        { value: "temp_hold", label: "temp_hold" },
+        { value: "unsubscribed", label: "unsubscribed" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated. `all`, `active`, `deleted`, `not_set`, `pending_confirmation`, `temp_hold`, `unsubscribed`. Omit to exclude deleted contacts.",
     },
@@ -83,7 +93,16 @@ const listContacts: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include sub-resources",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "list_memberships", label: "List memberships" },
+        { value: "phone_numbers", label: "Phone numbers" },
+        { value: "street_addresses", label: "Street addresses" },
+        { value: "taggings", label: "Taggings" },
+        { value: "notes", label: "Notes" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated: `custom_fields`, `list_memberships`, `phone_numbers`, `street_addresses`, `taggings`, `notes`. Omitted by default — side-loading costs.",
     },

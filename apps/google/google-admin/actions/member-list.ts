@@ -20,7 +20,13 @@ const listMembers: ActionDefinition<Input> = {
     {
       key: "roles",
       label: "Roles",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "OWNER", label: "OWNER" },
+        { value: "MANAGER", label: "MANAGER" },
+        { value: "MEMBER", label: "MEMBER" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: OWNER, MANAGER, MEMBER. Omit for all roles.",
     },
     { key: "maxResults", label: "Page size", type: "number", default: 200 },

@@ -75,7 +75,12 @@ const invoiceList: ActionDefinition<Input> = {
     {
       "key": "status",
       "label": "Status",
-      "type": "string",
+      "type": "multiselect",
+      options: [{ "value": "open", "label": "open" }, { "value": "closed", "label": "closed" }, {
+        "value": "draft",
+        "label": "draft",
+      }, { "value": "void", "label": "void" }],
+      config: { valueFormat: "csv" },
       "hint": "open, closed, draft or void; several separated by commas.",
     },
     {

@@ -72,7 +72,22 @@ const envelopeList: ActionDefinition<Input> = {
     {
       key: "orderBy",
       label: "Order by",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [
+        { value: "last_modified", label: "last_modified" },
+        { value: "action_required", label: "action_required" },
+        { value: "created", label: "created" },
+        { value: "completed", label: "completed" },
+        { value: "envelope_name", label: "envelope_name" },
+        { value: "expire", label: "expire" },
+        { value: "sent", label: "sent" },
+        { value: "signer_list", label: "signer_list" },
+        { value: "status", label: "status" },
+        { value: "subject", label: "subject" },
+        { value: "user_name", label: "user_name" },
+        { value: "status_changed", label: "status_changed" },
+      ],
       hint:
         "One of: last_modified, action_required, created, completed, envelope_name, expire, sent, signer_list, status, subject, user_name, status_changed.",
     },
@@ -88,7 +103,17 @@ const envelopeList: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "custom_fields", label: "Custom fields" },
+        { value: "documents", label: "Documents" },
+        { value: "attachments", label: "Attachments" },
+        { value: "extensions", label: "Extensions" },
+        { value: "folders", label: "Folders" },
+        { value: "recipients", label: "Recipients" },
+        { value: "payment_tabs", label: "Payment tabs" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated extras: custom_fields, documents, attachments, extensions, folders, recipients, payment_tabs.",
     },

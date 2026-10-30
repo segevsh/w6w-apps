@@ -1,5 +1,6 @@
 import type { ActionDefinition } from "@w6w/types";
 import { EventbriteClient } from "../lib/client.ts";
+import { EVENT_EXPANSIONS } from "../lib/expansions.ts";
 import { EVENT_OUTPUT } from "./create-event.ts";
 
 interface Input {
@@ -16,7 +17,14 @@ const getEvent: ActionDefinition<Input> = {
   description: "Retrieve a single event by ID.",
   params: [
     { key: "eventId", label: "Event ID", type: "string", required: true },
-    { key: "expand", label: "Expand", type: "string", default: "venue,ticket_classes" },
+    {
+      key: "expand",
+      label: "Expand",
+      type: "multiselect",
+      options: EVENT_EXPANSIONS,
+      config: { valueFormat: "csv" },
+      default: "venue,ticket_classes",
+    },
   ],
   // `expand` (default `venue,ticket_classes`) inlines these alongside the event.
   output: [

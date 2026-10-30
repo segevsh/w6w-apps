@@ -37,7 +37,12 @@ const action: ActionDefinition = {
     {
       key: "state",
       label: "States",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "0", label: "Unassigned" }, { value: "1", label: "Assigned" }, {
+        value: "2",
+        label: "Active",
+      }, { value: "3", label: "Completed" }],
+      config: { valueFormat: "csv" },
       default: "",
       hint: "Comma-separated: 0 unassigned, 1 assigned, 2 active, 3 completed.",
     },

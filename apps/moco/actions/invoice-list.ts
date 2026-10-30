@@ -30,7 +30,18 @@ const invoiceList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "draft", label: "draft" },
+        { value: "created", label: "created" },
+        { value: "sent", label: "sent" },
+        { value: "partially_paid", label: "partially_paid" },
+        { value: "paid", label: "paid" },
+        { value: "overdue", label: "overdue" },
+        { value: "ignored", label: "ignored" },
+        { value: "disregarded", label: "disregarded" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated: draft, created, sent, partially_paid, paid, overdue, ignored, disregarded.",
     },

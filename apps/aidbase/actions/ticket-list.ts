@@ -33,7 +33,15 @@ const ticketList: ActionDefinition<Input> = {
     {
       "key": "status",
       "label": "Statuses",
-      "type": "string",
+      "type": "multiselect",
+      options: [
+        { "value": "open", "label": "open" },
+        { "value": "assigned", "label": "assigned" },
+        { "value": "need_more_info", "label": "need_more_info" },
+        { "value": "resolved", "label": "resolved" },
+        { "value": "closed", "label": "closed" },
+      ],
+      config: { valueFormat: "csv" },
       "hint":
         "Comma-separated, e.g. open,assigned. Valid: open, assigned, need_more_info, resolved, closed. Aidbase answers 400 on an invalid value.",
     },

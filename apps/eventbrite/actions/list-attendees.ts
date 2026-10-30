@@ -7,6 +7,7 @@ interface Input {
   scopeId: string;
   status?: "attending" | "not_attending" | "unpaid";
   changedSince?: string;
+  /** Legacy saved input; Eventbrite does not accept page_size on attendee endpoints. */
   pageSize?: number;
   continuation?: string;
 }
@@ -45,14 +46,14 @@ const listAttendees: ActionDefinition<Input> = {
       key: "status",
       label: "Status",
       type: "select",
+      placeholder: "All statuses",
       options: [
         { value: "attending", label: "Attending" },
         { value: "not_attending", label: "Not attending" },
-        { value: "unpaid", label: "Unpaid" },
+        { value: "unpaid", label: "Unpaid (event only)" },
       ],
     },
     { key: "changedSince", label: "Changed since (ISO datetime)", type: "string" },
-    { key: "pageSize", label: "Page size", type: "number", default: 50 },
     { key: "continuation", label: "Continuation token", type: "string" },
   ],
   resolveFields: resolveEventbriteFields,
@@ -62,15 +63,18 @@ const listAttendees: ActionDefinition<Input> = {
   ],
 
   execute(input, ctx) {
+    if (input.scope === "organization" && input.status === "unpaid") {
+      throw new Error("Unpaid attendees can only be listed with Event scope.");
+    }
     const client = new EventbriteClient(ctx);
+    const id = encodeURIComponent(input.scopeId);
     const path = input.scope === "organization"
-      ? `/organizations/${input.scopeId}/attendees/`
-      : `/events/${input.scopeId}/attendees/`;
+      ? `/organizations/${id}/attendees/`
+      : `/events/${id}/attendees/`;
     return client.request<EventbriteListResponse<"attendees">>(path, {
       query: {
         status: input.status,
         changed_since: input.changedSince,
-        page_size: input.pageSize ?? 50,
         continuation: input.continuation,
       },
     });

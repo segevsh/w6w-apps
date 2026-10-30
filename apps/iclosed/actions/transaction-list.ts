@@ -49,7 +49,14 @@ const transactionList: ActionDefinition<Input> = {
     {
       key: "source",
       label: "Sources",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "Zapier", label: "Zapier" },
+        { value: "Stripe", label: "Stripe" },
+        { value: "Make", label: "Make" },
+        { value: "Other", label: "Other" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Zapier, Stripe, Make or Other; comma-separated for several.",
     },
     {

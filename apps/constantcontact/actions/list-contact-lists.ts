@@ -46,7 +46,12 @@ const listContactLists: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "all", label: "all" }, { value: "active", label: "active" }, {
+        value: "deleted",
+        label: "deleted",
+      }],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: `all`, `active`, `deleted`.",
     },
     {

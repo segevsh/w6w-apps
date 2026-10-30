@@ -45,7 +45,17 @@ const action: ActionDefinition<Input> = {
     {
       key: "milestones",
       label: "Milestones",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "lead", label: "lead" },
+        { value: "prospect", label: "prospect" },
+        { value: "approved", label: "approved" },
+        { value: "completed", label: "completed" },
+        { value: "invoiced", label: "invoiced" },
+        { value: "closed", label: "closed" },
+        { value: "cancelled", label: "cancelled" },
+      ],
+      config: { valueFormat: "csv" },
       advanced: true,
       hint: "Comma-separated: lead, prospect, approved, completed, invoiced, closed, cancelled.",
     },

@@ -78,7 +78,12 @@ const biteCreate: ActionDefinition<Input> = {
     {
       key: "privacies",
       label: "Visibility",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "public", label: "public" }, { value: "team", label: "team" }, {
+        value: "participants",
+        label: "participants",
+      }],
+      config: { valueFormat: "csv" },
       advanced: true,
       hint: "Comma-separated, from `public`, `team`, `participants`.",
     },

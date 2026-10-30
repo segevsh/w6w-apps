@@ -56,7 +56,12 @@ const bookingList: ActionDefinition<Input> = {
     {
       key: "expand",
       label: "Expand",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "data.owner", label: "Owner" }, {
+        value: "data.contact",
+        label: "Contact",
+      }, { value: "data.conversation", label: "Conversation" }],
+      config: { valueFormat: "csv" },
       advanced: true,
       hint: "Comma-separated: owner, contact, conversation. Prefix with data. for list expansion.",
     },

@@ -37,7 +37,15 @@ const userList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "ActivationRequired", label: "ActivationRequired" },
+        { value: "ActivationSent", label: "ActivationSent" },
+        { value: "Active", label: "Active" },
+        { value: "Closed", label: "Closed" },
+        { value: "Disabled", label: "Disabled" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated statuses: ActivationRequired, ActivationSent, Active, Closed, Disabled.",
     },

@@ -34,7 +34,12 @@ const action: ActionDefinition<Input> = {
     {
       key: "currency",
       label: "Currency",
-      type: "string",
+      type: "select",
+      placeholder: "Select…",
+      options: [{ value: "UAH", label: "UAH" }, { value: "USD", label: "USD" }, {
+        value: "EUR",
+        label: "EUR",
+      }],
       hint: "UAH, USD or EUR — SendPulse accepts no other values.",
     },
     {

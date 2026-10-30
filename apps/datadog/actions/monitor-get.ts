@@ -39,7 +39,12 @@ const monitorGet: ActionDefinition<Input> = {
     {
       key: "groupStates",
       label: "Group states",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "all", label: "all" }, { value: "alert", label: "alert" }, {
+        value: "warn",
+        label: "warn",
+      }, { value: "no data", label: "no data" }],
+      config: { valueFormat: "csv" },
       advanced: true,
       placeholder: "all",
       hint: "Comma-separated, from `all`, `alert`, `warn`, `no data`. Without it the response " +

@@ -47,7 +47,12 @@ const workflowRunSearch: ActionDefinition<Input, Output> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "Active", label: "Active" }, {
+        value: "Completed",
+        label: "Completed",
+      }, { value: "Archived", label: "Archived" }],
+      config: { valueFormat: "csv" },
       hint: "Active, Completed or Archived. Comma-separated for multiple. Defaults to Active.",
     },
   ],

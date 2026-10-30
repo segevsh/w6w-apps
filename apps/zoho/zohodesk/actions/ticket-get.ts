@@ -18,7 +18,15 @@ const ticketGet: ActionDefinition<Input, Record<string, unknown>> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "contacts", label: "Contacts" },
+        { value: "products", label: "Products" },
+        { value: "assignee", label: "Assignee" },
+        { value: "departments", label: "Departments" },
+        { value: "team", label: "Team" },
+      ],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: contacts, products, assignee, departments, team.",
     },
   ],

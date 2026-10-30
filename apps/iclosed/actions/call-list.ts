@@ -145,7 +145,12 @@ const callList: ActionDefinition<Input> = {
     {
       key: "types",
       label: "Types",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "rescheduled_events", label: "rescheduled_events" }, {
+        value: "cancelled_events",
+        label: "cancelled_events",
+      }, { value: "scheduled_events", label: "scheduled_events" }],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: rescheduled_events, cancelled_events, scheduled_events.",
     },
     {

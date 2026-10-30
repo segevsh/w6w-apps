@@ -23,9 +23,13 @@ export function includeParam(allowed: string, extra?: string): Param {
   return {
     key: "include",
     label: "Include",
-    type: "string",
-    placeholder: allowed.split(", ")[0],
-    hint: `Comma-separated related resources to embed. Allowed: ${allowed}. ` +
+    type: "multiselect",
+    options: allowed.split(",").map((value) => ({
+      value: value.trim(),
+      label: value.trim().replaceAll("_", " "),
+    })),
+    config: { valueFormat: "csv" },
+    hint: "Select one or more related resources to include. " +
       "An include that needs a scope the token lacks is silently omitted (still HTTP 200)." +
       (extra ? ` ${extra}` : ""),
   };

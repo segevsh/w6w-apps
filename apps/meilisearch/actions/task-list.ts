@@ -27,7 +27,15 @@ const action: ActionDefinition = {
     {
       key: "statuses",
       label: "Statuses",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "enqueued", label: "enqueued" },
+        { value: "processing", label: "processing" },
+        { value: "succeeded", label: "succeeded" },
+        { value: "failed", label: "failed" },
+        { value: "canceled", label: "canceled" },
+      ],
+      config: { valueFormat: "csv" },
       default: "",
       placeholder: "failed, canceled",
       hint: "Comma-separated: enqueued, processing, succeeded, failed, canceled.",

@@ -30,6 +30,13 @@ Where the blueprint disagrees with itself, the actions follow the vendor's worki
   finalizes it with the token. A workflow does the middle step with an HTTP step.
 - **Reports** (`get-sales-report`, `get-attendee-report`) send `event_ids` comma-separated.
 - **`update-ticket-class`** sends only the fields you set, though the blueprint marks them all required.
+- **Pagination** uses `continuation` from the previous response. `page_size` in a response
+  does not mean that endpoint accepts it as an input: only organization event listings and
+  discount searches expose Page size. Attendee, order and ticket-class listings ignore legacy
+  saved `pageSize` values so they do not cause `ARGUMENTS_ERROR`.
+- **Scope-specific filters** stay within their documented endpoints: unpaid attendees require
+  Event scope; order status and email filters apply to Event/Organization scopes; sorting
+  events by name requires Organization scope.
 
 ## Triggers
 

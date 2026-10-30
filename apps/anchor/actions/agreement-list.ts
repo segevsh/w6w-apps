@@ -32,7 +32,12 @@ const agreementList: ActionDefinition<Input> = {
     {
       key: "status",
       label: "Status",
-      type: "string",
+      type: "multiselect",
+      options: [{ value: "active", label: "active" }, {
+        value: "terminated",
+        label: "terminated",
+      }, { value: "completed", label: "completed" }],
+      config: { valueFormat: "csv" },
       hint: "Comma-separated: active, terminated, completed.",
     },
     {

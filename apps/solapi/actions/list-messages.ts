@@ -56,7 +56,22 @@ const listMessages: ActionDefinition<Input> = {
     {
       "key": "type",
       "label": "Type",
-      "type": "string",
+      "type": "select",
+      placeholder: "Select…",
+      options: [
+        { "value": "SMS", "label": "SMS" },
+        { "value": "LMS", "label": "LMS" },
+        { "value": "MMS", "label": "MMS" },
+        { "value": "ATA", "label": "ATA" },
+        { "value": "CTA", "label": "CTA" },
+        { "value": "CTI", "label": "CTI" },
+        { "value": "RCS_SMS", "label": "RCS_SMS" },
+        { "value": "RCS_LMS", "label": "RCS_LMS" },
+        { "value": "RCS_MMS", "label": "RCS_MMS" },
+        { "value": "RCS_TPL", "label": "RCS_TPL" },
+        { "value": "FAX", "label": "FAX" },
+        { "value": "VOICE", "label": "VOICE" },
+      ],
       "hint": "SMS, LMS, MMS, ATA, CTA, CTI, RCS_SMS, RCS_LMS, RCS_MMS, RCS_TPL, FAX or VOICE.",
     },
     {

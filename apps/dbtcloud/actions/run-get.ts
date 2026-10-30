@@ -41,7 +41,15 @@ const action: ActionDefinition = {
     {
       key: "includeRelated",
       label: "Include Related",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "trigger", label: "Trigger" },
+        { value: "job", label: "Job" },
+        { value: "audit", label: "Audit" },
+        { value: "run_steps", label: "Run steps" },
+        { value: "debug_logs", label: "Debug logs" },
+      ],
+      config: { valueFormat: "csv" },
       default: "",
       placeholder: "run_steps,job",
       hint: "Comma-separated: `trigger`, `job`, `audit`, `run_steps`, `debug_logs`. " +

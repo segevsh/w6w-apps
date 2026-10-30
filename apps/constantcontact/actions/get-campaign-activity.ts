@@ -40,7 +40,14 @@ const getCampaignActivity: ActionDefinition<Input> = {
     {
       key: "include",
       label: "Include",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "html_content", label: "Html content" },
+        { value: "physical_address_in_footer", label: "Physical address in footer" },
+        { value: "permalink_url", label: "Permalink url" },
+        { value: "document_properties", label: "Document properties" },
+      ],
+      config: { valueFormat: "csv" },
       hint:
         "Comma-separated: `html_content`, `physical_address_in_footer`, `permalink_url`, `document_properties`. All omitted by default.",
     },

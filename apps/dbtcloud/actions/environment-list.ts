@@ -39,7 +39,14 @@ const action: ActionDefinition = {
     {
       key: "includeRelated",
       label: "Include Related",
-      type: "string",
+      type: "multiselect",
+      options: [
+        { value: "project", label: "Project" },
+        { value: "connection", label: "Connection" },
+        { value: "credentials", label: "Credentials" },
+        { value: "repository", label: "Repository" },
+      ],
+      config: { valueFormat: "csv" },
       default: "",
       advanced: true,
       hint: "`project`, `connection`, `credentials`, `repository`.",
